@@ -1,0 +1,20 @@
+{
+  "name": "@varo/playground-weapp",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "echo weapp playground build pending",
+    "clean": "rimraf dist",
+    "dev": "echo weapp playground dev pending",
+    "lint": "echo weapp playground lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo weapp playground e2e pending"
+  },
+  "dependencies": {
+    "@varo/ui-weapp": "workspace:*"
+  }
+}
+
+

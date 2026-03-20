@@ -1,0 +1,20 @@
+{
+  "name": "@varo/playground-h5",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "echo h5 playground build pending",
+    "clean": "rimraf dist",
+    "dev": "echo h5 playground dev pending",
+    "lint": "echo h5 playground lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo h5 playground e2e pending"
+  },
+  "dependencies": {
+    "@varo/ui-h5": "workspace:*"
+  }
+}
+
+

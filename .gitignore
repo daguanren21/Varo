@@ -1,0 +1,11 @@
+node_modules
+dist
+.turbo
+coverage
+playwright-report
+test-results
+apps/docs/.vitepress/cache/
+.DS_Store
+*.log
+.pnpm-store
+*.tsbuildinfo

@@ -1,0 +1,56 @@
+{
+    "name":  "@varo/primitives-weapp",
+    "version":  "0.0.1",
+    "type":  "module",
+    "sideEffects":  false,
+    "main":  "./dist/index.js",
+    "module":  "./dist/index.js",
+    "types":  "./dist/index.d.ts",
+    "files":  [
+                  "dist",
+                  "src"
+              ],
+    "exports":  {
+                    ".":  {
+                              "types":  "./dist/index.d.ts",
+                              "import":  "./dist/index.js"
+                          },
+                    "./hooks":  {
+                                    "types":  "./dist/hooks.d.ts",
+                                    "import":  "./dist/hooks.js"
+                                },
+                    "./parts":  {
+                                    "types":  "./dist/parts.d.ts",
+                                    "import":  "./dist/parts.js"
+                                },
+                    "./source":  {
+                                     "types":  "./src/index.ts",
+                                     "import":  "./src/index.ts"
+                                 },
+                    "./source/parts":  {
+                                           "types":  "./src/parts.ts",
+                                           "import":  "./src/parts.ts"
+                                       },
+                    "./source/hooks":  {
+                                           "types":  "./src/hooks.ts",
+                                           "import":  "./src/hooks.ts"
+                                       }
+                },
+    "scripts":  {
+                    "build":  "tsc -p tsconfig.build.json",
+                    "clean":  "rimraf dist",
+                    "dev":  "tsc -p tsconfig.build.json --watch",
+                    "lint":  "echo primitives-weapp lint pending",
+                    "typecheck":  "tsc -p tsconfig.json --noEmit",
+                    "test":  "vitest run --passWithNoTests",
+                    "test:e2e":  "echo primitives-weapp has no e2e"
+                },
+    "dependencies":  {
+                         "@varo/primitives-core":  "workspace:*",
+                         "@varo/shared":  "workspace:*",
+                         "vue":  "^3.5.30"
+                     },
+    "peerDependencies":  {
+                             "wevu":  "6.10.2"
+                         }
+}

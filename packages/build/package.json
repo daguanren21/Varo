@@ -1,0 +1,17 @@
+{
+  "name": "@varo/build",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo build package is config-only",
+    "clean": "echo build package clean pending",
+    "dev": "echo build package has no dev server",
+    "lint": "echo build package lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo build package has no e2e"
+  }
+}
+
+
