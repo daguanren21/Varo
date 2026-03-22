@@ -9,3 +9,4 @@ apps/docs/.vitepress/cache/
 *.log
 .pnpm-store
 *.tsbuildinfo
+.playwright-cli/
