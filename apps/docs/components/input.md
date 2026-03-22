@@ -19,36 +19,9 @@
   </ul>
 </div>
 
-## H5 示例
+## 跨端示例与演示
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VInput } from '@varo/ui-h5'
-
-const value = ref('')
-</script>
-
-<template>
-  <VInput v-model:value="value" placeholder="请输入内容" />
-  <VInput default-value="默认内容" />
-</template>
-```
-
-## 小程序示例
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VInput } from '@varo/ui-weapp'
-
-const mobile = ref('')
-</script>
-
-<template>
-  <VInput v-model:value="mobile" placeholder="请输入手机号" />
-</template>
-```
+<PlatformTabsDemo example="input" locale="zh" />
 
 ## Props
 
@@ -104,4 +77,4 @@ const mobile = ref('')
 - [Button](/components/button)
 - [Dialog](/components/dialog)
 - [国际化配置](/guide/i18n)
-- [小程序示例](/examples/weapp)
+- [跨端演示](/examples/)

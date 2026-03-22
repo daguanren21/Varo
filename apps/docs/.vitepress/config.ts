@@ -1,6 +1,8 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 
 const githubUrl = process.env.VITE_GITHUB_URL || 'https://github.com/your-org/varo'
+const workspacePath = (relativePath: string) => fileURLToPath(new URL(relativePath, import.meta.url))
 
 export default defineConfig({
   title: 'Varo',
@@ -10,13 +12,13 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@varo/shared': '@varo/shared/source',
-        '@varo/theme': '@varo/theme/source',
-        '@varo/primitives-core': '@varo/primitives-core/source',
-        '@varo/primitives-h5': '@varo/primitives-h5/source',
-        '@varo/primitives-weapp': '@varo/primitives-weapp/source',
-        '@varo/ui-h5': '@varo/ui-h5/source',
-        '@varo/ui-weapp': '@varo/ui-weapp/source'
+        '@varo/shared': workspacePath('../../../packages/shared/src/index.ts'),
+        '@varo/theme': workspacePath('../../../packages/theme/src/index.ts'),
+        '@varo/primitives-core': workspacePath('../../../packages/primitives-core/src/index.ts'),
+        '@varo/primitives-h5': workspacePath('../../../packages/primitives-h5/src/index.ts'),
+        '@varo/primitives-weapp': workspacePath('../../../packages/primitives-weapp/src/index.ts'),
+        '@varo/ui-h5': workspacePath('../../../packages/ui-h5/src/index.ts'),
+        '@varo/ui-weapp': workspacePath('../../../packages/ui-weapp/src/index.ts')
       }
     }
   },
@@ -33,7 +35,7 @@ export default defineConfig({
         nav: [
           { text: '指南', link: '/guide/installation' },
           { text: '组件', link: '/components/button' },
-          { text: '示例', link: '/examples/h5' },
+          { text: '示例', link: '/examples/' },
           { text: '主题', link: '/guide/theme' },
           { text: '国际化', link: '/guide/i18n' },
           { text: '贡献', link: '/guide/contributing' }
@@ -57,10 +59,7 @@ export default defineConfig({
           },
           {
             text: '示例',
-            items: [
-              { text: 'H5 示例', link: '/examples/h5' },
-              { text: '小程序示例', link: '/examples/weapp' }
-            ]
+            items: [{ text: '跨端演示', link: '/examples/' }]
           },
           {
             text: '社区',
@@ -84,7 +83,7 @@ export default defineConfig({
         nav: [
           { text: 'Guide', link: '/en/guide/installation' },
           { text: 'Components', link: '/en/components/button' },
-          { text: 'Examples', link: '/en/examples/h5' },
+          { text: 'Examples', link: '/en/examples/' },
           { text: 'Theme', link: '/en/guide/theme' },
           { text: 'I18n', link: '/en/guide/i18n' },
           { text: 'Contributing', link: '/en/guide/contributing' }
@@ -108,10 +107,7 @@ export default defineConfig({
           },
           {
             text: 'Examples',
-            items: [
-              { text: 'H5 Example', link: '/en/examples/h5' },
-              { text: 'Mini-program Example', link: '/en/examples/weapp' }
-            ]
+            items: [{ text: 'Cross-platform Demo', link: '/en/examples/' }]
           },
           {
             text: 'Community',

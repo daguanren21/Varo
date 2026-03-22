@@ -18,34 +18,9 @@
   </ul>
 </div>
 
-## H5 示例
+## 跨端示例与演示
 
-```vue
-<script setup lang="ts">
-import { VButton } from '@varo/ui-h5'
-</script>
-
-<template>
-  <VButton variant="solid" size="md">提交</VButton>
-  <VButton variant="outline" size="sm">次要操作</VButton>
-  <VButton variant="ghost" :disabled="true">禁用态</VButton>
-</template>
-```
-
-## 小程序示例
-
-```vue
-<script setup lang="ts">
-import { VButton } from '@varo/ui-weapp'
-</script>
-
-<template>
-  <view class="stack">
-    <VButton size="lg">提交</VButton>
-    <VButton variant="outline">取消</VButton>
-  </view>
-</template>
-```
+<PlatformTabsDemo example="button" locale="zh" />
 
 ## Props
 
@@ -87,4 +62,4 @@ import { VButton } from '@varo/ui-weapp'
 - [Input](/components/input)
 - [Dialog](/components/dialog)
 - [主题配置](/guide/theme)
-- [H5 示例](/examples/h5)
+- [跨端演示](/examples/)

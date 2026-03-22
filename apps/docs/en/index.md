@@ -10,8 +10,8 @@ hero:
       text: Quick Start
       link: /en/guide/installation
     - theme: alt
-      text: Open H5 Example
-      link: /en/examples/h5
+      text: Open Cross-platform Demo
+      link: /en/examples/
 features:
   - title: Primitives First
     details: Ship a headless interaction layer independently from the official wrappers.
@@ -127,32 +127,13 @@ Varo primitives do not hard-code copy. Drive all labels and text from your app-l
 
 ## Usage Examples
 
-::: code-group
-
-```vue [H5]
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VButton, VInput } from '@varo/ui-h5'
-const name = ref('')
-</script>
-```
-
-```vue [Mini-program]
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VButton, VInput } from '@varo/ui-weapp'
-const mobile = ref('')
-</script>
-```
-
-:::
+<PlatformTabsDemo example="overview" locale="en" />
 
 <div class="varo-doc-links">
   <a href="/en/components/button">Button Docs</a>
   <a href="/en/components/input">Input Docs</a>
   <a href="/en/components/dialog">Dialog Docs</a>
-  <a href="/en/examples/h5">H5 Example</a>
-  <a href="/en/examples/weapp">Mini-program Example</a>
+  <a href="/en/examples/">Cross-platform Demo</a>
 </div>
 
 ## Live Preview

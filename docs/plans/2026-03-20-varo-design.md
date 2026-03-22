@@ -63,6 +63,15 @@ renderer 与 official UI 只消费 semantic/component token，不直接依赖 pa
 5. Input / Field / FormItem
 6. Toast / Popover / Collapse
 
+## Documentation Experience
+
+组件文档与示例页采用统一约束：
+
+- 每个组件页必须同时包含可复制的示例代码与演示效果
+- `H5` 与 `Weapp` 内容放在同一文档块中，通过 tabs 切换查看
+- 不再把同一组件的双端示例拆成两篇独立文档
+- 平台差异说明写在同一页内，优先强调共享交互契约，再补充运行时差异
+
 ## Testing
 
 稳定性要求从初始化阶段开始建立：
