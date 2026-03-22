@@ -10,8 +10,8 @@ hero:
       text: 快速开始
       link: /guide/installation
     - theme: alt
-      text: 查看 H5 示例
-      link: /examples/h5
+      text: 查看跨端演示
+      link: /examples/
 features:
   - title: Primitives First
     details: core、primitives、ui 分层清晰，可单独发布无样式交互层供团队二次封装。
@@ -160,46 +160,13 @@ const i18n = createI18n({
 
 ## 组件使用示例
 
-::: code-group
-
-```vue [H5]
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VButton, VInput } from '@varo/ui-h5'
-
-const name = ref('')
-</script>
-
-<template>
-  <VInput v-model:value="name" placeholder="请输入姓名" />
-  <VButton>提交</VButton>
-</template>
-```
-
-```vue [小程序]
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VButton, VInput } from '@varo/ui-weapp'
-
-const mobile = ref('')
-</script>
-
-<template>
-  <view class="stack">
-    <VInput v-model:value="mobile" placeholder="请输入手机号" />
-    <VButton size="lg">提交</VButton>
-  </view>
-</template>
-```
-
-:::
+<PlatformTabsDemo example="overview" locale="zh" />
 
 <div class="varo-doc-links">
   <a href="/components/button">Button 文档</a>
   <a href="/components/input">Input 文档</a>
   <a href="/components/dialog">Dialog 文档</a>
-  <a href="/examples/h5">H5 示例</a>
-  <a href="/examples/weapp">小程序示例</a>
+  <a href="/examples/">跨端演示</a>
 </div>
 
 ## 实时预览

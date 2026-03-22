@@ -3,6 +3,7 @@
   --vp-c-brand-2: #0d9488;
   --vp-c-brand-3: #14b8a6;
   --vp-c-brand-soft: rgba(15, 118, 110, 0.14);
+  --vp-sidebar-width: 200px;
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(135deg, #0f766e 20%, #2563eb 80%);
   --vp-home-hero-image-background-image: radial-gradient(circle at center, rgba(37, 99, 235, 0.26), rgba(15, 118, 110, 0.18));
@@ -232,7 +233,10 @@ body {
 }
 
 .vp-doc table {
+  display: table;
   overflow: hidden;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .vp-doc table th {
@@ -257,5 +261,41 @@ body {
   .varo-package-grid,
   .varo-stat-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 960px) {
+  .VPDoc > .container > .content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .VPDoc .content-container,
+  .VPDoc .main {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .VPDoc.has-aside > .container > .content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .VPDoc.has-aside .content-container,
+  .VPDoc.has-aside .main {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .VPDoc.has-aside .vp-doc .platform-demo {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
   }
 }

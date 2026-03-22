@@ -19,36 +19,9 @@
   </ul>
 </div>
 
-## H5 Example
+## Cross-platform Example and Preview
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VInput } from '@varo/ui-h5'
-
-const value = ref('')
-</script>
-
-<template>
-  <VInput v-model:value="value" placeholder="Type here" />
-  <VInput default-value="Default content" />
-</template>
-```
-
-## Mini-program Example
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { VInput } from '@varo/ui-weapp'
-
-const mobile = ref('')
-</script>
-
-<template>
-  <VInput v-model:value="mobile" placeholder="Phone number" />
-</template>
-```
+<PlatformTabsDemo example="input" locale="en" />
 
 ## Props
 
@@ -104,4 +77,4 @@ const mobile = ref('')
 - [Button](/en/components/button)
 - [Dialog](/en/components/dialog)
 - [Internationalization](/en/guide/i18n)
-- [Mini-program Example](/en/examples/weapp)
+- [Cross-platform Demo](/en/examples/)

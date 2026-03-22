@@ -21,34 +21,13 @@ Varo 的 Dialog 采用 parts 暴露方式：`VDialogRoot`、`VDialogTrigger`、`
   </ul>
 </div>
 
-## H5 示例
+## 跨端示例与演示
 
-```vue
-<script setup lang="ts">
-import {
-  VDialogClose,
-  VDialogContent,
-  VDialogOverlay,
-  VDialogRoot,
-  VDialogTrigger
-} from '@varo/ui-h5'
-</script>
-
-<template>
-  <VDialogRoot>
-    <VDialogTrigger>打开弹层</VDialogTrigger>
-    <VDialogOverlay class="overlay" />
-    <VDialogContent class="content">
-      <p>Dialog 内容</p>
-      <VDialogClose>关闭</VDialogClose>
-    </VDialogContent>
-  </VDialogRoot>
-</template>
-```
+<PlatformTabsDemo example="dialog" locale="zh" />
 
 ## 小程序封装建议
 
-小程序侧更推荐基于 `@varo/primitives-weapp` 再封一层企业内部弹层组件，因为不同小程序容器在 portal 与 overlay 行为上的差异通常更大。
+小程序侧更推荐基于 `@varo/primitives-weapp` 再封一层企业内部弹层组件，因为不同小程序容器在 portal 与 overlay 行为上的差异通常更大；tabs 里的示例主要用于对齐统一的交互契约与 parts 组织方式。
 
 ## Root Props
 
@@ -103,4 +82,4 @@ import {
 - [Button](/components/button)
 - [Input](/components/input)
 - [主题配置](/guide/theme)
-- [H5 示例](/examples/h5)
+- [跨端演示](/examples/)

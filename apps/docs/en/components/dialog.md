@@ -21,34 +21,13 @@ Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `
   </ul>
 </div>
 
-## H5 Example
+## Cross-platform Example and Preview
 
-```vue
-<script setup lang="ts">
-import {
-  VDialogClose,
-  VDialogContent,
-  VDialogOverlay,
-  VDialogRoot,
-  VDialogTrigger
-} from '@varo/ui-h5'
-</script>
-
-<template>
-  <VDialogRoot>
-    <VDialogTrigger>Open dialog</VDialogTrigger>
-    <VDialogOverlay class="overlay" />
-    <VDialogContent class="content">
-      <p>Dialog body</p>
-      <VDialogClose>Close</VDialogClose>
-    </VDialogContent>
-  </VDialogRoot>
-</template>
-```
+<PlatformTabsDemo example="dialog" locale="en" />
 
 ## Mini-program guidance
 
-For mini-programs, it is usually better to wrap `@varo/primitives-weapp` into an internal modal component because platform container differences tend to be larger around overlays and portals.
+For mini-programs, it is usually better to wrap `@varo/primitives-weapp` into an internal modal component because platform container differences tend to be larger around overlays and portals. The tabbed example focuses on the shared interaction contract and parts composition.
 
 ## Root Props
 
@@ -103,4 +82,4 @@ For mini-programs, it is usually better to wrap `@varo/primitives-weapp` into an
 - [Button](/en/components/button)
 - [Input](/en/components/input)
 - [Theme](/en/guide/theme)
-- [H5 Example](/en/examples/h5)
+- [Cross-platform Demo](/en/examples/)

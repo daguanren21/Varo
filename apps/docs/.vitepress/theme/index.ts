@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import { createTheme, VaroConfigProvider } from '@varo/theme'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
+import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import './custom.css'
 
 const docsTheme = createTheme({
@@ -17,6 +18,7 @@ const theme: Theme = {
   enhanceApp({ app }) {
     app.use(VaroConfigProvider, { theme: docsTheme })
     app.component('InteractivePreview', InteractivePreview)
+    app.component('PlatformTabsDemo', PlatformTabsDemo)
   }
 }
 

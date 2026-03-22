@@ -18,34 +18,9 @@
   </ul>
 </div>
 
-## H5 Example
+## Cross-platform Example and Preview
 
-```vue
-<script setup lang="ts">
-import { VButton } from '@varo/ui-h5'
-</script>
-
-<template>
-  <VButton variant="solid" size="md">Submit</VButton>
-  <VButton variant="outline" size="sm">Secondary</VButton>
-  <VButton variant="ghost" :disabled="true">Disabled</VButton>
-</template>
-```
-
-## Mini-program Example
-
-```vue
-<script setup lang="ts">
-import { VButton } from '@varo/ui-weapp'
-</script>
-
-<template>
-  <view class="stack">
-    <VButton size="lg">Submit</VButton>
-    <VButton variant="outline">Cancel</VButton>
-  </view>
-</template>
-```
+<PlatformTabsDemo example="button" locale="en" />
 
 ## Props
 
@@ -87,4 +62,4 @@ import { VButton } from '@varo/ui-weapp'
 - [Input](/en/components/input)
 - [Dialog](/en/components/dialog)
 - [Theme](/en/guide/theme)
-- [H5 Example](/en/examples/h5)
+- [Cross-platform Demo](/en/examples/)
