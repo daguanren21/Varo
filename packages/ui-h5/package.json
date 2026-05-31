@@ -2,7 +2,18 @@
     "name":  "@varo/ui-h5",
     "version":  "0.0.1",
     "type":  "module",
-    "sideEffects":  false,
+    "sideEffects":  [
+                        "./src/style.css",
+                        "./dist/style.css"
+                    ],
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/daguanren21/Varo.git"
+                   },
+    "publishConfig":  {
+                          "access":  "public",
+                          "registry":  "https://registry.npmjs.org/"
+                      },
     "main":  "./dist/index.js",
     "module":  "./dist/index.js",
     "types":  "./dist/index.d.ts",
@@ -15,21 +26,24 @@
                               "types":  "./dist/index.d.ts",
                               "import":  "./dist/index.js"
                           },
+                    "./style.css":  "./dist/style.css",
+                    "./source/style.css":  "./src/style.css",
                     "./source":  {
                                      "types":  "./src/index.ts",
                                      "import":  "./src/index.ts"
                                  }
                 },
     "scripts":  {
-                    "build":  "tsc -p tsconfig.build.json",
+                    "build":  "vite build",
                     "clean":  "rimraf dist",
-                    "dev":  "tsc -p tsconfig.build.json --watch",
+                    "dev":  "vite build --watch",
                     "lint":  "echo ui-h5 lint pending",
                     "typecheck":  "tsc -p tsconfig.json --noEmit",
                     "test":  "vitest run --passWithNoTests",
                     "test:e2e":  "echo ui-h5 has no e2e"
                 },
     "dependencies":  {
+                         "@varo/hooks":  "workspace:*",
                          "@varo/primitives-h5":  "workspace:*",
                          "@varo/shared":  "workspace:*",
                          "@varo/theme":  "workspace:*",

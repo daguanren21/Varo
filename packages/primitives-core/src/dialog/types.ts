@@ -1,6 +1,7 @@
-import type { Ref } from 'vue'
+import type { ReactiveRuntime, Ref } from '../reactive'
 
 export interface DialogRootOptions {
+  runtime?: ReactiveRuntime
   defaultOpen?: boolean
   open?: Ref<boolean | undefined>
   disabled?: Ref<boolean | undefined>

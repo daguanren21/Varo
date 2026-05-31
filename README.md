@@ -12,3 +12,9 @@ Varo 是一个面向小程序与 H5 的组件系统仓库，采用 `primitives f
 - token 与主题覆盖模型
 - primitives 的交互契约
 - 单测与 E2E 的长期接入位
+
+## Release
+
+组件包发布使用 `changesets`。首次发布先本地 `npm login` 后手工发布 scoped public packages，后续 CI 使用 GitHub Actions OIDC trusted publishing。
+
+详细流程见 [RELEASING.md](./RELEASING.md)。

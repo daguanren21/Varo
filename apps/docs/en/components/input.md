@@ -1,25 +1,67 @@
 # Input
 
-`VInput` is the official H5 wrapper for text input, built on top of the `InputRoot` primitive and shared field control logic.
+## Basic Usage
 
-## When to use
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
 
-- Form text input
-- Controlled or uncontrolled field flows
-- Unified invalid, disabled, size, and theme token behavior
+const value = ref('')
+</script>
 
-## Anatomy
+<template>
+  <VInput v-model:value="value" placeholder="Type here" />
+  <VInput default-value="Default content" />
+</template>
+```
 
-<div class="component-anatomy">
-  <strong>Input combines an input root with shared field state.</strong>
-  <ul>
-    <li><code>InputRoot</code> handles value sync, invalid state, and DOM writeback.</li>
-    <li><code>useFieldRoot</code> centralizes disabled and invalid field semantics.</li>
-    <li><code>VInput</code> adds size mapping, theme classes, and platform wrapper behavior.</li>
-  </ul>
-</div>
+## Clearable And Word Limit
 
-## Cross-platform Example and Preview
+```vue
+<template>
+  <VInput v-model:value="value" clearable placeholder="Type here" />
+  <VInput v-model:value="value" :max-length="20" show-word-limit />
+  <VInput v-model:value="value" clearable clear-trigger="always" />
+</template>
+```
+
+## Formatting
+
+```vue
+<script setup lang="ts">
+const trim = (value: string) => value.trim()
+const digits = (value: string) => value.replace(/\D/g, '')
+</script>
+
+<template>
+  <VInput v-model:value="value" :formatter="trim" format-trigger="onBlur" />
+  <VInput v-model:value="phone" :formatter="digits" :max-length="11" />
+</template>
+```
+
+## Textarea
+
+```vue
+<template>
+  <VInput type="textarea" :rows="3" placeholder="Notes" />
+  <VInput type="textarea" :autosize="{ minRows: 2, maxRows: 5 }" />
+</template>
+```
+
+## Alignment, Affixes, And State
+
+```vue
+<template>
+  <VInput label="Name" placeholder="Type a name" />
+  <VInput prefix-icon="Search" suffix-icon="Done" />
+  <VInput align="right" value="Right aligned" />
+  <VInput readonly value="Readonly content" />
+  <VInput disabled value="Disabled content" />
+  <VInput invalid error-message="Enter a valid value" />
+</template>
+```
+
+## Cross-Platform Demo
 
 <PlatformTabsDemo example="input" locale="en" />
 
@@ -28,53 +70,54 @@
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `value` | `string \| undefined` | `undefined` | Controlled value |
-| `defaultValue` | `string` | `''` | Uncontrolled initial value |
+| `defaultValue` | `string` | `''` | Initial uncontrolled value |
 | `placeholder` | `string \| undefined` | `undefined` | Placeholder text |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size token |
-| `invalid` | `boolean` | `false` | Invalid state |
+| `type` | `string` | `'text'` | Input type; `textarea` renders a textarea |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size |
+| `align` | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment |
 | `disabled` | `boolean` | `false` | Disabled state |
+| `readonly` | `boolean` | `false` | Readonly state |
+| `invalid` | `boolean` | `false` | Invalid state |
+| `clearable` | `boolean` | `false` | Show a clear control |
+| `clearTrigger` | `'focus' \| 'always'` | `'focus'` | When the clear control is visible |
+| `maxLength` | `number \| string` | `undefined` | Maximum input length |
+| `showWordLimit` | `boolean` | `false` | Show word count |
+| `formatter` | `(value: string) => string` | `undefined` | Value formatter |
+| `formatTrigger` | `'onInput' \| 'onBlur'` | `'onInput'` | Formatter trigger |
+| `rows` | `number \| string` | `undefined` | Textarea rows |
+| `autosize` | `boolean \| { minRows?: number; maxRows?: number }` | `false` | Textarea autosize |
+| `label` | `string` | `undefined` | Left label |
+| `labelWidth` | `number \| string` | `undefined` | Label width |
+| `prefixIcon` | `string` | `undefined` | Prefix content |
+| `suffixIcon` | `string` | `undefined` | Suffix content |
+| `errorMessage` | `string` | `undefined` | Error message |
 
 ## Events
 
 | Event | Payload | Description |
 | --- | --- | --- |
-| `update:value` | `string` | Sync controlled value |
-| `valueChange` | `string` | Fires whenever the value changes |
+| `update:value` | `string` | Value update |
+| `valueChange` | `string` | Value change |
+| `clear` | `MouseEvent` | Clear control click |
+| `focus` | `FocusEvent` | Focus |
+| `blur` | `FocusEvent` | Blur |
+
+## Slots
+
+| Slot | Description |
+| --- | --- |
+| `label` | Custom label |
+| `prefix` | Custom prefix |
+| `suffix` | Custom suffix |
 
 ## Data Attributes
 
 | Attribute | Description |
 | --- | --- |
-| `data-invalid` | Invalid field flag |
-| `data-disabled` | Disabled field flag |
-| `aria-invalid` | Accessibility state for invalid input |
-
-## Behavior
-
-- controlled mode writes the DOM value back to the current prop immediately after input, preventing visual drift
-- `size` only affects theme class generation and is not forwarded as a raw DOM `input` attribute
-- H5 and mini-program runtimes differ in event details, but the exposed value synchronization contract stays aligned
-
-## Composition Guidance
-
-<div class="component-note">
-  <strong>Recommended composition</strong>
-  <ul>
-    <li>Prefer controlled mode when form containers own validation and submit state.</li>
-    <li>Use uncontrolled mode for lightweight search and filter fields.</li>
-    <li>If you need prefix, suffix, clear buttons, or more advanced UI, keep building on primitives.</li>
-  </ul>
-</div>
-
-## Accessibility and State
-
-- invalid state is mirrored into `aria-invalid`
-- disabled state blocks further interaction
-- theming should only change visuals, not field semantics
-
-## Related Docs
-
-- [Button](/en/components/button)
-- [Dialog](/en/components/dialog)
-- [Internationalization](/en/guide/i18n)
-- [Cross-platform Demo](/en/examples/)
+| `data-size` | Current size |
+| `data-align` | Current alignment |
+| `data-clearable` | Clearable state |
+| `data-focused` | Focus state |
+| `data-invalid` | Invalid state |
+| `data-readonly` | Readonly state |
+| `data-disabled` | Disabled state |

@@ -18,6 +18,19 @@ describe('primitives-h5 button', () => {
     expect(wrapper.attributes('data-variant')).toBe('outline')
   })
 
+  it('respects the native button type', () => {
+    const wrapper = mount(ButtonRoot, {
+      props: {
+        nativeType: 'submit'
+      },
+      slots: {
+        default: () => 'Submit'
+      }
+    })
+
+    expect(wrapper.attributes('type')).toBe('submit')
+  })
+
   it('blocks click when disabled or loading', async () => {
     const onClick = vi.fn()
     const wrapper = mount(ButtonRoot, {

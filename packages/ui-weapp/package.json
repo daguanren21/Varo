@@ -3,17 +3,25 @@
     "version":  "0.0.1",
     "type":  "module",
     "sideEffects":  false,
-    "main":  "./dist/index.js",
-    "module":  "./dist/index.js",
-    "types":  "./dist/index.d.ts",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "https://github.com/daguanren21/Varo.git"
+                   },
+    "publishConfig":  {
+                          "access":  "public",
+                          "registry":  "https://registry.npmjs.org/"
+                      },
+    "main":  "./dist/src/index.js",
+    "module":  "./dist/src/index.js",
+    "types":  "./dist/src/index.d.ts",
     "files":  [
                   "dist",
                   "src"
               ],
     "exports":  {
                     ".":  {
-                              "types":  "./dist/index.d.ts",
-                              "import":  "./dist/index.js"
+                              "types":  "./dist/src/index.d.ts",
+                              "import":  "./dist/src/index.js"
                           },
                     "./source":  {
                                      "types":  "./src/index.ts",
@@ -21,15 +29,16 @@
                                  }
                 },
     "scripts":  {
-                    "build":  "tsc -p tsconfig.build.json",
+                    "build":  "weapp-vite build",
                     "clean":  "rimraf dist",
-                    "dev":  "tsc -p tsconfig.build.json --watch",
+                    "dev":  "weapp-vite",
                     "lint":  "echo ui-weapp lint pending",
                     "typecheck":  "tsc -p tsconfig.json --noEmit",
                     "test":  "vitest run --passWithNoTests",
                     "test:e2e":  "echo ui-weapp has no e2e"
                 },
     "dependencies":  {
+                         "@varo/hooks":  "workspace:*",
                          "@varo/primitives-weapp":  "workspace:*",
                          "@varo/shared":  "workspace:*",
                          "@varo/theme":  "workspace:*",

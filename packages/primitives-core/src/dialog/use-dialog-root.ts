@@ -1,16 +1,18 @@
-import { computed, ref, type Ref } from 'vue'
+import { resolveReactiveRuntime, type Ref } from '../reactive'
 import { useControllableState } from '../use-controllable-state'
 import type { DialogRootOptions, UseDialogRootResult } from './types'
 
 export function useDialogRoot(options: DialogRootOptions = {}): UseDialogRootResult {
+  const runtime = resolveReactiveRuntime(options.runtime)
   const openState = useControllableState({
+    runtime,
     defaultValue: options.defaultOpen ?? false,
     value: options.open,
     onUpdate: options.onOpenChange
   })
 
-  const disabled = computed(() => options.disabled?.value ?? false) as Ref<boolean>
-  const contentId = ref('varo-dialog-content')
+  const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
+  const contentId = runtime.ref('varo-dialog-content')
 
   function setOpen(value: boolean) {
     if (disabled.value) {

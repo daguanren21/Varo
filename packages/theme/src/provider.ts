@@ -10,7 +10,7 @@ export function provideVaroTheme(config: ThemeConfig) {
 }
 
 export function useVaroTheme() {
-  const config = inject(ThemeKey)
+  const config = inject(ThemeKey, undefined)
 
   if (!config) {
     return computed<ThemeDefinition>(() =>

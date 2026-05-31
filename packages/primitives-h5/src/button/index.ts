@@ -4,6 +4,7 @@ import {
   type PressableSize,
   type PressableVariant
 } from '@varo/primitives-core'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useButtonRoot } from './hooks'
 export type * from './types'
@@ -30,10 +31,15 @@ export const ButtonRoot = defineComponent({
     variant: {
       type: String as PropType<PressableVariant>,
       default: 'solid'
+    },
+    nativeType: {
+      type: String as PropType<'button' | 'submit' | 'reset'>,
+      default: undefined
     }
   },
   setup(props, { attrs, slots }) {
     const pressable = usePressableRoot({
+      runtime: vueReactiveRuntime,
       disabled: toRef(props, 'disabled'),
       loading: toRef(props, 'loading'),
       size: toRef(props, 'size'),
@@ -50,6 +56,7 @@ export const ButtonRoot = defineComponent({
       'data-pressed': String(pressable.state.pressed.value),
       'data-size': pressable.state.size.value,
       'data-variant': pressable.state.variant.value,
+      type: props.as === 'button' ? props.nativeType ?? attrs.type ?? 'button' : undefined,
       disabled: props.as === 'button' ? !pressable.state.interactive.value : undefined,
       onClick: (event: MouseEvent) => {
         const allowed = pressable.events.click(event)
@@ -80,4 +87,3 @@ export const ButtonRoot = defineComponent({
 })
 
 export type { PressableSize, PressableVariant } from '@varo/primitives-core'
-

@@ -1,17 +1,19 @@
-import { computed, type Ref } from 'vue'
+import { resolveReactiveRuntime, type Ref } from '../reactive'
 import { useControllableState } from '../use-controllable-state'
 import type { FieldRootOptions, UseFieldRootResult } from './types'
 
 export function useFieldRoot(options: FieldRootOptions = {}): UseFieldRootResult {
+  const runtime = resolveReactiveRuntime(options.runtime)
   const valueState = useControllableState({
+    runtime,
     defaultValue: options.defaultValue ?? '',
     value: options.value,
     onUpdate: options.onValueChange
   })
 
-  const disabled = computed(() => options.disabled?.value ?? false) as Ref<boolean>
-  const invalid = computed(() => options.invalid?.value ?? false) as Ref<boolean>
-  const interactive = computed(() => !disabled.value) as Ref<boolean>
+  const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
+  const invalid = runtime.computed(() => options.invalid?.value ?? false) as Ref<boolean>
+  const interactive = runtime.computed(() => !disabled.value) as Ref<boolean>
 
   function setValue(value: string) {
     if (!interactive.value) {

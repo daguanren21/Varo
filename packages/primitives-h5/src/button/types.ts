@@ -4,6 +4,7 @@ export interface ButtonRootProps {
   as?: string
   disabled?: boolean
   loading?: boolean
+  nativeType?: 'button' | 'submit' | 'reset'
   size?: PressableSize
   variant?: PressableVariant
 }

@@ -2,19 +2,27 @@ import {
   Fragment,
   defineComponent,
   h,
+  inject,
   onBeforeUnmount,
   onMounted,
+  provide,
   toRef,
   type PropType
 } from 'vue'
 import {
+  createDialogRootConsumer,
+  createDialogRootProvider,
   provideDialogRootContext,
   useDialogRoot,
   useDialogRootContext
 } from '@varo/primitives-core'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useDialogRoot } from './hooks'
 export type * from './types'
+
+const provideRuntimeDialogRootContext = createDialogRootProvider(provide)
+const useRuntimeDialogRootContext = createDialogRootConsumer(inject)
 
 function callHandler(handler: unknown, event: Event) {
   if (typeof handler === 'function') {
@@ -38,6 +46,7 @@ export const DialogRoot = defineComponent({
   emits: ['update:open', 'openChange'],
   setup(props, { emit, slots }) {
     const dialog = useDialogRoot({
+      runtime: vueReactiveRuntime,
       defaultOpen: props.defaultOpen,
       open: toRef(props, 'open'),
       disabled: toRef(props, 'disabled'),
@@ -63,7 +72,7 @@ export const DialogRoot = defineComponent({
       document.removeEventListener('keydown', handleDocumentKeydown)
     })
 
-    provideDialogRootContext(dialog)
+    provideRuntimeDialogRootContext(provideDialogRootContext(dialog))
 
     return () => h(Fragment, slots.default?.())
   }
@@ -78,7 +87,7 @@ export const DialogTrigger = defineComponent({
     }
   },
   setup(props, { attrs, slots }) {
-    const dialog = useDialogRootContext()
+    const dialog = useDialogRootContext(useRuntimeDialogRootContext())
 
     return () =>
       h(
@@ -107,7 +116,7 @@ export const DialogOverlay = defineComponent({
     }
   },
   setup(props, { attrs, slots }) {
-    const dialog = useDialogRootContext()
+    const dialog = useDialogRootContext(useRuntimeDialogRootContext())
 
     return () => {
       if (!dialog.state.open.value) {
@@ -139,7 +148,7 @@ export const DialogContent = defineComponent({
     }
   },
   setup(props, { attrs, slots }) {
-    const dialog = useDialogRootContext()
+    const dialog = useDialogRootContext(useRuntimeDialogRootContext())
 
     return () => {
       if (!dialog.state.open.value) {
@@ -160,7 +169,7 @@ export const DialogClose = defineComponent({
     }
   },
   setup(props, { attrs, slots }) {
-    const dialog = useDialogRootContext()
+    const dialog = useDialogRootContext(useRuntimeDialogRootContext())
 
     return () =>
       h(

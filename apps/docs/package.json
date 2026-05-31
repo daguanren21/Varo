@@ -16,7 +16,6 @@
   "dependencies": {
     "@varo/theme": "workspace:*",
     "@varo/ui-h5": "workspace:*",
-    "@varo/ui-weapp": "workspace:*",
     "vitepress": "^1.6.4",
     "vue": "^3.5.30"
   }

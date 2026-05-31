@@ -1,6 +1,7 @@
-import type { Ref } from 'vue'
+import type { ReactiveRuntime, Ref } from '../reactive'
 
 export interface FieldRootOptions {
+  runtime?: ReactiveRuntime
   defaultValue?: string
   value?: Ref<string | undefined>
   disabled?: Ref<boolean | undefined>

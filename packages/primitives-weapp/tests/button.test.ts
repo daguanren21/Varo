@@ -18,6 +18,19 @@ describe('primitives-weapp button', () => {
     expect(wrapper.attributes('data-variant')).toBe('outline')
   })
 
+  it('respects the native button type', () => {
+    const wrapper = mount(ButtonRoot, {
+      props: {
+        nativeType: 'reset'
+      },
+      slots: {
+        default: () => 'Reset'
+      }
+    })
+
+    expect(wrapper.attributes('type')).toBe('reset')
+  })
+
   it('blocks click when loading', async () => {
     const onClick = vi.fn()
     const wrapper = mount(ButtonRoot, {

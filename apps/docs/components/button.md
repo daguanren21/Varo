@@ -1,65 +1,110 @@
 # Button
 
-`VButton` 是官方 H5 封装层里的基础按钮组件，建立在 `ButtonRoot` primitive 之上。
+## 基础用法
 
-## 何时使用
+```vue
+<template>
+  <VButton>默认按钮</VButton>
+  <VButton tone="primary">主要按钮</VButton>
+  <VButton tone="success">成功按钮</VButton>
+  <VButton tone="warning">警告按钮</VButton>
+  <VButton tone="danger">危险按钮</VButton>
+</template>
+```
 
-- 触发页面级或局部动作
-- 表单提交、确认、取消等主次操作
-- 需要统一尺寸、状态与主题 token 的场景
+## 变体
 
-## Anatomy
+```vue
+<template>
+  <VButton variant="solid">实心按钮</VButton>
+  <VButton variant="outline">描边按钮</VButton>
+  <VButton variant="ghost">浅色按钮</VButton>
+  <VButton plain>朴素按钮</VButton>
+  <VButton hairline plain>细边框按钮</VButton>
+</template>
+```
 
-<div class="component-anatomy">
-  <strong>Button 由一个可交互根节点组成。</strong>
-  <ul>
-    <li><code>ButtonRoot</code> 负责按压、禁用、加载与语义状态。</li>
-    <li><code>VButton</code> 在此基础上补齐默认 class、尺寸和视觉变体。</li>
-  </ul>
-</div>
+## 尺寸
 
-## 跨端示例与演示
+```vue
+<template>
+  <VButton size="sm">小号按钮</VButton>
+  <VButton size="md">默认按钮</VButton>
+  <VButton size="lg">大号按钮</VButton>
+</template>
+```
+
+## 形状与块级按钮
+
+```vue
+<template>
+  <VButton shape="square">直角按钮</VButton>
+  <VButton shape="round">圆角按钮</VButton>
+  <VButton block>块级按钮</VButton>
+</template>
+```
+
+## 图标与加载
+
+```vue
+<template>
+  <VButton icon="+">新增</VButton>
+  <VButton icon="✓" icon-position="right">完成</VButton>
+  <VButton loading>提交中</VButton>
+  <VButton loading loading-text="保存中..." />
+</template>
+```
+
+## 自定义颜色与原生类型
+
+```vue
+<template>
+  <VButton color="#0f766e">自定义颜色</VButton>
+  <VButton native-type="submit">提交表单</VButton>
+  <VButton disabled>禁用按钮</VButton>
+</template>
+```
+
+## 跨端演示
 
 <PlatformTabsDemo example="button" locale="zh" />
 
 ## Props
 
-| Prop | 类型 | 默认值 | 说明 |
+| Prop | 类型 | 默认值 | 描述 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'ghost'` | `'solid'` | 按钮视觉变体 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
-| `loading` | `boolean` | `false` | 加载中时禁止交互 |
+| `variant` | `'solid' \| 'outline' \| 'ghost'` | `'solid'` | 视觉变体 |
+| `tone` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | 语义色 |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 尺寸 |
+| `shape` | `'default' \| 'square' \| 'round'` | `'default'` | 形状 |
+| `plain` | `boolean` | `false` | 朴素按钮，等价于描边视觉 |
+| `hairline` | `boolean` | `false` | 细边框标记 |
+| `block` | `boolean` | `false` | 宽度占满父容器 |
+| `icon` | `string` | `undefined` | 图标文本或图标名，由样式层解释 |
+| `iconPosition` | `'left' \| 'right'` | `'left'` | 图标位置 |
+| `loading` | `boolean` | `false` | 加载中，自动禁用点击 |
+| `loadingText` | `string` | `undefined` | 加载时替换默认内容 |
 | `disabled` | `boolean` | `false` | 禁用按钮 |
+| `color` | `string` | `undefined` | 自定义按钮颜色 |
+| `nativeType` | `'button' \| 'submit' \| 'reset'` | `undefined` | 原生 button type |
+
+## Slots
+
+| Slot | 描述 |
+| --- | --- |
+| `default` | 按钮内容 |
+| `icon` | 自定义图标内容，优先级高于 `icon` prop |
 
 ## Data Attributes
 
-| Attribute | 说明 |
+| Attribute | 描述 |
 | --- | --- |
 | `data-variant` | 当前视觉变体 |
-| `data-size` | 当前尺寸规格 |
-| `data-loading` | 是否处于加载中 |
-| `data-disabled` | 是否处于禁用态 |
-
-## 行为说明
-
-- `loading` 与 `disabled` 都会让按钮进入不可交互状态
-- 官方 wrappers 会基于 theme token 生成 class，不直接把业务样式写死在组件内部
-- 业务如果只需要交互能力，可以直接下沉到 primitives 层，不必依赖官方视觉封装
-
-## 组合建议
-
-<div class="component-note">
-  <strong>推荐组合方式</strong>
-  <ul>
-    <li>业务项目：直接使用 <code>@varo/ui-h5</code> / <code>@varo/ui-weapp</code>。</li>
-    <li>企业设计系统：复用 <code>ButtonRoot</code> 行为，自行接入品牌样式与权限体系。</li>
-    <li>对按钮 loading 的视觉表达有更强要求时，优先改 token 或 wrapper class，不要改核心交互逻辑。</li>
-  </ul>
-</div>
-
-## 相关文档
-
-- [Input](/components/input)
-- [Dialog](/components/dialog)
-- [主题配置](/guide/theme)
-- [跨端演示](/examples/)
+| `data-tone` | 当前语义色 |
+| `data-size` | 当前尺寸 |
+| `data-shape` | 当前形状 |
+| `data-loading` | 是否加载中 |
+| `data-disabled` | 是否禁用 |
+| `data-plain` | 是否朴素 |
+| `data-hairline` | 是否细边框 |
+| `data-block` | 是否块级 |

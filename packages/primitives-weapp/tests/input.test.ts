@@ -42,4 +42,55 @@ describe('primitives-weapp input', () => {
     expect(wrapper.attributes('aria-invalid')).toBe('true')
     expect(wrapper.attributes('data-disabled')).toBe('true')
   })
+
+  it('formats and limits values before emitting changes', async () => {
+    const onValueChange = vi.fn()
+    const wrapper = mount(InputRoot, {
+      props: {
+        formatter: (value: string) => value.trim(),
+        maxLength: 4,
+        onValueChange
+      }
+    })
+    const input = wrapper.find('input')
+
+    await input.setValue('  varo  ')
+
+    expect(onValueChange).toHaveBeenCalledWith('varo')
+    expect((wrapper.element as HTMLInputElement).value).toBe('varo')
+    expect(wrapper.attributes('maxlength')).toBe('4')
+  })
+
+  it('does not update while readonly', async () => {
+    const onValueChange = vi.fn()
+    const wrapper = mount(InputRoot, {
+      props: {
+        defaultValue: 'locked',
+        readonly: true,
+        onValueChange
+      }
+    })
+    const input = wrapper.find('input')
+
+    await input.setValue('changed')
+
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect((wrapper.element as HTMLInputElement).value).toBe('locked')
+    expect(wrapper.attributes('readonly')).toBeDefined()
+    expect(wrapper.attributes('data-readonly')).toBe('true')
+  })
+
+  it('renders textarea controls with autosize metadata', () => {
+    const wrapper = mount(InputRoot, {
+      props: {
+        type: 'textarea',
+        rows: 3,
+        autosize: true
+      }
+    })
+
+    expect(wrapper.find('textarea').exists()).toBe(true)
+    expect(wrapper.attributes('rows')).toBe('3')
+    expect(wrapper.attributes('data-autosize')).toBe('true')
+  })
 })

@@ -251,6 +251,24 @@ body {
   border-radius: 16px;
 }
 
+.component-demo {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 24px;
+  padding: 18px;
+  border: 1px solid var(--varo-panel-border);
+  border-radius: 16px;
+  background: var(--varo-panel-bg);
+  box-shadow: var(--varo-panel-shadow);
+}
+
+.component-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .component-anatomy ul,
 .component-note ul {
   margin: 10px 0 0;

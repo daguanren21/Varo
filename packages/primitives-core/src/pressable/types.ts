@@ -1,9 +1,10 @@
-import type { Ref } from 'vue'
+import type { ReactiveRuntime, Ref } from '../reactive'
 
 export type PressableSize = 'sm' | 'md' | 'lg'
 export type PressableVariant = 'solid' | 'ghost' | 'outline'
 
 export interface PressableRootOptions {
+  runtime?: ReactiveRuntime
   disabled?: Ref<boolean | undefined>
   loading?: Ref<boolean | undefined>
   size?: Ref<PressableSize | undefined>

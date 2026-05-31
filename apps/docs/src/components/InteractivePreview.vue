@@ -161,7 +161,7 @@ const copy = computed(() => {
               <section class="phone-card">
                 <label class="phone-field">
                   <span>{{ copy.controlled }}</span>
-                  <VInput v-model:value="value" :invalid="invalid" />
+                  <VInput v-model:value="value" clearable :invalid="invalid" :max-length="24" show-word-limit />
                 </label>
 
                 <button class="phone-inline-action" type="button" @click="invalid = !invalid">
@@ -498,6 +498,29 @@ const copy = computed(() => {
   cursor: pointer;
 }
 
+:deep(.varo-button[data-size='sm']) {
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+:deep(.varo-button[data-size='md']) {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-size: 0.92rem;
+}
+
+:deep(.varo-button[data-size='lg']) {
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: 18px;
+  font-size: 1rem;
+}
+
 .phone-trigger,
 .phone-dialog-close,
 :deep(.varo-button[data-variant='solid']) {
@@ -516,17 +539,95 @@ const copy = computed(() => {
   color: var(--vp-c-brand-1);
 }
 
+:deep(.varo-button[data-shape='round']) {
+  border-radius: 999px;
+}
+
+:deep(.varo-button[data-hairline='true']) {
+  border-width: 0.5px;
+}
+
+:deep(.varo-button__icon) {
+  flex: none;
+}
+
+:deep(.varo-button__loading-icon) {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: phone-preview-spin 0.75s linear infinite;
+}
+
+@keyframes phone-preview-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 :deep(.varo-input) {
-  min-height: 42px;
+  display: grid;
+  gap: 6px;
   width: 100%;
-  padding: 0 12px;
-  border-radius: 14px;
-  border: 1px solid var(--vp-c-divider);
-  background: rgba(255, 255, 255, 0.8);
   color: var(--vp-c-text-1);
 }
 
-:global(.dark) :deep(.varo-input) {
+:deep(.varo-input__body) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  box-sizing: border-box;
+}
+
+:deep(.varo-input__control) {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+:deep(textarea.varo-input__control) {
+  padding: 10px 0;
+  resize: none;
+}
+
+:deep(.varo-input__prefix),
+:deep(.varo-input__suffix),
+:deep(.varo-input__clear),
+:deep(.varo-input__word-limit) {
+  flex: none;
+  color: var(--vp-c-text-2);
+  font-size: 0.82rem;
+}
+
+:deep(.varo-input__clear) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.14);
+  cursor: pointer;
+}
+
+:deep(.varo-input[data-invalid='true'] .varo-input__body) {
+  border-color: rgba(185, 28, 28, 0.52);
+}
+
+:global(.dark) :deep(.varo-input__body) {
   background: rgba(15, 23, 42, 0.82);
 }
 

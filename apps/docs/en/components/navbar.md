@@ -1,0 +1,41 @@
+# Navbar
+
+## Basic Usage
+
+```vue
+<template>
+  <VNavbar title="Order Detail" left-text="Back" right-text="More" left-arrow />
+</template>
+```
+
+## Cross-platform Preview
+
+<PlatformTabsDemo example="navbar" locale="en" />
+
+## Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `title` | `string` | `undefined` | Title |
+| `leftText` | `string` | `undefined` | Left text |
+| `rightText` | `string` | `undefined` | Right text |
+| `leftArrow` | `boolean` | `false` | Show back arrow |
+| `fixed` | `boolean` | `false` | Fix to top |
+| `placeholder` | `boolean` | `false` | Reserve space when fixed |
+| `border` | `boolean` | `true` | Show bottom border |
+
+## Events
+
+| Event | Payload | Description |
+| --- | --- | --- |
+| `clickLeft` | `MouseEvent` | Left area clicked |
+| `clickRight` | `MouseEvent` | Right area clicked |
+
+## Slots
+
+| Slot | Description |
+| --- | --- |
+| `left` | Custom left area |
+| `title` | Custom title |
+| `right` | Custom right area |
+
