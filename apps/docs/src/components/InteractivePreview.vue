@@ -229,12 +229,6 @@ const copy = computed(() => {
     radial-gradient(circle at top right, rgba(15, 118, 110, 0.12), transparent 32%);
 }
 
-:global(.dark) .preview-shell {
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.76), rgba(15, 23, 42, 0.88)),
-    radial-gradient(circle at top right, rgba(45, 212, 191, 0.16), transparent 32%);
-}
-
 .preview-shell--example {
   margin-top: 18px;
 }
@@ -287,11 +281,6 @@ const copy = computed(() => {
   border: 1px solid var(--vp-c-divider);
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.64);
-}
-
-:global(.dark) .preview-meta-card,
-:global(.dark) .preview-control-block {
-  background: rgba(15, 23, 42, 0.58);
 }
 
 .preview-meta-card span,
@@ -369,12 +358,6 @@ const copy = computed(() => {
     radial-gradient(circle at top, rgba(15, 118, 110, 0.12), transparent 26%);
 }
 
-:global(.dark) .phone-screen {
-  background:
-    linear-gradient(180deg, #0f172a 0%, #111c2d 100%),
-    radial-gradient(circle at top, rgba(45, 212, 191, 0.14), transparent 28%);
-}
-
 .phone-status-bar,
 .phone-appbar,
 .phone-content {
@@ -418,12 +401,6 @@ const copy = computed(() => {
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.76);
   box-shadow: 0 18px 40px rgba(148, 163, 184, 0.14);
-}
-
-:global(.dark) .phone-card {
-  border-color: rgba(148, 163, 184, 0.14);
-  background: rgba(15, 23, 42, 0.72);
-  box-shadow: none;
 }
 
 .phone-field {
@@ -627,10 +604,6 @@ const copy = computed(() => {
   border-color: rgba(185, 28, 28, 0.52);
 }
 
-:global(.dark) :deep(.varo-input__body) {
-  background: rgba(15, 23, 42, 0.82);
-}
-
 .phone-overlay {
   position: absolute;
   inset: 0;
@@ -649,10 +622,6 @@ const copy = computed(() => {
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 18px 60px rgba(15, 23, 42, 0.22);
-}
-
-:global(.dark) .phone-dialog {
-  background: rgba(15, 23, 42, 0.94);
 }
 
 .phone-dialog h5 {
@@ -679,4 +648,99 @@ const copy = computed(() => {
     width: min(100%, 410px);
   }
 }
+
+.preview-shell {
+  border-color: var(--varo-border);
+  border-radius: var(--varo-radius-lg);
+  background: var(--varo-card);
+  box-shadow: var(--varo-shadow-sm);
+}
+
+.preview-kicker {
+  color: var(--varo-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.preview-head h2,
+.preview-sidebar h3,
+.phone-appbar h4 {
+  letter-spacing: 0;
+}
+
+.preview-meta-card,
+.preview-control-block,
+.phone-card {
+  border-color: var(--varo-border);
+  border-radius: var(--varo-radius-lg);
+  background: var(--varo-card-solid);
+  box-shadow: var(--varo-shadow-sm);
+}
+
+.preview-segment-btn,
+.phone-inline-action {
+  border-color: var(--varo-border);
+  border-radius: var(--varo-radius);
+  background: var(--varo-card-solid);
+  color: var(--varo-foreground);
+}
+
+.preview-segment-btn[data-active='true'],
+.phone-trigger,
+.phone-dialog-close,
+:deep(.varo-button[data-variant='solid']) {
+  border-color: var(--varo-primary);
+  background: var(--varo-primary);
+  color: var(--varo-primary-foreground);
+}
+
+.phone-bezel {
+  border-radius: 30px;
+  background: #18181b;
+  box-shadow: 0 18px 44px rgba(24, 24, 27, 0.18);
+}
+
+.phone-notch {
+  border-radius: 0 0 10px 10px;
+  background: #18181b;
+}
+
+.phone-screen {
+  border-radius: 22px;
+  background: var(--varo-bg);
+}
+
+.phone-trigger,
+.phone-dialog-close,
+:deep(.varo-button),
+:deep(.varo-button[data-size='sm']),
+:deep(.varo-button[data-size='md']),
+:deep(.varo-button[data-size='lg']),
+:deep(.varo-input__body),
+:deep(.varo-input__clear),
+.phone-overlay,
+.phone-dialog {
+  border-radius: var(--varo-radius);
+}
+
+:deep(.varo-button[data-variant='ghost']) {
+  background: var(--varo-card-muted);
+  color: var(--varo-foreground);
+}
+
+:deep(.varo-input__body) {
+  border-color: var(--varo-border);
+  background: var(--varo-card);
+}
+
+.phone-overlay {
+  background: rgba(24, 24, 27, 0.58);
+}
+
+.phone-dialog {
+  border-color: var(--varo-border);
+  background: var(--varo-card-solid);
+  box-shadow: var(--varo-shadow-popover);
+}
+
 </style>

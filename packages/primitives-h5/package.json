@@ -1,61 +1,61 @@
 {
-    "name":  "@varo/primitives-h5",
-    "version":  "0.0.1",
-    "type":  "module",
-    "sideEffects":  false,
-    "repository":  {
-                       "type":  "git",
-                       "url":  "https://github.com/daguanren21/Varo.git"
-                   },
-    "publishConfig":  {
-                          "access":  "public",
-                          "registry":  "https://registry.npmjs.org/"
-                      },
-    "main":  "./dist/index.mjs",
-    "module":  "./dist/index.mjs",
-    "types":  "./dist/index.d.mts",
-    "files":  [
-                  "dist",
-                  "src"
-              ],
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/index.d.mts",
-                              "import":  "./dist/index.mjs"
-                          },
-                    "./hooks":  {
-                                    "types":  "./dist/hooks.d.ts",
-                                    "import":  "./dist/hooks.js"
-                                },
-                    "./parts":  {
-                                    "types":  "./dist/parts.d.ts",
-                                    "import":  "./dist/parts.js"
-                                },
-                    "./source":  {
-                                     "types":  "./src/index.ts",
-                                     "import":  "./src/index.ts"
-                                 },
-                    "./source/parts":  {
-                                           "types":  "./src/parts.ts",
-                                           "import":  "./src/parts.ts"
-                                       },
-                    "./source/hooks":  {
-                                           "types":  "./src/hooks.ts",
-                                           "import":  "./src/hooks.ts"
-                                       }
-                },
-    "scripts":  {
-                    "build":  "tsdown",
-                    "clean":  "rimraf dist",
-                    "dev":  "tsdown --watch",
-                    "lint":  "echo primitives-h5 lint pending",
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --passWithNoTests",
-                    "test:e2e":  "echo primitives-h5 has no e2e"
-                },
-    "dependencies":  {
-                         "@varo/primitives-core":  "workspace:*",
-                         "@varo/shared":  "workspace:*",
-                         "vue":  "^3.5.30"
-                     }
+    "name": "@varo/primitives-h5",
+    "version": "0.1.0",
+    "type": "module",
+    "sideEffects": false,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/daguanren21/Varo.git"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.mts",
+            "import": "./dist/index.mjs"
+        },
+        "./hooks": {
+            "types": "./dist/hooks.d.ts",
+            "import": "./dist/hooks.js"
+        },
+        "./parts": {
+            "types": "./dist/parts.d.ts",
+            "import": "./dist/parts.js"
+        },
+        "./source": {
+            "types": "./src/index.ts",
+            "import": "./src/index.ts"
+        },
+        "./source/parts": {
+            "types": "./src/parts.ts",
+            "import": "./src/parts.ts"
+        },
+        "./source/hooks": {
+            "types": "./src/hooks.ts",
+            "import": "./src/hooks.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsdown",
+        "clean": "rimraf dist",
+        "dev": "tsdown --watch",
+        "lint": "echo primitives-h5 lint pending",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests",
+        "test:e2e": "echo primitives-h5 has no e2e"
+    },
+    "dependencies": {
+        "@varo/primitives-core": "workspace:*",
+        "@varo/shared": "workspace:*",
+        "vue": "^3.5.35"
+    }
 }

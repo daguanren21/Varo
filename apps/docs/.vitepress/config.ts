@@ -26,7 +26,7 @@ export default defineConfig({
     }
   },
   themeConfig: {
-    logo: '/logo.png'
+    logo: '/brand-assets/varo-runtime-mark.png'
   },
   locales: {
     root: {
@@ -41,6 +41,7 @@ export default defineConfig({
           { text: 'Primitives', link: '/primitives/' },
           { text: '示例', link: '/examples/' },
           { text: '主题', link: '/guide/theme' },
+          { text: '色彩', link: '/guide/colors' },
           { text: '国际化', link: '/guide/i18n' },
           { text: '贡献', link: '/guide/contributing' }
         ],
@@ -50,6 +51,7 @@ export default defineConfig({
             items: [
               { text: '安装指南', link: '/guide/installation' },
               { text: '主题配置', link: '/guide/theme' },
+              { text: '色彩系统', link: '/guide/colors' },
               { text: '国际化配置', link: '/guide/i18n' }
             ]
           },
@@ -161,6 +163,7 @@ export default defineConfig({
           { text: 'Primitives', link: '/en/primitives/' },
           { text: 'Examples', link: '/en/examples/' },
           { text: 'Theme', link: '/en/guide/theme' },
+          { text: 'Colors', link: '/en/guide/colors' },
           { text: 'I18n', link: '/en/guide/i18n' },
           { text: 'Contributing', link: '/en/guide/contributing' }
         ],
@@ -170,6 +173,7 @@ export default defineConfig({
             items: [
               { text: 'Installation', link: '/en/guide/installation' },
               { text: 'Theme', link: '/en/guide/theme' },
+              { text: 'Color System', link: '/en/guide/colors' },
               { text: 'Internationalization', link: '/en/guide/i18n' }
             ]
           },

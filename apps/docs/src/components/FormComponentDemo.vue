@@ -1183,6 +1183,7 @@ function onFormArrayFailed() {
             stroke-width="1.8"
           />
         </svg>
+        <span>{{ codeExpanded ? copy.code : copy.code }}</span>
       </button>
     </div>
 
@@ -1232,10 +1233,6 @@ function onFormArrayFailed() {
   border: 1px solid var(--vp-c-divider);
   border-radius: 18px;
   background: color-mix(in srgb, var(--vp-c-bg-soft) 82%, white);
-}
-
-:global(.dark) .form-demo__stage {
-  background: color-mix(in srgb, var(--vp-c-bg-soft) 86%, black);
 }
 
 .form-demo__label {
@@ -1400,7 +1397,7 @@ function onFormArrayFailed() {
   right: 12px;
   bottom: 12px;
   display: inline-flex;
-  width: 34px;
+  gap: 8px;
   height: 34px;
   align-items: center;
   justify-content: center;
@@ -1408,6 +1405,7 @@ function onFormArrayFailed() {
   border-radius: 10px;
   background: var(--vp-c-bg);
   color: var(--vp-c-text-2);
+  padding: 0 12px;
   cursor: pointer;
   transition:
     color 0.18s ease,
@@ -1427,6 +1425,11 @@ function onFormArrayFailed() {
 .form-demo__code-icon {
   width: 16px;
   height: 16px;
+}
+
+.form-demo__code-toggle span {
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .form-demo__code {
@@ -1513,5 +1516,86 @@ function onFormArrayFailed() {
     align-items: flex-start;
     flex-direction: column;
   }
+}
+
+.form-demo__stage,
+.form-demo__array-item {
+  border-color: var(--varo-border);
+  border-radius: var(--varo-radius-lg);
+  background: var(--varo-card-solid);
+  box-shadow: var(--varo-shadow-sm);
+}
+
+.form-demo__reopen,
+.form-demo__array-add,
+.form-demo__array-remove,
+.form-demo__array-count,
+.form-demo__array-badge,
+.form-demo__array-secondary,
+.form-demo__code-toggle,
+.form-demo__code,
+.form-demo__tabs,
+.form-demo__tab {
+  border-radius: var(--varo-radius);
+}
+
+.form-demo__reopen,
+.form-demo__array-add {
+  border-color: var(--varo-primary);
+  background: var(--varo-primary);
+  color: var(--varo-primary-foreground);
+}
+
+.form-demo__array-secondary,
+.form-demo__array-count {
+  border: 1px solid var(--varo-border);
+  background: var(--varo-card-muted);
+  color: var(--varo-foreground);
+}
+
+.form-demo__array-badge {
+  background: var(--varo-card-muted);
+  color: var(--varo-accent);
+}
+
+.form-demo__array-remove {
+  border-color: color-mix(in srgb, var(--varo-danger) 22%, transparent);
+  background: var(--varo-danger-soft);
+  color: var(--varo-danger);
+}
+
+.form-demo__code-toggle {
+  border-color: var(--varo-border);
+  background: var(--varo-card-solid);
+  color: var(--varo-muted);
+}
+
+.form-demo__code-toggle:hover,
+.form-demo__code-toggle[data-active='true'] {
+  border-color: var(--varo-border-strong);
+  background: var(--varo-card-muted);
+  color: var(--varo-foreground);
+}
+
+.form-demo__tabs {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-demo__tab[data-active='true'] {
+  background: #fafafa;
+  color: #18181b;
+}
+
+:deep(.varo-input__body),
+:deep(.varo-calendar),
+:deep(.varo-date-picker),
+:deep(.varo-picker),
+:deep(.varo-cascader),
+:deep(.varo-number-keyboard),
+:deep(.varo-calendar-card),
+:deep(.varo-short-password__cells),
+:deep(.varo-uploader__item),
+:deep(.varo-uploader__trigger) {
+  border-radius: var(--varo-radius);
 }
 </style>

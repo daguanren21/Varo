@@ -1,18 +1,20 @@
-# Cross-platform Demo
+# Mini-program Business Blocks
 
-The example gallery now lives in one page. Use the tabs to switch between `H5` and `Mini-program` so package choice, code, and rendered output stay visible together.
+This page is not a crowded gallery. It collects reusable business blocks with real mobile needs, component dependencies, H5 source, and mini-program source. Copy a block, replace fields, APIs, and local styles, then promote it inside your product codebase.
 
-<PlatformTabsDemo example="overview" locale="en" />
+<MiniProgramBlocksGallery locale="en" />
 
-## Integration Notes
+## Mini-program Build Chain
 
-- Mini-program integration is currently pinned to `wevu@6.10.2`
-- The official ready-to-use wrappers ship from `@varo/ui-h5` and `@varo/ui-weapp`
-- If you need an internal design system layer, build upward from `@varo/primitives-*`
+- `weapp-vite@6.16.43` handles mini-program builds, component JSON, and generated types
+- `wevu@6.16.43` is the mini-program Vue runtime peer; `@varo/ui-weapp` and `@varo/primitives-weapp` keep the same peer constraint
+- `weapp-tailwindcss@5.0.6` plugs into the `weapp-vite` chain for class translation; component packages stay Varo-token-first, while product apps can enable Tailwind utilities above them
+- For internal design systems, build upward from `@varo/primitives-*`, then promote blocks into business templates
 
 ## Related Docs
 
 - [Button Docs](/en/components/button)
 - [Input Docs](/en/components/input)
 - [Dialog Docs](/en/components/dialog)
+- [Color System](/en/guide/colors)
 - [Theme](/en/guide/theme)
