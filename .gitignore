@@ -10,3 +10,6 @@ apps/docs/.vitepress/cache/
 .pnpm-store
 *.tsbuildinfo
 .playwright-cli/
+.codegraph/
+**/.weapp-vite/
+.worktrees/
