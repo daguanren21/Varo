@@ -1,0 +1,17 @@
+{
+  "name": "order-filter",
+  "type": "block",
+  "title": "Order Filter",
+  "description": "A filter block for selecting multiple order statuses with VSelect.",
+  "targets": ["weapp-vite"],
+  "dependencies": ["vue"],
+  "registryDependencies": ["components/select", "components/button"],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/order-filter/order-filter.vue",
+      "to": "src/components/blocks/order-filter.vue"
+    }
+  ],
+  "docs": "/blocks/order-filter"
+}

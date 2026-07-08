@@ -1,0 +1,17 @@
+{
+  "name": "profile-edit",
+  "type": "block",
+  "title": "Profile Edit",
+  "description": "A form block for editing profile basics with VSelect-based city selection.",
+  "targets": ["weapp-vite"],
+  "dependencies": ["vue"],
+  "registryDependencies": ["components/select", "components/input", "components/button", "components/form"],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/profile-edit/profile-edit.vue",
+      "to": "src/components/blocks/profile-edit.vue"
+    }
+  ],
+  "docs": "/blocks/profile-edit"
+}

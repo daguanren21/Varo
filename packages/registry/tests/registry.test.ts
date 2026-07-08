@@ -86,6 +86,30 @@ describe('registry base kit manifest', () => {
     })
   })
 
+  it('ships copyable source files and form-oriented blocks using select', () => {
+    const componentFiles = [
+      'registry/components/select/select.ts',
+      'registry/components/switch/switch.ts',
+      'registry/components/toast/toast.ts',
+      'registry/components/loading/loading.ts'
+    ]
+    const blocks = [
+      readJson<RegistryItem>('registry/blocks/profile-edit/registry.json'),
+      readJson<RegistryItem>('registry/blocks/order-filter/registry.json')
+    ]
+
+    componentFiles.forEach((file) => {
+      expect(readFileSync(resolve(root, file), 'utf8').length).toBeGreaterThan(100)
+    })
+
+    blocks.forEach((block) => {
+      expect(validateRegistryItem(block)).toEqual([])
+      expect(block.type).toBe('block')
+      expect(block.targets).toEqual(['weapp-vite'])
+      expect(block.registryDependencies).toContain('components/select')
+    })
+  })
+
   it.each([
     ['missing docs', omitRegistryField('docs'), ['docs must be an absolute docs route']],
     ['non-string docs', { ...createValidRegistryItem(), docs: 42 }, ['docs must be an absolute docs route']],
