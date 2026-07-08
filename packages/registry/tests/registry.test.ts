@@ -5,6 +5,29 @@ import { baseKitPhase1, validateRegistryItem, type RegistryItem } from '../src'
 
 const root = resolve(__dirname, '../../..')
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(resolve(root, path), 'utf8')) as T
+const createValidRegistryItem = (): RegistryItem => ({
+  description: 'A select component.',
+  docs: '/components/select',
+  exportName: 'VSelect',
+  files: [
+    {
+      target: 'weapp-vite',
+      from: 'registry/components/select/select.ts',
+      to: 'src/components/ui/select.ts'
+    }
+  ],
+  name: 'select',
+  registryDependencies: [],
+  targets: ['weapp-vite'],
+  title: 'Select',
+  type: 'component'
+})
+
+const omitRegistryField = (field: keyof RegistryItem): unknown => {
+  const item: Record<string, unknown> = { ...createValidRegistryItem() }
+  delete item[field]
+  return item
+}
 
 describe('registry base kit manifest', () => {
   it('declares the complete Base Kit Phase 1 component set', () => {
@@ -61,5 +84,26 @@ describe('registry base kit manifest', () => {
       expect(item.registryDependencies).toEqual([])
       expect(item.docs).toBe(`/components/${name}`)
     })
+  })
+
+  it.each([
+    ['missing docs', omitRegistryField('docs'), ['docs must be an absolute docs route']],
+    ['non-string docs', { ...createValidRegistryItem(), docs: 42 }, ['docs must be an absolute docs route']],
+    ['missing targets', omitRegistryField('targets'), ['targets must be an array']],
+    ['non-array targets', { ...createValidRegistryItem(), targets: 'weapp-vite' }, ['targets must be an array']],
+    ['missing files', omitRegistryField('files'), ['files must be an array']],
+    ['non-array files', { ...createValidRegistryItem(), files: 'select.ts' }, ['files must be an array']],
+    [
+      'malformed file entry',
+      { ...createValidRegistryItem(), files: [{ target: 'weapp-vite' }] },
+      ['file.from must start with registry/: undefined', 'file.to must start with src/: undefined']
+    ]
+  ])('returns validation errors for %s instead of throwing', (_, item, expectedErrors) => {
+    let errors: string[] | undefined
+
+    expect(() => {
+      errors = validateRegistryItem(item as RegistryItem)
+    }).not.toThrow()
+    expect(errors).toEqual(expect.arrayContaining(expectedErrors))
   })
 })
