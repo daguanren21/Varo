@@ -1,0 +1,23 @@
+{
+  "name": "radio",
+  "type": "component",
+  "title": "VRadio",
+  "description": "A low-level radio primitive with grouped single selection, disabled state, and label slots.",
+  "exportName": "VRadio",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/shared", "@varo/theme", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/radio/radio.ts",
+      "to": "src/components/ui/radio.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/radio/selection.ts",
+      "to": "src/components/ui/selection.ts"
+    }
+  ],
+  "docs": "/components/radio"
+}

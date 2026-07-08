@@ -1,0 +1,18 @@
+{
+  "name": "popup",
+  "type": "component",
+  "title": "VPopup",
+  "description": "A low-level popup primitive with positions, overlay behavior, close affordance, and visibility events.",
+  "exportName": "VPopup",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/primitives-weapp", "@varo/shared", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/popup/popup.ts",
+      "to": "src/components/ui/popup.ts"
+    }
+  ],
+  "docs": "/components/popup"
+}

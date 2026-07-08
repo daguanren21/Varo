@@ -1,0 +1,28 @@
+{
+  "name": "date-picker",
+  "type": "component",
+  "title": "VDatePicker",
+  "description": "A low-level date picker primitive with calendar-card selection, confirm, and visible state events.",
+  "exportName": "VDatePicker",
+  "targets": ["weapp-vite"],
+  "dependencies": ["vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/date-picker/date-picker.ts",
+      "to": "src/components/ui/date-picker.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/date-picker/calendar.ts",
+      "to": "src/components/ui/calendar.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/date-picker/date-utils.ts",
+      "to": "src/components/ui/date-utils.ts"
+    }
+  ],
+  "docs": "/components/date-picker"
+}

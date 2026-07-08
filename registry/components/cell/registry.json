@@ -1,0 +1,18 @@
+{
+  "name": "cell",
+  "type": "component",
+  "title": "VCell",
+  "description": "A low-level cell primitive for list rows, grouped cells, metadata, and link-style interactions.",
+  "exportName": "VCell",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/primitives-weapp", "@varo/shared", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/cell/cell.ts",
+      "to": "src/components/ui/cell.ts"
+    }
+  ],
+  "docs": "/components/cell"
+}

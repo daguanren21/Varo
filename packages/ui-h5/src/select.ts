@@ -129,7 +129,10 @@ export const VSelect = defineComponent({
         return
       }
 
-      if (!result.changed) return
+      if (!result.changed) {
+        if (!props.multiple && !option.disabled) close()
+        return
+      }
 
       if (props.multiple) {
         if (props.confirmable) {

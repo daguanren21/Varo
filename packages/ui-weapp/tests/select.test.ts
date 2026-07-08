@@ -28,6 +28,22 @@ describe('ui-weapp select', () => {
     expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
   })
 
+  it('closes when selecting the already-selected single value', async () => {
+    const wrapper = mount(VSelect, {
+      props: {
+        modelValue: 'shanghai',
+        options
+      }
+    })
+
+    await wrapper.get('.varo-select__trigger').trigger('click')
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(true)
+
+    await wrapper.findAll('.varo-select__option')[0].trigger('click')
+
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
+  })
+
   it('keeps a draft for confirmable multiple selection', async () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VSelect, {

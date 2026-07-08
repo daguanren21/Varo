@@ -1,0 +1,18 @@
+{
+  "name": "textarea",
+  "type": "component",
+  "title": "VTextarea",
+  "description": "A low-level textarea primitive that reuses the input field shell for multiline text entry.",
+  "exportName": "VTextarea",
+  "targets": ["weapp-vite"],
+  "dependencies": ["vue"],
+  "registryDependencies": ["components/input"],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/textarea/textarea.ts",
+      "to": "src/components/ui/textarea.ts"
+    }
+  ],
+  "docs": "/components/textarea"
+}

@@ -6,6 +6,7 @@ import { baseKitPhase1, validateRegistryItem, type RegistryItem } from '../src'
 const root = resolve(__dirname, '../../..')
 const readText = (path: string): string => readFileSync(resolve(root, path), 'utf8')
 const readJson = <T>(path: string): T => JSON.parse(readText(path)) as T
+const fileExists = (path: string): boolean => existsSync(resolve(root, path))
 const registryItemPath = (dependency: string): string => `registry/${dependency}/registry.json`
 const createValidRegistryItem = (): RegistryItem => ({
   description: 'A select component.',
@@ -76,25 +77,42 @@ describe('registry base kit manifest', () => {
   })
 
   it('keeps missing phase-one entries low-level and target-compatible', () => {
-    const names = ['switch', 'toast', 'loading'] as const
+    const manifest = readJson<{ components: string[] }>('registry/base-kit.phase1.json')
 
-    names.forEach((name) => {
-      const item = readJson<RegistryItem>(`registry/components/${name}/registry.json`)
+    manifest.components.forEach((name) => {
+      const registryPath = `registry/components/${name}/registry.json`
 
+      expect(fileExists(registryPath), `${name} must declare ${registryPath}`).toBe(true)
+      const item = readJson<RegistryItem>(registryPath)
+
+      expect(item.name).toBe(name)
       expect(validateRegistryItem(item)).toEqual([])
       expect(item.targets).toEqual(['weapp-vite'])
-      expect(item.registryDependencies).toEqual([])
+      expect(item.registryDependencies).toEqual(expect.any(Array))
       expect(item.docs).toBe(`/components/${name}`)
     })
   })
 
-  it('keeps component registry source files byte-for-byte aligned with ui-weapp sources', () => {
-    const components = ['select', 'switch', 'toast', 'loading'] as const
+  it('keeps every phase-one registry source file byte-for-byte aligned with ui-weapp sources', () => {
+    const manifest = readJson<{ components: string[] }>('registry/base-kit.phase1.json')
 
-    components.forEach((component) => {
-      expect(readText(`registry/components/${component}/${component}.ts`)).toBe(
-        readText(`packages/ui-weapp/src/${component}.ts`)
-      )
+    manifest.components.forEach((component) => {
+      const item = readJson<RegistryItem>(`registry/components/${component}/registry.json`)
+      const expectedFrom = `registry/components/${component}/${component}.ts`
+      const runtimeSource = `packages/ui-weapp/src/${component}.ts`
+
+      expect(item.files).toContainEqual({
+        target: 'weapp-vite',
+        from: expectedFrom,
+        to: `src/components/ui/${component}.ts`
+      })
+      item.files.forEach((file) => {
+        expect(fileExists(file.from), `${component} file ${file.from} must exist`).toBe(true)
+      })
+
+      if (fileExists(runtimeSource)) {
+        expect(readText(expectedFrom)).toBe(readText(runtimeSource))
+      }
     })
   })
 
