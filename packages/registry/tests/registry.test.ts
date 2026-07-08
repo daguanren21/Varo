@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { baseKitPhase1, validateRegistryItem, type RegistryItem } from '../src'
 
@@ -8,6 +8,15 @@ const readText = (path: string): string => readFileSync(resolve(root, path), 'ut
 const readJson = <T>(path: string): T => JSON.parse(readText(path)) as T
 const fileExists = (path: string): boolean => existsSync(resolve(root, path))
 const registryItemPath = (dependency: string): string => `registry/${dependency}/registry.json`
+const registryComponentFiles = (): string[] =>
+  readdirSync(resolve(root, 'registry/components'), { withFileTypes: true }).flatMap((entry) => {
+    if (!entry.isDirectory()) return []
+
+    const componentDir = `registry/components/${entry.name}`
+    return readdirSync(resolve(root, componentDir), { withFileTypes: true })
+      .filter((file) => file.isFile() && file.name.endsWith('.ts'))
+      .map((file) => `${componentDir}/${file.name}`)
+  })
 const createValidRegistryItem = (): RegistryItem => ({
   description: 'A select component.',
   docs: '/components/select',
@@ -135,6 +144,21 @@ describe('registry base kit manifest', () => {
           existsSync(resolve(root, dependencyRegistryPath)),
           `${blockPath} dependency ${dependency} must resolve to ${dependencyRegistryPath}`
         ).toBe(true)
+      })
+    })
+  })
+
+  it('keeps relative imports inside registry component source files resolvable', () => {
+    const relativeImportPattern = /\b(?:import|export)\b[^'"]*?from\s+['"](\.\/[^'"]+)['"]/g
+
+    registryComponentFiles().forEach((sourcePath) => {
+      const source = readText(sourcePath)
+
+      Array.from(source.matchAll(relativeImportPattern)).forEach((match) => {
+        const importPath = match[1]
+        const resolvedPath = resolve(root, dirname(sourcePath), `${importPath}.ts`)
+
+        expect(existsSync(resolvedPath), `${sourcePath} imports ${importPath}`).toBe(true)
       })
     })
   })
