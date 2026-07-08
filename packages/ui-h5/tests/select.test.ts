@@ -114,4 +114,29 @@ describe('ui-weapp select', () => {
     expect(onClear).toHaveBeenCalledTimes(1)
     expect(onUpdate).toHaveBeenCalledWith([])
   })
+
+  it('clears the open confirmable multiple draft before confirm', async () => {
+    const onConfirm = vi.fn()
+    const onUpdate = vi.fn()
+    const wrapper = mount(VSelect, {
+      props: {
+        clearable: true,
+        confirmable: true,
+        modelValue: ['shanghai'],
+        multiple: true,
+        options,
+        onConfirm,
+        'onUpdate:modelValue': onUpdate
+      }
+    })
+
+    await wrapper.get('.varo-select__trigger').trigger('click')
+    await wrapper.get('.varo-select__clear').trigger('click')
+    await wrapper.get('.varo-select__confirm').trigger('click')
+
+    expect(onUpdate).toHaveBeenCalledWith([])
+    expect(onUpdate).not.toHaveBeenCalledWith(['shanghai'])
+    expect(onConfirm).toHaveBeenCalledWith([])
+    expect(onConfirm).not.toHaveBeenCalledWith(['shanghai'])
+  })
 })

@@ -148,6 +148,9 @@ export const VSelect = defineComponent({
     function clear(event: MouseEvent) {
       event.stopPropagation()
       const value = clearSelectValue(props.multiple)
+      if (props.multiple && props.confirmable) {
+        draftValue.value = []
+      }
       commit(value)
       emit('clear')
     }
