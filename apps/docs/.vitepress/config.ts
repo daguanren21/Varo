@@ -80,6 +80,8 @@ export default defineConfig({
                   { text: 'NumberKeyboard 数字键盘', link: '/components/number-keyboard' },
                   { text: 'Picker 选择器', link: '/components/picker' },
                   { text: 'Radio 单选按钮', link: '/components/radio' },
+                  { text: 'Select 选择器', link: '/components/select' },
+                  { text: 'Switch 开关', link: '/components/switch' },
                   { text: 'Range 区间选择器', link: '/components/range' },
                   { text: 'Rate 评分', link: '/components/rate' },
                   { text: 'Searchbar 搜索栏', link: '/components/searchbar' },
@@ -118,8 +120,10 @@ export default defineConfig({
                 text: '反馈组件',
                 collapsed: false,
                 items: [
+                  { text: 'Loading 加载', link: '/components/loading' },
                   { text: 'Overlay 遮罩层', link: '/components/overlay' },
-                  { text: 'Popup 弹出层', link: '/components/popup' }
+                  { text: 'Popup 弹出层', link: '/components/popup' },
+                  { text: 'Toast 轻提示', link: '/components/toast' }
                 ]
               },
               {
@@ -200,6 +204,8 @@ export default defineConfig({
                   { text: 'NumberKeyboard', link: '/en/components/number-keyboard' },
                   { text: 'Picker', link: '/en/components/picker' },
                   { text: 'Radio', link: '/en/components/radio' },
+                  { text: 'Select', link: '/en/components/select' },
+                  { text: 'Switch', link: '/en/components/switch' },
                   { text: 'Range', link: '/en/components/range' },
                   { text: 'Rate', link: '/en/components/rate' },
                   { text: 'Searchbar', link: '/en/components/searchbar' },
@@ -238,8 +244,10 @@ export default defineConfig({
                 text: 'Feedback',
                 collapsed: false,
                 items: [
+                  { text: 'Loading', link: '/en/components/loading' },
                   { text: 'Overlay', link: '/en/components/overlay' },
-                  { text: 'Popup', link: '/en/components/popup' }
+                  { text: 'Popup', link: '/en/components/popup' },
+                  { text: 'Toast', link: '/en/components/toast' }
                 ]
               },
               {

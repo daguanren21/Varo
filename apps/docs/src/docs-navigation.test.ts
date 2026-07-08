@@ -68,4 +68,42 @@ describe('docs navigation', () => {
       expect(existsSync(resolve(docsRoot, `en/components/${name}.md`))).toBe(true)
     })
   })
+
+  it('documents the Base Kit Phase 1 scope and VSelect boundaries', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const selectZh = readFileSync(resolve(docsRoot, 'components/select.md'), 'utf8')
+    const selectEn = readFileSync(resolve(docsRoot, 'en/components/select.md'), 'utf8')
+    const requiredPages = [
+      'components/select.md',
+      'components/switch.md',
+      'components/loading.md',
+      'components/toast.md',
+      'en/components/select.md',
+      'en/components/switch.md',
+      'en/components/loading.md',
+      'en/components/toast.md'
+    ]
+
+    ;[
+      '/components/select',
+      '/components/switch',
+      '/components/loading',
+      '/components/toast',
+      '/en/components/select',
+      '/en/components/switch',
+      '/en/components/loading',
+      '/en/components/toast'
+    ].forEach((route) => {
+      expect(config).toContain(route)
+    })
+
+    requiredPages.forEach((page) => {
+      expect(existsSync(resolve(docsRoot, page))).toBe(true)
+    })
+
+    expect(selectZh).toContain('默认使用 `picker` 模式')
+    expect(selectZh).toContain('分组、远程搜索、异步分页属于二次封装组件能力')
+    expect(selectEn).toContain('uses `picker` mode by default')
+    expect(selectEn).toContain('Grouped options, remote search, and async paging belong in secondary wrappers')
+  })
 })
