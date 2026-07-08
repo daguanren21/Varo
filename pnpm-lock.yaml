@@ -97,6 +97,9 @@ importers:
       '@varo/primitives-core':
         specifier: workspace:*
         version: link:../primitives-core
+      '@varo/utils':
+        specifier: workspace:*
+        version: link:../utils
 
   packages/primitives-core:
     dependencies:
@@ -177,6 +180,8 @@ importers:
       wevu:
         specifier: 6.10.2
         version: 6.10.2(miniprogram-api-typings@5.2.0)(rolldown@1.0.1)(rollup@4.59.0)(typescript@5.9.3)
+
+  packages/utils: {}
 
 packages:
 
