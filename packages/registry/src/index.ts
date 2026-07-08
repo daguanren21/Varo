@@ -74,7 +74,8 @@ export function validateRegistryItem(item: RegistryItem): string[] {
     if (registryItem.files.length === 0) errors.push('files must not be empty')
 
     registryItem.files.forEach((file) => {
-      const registryFile = file as Partial<Record<keyof RegistryFile, unknown>>
+      const registryFile =
+        file !== null && typeof file === 'object' ? (file as Partial<Record<keyof RegistryFile, unknown>>) : {}
 
       if (!allowedTargets.includes(registryFile.target as RegistryTarget)) {
         errors.push(`unsupported file target: ${registryFile.target}`)

@@ -97,6 +97,15 @@ describe('registry base kit manifest', () => {
       'malformed file entry',
       { ...createValidRegistryItem(), files: [{ target: 'weapp-vite' }] },
       ['file.from must start with registry/: undefined', 'file.to must start with src/: undefined']
+    ],
+    [
+      'null file entry',
+      { ...createValidRegistryItem(), files: [null] },
+      [
+        'unsupported file target: undefined',
+        'file.from must start with registry/: undefined',
+        'file.to must start with src/: undefined'
+      ]
     ]
   ])('returns validation errors for %s instead of throwing', (_, item, expectedErrors) => {
     let errors: string[] | undefined
