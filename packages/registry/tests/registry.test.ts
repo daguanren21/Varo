@@ -1,10 +1,12 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { baseKitPhase1, validateRegistryItem, type RegistryItem } from '../src'
 
 const root = resolve(__dirname, '../../..')
-const readJson = <T>(path: string): T => JSON.parse(readFileSync(resolve(root, path), 'utf8')) as T
+const readText = (path: string): string => readFileSync(resolve(root, path), 'utf8')
+const readJson = <T>(path: string): T => JSON.parse(readText(path)) as T
+const registryItemPath = (dependency: string): string => `registry/${dependency}/registry.json`
 const createValidRegistryItem = (): RegistryItem => ({
   description: 'A select component.',
   docs: '/components/select',
@@ -86,27 +88,36 @@ describe('registry base kit manifest', () => {
     })
   })
 
-  it('ships copyable source files and form-oriented blocks using select', () => {
-    const componentFiles = [
-      'registry/components/select/select.ts',
-      'registry/components/switch/switch.ts',
-      'registry/components/toast/toast.ts',
-      'registry/components/loading/loading.ts'
-    ]
-    const blocks = [
-      readJson<RegistryItem>('registry/blocks/profile-edit/registry.json'),
-      readJson<RegistryItem>('registry/blocks/order-filter/registry.json')
-    ]
+  it('keeps component registry source files byte-for-byte aligned with ui-weapp sources', () => {
+    const components = ['select', 'switch', 'toast', 'loading'] as const
 
-    componentFiles.forEach((file) => {
-      expect(readFileSync(resolve(root, file), 'utf8').length).toBeGreaterThan(100)
+    components.forEach((component) => {
+      expect(readText(`registry/components/${component}/${component}.ts`)).toBe(
+        readText(`packages/ui-weapp/src/${component}.ts`)
+      )
     })
+  })
 
-    blocks.forEach((block) => {
+  it('declares only resolvable registry dependencies for form-oriented blocks using select', () => {
+    const blocks = [
+      ['registry/blocks/profile-edit/registry.json', readJson<RegistryItem>('registry/blocks/profile-edit/registry.json')],
+      ['registry/blocks/order-filter/registry.json', readJson<RegistryItem>('registry/blocks/order-filter/registry.json')]
+    ] as const
+
+    blocks.forEach(([blockPath, block]) => {
       expect(validateRegistryItem(block)).toEqual([])
       expect(block.type).toBe('block')
       expect(block.targets).toEqual(['weapp-vite'])
-      expect(block.registryDependencies).toContain('components/select')
+      expect(block.registryDependencies).toEqual(['components/select'])
+
+      block.registryDependencies.forEach((dependency) => {
+        const dependencyRegistryPath = registryItemPath(dependency)
+
+        expect(
+          existsSync(resolve(root, dependencyRegistryPath)),
+          `${blockPath} dependency ${dependency} must resolve to ${dependencyRegistryPath}`
+        ).toBe(true)
+      })
     })
   })
 

@@ -5,7 +5,7 @@
   "description": "A form block for editing profile basics with VSelect-based city selection.",
   "targets": ["weapp-vite"],
   "dependencies": ["vue"],
-  "registryDependencies": ["components/select", "components/input", "components/button", "components/form"],
+  "registryDependencies": ["components/select"],
   "files": [
     {
       "target": "weapp-vite",

@@ -5,7 +5,7 @@
   "description": "A filter block for selecting multiple order statuses with VSelect.",
   "targets": ["weapp-vite"],
   "dependencies": ["vue"],
-  "registryDependencies": ["components/select", "components/button"],
+  "registryDependencies": ["components/select"],
   "files": [
     {
       "target": "weapp-vite",
