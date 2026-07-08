@@ -1,0 +1,18 @@
+{
+  "name": "switch",
+  "type": "component",
+  "title": "VSwitch",
+  "description": "A low-level boolean switch primitive for forms and settings.",
+  "exportName": "VSwitch",
+  "targets": ["weapp-vite"],
+  "dependencies": ["vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/switch/switch.ts",
+      "to": "src/components/ui/switch.ts"
+    }
+  ],
+  "docs": "/components/switch"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "select",
+  "type": "component",
+  "title": "VSelect",
+  "description": "A low-level select primitive with picker and dropdown modes, single select, multiple select, local search, and confirmable draft selection.",
+  "exportName": "VSelect",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/shared", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/select/select.ts",
+      "to": "src/components/ui/select.ts"
+    }
+  ],
+  "docs": "/components/select"
+}
