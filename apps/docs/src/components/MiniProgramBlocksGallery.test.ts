@@ -62,7 +62,7 @@ describe('MiniProgramBlocksGallery', () => {
 
     expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
     expect(copyButton.text()).not.toContain('复制')
-    expect(copyButton.get('.varo-block-copy-icon').exists()).toBe(true)
+    expect(copyButton.find('.varo-block-copy-icon').exists()).toBe(true)
 
     await copyButton.trigger('click')
 

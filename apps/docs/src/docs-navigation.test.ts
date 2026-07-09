@@ -171,15 +171,12 @@ describe('docs navigation', () => {
   it('keeps docs chrome quieter than the content surface', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-gridline: rgba(24, 36, 51, 0.032)')
+    expect(css).toContain('--varo-gridline: rgba(24, 36, 51, 0.055)')
     expect(css).toContain('.VPNavBar {')
-    expect(css).toContain('background: color-mix(in srgb, var(--varo-surface) 72%, transparent) !important')
-    expect(css).toContain('.VPSidebar {')
-    expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 86%, transparent) !important')
-    expect(css).toContain('.VPSidebar .curtain')
-    expect(css).toContain('background: transparent !important')
-    expect(css).toContain('.VPDoc.has-aside .aside')
-    expect(css).toContain('border-left: 1px solid color-mix(in srgb, var(--varo-border) 62%, transparent)')
+    expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 84%, transparent) !important')
+    expect(css).toContain('backdrop-filter: blur(14px)')
+    expect(css).toContain('.VPFeature {')
+    expect(css).toContain('background: var(--varo-card) !important')
   })
 
   it('adds a dedicated narrow-screen hero rule to avoid mobile title clipping', () => {
