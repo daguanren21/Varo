@@ -17,6 +17,14 @@ const registryComponentFiles = (): string[] =>
       .filter((file) => file.isFile() && file.name.endsWith('.ts'))
       .map((file) => `${componentDir}/${file.name}`)
   })
+const registryItemFiles = (): string[] =>
+  ['components', 'blocks'].flatMap((group) =>
+    readdirSync(resolve(root, `registry/${group}`), { withFileTypes: true }).flatMap((entry) => {
+      if (!entry.isDirectory()) return []
+
+      return [`registry/${group}/${entry.name}/registry.json`]
+    })
+  )
 const createValidRegistryItem = (): RegistryItem => ({
   description: 'A select component.',
   docs: '/components/select',
@@ -160,6 +168,15 @@ describe('registry base kit manifest', () => {
 
         expect(existsSync(resolvedPath), `${sourcePath} imports ${importPath}`).toBe(true)
       })
+    })
+  })
+
+  it('keeps registry docs routes backed by docs pages', () => {
+    registryItemFiles().forEach((registryPath) => {
+      const item = readJson<RegistryItem>(registryPath)
+      const docsPage = `${item.docs.replace(/^\//, '')}.md`
+
+      expect(fileExists(`apps/docs/${docsPage}`), `${registryPath} docs route ${item.docs} must resolve`).toBe(true)
     })
   })
 

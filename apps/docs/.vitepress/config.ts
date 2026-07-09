@@ -39,6 +39,7 @@ export default defineConfig({
           { text: '指南', link: '/guide/installation' },
           { text: '组件', link: '/components/button' },
           { text: 'Primitives', link: '/primitives/' },
+          { text: 'Blocks', link: '/blocks/profile-edit' },
           { text: '示例', link: '/examples/' },
           { text: '主题', link: '/guide/theme' },
           { text: '国际化', link: '/guide/i18n' },
@@ -138,6 +139,13 @@ export default defineConfig({
             items: [{ text: '交互 Primitives', link: '/primitives/' }]
           },
           {
+            text: 'Blocks',
+            items: [
+              { text: 'Profile Edit', link: '/blocks/profile-edit' },
+              { text: 'Order Filter', link: '/blocks/order-filter' }
+            ]
+          },
+          {
             text: '示例',
             items: [{ text: '跨端演示', link: '/examples/' }]
           },
@@ -163,6 +171,7 @@ export default defineConfig({
           { text: 'Guide', link: '/en/guide/installation' },
           { text: 'Components', link: '/en/components/button' },
           { text: 'Primitives', link: '/en/primitives/' },
+          { text: 'Blocks', link: '/en/blocks/profile-edit' },
           { text: 'Examples', link: '/en/examples/' },
           { text: 'Theme', link: '/en/guide/theme' },
           { text: 'I18n', link: '/en/guide/i18n' },
@@ -260,6 +269,13 @@ export default defineConfig({
           {
             text: 'Primitives',
             items: [{ text: 'Interactive Primitives', link: '/en/primitives/' }]
+          },
+          {
+            text: 'Blocks',
+            items: [
+              { text: 'Profile Edit', link: '/en/blocks/profile-edit' },
+              { text: 'Order Filter', link: '/en/blocks/order-filter' }
+            ]
           },
           {
             text: 'Examples',

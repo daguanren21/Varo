@@ -105,10 +105,14 @@ describe('docs navigation', () => {
       'components/switch.md',
       'components/loading.md',
       'components/toast.md',
+      'blocks/profile-edit.md',
+      'blocks/order-filter.md',
       'en/components/select.md',
       'en/components/switch.md',
       'en/components/loading.md',
-      'en/components/toast.md'
+      'en/components/toast.md',
+      'en/blocks/profile-edit.md',
+      'en/blocks/order-filter.md'
     ]
 
     ;[
@@ -116,10 +120,14 @@ describe('docs navigation', () => {
       '/components/switch',
       '/components/loading',
       '/components/toast',
+      '/blocks/profile-edit',
+      '/blocks/order-filter',
       '/en/components/select',
       '/en/components/switch',
       '/en/components/loading',
-      '/en/components/toast'
+      '/en/components/toast',
+      '/en/blocks/profile-edit',
+      '/en/blocks/order-filter'
     ].forEach((route) => {
       expect(config).toContain(route)
     })
