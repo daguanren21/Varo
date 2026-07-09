@@ -32,6 +32,12 @@ features:
   <a href="/en/guide/contributing">Contributing</a>
 </div>
 
+## Phase 1 Base Kit
+
+Phase 1 Base Kit includes 18 low-level components: `button`, `cell`, `input`, `textarea`, `input-number`, `form`, `checkbox`, `radio`, `switch`, `select`, `picker`, `cascader`, `date-picker`, `overlay`, `popup`, `dialog`, `toast`, `loading`.
+
+The multi-end registry direction starts with `weapp-vite` as the first registry target, and later targets should reuse the same Base Kit list.
+
 ## Package Boundaries
 
 <div class="varo-package-grid">

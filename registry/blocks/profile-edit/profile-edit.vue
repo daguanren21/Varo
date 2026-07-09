@@ -14,7 +14,7 @@ const cities = [
   <section class="varo-block varo-profile-edit">
     <label class="varo-profile-edit__field">
       <span>所在城市</span>
-      <VSelect v-model="city" :options="cities" placeholder="请选择城市" />
+      <VSelect v-model:value="city" :options="cities" placeholder="请选择城市" />
     </label>
   </section>
 </template>

@@ -1,6 +1,6 @@
 # Select 选择器
 
-`VSelect` 是 Base Kit 的低层选择组件，用于表单、筛选和业务组件二次封装。组件默认使用 `picker` 模式，适合 H5、小程序和 App 的移动端体验。
+`VSelect` 是 Base Kit 的低层选择组件，用于表单、筛选和业务组件二次封装。组件默认使用 `picker` 模式，适合 H5、小程序和 App 的移动端体验。受控契约使用 `v-model:value`、`value`、`update:value` 和 `valueChange`。
 
 ## 基础用法
 
@@ -16,7 +16,7 @@ const cities = [
 </script>
 
 <template>
-  <VSelect v-model="city" :options="cities" placeholder="请选择城市" />
+  <VSelect v-model:value="city" :options="cities" placeholder="请选择城市" />
 </template>
 ```
 
@@ -35,8 +35,8 @@ const options = [
 </script>
 
 <template>
-  <VSelect v-model="values" multiple :options="options" placeholder="请选择状态" />
-  <VSelect v-model="values" multiple :confirmable="false" :options="options" />
+  <VSelect v-model:value="values" multiple :options="options" placeholder="请选择状态" />
+  <VSelect v-model:value="values" multiple :confirmable="false" :options="options" />
 </template>
 ```
 
@@ -44,8 +44,8 @@ const options = [
 
 ```vue
 <template>
-  <VSelect v-model="city" searchable :options="cities" />
-  <VSelect v-model="city" mode="dropdown" :options="cities" />
+  <VSelect v-model:value="city" searchable :options="cities" />
+  <VSelect v-model:value="city" mode="dropdown" :options="cities" />
 </template>
 ```
 
@@ -57,7 +57,7 @@ const options = [
 
 | Prop | 类型 | 默认值 | 描述 |
 | --- | --- | --- | --- |
-| `modelValue` | `string \| number \| Array<string \| number>` | `undefined` | 当前选中值 |
+| `value` | `string \| number \| Array<string \| number>` | `undefined` | 当前选中值 |
 | `options` | `VSelectOption[]` | `[]` | 选项 |
 | `mode` | `'picker' \| 'dropdown'` | `'picker'` | 展示模式 |
 | `placeholder` | `string` | `'请选择'` | 占位文本 |
@@ -76,8 +76,8 @@ const options = [
 
 | Event | Payload | 描述 |
 | --- | --- | --- |
-| `update:modelValue` | `string \| number \| Array<string \| number> \| undefined` | 选中值更新 |
-| `change` | `string \| number \| Array<string \| number> \| undefined` | 选中值变化 |
+| `update:value` | `string \| number \| Array<string \| number> \| undefined` | 选中值更新 |
+| `valueChange` | `string \| number \| Array<string \| number> \| undefined` | 选中值变化 |
 | `clear` | `void` | 清空 |
 | `open` | `void` | 打开 |
 | `close` | `void` | 关闭 |

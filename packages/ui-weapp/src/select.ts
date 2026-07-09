@@ -11,13 +11,13 @@ import {
   type VSelectValue
 } from '@varo/shared'
 
-type VSelectModelValue = VSelectValue | VSelectValue[] | undefined
+type VSelectValueProp = VSelectValue | VSelectValue[] | undefined
 
 export const VSelect = defineComponent({
   name: 'VSelect',
   props: {
-    modelValue: {
-      type: [String, Number, Array] as PropType<VSelectModelValue>,
+    value: {
+      type: [String, Number, Array] as PropType<VSelectValueProp>,
       default: undefined
     },
     options: {
@@ -55,38 +55,38 @@ export const VSelect = defineComponent({
       default: '暂无数据'
     }
   },
-  emits: ['update:modelValue', 'change', 'clear', 'open', 'close', 'confirm', 'cancel', 'search', 'limit'],
+  emits: ['update:value', 'valueChange', 'clear', 'open', 'close', 'confirm', 'cancel', 'search', 'limit'],
   setup(props, { attrs, emit, slots }) {
     const visible = shallowRef(false)
     const query = shallowRef('')
     const draftValue = shallowRef<VSelectValue[]>([])
 
-    const modelArray = computed(() => normalizeSelectArray(props.modelValue))
-    const activeArray = computed(() => (props.multiple && props.confirmable && visible.value ? draftValue.value : modelArray.value))
+    const selectedArray = computed(() => normalizeSelectArray(props.value))
+    const activeArray = computed(() => (props.multiple && props.confirmable && visible.value ? draftValue.value : selectedArray.value))
     const filteredOptions = computed(() => filterSelectOptions(props.options, query.value, props.filterOption))
-    const displayText = computed(() => createSelectDisplay(props.options, props.modelValue, props.placeholder))
+    const displayText = computed(() => createSelectDisplay(props.options, props.value, props.placeholder))
 
     watch(
       () => visible.value,
       (nextVisible) => {
         if (nextVisible) {
-          draftValue.value = modelArray.value
+          draftValue.value = selectedArray.value
         }
       }
     )
 
     watch(
-      () => props.modelValue,
+      () => props.value,
       () => {
         if (!visible.value || !props.confirmable) {
-          draftValue.value = modelArray.value
+          draftValue.value = selectedArray.value
         }
       }
     )
 
-    function commit(value: VSelectModelValue) {
-      emit('update:modelValue', value)
-      emit('change', value)
+    function commit(value: VSelectValueProp) {
+      emit('update:value', value)
+      emit('valueChange', value)
     }
 
     function open() {
@@ -102,7 +102,7 @@ export const VSelect = defineComponent({
     }
 
     function cancel() {
-      draftValue.value = modelArray.value
+      draftValue.value = selectedArray.value
       visible.value = false
       query.value = ''
       emit('cancel')
@@ -118,7 +118,7 @@ export const VSelect = defineComponent({
     }
 
     function select(option: VSelectOption) {
-      const current = props.multiple && props.confirmable ? draftValue.value : props.modelValue
+      const current = props.multiple && props.confirmable ? draftValue.value : props.value
       const result = toggleSelectValue(current, option, {
         max: props.max,
         multiple: props.multiple
@@ -232,7 +232,7 @@ export const VSelect = defineComponent({
             },
             [
               h('span', { class: 'varo-select__value' }, slots.value?.({ text: displayText.value }) ?? displayText.value),
-              props.clearable && modelArray.value.length > 0 && !props.disabled && !props.readonly
+              props.clearable && selectedArray.value.length > 0 && !props.disabled && !props.readonly
                 ? h('span', { class: 'varo-select__clear', role: 'button', onClick: clear }, '×')
                 : null
             ]

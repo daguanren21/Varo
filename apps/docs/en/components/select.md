@@ -1,6 +1,6 @@
 # Select
 
-`VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. It uses `picker` mode by default so H5, mini-program, and App outputs share a mobile-first interaction.
+`VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. It uses `picker` mode by default so H5, mini-program, and App outputs share a mobile-first interaction. The controlled contract uses `v-model:value`, `value`, `update:value`, and `valueChange`.
 
 ## Basic Usage
 
@@ -16,7 +16,7 @@ const cities = [
 </script>
 
 <template>
-  <VSelect v-model="city" :options="cities" placeholder="Select city" />
+  <VSelect v-model:value="city" :options="cities" placeholder="Select city" />
 </template>
 ```
 
@@ -35,8 +35,8 @@ const options = [
 </script>
 
 <template>
-  <VSelect v-model="values" multiple :options="options" placeholder="Select status" />
-  <VSelect v-model="values" multiple :confirmable="false" :options="options" />
+  <VSelect v-model:value="values" multiple :options="options" placeholder="Select status" />
+  <VSelect v-model:value="values" multiple :confirmable="false" :options="options" />
 </template>
 ```
 
@@ -44,8 +44,8 @@ const options = [
 
 ```vue
 <template>
-  <VSelect v-model="city" searchable :options="cities" />
-  <VSelect v-model="city" mode="dropdown" :options="cities" />
+  <VSelect v-model:value="city" searchable :options="cities" />
+  <VSelect v-model:value="city" mode="dropdown" :options="cities" />
 </template>
 ```
 
@@ -57,7 +57,7 @@ Grouped options, remote search, and async paging belong in secondary wrappers. B
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `modelValue` | `string \| number \| Array<string \| number>` | `undefined` | Selected value |
+| `value` | `string \| number \| Array<string \| number>` | `undefined` | Selected value |
 | `options` | `VSelectOption[]` | `[]` | Options |
 | `mode` | `'picker' \| 'dropdown'` | `'picker'` | Presentation mode |
 | `placeholder` | `string` | `'请选择'` | Placeholder text |
@@ -71,3 +71,17 @@ Grouped options, remote search, and async paging belong in secondary wrappers. B
 | `filterOption` | `(query, option) => boolean` | `undefined` | Custom local filter |
 | `loading` | `boolean` | `false` | Loading display |
 | `emptyText` | `string` | `'暂无数据'` | Empty state text |
+
+## Events
+
+| Event | Payload | Description |
+| --- | --- | --- |
+| `update:value` | `string \| number \| Array<string \| number> \| undefined` | Selected value updated |
+| `valueChange` | `string \| number \| Array<string \| number> \| undefined` | Selected value changed |
+| `clear` | `void` | Cleared |
+| `open` | `void` | Opened |
+| `close` | `void` | Closed |
+| `confirm` | `Array<string \| number>` | Multiple selection confirmed |
+| `cancel` | `void` | Cancelled |
+| `search` | `string` | Search input changed |
+| `limit` | `{ max: number }` | Maximum selected count exceeded |

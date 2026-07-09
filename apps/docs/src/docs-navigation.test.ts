@@ -4,7 +4,28 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const docsRoot = resolve(__dirname, '..')
+const workspaceRoot = resolve(docsRoot, '../..')
 const configPath = resolve(docsRoot, '.vitepress/config.ts')
+const baseKitPhase1Components = [
+  'button',
+  'cell',
+  'input',
+  'textarea',
+  'input-number',
+  'form',
+  'checkbox',
+  'radio',
+  'switch',
+  'select',
+  'picker',
+  'cascader',
+  'date-picker',
+  'overlay',
+  'popup',
+  'dialog',
+  'toast',
+  'loading'
+]
 
 describe('docs navigation', () => {
   it('groups display layout components separately from navigation components', () => {
@@ -71,8 +92,14 @@ describe('docs navigation', () => {
 
   it('documents the Base Kit Phase 1 scope and VSelect boundaries', () => {
     const config = readFileSync(configPath, 'utf8')
+    const homeZh = readFileSync(resolve(docsRoot, 'index.md'), 'utf8')
+    const homeEn = readFileSync(resolve(docsRoot, 'en/index.md'), 'utf8')
     const selectZh = readFileSync(resolve(docsRoot, 'components/select.md'), 'utf8')
     const selectEn = readFileSync(resolve(docsRoot, 'en/components/select.md'), 'utf8')
+    const phase1Manifest = JSON.parse(readFileSync(resolve(workspaceRoot, 'registry/base-kit.phase1.json'), 'utf8')) as {
+      components: string[]
+      target: string
+    }
     const requiredPages = [
       'components/select.md',
       'components/switch.md',
@@ -99,6 +126,18 @@ describe('docs navigation', () => {
 
     requiredPages.forEach((page) => {
       expect(existsSync(resolve(docsRoot, page))).toBe(true)
+    })
+
+    expect(phase1Manifest.target).toBe('weapp-vite')
+    expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
+    expect(phase1Manifest.components).toHaveLength(18)
+    expect(homeZh).toContain('Phase 1 Base Kit 包含 18 个低层组件')
+    expect(homeZh).toContain('Registry 方向以 `weapp-vite` 作为首个多端 registry 目标')
+    expect(homeEn).toContain('Phase 1 Base Kit includes 18 low-level components')
+    expect(homeEn).toContain('The multi-end registry direction starts with `weapp-vite` as the first registry target')
+    baseKitPhase1Components.forEach((component) => {
+      expect(homeZh).toContain(`\`${component}\``)
+      expect(homeEn).toContain(`\`${component}\``)
     })
 
     expect(selectZh).toContain('默认使用 `picker` 模式')

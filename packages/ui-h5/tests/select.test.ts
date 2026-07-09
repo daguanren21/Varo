@@ -8,13 +8,15 @@ const options = [
   { label: 'Suzhou', value: 'suzhou', disabled: true }
 ]
 
-describe('ui-weapp select', () => {
+describe('ui-h5 select', () => {
   it('uses picker mode by default and commits single values immediately', async () => {
     const onUpdate = vi.fn()
+    const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
         options,
-        'onUpdate:modelValue': onUpdate
+        'onUpdate:value': onUpdate,
+        onValueChange
       }
     })
 
@@ -25,13 +27,14 @@ describe('ui-weapp select', () => {
     await wrapper.findAll('.varo-select__option')[1].trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith('hangzhou')
+    expect(onValueChange).toHaveBeenCalledWith('hangzhou')
     expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
   })
 
   it('closes when selecting the already-selected single value', async () => {
     const wrapper = mount(VSelect, {
       props: {
-        modelValue: 'shanghai',
+        value: 'shanghai',
         options
       }
     })
@@ -46,12 +49,14 @@ describe('ui-weapp select', () => {
 
   it('keeps a draft for confirmable multiple selection', async () => {
     const onUpdate = vi.fn()
+    const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
-        modelValue: ['shanghai'],
+        value: ['shanghai'],
         multiple: true,
         options,
-        'onUpdate:modelValue': onUpdate
+        'onUpdate:value': onUpdate,
+        onValueChange
       }
     })
 
@@ -63,17 +68,20 @@ describe('ui-weapp select', () => {
     await wrapper.get('.varo-select__confirm').trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith(['shanghai', 'hangzhou'])
+    expect(onValueChange).toHaveBeenCalledWith(['shanghai', 'hangzhou'])
   })
 
   it('can emit every multiple toggle immediately', async () => {
     const onUpdate = vi.fn()
+    const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
         confirmable: false,
-        modelValue: ['shanghai'],
+        value: ['shanghai'],
         multiple: true,
         options,
-        'onUpdate:modelValue': onUpdate
+        'onUpdate:value': onUpdate,
+        onValueChange
       }
     })
 
@@ -81,6 +89,7 @@ describe('ui-weapp select', () => {
     await wrapper.findAll('.varo-select__option')[1].trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith(['shanghai', 'hangzhou'])
+    expect(onValueChange).toHaveBeenCalledWith(['shanghai', 'hangzhou'])
   })
 
   it('filters options locally and emits search input', async () => {
@@ -104,17 +113,19 @@ describe('ui-weapp select', () => {
     const onClear = vi.fn()
     const onLimit = vi.fn()
     const onUpdate = vi.fn()
+    const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
         clearable: true,
         max: 1,
         mode: 'dropdown',
-        modelValue: ['shanghai'],
+        value: ['shanghai'],
         multiple: true,
         options,
         onClear,
         onLimit,
-        'onUpdate:modelValue': onUpdate
+        'onUpdate:value': onUpdate,
+        onValueChange
       }
     })
 
@@ -129,20 +140,23 @@ describe('ui-weapp select', () => {
 
     expect(onClear).toHaveBeenCalledTimes(1)
     expect(onUpdate).toHaveBeenCalledWith([])
+    expect(onValueChange).toHaveBeenCalledWith([])
   })
 
   it('clears the open confirmable multiple draft before confirm', async () => {
     const onConfirm = vi.fn()
     const onUpdate = vi.fn()
+    const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
         clearable: true,
         confirmable: true,
-        modelValue: ['shanghai'],
+        value: ['shanghai'],
         multiple: true,
         options,
         onConfirm,
-        'onUpdate:modelValue': onUpdate
+        'onUpdate:value': onUpdate,
+        onValueChange
       }
     })
 
@@ -152,6 +166,8 @@ describe('ui-weapp select', () => {
 
     expect(onUpdate).toHaveBeenCalledWith([])
     expect(onUpdate).not.toHaveBeenCalledWith(['shanghai'])
+    expect(onValueChange).toHaveBeenCalledWith([])
+    expect(onValueChange).not.toHaveBeenCalledWith(['shanghai'])
     expect(onConfirm).toHaveBeenCalledWith([])
     expect(onConfirm).not.toHaveBeenCalledWith(['shanghai'])
   })
