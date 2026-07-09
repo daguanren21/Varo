@@ -1,0 +1,18 @@
+{
+  "name": "overlay",
+  "type": "component",
+  "title": "VOverlay",
+  "description": "A low-level overlay primitive with controlled visibility, lock scroll, duration, and click events.",
+  "exportName": "VOverlay",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/primitives-weapp", "@varo/shared", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/overlay/overlay.ts",
+      "to": "src/components/ui/overlay.ts"
+    }
+  ],
+  "docs": "/components/overlay"
+}

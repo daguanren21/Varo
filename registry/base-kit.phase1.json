@@ -1,0 +1,24 @@
+{
+  "name": "base-kit-phase-1",
+  "target": "weapp-vite",
+  "components": [
+    "button",
+    "cell",
+    "input",
+    "textarea",
+    "input-number",
+    "form",
+    "checkbox",
+    "radio",
+    "switch",
+    "select",
+    "picker",
+    "cascader",
+    "date-picker",
+    "overlay",
+    "popup",
+    "dialog",
+    "toast",
+    "loading"
+  ]
+}

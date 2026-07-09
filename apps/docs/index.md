@@ -92,6 +92,12 @@ features:
   </div>
 </div>
 
+## Phase 1 Base Kit
+
+Phase 1 Base Kit 包含 18 个低层组件：`button`、`cell`、`input`、`textarea`、`input-number`、`form`、`checkbox`、`radio`、`switch`、`select`、`picker`、`cascader`、`date-picker`、`overlay`、`popup`、`dialog`、`toast`、`loading`。
+
+Registry 方向以 `weapp-vite` 作为首个多端 registry 目标，后续目标继续复用同一 Base Kit 清单。
+
 ## 包边界
 
 <div class="varo-package-grid">

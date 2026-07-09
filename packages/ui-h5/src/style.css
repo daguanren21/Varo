@@ -18,7 +18,7 @@
   --varo-ui-ring: rgba(8, 120, 111, 0.16);
 }
 
-:where(.varo-button, .varo-checkbox, .varo-radio, .varo-input-number button, .varo-rate__item, .varo-picker button, .varo-cascader button, .varo-calendar button, .varo-date-picker button, .varo-number-keyboard button, .varo-uploader button, .varo-indicator button, .varo-elevator button, .varo-menu button, .varo-pagination button) {
+:where(.varo-button, .varo-checkbox, .varo-radio, .varo-input-number button, .varo-select button, .varo-switch, .varo-toast button, .varo-rate__item, .varo-picker button, .varo-cascader button, .varo-calendar button, .varo-date-picker button, .varo-number-keyboard button, .varo-uploader button, .varo-indicator button, .varo-elevator button, .varo-menu button, .varo-pagination button) {
   font: inherit;
 }
 
@@ -316,6 +316,231 @@ textarea.varo-input__control {
   margin: 0;
   appearance: none;
   -webkit-appearance: none;
+}
+
+.varo-select {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  color: #172033;
+}
+
+.varo-select__trigger {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+}
+
+.varo-select__value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.varo-select__clear {
+  flex: none;
+  color: #64748b;
+}
+
+.varo-select__panel {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+}
+
+.varo-select__search {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  outline: 0;
+  font: inherit;
+}
+
+.varo-select__options {
+  display: grid;
+  gap: 4px;
+}
+
+.varo-select__option {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.varo-select__option[data-active='true'] {
+  background: rgba(15, 118, 110, 0.1);
+  color: #0f766e;
+  font-weight: 750;
+}
+
+.varo-select__option:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.varo-select__loading,
+.varo-select__empty {
+  padding: 10px;
+  color: #64748b;
+  text-align: center;
+}
+
+.varo-select__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #eef2f7;
+  padding-top: 8px;
+}
+
+.varo-select__cancel,
+.varo-select__confirm {
+  min-height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.varo-select__confirm {
+  background: #0f766e;
+  color: #fff;
+  padding: 0 14px;
+}
+
+.varo-switch {
+  display: inline-flex;
+  width: 50px;
+  height: 28px;
+  align-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  cursor: pointer;
+  padding: 2px;
+  transition: background 0.18s ease;
+}
+
+.varo-switch[data-checked='true'] {
+  background: #0f766e;
+}
+
+.varo-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.varo-switch__track {
+  display: flex;
+  width: 100%;
+}
+
+.varo-switch__thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  transition: transform 0.18s ease;
+}
+
+.varo-switch[data-checked='true'] .varo-switch__thumb {
+  transform: translateX(22px);
+}
+
+.varo-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+}
+
+.varo-loading__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: varo-spin 0.75s linear infinite;
+}
+
+.varo-loading[data-tone='primary'] {
+  color: #0f766e;
+}
+
+.varo-loading[data-size='sm'] {
+  font-size: 12px;
+}
+
+.varo-loading[data-size='lg'] {
+  font-size: 18px;
+}
+
+.varo-toast {
+  position: fixed;
+  left: 50%;
+  z-index: 1000;
+  display: inline-flex;
+  max-width: min(320px, calc(100vw - 32px));
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #fff;
+  transform: translateX(-50%);
+}
+
+.varo-toast[data-position='top'] {
+  top: 24px;
+}
+
+.varo-toast[data-position='middle'] {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.varo-toast[data-position='bottom'] {
+  bottom: 24px;
+}
+
+.varo-toast__message {
+  min-width: 0;
+}
+
+.varo-toast__close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .varo-rate {

@@ -1,0 +1,18 @@
+{
+  "name": "dialog",
+  "type": "component",
+  "title": "VDialogRoot",
+  "description": "A low-level dialog primitive re-exporting dialog root, trigger, overlay, content, and close parts.",
+  "exportName": "VDialogRoot",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/primitives-weapp"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/dialog/dialog.ts",
+      "to": "src/components/ui/dialog.ts"
+    }
+  ],
+  "docs": "/components/dialog"
+}

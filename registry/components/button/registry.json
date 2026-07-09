@@ -1,0 +1,18 @@
+{
+  "name": "button",
+  "type": "component",
+  "title": "VButton",
+  "description": "A low-level button primitive with size, variant, tone, shape, loading, and block states.",
+  "exportName": "VButton",
+  "targets": ["weapp-vite"],
+  "dependencies": ["@varo/primitives-weapp", "@varo/shared", "@varo/theme", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/button/button.ts",
+      "to": "src/components/ui/button.ts"
+    }
+  ],
+  "docs": "/components/button"
+}

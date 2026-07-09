@@ -137,6 +137,8 @@ importers:
         specifier: 6.16.43
         version: 6.16.43(miniprogram-api-typings@5.2.1)(rolldown@1.1.0)(rollup@4.61.1)(typescript@6.0.3)
 
+  packages/registry: {}
+
   packages/shared: {}
 
   packages/theme:
@@ -183,6 +185,8 @@ importers:
       wevu:
         specifier: 6.16.43
         version: 6.16.43(miniprogram-api-typings@5.2.1)(rolldown@1.1.0)(rollup@4.61.1)(typescript@6.0.3)
+
+  packages/utils: {}
 
   packages/utils: {}
 

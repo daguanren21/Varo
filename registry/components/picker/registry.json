@@ -1,0 +1,18 @@
+{
+  "name": "picker",
+  "type": "component",
+  "title": "VPicker",
+  "description": "A low-level picker primitive with visible state, option selection, confirm, cancel, and change events.",
+  "exportName": "VPicker",
+  "targets": ["weapp-vite"],
+  "dependencies": ["vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/picker/picker.ts",
+      "to": "src/components/ui/picker.ts"
+    }
+  ],
+  "docs": "/components/picker"
+}
