@@ -1,7 +1,14 @@
 import { resolve } from 'node:path'
+import { weappTailwindcss } from 'weapp-tailwindcss/vite'
 import { defineConfig } from 'weapp-vite/config'
 
 export default defineConfig({
+  plugins: [
+    weappTailwindcss({
+      appType: 'weapp-vite',
+      logLevel: 'warn'
+    })
+  ].flat(),
   resolve: {
     alias: {
       '@varo/hooks': resolve(import.meta.dirname, '../hooks/src/index.ts'),

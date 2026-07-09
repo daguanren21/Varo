@@ -1,7 +1,7 @@
 {
   "name": "@varo/docs",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "build": "vitepress build .",
@@ -17,6 +17,6 @@
     "@varo/theme": "workspace:*",
     "@varo/ui-h5": "workspace:*",
     "vitepress": "^1.6.4",
-    "vue": "^3.5.30"
+    "vue": "^3.5.35"
   }
 }

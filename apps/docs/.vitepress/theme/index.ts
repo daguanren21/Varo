@@ -26,6 +26,7 @@ import {
 import '@varo/ui-h5/source/style.css'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
+import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import './custom.css'
 
@@ -43,6 +44,7 @@ const theme: Theme = {
     app.use(VaroConfigProvider, { theme: docsTheme })
     app.component('FormComponentDemo', FormComponentDemo)
     app.component('InteractivePreview', InteractivePreview)
+    app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
     app.component('VCalendar', VCalendar)
     app.component('VCalendarCard', VCalendarCard)

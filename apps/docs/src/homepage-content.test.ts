@@ -28,4 +28,57 @@ describe('homepage content', () => {
     expect(content).not.toContain('<PlatformTabsDemo')
     expect(content).not.toContain('<InteractivePreview')
   })
+
+  it('promotes mini-program blocks from the homepage and examples pages', () => {
+    const zhHome = readFileSync(resolve(root, 'index.md'), 'utf8')
+    const enHome = readFileSync(resolve(root, 'en/index.md'), 'utf8')
+    const zhExamples = readFileSync(resolve(root, 'examples/index.md'), 'utf8')
+    const enExamples = readFileSync(resolve(root, 'en/examples/index.md'), 'utf8')
+
+    expect(zhHome).toContain('小程序 Blocks')
+    expect(enHome).toContain('Mini-program Blocks')
+    expect(zhExamples).toContain('小程序业务 Blocks')
+    expect(enExamples).toContain('Mini-program Business Blocks')
+  })
+
+  it('positions Varo as a serious cross-runtime design system product', () => {
+    const zhHome = readFileSync(resolve(root, 'index.md'), 'utf8')
+    const enHome = readFileSync(resolve(root, 'en/index.md'), 'utf8')
+
+    expect(zhHome).toContain('跨运行时组件系统的生产底座')
+    expect(zhHome).toContain('设计系统运行层')
+    expect(zhHome).toContain('组件资产台账')
+    expect(zhHome).toContain('交付可靠性')
+    expect(zhHome).not.toContain('shadcn 风格')
+    expect(enHome).toContain('Production foundation for cross-runtime component systems')
+    expect(enHome).toContain('Design System Runtime')
+    expect(enHome).toContain('Component Asset Ledger')
+    expect(enHome).toContain('Delivery Confidence')
+    expect(enHome).not.toContain('shadcn-style')
+  })
+
+  it('provides a richer block gallery for mini-program product flows', () => {
+    const zhExamples = readFileSync(resolve(root, 'examples/index.md'), 'utf8')
+    const enExamples = readFileSync(resolve(root, 'en/examples/index.md'), 'utf8')
+    const gallery = readFileSync(resolve(root, 'src/components/MiniProgramBlocksGallery.vue'), 'utf8')
+    const requiredBlocks = [
+      'Order Fulfillment Detail',
+      'Shipping Address Form',
+      'Filter Drawer',
+      'Payment Confirmation Sheet'
+    ]
+
+    requiredBlocks.forEach((block) => {
+      expect(gallery).toContain(block)
+    })
+
+    expect(zhExamples).toContain('<MiniProgramBlocksGallery locale="zh" />')
+    expect(enExamples).toContain('<MiniProgramBlocksGallery locale="en" />')
+    expect(gallery).toContain('class="varo-block-workspace"')
+    expect(gallery).toContain('class="varo-block-preview-panel"')
+    expect(gallery).toContain('class="varo-block-stage-head"')
+    expect(gallery).toContain('activeBlock')
+    expect(gallery).toContain('@click')
+    expect(gallery).toContain('class="varo-motion-pulse"')
+  })
 })

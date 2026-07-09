@@ -29,6 +29,13 @@ describe('ui-h5 style entry', () => {
     expect(style).toContain('background-color 0.2s ease')
     expect(style).toContain('appearance: textfield')
     expect(style).toContain('::-webkit-inner-spin-button')
+    expect(style).toContain('--varo-ui-bg: #f6f7f9')
+    expect(style).toContain('--varo-ui-surface: #ffffff')
+    expect(style).toContain('--varo-ui-primary: #08786f')
+    expect(style).toContain('--varo-ui-radius: 8px')
+    expect(style).toContain('background: var(--varo-ui-primary)')
+    expect(style).toContain('border-radius: var(--varo-ui-radius)')
+    expect(style).toContain('box-shadow: var(--varo-ui-shadow-sm)')
   })
 
   it('builds the stylesheet file targeted by package exports', () => {

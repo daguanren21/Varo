@@ -1,50 +1,50 @@
 {
-    "name":  "@varo/ui-weapp",
-    "version":  "0.0.1",
-    "type":  "module",
-    "sideEffects":  false,
-    "repository":  {
-                       "type":  "git",
-                       "url":  "https://github.com/daguanren21/Varo.git"
-                   },
-    "publishConfig":  {
-                          "access":  "public",
-                          "registry":  "https://registry.npmjs.org/"
-                      },
-    "main":  "./dist/src/index.js",
-    "module":  "./dist/src/index.js",
-    "types":  "./dist/src/index.d.ts",
-    "files":  [
-                  "dist",
-                  "src"
-              ],
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/src/index.d.ts",
-                              "import":  "./dist/src/index.js"
-                          },
-                    "./source":  {
-                                     "types":  "./src/index.ts",
-                                     "import":  "./src/index.ts"
-                                 }
-                },
-    "scripts":  {
-                    "build":  "weapp-vite build",
-                    "clean":  "rimraf dist",
-                    "dev":  "weapp-vite",
-                    "lint":  "echo ui-weapp lint pending",
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --passWithNoTests",
-                    "test:e2e":  "echo ui-weapp has no e2e"
-                },
-    "dependencies":  {
-                         "@varo/hooks":  "workspace:*",
-                         "@varo/primitives-weapp":  "workspace:*",
-                         "@varo/shared":  "workspace:*",
-                         "@varo/theme":  "workspace:*",
-                         "vue":  "^3.5.30"
-                     },
-    "peerDependencies":  {
-                             "wevu":  "6.10.2"
-                         }
+    "name": "@varo/ui-weapp",
+    "version": "0.1.0",
+    "type": "module",
+    "sideEffects": false,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/daguanren21/Varo.git"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "main": "./dist/src/index.js",
+    "module": "./dist/src/index.js",
+    "types": "./dist/src/index.d.ts",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "import": "./dist/src/index.js"
+        },
+        "./source": {
+            "types": "./src/index.ts",
+            "import": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "build": "weapp-vite build",
+        "clean": "rimraf dist",
+        "dev": "weapp-vite",
+        "lint": "echo ui-weapp lint pending",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests",
+        "test:e2e": "echo ui-weapp has no e2e"
+    },
+    "dependencies": {
+        "@varo/hooks": "workspace:*",
+        "@varo/primitives-weapp": "workspace:*",
+        "@varo/shared": "workspace:*",
+        "@varo/theme": "workspace:*",
+        "vue": "^3.5.35"
+    },
+    "peerDependencies": {
+        "wevu": "6.16.43"
+    }
 }
