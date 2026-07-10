@@ -5,6 +5,7 @@ import type { DialogRootOptions, UseDialogRootResult } from './types'
 export function useDialogRoot(options: DialogRootOptions = {}): UseDialogRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
   const openState = useControllableState({
+    controlled: options.openControlled,
     runtime,
     defaultValue: options.defaultOpen ?? false,
     value: options.open,

@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, type PropType, type StyleValue } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, onMounted, shallowRef, type PropType, type StyleValue } from 'vue'
 import type { StickyDimension, StickyScrollEvent } from './types'
 
 export type * from './types'
@@ -34,7 +34,7 @@ export const StickyRoot = defineComponent({
   },
   emits: ['change', 'scroll'],
   setup(props, { attrs, emit, slots }) {
-    const isFixed = ref(false)
+    const isFixed = shallowRef(false)
     const numericOffsetTop = computed(() => {
       const value = Number(props.offsetTop)
       return Number.isFinite(value) ? value : 0

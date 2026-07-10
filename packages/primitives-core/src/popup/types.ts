@@ -7,6 +7,7 @@ export interface PopupRootOptions {
   runtime?: ReactiveRuntime
   defaultVisible?: boolean
   visible?: Ref<boolean | undefined>
+  visibleControlled?: Ref<boolean | undefined>
   disabled?: Ref<boolean | undefined>
   closeOnClickOverlay?: Ref<boolean | undefined>
   onVisibleChange?: (visible: boolean) => void

@@ -5,6 +5,7 @@ import type { PopupRootOptions, UsePopupRootResult } from './types'
 export function usePopupRoot(options: PopupRootOptions = {}): UsePopupRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
   const visibleState = useControllableState({
+    controlled: options.visibleControlled,
     runtime,
     defaultValue: options.defaultVisible ?? false,
     value: options.visible,

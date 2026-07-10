@@ -1,6 +1,7 @@
 import { computed, defineComponent, h, nextTick, onMounted, ref, toRef, watch, type PropType } from 'vue'
 import { useFieldRoot } from '@varo/primitives-core'
 import { vueReactiveRuntime } from '../vue-runtime'
+import { usePropPresence } from '../vue-control'
 
 export { useInputRoot } from './hooks'
 export type * from './types'
@@ -70,7 +71,9 @@ export const InputRoot = defineComponent({
   emits: ['update:value', 'valueChange', 'focus', 'blur'],
   setup(props, { attrs, emit, expose }) {
     const control = ref<HTMLInputElement | HTMLTextAreaElement>()
+    const valueControlled = usePropPresence('value')
     const field = useFieldRoot({
+      valueControlled,
       runtime: vueReactiveRuntime,
       defaultValue: props.defaultValue,
       value: toRef(props, 'value'),

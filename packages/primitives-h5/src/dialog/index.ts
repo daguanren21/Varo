@@ -17,6 +17,7 @@ import {
   useDialogRootContext
 } from '@varo/primitives-core'
 import { vueReactiveRuntime } from '../vue-runtime'
+import { usePropPresence } from '../vue-control'
 
 export { useDialogRoot } from './hooks'
 export type * from './types'
@@ -45,7 +46,9 @@ export const DialogRoot = defineComponent({
   },
   emits: ['update:open', 'openChange'],
   setup(props, { emit, slots }) {
+    const openControlled = usePropPresence('open')
     const dialog = useDialogRoot({
+      openControlled,
       runtime: vueReactiveRuntime,
       defaultOpen: props.defaultOpen,
       open: toRef(props, 'open'),

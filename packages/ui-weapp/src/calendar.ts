@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, watch, type PropType } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
 import { buildMonthDays, normalizeMonth, shiftMonth, shiftYear } from './date-utils'
 
 export const VCalendarCard = defineComponent({
@@ -23,7 +23,7 @@ export const VCalendarCard = defineComponent({
   },
   emits: ['update:month', 'update:value', 'select'],
   setup(props, { emit }) {
-    const currentMonth = ref(normalizeMonth(props.month ?? props.value))
+    const currentMonth = shallowRef(normalizeMonth(props.month ?? props.value))
     const days = computed(() => buildMonthDays(currentMonth.value))
     const title = computed(() => currentMonth.value)
 
@@ -99,8 +99,8 @@ export const VCalendar = defineComponent({
   },
   emits: ['update:value', 'update:visible', 'confirm', 'select'],
   setup(props, { emit }) {
-    const selected = ref(props.value)
-    const currentMonth = ref(normalizeMonth(props.month ?? props.value))
+    const selected = shallowRef(props.value)
+    const currentMonth = shallowRef(normalizeMonth(props.month ?? props.value))
 
     watch(
       () => props.value,

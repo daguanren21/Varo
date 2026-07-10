@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, type PropType, type StyleValue } from 'vue'
+import { computed, defineComponent, getCurrentInstance, h, ref, shallowRef, type PropType, type StyleValue } from 'vue'
 import { createVariantClass } from '@varo/shared'
 import { useVaroTheme } from '@varo/theme'
 import { InputRoot } from '@varo/primitives-h5'
@@ -13,6 +13,8 @@ type InputRootExpose = {
   clear: () => boolean
   focus: () => void
 }
+
+const hasOwn = Object.prototype.hasOwnProperty
 
 export const VInput = defineComponent({
   name: 'VInput',
@@ -91,10 +93,15 @@ export const VInput = defineComponent({
   emits: ['update:value', 'valueChange', 'clear', 'focus', 'blur'],
   setup(props, { attrs, emit, slots }) {
     const theme = useVaroTheme()
+    const instance = getCurrentInstance()
     const inputRoot = ref<InputRootExpose>()
-    const focused = ref(false)
-    const localValue = ref(props.defaultValue)
-    const currentValue = computed(() => props.value ?? localValue.value)
+    const focused = shallowRef(false)
+    const localValue = shallowRef(props.defaultValue)
+    const valueControlled = computed(() => {
+      const vnodeProps = instance?.vnode.props
+      return vnodeProps ? hasOwn.call(vnodeProps, 'value') : false
+    })
+    const currentValue = computed(() => (valueControlled.value ? props.value ?? '' : localValue.value))
     const labelBasis = computed(() => {
       if (props.labelWidth == null || props.labelWidth === '') {
         return undefined
@@ -136,7 +143,7 @@ export const VInput = defineComponent({
     })
 
     function updateCurrentValue(value: string) {
-      if (props.value === undefined) {
+      if (!valueControlled.value) {
         localValue.value = value
       }
 
@@ -181,6 +188,7 @@ export const VInput = defineComponent({
       const { class: className, style, ...inputAttrs } = attrs
       const prefix = renderAffix('prefix', props.prefixIcon)
       const suffix = renderAffix('suffix', props.suffixIcon)
+      const controlledValueProps = valueControlled.value ? { value: props.value } : {}
 
       return h(
         'div',
@@ -210,6 +218,7 @@ export const VInput = defineComponent({
             prefix,
             h(InputRoot, {
               ...inputAttrs,
+              ...controlledValueProps,
               ref: inputRoot,
               autosize: props.autosize,
               class: 'varo-input__control',
@@ -224,7 +233,6 @@ export const VInput = defineComponent({
               rows: props.rows,
               style: { textAlign: props.align },
               type: props.type,
-              value: props.value,
               onBlur: (event: FocusEvent) => {
                 focused.value = false
                 emit('blur', event)

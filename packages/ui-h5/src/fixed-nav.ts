@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, type PropType, type StyleValue } from 'vue'
+import { computed, defineComponent, h, shallowRef, type PropType, type StyleValue } from 'vue'
 
 export interface FixedNavItem {
   id?: string | number
@@ -30,7 +30,7 @@ export const VFixedNav = defineComponent({
   },
   emits: ['update:visible', 'visibleChange', 'select'],
   setup(props, { attrs, emit }) {
-    const localVisible = ref(props.defaultVisible)
+    const localVisible = shallowRef(props.defaultVisible)
     const open = computed(() => props.visible ?? localVisible.value)
 
     function setVisible(visible: boolean) {

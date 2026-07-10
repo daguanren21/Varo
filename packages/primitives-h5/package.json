@@ -24,12 +24,12 @@
             "import": "./dist/index.mjs"
         },
         "./hooks": {
-            "types": "./dist/hooks.d.ts",
-            "import": "./dist/hooks.js"
+            "types": "./dist/hooks.d.mts",
+            "import": "./dist/hooks.mjs"
         },
         "./parts": {
-            "types": "./dist/parts.d.ts",
-            "import": "./dist/parts.js"
+            "types": "./dist/parts.d.mts",
+            "import": "./dist/parts.mjs"
         },
         "./source": {
             "types": "./src/index.ts",
@@ -56,6 +56,6 @@
     "dependencies": {
         "@varo/primitives-core": "workspace:*",
         "@varo/shared": "workspace:*",
-        "vue": "^3.5.35"
+        "vue": "^3.5.39"
     }
 }

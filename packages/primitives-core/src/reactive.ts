@@ -2,6 +2,8 @@ export interface Ref<T> {
   value: T
 }
 
+export type MaybeRef<T> = T | Ref<T>
+
 export interface WritableRef<T> extends Ref<T> {
   value: T
 }
@@ -46,4 +48,10 @@ export const defaultReactiveRuntime: ReactiveRuntime = {
 
 export function resolveReactiveRuntime(runtime?: ReactiveRuntime): ReactiveRuntime {
   return runtime ?? defaultReactiveRuntime
+}
+
+export function readMaybeRef<T>(source: MaybeRef<T>): T {
+  return typeof source === 'object' && source !== null && 'value' in source
+    ? source.value
+    : source
 }

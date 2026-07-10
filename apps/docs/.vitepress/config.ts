@@ -51,6 +51,7 @@ export default defineConfig({
             text: '开始使用',
             items: [
               { text: '安装指南', link: '/guide/installation' },
+              { text: 'shadcn 模式', link: '/guide/shadcn-mode' },
               { text: '主题配置', link: '/guide/theme' },
               { text: '色彩系统', link: '/guide/colors' },
               { text: '国际化配置', link: '/guide/i18n' }
@@ -185,6 +186,7 @@ export default defineConfig({
             text: 'Getting Started',
             items: [
               { text: 'Installation', link: '/en/guide/installation' },
+              { text: 'shadcn Mode', link: '/en/guide/shadcn-mode' },
               { text: 'Theme', link: '/en/guide/theme' },
               { text: 'Color System', link: '/en/guide/colors' },
               { text: 'Internationalization', link: '/en/guide/i18n' }

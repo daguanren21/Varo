@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, watch, type PropType, type StyleValue } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch, type PropType, type StyleValue } from 'vue'
 import type { ImageDimension, ImageFit } from './types'
 
 export type * from './types'
@@ -64,8 +64,8 @@ export const ImageRoot = defineComponent({
   },
   emits: ['load', 'error', 'click'],
   setup(props, { attrs, emit, slots }) {
-    const loading = ref(Boolean(props.src))
-    const failed = ref(false)
+    const loading = shallowRef(Boolean(props.src))
+    const failed = shallowRef(false)
     const rootStyle = computed(() => ({
       width: normalizeDimension(props.width),
       height: normalizeDimension(props.height),

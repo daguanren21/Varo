@@ -28,6 +28,7 @@ import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
+import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import './custom.css'
 
 const docsTheme = createTheme({
@@ -46,6 +47,7 @@ const theme: Theme = {
     app.component('InteractivePreview', InteractivePreview)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
+    app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)
     app.component('VCalendar', VCalendar)
     app.component('VCalendarCard', VCalendarCard)
     app.component('VCascader', VCascader)

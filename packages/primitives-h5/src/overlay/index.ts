@@ -1,6 +1,7 @@
 import { computed, defineComponent, h, onBeforeUnmount, toRef, watch, type PropType, type StyleValue } from 'vue'
 import { useBodyScrollLock, useOverlayRoot } from '@varo/primitives-core'
 import { vueReactiveRuntime } from '../vue-runtime'
+import { usePropPresence } from '../vue-control'
 import type { OverlayDimension } from './types'
 
 export type * from './types'
@@ -41,7 +42,9 @@ export const OverlayRoot = defineComponent({
   },
   emits: ['update:visible', 'visibleChange', 'close', 'click'],
   setup(props, { attrs, emit, slots }) {
+    const visibleControlled = usePropPresence('visible')
     const overlay = useOverlayRoot({
+      visibleControlled,
       runtime: vueReactiveRuntime,
       defaultVisible: props.defaultVisible,
       visible: toRef(props, 'visible'),

@@ -70,6 +70,23 @@ describe('ui-h5 advanced form controls', () => {
     })
   })
 
+  it('hydrates cascader selections from controlled values', async () => {
+    const wrapper = mount(VCascader, {
+      props: {
+        options: cityOptions,
+        value: ['zhejiang', 'hangzhou'],
+        visible: true
+      }
+    })
+
+    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Zhejiang', 'Hangzhou'])
+
+    await wrapper.setProps({ value: ['jiangsu'] })
+
+    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Jiangsu'])
+    expect(wrapper.findAll('.varo-cascader__option').map((item) => item.text())).toEqual(['Nanjing'])
+  })
+
   it('selects calendar card day and popup calendar confirm', async () => {
     const onCardUpdate = vi.fn()
     const onConfirm = vi.fn()

@@ -4,6 +4,7 @@ export interface FieldRootOptions {
   runtime?: ReactiveRuntime
   defaultValue?: string
   value?: Ref<string | undefined>
+  valueControlled?: Ref<boolean | undefined>
   disabled?: Ref<boolean | undefined>
   invalid?: Ref<boolean | undefined>
   onValueChange?: (value: string) => void

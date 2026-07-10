@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, watch, type PropType } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
 import { VCalendarCard } from './calendar'
 import { normalizeMonth } from './date-utils'
 
@@ -21,7 +21,7 @@ export const VDatePicker = defineComponent({
   },
   emits: ['update:value', 'update:visible', 'confirm', 'change'],
   setup(props, { emit }) {
-    const selected = ref(props.value)
+    const selected = shallowRef(props.value)
     const currentMonth = computed(() => props.month ?? normalizeMonth(props.value))
 
     watch(

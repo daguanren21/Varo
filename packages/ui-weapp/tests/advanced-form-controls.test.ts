@@ -51,6 +51,29 @@ describe('ui-weapp advanced form controls', () => {
     expect(dateConfirm).toHaveBeenCalledWith('2026-05-20')
   })
 
+  it('hydrates cascader selections from controlled values', async () => {
+    const wrapper = mount(VCascader, {
+      props: {
+        options: [
+          {
+            label: 'Zhejiang',
+            value: 'zhejiang',
+            children: [{ label: 'Hangzhou', value: 'hangzhou' }]
+          }
+        ],
+        value: ['zhejiang', 'hangzhou'],
+        visible: true
+      }
+    })
+
+    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Zhejiang', 'Hangzhou'])
+
+    await wrapper.setProps({ value: ['zhejiang'] })
+
+    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Zhejiang'])
+    expect(wrapper.findAll('.varo-cascader__option').map((item) => item.text())).toEqual(['Hangzhou'])
+  })
+
   it('updates calendar card, number keyboard, password, and uploader', async () => {
     const calendarUpdate = vi.fn()
     const keyboardInput = vi.fn()

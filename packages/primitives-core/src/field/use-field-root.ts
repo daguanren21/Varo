@@ -5,6 +5,7 @@ import type { FieldRootOptions, UseFieldRootResult } from './types'
 export function useFieldRoot(options: FieldRootOptions = {}): UseFieldRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
   const valueState = useControllableState({
+    controlled: options.valueControlled,
     runtime,
     defaultValue: options.defaultValue ?? '',
     value: options.value,

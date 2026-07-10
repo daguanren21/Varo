@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, inject, provide, ref, type InjectionKey, type PropType, type StyleValue } from 'vue'
+import { computed, defineComponent, h, inject, provide, shallowRef, type InjectionKey, type PropType, type StyleValue } from 'vue'
 
 export interface MenuOption {
   text: string
@@ -29,7 +29,7 @@ export const VMenu = defineComponent({
   },
   emits: ['update:activeName', 'open', 'close'],
   setup(props, { attrs, emit, slots }) {
-    const localActive = ref<string | number | undefined>(props.defaultActiveName)
+    const localActive = shallowRef<string | number | undefined>(props.defaultActiveName)
     const current = computed(() => props.activeName ?? localActive.value)
 
     function setActive(name: string | number | undefined) {

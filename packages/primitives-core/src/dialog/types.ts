@@ -4,6 +4,7 @@ export interface DialogRootOptions {
   runtime?: ReactiveRuntime
   defaultOpen?: boolean
   open?: Ref<boolean | undefined>
+  openControlled?: Ref<boolean | undefined>
   disabled?: Ref<boolean | undefined>
   onOpenChange?: (open: boolean) => void
 }

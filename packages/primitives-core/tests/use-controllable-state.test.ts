@@ -27,4 +27,28 @@ describe('useControllableState', () => {
     expect(onUpdate).toHaveBeenCalledWith(true)
     expect(state.current.value).toBe(false)
   })
+
+  it('treats a provided value ref as controlled even when the value is undefined', () => {
+    const value = ref<boolean | undefined>(undefined)
+    const onUpdate = vi.fn()
+    const state = useControllableState<boolean | undefined>({
+      defaultValue: false,
+      value,
+      onUpdate
+    })
+
+    expect(state.isControlled.value).toBe(true)
+    expect(state.current.value).toBeUndefined()
+
+    state.current.value = true
+
+    expect(onUpdate).toHaveBeenCalledWith(true)
+    expect(state.current.value).toBeUndefined()
+
+    value.value = true
+    expect(state.current.value).toBe(true)
+
+    value.value = undefined
+    expect(state.current.value).toBeUndefined()
+  })
 })

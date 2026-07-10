@@ -5,6 +5,7 @@ import type { OverlayRootOptions, UseOverlayRootResult } from './types'
 export function useOverlayRoot(options: OverlayRootOptions = {}): UseOverlayRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
   const visibleState = useControllableState({
+    controlled: options.visibleControlled,
     runtime,
     defaultValue: options.defaultVisible ?? false,
     value: options.visible,

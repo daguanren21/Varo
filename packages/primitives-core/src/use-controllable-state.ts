@@ -1,6 +1,7 @@
 import { resolveReactiveRuntime, type ReactiveRuntime, type Ref } from './reactive'
 
 export interface UseControllableStateOptions<T> {
+  controlled?: boolean | Ref<boolean | undefined>
   runtime?: ReactiveRuntime
   defaultValue: T
   value?: Ref<T | undefined>
@@ -10,7 +11,17 @@ export interface UseControllableStateOptions<T> {
 export function useControllableState<T>(options: UseControllableStateOptions<T>) {
   const runtime = resolveReactiveRuntime(options.runtime)
   const uncontrolled = runtime.ref(options.defaultValue) as Ref<T>
-  const isControlled = runtime.computed(() => options.value?.value !== undefined)
+  const isControlled = runtime.computed(() => {
+    if (typeof options.controlled === 'boolean') {
+      return options.controlled
+    }
+
+    if (options.controlled) {
+      return Boolean(options.controlled.value)
+    }
+
+    return options.value !== undefined
+  })
 
   const current = runtime.computed<T>({
     get() {

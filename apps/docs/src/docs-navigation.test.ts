@@ -43,9 +43,81 @@ describe('docs navigation', () => {
     const config = readFileSync(configPath, 'utf8')
     const primitiveZh = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
     const primitiveEn = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
+    const primitiveDemo = readFileSync(resolve(docsRoot, 'src/components/PrimitiveInteractionDemo.vue'), 'utf8')
 
     expect(config).toContain("{ text: 'Primitives', link: '/primitives/' }")
     expect(config).toContain("{ text: 'Primitives', link: '/en/primitives/' }")
+    expect(primitiveZh).toContain('<PrimitiveInteractionDemo locale="zh" />')
+    expect(primitiveEn).toContain('<PrimitiveInteractionDemo locale="en" />')
+    ;[
+      'ButtonRoot',
+      'InputRoot',
+      'DialogRoot',
+      'OverlayRoot',
+      'PopupRoot',
+      'SelectRoot',
+      'SelectTrigger',
+      'SelectValue',
+      'SelectContent',
+      'SelectItem',
+      'CheckboxRoot',
+      'CheckboxIndicator',
+      'RadioGroup',
+      'RadioItem',
+      'RadioIndicator',
+      'SwitchRoot',
+      'SwitchThumb',
+      'TabsRoot',
+      'TabsList',
+      'TabsTrigger',
+      'TabsContent',
+      'CollapsibleRoot',
+      'CollapsibleTrigger',
+      'CollapsibleContent',
+      'AccordionRoot',
+      'AccordionItem',
+      'AccordionTrigger',
+      'AccordionContent',
+      'PopoverRoot',
+      'PopoverTrigger',
+      'PopoverContent',
+      'PopoverClose',
+      'StickyRoot'
+    ].forEach((primitive) => {
+      expect(primitiveDemo).toContain(primitive)
+      expect(primitiveZh).toContain(primitive)
+      expect(primitiveEn).toContain(primitive)
+    })
+    expect(primitiveZh).toContain('Reka-style anatomy')
+    expect(primitiveZh).toContain('SelectRoot / SelectTrigger / SelectValue / SelectContent / SelectItem')
+    expect(primitiveZh).toContain('data-state')
+    expect(primitiveZh).toContain('data-placeholder')
+    expect(primitiveEn).toContain('Reka-style anatomy')
+    expect(primitiveEn).toContain('SelectRoot / SelectTrigger / SelectValue / SelectContent / SelectItem')
+    expect(primitiveEn).toContain('data-state')
+    expect(primitiveEn).toContain('data-placeholder')
+    expect(primitiveZh).toContain('CheckboxRoot / CheckboxIndicator')
+    expect(primitiveZh).toContain('RadioGroup / RadioItem / RadioIndicator')
+    expect(primitiveZh).toContain('SwitchRoot / SwitchThumb')
+    expect(primitiveZh).toContain('TabsRoot / TabsList / TabsTrigger / TabsContent')
+    expect(primitiveZh).toContain('同一 TabsRoot 内的 value 必须唯一')
+    expect(primitiveZh).toContain('ArrowLeft / ArrowRight / ArrowUp / ArrowDown / Home / End')
+    expect(primitiveEn).toContain('CheckboxRoot / CheckboxIndicator')
+    expect(primitiveEn).toContain('RadioGroup / RadioItem / RadioIndicator')
+    expect(primitiveEn).toContain('SwitchRoot / SwitchThumb')
+    expect(primitiveEn).toContain('TabsRoot / TabsList / TabsTrigger / TabsContent')
+    expect(primitiveEn).toContain('values must be unique within one TabsRoot')
+    expect(primitiveEn).toContain('ArrowLeft / ArrowRight / ArrowUp / ArrowDown / Home / End')
+    expect(primitiveZh).toContain('CollapsibleRoot / CollapsibleTrigger / CollapsibleContent')
+    expect(primitiveZh).toContain('AccordionRoot / AccordionItem / AccordionTrigger / AccordionContent')
+    expect(primitiveZh).toContain('PopoverRoot / PopoverTrigger / PopoverContent / PopoverClose')
+    expect(primitiveEn).toContain('CollapsibleRoot / CollapsibleTrigger / CollapsibleContent')
+    expect(primitiveEn).toContain('AccordionRoot / AccordionItem / AccordionTrigger / AccordionContent')
+    expect(primitiveEn).toContain('PopoverRoot / PopoverTrigger / PopoverContent / PopoverClose')
+    expect(primitiveZh).toContain('primitive 管行为契约')
+    expect(primitiveZh).toContain('UI wrapper 管视觉与定位')
+    expect(primitiveEn).toContain('primitives own behavior contracts')
+    expect(primitiveEn).toContain('UI wrappers own visuals and positioning')
     expect(primitiveZh).toContain('Dialog')
     expect(primitiveZh).toContain('Overlay')
     expect(primitiveZh).toContain('Popup')
@@ -274,5 +346,40 @@ describe('docs navigation', () => {
     expect(selectZh).toContain('分组、远程搜索、异步分页属于二次封装组件能力')
     expect(selectEn).toContain('uses `picker` mode by default')
     expect(selectEn).toContain('Grouped options, remote search, and async paging belong in secondary wrappers')
+  })
+
+  it('documents shadcn-style install and secondary business wrapping', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const installationZh = readFileSync(resolve(docsRoot, 'guide/installation.md'), 'utf8')
+    const installationEn = readFileSync(resolve(docsRoot, 'en/guide/installation.md'), 'utf8')
+    const shadcnZh = readFileSync(resolve(docsRoot, 'guide/shadcn-mode.md'), 'utf8')
+    const shadcnEn = readFileSync(resolve(docsRoot, 'en/guide/shadcn-mode.md'), 'utf8')
+
+    expect(config).toContain("{ text: 'shadcn 模式', link: '/guide/shadcn-mode' }")
+    expect(config).toContain("{ text: 'shadcn Mode', link: '/en/guide/shadcn-mode' }")
+    expect(installationZh).toContain('pnpm dlx @varo/cli add button select')
+    expect(installationZh).toContain('pnpm dlx @varo/cli add blocks/profile-edit')
+    expect(installationZh).toContain('pnpm dlx create-weapp-vite@latest varo-app')
+    expect(installationZh).toContain('weapp-vite@6.17.8')
+    expect(installationZh).toContain('wevu@6.17.8')
+    expect(installationZh).toContain('weapp-tailwindcss@^5.1.8')
+    expect(installationEn).toContain('pnpm dlx @varo/cli add button select')
+    expect(installationEn).toContain('pnpm dlx @varo/cli add blocks/profile-edit')
+    expect(installationEn).toContain('pnpm dlx create-weapp-vite@latest varo-app')
+    expect(installationEn).toContain('weapp-vite@6.17.8')
+    expect(installationEn).toContain('wevu@6.17.8')
+    expect(installationEn).toContain('weapp-tailwindcss@^5.1.8')
+    expect(shadcnZh).toContain('src/components/ui/select.ts')
+    expect(shadcnZh).toContain('src/components/biz/user-select.ts')
+    expect(shadcnZh).toContain('export const UserSelect')
+    expect(shadcnZh).toContain('远程搜索、分组、分页')
+    expect(shadcnZh).toContain('pnpm dlx @varo/cli add --force button select')
+    expect(shadcnZh).toContain('默认不会覆盖')
+    expect(shadcnEn).toContain('src/components/ui/select.ts')
+    expect(shadcnEn).toContain('src/components/biz/user-select.ts')
+    expect(shadcnEn).toContain('export const UserSelect')
+    expect(shadcnEn).toContain('remote search, grouping, and pagination')
+    expect(shadcnEn).toContain('pnpm dlx @varo/cli add --force button select')
+    expect(shadcnEn).toContain('does not overwrite')
   })
 })

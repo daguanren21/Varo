@@ -1,10 +1,25 @@
-import { computed, defineComponent, h, ref, type PropType } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
 
 export interface CascaderOption {
   children?: CascaderOption[]
   disabled?: boolean
   label: string
   value: string | number
+}
+
+function resolveSelectedPath(options: CascaderOption[], value: Array<string | number>) {
+  const path: CascaderOption[] = []
+  let levelOptions = options
+
+  for (const itemValue of value) {
+    const option = levelOptions.find((item) => item.value === itemValue)
+    if (!option) break
+
+    path.push(option)
+    levelOptions = option.children ?? []
+  }
+
+  return path
 }
 
 export const VCascader = defineComponent({
@@ -34,16 +49,26 @@ export const VCascader = defineComponent({
   },
   emits: ['update:value', 'update:visible', 'change', 'confirm', 'cancel'],
   setup(props, { emit }) {
-    const selectedPath = ref<CascaderOption[]>([])
+    const selectedPath = shallowRef<CascaderOption[]>([])
     const currentOptions = computed(() => selectedPath.value.at(-1)?.children ?? props.options)
+
+    watch(
+      [() => props.value, () => props.options],
+      () => {
+        selectedPath.value = resolveSelectedPath(props.options, props.value)
+      },
+      { immediate: true }
+    )
 
     function select(option: CascaderOption) {
       if (option.disabled) return
       const currentLevel = selectedPath.value.length
-      selectedPath.value = [...selectedPath.value.slice(0, currentLevel), option]
-      const value = selectedPath.value.map((item) => item.value)
+      const nextPath = [...selectedPath.value.slice(0, currentLevel), option]
+      const value = nextPath.map((item) => item.value)
+
+      selectedPath.value = nextPath
       emit('update:value', value)
-      emit('change', { labels: selectedPath.value.map((item) => item.label), options: selectedPath.value, value })
+      emit('change', { labels: nextPath.map((item) => item.label), options: nextPath, value })
     }
 
     function confirm() {
@@ -66,7 +91,7 @@ export const VCascader = defineComponent({
             h(
               'div',
               { class: 'varo-cascader__tabs' },
-              selectedPath.value.map((item) => h('span', { class: 'varo-cascader__tab' }, item.label))
+              selectedPath.value.map((item) => h('span', { key: item.value, class: 'varo-cascader__tab' }, item.label))
             ),
             h(
               'div',
@@ -75,6 +100,7 @@ export const VCascader = defineComponent({
                 h(
                   'button',
                   {
+                    key: option.value,
                     class: 'varo-cascader__option',
                     type: 'button',
                     disabled: option.disabled,

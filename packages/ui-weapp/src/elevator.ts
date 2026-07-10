@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, type PropType, type StyleValue } from 'vue'
+import { computed, defineComponent, h, shallowRef, type PropType, type StyleValue } from 'vue'
 
 export interface ElevatorGroup {
   title: string
@@ -20,7 +20,7 @@ export const VElevator = defineComponent({
   },
   emits: ['update:activeIndex', 'change', 'clickItem'],
   setup(props, { attrs, emit }) {
-    const localActive = ref(props.defaultActiveIndex ?? props.indexes[0]?.title ?? '')
+    const localActive = shallowRef(props.defaultActiveIndex ?? props.indexes[0]?.title ?? '')
     const current = computed(() => props.activeIndex ?? localActive.value)
     const groupRefs = new Map<string, HTMLElement>()
 

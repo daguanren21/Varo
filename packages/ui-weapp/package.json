@@ -42,9 +42,9 @@
         "@varo/primitives-weapp": "workspace:*",
         "@varo/shared": "workspace:*",
         "@varo/theme": "workspace:*",
-        "vue": "^3.5.35"
+        "vue": "^3.5.39"
     },
     "peerDependencies": {
-        "wevu": "6.16.43"
+        "wevu": "^6.17.8"
     }
 }

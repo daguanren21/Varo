@@ -1,4 +1,4 @@
-import { computed, defineComponent, h, ref, watch, type PropType } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
 
 export interface PickerOption {
   disabled?: boolean
@@ -33,7 +33,7 @@ export const VPicker = defineComponent({
   },
   emits: ['update:value', 'update:visible', 'confirm', 'cancel', 'change'],
   setup(props, { emit }) {
-    const selectedValue = ref<string | number | undefined>(props.value ?? props.columns[0]?.value)
+    const selectedValue = shallowRef<string | number | undefined>(props.value ?? props.columns[0]?.value)
     const selectedOption = computed(() => props.columns.find((item) => item.value === selectedValue.value))
 
     watch(

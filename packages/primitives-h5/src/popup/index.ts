@@ -11,6 +11,7 @@ import {
 } from 'vue'
 import { useBodyScrollLock, usePopupRoot, type PopupCloseIconPosition, type PopupPosition } from '@varo/primitives-core'
 import { vueReactiveRuntime } from '../vue-runtime'
+import { usePropPresence } from '../vue-control'
 import type { PopupDimension } from './types'
 
 export type * from './types'
@@ -87,7 +88,9 @@ export const PopupRoot = defineComponent({
   },
   emits: ['update:visible', 'visibleChange', 'close', 'clickOverlay'],
   setup(props, { attrs, emit, slots }) {
+    const visibleControlled = usePropPresence('visible')
     const popup = usePopupRoot({
+      visibleControlled,
       runtime: vueReactiveRuntime,
       defaultVisible: props.defaultVisible,
       visible: toRef(props, 'visible'),
