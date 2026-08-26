@@ -1,0 +1,26 @@
+{
+  "name": "range",
+  "type": "component",
+  "title": "VRange",
+  "description": "Single or dual-thumb range control with bounded numeric values.",
+  "exportName": "VRange",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "@varo/theme",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/range/range.ts",
+      "to": "src/components/ui/range.ts"
+    }
+  ],
+  "docs": "/components/range"
+}

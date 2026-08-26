@@ -14,6 +14,7 @@ type ButtonNativeType = 'button' | 'submit' | 'reset'
 
 export const VButton = defineComponent({
   name: 'VButton',
+  inheritAttrs: false,
   props: {
     disabled: Boolean,
     loading: Boolean,

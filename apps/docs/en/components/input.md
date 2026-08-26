@@ -1,5 +1,9 @@
 # Input
 
+## Demo
+
+<PlatformTabsDemo example="input" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -60,10 +64,6 @@ const digits = (value: string) => value.replace(/\D/g, '')
   <VInput invalid error-message="Enter a valid value" />
 </template>
 ```
-
-## Cross-Platform Demo
-
-<PlatformTabsDemo example="input" locale="en" />
 
 ## Props
 

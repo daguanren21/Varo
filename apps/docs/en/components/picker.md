@@ -1,6 +1,6 @@
 # Picker
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="picker" locale="en" />
 

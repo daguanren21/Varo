@@ -11,7 +11,11 @@ import {
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { installRegistryItems, resolveRegistryItems } from '../src/index'
+import {
+  installRegistryItems,
+  resolveRegistryItems,
+  type RegistryTarget
+} from '../src/index'
 
 const workspaceRoot = resolve(__dirname, '../../..')
 const registryRoot = resolve(workspaceRoot, 'registry')
@@ -30,6 +34,8 @@ function writeRegistryItem(
   options: {
     from?: string
     registryDependencies?: string[]
+    targetDependencies?: Partial<Record<RegistryTarget, string[]>>
+    targets?: RegistryTarget[]
     to?: string
   } = {}
 ) {
@@ -37,6 +43,7 @@ function writeRegistryItem(
   const itemName = itemPath.split('/').at(-1)!
   const itemRoot = join(registryRoot, itemPath)
   const source = options.from ?? `registry/${itemPath}/${itemName}.ts`
+  const targets = options.targets ?? ['h5', 'weapp-vite']
 
   mkdirSync(itemRoot, { recursive: true })
   writeFileSync(
@@ -44,10 +51,15 @@ function writeRegistryItem(
     JSON.stringify({
       description: `${itemName} fixture`,
       docs: `/components/${itemName}`,
-      files: [{ target: 'weapp-vite', from: source, to: options.to ?? `src/components/ui/${itemName}.ts` }],
+      files: targets.map((target) => ({
+        target,
+        from: source,
+        to: options.to ?? `src/components/ui/${itemName}.ts`
+      })),
       name: itemName,
       registryDependencies: options.registryDependencies ?? [],
-      targets: ['weapp-vite'],
+      targetDependencies: options.targetDependencies,
+      targets,
       title: itemName,
       type: itemPath.startsWith('blocks/') ? 'block' : 'component'
     })
@@ -60,40 +72,114 @@ function writeRegistryItem(
   return registryRoot
 }
 
-describe('varo add', () => {
-  it('resolves registry dependencies before requested blocks', () => {
-    const plan = resolveRegistryItems(['blocks/profile-edit'], { registryRoot })
+describe('varo add targets', () => {
+  it('resolves H5 dependencies and files before the requested component', () => {
+    const plan = resolveRegistryItems(['button'], { registryRoot, target: 'h5' })
 
-    expect(plan.items.map((item) => item.name)).toEqual(['select', 'profile-edit'])
+    expect(plan.target).toBe('h5')
+    expect(plan.items.map((item) => item.name)).toEqual(['base', 'cn', 'primitives', 'button'])
     expect(plan.files.map((file) => file.to)).toEqual([
-      'src/components/ui/select.ts',
-      'src/components/blocks/profile-edit.vue'
+      'src/styles/varo.css',
+      'src/lib/cn.ts',
+      'src/lib/varo-primitives.ts',
+      'src/components/ui/button.ts'
     ])
-    expect(plan.dependencies).toEqual(expect.arrayContaining(['vue']))
+    expect(plan.dependencies).toEqual(
+      expect.arrayContaining(['@varo/primitives-h5', '@varo/shared', '@varo/theme', 'clsx', 'tailwind-merge', 'vue'])
+    )
+    expect(plan.dependencies).not.toContain('@varo/primitives-weapp')
+    expect(plan.dependencies).not.toContain('@weapp-tailwindcss/merge')
   })
 
-  it('copies component and block files into a consumer project', async () => {
+  it('resolves mini-program-specific runtime and merge packages by default', () => {
+    const plan = resolveRegistryItems(['button'], { registryRoot })
+
+    expect(plan.target).toBe('weapp-vite')
+    expect(plan.dependencies).toEqual(
+      expect.arrayContaining([
+        '@varo/primitives-weapp',
+        '@varo/shared',
+        '@varo/theme',
+        '@weapp-tailwindcss/merge',
+        'clsx',
+        'wevu'
+      ])
+    )
+    expect(plan.dependencies).not.toContain('@varo/primitives-h5')
+    expect(plan.dependencies).not.toContain('tailwind-merge')
+    expect(plan.dependencies).not.toContain('vue')
+  })
+
+  it('resolves target-specific registry dependencies without copying H5 helpers into weapp', () => {
+    const h5 = resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
+    const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp-vite' })
+
+    expect(h5.items.map((item) => item.name)).toEqual(['base', 'selection', 'checkbox'])
+    expect(weapp.items.map((item) => item.name)).toEqual(['base', 'checkbox'])
+    expect(weapp.files.map((file) => file.to)).toContain('src/components/ui/v-checkbox.vue')
+    expect(weapp.files.map((file) => file.to)).not.toContain('src/components/ui/selection.ts')
+  })
+
+  it('copies target-correct component, adapter, merge helper, and styles', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
 
-    const plan = await installRegistryItems(['button', 'blocks/order-filter'], { projectRoot, registryRoot })
+    const plan = await installRegistryItems(['button'], {
+      projectRoot,
+      registryRoot,
+      target: 'h5'
+    })
 
-    expect(plan.files.map((file) => file.to)).toEqual([
-      'src/components/ui/button.ts',
-      'src/components/ui/select.ts',
-      'src/components/blocks/order-filter.vue'
-    ])
+    expect(plan.files.map((file) => file.to)).toContain('src/components/ui/button.ts')
     expect(readFileSync(join(projectRoot, 'src/components/ui/button.ts'), 'utf8')).toContain('export const VButton')
-    expect(readFileSync(join(projectRoot, 'src/components/ui/select.ts'), 'utf8')).toContain('export const VSelect')
-    expect(readFileSync(join(projectRoot, 'src/components/blocks/order-filter.vue'), 'utf8')).toContain('VSelect')
+    expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo/primitives-h5')
+    expect(readFileSync(join(projectRoot, 'src/lib/cn.ts'), 'utf8')).toContain("from 'tailwind-merge'")
+    expect(readFileSync(join(projectRoot, 'src/styles/varo.css'), 'utf8')).toContain('--varo-ui-primary')
   })
 
+  it('runs the executable with an explicit H5 target', () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const binPath = join(projectRoot, 'varo-cli.ts')
+
+    symlinkSync(resolve(workspaceRoot, 'packages/cli/src/index.ts'), binPath)
+
+    const output = execFileSync(process.execPath, [binPath, 'add', '--target', 'h5', 'button'], {
+      cwd: projectRoot,
+      encoding: 'utf8'
+    })
+
+    expect(output).toContain('Installed base, cn, primitives, button for h5')
+    expect(output).toContain('Dependencies:')
+    expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo/primitives-h5')
+  })
+
+  it('reports unsupported CLI and registry targets clearly', () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const binPath = join(projectRoot, 'varo-cli.ts')
+    symlinkSync(resolve(workspaceRoot, 'packages/cli/src/index.ts'), binPath)
+
+    expect(() =>
+      execFileSync(process.execPath, [binPath, 'add', '--target', 'native', 'button'], {
+        cwd: projectRoot,
+        encoding: 'utf8',
+        stdio: 'pipe'
+      })
+    ).toThrow(/Unsupported registry target: native/)
+
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/weapp-only', { targets: ['weapp-vite'] })
+    expect(() => resolveRegistryItems(['weapp-only'], { registryRoot: fixtureRegistry, target: 'h5' })).toThrow(
+      'Registry item components/weapp-only does not support target h5'
+    )
+  })
+})
+
+describe('varo add safety', () => {
   it('reports unknown registry items with the original request name', () => {
     expect(() => resolveRegistryItems(['components/not-found'], { registryRoot })).toThrow(
       'Unknown registry item: components/not-found'
     )
   })
 
-  it('runs through a symlinked bin entry', () => {
+  it('runs through a symlinked bin entry and only overwrites with force', () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const binPath = join(projectRoot, 'varo-cli.ts')
 
@@ -104,8 +190,8 @@ describe('varo add', () => {
       encoding: 'utf8'
     })
 
-    expect(output).toContain('Installed button')
-    const installedPath = join(projectRoot, 'src/components/ui/button.ts')
+    expect(output).toContain('Installed base, cn, primitives, button for weapp-vite')
+    const installedPath = join(projectRoot, 'src/components/ui/v-button.vue')
     expect(existsSync(installedPath)).toBe(true)
 
     writeFileSync(installedPath, 'consumer customization\n')
@@ -114,68 +200,70 @@ describe('varo add', () => {
       encoding: 'utf8'
     })
 
-    expect(forcedOutput).toContain('Installed button')
-    expect(readFileSync(installedPath, 'utf8')).toContain('export const VButton')
+    expect(forcedOutput).toContain('Installed base, cn, primitives, button for weapp-vite')
+    expect(readFileSync(installedPath, 'utf8')).toContain('<script setup lang="ts">')
   })
 
   it('rejects registry names and manifest paths outside their roots', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
-    const registryRoot = writeRegistryItem(projectRoot, 'components/source-escape', { from: '../outside.ts' })
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/source-escape', { from: '../outside.ts' })
     writeRegistryItem(projectRoot, 'components/target-escape', { to: '../outside.ts' })
     const consumerRoot = join(projectRoot, 'consumer')
     mkdirSync(consumerRoot)
 
-    expect(() => resolveRegistryItems(['blocks/../../outside'], { registryRoot })).toThrow(
+    expect(() => resolveRegistryItems(['blocks/../../outside'], { registryRoot: fixtureRegistry })).toThrow(
       'Invalid registry item name: blocks/../../outside'
     )
-    expect(() => resolveRegistryItems(['source-escape'], { registryRoot })).toThrow('outside the registry root')
+    expect(() => resolveRegistryItems(['source-escape'], { registryRoot: fixtureRegistry })).toThrow(
+      'outside the registry root'
+    )
     await expect(
-      installRegistryItems(['target-escape'], { projectRoot: consumerRoot, registryRoot })
+      installRegistryItems(['target-escape'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
     ).rejects.toThrow('outside the project root')
     expect(existsSync(join(projectRoot, 'outside.ts'))).toBe(false)
   })
 
   it('reports cyclic registry dependencies with their chain', () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
-    const registryRoot = writeRegistryItem(projectRoot, 'components/alpha', {
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', {
       registryDependencies: ['components/beta']
     })
     writeRegistryItem(projectRoot, 'components/beta', {
       registryDependencies: ['components/alpha']
     })
 
-    expect(() => resolveRegistryItems(['alpha'], { registryRoot })).toThrow(
+    expect(() => resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).toThrow(
       'Cyclic registry dependency: components/alpha -> components/beta -> components/alpha'
     )
   })
 
   it('preserves existing consumer files unless force is enabled', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
-    const registryRoot = writeRegistryItem(projectRoot, 'components/alpha')
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha')
     const consumerRoot = join(projectRoot, 'consumer')
     const targetPath = join(consumerRoot, 'src/components/ui/alpha.ts')
     mkdirSync(join(consumerRoot, 'src/components/ui'), { recursive: true })
     writeFileSync(targetPath, 'consumer customization\n')
 
-    await expect(installRegistryItems(['alpha'], { projectRoot: consumerRoot, registryRoot })).rejects.toThrow(
-      'Refusing to overwrite existing file: src/components/ui/alpha.ts'
-    )
+    await expect(
+      installRegistryItems(['alpha'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
+    ).rejects.toThrow('Refusing to overwrite existing file: src/components/ui/alpha.ts')
     expect(readFileSync(targetPath, 'utf8')).toBe('consumer customization\n')
 
-    await installRegistryItems(['alpha'], { force: true, projectRoot: consumerRoot, registryRoot })
+    await installRegistryItems(['alpha'], { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry })
     expect(readFileSync(targetPath, 'utf8')).toContain('export const alpha')
   })
 
   it('rejects registry items that target the same consumer file', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const target = 'src/components/ui/shared.ts'
-    const registryRoot = writeRegistryItem(projectRoot, 'components/alpha', { to: target })
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', { to: target })
     writeRegistryItem(projectRoot, 'components/beta', { to: target })
     const consumerRoot = join(projectRoot, 'consumer')
     mkdirSync(consumerRoot)
 
     await expect(
-      installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot })
+      installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
     ).rejects.toThrow('Registry items target the same file: src/components/ui/shared.ts')
     expect(existsSync(join(consumerRoot, target))).toBe(false)
   })

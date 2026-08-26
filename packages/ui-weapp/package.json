@@ -2,7 +2,9 @@
     "name": "@varo/ui-weapp",
     "version": "0.1.0",
     "type": "module",
-    "sideEffects": false,
+    "sideEffects": [
+        "./src/style.css"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/daguanren21/Varo.git"
@@ -11,27 +13,29 @@
         "access": "public",
         "registry": "https://registry.npmjs.org/"
     },
-    "main": "./dist/src/index.js",
-    "module": "./dist/src/index.js",
-    "types": "./dist/src/index.d.ts",
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
     "files": [
         "dist",
         "src"
     ],
     "exports": {
         ".": {
-            "types": "./dist/src/index.d.ts",
-            "import": "./dist/src/index.js"
+            "types": "./dist/index.d.mts",
+            "import": "./dist/index.mjs"
         },
+        "./style.css": "./src/style.css",
+        "./source/style.css": "./src/style.css",
         "./source": {
             "types": "./src/index.ts",
             "import": "./src/index.ts"
         }
     },
     "scripts": {
-        "build": "weapp-vite build",
+        "build": "tsdown",
         "clean": "rimraf dist",
-        "dev": "weapp-vite",
+        "dev": "tsdown --watch",
         "lint": "echo ui-weapp lint pending",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "test": "vitest run --passWithNoTests",
@@ -42,7 +46,7 @@
         "@varo/primitives-weapp": "workspace:*",
         "@varo/shared": "workspace:*",
         "@varo/theme": "workspace:*",
-        "vue": "^3.5.39"
+        "vue": "^3.5.41"
     },
     "peerDependencies": {
         "wevu": "^6.17.8"

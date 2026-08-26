@@ -1,6 +1,6 @@
 # Rate
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="rate" locale="en" />
 

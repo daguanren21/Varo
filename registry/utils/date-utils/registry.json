@@ -1,0 +1,22 @@
+{
+  "name": "date-utils",
+  "type": "util",
+  "title": "Date Utilities",
+  "description": "Portable calendar parsing, month navigation, and day generation helpers.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/utils/date-utils/date-utils.ts",
+      "to": "src/components/ui/date-utils.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/utils/date-utils/date-utils.ts",
+      "to": "src/components/ui/date-utils.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

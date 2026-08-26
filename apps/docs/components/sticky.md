@@ -1,5 +1,9 @@
 # Sticky
 
+## 演示
+
+<PlatformTabsDemo example="sticky" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -29,10 +33,6 @@
   </VSticky>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="sticky" locale="zh" />
 
 ## Props
 

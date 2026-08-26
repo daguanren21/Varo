@@ -1,5 +1,9 @@
 # Space
 
+## Demo
+
+<PlatformTabsDemo example="space" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -33,10 +37,6 @@
   </VSpace>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="space" locale="en" />
 
 ## Props
 

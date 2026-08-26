@@ -1,6 +1,6 @@
 # Calendar
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="calendar" locale="en" />
 

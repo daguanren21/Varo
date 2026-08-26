@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createTheme, VaroConfigProvider, type ThemeConfig } from '@varo/theme'
 import type { Plugin } from 'vue'
 import { VButton } from '../src/button'
@@ -34,6 +34,15 @@ describe('ui-h5 button', () => {
     expect(wrapper.attributes('data-variant')).toBe('outline')
     expect(wrapper.attributes('data-size')).toBe('lg')
     expect(wrapper.classes().join(' ')).toContain('varo-button')
+  })
+
+  it('forwards one click without duplicate fallthrough listeners', async () => {
+    const onClick = vi.fn()
+    const wrapper = mount(VButton, { global, attrs: { onClick } })
+
+    await wrapper.trigger('click')
+
+    expect(onClick).toHaveBeenCalledTimes(1)
   })
 
   it('renders a loading indicator before the button content', () => {

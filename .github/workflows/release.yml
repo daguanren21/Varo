@@ -39,6 +39,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Smoke e2e contracts
+        run: pnpm test:e2e
+
+      - name: Build
+        run: pnpm build
+
       - name: Create release pull request or version packages
         id: changesets
         uses: changesets/action@v1

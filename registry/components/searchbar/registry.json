@@ -1,0 +1,33 @@
+{
+  "name": "searchbar",
+  "type": "component",
+  "title": "VSearchbar",
+  "description": "Search input composition with clear, submit, and cancel behavior.",
+  "exportName": "VSearchbar",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "@varo/theme",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "components/input"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/searchbar/searchbar.ts",
+      "to": "src/components/ui/searchbar.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/searchbar/searchbar.ts",
+      "to": "src/components/ui/searchbar.ts"
+    }
+  ],
+  "docs": "/components/searchbar"
+}

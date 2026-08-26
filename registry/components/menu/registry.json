@@ -1,0 +1,30 @@
+{
+  "name": "menu",
+  "type": "component",
+  "title": "VMenu",
+  "description": "Action menu and menu-item controls for compact mobile command surfaces.",
+  "exportName": "VMenu",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/menu/menu.ts",
+      "to": "src/components/ui/menu.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/menu/menu.ts",
+      "to": "src/components/ui/menu.ts"
+    }
+  ],
+  "docs": "/components/menu"
+}

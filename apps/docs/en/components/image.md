@@ -1,5 +1,9 @@
 # Image
 
+## Demo
+
+<PlatformTabsDemo example="image" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -33,10 +37,6 @@
   <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="image" locale="en" />
 
 ## Props
 

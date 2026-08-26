@@ -2,6 +2,10 @@
 
 Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `VDialogOverlay`, `VDialogContent`, and `VDialogClose`.
 
+## Demo
+
+<PlatformTabsDemo example="dialog" locale="en" />
+
 ## When to use
 
 - Modal confirmations or supplemental content
@@ -20,10 +24,6 @@ Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `
     <li><code>VDialogClose</code> performs explicit close actions.</li>
   </ul>
 </div>
-
-## Cross-platform Example and Preview
-
-<PlatformTabsDemo example="dialog" locale="en" />
 
 ## Mini-program guidance
 

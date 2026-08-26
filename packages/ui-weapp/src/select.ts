@@ -219,7 +219,8 @@ export const VSelect = defineComponent({
           class: ['varo-select', `varo-select--${props.mode}`, attrs.class],
           'data-disabled': String(props.disabled),
           'data-readonly': String(props.readonly),
-          'data-multiple': String(props.multiple)
+          'data-multiple': String(props.multiple),
+          'data-open': String(visible.value)
         },
         [
           h(
@@ -228,13 +229,38 @@ export const VSelect = defineComponent({
               class: 'varo-select__trigger',
               type: 'button',
               disabled: props.disabled,
+              'aria-expanded': String(visible.value),
+              'aria-haspopup': 'listbox',
+              'data-open': String(visible.value),
               onClick: open
             },
             [
-              h('span', { class: 'varo-select__value' }, slots.value?.({ text: displayText.value }) ?? displayText.value),
-              props.clearable && selectedArray.value.length > 0 && !props.disabled && !props.readonly
-                ? h('span', { class: 'varo-select__clear', role: 'button', onClick: clear }, '×')
-                : null
+              h(
+                'span',
+                { class: 'varo-select__value' },
+                slots.value?.({ text: displayText.value }) ?? displayText.value
+              ),
+              h(
+                'span',
+                { class: 'varo-select__suffix', 'aria-hidden': 'true' },
+                [
+                  props.clearable && selectedArray.value.length > 0 && !props.disabled && !props.readonly
+                    ? h(
+                        'span',
+                        {
+                          class: 'varo-select__clear',
+                          role: 'button',
+                          onClick: clear
+                        },
+                        '×'
+                      )
+                    : null,
+                  h('span', {
+                    class: 'varo-select__arrow',
+                    'data-open': String(visible.value)
+                  })
+                ]
+              )
             ]
           ),
           renderPanel()

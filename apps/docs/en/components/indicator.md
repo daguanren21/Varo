@@ -1,5 +1,9 @@
 # Indicator
 
+## Demo
+
+<PlatformTabsDemo example="indicator" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -9,10 +13,6 @@
 </template>
 ```
 
-## Cross-platform Preview
-
-<PlatformTabsDemo example="indicator" locale="en" />
-
 ## Props
 
 | Prop | Type | Default | Description |
@@ -20,4 +20,3 @@
 | `total` | `number` | `0` | Total indicators |
 | `current` | `number` | `0` | Active index, zero-based |
 | `type` | `'dot' \| 'line'` | `'dot'` | Indicator type |
-

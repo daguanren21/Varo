@@ -1,5 +1,9 @@
 # Button
 
+## 演示
+
+<PlatformTabsDemo example="button" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -64,10 +68,6 @@
   <VButton disabled>禁用按钮</VButton>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="button" locale="zh" />
 
 ## Props
 

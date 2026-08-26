@@ -1,0 +1,30 @@
+{
+  "name": "pagination",
+  "type": "component",
+  "title": "VPagination",
+  "description": "Compact page navigation with controlled current-page state.",
+  "exportName": "VPagination",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/pagination/pagination.ts",
+      "to": "src/components/ui/pagination.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/pagination/pagination.ts",
+      "to": "src/components/ui/pagination.ts"
+    }
+  ],
+  "docs": "/components/pagination"
+}

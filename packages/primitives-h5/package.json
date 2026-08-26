@@ -56,6 +56,6 @@
     "dependencies": {
         "@varo/primitives-core": "workspace:*",
         "@varo/shared": "workspace:*",
-        "vue": "^3.5.39"
+        "vue": "^3.5.41"
     }
 }

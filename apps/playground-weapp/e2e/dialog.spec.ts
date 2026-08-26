@@ -1,36 +1,73 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const playgroundRoot = resolve(__dirname, '..')
+const readJson = <T>(path: string): T => JSON.parse(readFileSync(resolve(playgroundRoot, path), 'utf8')) as T
 
-describe('playground-weapp smoke baseline', () => {
-  it('keeps a real weapp-vite app shell and page entry', () => {
-    const pkg = readFileSync(resolve(playgroundRoot, 'package.json'), 'utf8')
-    const app = readFileSync(resolve(playgroundRoot, 'src/app.vue'), 'utf8')
-    const page = readFileSync(resolve(playgroundRoot, 'src/pages/index/index.vue'), 'utf8')
-    const project = readFileSync(resolve(playgroundRoot, 'project.config.json'), 'utf8')
+function collectFiles(directory: string, extension: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = resolve(directory, entry.name)
+    if (entry.isDirectory()) return collectFiles(path, extension)
+    return entry.name.endsWith(extension) ? [path] : []
+  })
+}
 
-    expect(pkg).toContain('"dev": "weapp-vite"')
-    expect(pkg).toContain('"build": "weapp-vite build"')
-    expect(project).toContain('miniprogramRoot')
-    expect(app).toContain('"pages": ["pages/index/index"]')
-    expect(page).toContain('VButton')
-    expect(page).toContain('VInput')
-    expect(page).toContain('VSwitch')
+describe('playground-weapp delivery contract', () => {
+  it('declares deterministic build, AI dev, typecheck, and runtime smoke commands', () => {
+    const pkg = readJson<{ scripts: Record<string, string> }>('package.json')
+    const project = readJson<{ appid: string; compileType: string; miniprogramRoot: string }>('project.config.json')
+
+    expect(pkg.scripts.build).toBe('weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs')
+    expect(pkg.scripts.dev).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite')
+    expect(pkg.scripts['dev:ai']).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite --open')
+    expect(pkg.scripts.typecheck).toBe('vue-tsc -p tsconfig.json --noEmit')
+    expect(pkg.scripts['smoke:runtime']).toBe('node e2e/runtime-smoke.mjs')
+    expect(project).toMatchObject({
+      appid: '',
+      compileType: 'miniprogram',
+      miniprogramRoot: 'devtools/build/mp-weixin/'
+    })
   })
 
-  it('produces a weapp build artifact with the index page when dist exists', () => {
-    const appJson = resolve(playgroundRoot, 'dist/build/mp-weixin/app.json')
-    const indexJs = resolve(playgroundRoot, 'dist/build/mp-weixin/pages/index/index.js')
+  it('uses Wevu as the mini-program runtime and limits Vue aliasing to tests', () => {
+    const sfcFiles = collectFiles(resolve(playgroundRoot, 'src/components'), '.vue')
+    const pageFiles = collectFiles(resolve(playgroundRoot, 'src/pages'), '.vue')
+    const featureFiles = collectFiles(resolve(playgroundRoot, 'src/features'), '.ts')
+    const viteConfig = readFileSync(resolve(playgroundRoot, 'vite.config.ts'), 'utf8')
 
-    if (!existsSync(appJson)) {
-      expect(existsSync(resolve(playgroundRoot, 'src/pages/index/index.vue'))).toBe(true)
+    ;[...sfcFiles, ...pageFiles, ...featureFiles].forEach((path) => {
+      expect(readFileSync(path, 'utf8'), path).not.toMatch(/from ['\"]vue['\"]/)
+    })
+    expect(viteConfig).toContain("wevu: 'vue'")
+    expect(viteConfig).not.toContain("vue: 'wevu'")
+  })
+
+  it('produces a compilable AI mall route when build output exists', () => {
+    const outputRoot = resolve(playgroundRoot, 'devtools/build/mp-weixin')
+    const appJsonPath = resolve(outputRoot, 'app.json')
+    if (!existsSync(appJsonPath)) {
+      expect(existsSync(resolve(playgroundRoot, 'src/pages/mall/index.vue'))).toBe(true)
       return
     }
 
-    const json = readFileSync(appJson, 'utf8')
-    expect(json).toContain('pages/index/index')
-    expect(existsSync(indexJs)).toBe(true)
+    const app = readJson<{ pages: string[] }>('devtools/build/mp-weixin/app.json')
+    const page = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/mall/index.json')
+
+    expect(app.pages[0]).toBe('pages/mall/index')
+    expect(existsSync(resolve(outputRoot, 'pages/mall/index.js'))).toBe(true)
+    expect(existsSync(resolve(outputRoot, 'pages/mall/index.wxml'))).toBe(true)
+    expect(page.usingComponents).toMatchObject({
+      MallAgentPanel: '/components/mall/MallAgentPanel',
+      MallHeader: '/components/mall/MallHeader',
+      MallProductGrid: '/components/mall/MallProductGrid'
+    })
+    Object.values(page.usingComponents)
+      .filter((componentPath) => componentPath.startsWith('/components/'))
+      .forEach((componentPath) => {
+        expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.json`))).toBe(true)
+        expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.wxml`))).toBe(true)
+        expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.js`))).toBe(true)
+      })
   })
 })

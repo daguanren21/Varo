@@ -1,0 +1,24 @@
+{
+  "name": "elevator",
+  "type": "component",
+  "title": "VElevator",
+  "description": "Indexed navigation list for quickly jumping through grouped content.",
+  "exportName": "VElevator",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/elevator/elevator.ts",
+      "to": "src/components/ui/elevator.ts"
+    }
+  ],
+  "docs": "/components/elevator"
+}

@@ -1,5 +1,9 @@
 # Grid
 
+## Demo
+
+<PlatformTabsDemo example="grid" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -35,10 +39,6 @@
   </VGrid>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="grid" locale="en" />
 
 ## Grid Props
 

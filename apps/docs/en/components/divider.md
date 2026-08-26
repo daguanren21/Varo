@@ -1,5 +1,9 @@
 # Divider
 
+## Demo
+
+<PlatformTabsDemo example="divider" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -28,10 +32,6 @@
   <span>Link</span>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="divider" locale="en" />
 
 ## Props
 

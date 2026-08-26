@@ -1,0 +1,26 @@
+{
+  "name": "cn",
+  "type": "util",
+  "title": "Class Name Merge",
+  "description": "Shadcn-compatible cn helper with target-correct Tailwind conflict resolution.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": ["clsx"],
+  "targetDependencies": {
+    "h5": ["tailwind-merge"],
+    "weapp-vite": ["@weapp-tailwindcss/merge"]
+  },
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/utils/cn/h5.ts",
+      "to": "src/lib/cn.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/utils/cn/weapp-vite.ts",
+      "to": "src/lib/cn.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

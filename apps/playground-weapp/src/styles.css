@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@layer base {
+  button {
+    line-height: inherit;
+  }
+
+  button::after {
+    border: 0;
+  }
+}

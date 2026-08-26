@@ -1,0 +1,32 @@
+{
+  "name": "rate",
+  "type": "component",
+  "title": "VRate",
+  "description": "Rating input with controlled value, count, and readonly states.",
+  "exportName": "VRate",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "@varo/theme",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/rate/rate.ts",
+      "to": "src/components/ui/rate.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/rate/rate.ts",
+      "to": "src/components/ui/rate.ts"
+    }
+  ],
+  "docs": "/components/rate"
+}

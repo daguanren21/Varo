@@ -1,5 +1,9 @@
 # Navbar 头部导航
 
+## 演示
+
+<PlatformTabsDemo example="navbar" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -7,10 +11,6 @@
   <VNavbar title="订单详情" left-text="返回" right-text="更多" left-arrow />
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="navbar" locale="zh" />
 
 ## Props
 
@@ -38,4 +38,3 @@
 | `left` | 自定义左侧区域 |
 | `title` | 自定义标题 |
 | `right` | 自定义右侧区域 |
-

@@ -1,6 +1,6 @@
 # Checkbox
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="checkbox" locale="en" />
 

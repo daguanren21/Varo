@@ -1,6 +1,6 @@
 # InputNumber 数字输入框
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="input-number" locale="zh" />
 

@@ -2,6 +2,26 @@
 
 这份指南教你如何从 Base Kit 组件沉淀一个可本地维护、可安装、可贡献的业务区块（block）。示例使用匿名的筛选区块，不包含真实 API、凭证、私有 URL 或内部需求编号。
 
+## 当前可安装 Blocks
+
+| Registry 名称 | 用途 | Targets |
+| --- | --- | --- |
+| `login-form` | 登录、记住状态、错误和加载反馈 | H5 / Weapp |
+| `profile-card` | 用户身份、状态和统计信息 | H5 / Weapp |
+| `profile-edit` | 资料编辑与城市选择 | H5 / Weapp |
+| `product-list` | 商品列表、库存、价格和加购动作 | H5 / Weapp |
+| `order-filter` | 订单状态与金额筛选 | H5 / Weapp |
+| `agent-chat` | 增量对话、推理、工具、审批与输入组合 | H5 / Weapp |
+
+```bash
+pnpm dlx @varo/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo/cli add --target h5 blocks/product-list
+pnpm dlx @varo/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo/cli add --target h5 blocks/agent-chat
+```
+
+文档展示必须来自这些真实 registry source；不得再用未导出的 `VCard`、`VBadge` 或不可编译的 JSX 字符串模拟 Block。
+
 ## 1. 先分清分层
 
 | 层 | 负责 | 不负责 |
@@ -61,7 +81,7 @@ src/components/ui/*
 安装底座组件：
 
 ```bash
-pnpm dlx @varo/cli add components/select
+pnpm dlx @varo/cli add --target weapp-vite components/select
 ```
 
 ## 4. 创建本地 block
@@ -255,7 +275,7 @@ pnpm test
 
 # 打包 CLI 后在临时目录验证安装
 pnpm --filter @varo/cli build
-pnpm dlx @varo/cli add blocks/status-filter
+pnpm dlx @varo/cli add --target weapp-vite blocks/status-filter
 ```
 
 确认：
@@ -291,8 +311,8 @@ pnpm dlx @varo/cli add blocks/status-filter
 ## 安装现有 block
 
 ```bash
-pnpm dlx @varo/cli add blocks/profile-edit
-pnpm dlx @varo/cli add blocks/order-filter
+pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo/cli add --target weapp-vite blocks/order-filter
 ```
 
 安装后：

@@ -1,0 +1,30 @@
+{
+  "name": "safe-area",
+  "type": "component",
+  "title": "VSafeArea",
+  "description": "Safe-area inset container for full-screen and bottom-action mobile layouts.",
+  "exportName": "VSafeArea",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/safe-area/safe-area.ts",
+      "to": "src/components/ui/safe-area.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/safe-area/safe-area.ts",
+      "to": "src/components/ui/safe-area.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

@@ -1,5 +1,9 @@
 # Navbar
 
+## Demo
+
+<PlatformTabsDemo example="navbar" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -7,10 +11,6 @@
   <VNavbar title="Order Detail" left-text="Back" right-text="More" left-arrow />
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="navbar" locale="en" />
 
 ## Props
 
@@ -38,4 +38,3 @@
 | `left` | Custom left area |
 | `title` | Custom title |
 | `right` | Custom right area |
-

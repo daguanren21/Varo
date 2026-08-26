@@ -1,0 +1,32 @@
+{
+  "name": "space",
+  "type": "component",
+  "title": "VSpace",
+  "description": "Consistent horizontal or vertical spacing composition.",
+  "exportName": "VSpace",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/layout-utils"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/space/space.ts",
+      "to": "src/components/ui/space.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/space/space.ts",
+      "to": "src/components/ui/space.ts"
+    }
+  ],
+  "docs": "/components/space"
+}

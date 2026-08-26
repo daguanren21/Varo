@@ -1,0 +1,24 @@
+{
+  "name": "number-keyboard",
+  "type": "component",
+  "title": "VNumberKeyboard",
+  "description": "Virtual numeric keyboard for amount, code, and decimal entry.",
+  "exportName": "VNumberKeyboard",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/number-keyboard/number-keyboard.ts",
+      "to": "src/components/ui/number-keyboard.ts"
+    }
+  ],
+  "docs": "/components/number-keyboard"
+}

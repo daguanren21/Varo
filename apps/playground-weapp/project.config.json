@@ -7,7 +7,7 @@
   "setting": {
     "bundle": false,
     "userConfirmedBundleSwitch": false,
-    "urlCheck": true,
+    "urlCheck": false,
     "scopeDataCheck": false,
     "coverView": true,
     "es6": true,
@@ -24,8 +24,8 @@
     "nodeModules": false,
     "enhance": true,
     "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
+    "useApiHook": false,
+    "useApiHostProcess": false,
     "showShadowRootInWxmlPanel": true,
     "packNpmManually": false,
     "enableEngineNative": false,
@@ -41,9 +41,9 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.5.5",
-  "appid": "touristappid",
+  "appid": "",
   "projectname": "varo-playground-weapp",
   "condition": {},
-  "miniprogramRoot": "dist/build/mp-weixin/",
-  "srcMiniprogramRoot": "dist/build/mp-weixin/"
+  "miniprogramRoot": "devtools/build/mp-weixin/",
+  "srcMiniprogramRoot": "devtools/build/mp-weixin/"
 }

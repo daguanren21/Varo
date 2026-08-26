@@ -1,0 +1,32 @@
+{
+  "name": "image",
+  "type": "component",
+  "title": "VImage",
+  "description": "Image wrapper with loading, fallback, fit, and aspect-ratio states.",
+  "exportName": "VImage",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/primitives"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/image/image.ts",
+      "to": "src/components/ui/image.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/image/weapp-vite.vue",
+      "to": "src/components/ui/v-image.vue"
+    }
+  ],
+  "docs": "/components/image"
+}

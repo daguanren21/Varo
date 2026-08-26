@@ -1,10 +1,8 @@
 # Form
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="form" locale="en" />
-
-## Dynamic Array Form
 
 <FormComponentDemo example="form-array" locale="en" />
 

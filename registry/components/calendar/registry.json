@@ -1,0 +1,25 @@
+{
+  "name": "calendar",
+  "type": "component",
+  "title": "VCalendarCard",
+  "description": "Calendar and calendar-card controls for bounded single-date selection.",
+  "exportName": "VCalendarCard",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/date-utils"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/calendar/calendar.ts",
+      "to": "src/components/ui/calendar.ts"
+    }
+  ],
+  "docs": "/components/calendar"
+}

@@ -1,0 +1,61 @@
+{
+  "version": "0.2",
+  "targets": ["h5", "weapp-vite"],
+  "summary": {
+    "components": 36,
+    "blocks": 1,
+    "surfaces": 37
+  },
+  "beautifulUi": {
+    "source": "https://www.beautifului.dev/",
+    "coverage": {
+      "Loading State": ["AgentLoading"],
+      "Thinking": ["AgentThinking", "AgentActivity"],
+      "Streaming Text": ["AgentStream", "AgentMarkdown", "AgentCitations"],
+      "Approval Card": ["AgentApproval"],
+      "Tool Chips": ["AgentToolChip", "AgentToolResult"],
+      "Task Rows": ["AgentTaskList"],
+      "Chat": ["AgentMessage", "AgentConversation", "AgentMessageScroller", "AgentChat"],
+      "Prompt Bar": ["AgentComposer", "AgentPromptSuggestions"],
+      "Recommendation Card": ["AgentRecommendation"],
+      "Context Cards": ["AgentContextCard"],
+      "Diff Table": ["AgentDiffTable"],
+      "Records Table": ["AgentRecordsTable"],
+      "Filter Table": ["AgentFilterTable"],
+      "Sidebar Nav": ["AgentSidebar"],
+      "Search": ["AgentCommandSearch"],
+      "Flowchart": ["AgentFlowchart"],
+      "Insight Cards": ["AgentInsightCard"],
+      "Code Block": ["AgentCodeBlock"],
+      "Fine-tune Card": ["AgentFineTune"],
+      "Selection Actions": ["AgentSelectionActions"]
+    }
+  },
+  "beui": {
+    "source": "https://beui.dev/llms.txt",
+    "coverage": {
+      "Message Bubble": ["AgentMessage"],
+      "Message": ["AgentMessage", "AgentConversation"],
+      "Message Scroller": ["AgentMessageScroller"],
+      "Prompt Input": ["AgentComposer", "AgentPromptSuggestions"],
+      "Todo List": ["AgentTaskList"],
+      "Code Block": ["AgentCodeBlock"],
+      "Approval Card": ["AgentApproval"],
+      "File Diff": ["AgentFileDiff"],
+      "Tool Result": ["AgentToolResult"],
+      "Streaming Response": ["AgentStream", "AgentMarkdown"],
+      "Image Generation": ["AgentImageGeneration"],
+      "Tool Approval": ["AgentToolApproval"],
+      "Citations": ["AgentCitations", "AgentSourceList"],
+      "Agent Activity": ["AgentActivity", "AgentThinking"],
+      "Agent Loading States": ["AgentLoading"],
+      "AI Sidebar": ["AgentSidebar"],
+      "Chat App": ["AgentChat", "AgentEventRenderer"]
+    }
+  },
+  "notes": [
+    "Coverage maps interaction contracts, not React or Framer Motion source code.",
+    "Mini-program implementations use WXML-compatible state and CSS motion.",
+    "Browser-only clipboard, DOM selection, and layoutId behavior is exposed through controlled events or product callbacks."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "steps",
+  "type": "component",
+  "title": "VSteps",
+  "description": "Horizontal or vertical process steps with current, completed, and clickable states.",
+  "exportName": "VSteps",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/steps/steps.ts",
+      "to": "src/components/ui/steps.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/steps/steps.ts",
+      "to": "src/components/ui/steps.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

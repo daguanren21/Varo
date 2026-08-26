@@ -1,6 +1,6 @@
 # Textarea
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="textarea" locale="en" />
 

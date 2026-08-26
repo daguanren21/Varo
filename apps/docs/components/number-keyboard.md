@@ -1,6 +1,6 @@
 # NumberKeyboard 数字键盘
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="number-keyboard" locale="zh" />
 

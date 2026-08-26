@@ -1,5 +1,9 @@
 # Overlay
 
+## 演示
+
+<PlatformTabsDemo example="overlay" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -30,10 +34,6 @@ const visible = ref(false)
   <VOverlay v-model:visible="visible" :close-on-click-overlay="false" />
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="overlay" locale="zh" />
 
 ## Props
 

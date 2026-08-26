@@ -1,0 +1,32 @@
+{
+  "name": "layout",
+  "type": "component",
+  "title": "VRow",
+  "description": "Row and column layout controls with span, offset, gutter, and alignment options.",
+  "exportName": "VRow",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/layout-utils"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/layout/layout.ts",
+      "to": "src/components/ui/layout.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/layout/layout.ts",
+      "to": "src/components/ui/layout.ts"
+    }
+  ],
+  "docs": "/components/layout"
+}

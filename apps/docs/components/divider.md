@@ -1,5 +1,9 @@
 # Divider
 
+## 演示
+
+<PlatformTabsDemo example="divider" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -28,10 +32,6 @@
   <span>链接</span>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="divider" locale="zh" />
 
 ## Props
 

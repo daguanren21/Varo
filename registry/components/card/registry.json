@@ -1,0 +1,32 @@
+{
+  "name": "card",
+  "type": "component",
+  "title": "VCard",
+  "description": "Composable card anatomy for headers, titles, descriptions, content, and actions.",
+  "exportName": "VCard",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/card/card.ts",
+      "to": "src/components/ui/card.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/card/weapp-vite.vue",
+      "to": "src/components/ui/v-card.vue"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "tabbar",
+  "type": "component",
+  "title": "VTabbar",
+  "description": "Bottom navigation bar and item controls for primary app destinations.",
+  "exportName": "VTabbar",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/tabbar/tabbar.ts",
+      "to": "src/components/ui/tabbar.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/tabbar/tabbar.ts",
+      "to": "src/components/ui/tabbar.ts"
+    }
+  ],
+  "docs": "/components/tabbar"
+}

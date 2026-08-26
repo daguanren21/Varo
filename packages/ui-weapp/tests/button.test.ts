@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createTheme, VaroConfigProvider, type ThemeConfig } from '@varo/theme'
 import type { Plugin } from 'vue'
 import { VButton } from '../src/button'
@@ -35,6 +35,15 @@ describe('ui-weapp button', () => {
     expect(loadingIcon.attributes('aria-hidden')).toBe('true')
     expect(wrapper.text()).toContain('保存')
     expect(wrapper.attributes('aria-busy')).toBe('true')
+  })
+
+  it('forwards one click without duplicate fallthrough listeners', async () => {
+    const onClick = vi.fn()
+    const wrapper = mount(VButton, { global, attrs: { onClick } })
+
+    await wrapper.trigger('click')
+
+    expect(onClick).toHaveBeenCalledTimes(1)
   })
 
   it('exposes Varo-style equivalents for Vant and NutUI button features', () => {

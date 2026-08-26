@@ -1,0 +1,24 @@
+{
+  "name": "uploader",
+  "type": "component",
+  "title": "VUploader",
+  "description": "File selection and upload-list control with progress and removal states.",
+  "exportName": "VUploader",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/uploader/uploader.ts",
+      "to": "src/components/ui/uploader.ts"
+    }
+  ],
+  "docs": "/components/uploader"
+}

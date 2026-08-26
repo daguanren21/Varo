@@ -1,0 +1,31 @@
+{
+  "name": "list",
+  "type": "component",
+  "title": "VList",
+  "description": "Incremental list loading contract adapted to IntersectionObserver and mini-program scroll-view.",
+  "exportName": "VList",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "components/loading"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/list/h5.ts",
+      "to": "src/components/ui/list.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/list/weapp-vite.ts",
+      "to": "src/components/ui/list.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

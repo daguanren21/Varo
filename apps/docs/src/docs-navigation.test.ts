@@ -7,24 +7,21 @@ const docsRoot = resolve(__dirname, '..')
 const workspaceRoot = resolve(docsRoot, '../..')
 const configPath = resolve(docsRoot, '.vitepress/config.ts')
 const baseKitPhase1Components = [
+  'avatar',
+  'badge',
   'button',
-  'cell',
-  'input',
-  'textarea',
-  'input-number',
-  'form',
+  'card',
   'checkbox',
-  'radio',
-  'switch',
+  'empty',
+  'icon',
+  'image',
+  'input',
+  'input-number',
+  'loading',
+  'progress',
   'select',
-  'picker',
-  'cascader',
-  'date-picker',
-  'overlay',
-  'popup',
-  'dialog',
-  'toast',
-  'loading'
+  'switch',
+  'tag'
 ]
 
 describe('docs navigation', () => {
@@ -39,94 +36,85 @@ describe('docs navigation', () => {
     expect(config).toContain("{ text: 'Menu 菜单', link: '/components/menu' }")
   })
 
-  it('adds a primitives entry for interactive behavior primitives only', () => {
+  it('adds a primitives catalog and dedicated pages for interactive behavior primitives', () => {
     const config = readFileSync(configPath, 'utf8')
     const primitiveZh = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
     const primitiveEn = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
-    const primitiveDemo = readFileSync(resolve(docsRoot, 'src/components/PrimitiveInteractionDemo.vue'), 'utf8')
+    const catalog = readFileSync(resolve(docsRoot, 'src/components/PrimitiveCatalog.vue'), 'utf8')
+    const example = readFileSync(resolve(docsRoot, 'src/components/PrimitiveExample.vue'), 'utf8')
+    const dedicatedPages = [
+      'checkbox',
+      'radio-group',
+      'switch',
+      'tabs',
+      'select',
+      'collapsible',
+      'accordion',
+      'popover'
+    ]
 
     expect(config).toContain("{ text: 'Primitives', link: '/primitives/' }")
     expect(config).toContain("{ text: 'Primitives', link: '/en/primitives/' }")
-    expect(primitiveZh).toContain('<PrimitiveInteractionDemo locale="zh" />')
-    expect(primitiveEn).toContain('<PrimitiveInteractionDemo locale="en" />')
-    ;[
-      'ButtonRoot',
-      'InputRoot',
-      'DialogRoot',
-      'OverlayRoot',
-      'PopupRoot',
-      'SelectRoot',
-      'SelectTrigger',
-      'SelectValue',
-      'SelectContent',
-      'SelectItem',
-      'CheckboxRoot',
-      'CheckboxIndicator',
-      'RadioGroup',
-      'RadioItem',
-      'RadioIndicator',
-      'SwitchRoot',
-      'SwitchThumb',
-      'TabsRoot',
-      'TabsList',
-      'TabsTrigger',
-      'TabsContent',
-      'CollapsibleRoot',
-      'CollapsibleTrigger',
-      'CollapsibleContent',
-      'AccordionRoot',
-      'AccordionItem',
-      'AccordionTrigger',
-      'AccordionContent',
-      'PopoverRoot',
-      'PopoverTrigger',
-      'PopoverContent',
-      'PopoverClose',
-      'StickyRoot'
-    ].forEach((primitive) => {
-      expect(primitiveDemo).toContain(primitive)
-      expect(primitiveZh).toContain(primitive)
-      expect(primitiveEn).toContain(primitive)
+    expect(config).toContain("{ text: '总览', link: '/primitives/' }")
+    expect(config).toContain("{ text: 'Overview', link: '/en/primitives/' }")
+    expect(primitiveZh).toContain('<PrimitiveCatalog locale="zh" />')
+    expect(primitiveEn).toContain('<PrimitiveCatalog locale="en" />')
+    expect(primitiveZh).not.toContain('<PrimitiveInteractionDemo')
+    expect(primitiveEn).not.toContain('<PrimitiveInteractionDemo')
+    expect(primitiveZh).not.toContain('Reka-style anatomy')
+    expect(primitiveEn).not.toContain('Reka-style anatomy')
+    expect(catalog).toContain("title: 'Checkbox'")
+    expect(catalog).toContain("href: '/primitives/checkbox'")
+    expect(catalog).toContain("href: '/en/primitives/popover'")
+    expect(example).toContain("name: PrimitiveExampleName")
+    expect(example).toContain('resolvePrimitiveExample')
+
+    dedicatedPages.forEach((page) => {
+      expect(config).toContain(`/primitives/${page}`)
+      expect(config).toContain(`/en/primitives/${page}`)
+      expect(existsSync(resolve(docsRoot, `primitives/${page}.md`))).toBe(true)
+      expect(existsSync(resolve(docsRoot, `en/primitives/${page}.md`))).toBe(true)
+      expect(readFileSync(resolve(docsRoot, `primitives/${page}.md`), 'utf8')).toContain(
+        `<PrimitiveExample name="${page}" locale="zh" />`
+      )
+      expect(readFileSync(resolve(docsRoot, `en/primitives/${page}.md`), 'utf8')).toContain(
+        `<PrimitiveExample name="${page}" locale="en" />`
+      )
     })
-    expect(primitiveZh).toContain('Reka-style anatomy')
-    expect(primitiveZh).toContain('SelectRoot / SelectTrigger / SelectValue / SelectContent / SelectItem')
-    expect(primitiveZh).toContain('data-state')
-    expect(primitiveZh).toContain('data-placeholder')
-    expect(primitiveEn).toContain('Reka-style anatomy')
-    expect(primitiveEn).toContain('SelectRoot / SelectTrigger / SelectValue / SelectContent / SelectItem')
-    expect(primitiveEn).toContain('data-state')
-    expect(primitiveEn).toContain('data-placeholder')
-    expect(primitiveZh).toContain('CheckboxRoot / CheckboxIndicator')
-    expect(primitiveZh).toContain('RadioGroup / RadioItem / RadioIndicator')
-    expect(primitiveZh).toContain('SwitchRoot / SwitchThumb')
-    expect(primitiveZh).toContain('TabsRoot / TabsList / TabsTrigger / TabsContent')
-    expect(primitiveZh).toContain('同一 TabsRoot 内的 value 必须唯一')
-    expect(primitiveZh).toContain('ArrowLeft / ArrowRight / ArrowUp / ArrowDown / Home / End')
-    expect(primitiveEn).toContain('CheckboxRoot / CheckboxIndicator')
-    expect(primitiveEn).toContain('RadioGroup / RadioItem / RadioIndicator')
-    expect(primitiveEn).toContain('SwitchRoot / SwitchThumb')
-    expect(primitiveEn).toContain('TabsRoot / TabsList / TabsTrigger / TabsContent')
-    expect(primitiveEn).toContain('values must be unique within one TabsRoot')
-    expect(primitiveEn).toContain('ArrowLeft / ArrowRight / ArrowUp / ArrowDown / Home / End')
-    expect(primitiveZh).toContain('CollapsibleRoot / CollapsibleTrigger / CollapsibleContent')
-    expect(primitiveZh).toContain('AccordionRoot / AccordionItem / AccordionTrigger / AccordionContent')
-    expect(primitiveZh).toContain('PopoverRoot / PopoverTrigger / PopoverContent / PopoverClose')
-    expect(primitiveEn).toContain('CollapsibleRoot / CollapsibleTrigger / CollapsibleContent')
-    expect(primitiveEn).toContain('AccordionRoot / AccordionItem / AccordionTrigger / AccordionContent')
-    expect(primitiveEn).toContain('PopoverRoot / PopoverTrigger / PopoverContent / PopoverClose')
-    expect(primitiveZh).toContain('primitive 管行为契约')
-    expect(primitiveZh).toContain('UI wrapper 管视觉与定位')
-    expect(primitiveEn).toContain('primitives own behavior contracts')
-    expect(primitiveEn).toContain('UI wrappers own visuals and positioning')
-    expect(primitiveZh).toContain('Dialog')
-    expect(primitiveZh).toContain('Overlay')
-    expect(primitiveZh).toContain('Popup')
-    expect(primitiveZh).toContain('Sticky')
+
+    ;[
+      'CheckboxRoot / CheckboxIndicator',
+      'RadioGroup / RadioItem / RadioIndicator',
+      'SwitchRoot / SwitchThumb',
+      'TabsRoot / TabsList / TabsTrigger / TabsContent',
+      'SelectRoot / Trigger / Value / Content / Item',
+      'CollapsibleRoot / Trigger / Content',
+      'AccordionRoot / Item / Trigger / Content',
+      'PopoverRoot / Trigger / Content / Close'
+    ].forEach((parts) => {
+      expect(catalog).toContain(parts)
+    })
+
+    const checkboxZh = readFileSync(resolve(docsRoot, 'primitives/checkbox.md'), 'utf8')
+    const selectZh = readFileSync(resolve(docsRoot, 'primitives/select.md'), 'utf8')
+    expect(checkboxZh).toContain('CheckboxRoot')
+    expect(checkboxZh).toContain('CheckboxIndicator')
+    expect(selectZh).toContain('SelectTrigger')
+    expect(selectZh).toContain('SelectValue')
+
+    expect(primitiveZh).toContain('## 产品边界')
+    expect(primitiveZh).toContain('**primitive** 管行为契约')
+    expect(primitiveZh).toContain('**UI wrapper** 管视觉与定位')
+    expect(primitiveZh).toContain('同一 `TabsRoot` / `AccordionRoot` 内的 value 必须唯一')
+    expect(primitiveEn).toContain('## Product boundaries')
+    expect(primitiveEn).toContain('**Primitives** own behavior contracts')
+    expect(primitiveEn).toContain('**UI wrappers** own visuals and positioning')
+    expect(primitiveEn).toContain('Values inside one `TabsRoot` / `AccordionRoot` must stay unique')
     expect(primitiveZh).not.toContain('Divider')
     expect(primitiveZh).not.toContain('Grid')
     expect(primitiveZh).not.toContain('Layout')
     expect(primitiveZh).not.toContain('Space')
-    expect(primitiveEn).toContain('interactive or behavioral primitives')
+    expect(primitiveEn).toContain('behavior building blocks')
   })
 
   it('lists form components and has matching zh/en pages', () => {
@@ -278,13 +266,13 @@ describe('docs navigation', () => {
     expect(zhPrimitive).toContain('组合顺序')
     expect(zhPrimitive).toContain('受控与非受控')
     expect(zhPrimitive).toContain('class="varo-primitive-stack"')
-    expect(enPrimitive).toContain('runtime contract')
-    expect(enPrimitive).toContain('composition order')
-    expect(enPrimitive).toContain('controlled and uncontrolled')
+    expect(enPrimitive).toContain('Runtime contract')
+    expect(enPrimitive).toContain('Composition order')
+    expect(enPrimitive).toContain('Controlled and uncontrolled')
     expect(enPrimitive).toContain('class="varo-primitive-stack"')
   })
 
-  it('documents the Base Kit Phase 1 scope and VSelect boundaries', () => {
+  it('documents the dual-target component tiers and VSelect boundaries', () => {
     const config = readFileSync(configPath, 'utf8')
     const homeZh = readFileSync(resolve(docsRoot, 'index.md'), 'utf8')
     const homeEn = readFileSync(resolve(docsRoot, 'en/index.md'), 'utf8')
@@ -292,19 +280,27 @@ describe('docs navigation', () => {
     const selectEn = readFileSync(resolve(docsRoot, 'en/components/select.md'), 'utf8')
     const phase1Manifest = JSON.parse(readFileSync(resolve(workspaceRoot, 'registry/base-kit.phase1.json'), 'utf8')) as {
       components: string[]
-      target: string
+      targets: string[]
+    }
+    const componentTiers = JSON.parse(
+      readFileSync(resolve(workspaceRoot, 'registry/component-tiers.v0.1.json'), 'utf8')
+    ) as {
+      agentUi: string[]
+      registryCatalog: { h5: number; weappSfcBaseKit: number; weappVite: number }
     }
     const requiredPages = [
       'components/select.md',
       'components/switch.md',
       'components/loading.md',
       'components/toast.md',
+      'blocks/build-your-own.md',
       'blocks/profile-edit.md',
       'blocks/order-filter.md',
       'en/components/select.md',
       'en/components/switch.md',
       'en/components/loading.md',
       'en/components/toast.md',
+      'en/blocks/build-your-own.md',
       'en/blocks/profile-edit.md',
       'en/blocks/order-filter.md'
     ]
@@ -314,12 +310,14 @@ describe('docs navigation', () => {
       '/components/switch',
       '/components/loading',
       '/components/toast',
+      '/blocks/build-your-own',
       '/blocks/profile-edit',
       '/blocks/order-filter',
       '/en/components/select',
       '/en/components/switch',
       '/en/components/loading',
       '/en/components/toast',
+      '/en/blocks/build-your-own',
       '/en/blocks/profile-edit',
       '/en/blocks/order-filter'
     ].forEach((route) => {
@@ -330,13 +328,15 @@ describe('docs navigation', () => {
       expect(existsSync(resolve(docsRoot, page))).toBe(true)
     })
 
-    expect(phase1Manifest.target).toBe('weapp-vite')
+    expect(phase1Manifest.targets).toEqual(['h5', 'weapp-vite'])
     expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
-    expect(phase1Manifest.components).toHaveLength(18)
-    expect(homeZh).toContain('Phase 1 Base Kit 包含 18 个低层组件')
-    expect(homeZh).toContain('Registry 方向以 `weapp-vite` 作为首个多端 registry 目标')
-    expect(homeEn).toContain('Phase 1 Base Kit includes 18 low-level components')
-    expect(homeEn).toContain('The multi-end registry direction starts with `weapp-vite` as the first registry target')
+    expect(phase1Manifest.components).toHaveLength(15)
+    expect(componentTiers.registryCatalog).toEqual({ h5: 56, weappSfcBaseKit: 15, weappVite: 45 })
+    expect(componentTiers.agentUi).toHaveLength(36)
+    expect(homeZh).toContain('Base Kit 包含 15 个已经通过微信开发者工具编译的原生 SFC 组件')
+    expect(homeZh).toContain('小程序已开放 45 个高共识组件族')
+    expect(homeEn).toContain('The Base Kit contains 15 native SFC components verified by WeChat DevTools')
+    expect(homeEn).toContain('mini-program registry exposes 45 high-consensus families')
     baseKitPhase1Components.forEach((component) => {
       expect(homeZh).toContain(`\`${component}\``)
       expect(homeEn).toContain(`\`${component}\``)
@@ -357,29 +357,79 @@ describe('docs navigation', () => {
 
     expect(config).toContain("{ text: 'shadcn 模式', link: '/guide/shadcn-mode' }")
     expect(config).toContain("{ text: 'shadcn Mode', link: '/en/guide/shadcn-mode' }")
-    expect(installationZh).toContain('pnpm dlx @varo/cli add button select')
-    expect(installationZh).toContain('pnpm dlx @varo/cli add blocks/profile-edit')
+    expect(installationZh).toContain('pnpm dlx @varo/cli add --target weapp-vite button select card')
+    expect(installationZh).toContain('pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit')
     expect(installationZh).toContain('pnpm dlx create-weapp-vite@latest varo-app')
     expect(installationZh).toContain('weapp-vite@6.17.8')
     expect(installationZh).toContain('wevu@6.17.8')
     expect(installationZh).toContain('weapp-tailwindcss@^5.1.8')
-    expect(installationEn).toContain('pnpm dlx @varo/cli add button select')
-    expect(installationEn).toContain('pnpm dlx @varo/cli add blocks/profile-edit')
+    expect(installationZh).toContain('@weapp-tailwindcss/merge')
+    expect(installationEn).toContain('pnpm dlx @varo/cli add --target weapp-vite button select card')
+    expect(installationEn).toContain('pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit')
     expect(installationEn).toContain('pnpm dlx create-weapp-vite@latest varo-app')
     expect(installationEn).toContain('weapp-vite@6.17.8')
     expect(installationEn).toContain('wevu@6.17.8')
     expect(installationEn).toContain('weapp-tailwindcss@^5.1.8')
-    expect(shadcnZh).toContain('src/components/ui/select.ts')
+    expect(installationEn).toContain('@weapp-tailwindcss/merge')
+    expect(shadcnZh).toContain('src/components/ui/v-button.vue')
+    expect(shadcnZh).toContain('src/components/ui/select.vue')
     expect(shadcnZh).toContain('src/components/biz/user-select.ts')
     expect(shadcnZh).toContain('export const UserSelect')
     expect(shadcnZh).toContain('远程搜索、分组、分页')
-    expect(shadcnZh).toContain('pnpm dlx @varo/cli add --force button select')
-    expect(shadcnZh).toContain('默认不会覆盖')
-    expect(shadcnEn).toContain('src/components/ui/select.ts')
+    expect(shadcnZh).toContain('pnpm dlx @varo/cli add --target weapp-vite --force button select')
+    expect(shadcnZh).toContain('components/agent-ui')
+    expect(shadcnEn).toContain('src/components/ui/v-button.vue')
+    expect(shadcnEn).toContain('src/components/ui/select.vue')
     expect(shadcnEn).toContain('src/components/biz/user-select.ts')
     expect(shadcnEn).toContain('export const UserSelect')
     expect(shadcnEn).toContain('remote search, grouping, and pagination')
-    expect(shadcnEn).toContain('pnpm dlx @varo/cli add --force button select')
-    expect(shadcnEn).toContain('does not overwrite')
+    expect(shadcnEn).toContain('pnpm dlx @varo/cli add --target weapp-vite --force button select')
+    expect(shadcnEn).toContain('components/agent-ui')
+  })
+
+  it('publishes interactive AI component docs on VitePress 2 alpha', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const theme = readFileSync(resolve(docsRoot, '.vitepress/theme/index.ts'), 'utf8')
+    const demo = readFileSync(resolve(docsRoot, 'src/components/AgentComponentsDemo.vue'), 'utf8')
+    const aiZh = readFileSync(resolve(docsRoot, 'ai/index.md'), 'utf8')
+    const aiEn = readFileSync(resolve(docsRoot, 'en/ai/index.md'), 'utf8')
+    const packageJson = JSON.parse(readFileSync(resolve(docsRoot, 'package.json'), 'utf8')) as {
+      dependencies: Record<string, string>
+    }
+
+    expect(packageJson.dependencies.vitepress).toBe('2.0.0-alpha.19')
+    expect(config).toContain("{ text: 'AI 组件', link: '/ai/' }")
+    expect(config).toContain("{ text: 'AI Components', link: '/en/ai/' }")
+    expect(theme).toContain("app.component('AgentComponentsDemo', AgentComponentsDemo)")
+    expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
+    expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
+    expect(aiZh).toContain('36 个双端 Agent 组件')
+    expect(aiEn).toContain('36 dual-target Agent components')
+    expect(aiZh).toContain('Beautiful UI / beUI 对标')
+    expect(aiEn).toContain('Beautiful UI / beUI Coverage')
+    expect(demo).toContain('AgentEventRenderer')
+    expect(demo).toContain('AgentArtifact')
+    expect(demo).toContain('AgentAttachmentList')
+
+    const slugs = [
+      'loading', 'thinking', 'markdown', 'stream', 'message', 'conversation',
+      'tool-chip', 'task-list', 'radio-group', 'approval', 'recommendation',
+      'prompt-suggestions', 'composer', 'response-actions', 'artifact', 'sources',
+      'attachments', 'event-renderer', 'message-scroller', 'code-block',
+      'file-diff', 'tool-result', 'image-generation', 'tool-approval', 'citations',
+      'activity', 'sidebar', 'context-card', 'insight-card', 'selection-actions',
+      'diff-table', 'records-table', 'filter-table', 'command-search', 'flowchart',
+      'fine-tune', 'agent-chat'
+    ]
+    slugs.forEach((slug) => {
+      const zhPage = readFileSync(resolve(docsRoot, `ai/${slug}.md`), 'utf8')
+      const enPage = readFileSync(resolve(docsRoot, `en/ai/${slug}.md`), 'utf8')
+      expect(zhPage).toContain(`<AgentComponentDemo component=\"${slug}\" locale=\"zh\" />`)
+      expect(enPage).toContain(`<AgentComponentDemo component=\"${slug}\" locale=\"en\" />`)
+      expect(zhPage).toContain('## Props')
+      expect(enPage).toContain('## Props')
+      expect(zhPage).not.toContain('@/components/agent-ui/advanced')
+      expect(enPage).not.toContain('@/components/agent-ui/advanced')
+    })
   })
 })

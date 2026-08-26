@@ -1,6 +1,6 @@
 # Uploader
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="uploader" locale="en" />
 

@@ -1,5 +1,9 @@
 # Cell
 
+## 演示
+
+<PlatformTabsDemo example="cell" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -56,10 +60,6 @@
   </VCellGroup>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="cell" locale="zh" />
 
 ## Cell Props
 

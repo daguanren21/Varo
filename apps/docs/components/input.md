@@ -1,5 +1,9 @@
 # Input
 
+## 演示
+
+<PlatformTabsDemo example="input" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -60,10 +64,6 @@ const digits = (value: string) => value.replace(/\D/g, '')
   <VInput invalid error-message="请输入有效内容" />
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="input" locale="zh" />
 
 ## Props
 

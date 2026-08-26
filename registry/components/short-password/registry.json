@@ -1,0 +1,24 @@
+{
+  "name": "short-password",
+  "type": "component",
+  "title": "VShortPassword",
+  "description": "Masked short-code input for payment and verification flows.",
+  "exportName": "VShortPassword",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/short-password/short-password.ts",
+      "to": "src/components/ui/short-password.ts"
+    }
+  ],
+  "docs": "/components/short-password"
+}

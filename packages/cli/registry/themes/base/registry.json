@@ -1,0 +1,22 @@
+{
+  "name": "base",
+  "type": "theme",
+  "title": "Varo Base Theme",
+  "description": "Cross-platform component styles and design tokens for copied Varo components.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/themes/base/h5.css",
+      "to": "src/styles/varo.css"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/themes/base/weapp-vite.css",
+      "to": "src/styles/varo.css"
+    }
+  ],
+  "docs": "/guide/theme"
+}

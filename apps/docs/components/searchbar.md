@@ -1,6 +1,6 @@
 # Searchbar 搜索栏
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="searchbar" locale="zh" />
 

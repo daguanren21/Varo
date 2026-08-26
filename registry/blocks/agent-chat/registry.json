@@ -1,0 +1,33 @@
+{
+  "name": "agent-chat",
+  "type": "block",
+  "title": "Agent Chat",
+  "description": "Production Agent conversation shell with history, incremental event rendering, approvals, response actions, and prompt composition.",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/agent-core"
+  ],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "components/agent-ui"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-chat/h5.vue",
+      "to": "src/components/blocks/agent-chat.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/agent-chat/weapp-vite.vue",
+      "to": "src/components/blocks/agent-chat.vue"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

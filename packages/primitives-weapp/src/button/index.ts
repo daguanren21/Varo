@@ -17,6 +17,7 @@ function callHandler(handler: unknown, event: Event) {
 
 export const ButtonRoot = defineComponent({
   name: 'ButtonRoot',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

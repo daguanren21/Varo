@@ -1,6 +1,6 @@
 # Range
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="range" locale="en" />
 

@@ -12,6 +12,7 @@ import {
   VFormItem,
   VInput,
   VInputNumber,
+  VLoading,
   VNumberKeyboard,
   VPicker,
   VRadio,
@@ -19,17 +20,26 @@ import {
   VRange,
   VRate,
   VSearchbar,
+  VSelect,
   VShortPassword,
+  VSwitch,
   VTextarea,
+  VToast,
   VUploader
 } from '@varo/ui-h5'
 import '@varo/ui-h5/source/style.css'
+import './tailwind.css'
+import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
+import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
+import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
+import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import './custom.css'
+import './agent-docs.css'
 
 const docsTheme = createTheme({
   primary: '#0f766e',
@@ -42,11 +52,15 @@ const docsTheme = createTheme({
 const theme: Theme = {
   extends: DefaultTheme,
   enhanceApp({ app }) {
-    app.use(VaroConfigProvider, { theme: docsTheme })
+    VaroConfigProvider.install(app, { theme: docsTheme })
+    app.component('AgentComponentsDemo', AgentComponentsDemo)
+    app.component('AgentComponentDemo', AgentComponentDemo)
     app.component('FormComponentDemo', FormComponentDemo)
     app.component('InteractivePreview', InteractivePreview)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
+    app.component('PrimitiveCatalog', PrimitiveCatalog)
+    app.component('PrimitiveExample', PrimitiveExample)
     app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)
     app.component('VCalendar', VCalendar)
     app.component('VCalendarCard', VCalendarCard)
@@ -58,6 +72,7 @@ const theme: Theme = {
     app.component('VFormItem', VFormItem)
     app.component('VInput', VInput)
     app.component('VInputNumber', VInputNumber)
+    app.component('VLoading', VLoading)
     app.component('VNumberKeyboard', VNumberKeyboard)
     app.component('VPicker', VPicker)
     app.component('VRadio', VRadio)
@@ -65,8 +80,11 @@ const theme: Theme = {
     app.component('VRange', VRange)
     app.component('VRate', VRate)
     app.component('VSearchbar', VSearchbar)
+    app.component('VSelect', VSelect)
     app.component('VShortPassword', VShortPassword)
+    app.component('VSwitch', VSwitch)
     app.component('VTextarea', VTextarea)
+    app.component('VToast', VToast)
     app.component('VUploader', VUploader)
   }
 }

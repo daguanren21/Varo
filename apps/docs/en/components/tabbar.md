@@ -1,5 +1,9 @@
 # Tabbar
 
+## Demo
+
+<PlatformTabsDemo example="tabbar" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -18,10 +22,6 @@ const active = ref('home')
   </VTabbar>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="tabbar" locale="en" />
 
 ## VTabbar Props
 
@@ -47,4 +47,3 @@ const active = ref('home')
 | `icon` | `string` | `undefined` | Icon text or icon name |
 | `badge` | `string \| number` | `undefined` | Badge |
 | `dot` | `boolean` | `false` | Show red dot |
-

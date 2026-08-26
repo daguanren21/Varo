@@ -1,0 +1,30 @@
+{
+  "name": "navbar",
+  "type": "component",
+  "title": "VNavbar",
+  "description": "Mobile navigation bar with title, leading, trailing, and fixed states.",
+  "exportName": "VNavbar",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/navbar/navbar.ts",
+      "to": "src/components/ui/navbar.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/navbar/navbar.ts",
+      "to": "src/components/ui/navbar.ts"
+    }
+  ],
+  "docs": "/components/navbar"
+}

@@ -1,5 +1,9 @@
 # FixedNav 悬浮导航
 
+## 演示
+
+<PlatformTabsDemo example="fixed-nav" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -20,10 +24,6 @@ const navList = [
 </template>
 ```
 
-## 跨端演示
-
-<PlatformTabsDemo example="fixed-nav" locale="zh" />
-
 ## Props
 
 | Prop | 类型 | 默认值 | 描述 |
@@ -41,4 +41,3 @@ const navList = [
 | `update:visible` | `boolean` | 展开状态变化 |
 | `visibleChange` | `boolean` | 展开状态变化 |
 | `select` | `(item, index)` | 点击导航项 |
-

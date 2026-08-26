@@ -1,5 +1,9 @@
 # Popup
 
+## 演示
+
+<PlatformTabsDemo example="popup" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -36,10 +40,6 @@ const visible = ref(false)
   <VPopup v-model:visible="visible" closeable close-icon-position="top-right" />
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="popup" locale="zh" />
 
 ## Props
 

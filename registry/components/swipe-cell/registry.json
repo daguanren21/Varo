@@ -1,0 +1,30 @@
+{
+  "name": "swipe-cell",
+  "type": "component",
+  "title": "VSwipeCell",
+  "description": "Touch-driven list cell actions with controlled left and right open states.",
+  "exportName": "VSwipeCell",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/swipe-cell/swipe-cell.ts",
+      "to": "src/components/ui/swipe-cell.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/swipe-cell/swipe-cell.ts",
+      "to": "src/components/ui/swipe-cell.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

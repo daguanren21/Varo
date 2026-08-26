@@ -1,6 +1,6 @@
 # ShortPassword
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="short-password" locale="en" />
 

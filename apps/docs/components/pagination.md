@@ -1,5 +1,9 @@
 # Pagination 分页
 
+## 演示
+
+<PlatformTabsDemo example="pagination" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -15,10 +19,6 @@ const page = ref(2)
   <VPagination v-model="page" :page-count="5" mode="simple" />
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="pagination" locale="zh" />
 
 ## Props
 
@@ -36,4 +36,3 @@ const page = ref(2)
 | --- | --- | --- |
 | `update:modelValue` | `number` | 页码变化 |
 | `change` | `number` | 页码变化 |
-

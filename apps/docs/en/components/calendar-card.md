@@ -1,6 +1,6 @@
 # CalendarCard
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="calendar-card" locale="en" />
 

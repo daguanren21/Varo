@@ -1,5 +1,9 @@
 # Menu 菜单
 
+## 演示
+
+<PlatformTabsDemo example="menu" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -22,10 +26,6 @@ const options = [
   </VMenu>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="menu" locale="zh" />
 
 ## VMenu Props
 
@@ -57,4 +57,3 @@ const options = [
 | --- | --- | --- |
 | `update:modelValue` | `string \| number` | 选中值变化 |
 | `select` | `(value, option)` | 点击选项 |
-

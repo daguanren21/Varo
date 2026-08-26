@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@source './**/*.{ts,vue}';
+
 :root {
   color: #172033;
   background: #f4f7fb;

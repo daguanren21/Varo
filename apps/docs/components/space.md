@@ -1,5 +1,9 @@
 # Space
 
+## 演示
+
+<PlatformTabsDemo example="space" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -33,10 +37,6 @@
   </VSpace>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="space" locale="zh" />
 
 ## Props
 

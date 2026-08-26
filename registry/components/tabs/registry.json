@@ -1,0 +1,30 @@
+{
+  "name": "tabs",
+  "type": "component",
+  "title": "VTabs",
+  "description": "Controlled tab list and panels with horizontal or vertical layouts.",
+  "exportName": "VTabs",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/tabs/tabs.ts",
+      "to": "src/components/ui/tabs.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/tabs/tabs.ts",
+      "to": "src/components/ui/tabs.ts"
+    }
+  ],
+  "docs": "/components/tabs"
+}

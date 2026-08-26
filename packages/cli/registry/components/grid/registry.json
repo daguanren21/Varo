@@ -1,0 +1,32 @@
+{
+  "name": "grid",
+  "type": "component",
+  "title": "VGrid",
+  "description": "Responsive mobile grid and grid-item layout primitives.",
+  "exportName": "VGrid",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/layout-utils"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/grid/grid.ts",
+      "to": "src/components/ui/grid.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/grid/grid.ts",
+      "to": "src/components/ui/grid.ts"
+    }
+  ],
+  "docs": "/components/grid"
+}

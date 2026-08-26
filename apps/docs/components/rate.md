@@ -1,6 +1,6 @@
 # Rate 评分
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="rate" locale="zh" />
 

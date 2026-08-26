@@ -1,5 +1,9 @@
 # Cell
 
+## Demo
+
+<PlatformTabsDemo example="cell" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -56,10 +60,6 @@
   </VCellGroup>
 </template>
 ```
-
-## Cross-Platform Demo
-
-<PlatformTabsDemo example="cell" locale="en" />
 
 ## Cell Props
 

@@ -1,0 +1,32 @@
+{
+  "name": "tag",
+  "type": "component",
+  "title": "VTag",
+  "description": "Closable or checkable label with sizes, variants, semantic tones, and disabled state.",
+  "exportName": "VTag",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/tag/tag.ts",
+      "to": "src/components/ui/tag.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/tag/weapp-vite.vue",
+      "to": "src/components/ui/tag.vue"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

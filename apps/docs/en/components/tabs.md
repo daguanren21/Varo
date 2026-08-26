@@ -1,5 +1,9 @@
 # Tabs
 
+## Demo
+
+<PlatformTabsDemo example="tabs" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -18,10 +22,6 @@ const active = ref('overview')
   </VTabs>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="tabs" locale="en" />
 
 ## VTabs Props
 
@@ -45,4 +45,3 @@ const active = ref('overview')
 | `name` | `string \| number` | - | Tab name |
 | `title` | `string` | `undefined` | Tab title |
 | `disabled` | `boolean` | `false` | Disabled state |
-

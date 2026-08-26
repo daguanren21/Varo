@@ -47,6 +47,6 @@
         "@varo/primitives-h5": "workspace:*",
         "@varo/shared": "workspace:*",
         "@varo/theme": "workspace:*",
-        "vue": "^3.5.39"
+        "vue": "^3.5.41"
     }
 }

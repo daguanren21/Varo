@@ -22,8 +22,11 @@ describe('ui-weapp select', () => {
 
     expect(wrapper.classes()).toContain('varo-select--picker')
     expect(wrapper.get('.varo-select__value').text()).toBe('请选择')
+    expect(wrapper.find('.varo-select__arrow').exists()).toBe(true)
 
     await wrapper.get('.varo-select__trigger').trigger('click')
+    expect(wrapper.attributes('data-open')).toBe('true')
+    expect(wrapper.get('.varo-select__panel').classes().length).toBeGreaterThanOrEqual(0)
     await wrapper.findAll('.varo-select__option')[1].trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith('hangzhou')

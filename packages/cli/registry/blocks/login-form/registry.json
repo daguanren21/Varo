@@ -1,0 +1,31 @@
+{
+  "name": "login-form",
+  "type": "block",
+  "title": "Login Form",
+  "description": "Production-shaped phone and password login form with remember, error, loading, and recovery states.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "utils/cn",
+    "components/button",
+    "components/input",
+    "components/switch"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/login-form/h5.vue",
+      "to": "src/components/blocks/login-form.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/login-form/weapp-vite.vue",
+      "to": "src/components/blocks/login-form.vue"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

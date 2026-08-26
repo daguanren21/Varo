@@ -1,6 +1,6 @@
 # InputNumber
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="input-number" locale="en" />
 

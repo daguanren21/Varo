@@ -4,17 +4,28 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "echo h5 playground build pending",
+    "build": "vite build",
     "clean": "rimraf dist",
-    "dev": "echo h5 playground dev pending",
+    "dev": "vite",
     "lint": "echo h5 playground lint pending",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "preview": "vite preview --host 127.0.0.1 --port 4175",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
-    "test:e2e": "echo h5 playground e2e pending"
+    "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {
-    "@varo/ui-h5": "workspace:*"
+    "@varo/agent-core": "workspace:^",
+    "@varo/theme": "workspace:*",
+    "@varo/ui-h5": "workspace:*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0",
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.1.3",
+    "vue-tsc": "^3.3.6"
   }
 }
-
-

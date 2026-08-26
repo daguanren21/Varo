@@ -37,8 +37,19 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
-      - name: Test
+      - name: Unit tests
         run: pnpm test
 
-      - name: Build
+      - name: Smoke e2e contracts
+        run: pnpm test:e2e
+
+      - name: Build packages and apps
         run: pnpm build
+
+      - name: Build docs
+        run: pnpm --filter @varo/docs build
+
+      - name: Build playgrounds
+        run: |
+          pnpm --filter @varo/playground-h5 build
+          pnpm --filter @varo/playground-weapp build

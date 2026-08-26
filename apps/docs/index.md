@@ -92,11 +92,11 @@ features:
   </div>
 </div>
 
-## Phase 1 Base Kit
+## 双端组件覆盖
 
-Phase 1 Base Kit 包含 18 个低层组件：`button`、`cell`、`input`、`textarea`、`input-number`、`form`、`checkbox`、`radio`、`switch`、`select`、`picker`、`cascader`、`date-picker`、`overlay`、`popup`、`dialog`、`toast`、`loading`。
+Base Kit 包含 15 个已经通过微信开发者工具编译的原生 SFC 组件：`avatar`、`badge`、`button`、`card`、`checkbox`、`empty`、`icon`、`image`、`input`、`input-number`、`loading`、`progress`、`select`、`switch`、`tag`。
 
-Registry 方向以 `weapp-vite` 作为首个多端 registry 目标，后续目标继续复用同一 Base Kit 清单。
+Registry 同时支持 `h5` 与 `weapp-vite`：H5 覆盖 56 个 runtime 组件族；小程序已开放 45 个高共识组件族，并保留上述 15 个 SFC 作为最小可组合基座。完整分级由 `registry/component-tiers.v0.1.json` 约束。
 
 ## 包边界
 
@@ -112,5 +112,9 @@ Registry 方向以 `weapp-vite` 作为首个多端 registry 目标，后续目�
   <div class="varo-package-card">
     <h3>Theme</h3>
     <p>用主题 token 统一颜色、尺寸和组件级样式输入。</p>
+  </div>
+  <div class="varo-package-card">
+    <h3>Agent Core</h3>
+    <p>统一事件协议、SSE/分块传输、平滑输出和安全 Markdown AST。</p>
   </div>
 </div>

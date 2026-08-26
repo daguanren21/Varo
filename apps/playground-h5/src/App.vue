@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import {
   VButton,
   VDialogClose,
@@ -10,11 +10,88 @@ import {
   VInput,
   VSwitch
 } from '@varo/ui-h5'
+import {
+  AgentArtifact,
+  AgentResponseActions,
+  AgentSourceList
+} from './components/agent-ui'
+import AgentChat from './components/blocks/agent-chat.vue'
+import LoginForm from './components/blocks/login-form.vue'
+import OrderFilter from './components/blocks/order-filter.vue'
+import ProductList from './components/blocks/product-list.vue'
+import ProfileCard from './components/blocks/profile-card.vue'
+import ProfileEdit from './components/blocks/profile-edit.vue'
+import { useAgentDemo } from './features/useAgentDemo'
 
-const name = ref('Varo')
-const loading = ref(false)
-const enabled = ref(true)
-const clicks = ref(0)
+const name = shallowRef('Varo')
+const loading = shallowRef(false)
+const enabled = shallowRef(true)
+const clicks = shallowRef(0)
+const lastEvent = shallowRef('等待交互')
+const {
+  approve: approveAgent,
+  busy: agentBusy,
+  messages: agentMessages,
+  prompt: agentPrompt,
+  reject: rejectAgent,
+  retry: retryAgent,
+  send: sendAgent,
+  snapshot: agentSnapshot
+} = useAgentDemo()
+const cities = [
+  { label: '上海', value: 'shanghai' },
+  { label: '杭州', value: 'hangzhou' },
+  { label: '深圳', value: 'shenzhen' }
+]
+const profile = {
+  fallback: 'VA',
+  name: 'Varo Maintainer',
+  status: 'Pro',
+  subtitle: '负责 H5 与小程序设计系统'
+}
+const profileStats = [
+  { label: '组件', value: 56 },
+  { label: 'Blocks', value: 6 },
+  { label: '平台', value: 2 }
+]
+const products = [
+  {
+    id: 'starter',
+    name: 'Varo Starter Kit',
+    description: '双端主题、组件源码与基础 Blocks。',
+    price: 9900,
+    badge: '推荐',
+    inventory: 32
+  },
+  {
+    id: 'commerce',
+    name: 'Commerce Blocks',
+    description: '商品、订单和筛选业务组合。',
+    price: 19900,
+    inventory: 8
+  }
+]
+const agentArtifact = {
+  content: `export const events = createAgentSseEventSource()\nrequestTask.onChunkReceived(({ data }) => events.feed(data))\nawait controller.connect(events.source)`,
+  id: 'transport-adapter',
+  kind: 'code' as const,
+  language: 'ts',
+  title: '微信分块传输适配器'
+}
+const agentSources = [
+  {
+    domain: 'github.com/Simon-He95',
+    id: 'markstream',
+    title: 'Markstream Vue / Core',
+    url: 'https://github.com/Simon-He95/markstream-vue'
+  },
+  {
+    domain: 'ui.shadcn.com',
+    id: 'shadcn',
+    title: 'shadcn/ui Registry',
+    url: 'https://ui.shadcn.com/docs/registry'
+  }
+]
 
 function onPrimaryClick() {
   clicks.value += 1
@@ -23,6 +100,10 @@ function onPrimaryClick() {
     loading.value = false
   }, 900)
 }
+
+function record(message: string) {
+  lastEvent.value = message
+}
 </script>
 
 <template>
@@ -30,7 +111,7 @@ function onPrimaryClick() {
     <header class="pg__hero">
       <p class="pg__kicker">@varo/playground-h5</p>
       <h1>H5 Playground</h1>
-      <p>真实 Vite + Vue 运行时，用于手工验证 `@varo/ui-h5` 交互与主题。</p>
+      <p>真实 Vite + Vue + Tailwind v4 运行时，验证 runtime components、registry source 与 Blocks。</p>
     </header>
 
     <main class="pg__grid">
@@ -68,6 +149,93 @@ function onPrimaryClick() {
             </div>
           </VDialogContent>
         </VDialogRoot>
+      </section>
+
+      <section class="pg__agent">
+        <header class="pg__block-intro">
+          <div>
+            <p class="pg__kicker">Real Agent Runtime</p>
+            <h2>增量 Markdown、工具调用与人工审批</h2>
+            <p>同一事件协议驱动 H5 与微信小程序；这里运行真实的增量控制器，不是逐字 CSS 动画。</p>
+          </div>
+          <span class="pg__agent-status" :data-status="agentSnapshot.status">{{ agentSnapshot.status }}</span>
+        </header>
+
+        <div class="pg__agent-grid">
+          <AgentChat
+            v-model="agentPrompt"
+            class="pg__agent-chat"
+            title="双端 Agent 交付建议"
+            :busy="agentBusy"
+            :messages="agentMessages"
+            :snapshot="agentSnapshot"
+            :suggestions="['分析双端 Agent 方案', '生成发布计划']"
+            @approve="approveAgent"
+            @close="record('关闭 Agent Chat Block')"
+            @reject="rejectAgent"
+            @retry="retryAgent"
+            @submit="sendAgent"
+          >
+            <template #actions>
+              <AgentResponseActions
+                :content="agentSnapshot.message?.source"
+                @copy="record('已复制 Agent 回答')"
+                @retry="retryAgent"
+                @like="record('回答反馈：有帮助')"
+                @dislike="record('回答反馈：需改进')"
+              />
+            </template>
+          </AgentChat>
+
+          <aside class="pg__agent-assets">
+            <AgentArtifact :artifact="agentArtifact" @open="record('打开传输适配器产物')" />
+            <AgentSourceList :sources="agentSources" @open="record(`打开来源：${$event.title}`)" />
+          </aside>
+        </div>
+      </section>
+
+      <section class="pg__blocks">
+        <header class="pg__block-intro">
+          <div>
+            <p class="pg__kicker">Registry-driven</p>
+            <h2>可安装的双端 Blocks</h2>
+            <p>以下界面直接使用 CLI 安装到本应用的源码，不是文档站中的静态示意图。</p>
+          </div>
+          <output class="pg__event" aria-live="polite">{{ lastEvent }}</output>
+        </header>
+
+        <div class="pg__block-grid">
+          <LoginForm
+            class-name="max-w-none"
+            @forgot-password="record('触发找回密码')"
+            @submit="record(`登录提交：${$event.phone}`)"
+          />
+          <ProfileCard
+            :user="profile"
+            :stats="profileStats"
+            @edit="record('打开资料编辑')"
+            @select-stat="record(`选择统计：${$event.stat.label}`)"
+          />
+          <ProductList
+            class-name="lg:col-span-2"
+            title="组件与 Blocks"
+            description="可直接复制进业务项目的源码产品。"
+            :items="products"
+            @select="record(`查看商品：${$event.item.name}`)"
+            @add-to-cart="record(`加入购物车：${$event.item.name}`)"
+          />
+          <ProfileEdit
+            :cities="cities"
+            :initial-profile="{ name: 'Varo Maintainer', phone: '13800138000', city: 'hangzhou' }"
+            @cancel="record('取消资料编辑')"
+            @submit="record(`保存资料：${$event.name}`)"
+          />
+          <OrderFilter
+            :result-count="128"
+            @apply="record(`应用筛选：${$event.statuses.length} 个状态`)"
+            @reset="record('重置订单筛选')"
+          />
+        </div>
       </section>
     </main>
   </div>
@@ -187,5 +355,122 @@ function onPrimaryClick() {
   margin: 10px 0 0;
   color: #5b677a;
   line-height: 1.6;
+}
+
+.pg__agent {
+  display: grid;
+  gap: 18px;
+  margin-top: 10px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(23, 32, 51, 0.12);
+}
+
+.pg__agent-grid {
+  display: grid;
+  align-items: start;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(240px, .75fr);
+}
+
+.pg__agent-chat {
+  min-width: 0;
+}
+
+.pg__agent-assets {
+  display: grid;
+  gap: 12px;
+}
+
+.pg__agent-status {
+  min-width: 86px;
+  padding: 7px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.pg__agent-status[data-status='streaming'],
+.pg__agent-status[data-status='waiting'] {
+  border-color: #99f6e4;
+  background: #f0fdfa;
+  color: #0f766e;
+}
+
+.pg__agent-status[data-status='completed'] {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.pg__blocks {
+  display: grid;
+  gap: 18px;
+  margin-top: 10px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(23, 32, 51, 0.12);
+}
+
+.pg__block-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.pg__block-intro h2 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: -0.03em;
+}
+
+.pg__block-intro p:not(.pg__kicker) {
+  margin: 8px 0 0;
+  max-width: 58ch;
+  color: #5b677a;
+  line-height: 1.6;
+}
+
+.pg__event {
+  flex: none;
+  max-width: 320px;
+  padding: 8px 12px;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 999px;
+  background: rgba(204, 251, 241, 0.72);
+  color: #115e59;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pg__block-grid {
+  display: grid;
+  align-items: start;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .pg__block-intro {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .pg__event {
+    max-width: 100%;
+  }
+
+  .pg__block-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pg__agent-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 </style>

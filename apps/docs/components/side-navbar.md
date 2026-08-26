@@ -1,5 +1,9 @@
 # SideNavbar 侧边栏导航
 
+## 演示
+
+<PlatformTabsDemo example="side-navbar" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -18,10 +22,6 @@ const active = ref('orders')
   </VSideNavbar>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="side-navbar" locale="zh" />
 
 ## VSideNavbar Props
 
@@ -44,4 +44,3 @@ const active = ref('orders')
 | `title` | `string` | `undefined` | 导航标题 |
 | `badge` | `string \| number` | `undefined` | 徽标 |
 | `disabled` | `boolean` | `false` | 是否禁用 |
-

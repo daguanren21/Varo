@@ -1,6 +1,6 @@
 # Searchbar
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="searchbar" locale="en" />
 

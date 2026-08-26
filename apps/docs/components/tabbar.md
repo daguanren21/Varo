@@ -1,5 +1,9 @@
 # Tabbar 标签栏
 
+## 演示
+
+<PlatformTabsDemo example="tabbar" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -18,10 +22,6 @@ const active = ref('home')
   </VTabbar>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="tabbar" locale="zh" />
 
 ## VTabbar Props
 
@@ -47,4 +47,3 @@ const active = ref('home')
 | `icon` | `string` | `undefined` | 图标文本或图标名 |
 | `badge` | `string \| number` | `undefined` | 徽标 |
 | `dot` | `boolean` | `false` | 是否显示小红点 |
-

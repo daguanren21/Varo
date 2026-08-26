@@ -1,0 +1,32 @@
+{
+  "name": "collapse",
+  "type": "component",
+  "title": "VCollapse",
+  "description": "Single or multiple disclosure groups built on the shared accordion primitive.",
+  "exportName": "VCollapse",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/primitives",
+    "components/icon"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/collapse/collapse.ts",
+      "to": "src/components/ui/collapse.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/collapse/collapse.ts",
+      "to": "src/components/ui/collapse.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

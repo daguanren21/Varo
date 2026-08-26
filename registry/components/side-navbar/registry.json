@@ -1,0 +1,24 @@
+{
+  "name": "side-navbar",
+  "type": "component",
+  "title": "VSideNavbar",
+  "description": "Vertical side navigation with controlled active item state.",
+  "exportName": "VSideNavbar",
+  "targets": [
+    "h5"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/side-navbar/side-navbar.ts",
+      "to": "src/components/ui/side-navbar.ts"
+    }
+  ],
+  "docs": "/components/side-navbar"
+}

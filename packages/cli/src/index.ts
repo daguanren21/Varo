@@ -5,8 +5,10 @@ import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
+export type RegistryTarget = 'h5' | 'weapp-vite'
+
 export interface RegistryFile {
-  target: 'weapp-vite'
+  target: RegistryTarget
   from: string
   to: string
 }
@@ -14,12 +16,16 @@ export interface RegistryFile {
 export interface RegistryItem {
   dependencies?: string[]
   description: string
+  devDependencies?: string[]
   docs: string
   exportName?: string
   files: RegistryFile[]
   name: string
   registryDependencies: string[]
-  targets: Array<'weapp-vite'>
+  targetDependencies?: Partial<Record<RegistryTarget, string[]>>
+  targetDevDependencies?: Partial<Record<RegistryTarget, string[]>>
+  targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
+  targets: RegistryTarget[]
   title: string
   type: 'component' | 'block' | 'hook' | 'util' | 'theme' | 'template'
 }
@@ -32,13 +38,15 @@ export interface PlannedRegistryFile extends RegistryFile {
 
 export interface RegistryInstallPlan {
   dependencies: string[]
+  devDependencies: string[]
   files: PlannedRegistryFile[]
   items: RegistryItem[]
+  target: RegistryTarget
 }
 
 export interface ResolveRegistryOptions {
   registryRoot?: string
-  target?: 'weapp-vite'
+  target?: RegistryTarget
 }
 
 export interface InstallRegistryOptions extends ResolveRegistryOptions {
@@ -52,10 +60,13 @@ const defaultRegistryRoot =
   defaultRegistryCandidates.find((candidate) => existsSync(resolve(candidate, 'components/button/registry.json'))) ??
   defaultRegistryCandidates[0]
 
-function normalizeRegistryName(name: string): string {
-  const normalized = name.startsWith('components/') || name.startsWith('blocks/') ? name : `components/${name}`
+const registryGroups = ['blocks', 'components', 'hooks', 'templates', 'themes', 'utils'] as const
 
-  if (!/^(?:components|blocks)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalized)) {
+function normalizeRegistryName(name: string): string {
+  const hasGroup = registryGroups.some((group) => name.startsWith(`${group}/`))
+  const normalized = hasGroup ? name : `components/${name}`
+
+  if (!/^(?:blocks|components|hooks|templates|themes|utils)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalized)) {
     throw new Error(`Invalid registry item name: ${name}`)
   }
 
@@ -150,7 +161,10 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
     dependencyStack.push(itemPathName)
     const item = resolveRegistryItem(requestName, registryRoot)
     try {
-      item.registryDependencies.forEach(visit)
+      if (!item.targets.includes(target)) {
+        throw new Error(`Registry item ${itemPathName} does not support target ${target}`)
+      }
+      [...item.registryDependencies, ...(item.targetRegistryDependencies?.[target] ?? [])].forEach(visit)
     } finally {
       dependencyStack.pop()
       visiting.delete(itemPathName)
@@ -162,7 +176,12 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
 
   names.forEach(visit)
 
-  const dependencies = Array.from(new Set(items.flatMap((item) => item.dependencies ?? []))).sort()
+  const dependencies = Array.from(
+    new Set(items.flatMap((item) => [...(item.dependencies ?? []), ...(item.targetDependencies?.[target] ?? [])]))
+  ).sort()
+  const devDependencies = Array.from(
+    new Set(items.flatMap((item) => [...(item.devDependencies ?? []), ...(item.targetDevDependencies?.[target] ?? [])]))
+  ).sort()
   const files = items.flatMap((item) =>
     item.files
       .filter((file) => file.target === target)
@@ -174,7 +193,7 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
       }))
   )
 
-  return { dependencies, files, items }
+  return { dependencies, devDependencies, files, items, target }
 }
 
 export async function installRegistryItems(names: string[], options: InstallRegistryOptions): Promise<RegistryInstallPlan> {
@@ -208,21 +227,66 @@ export async function installRegistryItems(names: string[], options: InstallRegi
 
 async function runCli(argv: string[]) {
   const [command, ...args] = argv
-  const force = args.includes('--force')
-  const items = args.filter((arg) => arg !== '--force')
+  let force = false
+  let target: RegistryTarget = 'weapp-vite'
+  const items: string[] = []
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index]
+    if (arg === '--force') {
+      force = true
+      continue
+    }
+
+    if (arg === '--target') {
+      const value = args[index + 1]
+      if (value !== 'h5' && value !== 'weapp-vite') {
+        throw new Error(`Unsupported registry target: ${value ?? '(missing)'}`)
+      }
+      target = value
+      index += 1
+      continue
+    }
+
+    if (arg.startsWith('--target=')) {
+      const value = arg.slice('--target='.length)
+      if (value !== 'h5' && value !== 'weapp-vite') {
+        throw new Error(`Unsupported registry target: ${value || '(missing)'}`)
+      }
+      target = value
+      continue
+    }
+
+    if (arg.startsWith('--')) {
+      throw new Error(`Unknown option: ${arg}`)
+    }
+
+    items.push(arg)
+  }
 
   if (command !== 'add' || items.length === 0) {
-    process.stderr.write('Usage: varo add [--force] <component|blocks/name> [...items]\n')
+    process.stderr.write(
+      'Usage: varo add [--target h5|weapp-vite] [--force] <component|blocks/name> [...items]\n'
+    )
     process.exitCode = 1
     return
   }
 
   const plan = await installRegistryItems(items, {
     force,
-    projectRoot: process.cwd()
+    projectRoot: process.cwd(),
+    target
   })
+  const output = [`Installed ${plan.items.map((item) => item.name).join(', ')} for ${plan.target}`]
 
-  process.stdout.write(`Installed ${plan.items.map((item) => item.name).join(', ')}\n`)
+  if (plan.dependencies.length > 0) {
+    output.push(`Dependencies: ${plan.dependencies.join(' ')}`)
+  }
+  if (plan.devDependencies.length > 0) {
+    output.push(`Dev dependencies: ${plan.devDependencies.join(' ')}`)
+  }
+
+  process.stdout.write(`${output.join('\n')}\n`)
 }
 
 if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {

@@ -1,0 +1,32 @@
+{
+  "name": "divider",
+  "type": "component",
+  "title": "VDivider",
+  "description": "Horizontal or vertical separator with optional inset and label content.",
+  "exportName": "VDivider",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/layout-utils"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/divider/divider.ts",
+      "to": "src/components/ui/divider.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/divider/divider.ts",
+      "to": "src/components/ui/divider.ts"
+    }
+  ],
+  "docs": "/components/divider"
+}

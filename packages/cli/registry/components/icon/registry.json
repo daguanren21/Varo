@@ -1,0 +1,35 @@
+{
+  "name": "icon",
+  "type": "component",
+  "title": "VIcon",
+  "description": "Cross-platform icon container with accessible labels, sizing, tones, and core glyphs.",
+  "exportName": "VIcon",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/icon/icon.ts",
+      "to": "src/components/ui/icon.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/icon/weapp-vite.vue",
+      "to": "src/components/ui/v-icon.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/icon/icon.ts",
+      "to": "src/components/ui/icon.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

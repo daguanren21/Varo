@@ -1,0 +1,30 @@
+{
+  "name": "indicator",
+  "type": "component",
+  "title": "VIndicator",
+  "description": "Compact current-position indicator for paged or carousel content.",
+  "exportName": "VIndicator",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/indicator/indicator.ts",
+      "to": "src/components/ui/indicator.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/indicator/indicator.ts",
+      "to": "src/components/ui/indicator.ts"
+    }
+  ],
+  "docs": "/components/indicator"
+}

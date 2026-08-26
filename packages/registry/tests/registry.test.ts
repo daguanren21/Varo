@@ -1,185 +1,275 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { dirname, posix, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { baseKitPhase1, validateRegistryItem, type RegistryItem } from '../src'
+import {
+  baseKitPhase1,
+  componentCatalogV01,
+  validateRegistryItem,
+  weappComponentCatalogV01,
+  type RegistryItem,
+  type RegistryTarget
+} from '../src'
 
 const root = resolve(__dirname, '../../..')
+const registryGroups = ['blocks', 'components', 'themes', 'utils'] as const
+const targets: RegistryTarget[] = ['h5', 'weapp-vite']
 const readText = (path: string): string => readFileSync(resolve(root, path), 'utf8')
 const readJson = <T>(path: string): T => JSON.parse(readText(path)) as T
 const fileExists = (path: string): boolean => existsSync(resolve(root, path))
 const registryItemPath = (dependency: string): string => `registry/${dependency}/registry.json`
-const registryComponentFiles = (): string[] =>
-  readdirSync(resolve(root, 'registry/components'), { withFileTypes: true }).flatMap((entry) => {
-    if (!entry.isDirectory()) return []
 
-    const componentDir = `registry/components/${entry.name}`
-    return readdirSync(resolve(root, componentDir), { withFileTypes: true })
-      .filter((file) => file.isFile() && file.name.endsWith('.ts'))
-      .map((file) => `${componentDir}/${file.name}`)
+function registryItemFiles(): string[] {
+  return registryGroups.flatMap((group) => {
+    const groupRoot = resolve(root, `registry/${group}`)
+    if (!existsSync(groupRoot)) return []
+
+    return readdirSync(groupRoot, { withFileTypes: true }).flatMap((entry) =>
+      entry.isDirectory() ? [`registry/${group}/${entry.name}/registry.json`] : []
+    )
   })
-const registryItemFiles = (): string[] =>
-  ['components', 'blocks'].flatMap((group) =>
-    readdirSync(resolve(root, `registry/${group}`), { withFileTypes: true }).flatMap((entry) => {
-      if (!entry.isDirectory()) return []
-
-      return [`registry/${group}/${entry.name}/registry.json`]
-    })
-  )
-const createValidRegistryItem = (): RegistryItem => ({
-  description: 'A select component.',
-  docs: '/components/select',
-  exportName: 'VSelect',
-  files: [
-    {
-      target: 'weapp-vite',
-      from: 'registry/components/select/select.ts',
-      to: 'src/components/ui/select.ts'
-    }
-  ],
-  name: 'select',
-  registryDependencies: [],
-  targets: ['weapp-vite'],
-  title: 'Select',
-  type: 'component'
-})
-
-const omitRegistryField = (field: keyof RegistryItem): unknown => {
-  const item: Record<string, unknown> = { ...createValidRegistryItem() }
-  delete item[field]
-  return item
 }
 
-describe('registry base kit manifest', () => {
-  it('declares the complete Base Kit Phase 1 component set', () => {
-    const manifest = readJson<{ components: string[] }>('registry/base-kit.phase1.json')
+function runtimeComponentNames(): string[] {
+  const helperFiles = new Set(['date-utils', 'index', 'layout-utils', 'selection'])
 
-    expect(manifest.components).toEqual([
-      'button',
-      'cell',
-      'input',
-      'textarea',
-      'input-number',
-      'form',
-      'checkbox',
-      'radio',
-      'switch',
-      'select',
-      'picker',
-      'cascader',
-      'date-picker',
-      'overlay',
-      'popup',
-      'dialog',
-      'toast',
-      'loading'
-    ])
-    expect(baseKitPhase1).toEqual(manifest.components)
-  })
+  return readdirSync(resolve(root, 'packages/ui-h5/src'), { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+    .map((entry) => entry.name.replace(/\.ts$/, ''))
+    .filter((name) => !helperFiles.has(name))
+    .sort()
+}
 
-  it('validates the select registry item as a weapp-vite base component', () => {
-    const item = readJson<RegistryItem>('registry/components/select/registry.json')
-
-    expect(validateRegistryItem(item)).toEqual([])
-    expect(item.name).toBe('select')
-    expect(item.exportName).toBe('VSelect')
-    expect(item.targets).toEqual(['weapp-vite'])
-    expect(item.docs).toBe('/components/select')
-    expect(item.files).toEqual([
+function createValidRegistryItem(): RegistryItem {
+  return {
+    description: 'A select component.',
+    docs: '/components/select',
+    exportName: 'VSelect',
+    files: [
+      {
+        target: 'h5',
+        from: 'registry/components/select/select.ts',
+        to: 'src/components/ui/select.ts'
+      },
       {
         target: 'weapp-vite',
         from: 'registry/components/select/select.ts',
         to: 'src/components/ui/select.ts'
       }
-    ])
+    ],
+    name: 'select',
+    registryDependencies: ['themes/base'],
+    targets: ['h5', 'weapp-vite'],
+    title: 'Select',
+    type: 'component'
+  }
+}
+
+function omitRegistryField(field: keyof RegistryItem): unknown {
+  const item: Record<string, unknown> = { ...createValidRegistryItem() }
+  delete item[field]
+  return item
+}
+
+function resolveImportDestination(targetPath: string, importPath: string): string[] {
+  const resolved = posix.normalize(posix.join(dirname(targetPath), importPath))
+  return [resolved, `${resolved}.ts`, `${resolved}.vue`, `${resolved}.css`, `${resolved}/index.ts`]
+}
+
+describe('registry catalog', () => {
+  it('keeps the Base Kit manifest aligned with the exported core list', () => {
+    const manifest = readJson<{ components: string[]; targets: RegistryTarget[] }>('registry/base-kit.phase1.json')
+
+    expect(manifest.targets).toEqual(targets)
+    expect(manifest.components).toEqual(baseKitPhase1)
+    expect(baseKitPhase1).toHaveLength(15)
   })
 
-  it('keeps missing phase-one entries low-level and target-compatible', () => {
-    const manifest = readJson<{ components: string[] }>('registry/base-kit.phase1.json')
+  it('publishes every maintained runtime component through the v0.1 registry catalog', () => {
+    expect([...componentCatalogV01].sort()).toEqual(runtimeComponentNames())
+    expect(componentCatalogV01).toHaveLength(56)
+  })
 
-    manifest.components.forEach((name) => {
-      const registryPath = `registry/components/${name}/registry.json`
+  it('partitions the mini-program registry into high-consensus and specialized tiers', () => {
+    const tiers = readJson<{
+      agentUi: string[]
+      registryCatalog: { h5: number; weappSfcBaseKit: number; weappVite: number }
+      runtimeCatalog: { h5: number; weappVite: number }
+      weappHighConsensus: string[]
+      weappSpecializedPendingRegistry: string[]
+    }>('registry/component-tiers.v0.1.json')
 
-      expect(fileExists(registryPath), `${name} must declare ${registryPath}`).toBe(true)
-      const item = readJson<RegistryItem>(registryPath)
+    expect(tiers.runtimeCatalog).toEqual({ h5: 56, weappVite: 56 })
+    expect(tiers.registryCatalog).toEqual({ h5: 56, weappSfcBaseKit: 15, weappVite: 45 })
+    expect(tiers.weappHighConsensus).toEqual(weappComponentCatalogV01)
+    expect(
+      [...tiers.weappHighConsensus, ...tiers.weappSpecializedPendingRegistry].sort()
+    ).toEqual([...componentCatalogV01].sort())
+    expect(tiers.agentUi).toHaveLength(36)
+  })
 
-      expect(item.name).toBe(name)
-      expect(validateRegistryItem(item)).toEqual([])
-      expect(item.targets).toEqual(['weapp-vite'])
-      expect(item.registryDependencies).toEqual(expect.any(Array))
-      expect(item.docs).toBe(`/components/${name}`)
+  it('ships advanced Agent UI as native weapp SFCs with target-aware class merging', () => {
+    const manifest = readJson<RegistryItem & {
+      targetDependencies?: Partial<Record<RegistryTarget, string[]>>
+      targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
+    }>('registry/components/agent-ui/registry.json')
+    const weappFiles = manifest.files.filter((file) => file.target === 'weapp-vite')
+    const advancedComponents = [
+      'AgentMessageScroller', 'AgentCodeBlock', 'AgentFileDiff', 'AgentToolResult',
+      'AgentImageGeneration', 'AgentToolApproval', 'AgentCitations', 'AgentActivity',
+      'AgentSidebar', 'AgentContextCard', 'AgentInsightCard', 'AgentSelectionActions',
+      'AgentDiffTable', 'AgentRecordsTable', 'AgentFilterTable', 'AgentCommandSearch',
+      'AgentFlowchart', 'AgentFineTune'
+    ]
+
+    expect(manifest.targetRegistryDependencies?.['weapp-vite']).toContain('utils/cn')
+    expect(manifest.targetDependencies?.h5).toContain('vue')
+    expect(manifest.targetDependencies?.['weapp-vite']).toContain('wevu')
+    expect(weappFiles.some((file) => file.to.endsWith('/advanced.ts'))).toBe(false)
+    expect(weappFiles.some((file) => file.to.endsWith('/agent-advanced.css'))).toBe(false)
+    advancedComponents.forEach((name) => {
+      expect(
+        weappFiles.some((file) => file.to === `src/components/agent-ui/${name}.vue`),
+        `${name} must ship as a native weapp SFC`
+      ).toBe(true)
+    })
+    weappFiles.filter((file) => file.from.endsWith('.vue')).forEach((file) => {
+      expect(readText(file.from), file.from).not.toMatch(/from ['\"]vue['\"]/)
     })
   })
 
-  it('keeps every phase-one registry source file byte-for-byte aligned with ui-weapp sources', () => {
-    const manifest = readJson<{ components: string[] }>('registry/base-kit.phase1.json')
+  it('keeps dual-target Blocks on Vue for H5 and Wevu for mini-programs', () => {
+    const blockNames = ['agent-chat', 'login-form', 'order-filter', 'product-list', 'profile-card', 'profile-edit']
+    blockNames.forEach((name) => {
+      const manifest = readJson<RegistryItem & {
+        targetDependencies?: Partial<Record<RegistryTarget, string[]>>
+      }>(`registry/blocks/${name}/registry.json`)
+      const weappFiles = manifest.files.filter((file) => file.target === 'weapp-vite' && file.from.endsWith('.vue'))
 
-    manifest.components.forEach((component) => {
-      const item = readJson<RegistryItem>(`registry/components/${component}/registry.json`)
-      const expectedFrom = `registry/components/${component}/${component}.ts`
-      const runtimeSource = `packages/ui-weapp/src/${component}.ts`
+      expect(manifest.targetDependencies?.h5, name).toContain('vue')
+      expect(manifest.targetDependencies?.['weapp-vite'], name).toContain('wevu')
+      weappFiles.forEach((file) => {
+        expect(readText(file.from), file.from).not.toMatch(/from ['\"]vue['\"]/)
+      })
+    })
+  })
 
-      expect(item.files).toContainEqual({
-        target: 'weapp-vite',
-        from: expectedFrom,
-        to: `src/components/ui/${component}.ts`
+  it('keeps every registry item valid, target-complete, documented, and backed by source files', () => {
+    registryItemFiles().forEach((registryPath) => {
+      const item = readJson<RegistryItem>(registryPath)
+
+      expect(validateRegistryItem(item), registryPath).toEqual([])
+      item.targets.forEach((target) => {
+        expect(item.files.some((file) => file.target === target), `${registryPath} ${target}`).toBe(true)
       })
       item.files.forEach((file) => {
-        expect(fileExists(file.from), `${component} file ${file.from} must exist`).toBe(true)
+        expect(fileExists(file.from), `${registryPath} source ${file.from}`).toBe(true)
       })
 
-      if (fileExists(runtimeSource)) {
-        expect(readText(expectedFrom)).toBe(readText(runtimeSource))
+      const docsPage = `${item.docs.replace(/^\//, '')}.md`
+      expect(fileExists(`apps/docs/${docsPage}`), `${registryPath} docs route ${item.docs}`).toBe(true)
+    })
+  })
+
+  it('keeps the full H5 catalog, high-consensus weapp catalog, and executable SFC Base Kit aligned', () => {
+    expect(weappComponentCatalogV01).toHaveLength(45)
+
+    componentCatalogV01.forEach((name) => {
+      const registryPath = `registry/components/${name}/registry.json`
+      const item = readJson<RegistryItem>(registryPath)
+      const h5File = item.files.find((file) => file.target === 'h5' && file.to === `src/components/ui/${name}.ts`)
+      const isBaseKitComponent = baseKitPhase1.some((component) => component === name)
+      const supportsWeapp = weappComponentCatalogV01.some((component) => component === name)
+
+      expect(item.name).toBe(name)
+      expect(item.targets).toContain('h5')
+      expect(item.registryDependencies).toContain('themes/base')
+      expect(h5File, `${name} must expose its H5 source`).toBeDefined()
+
+      const h5Source = readText(h5File!.from)
+      expect(h5Source).toContain("import '../../styles/varo.css'")
+      expect(h5Source).not.toContain('@varo/primitives-h5')
+      expect(h5Source).not.toContain('@varo/primitives-weapp')
+
+      if (h5Source.includes('../../lib/varo-primitives')) {
+        expect(item.registryDependencies).toContain('utils/primitives')
+      }
+
+      if (isBaseKitComponent) {
+        const weappFile = item.files.find((file) => file.target === 'weapp-vite' && file.to.endsWith('.vue'))
+        expect(item.targets).toEqual(targets)
+        expect(weappFile?.from.endsWith('.vue')).toBe(true)
+        expect(readText(weappFile!.from)).toContain('"styleIsolation": "apply-shared"')
+      } else if (supportsWeapp) {
+        const weappFile = item.files.find(
+          (file) => file.target === 'weapp-vite' && file.to === `src/components/ui/${name}.ts`
+        )
+        expect(item.targets).toEqual(targets)
+        expect(weappFile, `${name} must expose its weapp source`).toBeDefined()
+        const weappSource = readText(weappFile!.from)
+        expect(weappSource).toContain("import '../../styles/varo.css'")
+        expect(weappSource).not.toContain('@varo/primitives-h5')
+        expect(weappSource).not.toContain('@varo/primitives-weapp')
+      } else {
+        expect(item.targets).toEqual(['h5'])
       }
     })
   })
 
-  it('declares only resolvable registry dependencies for form-oriented blocks using select', () => {
-    const blocks = [
-      ['registry/blocks/profile-edit/registry.json', readJson<RegistryItem>('registry/blocks/profile-edit/registry.json')],
-      ['registry/blocks/order-filter/registry.json', readJson<RegistryItem>('registry/blocks/order-filter/registry.json')]
-    ] as const
+  it('resolves every registry dependency and copied relative import for both targets', () => {
+    const items = registryItemFiles().map((path) => readJson<RegistryItem>(path))
 
-    blocks.forEach(([blockPath, block]) => {
-      expect(validateRegistryItem(block)).toEqual([])
-      expect(block.type).toBe('block')
-      expect(block.targets).toEqual(['weapp-vite'])
-      expect(block.registryDependencies).toEqual(['components/select'])
+    items.forEach((item) => {
+      item.registryDependencies.forEach((dependency) => {
+        expect(fileExists(registryItemPath(dependency)), `${item.name} dependency ${dependency}`).toBe(true)
+      })
+      Object.values(item.targetRegistryDependencies ?? {})
+        .flat()
+        .forEach((dependency) => {
+          expect(fileExists(registryItemPath(dependency)), `${item.name} target dependency ${dependency}`).toBe(true)
+        })
+    })
 
-      block.registryDependencies.forEach((dependency) => {
-        const dependencyRegistryPath = registryItemPath(dependency)
+    targets.forEach((target) => {
+      const targetFiles = new Set(
+        items.flatMap((item) => item.files.filter((file) => file.target === target).map((file) => file.to))
+      )
+      const relativeImportPattern = /\b(?:import|export)\b(?:[^'";]*?\bfrom\s*)?['"](\.{1,2}\/[^'"]+)['"]/g
 
-        expect(
-          existsSync(resolve(root, dependencyRegistryPath)),
-          `${blockPath} dependency ${dependency} must resolve to ${dependencyRegistryPath}`
-        ).toBe(true)
+      items.forEach((item) => {
+        item.files
+          .filter((file) => file.target === target && /\.(?:ts|vue)$/.test(file.from))
+          .forEach((file) => {
+            const source = readText(file.from)
+            Array.from(source.matchAll(relativeImportPattern)).forEach((match) => {
+              const candidates = resolveImportDestination(file.to, match[1])
+              expect(
+                candidates.some((candidate) => targetFiles.has(candidate)),
+                `${target} ${file.from} imports ${match[1]}`
+              ).toBe(true)
+            })
+          })
       })
     })
   })
 
-  it('keeps relative imports inside registry component source files resolvable', () => {
-    const relativeImportPattern = /\b(?:import|export)\b[^'"]*?from\s+['"](\.\/[^'"]+)['"]/g
+  it('declares target-specific primitives and class-merge dependencies', () => {
+    const primitives = readJson<RegistryItem>('registry/utils/primitives/registry.json')
+    const cn = readJson<RegistryItem>('registry/utils/cn/registry.json')
 
-    registryComponentFiles().forEach((sourcePath) => {
-      const source = readText(sourcePath)
-
-      Array.from(source.matchAll(relativeImportPattern)).forEach((match) => {
-        const importPath = match[1]
-        const resolvedPath = resolve(root, dirname(sourcePath), `${importPath}.ts`)
-
-        expect(existsSync(resolvedPath), `${sourcePath} imports ${importPath}`).toBe(true)
-      })
+    expect(primitives.targetDependencies).toEqual({
+      h5: ['@varo/primitives-h5'],
+      'weapp-vite': ['@varo/primitives-weapp']
     })
-  })
-
-  it('keeps registry docs routes backed by docs pages', () => {
-    registryItemFiles().forEach((registryPath) => {
-      const item = readJson<RegistryItem>(registryPath)
-      const docsPage = `${item.docs.replace(/^\//, '')}.md`
-
-      expect(fileExists(`apps/docs/${docsPage}`), `${registryPath} docs route ${item.docs} must resolve`).toBe(true)
+    expect(cn.dependencies).toEqual(['clsx'])
+    expect(cn.targetDependencies).toEqual({
+      h5: ['tailwind-merge'],
+      'weapp-vite': ['@weapp-tailwindcss/merge']
     })
+    expect(readText('registry/utils/cn/weapp-vite.ts')).toContain("from '@weapp-tailwindcss/merge'")
   })
+})
 
+describe('registry validation', () => {
   it.each([
     ['missing docs', omitRegistryField('docs'), ['docs must be an absolute docs route']],
     ['non-string docs', { ...createValidRegistryItem(), docs: 42 }, ['docs must be an absolute docs route']],
@@ -187,6 +277,21 @@ describe('registry base kit manifest', () => {
     ['non-array targets', { ...createValidRegistryItem(), targets: 'weapp-vite' }, ['targets must be an array']],
     ['missing files', omitRegistryField('files'), ['files must be an array']],
     ['non-array files', { ...createValidRegistryItem(), files: 'select.ts' }, ['files must be an array']],
+    [
+      'missing target file',
+      { ...createValidRegistryItem(), files: createValidRegistryItem().files.slice(0, 1) },
+      ['target has no files: weapp-vite']
+    ],
+    [
+      'undeclared file target',
+      { ...createValidRegistryItem(), targets: ['h5'] },
+      ['file target is not declared by item: weapp-vite']
+    ],
+    [
+      'invalid target dependencies',
+      { ...createValidRegistryItem(), targetDependencies: { browser: ['vue'], h5: 'vue' } },
+      ['unsupported targetDependencies target: browser', 'targetDependencies.h5 must be an array of package names']
+    ],
     [
       'malformed file entry',
       { ...createValidRegistryItem(), files: [{ target: 'weapp-vite' }] },

@@ -1,5 +1,9 @@
 # SideNavbar
 
+## Demo
+
+<PlatformTabsDemo example="side-navbar" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -18,10 +22,6 @@ const active = ref('orders')
   </VSideNavbar>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="side-navbar" locale="en" />
 
 ## VSideNavbar Props
 
@@ -44,4 +44,3 @@ const active = ref('orders')
 | `title` | `string` | `undefined` | Item title |
 | `badge` | `string \| number` | `undefined` | Badge |
 | `disabled` | `boolean` | `false` | Disabled state |
-

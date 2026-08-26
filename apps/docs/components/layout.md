@@ -1,5 +1,9 @@
 # Layout
 
+## 演示
+
+<PlatformTabsDemo example="layout" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -37,10 +41,6 @@
   </VRow>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="layout" locale="zh" />
 
 ## Row Props
 

@@ -1,0 +1,31 @@
+{
+  "name": "avatar",
+  "type": "component",
+  "title": "VAvatar",
+  "description": "Avatar and overlapping avatar-group controls with image and fallback content.",
+  "exportName": "VAvatar",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "components/image"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/avatar/avatar.ts",
+      "to": "src/components/ui/avatar.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/avatar/weapp-vite.vue",
+      "to": "src/components/ui/avatar.vue"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

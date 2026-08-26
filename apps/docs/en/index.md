@@ -92,11 +92,11 @@ features:
   </div>
 </div>
 
-## Phase 1 Base Kit
+## Dual-target Coverage
 
-Phase 1 Base Kit includes 18 low-level components: `button`, `cell`, `input`, `textarea`, `input-number`, `form`, `checkbox`, `radio`, `switch`, `select`, `picker`, `cascader`, `date-picker`, `overlay`, `popup`, `dialog`, `toast`, `loading`.
+The Base Kit contains 15 native SFC components verified by WeChat DevTools: `avatar`, `badge`, `button`, `card`, `checkbox`, `empty`, `icon`, `image`, `input`, `input-number`, `loading`, `progress`, `select`, `switch`, and `tag`.
 
-The multi-end registry direction starts with `weapp-vite` as the first registry target, and later targets should reuse the same Base Kit list.
+Registry supports both `h5` and `weapp-vite`: H5 covers all 56 runtime families; the mini-program registry exposes 45 high-consensus families while retaining those 15 SFCs as the minimal composable base. `registry/component-tiers.v0.1.json` is the machine-readable boundary.
 
 ## Package Boundaries
 
@@ -112,5 +112,9 @@ The multi-end registry direction starts with `weapp-vite` as the first registry 
   <div class="varo-package-card">
     <h3>Theme</h3>
     <p>Token-driven color, sizing, and component style inputs.</p>
+  </div>
+  <div class="varo-package-card">
+    <h3>Agent Core</h3>
+    <p>Shared event protocol, SSE/chunk transport, smooth reveal, and safe Markdown AST.</p>
   </div>
 </div>

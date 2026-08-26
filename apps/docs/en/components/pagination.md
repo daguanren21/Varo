@@ -1,5 +1,9 @@
 # Pagination
 
+## Demo
+
+<PlatformTabsDemo example="pagination" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -15,10 +19,6 @@ const page = ref(2)
   <VPagination v-model="page" :page-count="5" mode="simple" />
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="pagination" locale="en" />
 
 ## Props
 
@@ -36,4 +36,3 @@ const page = ref(2)
 | --- | --- | --- |
 | `update:modelValue` | `number` | Page changed |
 | `change` | `number` | Page changed |
-

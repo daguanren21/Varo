@@ -1,10 +1,8 @@
 # Form 表单
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="form" locale="zh" />
-
-## 动态数组表单
 
 <FormComponentDemo example="form-array" locale="zh" />
 

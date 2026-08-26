@@ -4,17 +4,32 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "echo weapp playground build pending",
-    "clean": "rimraf dist",
-    "dev": "echo weapp playground dev pending",
+    "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
+    "clean": "rimraf dist devtools .weapp-vite",
+    "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite",
+    "dev:ai": "node scripts/prepare-devtools-project.mjs && weapp-vite --open",
+    "prepare:weapp": "weapp-vite prepare",
     "lint": "echo weapp playground lint pending",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
-    "test:e2e": "echo weapp playground e2e pending"
+    "smoke:runtime": "node e2e/runtime-smoke.mjs",
+    "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {
-    "@varo/ui-weapp": "workspace:*"
+    "@varo/agent-core": "workspace:^",
+    "@varo/theme": "workspace:*",
+    "@varo/ui-weapp": "workspace:*",
+    "@weapp-tailwindcss/merge": "^2.2.2",
+    "clsx": "^2.1.1",
+    "wevu": "6.17.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@weapp-vite/miniprogram-automator": "1.2.13",
+    "tailwindcss": "^4.3.3",
+    "vite": "8.1.0",
+    "vue": "^3.5.41",
+    "weapp-tailwindcss": "^5.1.8",
+    "weapp-vite": "6.17.8"
   }
 }
-
-

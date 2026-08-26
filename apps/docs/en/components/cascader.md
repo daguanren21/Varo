@@ -1,6 +1,6 @@
 # Cascader
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="cascader" locale="en" />
 

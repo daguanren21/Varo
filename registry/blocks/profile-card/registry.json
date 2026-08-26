@@ -1,0 +1,31 @@
+{
+  "name": "profile-card",
+  "type": "block",
+  "title": "Profile Card",
+  "description": "User identity card with avatar, status, statistics, edit action, and extension content.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "utils/cn",
+    "components/avatar",
+    "components/badge",
+    "components/button"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/profile-card/h5.vue",
+      "to": "src/components/blocks/profile-card.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/profile-card/weapp-vite.vue",
+      "to": "src/components/blocks/profile-card.vue"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

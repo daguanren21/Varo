@@ -1,6 +1,6 @@
 # Radio
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="radio" locale="en" />
 

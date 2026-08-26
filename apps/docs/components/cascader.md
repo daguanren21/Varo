@@ -1,6 +1,6 @@
 # Cascader 级联选择器
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="cascader" locale="zh" />
 

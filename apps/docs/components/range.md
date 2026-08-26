@@ -1,6 +1,6 @@
 # Range 区间选择器
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="range" locale="zh" />
 

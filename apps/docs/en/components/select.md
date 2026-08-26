@@ -1,53 +1,18 @@
 # Select
 
-`VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. It uses `picker` mode by default so H5, mini-program, and App outputs share a mobile-first interaction. The controlled contract uses `v-model:value`, `value`, `update:value`, and `valueChange`.
+`VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. It uses `picker` mode by default for H5, mini-program, and App mobile interactions. The controlled contract uses `v-model:value`, `value`, `update:value`, and `valueChange`.
 
-## Basic Usage
+## Demo
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
+<FormComponentDemo example="select" locale="en" />
 
-const city = ref<string | number>()
-const cities = [
-  { label: 'Shanghai', value: 'shanghai' },
-  { label: 'Hangzhou', value: 'hangzhou' }
-]
-</script>
+## Multiple Selection And Confirm
 
-<template>
-  <VSelect v-model:value="city" :options="cities" placeholder="Select city" />
-</template>
-```
-
-## Multiple Selection
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const values = ref<Array<string | number>>([])
-const options = [
-  { label: 'Pending', value: 'pending' },
-  { label: 'Done', value: 'done' },
-  { label: 'Cancelled', value: 'cancelled' }
-]
-</script>
-
-<template>
-  <VSelect v-model:value="values" multiple :options="options" placeholder="Select status" />
-  <VSelect v-model:value="values" multiple :confirmable="false" :options="options" />
-</template>
-```
+Multiple selection confirms draft changes by default. Set `:confirmable="false"` to apply selections immediately.
 
 ## Search And Dropdown
 
-```vue
-<template>
-  <VSelect v-model:value="city" searchable :options="cities" />
-  <VSelect v-model:value="city" mode="dropdown" :options="cities" />
-</template>
-```
+Use `searchable` for local search and `mode="dropdown"` for dropdown presentation.
 
 ## Wrapper Boundary
 

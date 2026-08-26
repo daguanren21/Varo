@@ -1,0 +1,32 @@
+{
+  "name": "action-sheet",
+  "type": "component",
+  "title": "VActionSheet",
+  "description": "Bottom action menu with selectable, disabled, loading, cancel, and safe-area states.",
+  "exportName": "VActionSheet",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "components/loading",
+    "components/popup"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/action-sheet/action-sheet.ts",
+      "to": "src/components/ui/action-sheet.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/action-sheet/action-sheet.ts",
+      "to": "src/components/ui/action-sheet.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

@@ -47,23 +47,28 @@ export const SwitchRoot = defineComponent({
 
     provide(switchRootContextKey, switchRoot)
 
-    return () =>
-      h(
+    return () => {
+      const { class: attrClass, onClick: userClick, ...restAttrs } = attrs
+
+      return h(
         props.as,
         {
-          ...attrs,
+          ...restAttrs,
           ...switchRoot.attrs.root,
+          class: [attrClass],
           disabled: props.as === 'button' ? !switchRoot.state.interactive.value : undefined,
+          type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
             runInteractiveClick(event, {
               action: switchRoot.events.toggle,
-              handler: attrs.onClick,
+              handler: userClick,
               interactive: switchRoot.state.interactive.value
             })
           }
         },
         slots.default?.()
       )
+    }
   }
 })
 

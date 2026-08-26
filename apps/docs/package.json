@@ -11,12 +11,20 @@
     "preview": "vitepress preview .",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
-    "test:e2e": "echo docs e2e skipped"
+    "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {
+    "@varo/agent-core": "workspace:^",
     "@varo/theme": "workspace:*",
     "@varo/ui-h5": "workspace:*",
-    "vitepress": "^1.6.4",
-    "vue": "^3.5.39"
+    "@varo/ui-weapp": "workspace:*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0",
+    "vitepress": "2.0.0-alpha.19",
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "tailwindcss": "4.3.3"
   }
 }

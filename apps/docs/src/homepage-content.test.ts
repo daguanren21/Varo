@@ -57,28 +57,24 @@ describe('homepage content', () => {
     expect(enHome).not.toContain('shadcn-style')
   })
 
-  it('provides a richer block gallery for mini-program product flows', () => {
+  it('renders a registry-backed block catalog instead of fictional product flows', () => {
     const zhExamples = readFileSync(resolve(root, 'examples/index.md'), 'utf8')
     const enExamples = readFileSync(resolve(root, 'en/examples/index.md'), 'utf8')
     const gallery = readFileSync(resolve(root, 'src/components/MiniProgramBlocksGallery.vue'), 'utf8')
-    const requiredBlocks = [
-      'Order Fulfillment Detail',
-      'Shipping Address Form',
-      'Filter Drawer',
-      'Payment Confirmation Sheet'
-    ]
+    const requiredBlocks = ['login-form', 'profile-card', 'profile-edit', 'product-list', 'order-filter', 'agent-chat']
 
     requiredBlocks.forEach((block) => {
-      expect(gallery).toContain(block)
+      expect(gallery).toContain(`id: '${block}'`)
     })
 
     expect(zhExamples).toContain('<MiniProgramBlocksGallery locale="zh" />')
     expect(enExamples).toContain('<MiniProgramBlocksGallery locale="en" />')
-    expect(gallery).toContain('class="varo-block-workspace"')
-    expect(gallery).toContain('class="varo-block-preview-panel"')
-    expect(gallery).toContain('class="varo-block-stage-head"')
-    expect(gallery).toContain('activeBlock')
+    expect(gallery).toContain('class="varo-real-blocks__workspace"')
+    expect(gallery).toContain('class="varo-real-blocks__catalog"')
+    expect(gallery).toContain('class="varo-real-blocks__detail"')
+    expect(gallery).toContain('selectedId')
+    expect(gallery).toContain('add --target ${target.value}')
     expect(gallery).toContain('@click')
-    expect(gallery).toContain('class="varo-motion-pulse"')
+    expect(gallery).not.toContain('VNavbar')
   })
 })

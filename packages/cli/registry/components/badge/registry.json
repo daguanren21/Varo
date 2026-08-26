@@ -1,0 +1,30 @@
+{
+  "name": "badge",
+  "type": "component",
+  "title": "VBadge",
+  "description": "Compact status, count, and dot indicator with semantic tones.",
+  "exportName": "VBadge",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/badge/badge.ts",
+      "to": "src/components/ui/badge.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/badge/weapp-vite.vue",
+      "to": "src/components/ui/badge.vue"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

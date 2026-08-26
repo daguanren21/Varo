@@ -1,0 +1,52 @@
+{
+  "name": "product-list",
+  "type": "block",
+  "title": "Product List",
+  "description": "Responsive product list with reusable item rows, empty state, inventory, pricing, selection, and cart actions.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "utils/cn",
+    "components/badge",
+    "components/button",
+    "components/empty",
+    "components/image"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/product-list/h5.vue",
+      "to": "src/components/blocks/product-list.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/blocks/product-list/product-list-item.h5.vue",
+      "to": "src/components/blocks/product-list-item.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/blocks/product-list/product-list.types.ts",
+      "to": "src/components/blocks/product-list.types.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/product-list/weapp-vite.vue",
+      "to": "src/components/blocks/product-list.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/product-list/product-list-item.weapp-vite.vue",
+      "to": "src/components/blocks/product-list-item.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/product-list/product-list.types.ts",
+      "to": "src/components/blocks/product-list.types.ts"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

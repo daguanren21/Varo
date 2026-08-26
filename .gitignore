@@ -13,3 +13,5 @@ apps/docs/.vitepress/cache/
 .codegraph/
 **/.weapp-vite/
 .worktrees/
+apps/playground-weapp/devtools/
+apps/playground-weapp/project.local.json

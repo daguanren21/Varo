@@ -1,6 +1,6 @@
 # Calendar 日历
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="calendar" locale="zh" />
 

@@ -1,0 +1,31 @@
+{
+  "name": "notice-bar",
+  "type": "component",
+  "title": "VNoticeBar",
+  "description": "Inline page notice with semantic tones, optional scrolling, and close behavior.",
+  "exportName": "VNoticeBar",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "components/icon"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/notice-bar/notice-bar.ts",
+      "to": "src/components/ui/notice-bar.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/notice-bar/notice-bar.ts",
+      "to": "src/components/ui/notice-bar.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

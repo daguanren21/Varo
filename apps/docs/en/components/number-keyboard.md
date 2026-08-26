@@ -1,6 +1,6 @@
 # NumberKeyboard
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="number-keyboard" locale="en" />
 

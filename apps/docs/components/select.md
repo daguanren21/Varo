@@ -2,52 +2,17 @@
 
 `VSelect` 是 Base Kit 的低层选择组件，用于表单、筛选和业务组件二次封装。组件默认使用 `picker` 模式，适合 H5、小程序和 App 的移动端体验。受控契约使用 `v-model:value`、`value`、`update:value` 和 `valueChange`。
 
-## 基础用法
+## 演示
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const city = ref<string | number>()
-const cities = [
-  { label: '上海', value: 'shanghai' },
-  { label: '杭州', value: 'hangzhou' }
-]
-</script>
-
-<template>
-  <VSelect v-model:value="city" :options="cities" placeholder="请选择城市" />
-</template>
-```
+<FormComponentDemo example="select" locale="zh" />
 
 ## 多选与确认
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const values = ref<Array<string | number>>([])
-const options = [
-  { label: '待处理', value: 'pending' },
-  { label: '已完成', value: 'done' },
-  { label: '已取消', value: 'cancelled' }
-]
-</script>
-
-<template>
-  <VSelect v-model:value="values" multiple :options="options" placeholder="请选择状态" />
-  <VSelect v-model:value="values" multiple :confirmable="false" :options="options" />
-</template>
-```
+多选时默认需要确认提交；设置 `:confirmable="false"` 可即时更新选中值。
 
 ## 搜索与 Dropdown
 
-```vue
-<template>
-  <VSelect v-model:value="city" searchable :options="cities" />
-  <VSelect v-model:value="city" mode="dropdown" :options="cities" />
-</template>
-```
+`searchable` 开启本地搜索；`mode="dropdown"` 切换为下拉展示。
 
 ## 二次封装边界
 

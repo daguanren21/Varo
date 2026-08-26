@@ -1,5 +1,9 @@
 # Image
 
+## 演示
+
+<PlatformTabsDemo example="image" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -33,10 +37,6 @@
   <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="image" locale="zh" />
 
 ## Props
 

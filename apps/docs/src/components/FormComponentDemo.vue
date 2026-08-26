@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, useId } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, useId } from 'vue'
 import {
   VButton,
   VCalendar,
@@ -12,6 +12,7 @@ import {
   VFormItem,
   VInput,
   VInputNumber,
+  VLoading,
   VNumberKeyboard,
   VPicker,
   VRadio,
@@ -19,8 +20,11 @@ import {
   VRange,
   VRate,
   VSearchbar,
+  VSelect,
   VShortPassword,
+  VSwitch,
   VTextarea,
+  VToast,
   VUploader
 } from '@varo/ui-h5'
 
@@ -33,14 +37,18 @@ type FormDemoKind =
   | 'form'
   | 'form-array'
   | 'input-number'
+  | 'loading'
   | 'number-keyboard'
   | 'picker'
   | 'radio'
   | 'range'
   | 'rate'
   | 'searchbar'
+  | 'select'
   | 'short-password'
+  | 'switch'
   | 'textarea'
+  | 'toast'
   | 'uploader'
 type Locale = 'zh' | 'en'
 type Platform = 'h5' | 'weapp'
@@ -57,8 +65,13 @@ const props = withDefaults(
 
 const codeExpanded = ref(false)
 const activePlatform = ref<Platform>('h5')
+const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
+let copyFeedbackTimer: number | undefined
 const checkboxValue = ref(['apple'])
 const radioValue = ref('wechat')
+const selectValue = ref<string | number>('hangzhou')
+const switchValue = ref(true)
+const toastVisible = ref(true)
 const inputNumberValue = ref(2)
 const rateValue = ref(3)
 const rangeValue = ref(40)
@@ -162,6 +175,15 @@ const copy = computed(() =>
     ? {
         preview: 'Live Preview',
         code: 'Example Code',
+        codeExpand: 'Show code',
+        codeCollapse: 'Hide code',
+        copyCode: 'Copy code',
+        copyCodeH5: 'Copy H5 code',
+        copyCodeWeapp: 'Copy mini-program code',
+        copied: 'Copied',
+        copyManual: 'Manual',
+        copySuccess: 'Copied to clipboard',
+        copyUnsupported: 'Copy the code manually',
         h5: 'H5',
         weapp: 'Mini Program',
         confirm: 'Confirm',
@@ -172,6 +194,10 @@ const copy = computed(() =>
         mobile: 'Mobile',
         mobilePlaceholder: 'Mobile number',
         searchPlaceholder: 'Search',
+        selectPlaceholder: 'Select city',
+        toastMessage: 'Saved successfully',
+        toastShow: 'Show Toast',
+        loadingText: 'Loading',
         textareaPlaceholder: 'Enter content',
         keyboardDone: 'Done',
         keyboardDelete: 'Delete',
@@ -212,6 +238,15 @@ const copy = computed(() =>
     : {
         preview: '演示效果',
         code: '示例代码',
+        codeExpand: '展开代码',
+        codeCollapse: '收起代码',
+        copyCode: '复制代码',
+        copyCodeH5: '复制 H5 代码',
+        copyCodeWeapp: '复制小程序代码',
+        copied: '已复制',
+        copyManual: '手动复制',
+        copySuccess: '已复制到剪贴板',
+        copyUnsupported: '请手动复制代码',
         h5: 'H5 写法',
         weapp: '小程序写法',
         confirm: '确定',
@@ -222,6 +257,10 @@ const copy = computed(() =>
         mobile: '手机号',
         mobilePlaceholder: '请输入手机号',
         searchPlaceholder: '搜索',
+        selectPlaceholder: '请选择城市',
+        toastMessage: '保存成功',
+        toastShow: '显示 Toast',
+        loadingText: '加载中',
         textareaPlaceholder: '请输入内容',
         keyboardDone: '完成',
         keyboardDelete: '删除',
@@ -312,6 +351,20 @@ const pickerColumns = computed(() =>
         { label: '苹果', value: 'apple' },
         { label: '梨', value: 'pear' },
         { label: '橙子', value: 'orange' }
+      ]
+)
+
+const selectOptions = computed(() =>
+  props.locale === 'en'
+    ? [
+        { label: 'Shanghai', value: 'shanghai' },
+        { label: 'Hangzhou', value: 'hangzhou' },
+        { label: 'Shenzhen', value: 'shenzhen' }
+      ]
+    : [
+        { label: '上海', value: 'shanghai' },
+        { label: '杭州', value: 'hangzhou' },
+        { label: '深圳', value: 'shenzhen' }
       ]
 )
 
@@ -737,12 +790,116 @@ const files = ref([
   <VUploader v-model:value="files" accept="image/*" list-type="card" upload-text="${copy.value.upload}" />
 </template>
       `.trim()
+    case 'select':
+      return `
+<script setup lang="ts">
+import { ref } from 'vue'
+import { VSelect } from '${packageName}'
+
+const city = ref<string | number>('hangzhou')
+const options = ${isEn ? "[{ label: 'Shanghai', value: 'shanghai' }, { label: 'Hangzhou', value: 'hangzhou' }, { label: 'Shenzhen', value: 'shenzhen' }]" : "[{ label: '上海', value: 'shanghai' }, { label: '杭州', value: 'hangzhou' }, { label: '深圳', value: 'shenzhen' }]"}
+<\/script>
+
+<template>
+  <VSelect v-model:value="city" mode="dropdown" :options="options" placeholder="${copy.value.selectPlaceholder}" clearable />
+</template>
+      `.trim()
+    case 'switch':
+      return `
+<script setup lang="ts">
+import { ref } from 'vue'
+import { VSwitch } from '${packageName}'
+
+const enabled = ref(true)
+<\/script>
+
+<template>
+  <VSwitch v-model="enabled" />
+  <VSwitch v-model="enabled" disabled />
+</template>
+      `.trim()
+    case 'toast':
+      return `
+<script setup lang="ts">
+import { ref } from 'vue'
+import { VToast } from '${packageName}'
+
+const visible = ref(true)
+<\/script>
+
+<template>
+  <VToast v-model:visible="visible" type="success" message="${copy.value.toastMessage}" />
+</template>
+      `.trim()
+    case 'loading':
+      return `
+<script setup lang="ts">
+import { VLoading } from '${packageName}'
+<\/script>
+
+<template>
+  <VLoading text="${copy.value.loadingText}" />
+  <VLoading size="sm" tone="primary" />
+  <VLoading size="lg" tone="success" />
+</template>
+      `.trim()
     default:
       return ''
   }
 }
 
 const activeCode = computed(() => codeFor(platformPackage.value))
+const codeToggleLabel = computed(() =>
+  codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand
+)
+const copyLabel = computed(() => {
+  if (copyState.value === 'copied') {
+    return copy.value.copied
+  }
+
+  if (copyState.value === 'unsupported') {
+    return copy.value.copyManual
+  }
+
+  return activePlatform.value === 'h5' ? copy.value.copyCodeH5 : copy.value.copyCodeWeapp
+})
+
+function resetCopyState() {
+  if (copyFeedbackTimer) {
+    window.clearTimeout(copyFeedbackTimer)
+    copyFeedbackTimer = undefined
+  }
+
+  copyState.value = 'idle'
+}
+
+async function copySnippet() {
+  if (!navigator?.clipboard?.writeText) {
+    copyState.value = 'unsupported'
+    return
+  }
+
+  await navigator.clipboard.writeText(activeCode.value)
+  copyState.value = 'copied'
+  copyFeedbackTimer = window.setTimeout(() => {
+    copyState.value = 'idle'
+    copyFeedbackTimer = undefined
+  }, 1800)
+}
+
+function setPlatform(platform: Platform) {
+  activePlatform.value = platform
+  resetCopyState()
+}
+
+function toggleCodeExpanded() {
+  codeExpanded.value = !codeExpanded.value
+  if (!codeExpanded.value) {
+    resetCopyState()
+  }
+}
+
+onBeforeUnmount(() => resetCopyState())
 
 function addFormArrayCompany() {
   formArrayModel.companies.push({ name: '', contact: '', phone: '', type: '' })
@@ -807,6 +964,29 @@ function onFormArrayFailed() {
         />
         <VTextarea v-else-if="example === 'textarea'" v-model:value="textareaValue" :placeholder="copy.textareaPlaceholder" />
         <VShortPassword v-else-if="example === 'short-password'" v-model:value="shortPasswordValue" />
+        <VSelect
+          v-else-if="example === 'select'"
+          v-model:value="selectValue"
+          mode="dropdown"
+          :options="selectOptions"
+          :placeholder="copy.selectPlaceholder"
+          clearable
+        />
+        <div v-else-if="example === 'switch'" class="form-demo__switch-row">
+          <VSwitch v-model="switchValue" />
+          <VSwitch v-model="switchValue" disabled />
+        </div>
+        <div v-else-if="example === 'loading'" class="form-demo__loading-row">
+          <VLoading :text="copy.loadingText" />
+          <VLoading size="sm" tone="primary" />
+          <VLoading size="lg" tone="success" />
+        </div>
+        <VToast
+          v-else-if="example === 'toast'"
+          v-model:visible="toastVisible"
+          type="success"
+          :message="copy.toastMessage"
+        />
         <VUploader
           v-else-if="example === 'uploader'"
           v-model:value="uploaderFiles"
@@ -1151,6 +1331,14 @@ function onFormArrayFailed() {
         >
           {{ copy.reopen }}
         </button>
+        <button
+          v-if="example === 'toast' && !toastVisible"
+          class="form-demo__reopen"
+          type="button"
+          @click="toastVisible = true"
+        >
+          {{ copy.toastShow }}
+        </button>
       </div>
 
       <button
@@ -1158,8 +1346,8 @@ function onFormArrayFailed() {
         :data-active="String(codeExpanded)"
         type="button"
         :aria-expanded="codeExpanded"
-        :aria-label="copy.code"
-        @click="codeExpanded = !codeExpanded"
+        :aria-label="codeToggleLabel"
+        @click="toggleCodeExpanded"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true" class="form-demo__code-icon">
           <path
@@ -1183,31 +1371,44 @@ function onFormArrayFailed() {
             stroke-width="1.8"
           />
         </svg>
-        <span>{{ codeExpanded ? copy.code : copy.code }}</span>
+        <span>{{ codeToggleLabel }}</span>
       </button>
     </div>
 
-    <div v-if="codeExpanded" class="form-demo__code">
-      <div class="form-demo__tabs" role="tablist" :aria-label="copy.code">
+    <div v-if="codeExpanded" class="form-demo__code" :data-expanded="String(codeExpanded)">
+      <div class="form-demo__code-toolbar">
+        <div class="form-demo__tabs" role="tablist" :aria-label="copy.code">
+          <button
+            class="form-demo__tab"
+            :data-active="activePlatform === 'h5'"
+            type="button"
+            role="tab"
+            :aria-selected="activePlatform === 'h5'"
+            @click="setPlatform('h5')"
+          >
+            {{ copy.h5 }}
+          </button>
+          <button
+            class="form-demo__tab"
+            :data-active="activePlatform === 'weapp'"
+            type="button"
+            role="tab"
+            :aria-selected="activePlatform === 'weapp'"
+            @click="setPlatform('weapp')"
+          >
+            {{ copy.weapp }}
+          </button>
+        </div>
         <button
-          class="form-demo__tab"
-          :data-active="activePlatform === 'h5'"
+          class="form-demo__code-copy"
           type="button"
-          role="tab"
-          :aria-selected="activePlatform === 'h5'"
-          @click="activePlatform = 'h5'"
+          :data-state="copyState"
+          :aria-label="copyLabel"
+          :title="copyLabel"
+          @click="copySnippet"
         >
-          {{ copy.h5 }}
-        </button>
-        <button
-          class="form-demo__tab"
-          :data-active="activePlatform === 'weapp'"
-          type="button"
-          role="tab"
-          :aria-selected="activePlatform === 'weapp'"
-          @click="activePlatform = 'weapp'"
-        >
-          {{ copy.weapp }}
+          <span class="form-demo__code-copy-icon" aria-hidden="true"></span>
+          <span class="form-demo__code-copy-label">{{ copyLabel }}</span>
         </button>
       </div>
       <div class="form-demo__code-head">
@@ -1215,14 +1416,28 @@ function onFormArrayFailed() {
         <span>{{ packageTag }}</span>
       </div>
       <pre><code>{{ activeCode }}</code></pre>
+      <p
+        v-if="copyState !== 'idle'"
+        class="form-demo__code-toast"
+        :data-state="copyState"
+        role="status"
+        aria-live="polite"
+      >
+        {{ copyState === 'copied' ? copy.copySuccess : copy.copyUnsupported }}
+      </p>
     </div>
   </section>
 </template>
 
 <style scoped>
 .form-demo {
+  --form-demo-surface: var(--varo-demo-surface);
+  --form-demo-surface-strong: var(--varo-demo-surface-strong);
+  --form-demo-border: var(--varo-demo-border);
+  --form-demo-shadow: var(--varo-demo-shadow);
+  --form-demo-code-bg: var(--varo-demo-code-bg);
   position: relative;
-  margin: 18px 0 28px;
+  margin: 20px 0 28px;
 }
 
 .form-demo__stage {
@@ -1230,9 +1445,12 @@ function onFormArrayFailed() {
   display: grid;
   gap: 14px;
   padding: 18px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--vp-c-bg-soft) 82%, white);
+  border: 1px solid var(--form-demo-border);
+  border-radius: var(--varo-demo-radius);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--form-demo-surface) 94%, transparent), var(--form-demo-surface-strong)),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 10%, transparent), transparent 36%);
+  box-shadow: var(--form-demo-shadow);
 }
 
 .form-demo__label {
@@ -1248,30 +1466,93 @@ function onFormArrayFailed() {
   align-items: start;
 }
 
+.form-demo__preview[data-example='select'] {
+  overflow: visible;
+  padding-bottom: 8px;
+}
+
+.form-demo__preview[data-example='select'] :deep(.varo-select) {
+  overflow: visible;
+}
+
+.form-demo__stage:has(.form-demo__preview[data-example='select']) {
+  overflow: visible;
+}
+
 .form-demo__preview[data-example='calendar'],
 .form-demo__preview[data-example='date-picker'],
 .form-demo__preview[data-example='cascader'],
 .form-demo__preview[data-example='picker'],
 .form-demo__preview[data-example='number-keyboard'] {
+  position: relative;
   max-width: 390px;
+  min-height: 280px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid var(--form-demo-border);
+  border-radius: 20px;
+  background: var(--varo-demo-phone-screen);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--varo-card-solid) 18%, transparent),
+    0 14px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
+}
+
+.form-demo__preview[data-example='toast'] {
+  min-height: 148px;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  border: 1px solid var(--form-demo-border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--form-demo-surface-strong) 88%, transparent);
+}
+
+.form-demo__preview[data-example='calendar'] :deep(.varo-calendar),
+.form-demo__preview[data-example='date-picker'] :deep(.varo-date-picker),
+.form-demo__preview[data-example='cascader'] :deep(.varo-cascader),
+.form-demo__preview[data-example='picker'] :deep(.varo-picker),
+.form-demo__preview[data-example='number-keyboard'] :deep(.varo-number-keyboard) {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--varo-foreground) 10%, transparent);
+}
+
+.form-demo__preview .form-demo__reopen {
+  position: relative;
+  z-index: 1;
+  justify-self: start;
 }
 
 .form-demo__reopen,
-.form-demo__array-add,
-.form-demo__array-remove {
+.form-demo__array-add {
   display: inline-flex;
   width: fit-content;
   min-height: 38px;
   align-items: center;
   justify-content: center;
   padding: 0 14px;
-  border: 1px solid rgba(15, 118, 110, 0.38);
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, transparent);
   border-radius: 12px;
-  background: rgba(15, 118, 110, 0.1);
-  color: #0f766e;
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  color: var(--varo-primary);
   cursor: pointer;
   font-weight: 700;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
+
+.form-demo__reopen:hover,
+.form-demo__array-add:hover {
+  border-color: color-mix(in srgb, var(--varo-primary) 56%, transparent);
+  background: color-mix(in srgb, var(--varo-primary) 16%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--varo-primary) 14%, transparent);
+}
+
 
 .form-demo__array-toolbar,
 .form-demo__form-actions {
@@ -1297,7 +1578,7 @@ function onFormArrayFailed() {
   align-items: center;
   padding: 0 12px;
   border-radius: 999px;
-  background: rgba(100, 116, 139, 0.1);
+  background: color-mix(in srgb, var(--varo-muted) 12%, transparent);
   color: var(--vp-c-text-2);
   font-size: 12px;
   font-weight: 700;
@@ -1305,9 +1586,9 @@ function onFormArrayFailed() {
 
 .form-demo__array-item {
   padding: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--varo-border);
   border-radius: 14px;
-  background: rgba(248, 250, 252, 0.72);
+  background: color-mix(in srgb, var(--varo-surface-strong) 72%, transparent);
 }
 
 .form-demo__array-header {
@@ -1336,8 +1617,8 @@ function onFormArrayFailed() {
   align-items: center;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(15, 118, 110, 0.12);
-  color: #0f766e;
+  background: color-mix(in srgb, var(--varo-primary) 12%, transparent);
+  color: var(--varo-primary);
   font-size: 11px;
   font-weight: 800;
 }
@@ -1364,7 +1645,7 @@ function onFormArrayFailed() {
 .form-demo__array-remove {
   display: inline-flex;
   min-width: 72px;
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 12px;
   align-items: center;
   justify-content: center;
@@ -1372,19 +1653,38 @@ function onFormArrayFailed() {
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .form-demo__array-secondary {
-  border: 1px solid rgba(148, 163, 184, 0.24);
-  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--varo-border);
+  background: color-mix(in srgb, var(--varo-card-solid) 86%, transparent);
   color: var(--vp-c-text-2);
 }
 
 .form-demo__array-remove {
-  border: 1px solid rgba(220, 38, 38, 0.18);
-  background: rgba(254, 226, 226, 0.72);
-  color: #b91c1c;
+  border: 1px solid color-mix(in srgb, var(--varo-danger) 18%, transparent);
+  background: color-mix(in srgb, var(--varo-danger) 12%, transparent);
+  color: var(--varo-danger);
 }
+
+.form-demo__array-secondary:hover {
+  border-color: color-mix(in srgb, var(--varo-primary) 34%, var(--varo-border));
+  background: color-mix(in srgb, var(--varo-primary) 8%, var(--varo-card-solid));
+  color: var(--varo-foreground);
+}
+
+.form-demo__array-remove:hover {
+  border-color: color-mix(in srgb, var(--varo-danger) 36%, transparent);
+  background: color-mix(in srgb, var(--varo-danger) 18%, transparent);
+  transform: translateY(-1px);
+}
+
 
 @media (max-width: 640px) {
   .form-demo__array-grid {
@@ -1396,14 +1696,16 @@ function onFormArrayFailed() {
   position: absolute;
   right: 12px;
   bottom: 12px;
+  z-index: 2;
   display: inline-flex;
   gap: 8px;
-  height: 34px;
+  min-height: 36px;
+  height: auto;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
-  background: var(--vp-c-bg);
+  border: 1px solid var(--form-demo-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--form-demo-surface-strong) 92%, transparent);
   color: var(--vp-c-text-2);
   padding: 0 12px;
   cursor: pointer;
@@ -1416,9 +1718,9 @@ function onFormArrayFailed() {
 
 .form-demo__code-toggle:hover,
 .form-demo__code-toggle[data-active='true'] {
-  border-color: rgba(15, 118, 110, 0.46);
-  background: rgba(15, 118, 110, 0.1);
-  color: #0f766e;
+  border-color: color-mix(in srgb, var(--varo-primary) 46%, transparent);
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  color: var(--varo-primary);
   transform: translateY(-1px);
 }
 
@@ -1435,39 +1737,141 @@ function onFormArrayFailed() {
 .form-demo__code {
   margin-top: 12px;
   overflow: hidden;
-  border: 1px solid var(--vp-c-divider);
+  border: 1px solid var(--form-demo-border);
   border-radius: 18px;
-  background: #0f172a;
+  background: var(--form-demo-code-bg);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--varo-foreground) 10%, transparent);
+}
+
+.form-demo__code-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 12px 0;
 }
 
 .form-demo__tabs {
   display: inline-flex;
   gap: 6px;
-  margin: 12px 12px 0;
+  margin: 0;
   padding: 4px;
   border-radius: 12px;
-  background: rgba(148, 163, 184, 0.18);
+  background: color-mix(in srgb, var(--varo-border-strong) 40%, transparent);
 }
 
 .form-demo__tab {
+  min-height: 36px;
   border: 0;
   border-radius: 9px;
-  padding: 7px 12px;
+  padding: 0 14px;
   background: transparent;
-  color: rgba(226, 232, 240, 0.72);
+  color: color-mix(in srgb, var(--varo-card-solid) 72%, transparent);
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
   transition:
     background 0.18s ease,
     color 0.18s ease,
-    transform 0.18s ease;
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .form-demo__tab[data-active='true'] {
-  background: #ffffff;
-  color: #0f172a;
+  background: var(--varo-card-solid);
+  color: var(--varo-foreground);
   transform: translateY(-1px);
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--varo-foreground) 12%, transparent);
+}
+.form-demo__tab:hover:not([data-active='true']) {
+  color: color-mix(in srgb, var(--varo-card-solid) 92%, transparent);
+  background: color-mix(in srgb, var(--varo-card-solid) 10%, transparent);
+}
+
+.form-demo__code-copy {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--varo-card-solid) 18%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--varo-card-solid) 8%, transparent);
+  color: color-mix(in srgb, var(--varo-card-solid) 82%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.form-demo__code-copy:hover {
+  border-color: color-mix(in srgb, var(--varo-primary) 42%, transparent);
+  background: color-mix(in srgb, var(--varo-primary) 16%, transparent);
+  color: color-mix(in srgb, var(--varo-card-solid) 96%, transparent);
+}
+
+.form-demo__code-copy[data-state='copied'] {
+  border-color: color-mix(in srgb, #4ade80 48%, transparent);
+  background: color-mix(in srgb, #4ade80 18%, transparent);
+  color: #bbf7d0;
+}
+
+.form-demo__code-copy[data-state='unsupported'] {
+  border-color: color-mix(in srgb, #fbbf24 48%, transparent);
+  background: color-mix(in srgb, #fbbf24 14%, transparent);
+  color: #fde68a;
+}
+
+.form-demo__code-copy-icon {
+  position: relative;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+}
+
+.form-demo__code-copy-icon::before,
+.form-demo__code-copy-icon::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+}
+
+.form-demo__code-copy-icon::before {
+  top: 0;
+  right: 0;
+}
+
+.form-demo__code-copy-icon::after {
+  bottom: 0;
+  left: 0;
+  background: currentColor;
+  opacity: 0.18;
+}
+
+.form-demo__code-copy-label {
+  font-size: 12px;
+  font-weight: 720;
+  line-height: 1;
+}
+
+.form-demo__tab:focus-visible,
+.form-demo__reopen:focus-visible,
+.form-demo__array-add:focus-visible,
+.form-demo__array-secondary:focus-visible,
+.form-demo__array-remove:focus-visible,
+.form-demo__code-toggle:focus-visible,
+.form-demo__code-copy:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--varo-primary) 70%, transparent);
+  outline-offset: 2px;
 }
 
 .form-demo__code-head {
@@ -1476,25 +1880,44 @@ function onFormArrayFailed() {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px 0;
-  color: rgba(226, 232, 240, 0.88);
+  color: color-mix(in srgb, var(--varo-card-solid) 88%, transparent);
   font-size: 13px;
 }
 
 .form-demo__code-head span {
-  color: rgba(226, 232, 240, 0.52);
+  color: color-mix(in srgb, var(--varo-card-solid) 52%, transparent);
 }
 
 .form-demo__code pre {
   margin: 0;
   padding: 14px 16px 18px;
   overflow-x: auto;
-  color: #e2e8f0;
+  color: color-mix(in srgb, var(--varo-card-solid) 92%, var(--varo-surface-strong));
   font-size: 13px;
   line-height: 1.65;
 }
 
 .form-demo__code code {
   font-family: var(--vp-font-family-mono);
+}
+
+.form-demo__code-toast {
+  margin: 0;
+  border-top: 1px solid color-mix(in srgb, #fff 10%, transparent);
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.form-demo__code-toast[data-state='copied'] {
+  background: color-mix(in srgb, #4ade80 12%, transparent);
+  color: #bbf7d0;
+}
+
+.form-demo__code-toast[data-state='unsupported'] {
+  background: color-mix(in srgb, #fbbf24 12%, transparent);
+  color: #fde68a;
 }
 
 :deep(.varo-checkbox-group),
@@ -1510,6 +1933,15 @@ function onFormArrayFailed() {
 @media (max-width: 640px) {
   .form-demo__stage {
     padding: 14px;
+    border-radius: calc(var(--varo-demo-radius) - 4px);
+  }
+
+  .form-demo__code-toolbar {
+    align-items: stretch;
+  }
+
+  .form-demo__code-copy {
+    width: 100%;
   }
 
   .form-demo__code-head {
@@ -1518,7 +1950,11 @@ function onFormArrayFailed() {
   }
 }
 
-.form-demo__stage,
+.form-demo__stage {
+  border-color: var(--form-demo-border);
+  border-radius: var(--varo-demo-radius);
+}
+
 .form-demo__array-item {
   border-color: var(--varo-border);
   border-radius: var(--varo-radius-lg);
@@ -1533,6 +1969,10 @@ function onFormArrayFailed() {
 .form-demo__array-badge,
 .form-demo__array-secondary,
 .form-demo__code-toggle,
+.form-demo__code-copy {
+  border-radius: 999px;
+}
+
 .form-demo__code,
 .form-demo__tabs,
 .form-demo__tab {
@@ -1578,12 +2018,12 @@ function onFormArrayFailed() {
 }
 
 .form-demo__tabs {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--varo-card-solid) 8%, transparent);
 }
 
 .form-demo__tab[data-active='true'] {
-  background: #fafafa;
-  color: #18181b;
+  background: var(--varo-card-solid);
+  color: var(--varo-foreground);
 }
 
 :deep(.varo-input__body),

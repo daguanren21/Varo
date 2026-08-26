@@ -1,5 +1,9 @@
 # Tabs 选项卡切换
 
+## 演示
+
+<PlatformTabsDemo example="tabs" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -18,10 +22,6 @@ const active = ref('overview')
   </VTabs>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="tabs" locale="zh" />
 
 ## VTabs Props
 
@@ -45,4 +45,3 @@ const active = ref('overview')
 | `name` | `string \| number` | - | 选项卡标识 |
 | `title` | `string` | `undefined` | 标题 |
 | `disabled` | `boolean` | `false` | 是否禁用 |
-

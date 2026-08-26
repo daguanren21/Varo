@@ -1,13 +1,22 @@
 # Profile Edit Block
 
-`Profile Edit` is a Base Kit form block that uses `VSelect` for city selection. It targets the `weapp-vite` registry and works as a starting point for profile editing screens.
+`Profile Edit` is an installable dual-target profile form with name, phone, searchable city, biography, loading, cancel, and submit states.
 
 ## Registry
 
-- Target: `weapp-vite`
-- Dependencies: `components/select`
+- Targets: `h5`, `weapp-vite`
+- Dependencies: `components/button`, `components/input`, `components/select`, `utils/cn`
 - File: `src/components/blocks/profile-edit.vue`
+
+```bash
+pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo/cli add --target h5 blocks/profile-edit
+```
 
 ## Boundary
 
-This block only composes base components. Remote city data, user APIs, submit flows, avatar fields, and region cascading belong in the business wrapper layer.
+The Block owns typed local form composition only. APIs, authentication, remote city dictionaries, and persistence policy stay in the business wrapper. Products inject `initialProfile` and `cities`, then handle `submit` / `cancel`.
+
+## Related
+
+- [Build Your Own Block](/en/blocks/build-your-own)

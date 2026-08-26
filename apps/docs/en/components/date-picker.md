@@ -1,6 +1,6 @@
 # DatePicker
 
-## Basic Usage
+## Demo
 
 <FormComponentDemo example="date-picker" locale="en" />
 

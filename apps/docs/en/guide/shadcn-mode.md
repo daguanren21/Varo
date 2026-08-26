@@ -1,38 +1,53 @@
 # shadcn Mode
 
-Varo registry is not only an npm package story. It gives product teams source files they can own, review, and wrap into an internal design system.
+Varo registry is not only an npm package story. It gives product teams target-correct source files they can own: TypeScript runtime source on H5; native Vue SFCs for the mini-program Base Kit; and target-neutral TypeScript runtime source backed by mini-program primitives for the extended high-consensus set.
 
 ## Add Components
 
 ```bash
-pnpm dlx @varo/cli add button select
+# weapp-vite Base Kit
+pnpm dlx @varo/cli add --target weapp-vite button select card
+
+# weapp-vite high-consensus extensions
+pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+
+# H5
+pnpm dlx @varo/cli add --target h5 button select card
 ```
 
-This copies:
+The mini-program target receives:
 
 ```text
-src/components/ui/button.ts
-src/components/ui/select.ts
+src/components/ui/v-button.vue
+src/components/ui/select.vue
+src/components/ui/v-card.vue
+src/lib/cn.ts
+src/styles/varo.css
 ```
 
-The CLI does not overwrite existing files by default, so local changes to copied source remain intact. After reviewing those changes, replace them explicitly with:
+Files that would shadow native mini-program tags use a `v-` prefix. The H5 target receives the matching `.ts` source with the same public contract.
+
+The CLI preserves local files by default. Replace reviewed customizations explicitly:
 
 ```bash
-pnpm dlx @varo/cli add --force button select
+pnpm dlx @varo/cli add --target weapp-vite --force button select
 ```
 
-Blocks install their registry dependencies first:
+Blocks resolve target-specific registry dependencies first:
 
 ```bash
-pnpm dlx @varo/cli add blocks/profile-edit
+pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo/cli add --target h5 blocks/profile-edit
 ```
 
-`profile-edit` depends on `components/select`, so the product receives:
+## Agent UI
 
-```text
-src/components/ui/select.ts
-src/components/blocks/profile-edit.vue
+```bash
+pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo/cli add --target h5 components/agent-ui
 ```
+
+This installs 36 dual-target Agent components covering loading, reasoning, streaming, messages, tools, tasks, approval, prompt input, code, diffs, image generation, citations, activity, sidebars, context, tables, workflows, fine-tuning, and selection actions. `blocks/agent-chat` provides the complete conversation block, while `@varo/agent-core` supplies the provider-neutral event protocol, SSE/chunk decoding, and target-specific smooth scheduling.
 
 ## Wrap Business Components
 
@@ -85,6 +100,7 @@ export const UserSelect = defineComponent({
 | Layer | Location | Responsibility |
 | --- | --- | --- |
 | Primitives | `@varo/primitives-*` | State, events, Root/Trigger/Content contracts |
+| Agent Core | `@varo/agent-core` | Event protocol, SSE/chunk transport, smooth text queue, and Markdown AST |
 | Base Kit | `src/components/ui/*` | Copied low-level components that teams can modify |
 | Business Wrappers | `src/components/biz/*` | Remote search, grouping, pagination, API fields, and product copy |
 | Blocks | `src/components/blocks/*` | Copied business screen slices |

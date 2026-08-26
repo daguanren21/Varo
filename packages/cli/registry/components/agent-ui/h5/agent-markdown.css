@@ -1,0 +1,51 @@
+.agent-markdown {
+  color: inherit;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.agent-markdown > :first-child { margin-top: 0; }
+.agent-markdown > :last-child { margin-bottom: 0; }
+.agent-markdown .agent-markdown__paragraph,
+.agent-markdown .agent-markdown__h,
+.agent-markdown .agent-markdown__strong,
+.agent-markdown .agent-markdown__quote,
+.agent-markdown .agent-markdown__definitions dt {
+  color: inherit;
+}
+.agent-markdown__h { color: inherit; font-weight: 800; line-height: 1.3; margin: 1.1em 0 .45em; }
+.agent-markdown__h1 { font-size: 1.55em; }
+.agent-markdown__h2 { font-size: 1.35em; }
+.agent-markdown__h3 { font-size: 1.18em; }
+.agent-markdown__h4, .agent-markdown__h5, .agent-markdown__h6 { font-size: 1em; }
+.agent-markdown__paragraph { margin: .55em 0; }
+.agent-markdown__list { display: grid; gap: .35em; margin: .65em 0; padding-left: 1.4rem; }
+.agent-markdown__list--bullet { list-style: disc; }
+.agent-markdown__list--ordered { list-style: decimal; }
+.agent-markdown__list-item > .agent-markdown__paragraph { margin: 0; }
+.agent-markdown__code-block { background: #0f172a; border: 1px solid #1e293b; border-radius: .875rem; color: #e2e8f0; margin: .8em 0; overflow: hidden; }
+.agent-markdown__code-head { align-items: center; background: #111c30; border-bottom: 1px solid #26334a; color: #94a3b8; display: flex; font-size: .68rem; font-weight: 700; justify-content: space-between; letter-spacing: .08em; min-height: 2rem; padding: 0 .75rem; text-transform: uppercase; }
+.agent-markdown__pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .76rem; line-height: 1.65; margin: 0; overflow-x: auto; padding: .8rem; white-space: pre; }
+.agent-markdown__inline-code, .agent-markdown__math-inline { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: .35rem; color: #0f766e; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .88em; padding: .08em .35em; }
+.agent-markdown__link { color: #0f766e; font-weight: 650; text-decoration: underline; text-decoration-color: #99f6e4; text-underline-offset: .18em; }
+.agent-markdown__image { border-radius: .75rem; display: block; height: auto; margin: .75em 0; max-width: 100%; }
+.agent-markdown__rule { border: 0; border-top: 1px solid #e2e8f0; margin: 1em 0; }
+.agent-markdown__quote { border-left: 3px solid #14b8a6; color: inherit; margin: .75em 0; padding: .2em 0 .2em .85rem; }
+.agent-markdown__table-scroll { margin: .8em 0; max-width: 100%; overflow-x: auto; }
+.agent-markdown__table { border-collapse: collapse; min-width: 100%; }
+.agent-markdown__table th, .agent-markdown__table td { border: 1px solid #e2e8f0; padding: .45rem .6rem; text-align: left; white-space: nowrap; }
+.agent-markdown__table th { background: #f8fafc; color: inherit; font-weight: 750; }
+.agent-markdown__strong { color: inherit; font-weight: 800; }
+.agent-markdown__mark { background: #fef3c7; border-radius: .2rem; color: inherit; padding: 0 .12em; }
+.agent-markdown__definitions { display: grid; gap: .3rem; margin: .75em 0; }
+.agent-markdown__definitions dt { color: inherit; font-weight: 750; }
+.agent-markdown__definitions dd { margin: 0 0 .45rem 1rem; }
+.agent-markdown__footnote { color: #0f766e; font-size: .75em; }
+.agent-markdown__admonition { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: .75rem; margin: .8em 0; padding: .7rem .8rem; }
+.agent-markdown__admonition-title { color: #115e59; display: block; margin-bottom: .25rem; }
+.agent-markdown__math-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .75rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; margin: .8em 0; overflow-x: auto; padding: .75rem; }
+.agent-message[data-role='user'] .agent-markdown { color: #fff; }
+.agent-message[data-role='user'] .agent-markdown__link,
+.agent-message[data-role='user'] .agent-markdown__footnote { color: #fff; text-decoration-color: rgba(255,255,255,.7); }
+.agent-message[data-role='user'] .agent-markdown__inline-code,
+.agent-message[data-role='user'] .agent-markdown__math-inline { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.14); color: #fff; }

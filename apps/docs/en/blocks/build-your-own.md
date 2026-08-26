@@ -2,6 +2,26 @@
 
 This guide shows how to turn Base Kit components into a maintainable, installable, and optionally contributable business block. The running example is an anonymized filter bar with no real APIs, credentials, private URLs, or internal ticket IDs.
 
+## Installable Blocks
+
+| Registry name | Purpose | Targets |
+| --- | --- | --- |
+| `login-form` | Login, remember, error, and loading states | H5 / Weapp |
+| `profile-card` | Identity, status, and account statistics | H5 / Weapp |
+| `profile-edit` | Profile fields and city selection | H5 / Weapp |
+| `product-list` | Products, inventory, pricing, and cart actions | H5 / Weapp |
+| `order-filter` | Order status and amount filters | H5 / Weapp |
+| `agent-chat` | Incremental conversation, reasoning, tools, approval, and composer | H5 / Weapp |
+
+```bash
+pnpm dlx @varo/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo/cli add --target h5 blocks/product-list
+pnpm dlx @varo/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo/cli add --target h5 blocks/agent-chat
+```
+
+Documentation previews must come from these real registry sources, not fictional exports or non-compiling JSX strings.
+
 ## 1. Understand the layers
 
 | Layer | Owns | Does not own |
@@ -61,7 +81,7 @@ Do not import registry source paths directly from the block. Keep remote data an
 Install the base component:
 
 ```bash
-pnpm dlx @varo/cli add components/select
+pnpm dlx @varo/cli add --target weapp-vite components/select
 ```
 
 ## 4. Create the local block
@@ -255,7 +275,7 @@ pnpm test
 
 # pack the CLI and install into a temporary fixture
 pnpm --filter @varo/cli build
-pnpm dlx @varo/cli add blocks/status-filter
+pnpm dlx @varo/cli add --target weapp-vite blocks/status-filter
 ```
 
 Confirm:
@@ -291,8 +311,8 @@ A contribution usually includes source, `registry.json`, tests, and bilingual do
 ## Install existing blocks
 
 ```bash
-pnpm dlx @varo/cli add blocks/profile-edit
-pnpm dlx @varo/cli add blocks/order-filter
+pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo/cli add --target weapp-vite blocks/order-filter
 ```
 
 After install:

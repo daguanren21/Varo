@@ -1,0 +1,22 @@
+{
+  "name": "layout-utils",
+  "type": "util",
+  "title": "Layout Utilities",
+  "description": "Portable size normalization helpers shared by layout components.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/utils/layout-utils/layout-utils.ts",
+      "to": "src/components/ui/layout-utils.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/utils/layout-utils/layout-utils.ts",
+      "to": "src/components/ui/layout-utils.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

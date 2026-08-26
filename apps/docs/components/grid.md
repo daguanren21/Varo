@@ -1,5 +1,9 @@
 # Grid
 
+## 演示
+
+<PlatformTabsDemo example="grid" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -35,10 +39,6 @@
   </VGrid>
 </template>
 ```
-
-## 跨端演示
-
-<PlatformTabsDemo example="grid" locale="zh" />
 
 ## Grid Props
 

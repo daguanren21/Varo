@@ -1,0 +1,32 @@
+{
+  "name": "progress",
+  "type": "component",
+  "title": "VProgress",
+  "description": "Linear and circular progress indicator with bounded values and semantic statuses.",
+  "exportName": "VProgress",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/progress/progress.ts",
+      "to": "src/components/ui/progress.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/progress/weapp-vite.vue",
+      "to": "src/components/ui/v-progress.vue"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

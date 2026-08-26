@@ -1,5 +1,9 @@
 # Elevator
 
+## Demo
+
+<PlatformTabsDemo example="elevator" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -20,10 +24,6 @@ const indexes = [
 </template>
 ```
 
-## Cross-platform Preview
-
-<PlatformTabsDemo example="elevator" locale="en" />
-
 ## Props
 
 | Prop | Type | Default | Description |
@@ -39,4 +39,3 @@ const indexes = [
 | `update:activeIndex` | `string` | Active index changed |
 | `change` | `string` | Active index changed |
 | `clickItem` | `(item, index)` | Group item clicked |
-

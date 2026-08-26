@@ -1,0 +1,32 @@
+{
+  "name": "sticky",
+  "type": "component",
+  "title": "VSticky",
+  "description": "Sticky positioning wrapper with offset and containment options.",
+  "exportName": "VSticky",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "@varo/shared",
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/primitives"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/sticky/sticky.ts",
+      "to": "src/components/ui/sticky.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/sticky/sticky.ts",
+      "to": "src/components/ui/sticky.ts"
+    }
+  ],
+  "docs": "/components/sticky"
+}

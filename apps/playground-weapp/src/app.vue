@@ -1,17 +1,4 @@
 <script setup lang="ts">
-import { createTheme, VaroConfigProvider } from '@varo/theme'
-
-const theme = createTheme({
-  primary: '#0f766e',
-  success: '#15803d',
-  warning: '#c2410c',
-  error: '#b91c1c',
-  neutral: '#172033'
-})
-
-// Keep provider config available for page-level composition.
-void theme
-void VaroConfigProvider
 </script>
 
 <template>
@@ -21,6 +8,9 @@ void VaroConfigProvider
 </template>
 
 <style>
+@import './styles.css';
+@import './styles/varo.css';
+
 page {
   background: #f4f7fb;
   color: #172033;
@@ -35,12 +25,12 @@ page {
 <json lang="jsonc">
 {
   "$schema": "https://vite.icebreaker.top/app.json",
-  "pages": ["pages/index/index"],
+  "pages": ["pages/mall/index", "pages/index/index"],
   "window": {
-    "navigationBarTitleText": "Varo Weapp Playground",
-    "navigationBarBackgroundColor": "#0f766e",
+    "navigationBarTitleText": "Varo AI 商城",
+    "navigationBarBackgroundColor": "#e1251b",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#f4f7fb"
+    "backgroundColor": "#f5f5f5"
   }
 }
 </json>

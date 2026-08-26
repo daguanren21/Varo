@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 
@@ -13,15 +14,19 @@ export default defineConfig({
     ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }]
   ],
   vite: {
+    plugins: [tailwindcss()],
     resolve: {
       alias: {
+        '@varo/agent-core': workspacePath('../../../packages/agent-core/src/index.ts'),
         '@varo/shared': workspacePath('../../../packages/shared/src/index.ts'),
         '@varo/utils': workspacePath('../../../packages/utils/src/index.ts'),
         '@varo/theme': workspacePath('../../../packages/theme/src/index.ts'),
         '@varo/primitives-core': workspacePath('../../../packages/primitives-core/src/index.ts'),
         '@varo/primitives-h5': workspacePath('../../../packages/primitives-h5/src/index.ts'),
+        '@varo/primitives-weapp': workspacePath('../../../packages/primitives-weapp/src/index.ts'),
         '@varo/ui-h5/source/style.css': workspacePath('../../../packages/ui-h5/src/style.css'),
-        '@varo/ui-h5': workspacePath('../../../packages/ui-h5/src/index.ts')
+        '@varo/ui-h5': workspacePath('../../../packages/ui-h5/src/index.ts'),
+        '@varo/ui-weapp': workspacePath('../../../packages/ui-weapp/src/index.ts')
       }
     }
   },
@@ -38,8 +43,9 @@ export default defineConfig({
         nav: [
           { text: '指南', link: '/guide/installation' },
           { text: '组件', link: '/components/button' },
+          { text: 'AI 组件', link: '/ai/' },
           { text: 'Primitives', link: '/primitives/' },
-          { text: 'Blocks', link: '/blocks/profile-edit' },
+          { text: 'Blocks', link: '/blocks/build-your-own' },
           { text: '示例', link: '/examples/' },
           { text: '主题', link: '/guide/theme' },
           { text: '色彩', link: '/guide/colors' },
@@ -138,14 +144,99 @@ export default defineConfig({
             ]
           },
           {
+            text: 'AI Agent 组件',
+            items: [
+              { text: '总览与实时演示', link: '/ai/' },
+              {
+                text: '对话与流式',
+                collapsed: false,
+                items: [
+                  { text: 'AgentLoading', link: '/ai/loading' },
+                  { text: 'AgentThinking', link: '/ai/thinking' },
+                  { text: 'AgentMarkdown', link: '/ai/markdown' },
+                  { text: 'AgentStream', link: '/ai/stream' },
+                  { text: 'AgentMessage', link: '/ai/message' },
+                  { text: 'AgentConversation', link: '/ai/conversation' },
+                  { text: 'AgentMessageScroller', link: '/ai/message-scroller' }
+                ]
+              },
+              {
+                text: '执行与审批',
+                collapsed: false,
+                items: [
+                  { text: 'AgentToolChip', link: '/ai/tool-chip' },
+                  { text: 'AgentToolResult', link: '/ai/tool-result' },
+                  { text: 'AgentTaskList', link: '/ai/task-list' },
+                  { text: 'AgentActivity', link: '/ai/activity' },
+                  { text: 'AgentApproval', link: '/ai/approval' },
+                  { text: 'AgentToolApproval', link: '/ai/tool-approval' },
+                  { text: 'AgentRecommendation', link: '/ai/recommendation' },
+                  { text: 'AgentEventRenderer', link: '/ai/event-renderer' }
+                ]
+              },
+              {
+                text: '输入与操作',
+                collapsed: false,
+                items: [
+                  { text: 'AgentRadioGroup', link: '/ai/radio-group' },
+                  { text: 'AgentPromptSuggestions', link: '/ai/prompt-suggestions' },
+                  { text: 'AgentComposer', link: '/ai/composer' },
+                  { text: 'AgentResponseActions', link: '/ai/response-actions' },
+                  { text: 'AgentSelectionActions', link: '/ai/selection-actions' },
+                  { text: 'AgentCommandSearch', link: '/ai/command-search' }
+                ]
+              },
+              {
+                text: '上下文与产物',
+                collapsed: false,
+                items: [
+                  { text: 'AgentArtifact', link: '/ai/artifact' },
+                  { text: 'AgentAttachmentList', link: '/ai/attachments' },
+                  { text: 'AgentSourceList', link: '/ai/sources' },
+                  { text: 'AgentCitations', link: '/ai/citations' },
+                  { text: 'AgentContextCard', link: '/ai/context-card' },
+                  { text: 'AgentCodeBlock', link: '/ai/code-block' },
+                  { text: 'AgentFileDiff', link: '/ai/file-diff' },
+                  { text: 'AgentImageGeneration', link: '/ai/image-generation' }
+                ]
+              },
+              {
+                text: '数据与工作区',
+                collapsed: false,
+                items: [
+                  { text: 'AgentSidebar', link: '/ai/sidebar' },
+                  { text: 'AgentInsightCard', link: '/ai/insight-card' },
+                  { text: 'AgentDiffTable', link: '/ai/diff-table' },
+                  { text: 'AgentRecordsTable', link: '/ai/records-table' },
+                  { text: 'AgentFilterTable', link: '/ai/filter-table' },
+                  { text: 'AgentFlowchart', link: '/ai/flowchart' },
+                  { text: 'AgentFineTune', link: '/ai/fine-tune' },
+                  { text: 'AgentChat Block', link: '/ai/agent-chat' }
+                ]
+              }
+            ]
+          },
+          {
             text: 'Primitives',
-            items: [{ text: '交互 Primitives', link: '/primitives/' }]
+            items: [
+              { text: '总览', link: '/primitives/' },
+              { text: 'Checkbox', link: '/primitives/checkbox' },
+              { text: 'Radio Group', link: '/primitives/radio-group' },
+              { text: 'Switch', link: '/primitives/switch' },
+              { text: 'Tabs', link: '/primitives/tabs' },
+              { text: 'Select', link: '/primitives/select' },
+              { text: 'Collapsible', link: '/primitives/collapsible' },
+              { text: 'Accordion', link: '/primitives/accordion' },
+              { text: 'Popover', link: '/primitives/popover' }
+            ]
           },
           {
             text: 'Blocks',
             items: [
+              { text: '构建你自己的 Block', link: '/blocks/build-your-own' },
               { text: 'Profile Edit', link: '/blocks/profile-edit' },
-              { text: 'Order Filter', link: '/blocks/order-filter' }
+              { text: 'Order Filter', link: '/blocks/order-filter' },
+              { text: 'Agent Chat', link: '/ai/' }
             ]
           },
           {
@@ -173,8 +264,9 @@ export default defineConfig({
         nav: [
           { text: 'Guide', link: '/en/guide/installation' },
           { text: 'Components', link: '/en/components/button' },
+          { text: 'AI Components', link: '/en/ai/' },
           { text: 'Primitives', link: '/en/primitives/' },
-          { text: 'Blocks', link: '/en/blocks/profile-edit' },
+          { text: 'Blocks', link: '/en/blocks/build-your-own' },
           { text: 'Examples', link: '/en/examples/' },
           { text: 'Theme', link: '/en/guide/theme' },
           { text: 'Colors', link: '/en/guide/colors' },
@@ -273,14 +365,99 @@ export default defineConfig({
             ]
           },
           {
+            text: 'AI Agent Components',
+            items: [
+              { text: 'Overview and Live Demo', link: '/en/ai/' },
+              {
+                text: 'Conversation and Streaming',
+                collapsed: false,
+                items: [
+                  { text: 'AgentLoading', link: '/en/ai/loading' },
+                  { text: 'AgentThinking', link: '/en/ai/thinking' },
+                  { text: 'AgentMarkdown', link: '/en/ai/markdown' },
+                  { text: 'AgentStream', link: '/en/ai/stream' },
+                  { text: 'AgentMessage', link: '/en/ai/message' },
+                  { text: 'AgentConversation', link: '/en/ai/conversation' },
+                  { text: 'AgentMessageScroller', link: '/en/ai/message-scroller' }
+                ]
+              },
+              {
+                text: 'Execution and Approval',
+                collapsed: false,
+                items: [
+                  { text: 'AgentToolChip', link: '/en/ai/tool-chip' },
+                  { text: 'AgentToolResult', link: '/en/ai/tool-result' },
+                  { text: 'AgentTaskList', link: '/en/ai/task-list' },
+                  { text: 'AgentActivity', link: '/en/ai/activity' },
+                  { text: 'AgentApproval', link: '/en/ai/approval' },
+                  { text: 'AgentToolApproval', link: '/en/ai/tool-approval' },
+                  { text: 'AgentRecommendation', link: '/en/ai/recommendation' },
+                  { text: 'AgentEventRenderer', link: '/en/ai/event-renderer' }
+                ]
+              },
+              {
+                text: 'Prompt and Actions',
+                collapsed: false,
+                items: [
+                  { text: 'AgentRadioGroup', link: '/en/ai/radio-group' },
+                  { text: 'AgentPromptSuggestions', link: '/en/ai/prompt-suggestions' },
+                  { text: 'AgentComposer', link: '/en/ai/composer' },
+                  { text: 'AgentResponseActions', link: '/en/ai/response-actions' },
+                  { text: 'AgentSelectionActions', link: '/en/ai/selection-actions' },
+                  { text: 'AgentCommandSearch', link: '/en/ai/command-search' }
+                ]
+              },
+              {
+                text: 'Context and Artifacts',
+                collapsed: false,
+                items: [
+                  { text: 'AgentArtifact', link: '/en/ai/artifact' },
+                  { text: 'AgentAttachmentList', link: '/en/ai/attachments' },
+                  { text: 'AgentSourceList', link: '/en/ai/sources' },
+                  { text: 'AgentCitations', link: '/en/ai/citations' },
+                  { text: 'AgentContextCard', link: '/en/ai/context-card' },
+                  { text: 'AgentCodeBlock', link: '/en/ai/code-block' },
+                  { text: 'AgentFileDiff', link: '/en/ai/file-diff' },
+                  { text: 'AgentImageGeneration', link: '/en/ai/image-generation' }
+                ]
+              },
+              {
+                text: 'Data and Workspace',
+                collapsed: false,
+                items: [
+                  { text: 'AgentSidebar', link: '/en/ai/sidebar' },
+                  { text: 'AgentInsightCard', link: '/en/ai/insight-card' },
+                  { text: 'AgentDiffTable', link: '/en/ai/diff-table' },
+                  { text: 'AgentRecordsTable', link: '/en/ai/records-table' },
+                  { text: 'AgentFilterTable', link: '/en/ai/filter-table' },
+                  { text: 'AgentFlowchart', link: '/en/ai/flowchart' },
+                  { text: 'AgentFineTune', link: '/en/ai/fine-tune' },
+                  { text: 'AgentChat Block', link: '/en/ai/agent-chat' }
+                ]
+              }
+            ]
+          },
+          {
             text: 'Primitives',
-            items: [{ text: 'Interactive Primitives', link: '/en/primitives/' }]
+            items: [
+              { text: 'Overview', link: '/en/primitives/' },
+              { text: 'Checkbox', link: '/en/primitives/checkbox' },
+              { text: 'Radio Group', link: '/en/primitives/radio-group' },
+              { text: 'Switch', link: '/en/primitives/switch' },
+              { text: 'Tabs', link: '/en/primitives/tabs' },
+              { text: 'Select', link: '/en/primitives/select' },
+              { text: 'Collapsible', link: '/en/primitives/collapsible' },
+              { text: 'Accordion', link: '/en/primitives/accordion' },
+              { text: 'Popover', link: '/en/primitives/popover' }
+            ]
           },
           {
             text: 'Blocks',
             items: [
+              { text: 'Build Your Own Block', link: '/en/blocks/build-your-own' },
               { text: 'Profile Edit', link: '/en/blocks/profile-edit' },
-              { text: 'Order Filter', link: '/en/blocks/order-filter' }
+              { text: 'Order Filter', link: '/en/blocks/order-filter' },
+              { text: 'Agent Chat', link: '/en/ai/' }
             ]
           },
           {

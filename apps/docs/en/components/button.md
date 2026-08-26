@@ -1,5 +1,9 @@
 # Button
 
+## Demo
+
+<PlatformTabsDemo example="button" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -64,10 +68,6 @@
   <VButton disabled>Disabled</VButton>
 </template>
 ```
-
-## Cross-Platform Demo
-
-<PlatformTabsDemo example="button" locale="en" />
 
 ## Props
 

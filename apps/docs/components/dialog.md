@@ -2,6 +2,10 @@
 
 Varo 的 Dialog 采用 parts 暴露方式：`VDialogRoot`、`VDialogTrigger`、`VDialogOverlay`、`VDialogContent` 与 `VDialogClose`。
 
+## 演示
+
+<PlatformTabsDemo example="dialog" locale="zh" />
+
 ## 何时使用
 
 - 需要模态确认或补充信息展示
@@ -20,10 +24,6 @@ Varo 的 Dialog 采用 parts 暴露方式：`VDialogRoot`、`VDialogTrigger`、`
     <li><code>VDialogClose</code> 负责显式关闭动作。</li>
   </ul>
 </div>
-
-## 跨端示例与演示
-
-<PlatformTabsDemo example="dialog" locale="zh" />
 
 ## 小程序封装建议
 

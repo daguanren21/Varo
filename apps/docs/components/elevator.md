@@ -1,5 +1,9 @@
 # Elevator 电梯楼层
 
+## 演示
+
+<PlatformTabsDemo example="elevator" locale="zh" />
+
 ## 基础用法
 
 ```vue
@@ -20,10 +24,6 @@ const indexes = [
 </template>
 ```
 
-## 跨端演示
-
-<PlatformTabsDemo example="elevator" locale="zh" />
-
 ## Props
 
 | Prop | 类型 | 默认值 | 描述 |
@@ -39,4 +39,3 @@ const indexes = [
 | `update:activeIndex` | `string` | 索引变化 |
 | `change` | `string` | 索引变化 |
 | `clickItem` | `(item, index)` | 点击分组内容 |
-

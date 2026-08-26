@@ -18,7 +18,9 @@ npm login
 
 ```bash
 pnpm install
+pnpm typecheck
 pnpm test
+pnpm test:e2e
 pnpm build
 ```
 
@@ -57,6 +59,7 @@ After the first successful publish, configure trusted publishing in npm for each
 
 Do this for every public package published from this monorepo:
 
+- `@varo/agent-core`
 - `@varo/hooks`
 - `@varo/primitives-core`
 - `@varo/primitives-h5`

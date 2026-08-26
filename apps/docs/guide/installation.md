@@ -2,9 +2,9 @@
 
 ## 推荐接入路径
 
-- 业务应用优先使用 `@varo/ui-h5` 或 `@varo/ui-weapp`
-- 设计系统与企业二次封装优先使用 `@varo/primitives-h5` 或 `@varo/primitives-weapp`
-- 小程序工程使用 `weapp-vite` + `wevu`，需要 utility class 转译时再启用 `weapp-tailwindcss`
+- 业务项目优先使用 `@varo/cli` 安装可维护源码；runtime 包作为稳定 primitives 与官方封装
+- H5 使用 `@varo/primitives-h5`，小程序使用 `@varo/primitives-weapp`
+- 小程序工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`
 
 ## 初始化项目
 
@@ -19,6 +19,7 @@ pnpm install
 ```bash
 pnpm add vue @varo/ui-h5 @varo/theme
 pnpm add vue wevu@6.17.8 @varo/ui-weapp @varo/theme
+pnpm add @varo/agent-core # 仅在接入 Agent 事件流与 Markdown 时需要
 ```
 
 ## Primitives Only
@@ -33,19 +34,39 @@ pnpm add vue wevu@6.17.8 @varo/primitives-weapp
 如果你想像 shadcn/ui 一样把源码安装进业务项目，再做二次封装，使用 CLI 的 registry add 流程：
 
 ```bash
-pnpm dlx @varo/cli add button select
-pnpm dlx @varo/cli add blocks/profile-edit
+pnpm dlx @varo/cli add --target weapp-vite button select card
+pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo/cli add --target h5 button select card components/agent-ui
 ```
 
 组件会进入 `src/components/ui/*`，blocks 会进入 `src/components/blocks/*`。业务项目可以继续在 `src/components/biz/*` 里封装 `UserSelect`、`DepartmentSelect`、`ProductSelect` 这类领域组件。
 
+H5 Registry 覆盖 56 个 runtime 组件族；小程序 Registry 覆盖 45 个高共识组件族，其中 15 个 Base Kit 组件提供直接编译为 WXML/WXSS/JSON 的原生 SFC。其余高共识组件以可复制 TypeScript runtime source 交付，并共享目标平台 primitives。
+
+## Agent 流式接入
+
+`@varo/agent-core` 不绑定模型厂商。服务端只需输出 `message.start`、`text.delta`、`reasoning.*`、`tool.*`、`approval.*`、`message.end` 与 `done` 事件；H5 可接 Fetch/SSE，小程序可把 `wx.request({ enableChunked: true })` 的分块交给 `createAgentSseEventSource()`。
+
+```ts
+import { createAgentSseEventSource, createAgentStreamController } from '@varo/agent-core'
+
+const transport = createAgentSseEventSource()
+const controller = createAgentStreamController()
+
+requestTask.onChunkReceived(({ data }) => transport.feed(data))
+void controller.connect(transport.source)
+```
+
 ## 小程序构建链
 
 ```bash
-pnpm add -D weapp-vite@6.17.8 weapp-tailwindcss@^5.1.8
+pnpm add -D weapp-vite@6.17.8 weapp-tailwindcss@^5.1.8 tailwindcss
+pnpm add clsx @weapp-tailwindcss/merge
 ```
 
-`@varo/ui-weapp` 的组件包构建由 `weapp-vite` 负责，`wevu` 是运行时 peer。`weapp-tailwindcss` 已接入 Varo 的小程序构建配置，适合业务应用层使用 utility class；组件库自身仍以 Varo token、theme provider 和 primitives 契约为主。
+小程序 Base Kit 使用真正的 Vue SFC，并通过 `styleIsolation: apply-shared` 消费 Tailwind v4 utilities。扩展 Registry 组件使用同一份目标中立 runtime source 与小程序 primitives。`cn()` 使用 `@weapp-tailwindcss/merge`，不会引入浏览器版 `tailwind-merge` 的转义差异。
 
 ## 工程化建议
 
@@ -58,5 +79,5 @@ pnpm add -D weapp-vite@6.17.8 weapp-tailwindcss@^5.1.8
 - `weapp-vite` 当前对齐 `6.17.8`
 - `wevu` 当前对齐 `6.17.8`
 - `weapp-tailwindcss` 当前对齐 `^5.1.8`
-- 文档站基于 `VitePress`
-- Vue 侧使用 Vue 3 + TypeScript + `<script setup>`
+- 文档站基于 `VitePress 2.0.0-alpha.19`
+- Vue 侧统一使用 `Vue 3.5.41`、TypeScript 与 `<script setup>`

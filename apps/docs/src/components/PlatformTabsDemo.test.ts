@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createTheme, VaroConfigProvider, type ThemeConfig } from '@varo/theme'
 import type { Plugin } from 'vue'
@@ -20,7 +20,7 @@ describe('PlatformTabsDemo', () => {
     vi.useRealTimers()
   })
 
-  it('keeps platform metadata out of the visible summary and collapses example code', async () => {
+  it('renders phone-frame preview chrome with compact metadata and collapsed example code', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin]
@@ -31,31 +31,38 @@ describe('PlatformTabsDemo', () => {
       }
     })
 
-    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
     expect(wrapper.find('.platform-demo__note').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('说明')
     expect(wrapper.text()).not.toContain('适合浏览器页面里的表单提交')
 
     const stage = wrapper.get('.platform-demo__stage')
-
-    expect(wrapper.find('.platform-demo__tabs').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__device-shell').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__status-bar').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__appbar').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__code-block').exists()).toBe(false)
+    expect(stage.attributes('data-layout')).toBe('controls-preview')
+    expect(wrapper.find('.platform-demo__platform-switch').exists()).toBe(true)
+    expect(wrapper.find('.platform-demo__phone-frame').exists()).toBe(true)
+    expect(wrapper.find('.platform-demo__phone-status').exists()).toBe(true)
+    expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(true)
+    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(true)
+    expect(wrapper.get('.platform-demo__meta-card strong').text()).toContain('H5')
+    expect(wrapper.find('.platform-demo__code-section').exists()).toBe(false)
 
     const toggle = wrapper.get('.platform-demo__code-toggle')
-    expect(toggle.attributes('aria-label')).toBe('示例代码')
+    expect(toggle.attributes('aria-label')).toBe('展开代码')
     expect(toggle.attributes('aria-expanded')).toBe('false')
+    expect(toggle.text()).toContain('展开代码')
+    expect(wrapper.find('.platform-demo__code-copy').exists()).toBe(false)
 
     await toggle.trigger('click')
 
-    const codeDetails = wrapper.get('.platform-demo__code-block')
-    expect(stage.element.contains(codeDetails.element)).toBe(true)
+    const codeShell = wrapper.get('.platform-demo__code-shell')
+    const codeSection = wrapper.get('.platform-demo__code-section')
+    expect(stage.element.contains(codeShell.element)).toBe(true)
+    expect(codeShell.attributes('data-expanded')).toBe('true')
     expect(toggle.attributes('data-active')).toBe('true')
     expect(toggle.attributes('aria-expanded')).toBe('true')
+    expect(toggle.attributes('aria-label')).toBe('收起代码')
+    expect(toggle.text()).toContain('收起代码')
 
-    const codeTabs = codeDetails.findAll('.platform-demo__code-tab')
+    const codeTabs = codeShell.findAll('.platform-demo__code-tab')
     expect(codeTabs).toHaveLength(2)
     expect(codeTabs[0]!.text()).toBe('H5 组件')
     expect(codeTabs[1]!.text()).toBe('小程序组件')
@@ -63,13 +70,22 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[1]!.attributes('data-active')).toBe('false')
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('false')
-    expect(codeDetails.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeDetails.get('.platform-demo__code-head').text()).toContain('@varo/ui-h5')
-    expect(codeDetails.get('code').text()).toContain("from '@varo/ui-h5'")
-    expect(codeDetails.get('code').text()).not.toContain("from '@varo/ui-weapp'")
+    expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
+    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo/ui-h5')
+    expect(codeSection.get('code').text()).toContain("from '@varo/ui-h5'")
+    expect(codeSection.get('code').text()).not.toContain("from '@varo/ui-weapp'")
+
+    const copyButton = wrapper.get('.platform-demo__code-copy')
+    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
+    expect(copyButton.text()).toContain('复制 H5 代码')
+    expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
   })
 
   it('expands and switches example code between H5 and mini-program snippets', async () => {
+    const writeText = vi.fn((text: string) => Promise.resolve(text))
+    const clipboard = { writeText }
+    vi.stubGlobal('navigator', { clipboard })
+
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin]
@@ -81,19 +97,38 @@ describe('PlatformTabsDemo', () => {
     })
 
     await wrapper.get('.platform-demo__code-toggle').trigger('click')
-    const codeDetails = wrapper.get('.platform-demo__code-block')
-    const codeTabs = codeDetails.findAll('.platform-demo__code-tab')
+    const codeShell = wrapper.get('.platform-demo__code-shell')
+    const codeSection = wrapper.get('.platform-demo__code-section')
+    const codeTabs = codeShell.findAll('.platform-demo__code-tab')
     await codeTabs[1]!.trigger('click')
 
     expect(codeTabs[0]!.attributes('data-active')).toBe('false')
     expect(codeTabs[1]!.attributes('data-active')).toBe('true')
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('false')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('true')
-    expect(codeDetails.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeDetails.get('.platform-demo__code-head').text()).toContain('小程序组件')
-    expect(codeDetails.get('.platform-demo__code-head').text()).toContain('@varo/ui-weapp')
-    expect(codeDetails.get('code').text()).toContain("from '@varo/ui-weapp'")
-    expect(codeDetails.get('code').text()).not.toContain("from '@varo/ui-h5'")
+    expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
+    expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序组件')
+    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo/ui-weapp')
+    expect(codeSection.get('code').text()).toContain("from '@varo/ui-weapp'")
+    expect(codeSection.get('code').text()).not.toContain("from '@varo/ui-h5'")
+    expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
+    expect(wrapper.get('.platform-demo__runtime-pill').text()).toContain('小程序')
+
+    const copyButton = wrapper.get('.platform-demo__code-copy')
+    expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
+    await copyButton.trigger('click')
+    await flushPromises()
+
+    expect(writeText).toHaveBeenCalledTimes(1)
+    expect(writeText.mock.calls[0]![0]).toContain("from '@varo/ui-weapp'")
+    expect(copyButton.attributes('aria-label')).toBe('已复制')
+    expect(wrapper.get('.platform-demo__code-toast').text()).toContain('已复制到剪贴板')
+
+    await codeTabs[0]!.trigger('click')
+    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
+    expect(wrapper.find('.platform-demo__code-toast').exists()).toBe(false)
+
+    vi.unstubAllGlobals()
   })
 
   it('uses a preview-only layout for demos without controls', () => {

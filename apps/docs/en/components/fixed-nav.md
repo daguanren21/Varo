@@ -1,5 +1,9 @@
 # FixedNav
 
+## Demo
+
+<PlatformTabsDemo example="fixed-nav" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -20,10 +24,6 @@ const navList = [
 </template>
 ```
 
-## Cross-platform Preview
-
-<PlatformTabsDemo example="fixed-nav" locale="en" />
-
 ## Props
 
 | Prop | Type | Default | Description |
@@ -41,4 +41,3 @@ const navList = [
 | `update:visible` | `boolean` | Expanded state changed |
 | `visibleChange` | `boolean` | Expanded state changed |
 | `select` | `(item, index)` | Navigation item selected |
-

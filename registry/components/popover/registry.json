@@ -1,0 +1,31 @@
+{
+  "name": "popover",
+  "type": "component",
+  "title": "VPopoverRoot",
+  "description": "Styled popover parts for trigger, positioned content, and close behavior.",
+  "exportName": "VPopoverRoot",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "utils/primitives"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/popover/popover.ts",
+      "to": "src/components/ui/popover.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/popover/popover.ts",
+      "to": "src/components/ui/popover.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

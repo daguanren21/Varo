@@ -1,6 +1,6 @@
 # Picker 选择器
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="picker" locale="zh" />
 

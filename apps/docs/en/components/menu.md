@@ -1,5 +1,9 @@
 # Menu
 
+## Demo
+
+<PlatformTabsDemo example="menu" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -22,10 +26,6 @@ const options = [
   </VMenu>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="menu" locale="en" />
 
 ## VMenu Props
 
@@ -57,4 +57,3 @@ const options = [
 | --- | --- | --- |
 | `update:modelValue` | `string \| number` | Selected value changed |
 | `select` | `(value, option)` | Option selected |
-

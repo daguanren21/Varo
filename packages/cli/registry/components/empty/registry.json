@@ -1,0 +1,32 @@
+{
+  "name": "empty",
+  "type": "component",
+  "title": "VEmpty",
+  "description": "Empty-state composition with visual, title, description, and action regions.",
+  "exportName": "VEmpty",
+  "targets": [
+    "h5",
+    "weapp-vite"
+  ],
+  "dependencies": [
+    "vue"
+  ],
+  "registryDependencies": [
+    "themes/base",
+    "components/icon",
+    "components/image"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/empty/empty.ts",
+      "to": "src/components/ui/empty.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/empty/weapp-vite.vue",
+      "to": "src/components/ui/empty.vue"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

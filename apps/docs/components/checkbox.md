@@ -1,6 +1,6 @@
 # Checkbox 复选按钮
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="checkbox" locale="zh" />
 

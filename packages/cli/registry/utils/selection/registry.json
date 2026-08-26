@@ -1,0 +1,22 @@
+{
+  "name": "selection",
+  "type": "util",
+  "title": "Selection Controls",
+  "description": "Shared checkbox and radio implementations used by their public registry entries.",
+  "targets": ["h5", "weapp-vite"],
+  "dependencies": ["@varo/shared", "@varo/theme", "vue"],
+  "registryDependencies": [],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/utils/selection/selection.ts",
+      "to": "src/components/ui/selection.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/utils/selection/selection.ts",
+      "to": "src/components/ui/selection.ts"
+    }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

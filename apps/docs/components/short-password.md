@@ -1,6 +1,6 @@
 # ShortPassword 短密码
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="short-password" locale="zh" />
 

@@ -1,6 +1,6 @@
 # Uploader 上传
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="uploader" locale="zh" />
 

@@ -1,6 +1,6 @@
 # CalendarCard 日历卡片
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="calendar-card" locale="zh" />
 

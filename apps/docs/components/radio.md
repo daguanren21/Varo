@@ -1,6 +1,6 @@
 # Radio 单选按钮
 
-## 基础用法
+## 演示
 
 <FormComponentDemo example="radio" locale="zh" />
 

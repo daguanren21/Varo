@@ -1,5 +1,9 @@
 # Sticky
 
+## Demo
+
+<PlatformTabsDemo example="sticky" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -29,10 +33,6 @@
   </VSticky>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="sticky" locale="en" />
 
 ## Props
 

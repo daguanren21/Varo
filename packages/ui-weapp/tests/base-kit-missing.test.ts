@@ -20,6 +20,10 @@ describe('ui-weapp missing base kit components', () => {
     await wrapper.trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith(true)
+
+    await wrapper.setProps({ modelValue: true })
+    await wrapper.trigger('click')
+    expect(onUpdate).toHaveBeenLastCalledWith(false)
   })
 
   it('renders VLoading with text', () => {

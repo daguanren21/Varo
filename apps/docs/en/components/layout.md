@@ -1,5 +1,9 @@
 # Layout
 
+## Demo
+
+<PlatformTabsDemo example="layout" locale="en" />
+
 ## Basic Usage
 
 ```vue
@@ -37,10 +41,6 @@
   </VRow>
 </template>
 ```
-
-## Cross-platform Preview
-
-<PlatformTabsDemo example="layout" locale="en" />
 
 ## Row Props
 

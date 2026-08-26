@@ -95,21 +95,25 @@ export const SelectTrigger = defineComponent({
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
 
-    return () =>
-      h(
+    return () => {
+      const { class: attrClass, onClick: userClick, ...restAttrs } = attrs
+
+      return h(
         props.as,
         {
-          ...attrs,
+          ...restAttrs,
           ...select.attrs.trigger,
+          class: [attrClass],
           disabled: props.as === 'button' ? !select.state.interactive.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
-            callHandler(attrs.onClick, event)
+            callHandler(userClick, event)
             select.events.toggle()
           }
         },
         slots.default?.()
       )
+    }
   }
 })
 
