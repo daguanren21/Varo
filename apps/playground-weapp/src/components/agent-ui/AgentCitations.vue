@@ -45,7 +45,7 @@ function toggle() {
     </button>
 
     <view v-if="open" class="grid gap-1 border-t border-slate-100 p-2">
-      <button v-for="(item, index) in items" :key="item.id" class="flex min-h-11 w-full items-center gap-2.5 rounded-xl border-0 bg-slate-50 px-2.5 py-2 text-left active:bg-slate-100" type="button" @click="emit('open', item)">
+      <button v-for="(item, index) in items" :key="item.id" class="flex min-h-11 w-full items-center gap-2.5 rounded-xl border-0 bg-slate-50 px-2.5 py-2 text-left" hover-class="bg-slate-100" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('open', item)">
         <text class="grid h-6 w-6 flex-none place-items-center rounded-lg bg-white text-[9px] font-bold tabular-nums text-teal-700 shadow-sm">{{ index + 1 }}</text>
         <view class="grid min-w-0 flex-1 gap-0.5">
           <text class="truncate text-[11px] font-semibold text-slate-700">{{ item.title }}</text>

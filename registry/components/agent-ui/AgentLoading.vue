@@ -20,6 +20,7 @@ const elapsed = shallowRef(0)
 let timer: ReturnType<typeof setInterval> | undefined
 const effectiveStartedAt = props.startedAt ?? Date.now()
 const elapsedLabel = computed(() => `${elapsed.value.toFixed(1)}s`)
+const pixelCount = computed(() => (props.variant === 'dots' ? 3 : 9))
 
 function updateElapsed() {
   elapsed.value = Math.max(0, (Date.now() - effectiveStartedAt) / 1000)
@@ -48,7 +49,7 @@ onBeforeUnmount(stop)
       aria-hidden="true"
     >
       <text
-        v-for="index in variant === 'dots' ? 3 : 9"
+        v-for="index in pixelCount"
         :key="index"
         class="agent-loading__pixel rounded-sm bg-teal-700 opacity-20"
         :style="{ animationDelay: `${index * 45}ms` }"

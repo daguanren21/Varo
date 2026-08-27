@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 const props = withDefaults(
   defineProps<{
     checkable?: boolean
@@ -21,6 +22,8 @@ const props = withDefaults(
     variant: 'soft'
   }
 )
+const checkableRole = computed(() => (props.checkable ? 'checkbox' : undefined))
+const checkableValue = computed(() => (props.checkable ? props.checked : undefined))
 
 const emit = defineEmits<{
   change: [checked: boolean]
@@ -47,8 +50,8 @@ function close(event: { stopPropagation?: () => void }) {
 <template>
   <view
     class="varo-tag"
-    :role="checkable ? 'checkbox' : undefined"
-    :aria-checked="checkable ? checked : undefined"
+    :role="checkableRole"
+    :aria-checked="checkableValue"
     :aria-disabled="disabled"
     :data-checked="String(checked)"
     :data-disabled="String(disabled)"

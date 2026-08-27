@@ -46,7 +46,7 @@ function lineClass(line: number) {
         <text class="truncate text-xs font-bold text-slate-50">{{ filename }}</text>
         <text class="text-[9px] font-semibold uppercase tracking-[.08em] text-slate-500">{{ language }}</text>
       </view>
-      <button class="min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[10px] font-semibold text-slate-400 active:bg-slate-800" type="button" @click="emit('copy', code)">
+      <button class="min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[10px] font-semibold text-slate-400" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
         Copy
       </button>
     </view>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
-withDefaults(
+import { computed } from 'wevu'
+import { cn, type ClassValue } from '../../lib/cn'
+
+const props = withDefaults(
   defineProps<{
+    className?: ClassValue
     interactive?: boolean
     padding?: boolean
     variant?: 'default' | 'outline' | 'elevated' | 'muted'
@@ -11,16 +15,25 @@ withDefaults(
     variant: 'default'
   }
 )
+
+const classes = computed(() =>
+  cn(
+    'varo-card',
+    `varo-card--${props.variant}`,
+    props.padding && 'varo-card--padded',
+    props.interactive && 'varo-card--interactive',
+    props.className
+  )
+)
+const hoverClass = computed(() => (props.interactive ? 'varo-card--pressed' : 'none'))
 </script>
 
 <template>
   <view
-    :class="[
-      'varo-card',
-      `varo-card--${variant}`,
-      padding && 'varo-card--padded',
-      interactive && 'varo-card--interactive'
-    ]"
+    :class="classes"
+    :hover-class="hoverClass"
+    :hover-start-time="20"
+    :hover-stay-time="70"
     :data-interactive="String(interactive)"
     :data-variant="variant"
   >

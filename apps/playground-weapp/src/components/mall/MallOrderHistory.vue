@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import VButton from '../ui/v-button.vue'
 import VTag from '../ui/tag.vue'
 import type { MallHistoryItem, MallOrder, MallOrderStatus } from '../../features/mall/useMallAgent'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     history?: MallHistoryItem[]
     orders?: MallOrder[]
@@ -24,6 +25,13 @@ const STATUS_LABEL: Record<MallOrderStatus, string> = {
   returned: '已退货',
   shipping: '配送中'
 }
+
+const displayOrders = computed(() =>
+  props.orders.map((order) => ({
+    order,
+    tone: order.status === 'returned' ? 'default' as const : 'primary' as const
+  }))
+)
 </script>
 
 <template>
@@ -31,22 +39,22 @@ const STATUS_LABEL: Record<MallOrderStatus, string> = {
     <view>
       <text class="mb-2 block text-xs font-extrabold tracking-[.12em] text-slate-400">订单</text>
       <view class="grid gap-2">
-        <view v-for="order in orders" :key="order.id" class="grid gap-2.5 rounded-xl border border-slate-200 bg-white p-3">
+        <view v-for="item in displayOrders" :key="item.order.id" class="grid gap-2.5 rounded-xl border border-slate-200 bg-white p-3">
           <view class="flex items-start justify-between gap-3">
             <view class="grid min-w-0 gap-1">
-              <text class="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-bold text-slate-900">{{ order.productName }}</text>
-              <text class="text-[10px] text-slate-400">{{ order.id }} · {{ order.createdAt }}</text>
+              <text class="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-bold text-slate-900">{{ item.order.productName }}</text>
+              <text class="text-[10px] text-slate-400">{{ item.order.id }} · {{ item.order.createdAt }}</text>
             </view>
-            <VTag :tone="order.status === 'returned' ? 'default' : 'primary'" variant="soft" size="sm">
-              {{ STATUS_LABEL[order.status] }}
+            <VTag :tone="item.tone" variant="soft" size="sm">
+              {{ STATUS_LABEL[item.order.status] }}
             </VTag>
           </view>
           <view class="flex items-end justify-between gap-3 border-t border-slate-100 pt-2">
             <view class="grid gap-0.5">
-              <text class="text-[10px] text-slate-400">{{ order.quantity }} 件 · {{ order.address }}</text>
-              <text class="text-sm font-black text-[#e1251b]">¥{{ (order.total / 100).toFixed(2) }}</text>
+              <text class="text-[10px] text-slate-400">{{ item.order.quantity }} 件 · {{ item.order.address }}</text>
+              <text class="text-sm font-black text-[#e1251b]">¥{{ (item.order.total / 100).toFixed(2) }}</text>
             </view>
-            <VButton v-if="order.status === 'delivered' || order.status === 'shipping'" size="sm" variant="outline" @click="emit('return', order)">
+            <VButton v-if="item.order.status === 'delivered' || item.order.status === 'shipping'" size="sm" variant="outline" @click="emit('return', item.order)">
               申请退货
             </VButton>
           </view>

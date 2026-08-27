@@ -76,6 +76,7 @@ const approvalDescription = computed(() => {
   if (props.pendingAction?.type === 'return') return `订单 ${props.pendingAction.order.id}，确认后 Agent 将提交退货申请。`
   return ''
 })
+const approveText = computed(() => (props.pendingAction?.type === 'purchase' ? '确认下单' : '提交退货'))
 
 function send(value: string) {
   prompt.value = ''
@@ -129,7 +130,7 @@ function messageContent(message: MallAgentMessage) {
             :description="approvalDescription"
             :choices="approvalChoices"
             :value="approvalValue"
-            :approve-text="pendingAction.type === 'purchase' ? '确认下单' : '提交退货'"
+            :approve-text="approveText"
             @update:value="emit('update:approvalValue', $event)"
             @approve="emit('approve', $event)"
             @reject="emit('reject')"

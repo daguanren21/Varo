@@ -35,7 +35,8 @@ export default defineConfig({
           appType: 'weapp-vite',
           cssEntries: [resolve(root, 'src/styles.css')],
           cssOptions: {
-            rem2rpx: true
+            rem2rpx: true,
+            cssRemoveActivePseudoClass: true
           },
           ignoreCallExpressionIdentifiers: ['cn'],
           logLevel: 'warn'

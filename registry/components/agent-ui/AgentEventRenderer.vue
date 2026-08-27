@@ -30,6 +30,8 @@ const messageContent = computed(() => String(props.snapshot.message?.visible ?? 
 const messageError = computed(() => String(props.snapshot.error?.message ?? ''))
 const approvalDescription = computed(() => String(props.snapshot.approval?.description ?? ''))
 const approvalTitle = computed(() => String(props.snapshot.approval?.title ?? ''))
+const approvalId = computed(() => props.snapshot.approval?.id ?? '')
+const showApproval = computed(() => props.snapshot.approval?.status === 'waiting')
 
 </script>
 
@@ -55,8 +57,8 @@ const approvalTitle = computed(() => String(props.snapshot.approval?.title ?? ''
     <AgentLoading v-if="streamStatus === 'streaming' && !messageContent" label="正在生成回答" />
 
     <AgentApproval
-      v-if="snapshot.approval?.status === 'waiting'"
-      :key="snapshot.approval.id"
+      v-if="showApproval"
+      :key="approvalId"
       :choices="choices"
       :description="approvalDescription"
       :title="approvalTitle"

@@ -31,13 +31,15 @@ import '@varo/ui-h5/source/style.css'
 import './tailwind.css'
 import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
 import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
-import InteractivePreview from '../../src/components/InteractivePreview.vue'
+import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
+import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
+import DocsLayout from './DocsLayout.vue'
 import './custom.css'
 import './agent-docs.css'
 
@@ -51,12 +53,14 @@ const docsTheme = createTheme({
 
 const theme: Theme = {
   extends: DefaultTheme,
+  Layout: DocsLayout,
   enhanceApp({ app }) {
     VaroConfigProvider.install(app, { theme: docsTheme })
     app.component('AgentComponentsDemo', AgentComponentsDemo)
     app.component('AgentComponentDemo', AgentComponentDemo)
     app.component('FormComponentDemo', FormComponentDemo)
     app.component('InteractivePreview', InteractivePreview)
+    app.component('ComponentCatalog', ComponentCatalog)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
     app.component('PrimitiveCatalog', PrimitiveCatalog)

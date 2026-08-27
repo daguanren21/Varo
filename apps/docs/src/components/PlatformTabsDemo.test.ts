@@ -81,6 +81,38 @@ describe('PlatformTabsDemo', () => {
     expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
   })
 
+  it('supports roving keyboard selection for platform tabs', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin]
+      },
+      props: {
+        example: 'button',
+        locale: 'zh'
+      }
+    })
+
+    const stage = wrapper.get('.platform-demo__stage')
+    const tabs = wrapper.findAll('.platform-demo__platform-tab')
+    expect(stage.attributes('role')).toBe('tabpanel')
+    expect(tabs[0]!.attributes('aria-controls')).toBe(stage.attributes('id'))
+    expect(tabs[0]!.attributes('tabindex')).toBe('0')
+    expect(tabs[1]!.attributes('tabindex')).toBe('-1')
+
+    await tabs[0]!.trigger('keydown', { key: 'ArrowRight' })
+    await flushPromises()
+
+    expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
+    expect(tabs[0]!.attributes('aria-selected')).toBe('false')
+    expect(tabs[0]!.attributes('tabindex')).toBe('-1')
+    expect(tabs[1]!.attributes('aria-selected')).toBe('true')
+    expect(tabs[1]!.attributes('tabindex')).toBe('0')
+
+    await tabs[1]!.trigger('keydown', { key: 'Home' })
+    await flushPromises()
+    expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('h5')
+  })
+
   it('expands and switches example code between H5 and mini-program snippets', async () => {
     const writeText = vi.fn((text: string) => Promise.resolve(text))
     const clipboard = { writeText }

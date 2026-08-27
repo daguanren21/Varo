@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import VProgress from '../ui/v-progress.vue'
 import type { AgentTask } from './types'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     tasks?: AgentTask[]
     title?: string
@@ -19,16 +20,24 @@ function indexClass(status: AgentTask['status']) {
   if (status === 'failed') return 'border-red-600 bg-red-50 text-red-600'
   return 'border-slate-300 text-slate-500'
 }
+
+const completedCount = computed(() => props.tasks.filter((task) => task.status === 'completed').length)
+const displayTasks = computed(() =>
+  props.tasks.map((task) => ({
+    ...task,
+    progressStatus: task.status === 'failed' ? 'danger' as const : task.status === 'completed' ? 'success' as const : 'active' as const
+  }))
+)
 </script>
 
 <template>
   <view class="agent-tasks overflow-hidden rounded-[14px] border border-slate-200 bg-white" aria-live="polite">
     <view class="flex min-h-11 items-center justify-between gap-3 border-b border-slate-100 px-[13px]">
       <text class="text-[13px] font-bold text-slate-950">{{ title }}</text>
-      <text class="text-[11px] tabular-nums text-slate-400">{{ tasks.filter((task) => task.status === 'completed').length }}/{{ tasks.length }}</text>
+      <text class="text-[11px] tabular-nums text-slate-400">{{ completedCount }}/{{ tasks.length }}</text>
     </view>
     <view class="grid divide-y divide-slate-50">
-      <view v-for="(task, index) in tasks" :key="task.id" class="flex min-h-[50px] items-center gap-2.5 px-[13px] py-2">
+      <view v-for="(task, index) in displayTasks" :key="task.id" class="flex min-h-[50px] items-center gap-2.5 px-[13px] py-2">
         <view :class="['grid h-6 w-6 flex-none place-items-center rounded-full border text-[10px] font-bold', indexClass(task.status)]" aria-hidden="true">
           <text>{{ task.status === 'completed' ? '✓' : index + 1 }}</text>
         </view>
@@ -42,7 +51,7 @@ function indexClass(status: AgentTask['status']) {
             :percentage="task.progress"
             :show-text="false"
             :stroke-width="4"
-            :status="task.status === 'failed' ? 'danger' : task.status === 'completed' ? 'success' : 'active'"
+            :status="task.progressStatus"
           />
         </view>
       </view>

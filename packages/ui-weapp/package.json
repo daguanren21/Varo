@@ -49,6 +49,6 @@
         "vue": "^3.5.41"
     },
     "peerDependencies": {
-        "wevu": "^6.17.8"
+        "wevu": "^6.23.0"
     }
 }

@@ -18,7 +18,7 @@ pnpm install
 
 ```bash
 pnpm add vue @varo/ui-h5 @varo/theme
-pnpm add vue wevu@6.17.8 @varo/ui-weapp @varo/theme
+pnpm add vue wevu@6.23.0 @varo/ui-weapp @varo/theme
 pnpm add @varo/agent-core # 仅在接入 Agent 事件流与 Markdown 时需要
 ```
 
@@ -26,7 +26,7 @@ pnpm add @varo/agent-core # 仅在接入 Agent 事件流与 Markdown 时需要
 
 ```bash
 pnpm add vue @varo/primitives-h5
-pnpm add vue wevu@6.17.8 @varo/primitives-weapp
+pnpm add vue wevu@6.23.0 @varo/primitives-weapp
 ```
 
 ## shadcn 模式安装
@@ -62,7 +62,7 @@ void controller.connect(transport.source)
 ## 小程序构建链
 
 ```bash
-pnpm add -D weapp-vite@6.17.8 weapp-tailwindcss@^5.1.8 tailwindcss
+pnpm add -D weapp-vite@6.23.0 weapp-tailwindcss@^5.3.6 tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -76,8 +76,8 @@ pnpm add clsx @weapp-tailwindcss/merge
 
 ## 版本说明
 
-- `weapp-vite` 当前对齐 `6.17.8`
-- `wevu` 当前对齐 `6.17.8`
-- `weapp-tailwindcss` 当前对齐 `^5.1.8`
+- `weapp-vite` 当前对齐 `6.23.0`
+- `wevu` 当前对齐 `6.23.0`
+- `weapp-tailwindcss` 当前对齐 `^5.3.6`
 - 文档站基于 `VitePress 2.0.0-alpha.19`
 - Vue 侧统一使用 `Vue 3.5.41`、TypeScript 与 `<script setup>`

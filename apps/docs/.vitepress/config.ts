@@ -10,8 +10,11 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }]
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/brand-assets/varo-symbol.svg' }],
+    ['link', { rel: 'alternate icon', href: '/favicon.ico' }],
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#f7f8fa' }],
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0b1016' }]
   ],
   vite: {
     plugins: [tailwindcss()],
@@ -31,7 +34,50 @@ export default defineConfig({
     }
   },
   themeConfig: {
-    logo: '/brand-assets/varo-runtime-mark.png'
+    logo: {
+      light: '/brand-assets/varo-lockup.svg',
+      dark: '/brand-assets/varo-lockup-dark.svg',
+      alt: 'Varo'
+    },
+    siteTitle: false,
+    search: {
+      provider: 'local',
+      options: {
+        detailedView: true,
+        translations: {
+          button: { buttonText: '搜索文档', buttonAriaLabel: '搜索文档' },
+          modal: {
+            displayDetails: '显示详情',
+            resetButtonTitle: '清除搜索',
+            backButtonTitle: '返回',
+            noResultsText: '未找到相关文档',
+            footer: {
+              selectText: '选择',
+              navigateText: '切换',
+              closeText: '关闭'
+            }
+          }
+        },
+        locales: {
+          en: {
+            translations: {
+              button: { buttonText: 'Search docs', buttonAriaLabel: 'Search documentation' },
+              modal: {
+                displayDetails: 'Display details',
+                resetButtonTitle: 'Clear search',
+                backButtonTitle: 'Back',
+                noResultsText: 'No matching documentation found',
+                footer: {
+                  selectText: 'Select',
+                  navigateText: 'Navigate',
+                  closeText: 'Close'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   },
   locales: {
     root: {
@@ -40,17 +86,42 @@ export default defineConfig({
       title: 'Varo',
       description: '面向 H5 与小程序封装的 primitives-first Vue 组件体系。',
       themeConfig: {
+        search: {
+          provider: 'local',
+          options: {
+            detailedView: true,
+            translations: {
+              button: { buttonText: '搜索文档', buttonAriaLabel: '搜索文档' },
+              modal: {
+                displayDetails: '显示详情',
+                resetButtonTitle: '清除搜索',
+                backButtonTitle: '返回',
+                noResultsText: '未找到相关文档',
+                footer: {
+                  selectText: '选择',
+                  navigateText: '切换',
+                  closeText: '关闭'
+                }
+              }
+            }
+          }
+        },
         nav: [
-          { text: '指南', link: '/guide/installation' },
-          { text: '组件', link: '/components/button' },
-          { text: 'AI 组件', link: '/ai/' },
+          { text: '开始', link: '/guide/installation' },
+          { text: '组件', link: '/components/' },
+          { text: 'AI Agent', link: '/ai/' },
           { text: 'Primitives', link: '/primitives/' },
           { text: 'Blocks', link: '/blocks/build-your-own' },
-          { text: '示例', link: '/examples/' },
-          { text: '主题', link: '/guide/theme' },
-          { text: '色彩', link: '/guide/colors' },
-          { text: '国际化', link: '/guide/i18n' },
-          { text: '贡献', link: '/guide/contributing' }
+          {
+            text: '资源',
+            items: [
+              { text: '跨端示例', link: '/examples/' },
+              { text: '主题配置', link: '/guide/theme' },
+              { text: '色彩系统', link: '/guide/colors' },
+              { text: '国际化', link: '/guide/i18n' },
+              { text: '参与贡献', link: '/guide/contributing' }
+            ]
+          }
         ],
         sidebar: [
           {
@@ -66,9 +137,10 @@ export default defineConfig({
           {
             text: '组件文档',
             items: [
+              { text: '组件总览', link: '/components/' },
               {
                 text: '基础组件',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Button 按钮', link: '/components/button' },
                   { text: 'Cell 单元格', link: '/components/cell' },
@@ -78,7 +150,7 @@ export default defineConfig({
               },
               {
                 text: '表单组件',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Calendar 日历', link: '/components/calendar' },
                   { text: 'CalendarCard 日历卡片', link: '/components/calendar-card' },
@@ -102,7 +174,7 @@ export default defineConfig({
               },
               {
                 text: '布局组件',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Divider 分割线', link: '/components/divider' },
                   { text: 'Grid 宫格', link: '/components/grid' },
@@ -113,7 +185,7 @@ export default defineConfig({
               },
               {
                 text: '导航组件',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Elevator 电梯楼层', link: '/components/elevator' },
                   { text: 'FixedNav 悬浮导航', link: '/components/fixed-nav' },
@@ -128,7 +200,7 @@ export default defineConfig({
               },
               {
                 text: '反馈组件',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Loading 加载', link: '/components/loading' },
                   { text: 'Overlay 遮罩层', link: '/components/overlay' },
@@ -138,7 +210,7 @@ export default defineConfig({
               },
               {
                 text: '高级组件',
-                collapsed: false,
+                collapsed: true,
                 items: [{ text: 'Dialog 对话框', link: '/components/dialog' }]
               }
             ]
@@ -149,7 +221,7 @@ export default defineConfig({
               { text: '总览与实时演示', link: '/ai/' },
               {
                 text: '对话与流式',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentLoading', link: '/ai/loading' },
                   { text: 'AgentThinking', link: '/ai/thinking' },
@@ -162,7 +234,7 @@ export default defineConfig({
               },
               {
                 text: '执行与审批',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentToolChip', link: '/ai/tool-chip' },
                   { text: 'AgentToolResult', link: '/ai/tool-result' },
@@ -176,7 +248,7 @@ export default defineConfig({
               },
               {
                 text: '输入与操作',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentRadioGroup', link: '/ai/radio-group' },
                   { text: 'AgentPromptSuggestions', link: '/ai/prompt-suggestions' },
@@ -188,7 +260,7 @@ export default defineConfig({
               },
               {
                 text: '上下文与产物',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentArtifact', link: '/ai/artifact' },
                   { text: 'AgentAttachmentList', link: '/ai/attachments' },
@@ -202,7 +274,7 @@ export default defineConfig({
               },
               {
                 text: '数据与工作区',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentSidebar', link: '/ai/sidebar' },
                   { text: 'AgentInsightCard', link: '/ai/insight-card' },
@@ -261,17 +333,42 @@ export default defineConfig({
       title: 'Varo',
       description: 'A primitives-first Vue component library for H5 and mini-program wrappers.',
       themeConfig: {
+        search: {
+          provider: 'local',
+          options: {
+            detailedView: true,
+            translations: {
+              button: { buttonText: 'Search docs', buttonAriaLabel: 'Search documentation' },
+              modal: {
+                displayDetails: 'Display details',
+                resetButtonTitle: 'Clear search',
+                backButtonTitle: 'Back',
+                noResultsText: 'No matching documentation found',
+                footer: {
+                  selectText: 'Select',
+                  navigateText: 'Navigate',
+                  closeText: 'Close'
+                }
+              }
+            }
+          }
+        },
         nav: [
-          { text: 'Guide', link: '/en/guide/installation' },
-          { text: 'Components', link: '/en/components/button' },
-          { text: 'AI Components', link: '/en/ai/' },
+          { text: 'Start', link: '/en/guide/installation' },
+          { text: 'Components', link: '/en/components/' },
+          { text: 'AI Agent', link: '/en/ai/' },
           { text: 'Primitives', link: '/en/primitives/' },
           { text: 'Blocks', link: '/en/blocks/build-your-own' },
-          { text: 'Examples', link: '/en/examples/' },
-          { text: 'Theme', link: '/en/guide/theme' },
-          { text: 'Colors', link: '/en/guide/colors' },
-          { text: 'I18n', link: '/en/guide/i18n' },
-          { text: 'Contributing', link: '/en/guide/contributing' }
+          {
+            text: 'Resources',
+            items: [
+              { text: 'Cross-platform Examples', link: '/en/examples/' },
+              { text: 'Theme', link: '/en/guide/theme' },
+              { text: 'Color System', link: '/en/guide/colors' },
+              { text: 'Internationalization', link: '/en/guide/i18n' },
+              { text: 'Contributing', link: '/en/guide/contributing' }
+            ]
+          }
         ],
         sidebar: [
           {
@@ -287,9 +384,10 @@ export default defineConfig({
           {
             text: 'Components',
             items: [
+              { text: 'Overview', link: '/en/components/' },
               {
                 text: 'Basic',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Button', link: '/en/components/button' },
                   { text: 'Cell', link: '/en/components/cell' },
@@ -299,7 +397,7 @@ export default defineConfig({
               },
               {
                 text: 'Form Components',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Calendar', link: '/en/components/calendar' },
                   { text: 'CalendarCard', link: '/en/components/calendar-card' },
@@ -323,7 +421,7 @@ export default defineConfig({
               },
               {
                 text: 'Layout',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Divider', link: '/en/components/divider' },
                   { text: 'Grid', link: '/en/components/grid' },
@@ -334,7 +432,7 @@ export default defineConfig({
               },
               {
                 text: 'Navigation',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Elevator', link: '/en/components/elevator' },
                   { text: 'FixedNav', link: '/en/components/fixed-nav' },
@@ -349,7 +447,7 @@ export default defineConfig({
               },
               {
                 text: 'Feedback',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'Loading', link: '/en/components/loading' },
                   { text: 'Overlay', link: '/en/components/overlay' },
@@ -359,7 +457,7 @@ export default defineConfig({
               },
               {
                 text: 'Advanced',
-                collapsed: false,
+                collapsed: true,
                 items: [{ text: 'Dialog', link: '/en/components/dialog' }]
               }
             ]
@@ -370,7 +468,7 @@ export default defineConfig({
               { text: 'Overview and Live Demo', link: '/en/ai/' },
               {
                 text: 'Conversation and Streaming',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentLoading', link: '/en/ai/loading' },
                   { text: 'AgentThinking', link: '/en/ai/thinking' },
@@ -383,7 +481,7 @@ export default defineConfig({
               },
               {
                 text: 'Execution and Approval',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentToolChip', link: '/en/ai/tool-chip' },
                   { text: 'AgentToolResult', link: '/en/ai/tool-result' },
@@ -397,7 +495,7 @@ export default defineConfig({
               },
               {
                 text: 'Prompt and Actions',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentRadioGroup', link: '/en/ai/radio-group' },
                   { text: 'AgentPromptSuggestions', link: '/en/ai/prompt-suggestions' },
@@ -409,7 +507,7 @@ export default defineConfig({
               },
               {
                 text: 'Context and Artifacts',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentArtifact', link: '/en/ai/artifact' },
                   { text: 'AgentAttachmentList', link: '/en/ai/attachments' },
@@ -423,7 +521,7 @@ export default defineConfig({
               },
               {
                 text: 'Data and Workspace',
-                collapsed: false,
+                collapsed: true,
                 items: [
                   { text: 'AgentSidebar', link: '/en/ai/sidebar' },
                   { text: 'AgentInsightCard', link: '/en/ai/insight-card' },

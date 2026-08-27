@@ -48,7 +48,7 @@ function sortMark(column: AgentTableColumn) {
           <text v-else class="text-[9px] font-bold uppercase tracking-[.06em] text-slate-500">{{ column.label }}</text>
         </view>
       </view>
-      <button v-for="row in rows" :key="row.id" class="grid min-h-11 w-full border-0 border-b border-slate-100 bg-white p-0 text-left last:border-b-0 active:bg-slate-50" :style="gridStyle" type="button" role="row" @click="emit('select', row)">
+      <button v-for="row in rows" :key="row.id" class="grid min-h-11 w-full border-0 border-b border-slate-100 bg-white p-0 text-left last:border-b-0" hover-class="bg-slate-50" :hover-start-time="20" :hover-stay-time="70" :style="gridStyle" type="button" role="row" @click="emit('select', row)">
         <text v-for="column in columns" :key="column.key" class="truncate px-3 py-3 text-[11px] leading-4 text-slate-700" role="cell">{{ agentTableCellValue(row, column.key) }}</text>
       </button>
       <view v-if="!rows.length" class="grid min-h-24 place-items-center text-[11px] text-slate-400">No records</view>

@@ -6,9 +6,9 @@
 
 ## 小程序构建链路
 
-- `weapp-vite@6.17.8` 负责小程序产物构建、组件 JSON 与类型声明输出
-- `wevu@6.17.8` 作为小程序 Vue 运行时 peer，`@varo/ui-weapp` 与 `@varo/primitives-weapp` 保持同版本约束
-- `weapp-tailwindcss@^5.1.8` 接入 `weapp-vite` 插件链，提供 class 转译能力；组件包仍以 Varo token 为主，业务项目可在上层启用 Tailwind utilities
+- `weapp-vite@6.23.0` 负责小程序产物构建、组件 JSON、复杂列表 key 与类型声明输出
+- `wevu@6.23.0` 作为小程序 Vue 运行时 peer，`@varo/ui-weapp` 与 `@varo/primitives-weapp` 保持同版本约束
+- `weapp-tailwindcss@^5.3.6` 接入 `weapp-vite` 插件链，提供 class 转译能力；小程序按最新默认移除无效交互伪类，组件使用原生 `hover-class` 表达按压反馈
 - 如果要继续做企业内部设计系统，优先从 `@varo/primitives-*` 向上封装，再把 blocks 作为业务模板沉淀
 
 ## 相关文档

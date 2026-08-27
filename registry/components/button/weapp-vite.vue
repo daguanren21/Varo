@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'wevu'
+import { cn, type ClassValue } from '../../lib/cn'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
 type ButtonVariant = 'solid' | 'outline' | 'ghost'
@@ -9,6 +10,7 @@ type ButtonShape = 'default' | 'square' | 'round'
 const props = withDefaults(
   defineProps<{
     block?: boolean
+    className?: ClassValue
     disabled?: boolean
     hairline?: boolean
     icon?: string
@@ -43,14 +45,19 @@ const emit = defineEmits<{
   click: [event: unknown]
 }>()
 
-const classes = computed(() => [
-  'varo-button',
-  `varo-button--size-${props.size}`,
-  `varo-button--variant-${props.plain ? 'outline' : props.variant}`,
-  `varo-button--tone-${props.tone}`,
-  `varo-button--shape-${props.shape}`
-])
+const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
+const classes = computed(() =>
+  cn(
+    'varo-button',
+    `varo-button--size-${props.size}`,
+    `varo-button--variant-${visualVariant.value}`,
+    `varo-button--tone-${props.tone}`,
+    `varo-button--shape-${props.shape}`,
+    props.className
+  )
+)
 const formType = computed(() => (props.nativeType === 'submit' || props.nativeType === 'reset' ? props.nativeType : undefined))
+const hoverClass = computed(() => (props.disabled || props.loading ? 'none' : 'varo-button--pressed'))
 
 function click(event: unknown) {
   if (!props.disabled && !props.loading) emit('click', event)
@@ -62,6 +69,9 @@ function click(event: unknown) {
     :class="classes"
     :disabled="disabled || loading"
     :form-type="formType"
+    :hover-class="hoverClass"
+    :hover-start-time="20"
+    :hover-stay-time="70"
     :data-block="String(block)"
     :data-disabled="String(disabled)"
     :data-hairline="String(hairline)"
@@ -70,7 +80,7 @@ function click(event: unknown) {
     :data-shape="shape"
     :data-size="size"
     :data-tone="tone"
-    :data-variant="plain ? 'outline' : variant"
+    :data-variant="visualVariant"
     @click="click"
   >
     <template v-if="loading">

@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import VIcon from './v-icon.vue'
 import VImage from './v-image.vue'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     description?: string
     icon?: string
@@ -18,6 +19,11 @@ withDefaults(
     title: ''
   }
 )
+const iconSize = computed(() => {
+  if (props.size === 'lg') return 44
+  if (props.size === 'sm') return 28
+  return 36
+})
 </script>
 
 <template>
@@ -25,7 +31,7 @@ withDefaults(
     <view class="varo-empty__visual" aria-hidden="true">
       <slot name="image">
         <VImage v-if="image" :src="image" width="100%" height="100%" fit="contain" />
-        <VIcon v-else :name="icon" :size="size === 'lg' ? 44 : size === 'sm' ? 28 : 36" />
+        <VIcon v-else :name="icon" :size="iconSize" />
       </slot>
     </view>
     <text v-if="title || $slots.title" class="varo-empty__title"><slot name="title">{{ title }}</slot></text>

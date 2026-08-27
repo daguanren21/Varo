@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import type { AgentMarkdownViewNode } from '@varo/agent-core'
 
 const props = defineProps<{
   node: AgentMarkdownViewNode
 }>()
+const hasChildren = computed(() => Boolean(props.node.children?.length))
 
 const emit = defineEmits<{
   link: [href: string]
@@ -50,7 +52,7 @@ function headingClass(level?: number) {
 
   <text v-else-if="node.kind === 'link'" class="font-semibold text-inherit underline" role="link" @click="node.href && emit('link', node.href)">
     <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
-    <text v-if="!node.children?.length">{{ node.text }}</text>
+    <text v-if="!hasChildren">{{ node.text }}</text>
   </text>
 
   <image v-else-if="node.kind === 'image' && node.href" class="my-2 h-48 w-full rounded-xl bg-slate-100" :src="node.href" :alt="node.alt" mode="aspectFit" />

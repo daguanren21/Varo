@@ -29,6 +29,7 @@ describe('advanced mini-program Agent UI', () => {
     const wrapper = mount(AgentRadioGroup, {
       props: { choices: [{ label: '仅验证', value: 'verify' }, { label: '发布', value: 'publish' }], value: 'verify' }
     })
+    expect(wrapper.findAll('[role="radio"]')[0]!.attributes('hover-class')).toBe('agent-radio__item--pressed')
     await wrapper.findAll('[role="radio"]')[1].trigger('click')
     expect(wrapper.emitted('update:value')?.[0]).toEqual(['publish'])
     expect(wrapper.emitted('change')?.[0]).toEqual(['publish'])
@@ -105,12 +106,14 @@ describe('advanced mini-program Agent UI', () => {
     const table = mount(AgentFilterTable, {
       props: { columns, rows, filter: 'all', filters: [{ label: 'Running', value: 'running' }] }
     })
+    expect(table.findAll('[role="row"]')[1]!.attributes('hover-class')).toBe('bg-slate-50')
     await table.get('[role="navigation"] button').trigger('click')
     expect(table.emitted('update:filter')?.[0]).toEqual(['running'])
 
     const search = mount(AgentCommandSearch, {
       props: { items: [{ id: 'release', label: 'Generate release plan' }], modelValue: '' }
     })
+    expect(search.get('div button').attributes('hover-class')).toBe('bg-slate-50')
     await search.get('input').setValue('release')
     expect(search.emitted('update:modelValue')?.at(-1)).toEqual(['release'])
     await search.get('div button').trigger('click')

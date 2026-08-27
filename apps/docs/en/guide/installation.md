@@ -18,7 +18,7 @@ pnpm install
 
 ```bash
 pnpm add vue @varo/ui-h5 @varo/theme
-pnpm add vue wevu@6.17.8 @varo/ui-weapp @varo/theme
+pnpm add vue wevu@6.23.0 @varo/ui-weapp @varo/theme
 pnpm add @varo/agent-core # only when the product needs Agent events and Markdown
 ```
 
@@ -26,7 +26,7 @@ pnpm add @varo/agent-core # only when the product needs Agent events and Markdow
 
 ```bash
 pnpm add vue @varo/primitives-h5
-pnpm add vue wevu@6.17.8 @varo/primitives-weapp
+pnpm add vue wevu@6.23.0 @varo/primitives-weapp
 ```
 
 ## shadcn-style install
@@ -62,7 +62,7 @@ void controller.connect(transport.source)
 ## Mini-program build chain
 
 ```bash
-pnpm add -D weapp-vite@6.17.8 weapp-tailwindcss@^5.1.8 tailwindcss
+pnpm add -D weapp-vite@6.23.0 weapp-tailwindcss@^5.3.6 tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -76,8 +76,8 @@ The mini-program Base Kit ships real Vue SFCs and consumes Tailwind v4 utilities
 
 ## Version notes
 
-- `weapp-vite` is aligned to `6.17.8`
-- `wevu` is aligned to `6.17.8`
-- `weapp-tailwindcss` is aligned to `^5.1.8`
+- `weapp-vite` is aligned to `6.23.0`
+- `wevu` is aligned to `6.23.0`
+- `weapp-tailwindcss` is aligned to `^5.3.6`
 - Docs are powered by `VitePress 2.0.0-alpha.19`
 - Vue packages are aligned on `Vue 3.5.41`, TypeScript, and `<script setup>`

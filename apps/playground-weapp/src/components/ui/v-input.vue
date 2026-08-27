@@ -51,6 +51,7 @@ const focused = shallowRef(false)
 const localValue = shallowRef(props.value)
 const isTextarea = computed(() => props.type === 'textarea')
 const maxLength = computed(() => Number(props.maxLength) || 140)
+const nativeType = computed(() => (props.type === 'tel' ? 'number' : props.type))
 
 watch(
   () => props.value,
@@ -128,7 +129,7 @@ function clear(event: unknown) {
         class="varo-input__control"
         :value="localValue"
         :password="type === 'password'"
-        :type="type === 'tel' ? 'number' : type"
+        :type="nativeType"
         :placeholder="placeholder"
         :disabled="disabled || readonly"
         :maxlength="maxLength"

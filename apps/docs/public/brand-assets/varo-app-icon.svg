@@ -1,0 +1,27 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Varo</title>
+  <defs>
+    <linearGradient id="varo-app-bg" x1="32" y1="20" x2="224" y2="240" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A1628"/>
+      <stop offset="0.55" stop-color="#0B1016"/>
+      <stop offset="1" stop-color="#061A10"/>
+    </linearGradient>
+    <radialGradient id="varo-app-glow" cx="0" cy="0" r="1" gradientTransform="translate(185 48) rotate(128) scale(150)">
+      <stop stop-color="#07C160" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#07C160" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="varo-app-cut">
+      <rect width="256" height="256" fill="white"/>
+      <rect x="106" y="106" width="44" height="44" transform="rotate(45 128 128)" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="256" height="256" rx="58" fill="url(#varo-app-bg)"/>
+  <rect width="256" height="256" rx="58" fill="url(#varo-app-glow)"/>
+  <g transform="translate(38 38) scale(1.4)" mask="url(#varo-app-cut)">
+    <path d="M16 32L32 16L72 56L56 72L16 32Z" fill="#3B82F6"/>
+    <path d="M72 16L112 56L96 72L56 32L72 16Z" fill="#059B4D"/>
+    <path d="M16 96L56 56L72 72L32 112L16 96Z" fill="#73A7FF"/>
+    <path d="M56 96L96 56L112 72L72 112L56 96Z" fill="#07C160"/>
+  </g>
+  <rect x="1" y="1" width="254" height="254" rx="57" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="2"/>
+</svg>

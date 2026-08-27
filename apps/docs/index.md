@@ -4,32 +4,32 @@ title: Varo
 hero:
   name: Varo
   text: 跨运行时组件系统的生产底座
-  tagline: 面向 H5 与小程序的设计系统运行层。Varo 把 primitives、组件封装、主题 token、业务 blocks 和交付校验拆成清晰资产，让团队把移动端产品做得一致、可复用、可维护。
+  tagline: 为 H5 与小程序提供统一的 primitives、组件封装、主题 token 和业务 blocks。用可复制源码与交付校验，让双端产品保持一致、可维护。
   actions:
     - theme: brand
       text: 快速开始
       link: /guide/installation
     - theme: alt
       text: 查看组件
-      link: /components/button
+      link: /components/
 features:
-  - title: 设计系统运行层
-    details: primitives、受控状态、可访问交互和平台适配拆层交付，避免业务团队重复造基础能力。
-  - title: 组件资产台账
-    details: 组件、主题、blocks、示例和跨端写法统一收敛，方便团队按业务场景查找与复制。
+  - title: 双端行为底座
+    details: primitives、受控状态、可访问交互与平台适配拆层交付，避免重复实现核心行为。
+  - title: 可复制组件资产
+    details: 组件、主题、blocks 与跨端代码统一收敛，按任务找到资产后即可继续业务封装。
   - title: 交付可靠性
-    details: H5 与小程序共享交互语义、状态模型和测试入口，降低双端发布时的样式与行为漂移。
+    details: H5 与小程序共享交互语义、状态模型和测试入口，降低双端发布漂移。
   - title: Primitives First
-    details: 默认 UI 只是上层实现，企业设计系统仍可从 headless runtime 继续向上封装。
+    details: 默认 UI 只是上层实现，企业设计系统仍可从 headless runtime 继续封装。
 ---
 
-## 文档入口
+## 开始使用
 
 <div class="varo-doc-links">
+  <a href="/components/">组件总览</a>
+  <a href="/ai/">AI Agent 组件</a>
   <a href="/guide/installation">安装指南</a>
-  <a href="/components/button">组件文档</a>
-  <a href="/examples/">跨端演示</a>
-  <a href="/guide/contributing">如何贡献</a>
+  <a href="/examples/">跨端示例</a>
 </div>
 
 ## 小程序 Blocks

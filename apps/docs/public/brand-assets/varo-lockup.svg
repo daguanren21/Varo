@@ -1,0 +1,21 @@
+<svg width="292" height="72" viewBox="0 0 292 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Varo</title>
+  <defs>
+    <mask id="varo-lockup-cut">
+      <rect width="64" height="64" fill="white"/>
+      <rect x="24" y="24" width="16" height="16" transform="rotate(45 32 32)" fill="black"/>
+    </mask>
+  </defs>
+  <g transform="translate(4 4)" mask="url(#varo-lockup-cut)">
+    <path d="M8 16L16 8L36 28L28 36L8 16Z" fill="#3B82F6"/>
+    <path d="M36 8L56 28L48 36L28 16L36 8Z" fill="#059B4D"/>
+    <path d="M8 48L28 28L36 36L16 56L8 48Z" fill="#73A7FF"/>
+    <path d="M28 48L48 28L56 36L36 56L28 48Z" fill="#07C160"/>
+  </g>
+  <g transform="translate(80 7) scale(.9)">
+    <path d="M4 16H20L32 46L44 16H60L40 58H24L4 16Z" fill="#181A1D"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M88 14C74 14 64 24 64 38C64 52 74 60 87 60C94 60 100 57 104 52V58H118V16H104V22C100 17 94 14 88 14ZM90 28C98 28 104 33 104 39C104 46 98 50 90 50C83 50 79 46 79 39C79 33 83 28 90 28Z" fill="#181A1D"/>
+    <path d="M128 16H143V24C147 17 153 14 162 14V29C151 29 143 34 143 44V58H128V16Z" fill="#181A1D"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M198 14C181 14 170 24 170 37C170 51 181 60 198 60C215 60 226 51 226 37C226 24 215 14 198 14ZM198 28C206 28 211 32 211 38C211 44 206 48 198 48C190 48 185 44 185 38C185 32 190 28 198 28Z" fill="#181A1D"/>
+  </g>
+</svg>

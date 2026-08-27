@@ -4,6 +4,8 @@ import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import AgentChat from './components/blocks/agent-chat.vue'
+import VButton from './components/ui/v-button.vue'
+import VCard from './components/ui/v-card.vue'
 import { VActionSheet } from './components/ui/action-sheet'
 import { VCollapse, VCollapseItem } from './components/ui/collapse'
 import { VList } from './components/ui/list'
@@ -12,6 +14,23 @@ import { VSteps } from './components/ui/steps'
 import { VSwipeCell } from './components/ui/swipe-cell'
 
 describe('expanded weapp registry components', () => {
+  it('uses native mini-program hover classes for pressed feedback', () => {
+    const button = mount(VButton, { props: { className: 'rounded-none shadow-none' } })
+    expect(button.get('button').attributes('hover-class')).toBe('varo-button--pressed')
+    expect(button.get('button').attributes('hover-start-time')).toBe('20')
+    expect(button.get('button').attributes('hover-stay-time')).toBe('70')
+    expect(button.get('button').classes()).toContain('rounded-none')
+    expect(button.get('button').classes()).toContain('shadow-none')
+
+    const disabledButton = mount(VButton, { props: { disabled: true } })
+    expect(disabledButton.get('button').attributes('hover-class')).toBe('none')
+
+    const card = mount(VCard, { props: { className: 'rounded-none shadow-none', interactive: true } })
+    expect(card.get('.varo-card').attributes('hover-class')).toBe('varo-card--pressed')
+    expect(card.get('.varo-card').classes()).toContain('rounded-none')
+    expect(card.get('.varo-card').classes()).toContain('shadow-none')
+  })
+
   it('selects an action and closes the action sheet', async () => {
     const wrapper = mount(VActionSheet, {
       props: {

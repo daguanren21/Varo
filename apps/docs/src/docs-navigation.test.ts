@@ -192,26 +192,26 @@ describe('docs navigation', () => {
     expect(css).not.toContain('@keyframes varo-button-breathe')
   })
 
-  it('keeps the docs outline narrow so examples have room', () => {
+  it('balances navigation density with a readable content measure', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--vp-sidebar-width: 210px')
-    expect(css).toContain('--vp-aside-width: 168px')
-    expect(css).toContain('--vp-content-container: 1040px')
+    expect(css).toContain('--vp-sidebar-width: 224px')
+    expect(css).toContain('--vp-aside-width: 188px')
+    expect(css).toContain('--vp-content-container: 960px')
   })
 
   it('uses a product-grade docs palette and fixes dark demo contrast for form labels', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-bg: #f6f7f9')
+    expect(css).toContain('--varo-bg: #f7f8fa')
     expect(css).toContain('--varo-surface: #ffffff')
-    expect(css).toContain('--varo-surface-strong: #eef2f6')
-    expect(css).toContain('--varo-primary: #08786f')
+    expect(css).toContain('--varo-surface-strong: #eef2f5')
+    expect(css).toContain('--varo-primary: #0f766e')
     expect(css).toContain('--varo-primary-foreground: #ffffff')
-    expect(css).toContain('--varo-radius: 6px')
-    expect(css).toContain('--varo-radius-lg: 8px')
-    expect(css).toContain('--varo-gridline: rgba(24, 36, 51, 0.055)')
-    expect(css).toContain('font-family: "IBM Plex Sans", "Aptos", "SF Pro Text",')
+    expect(css).toContain('--varo-radius: 8px')
+    expect(css).toContain('--varo-radius-lg: 12px')
+    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
+    expect(css).toContain('font-family: Inter, \"SF Pro Text\", \"PingFang SC\",')
     expect(css).toContain('.dark .vp-doc :is(.varo-form-item__label, .varo-checkbox, .varo-radio, .varo-input__label)')
     expect(css).toContain('.dark .vp-doc :is(.varo-input__body, .varo-input-number, .varo-checkbox__icon, .varo-radio__icon, .varo-textarea__control)')
   })
@@ -231,12 +231,12 @@ describe('docs navigation', () => {
   it('keeps docs chrome quieter than the content surface', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-gridline: rgba(24, 36, 51, 0.055)')
+    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
     expect(css).toContain('.VPNavBar {')
-    expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 84%, transparent) !important')
-    expect(css).toContain('backdrop-filter: blur(14px)')
+    expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important')
+    expect(css).toContain('backdrop-filter: blur(12px)')
     expect(css).toContain('.VPFeature {')
-    expect(css).toContain('background: var(--varo-card) !important')
+    expect(css).toContain('background: color-mix(in srgb, var(--varo-card) 84%, transparent) !important')
   })
 
   it('adds a dedicated narrow-screen hero rule to avoid mobile title clipping', () => {
@@ -244,18 +244,31 @@ describe('docs navigation', () => {
 
     expect(css).toContain('@media (max-width: 640px)')
     expect(css).toContain('.VPHero .name')
-    expect(css).toContain('font-size: clamp(30px, 15vw, 54px)')
+    expect(css).toContain('font-size: 12px')
     expect(css).toContain('.VPHero .text')
-    expect(css).toContain('font-size: clamp(24px, 10.5vw, 42px)')
+    expect(css).toContain('font-size: clamp(32px, 10.5vw, 42px)')
   })
 
-  it('uses the renewed runtime mark for docs branding', () => {
+  it('ships a complete Kinetic Grid brand system for docs and product icons', () => {
     const config = readFileSync(configPath, 'utf8')
-    const logoPath = resolve(docsRoot, 'public/brand-assets/varo-runtime-mark.png')
+    const assets = [
+      'public/brand-assets/varo-symbol.svg',
+      'public/brand-assets/varo-lockup.svg',
+      'public/brand-assets/varo-lockup-dark.svg',
+      'public/brand-assets/varo-app-icon.svg',
+      'public/brand-assets/varo-runtime-mark.png',
+      'public/apple-touch-icon.png',
+      'public/favicon.ico'
+    ]
 
-    expect(config).toContain("logo: '/brand-assets/varo-runtime-mark.png'")
-    expect(existsSync(logoPath)).toBe(true)
-    expect(statSync(logoPath).size).toBeGreaterThan(1024)
+    expect(config).toContain("light: '/brand-assets/varo-lockup.svg'")
+    expect(config).toContain("dark: '/brand-assets/varo-lockup-dark.svg'")
+    expect(config).toContain('siteTitle: false')
+    assets.forEach((asset) => {
+      const path = resolve(docsRoot, asset)
+      expect(existsSync(path), asset).toBe(true)
+      expect(statSync(path).size, asset).toBeGreaterThan(200)
+    })
   })
 
   it('explains primitives as runtime contracts instead of a flat component list', () => {
@@ -360,16 +373,16 @@ describe('docs navigation', () => {
     expect(installationZh).toContain('pnpm dlx @varo/cli add --target weapp-vite button select card')
     expect(installationZh).toContain('pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit')
     expect(installationZh).toContain('pnpm dlx create-weapp-vite@latest varo-app')
-    expect(installationZh).toContain('weapp-vite@6.17.8')
-    expect(installationZh).toContain('wevu@6.17.8')
-    expect(installationZh).toContain('weapp-tailwindcss@^5.1.8')
+    expect(installationZh).toContain('weapp-vite@6.23.0')
+    expect(installationZh).toContain('wevu@6.23.0')
+    expect(installationZh).toContain('weapp-tailwindcss@^5.3.6')
     expect(installationZh).toContain('@weapp-tailwindcss/merge')
     expect(installationEn).toContain('pnpm dlx @varo/cli add --target weapp-vite button select card')
     expect(installationEn).toContain('pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit')
     expect(installationEn).toContain('pnpm dlx create-weapp-vite@latest varo-app')
-    expect(installationEn).toContain('weapp-vite@6.17.8')
-    expect(installationEn).toContain('wevu@6.17.8')
-    expect(installationEn).toContain('weapp-tailwindcss@^5.1.8')
+    expect(installationEn).toContain('weapp-vite@6.23.0')
+    expect(installationEn).toContain('wevu@6.23.0')
+    expect(installationEn).toContain('weapp-tailwindcss@^5.3.6')
     expect(installationEn).toContain('@weapp-tailwindcss/merge')
     expect(shadcnZh).toContain('src/components/ui/v-button.vue')
     expect(shadcnZh).toContain('src/components/ui/select.vue')
@@ -398,8 +411,8 @@ describe('docs navigation', () => {
     }
 
     expect(packageJson.dependencies.vitepress).toBe('2.0.0-alpha.19')
-    expect(config).toContain("{ text: 'AI 组件', link: '/ai/' }")
-    expect(config).toContain("{ text: 'AI Components', link: '/en/ai/' }")
+    expect(config).toContain("{ text: 'AI Agent', link: '/ai/' }")
+    expect(config).toContain("{ text: 'AI Agent', link: '/en/ai/' }")
     expect(theme).toContain("app.component('AgentComponentsDemo', AgentComponentsDemo)")
     expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')

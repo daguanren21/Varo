@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import {
   getDemoCopy,
   getDemoRuntime,
@@ -21,6 +21,7 @@ const props = withDefaults(
 
 const variants = ['solid', 'outline', 'ghost'] as const
 const sizes = ['sm', 'md', 'lg'] as const
+const platforms = ['h5', 'weapp'] as const
 
 const selectedVariant = ref<(typeof variants)[number]>('solid')
 const selectedSize = ref<(typeof sizes)[number]>('md')
@@ -31,6 +32,8 @@ const inputInvalid = ref(false)
 const activePlatform = ref<Platform>('h5')
 const codeExpanded = ref(false)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
+const platformPanelId = computed(() => `platform-${props.example}-panel`)
+const codePanelId = computed(() => `platform-${props.example}-code-panel`)
 let copyFeedbackTimer: number | undefined
 const overlayVisible = ref(true)
 const popupVisible = ref(true)
@@ -158,6 +161,39 @@ function setPlatform(platform: Platform) {
   resetCopyState()
 }
 
+function codeTabId(platform: Platform) {
+  return `platform-${props.example}-code-tab-${platform}`
+}
+
+function platformTabId(platform: Platform) {
+  return `platform-${props.example}-tab-${platform}`
+}
+
+function handlePlatformTabKeydown(event: KeyboardEvent) {
+  const currentIndex = platforms.indexOf(activePlatform.value)
+  let nextIndex = currentIndex
+
+  if (event.key === 'ArrowRight') {
+    nextIndex = (currentIndex + 1) % platforms.length
+  } else if (event.key === 'ArrowLeft') {
+    nextIndex = (currentIndex - 1 + platforms.length) % platforms.length
+  } else if (event.key === 'Home') {
+    nextIndex = 0
+  } else if (event.key === 'End') {
+    nextIndex = platforms.length - 1
+  } else {
+    return
+  }
+
+  event.preventDefault()
+  const platform = platforms[nextIndex]!
+  const tablist = (event.currentTarget as HTMLButtonElement).closest('[role=\"tablist\"]')
+  setPlatform(platform)
+  void nextTick(() => {
+    tablist?.querySelector<HTMLButtonElement>(`[data-platform=\"${platform}\"]`)?.focus()
+  })
+}
+
 function toggleCodeExpanded() {
   codeExpanded.value = !codeExpanded.value
   if (!codeExpanded.value) {
@@ -194,22 +230,32 @@ onBeforeUnmount(() => {
       </div>
       <div class="platform-demo__platform-switch" role="tablist" :aria-label="copy.runtimeLabel">
         <button
+          :id="platformTabId('h5')"
           type="button"
           role="tab"
           class="platform-demo__platform-tab"
+          data-platform="h5"
           :data-active="activePlatform === 'h5'"
+          :aria-controls="platformPanelId"
           :aria-selected="activePlatform === 'h5'"
+          :tabindex="activePlatform === 'h5' ? 0 : -1"
           @click="setPlatform('h5')"
+          @keydown="handlePlatformTabKeydown"
         >
           H5
         </button>
         <button
+          :id="platformTabId('weapp')"
           type="button"
           role="tab"
           class="platform-demo__platform-tab"
+          data-platform="weapp"
           :data-active="activePlatform === 'weapp'"
+          :aria-controls="platformPanelId"
           :aria-selected="activePlatform === 'weapp'"
+          :tabindex="activePlatform === 'weapp' ? 0 : -1"
           @click="setPlatform('weapp')"
+          @keydown="handlePlatformTabKeydown"
         >
           {{ locale === 'en' ? 'Mini Program' : '小程序' }}
         </button>
@@ -217,7 +263,10 @@ onBeforeUnmount(() => {
     </header>
 
     <div
+      :id="platformPanelId"
       class="platform-demo__stage"
+      role="tabpanel"
+      :aria-labelledby="platformTabId(activePlatform)"
       :data-layout="hasControls ? 'controls-preview' : 'preview-only'"
     >
       <section v-if="hasControls" class="platform-demo__panel platform-demo__panel--controls">
@@ -882,13 +931,18 @@ onBeforeUnmount(() => {
             <div class="platform-demo__code-tabs" role="tablist" :aria-label="copy.codeTitle">
               <button
                 v-for="codeExample in codeExamples"
+                :id="codeTabId(codeExample.key)"
                 :key="codeExample.key"
                 class="platform-demo__code-tab"
+                :data-platform="codeExample.key"
                 :data-active="activePlatform === codeExample.key"
                 type="button"
                 role="tab"
+                :aria-controls="codePanelId"
                 :aria-selected="activePlatform === codeExample.key"
+                :tabindex="activePlatform === codeExample.key ? 0 : -1"
                 @click="setPlatform(codeExample.key)"
+                @keydown="handlePlatformTabKeydown"
               >
                 {{ codeExample.title }}
               </button>
@@ -919,7 +973,13 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <section v-if="codeExpanded" class="platform-demo__code-section">
+          <section
+            v-if="codeExpanded"
+            :id="codePanelId"
+            class="platform-demo__code-section"
+            role="tabpanel"
+            :aria-labelledby="codeTabId(activePlatform)"
+          >
             <div class="platform-demo__code-head">
               <strong>{{ activeCodeExample.title }}</strong>
               <span>{{ activeCodeExample.packageName }}</span>
@@ -954,6 +1014,11 @@ onBeforeUnmount(() => {
   --demo-phone-screen: var(--varo-demo-phone-screen);
   --demo-phone-card: var(--varo-demo-phone-card);
   --demo-shadow: var(--varo-demo-shadow);
+  --demo-code-bg: #0f1722;
+  --demo-code-surface: #172231;
+  --demo-code-border: #304056;
+  --demo-code-text: #e8eef5;
+  --demo-code-muted: #9eacc0;
   margin: 24px 0;
   padding: 0;
   border: 0;
@@ -983,28 +1048,27 @@ onBeforeUnmount(() => {
 
 .platform-demo__platform-switch {
   display: inline-flex;
-  padding: 4px;
-  border: 1px solid var(--demo-border);
-  border-radius: 999px;
-  background: var(--demo-surface);
-  gap: 4px;
   flex-shrink: 0;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--demo-border);
+  border-radius: 10px;
+  background: var(--demo-surface);
 }
 
 .platform-demo__platform-tab {
   min-height: 36px;
   padding: 0 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 7px;
   background: transparent;
-  color: var(--vp-c-text-1);
+  color: var(--vp-c-text-2);
   font-size: 0.84rem;
   font-weight: 700;
   cursor: pointer;
   transition:
     background 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
+    color 160ms ease;
 }
 
 .platform-demo__platform-tab:focus-visible {
@@ -1013,9 +1077,9 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__platform-tab[data-active='true'] {
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
-  color: var(--varo-primary-foreground);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--vp-c-brand-1) 28%, transparent);
+  background: color-mix(in srgb, var(--demo-brand) 14%, var(--demo-surface-strong));
+  color: var(--demo-brand);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--demo-brand) 24%, transparent);
 }
 
 .platform-demo__stage {
@@ -1025,9 +1089,7 @@ onBeforeUnmount(() => {
   padding: 16px;
   border: 1px solid var(--demo-border);
   border-radius: var(--varo-demo-radius-lg);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--demo-surface) 94%, transparent), var(--demo-surface-strong)),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent), transparent 34%);
+  background: color-mix(in srgb, var(--demo-surface-strong) 92%, transparent);
   box-shadow: var(--demo-shadow);
 }
 
@@ -1056,7 +1118,7 @@ onBeforeUnmount(() => {
   gap: 12px;
   padding: 14px;
   border: 1px solid var(--demo-border);
-  border-radius: 18px;
+  border-radius: 12px;
   background: color-mix(in srgb, var(--demo-surface-strong) 88%, transparent);
 }
 
@@ -1068,7 +1130,7 @@ onBeforeUnmount(() => {
 .platform-demo__meta-card {
   padding: 12px 14px;
   border: 1px solid var(--demo-border);
-  border-radius: 16px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--demo-surface-strong) 92%, transparent);
 }
 
@@ -1213,10 +1275,11 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__code-shell {
-  border: 1px solid var(--demo-border);
-  border-radius: 18px;
-  background: var(--demo-surface-strong);
   overflow: hidden;
+  border: 1px solid var(--demo-code-border);
+  border-radius: 14px;
+  background: var(--demo-code-bg);
+  color: var(--demo-code-text);
 }
 
 .platform-demo__code-shell[data-expanded='false'] .platform-demo__code-head-row {
@@ -1249,25 +1312,23 @@ onBeforeUnmount(() => {
 .platform-demo__code-tab {
   min-height: 36px;
   padding: 0 14px;
-  border: 1px solid var(--demo-border);
-  border-radius: 999px;
+  border: 1px solid var(--demo-code-border);
+  border-radius: 8px;
   background: transparent;
-  color: var(--vp-c-text-1);
+  color: var(--demo-code-muted);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition:
     border-color 160ms ease,
     background 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
+    color 160ms ease;
 }
 
 .platform-demo__code-tab[data-active='true'] {
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
-  color: var(--varo-primary-foreground);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--vp-c-brand-1) 28%, transparent);
+  border-color: color-mix(in srgb, var(--demo-brand) 32%, var(--demo-code-border));
+  background: color-mix(in srgb, var(--demo-brand) 10%, var(--demo-code-surface));
+  color: var(--demo-code-text);
 }
 
 .platform-demo__code-tab:hover:not([data-active='true']) {
@@ -1284,10 +1345,10 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 6px;
   padding: 0 14px;
-  border: 1px solid var(--demo-border);
-  border-radius: 999px;
+  border: 1px solid var(--demo-code-border);
+  border-radius: 8px;
   background: transparent;
-  color: var(--vp-c-text-1);
+  color: var(--demo-code-text);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -1365,17 +1426,17 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px 0;
-  color: var(--demo-text-muted);
+  color: var(--demo-code-muted);
   font-size: 0.78rem;
 }
 
 .platform-demo__code-section pre {
-  margin: 0;
-  padding: 12px 14px 16px;
-  overflow: auto;
   max-height: 280px;
+  margin: 0;
+  overflow: auto;
+  padding: 12px 14px 16px;
   background: transparent;
-  color: var(--vp-c-text-1);
+  color: var(--demo-code-text);
   font-size: 0.8rem;
   line-height: 1.55;
 }

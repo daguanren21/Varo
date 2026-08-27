@@ -1,53 +1,53 @@
 :root {
-  --vp-c-brand-1: #08786f;
-  --vp-c-brand-2: #0a615c;
-  --vp-c-brand-3: #12a89b;
-  --vp-c-brand-soft: rgba(8, 120, 111, 0.1);
-  --vp-sidebar-width: 210px;
-  --vp-aside-width: 168px;
-  --vp-content-container: 1040px;
-  --vp-home-hero-name-color: var(--vp-c-text-1);
-  --vp-home-hero-image-background-image: linear-gradient(135deg, rgba(8, 120, 111, 0.16), rgba(36, 48, 62, 0.12));
-  --vp-home-hero-image-filter: blur(52px);
-  --varo-bg: #f6f7f9;
-  --varo-foreground: #182433;
-  --varo-muted: #667085;
+  --vp-c-brand-1: #0f766e;
+  --vp-c-brand-2: #0b5f59;
+  --vp-c-brand-3: #14a89b;
+  --vp-c-brand-soft: rgba(15, 118, 110, 0.1);
+  --vp-sidebar-width: 224px;
+  --vp-aside-width: 188px;
+  --vp-content-container: 960px;
+  --vp-home-hero-name-color: var(--varo-accent);
+  --vp-home-hero-image-background-image: none;
+  --vp-home-hero-image-filter: none;
+  --varo-bg: #f7f8fa;
+  --varo-foreground: #18212f;
+  --varo-muted: #5e6b7c;
   --varo-surface: #ffffff;
-  --varo-surface-strong: #eef2f6;
-  --varo-card: rgba(255, 255, 255, 0.82);
+  --varo-surface-strong: #eef2f5;
+  --varo-card: rgba(255, 255, 255, 0.9);
   --varo-card-solid: #ffffff;
-  --varo-card-muted: #f1f4f7;
-  --varo-border: #d8dee7;
-  --varo-border-strong: #aeb8c6;
-  --varo-gridline: rgba(24, 36, 51, 0.055);
-  --varo-accent: #08786f;
-  --varo-accent-soft: rgba(8, 120, 111, 0.08);
-  --varo-ring: rgba(8, 120, 111, 0.18);
-  --varo-shadow: 0 1px 2px rgba(24, 36, 51, 0.06), 0 18px 42px rgba(24, 36, 51, 0.08);
-  --varo-shadow-sm: 0 1px 2px rgba(24, 36, 51, 0.06);
-  --varo-shadow-popover: 0 18px 42px rgba(24, 36, 51, 0.16);
-  --varo-radius: 6px;
-  --varo-radius-lg: 8px;
-  --varo-primary: #08786f;
+  --varo-card-muted: #f0f3f6;
+  --varo-border: #d9e0e8;
+  --varo-border-strong: #acb7c5;
+  --varo-gridline: rgba(24, 33, 47, 0.045);
+  --varo-accent: #0f766e;
+  --varo-accent-soft: rgba(15, 118, 110, 0.08);
+  --varo-ring: rgba(15, 118, 110, 0.22);
+  --varo-shadow: 0 1px 2px rgba(24, 33, 47, 0.05), 0 14px 34px rgba(24, 33, 47, 0.08);
+  --varo-shadow-sm: 0 1px 2px rgba(24, 33, 47, 0.06);
+  --varo-shadow-popover: 0 18px 42px rgba(24, 33, 47, 0.15);
+  --varo-radius: 8px;
+  --varo-radius-lg: 12px;
+  --varo-primary: #0f766e;
   --varo-primary-foreground: #ffffff;
   --varo-danger: #c7372f;
   --varo-danger-soft: rgba(199, 55, 47, 0.1);
-  --varo-color-primary: #08786f;
-  --varo-color-success: #16a34a;
-  --varo-color-warning: #c77800;
+  --varo-color-primary: #0f766e;
+  --varo-color-success: #16824c;
+  --varo-color-warning: #b86f00;
   --varo-color-danger: #c7372f;
-  --varo-color-text: #182433;
-  --varo-color-text-muted: #667085;
-  --varo-color-background: #f6f7f9;
+  --varo-color-text: #18212f;
+  --varo-color-text-muted: #5e6b7c;
+  --varo-color-background: #f7f8fa;
   --varo-color-surface: #ffffff;
-  --varo-color-border: #d8dee7;
-  --varo-color-border-strong: #aeb8c6;
-  --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 88%, transparent);
-  --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 94%, transparent);
+  --varo-color-border: #d9e0e8;
+  --varo-color-border-strong: #acb7c5;
+  --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 90%, transparent);
+  --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 96%, transparent);
   --varo-demo-border: color-mix(in srgb, var(--vp-c-divider) 88%, transparent);
   --varo-demo-text-muted: var(--vp-c-text-2);
   --varo-demo-brand: var(--vp-c-brand-1);
-  --varo-demo-shadow: 0 18px 42px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
+  --varo-demo-shadow: 0 14px 34px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
   --varo-demo-phone-shell: linear-gradient(
     180deg,
     color-mix(in srgb, var(--varo-foreground) 86%, var(--varo-bg)),
@@ -58,201 +58,262 @@
     color-mix(in srgb, var(--varo-bg) 74%, var(--varo-card-solid)) 0%,
     color-mix(in srgb, var(--varo-bg) 86%, var(--varo-accent-soft)) 100%
   );
-  --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg) 94%, var(--varo-card-solid));
-  --varo-demo-code-bg: color-mix(in srgb, var(--varo-foreground) 88%, var(--varo-bg));
-  --varo-demo-radius: 22px;
-  --varo-demo-radius-lg: 28px;
+  --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg) 96%, var(--varo-card-solid));
+  --varo-demo-code-bg: #0f1722;
+  --varo-demo-radius: 14px;
+  --varo-demo-radius-lg: 18px;
 }
 
 .dark {
-  --vp-c-brand-1: #54d9cc;
-  --vp-c-brand-2: #2ab8ad;
-  --vp-c-brand-3: #0e8f86;
-  --vp-c-brand-soft: rgba(84, 217, 204, 0.12);
-  --varo-bg: #0c1118;
-  --varo-foreground: #f4f7fb;
-  --varo-muted: #a8b3c2;
-  --varo-surface: #121923;
-  --varo-surface-strong: #1a2330;
-  --varo-card: rgba(18, 25, 35, 0.88);
-  --varo-card-solid: #121923;
-  --varo-card-muted: #1a2330;
-  --varo-border: #283241;
-  --varo-border-strong: #465367;
-  --varo-gridline: rgba(244, 247, 251, 0.055);
-  --varo-accent: #54d9cc;
-  --varo-accent-soft: rgba(84, 217, 204, 0.1);
-  --varo-ring: rgba(84, 217, 204, 0.2);
-  --varo-shadow: 0 1px 2px rgba(0, 0, 0, 0.34), 0 18px 48px rgba(0, 0, 0, 0.24);
-  --varo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.32);
-  --varo-shadow-popover: 0 24px 52px rgba(0, 0, 0, 0.34);
-  --varo-primary: #54d9cc;
-  --varo-primary-foreground: #071311;
-  --varo-danger: #ff7b72;
-  --varo-danger-soft: rgba(255, 123, 114, 0.16);
-  --varo-color-primary: #54d9cc;
-  --varo-color-success: #4ade80;
-  --varo-color-warning: #fbbf24;
-  --varo-color-danger: #ff7b72;
-  --varo-color-text: #f4f7fb;
-  --varo-color-text-muted: #a8b3c2;
-  --varo-color-background: #0c1118;
-  --varo-color-surface: #121923;
-  --varo-color-border: #283241;
-  --varo-color-border-strong: #465367;
-  --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 72%, var(--varo-bg));
-  --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 78%, var(--varo-bg));
+  --vp-c-brand-1: #65d7cb;
+  --vp-c-brand-2: #35b8ad;
+  --vp-c-brand-3: #14968d;
+  --vp-c-brand-soft: rgba(101, 215, 203, 0.12);
+  --varo-bg: #0b1016;
+  --varo-foreground: #f2f5f8;
+  --varo-muted: #a8b4c2;
+  --varo-surface: #111821;
+  --varo-surface-strong: #18222e;
+  --varo-card: rgba(17, 24, 33, 0.92);
+  --varo-card-solid: #111821;
+  --varo-card-muted: #17212c;
+  --varo-border: #273342;
+  --varo-border-strong: #445469;
+  --varo-gridline: rgba(242, 245, 248, 0.045);
+  --varo-accent: #65d7cb;
+  --varo-accent-soft: rgba(101, 215, 203, 0.1);
+  --varo-ring: rgba(101, 215, 203, 0.22);
+  --varo-shadow: 0 1px 2px rgba(0, 0, 0, 0.32), 0 16px 38px rgba(0, 0, 0, 0.22);
+  --varo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --varo-shadow-popover: 0 22px 50px rgba(0, 0, 0, 0.34);
+  --varo-primary: #65d7cb;
+  --varo-primary-foreground: #071310;
+  --varo-danger: #ff827a;
+  --varo-danger-soft: rgba(255, 130, 122, 0.16);
+  --varo-color-primary: #65d7cb;
+  --varo-color-success: #55d98a;
+  --varo-color-warning: #f2c14e;
+  --varo-color-danger: #ff827a;
+  --varo-color-text: #f2f5f8;
+  --varo-color-text-muted: #a8b4c2;
+  --varo-color-background: #0b1016;
+  --varo-color-surface: #111821;
+  --varo-color-border: #273342;
+  --varo-color-border-strong: #445469;
+  --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 76%, var(--varo-bg));
+  --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 82%, var(--varo-bg));
   --varo-demo-border: color-mix(in srgb, var(--vp-c-divider) 58%, var(--varo-border));
-  --varo-demo-shadow: 0 20px 48px color-mix(in srgb, #000 34%, transparent);
+  --varo-demo-shadow: 0 18px 42px color-mix(in srgb, #000 32%, transparent);
   --varo-demo-phone-shell: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--varo-foreground) 58%, var(--varo-bg)),
-    color-mix(in srgb, var(--varo-bg) 92%, #000)
+    color-mix(in srgb, var(--varo-foreground) 56%, var(--varo-bg)),
+    color-mix(in srgb, var(--varo-bg) 94%, #000)
   );
   --varo-demo-phone-screen: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--varo-surface) 84%, var(--varo-bg)) 0%,
-    color-mix(in srgb, var(--varo-surface-strong) 90%, var(--varo-bg)) 100%
+    color-mix(in srgb, var(--varo-surface) 86%, var(--varo-bg)) 0%,
+    color-mix(in srgb, var(--varo-surface-strong) 92%, var(--varo-bg)) 100%
   );
-  --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg-soft) 82%, var(--varo-surface));
-  --varo-demo-code-bg: color-mix(in srgb, var(--varo-foreground) 78%, var(--varo-bg));
+  --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg-soft) 86%, var(--varo-surface));
+  --varo-demo-code-bg: #0a1018;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background:
-    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
-    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px),
-    var(--varo-bg);
-  background-size: 28px 28px;
+  background: var(--varo-bg);
   color: var(--varo-foreground);
-  font-family: "IBM Plex Sans", "Aptos", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Inter, "SF Pro Text", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
-}
-
-
-.dark body {
-  background:
-    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
-    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px),
-    var(--varo-bg);
-  background-size: 28px 28px;
+  text-rendering: optimizeLegibility;
 }
 
 .VPNavBar {
   border-bottom: 1px solid var(--varo-border);
-  background: color-mix(in srgb, var(--varo-bg) 84%, transparent) !important;
-  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--varo-foreground) 3%, transparent);
 }
 
 .VPNavBarTitle .title {
-  font-weight: 760;
-  letter-spacing: 0;
+  min-width: 114px;
+}
+
+.VPNavBarTitle img {
+  width: auto;
+  height: 28px;
+  border-radius: 0;
+}
+
+.VPNavBarMenuLink,
+.VPNavBarMenuGroup .button {
+  font-size: 14px;
+  font-weight: 620;
 }
 
 .VPButton {
-  min-height: 38px;
+  min-height: 40px;
   border-radius: var(--varo-radius) !important;
-  font-weight: 650;
+  font-weight: 680;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
 .VPButton.brand {
-  border-color: var(--varo-foreground) !important;
-  background: var(--varo-foreground) !important;
-  color: var(--varo-bg) !important;
+  border-color: var(--varo-primary) !important;
+  background: var(--varo-primary) !important;
+  color: var(--varo-primary-foreground) !important;
+}
+
+.VPButton.brand:hover {
+  transform: translateY(-1px);
 }
 
 .VPButton.alt {
   border: 1px solid var(--varo-border) !important;
-  background: var(--varo-card-solid) !important;
+  background: transparent !important;
   color: var(--varo-foreground) !important;
-  box-shadow: var(--varo-shadow-sm);
+  box-shadow: none;
 }
 
 .VPHero {
   position: relative;
-  padding-top: 66px !important;
-  padding-bottom: 22px !important;
+  overflow: hidden;
+  border-bottom: 1px solid var(--varo-border);
+  padding-top: 116px !important;
+  padding-bottom: 46px !important;
+}
+
+.VPHero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px),
+    radial-gradient(circle at 12% 20%, var(--varo-accent-soft), transparent 30%);
+  background-size: 32px 32px, 32px 32px, auto;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+  pointer-events: none;
 }
 
 .VPHero .container {
-  align-items: center;
+  position: relative;
+  z-index: 1;
+  align-items: flex-start;
 }
 
 .VPHero .main {
-  max-width: 720px;
-  padding-top: 6px;
-}
-
-.VPHero .name,
-.VPHero .text {
-  letter-spacing: 0;
+  max-width: 760px;
+  padding-top: 0;
 }
 
 .VPHero .name {
-  font-size: clamp(48px, 7vw, 86px);
+  display: block;
+  margin-bottom: 14px;
+  color: var(--varo-accent);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .VPHero .text {
-  max-width: 680px;
+  max-width: 720px;
   color: var(--varo-foreground);
-  font-size: clamp(28px, 4vw, 52px);
-  line-height: 1.04;
+  font-size: clamp(38px, 5vw, 58px);
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
 }
 
 .VPHero .tagline {
-  max-width: 660px;
+  max-width: 68ch;
   color: var(--varo-muted);
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 1.05rem;
+  line-height: 1.72;
+  text-wrap: pretty;
 }
 
-.vp-doc,
-.vp-doc p,
-.vp-doc li {
+.VPHero .actions {
+  margin-top: 26px;
+}
+
+.vp-doc {
   color: var(--varo-foreground);
 }
 
+.vp-doc > p,
+.vp-doc > ul,
+.vp-doc > ol {
+  max-width: 76ch;
+}
+
 .vp-doc p,
 .vp-doc li {
   color: var(--varo-muted);
+  line-height: 1.78;
+}
+
+.vp-doc h1 {
+  color: var(--varo-foreground);
+  font-size: clamp(32px, 4vw, 42px);
+  line-height: 1.14;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.vp-doc h2,
+.vp-doc h3 {
+  color: var(--varo-foreground);
+  letter-spacing: -0.025em;
+  scroll-margin-top: calc(var(--vp-nav-height) + 28px);
+  text-wrap: balance;
+}
+
+.vp-doc h2 {
+  margin-top: 40px;
+  border-top: 1px solid var(--varo-border);
+  padding-top: 24px;
 }
 
 .VPFeature {
   border: 1px solid var(--varo-border) !important;
   border-radius: var(--varo-radius-lg) !important;
-  background: var(--varo-card) !important;
-  box-shadow: var(--varo-shadow-sm);
+  background: color-mix(in srgb, var(--varo-card) 84%, transparent) !important;
+  box-shadow: none;
   transition:
-    border-color 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
+    border-color 160ms ease,
+    background 160ms ease;
 }
 
 .VPFeature:hover {
-  border-color: var(--varo-border-strong) !important;
-  transform: translateY(-2px);
-  box-shadow: var(--varo-shadow);
+  border-color: color-mix(in srgb, var(--varo-accent) 42%, var(--varo-border)) !important;
+  background: var(--varo-card) !important;
 }
 
-.VPFeature .title,
-.vp-doc h2,
-.vp-doc h3 {
-  letter-spacing: 0;
+.VPFeature .title {
+  letter-spacing: -0.015em;
 }
 
 .VPFeature .details {
   color: var(--varo-muted);
-}
-
-.vp-doc h2 {
-  margin-top: 42px;
-  border-top: 1px solid var(--varo-border);
-  padding-top: 26px;
+  line-height: 1.65;
 }
 
 .vp-doc .custom-block,
 .vp-doc div[class*='language-'],
-.vp-doc table {
+.vp-doc > table {
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
   box-shadow: var(--varo-shadow-sm);
@@ -272,10 +333,10 @@ body {
   height: 32px;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, #fff 14%, transparent);
+  border: 1px solid #304056;
   border-radius: var(--varo-radius);
-  background: color-mix(in srgb, var(--varo-foreground) 72%, transparent);
-  color: color-mix(in srgb, var(--varo-bg) 96%, #fff);
+  background: #172231;
+  color: #e8eef5;
   opacity: 0;
   transform: translateY(-2px);
   transition:
@@ -309,15 +370,31 @@ body {
     linear-gradient(#000 0 0) 1px 5px / 9px 11px no-repeat;
 }
 
-.vp-doc table {
+.vp-doc > table {
   display: table;
   overflow: hidden;
   width: 100%;
   table-layout: fixed;
 }
 
-.vp-doc table th {
+.vp-doc > table th {
   background: color-mix(in srgb, var(--varo-card-solid) 74%, var(--varo-border));
+}
+
+.VPButton:focus-visible,
+.VPNavBarMenuLink:focus-visible,
+.VPNavBarMenuGroup .button:focus-visible,
+.varo-doc-links a:focus-visible,
+.varo-block-actions a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--varo-accent) 72%, transparent);
+  outline-offset: 3px;
+}
+
+@media (hover: none) {
+  .vp-doc div[class*='language-'] > button.copy {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .varo-doc-links,
@@ -1634,7 +1711,7 @@ body {
   }
 
   .VPHero {
-    padding-top: 38px !important;
+    padding-top: 96px !important;
   }
 }
 
@@ -1725,8 +1802,8 @@ body {
 }
 @media (max-width: 640px) {
   .VPHero {
-    padding-top: 18px !important;
-    padding-bottom: 8px !important;
+    padding-top: 86px !important;
+    padding-bottom: 30px !important;
   }
 
   .VPHero .main {
@@ -1734,13 +1811,14 @@ body {
   }
 
   .VPHero .name {
-    font-size: clamp(30px, 15vw, 54px);
-    line-height: 0.9;
+    margin-bottom: 10px;
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .VPHero .text {
-    font-size: clamp(24px, 10.5vw, 42px);
-    line-height: 1;
+    font-size: clamp(32px, 10.5vw, 42px);
+    line-height: 1.08;
   }
 
   .VPHero .tagline {
@@ -1748,12 +1826,28 @@ body {
     line-height: 1.66;
   }
 
+  .VPHero .actions {
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .VPFeature {
+    padding: 16px !important;
+  }
+
+  .vp-doc h1 {
+    font-size: 30px;
+  }
+
+  .vp-doc h2 {
+    margin-top: 34px;
+    padding-top: 20px;
+  }
 
   .varo-block-preview-panel .varo-phone-block,
   .varo-block-code-panel {
     padding: 12px;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1769,31 +1863,36 @@ body {
 
 @media (min-width: 960px) {
   .VPDoc > .container > .content {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
   }
 
-  .VPDoc .content-container,
   .VPDoc .main {
     width: 100% !important;
     max-width: none !important;
-    margin-left: 0 !important;
     margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .VPDoc .content-container {
+    width: 100% !important;
+    max-width: var(--vp-content-container) !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
   }
 }
 
 @media (min-width: 1280px) {
   .VPDoc.has-aside > .container > .content {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding-right: 24px !important;
+    padding-left: 24px !important;
   }
 
-  .VPDoc.has-aside .content-container,
-  .VPDoc.has-aside .main {
+  .VPDoc.has-aside .content-container {
     width: 100% !important;
-    max-width: none !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    max-width: var(--vp-content-container) !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
   }
 
   .VPDoc.has-aside .vp-doc .platform-demo {

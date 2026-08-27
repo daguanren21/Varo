@@ -29,7 +29,7 @@ const rootClass = computed(() =>
       <text class="block border-l-[3px] border-teal-600 pl-3 text-[12px] leading-5 text-slate-600">{{ text }}</text>
     </view>
     <view class="flex flex-wrap gap-2 p-2.5">
-      <button v-for="action in actions" :key="action.id" class="min-h-8 rounded-lg border border-slate-200 bg-white px-3 text-[10px] font-bold text-slate-600 active:border-teal-300 active:text-teal-700" type="button" @click="emit('select', { action, text })">
+      <button v-for="action in actions" :key="action.id" class="min-h-8 rounded-lg border border-slate-200 bg-white px-3 text-[10px] font-bold text-slate-600" hover-class="border-teal-300 text-teal-700" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', { action, text })">
         {{ action.label }}
       </button>
     </view>

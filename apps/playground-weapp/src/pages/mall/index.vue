@@ -197,10 +197,13 @@ defineExpose({
     </view>
 
     <button
-      class="fixed bottom-[calc(env(safe-area-inset-bottom)+18px)] right-4 z-40 grid h-[52px] w-[52px] place-items-center rounded-full border-2 border-white bg-teal-700 text-[11px] font-black text-white shadow-[0_8px_24px_rgba(15,118,110,.28)] active:scale-95"
+      class="fixed bottom-[calc(env(safe-area-inset-bottom)+18px)] right-4 z-40 grid h-[52px] w-[52px] place-items-center rounded-full border-2 border-white bg-teal-700 text-[11px] font-black text-white shadow-[0_8px_24px_rgba(15,118,110,.28)]"
       type="button"
       id="agent-entry"
       aria-label="打开 AI 导购"
+      hover-class="scale-95"
+      :hover-start-time="20"
+      :hover-stay-time="70"
       @click="openAgent"
     >
       <text>AI</text>

@@ -61,6 +61,9 @@ function select(choice: AgentChoice) {
       :disabled="choice.disabled"
       :aria-checked="choice.value === value"
       :data-selected="String(choice.value === value)"
+      hover-class="agent-radio__item--pressed"
+      :hover-start-time="20"
+      :hover-stay-time="70"
       @click="select(choice)"
     >
       <text
@@ -78,7 +81,7 @@ function select(choice: AgentChoice) {
 
 <style scoped>
 .agent-radio { --agent-radio-spring: cubic-bezier(.2, .9, .25, 1.18); }
-.agent-radio__item:active { transform: scale(.975); }
+.agent-radio__item--pressed { transform: scale(.975); }
 .agent-radio__item:disabled { opacity: .45; }
 .agent-radio__indicator { top: 22px; left: 20px; width: 10px; height: 10px; transform: translateY(calc(var(--agent-choice-index) * 56px)); transition: transform .32s var(--agent-radio-spring); }
 .agent-radio[data-orientation='horizontal'] .agent-radio__indicator { top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / var(--agent-choice-count)); height: auto; border-radius: 10px; background: #fff; box-shadow: 0 1px 4px rgba(15, 23, 42, .12); transform: translateX(calc(var(--agent-choice-index) * 100%)); }

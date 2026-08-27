@@ -310,6 +310,34 @@ function t(zh: string, en: string) {
   font-weight: 700;
 }
 
+
+.ai-docs-demo :deep(.agent-markdown__table-scroll) {
+  overflow-x: auto;
+  border: 1px solid #dbe4ee;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.ai-docs-demo :deep(.agent-markdown__table) {
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  color: #334155;
+  box-shadow: none;
+}
+
+.ai-docs-demo :deep(.agent-markdown__table th),
+.ai-docs-demo :deep(.agent-markdown__table td) {
+  border-color: #dbe4ee;
+  background: #fff;
+  color: #334155;
+}
+
+.ai-docs-demo :deep(.agent-markdown__table th) {
+  background: #f1f5f9;
+  color: #172033;
+}
 @media (max-width: 760px) {
   .ai-docs-demo__hero {
     align-items: start;

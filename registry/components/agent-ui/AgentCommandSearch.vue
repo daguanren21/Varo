@@ -50,7 +50,7 @@ function inputValue(event: Event) {
     </view>
 
     <scroll-view v-if="visibleItems.length" class="max-h-[280px] p-2" scroll-y :show-scrollbar="false">
-      <button v-for="item in visibleItems" :key="item.id" class="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border-0 bg-white px-2.5 py-2 text-left active:bg-slate-50" type="button" @click="emit('select', item)">
+      <button v-for="item in visibleItems" :key="item.id" class="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border-0 bg-white px-2.5 py-2 text-left" hover-class="bg-slate-50" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', item)">
         <view class="grid min-w-0 flex-1 gap-0.5">
           <text class="truncate text-[11px] font-semibold text-slate-700">{{ item.label }}</text>
           <text v-if="item.description" class="truncate text-[10px] text-slate-400">{{ item.description }}</text>

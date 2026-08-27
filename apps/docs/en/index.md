@@ -4,32 +4,32 @@ title: Varo
 hero:
   name: Varo
   text: Production foundation for cross-runtime component systems
-  tagline: A design system runtime for H5 and mini-program products. Varo separates primitives, wrappers, theme tokens, business blocks, and delivery checks into clear assets so teams can ship consistent mobile experiences.
+  tagline: A shared foundation for H5 and mini-program primitives, UI wrappers, theme tokens, and business blocks. Editable source and delivery checks keep both targets consistent and maintainable.
   actions:
     - theme: brand
       text: Quick Start
       link: /en/guide/installation
     - theme: alt
       text: Components
-      link: /en/components/button
+      link: /en/components/
 features:
-  - title: Design System Runtime
-    details: Primitives, controlled state, accessible behavior, and platform adapters are separated so product teams avoid rebuilding core interaction work.
-  - title: Component Asset Ledger
-    details: Components, theme tokens, blocks, examples, and cross-runtime snippets are organized as product assets teams can search and reuse.
+  - title: Dual-target Behavior
+    details: Primitives, controlled state, accessible interaction, and platform adapters keep core behavior from being rebuilt.
+  - title: Editable Component Assets
+    details: Components, themes, blocks, and cross-runtime code stay organized by task and ready for product extension.
   - title: Delivery Confidence
     details: H5 and mini-program packages share interaction semantics, state models, and test entry points to reduce release drift.
   - title: Primitives First
-    details: The default UI is only one layer; internal design systems can still build upward from the headless runtime.
+    details: The default UI is one layer; internal design systems can continue building from the headless runtime.
 ---
 
-## Entry Points
+## Start Here
 
 <div class="varo-doc-links">
+  <a href="/en/components/">Component Overview</a>
+  <a href="/en/ai/">AI Agent Components</a>
   <a href="/en/guide/installation">Installation</a>
-  <a href="/en/components/button">Components</a>
-  <a href="/en/examples/">Cross-platform Demo</a>
-  <a href="/en/guide/contributing">Contributing</a>
+  <a href="/en/examples/">Cross-platform Examples</a>
 </div>
 
 ## Mini-program Blocks

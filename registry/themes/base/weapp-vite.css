@@ -63,7 +63,7 @@ page {
     transform 0.18s ease;
 }
 
-.varo-button:active {
+.varo-button--pressed {
   transform: translateY(1px);
 }
 
@@ -1609,7 +1609,7 @@ textarea.varo-input__control {
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
-.varo-card--interactive:active {
+.varo-card--pressed {
   transform: translateY(1px);
 }
 

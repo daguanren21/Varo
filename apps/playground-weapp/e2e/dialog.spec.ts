@@ -58,10 +58,11 @@ describe('playground-weapp delivery contract', () => {
     expect(existsSync(resolve(outputRoot, 'pages/mall/index.js'))).toBe(true)
     expect(existsSync(resolve(outputRoot, 'pages/mall/index.wxml'))).toBe(true)
     expect(page.usingComponents).toMatchObject({
-      MallAgentPanel: '/components/mall/MallAgentPanel',
-      MallHeader: '/components/mall/MallHeader',
-      MallProductGrid: '/components/mall/MallProductGrid'
+      'mall-agent-panel': '/components/mall/MallAgentPanel',
+      'mall-header': '/components/mall/MallHeader',
+      'mall-product-grid': '/components/mall/MallProductGrid'
     })
+    expect(Object.keys(page.usingComponents).every((name) => name === name.toLowerCase())).toBe(true)
     Object.values(page.usingComponents)
       .filter((componentPath) => componentPath.startsWith('/components/'))
       .forEach((componentPath) => {
@@ -69,5 +70,27 @@ describe('playground-weapp delivery contract', () => {
         expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.wxml`))).toBe(true)
         expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.js`))).toBe(true)
       })
+  })
+
+  it('emits WXML-safe bindings and native pressed states when build output exists', () => {
+    const outputRoot = resolve(playgroundRoot, 'devtools/build/mp-weixin')
+    if (!existsSync(resolve(outputRoot, 'app.json'))) return
+
+    const attributeTernary = /=\"\{\{[^\"}]*\?[^\"}]*:[^\"}]*\}\}\"/
+    collectFiles(outputRoot, '.wxml').forEach((path) => {
+      const content = readFileSync(path, 'utf8')
+      expect(content, path).not.toContain('?.')
+      expect(content, path).not.toContain('??')
+      expect(content, path).not.toMatch(attributeTernary)
+    })
+
+    collectFiles(outputRoot, '.wxss').forEach((path) => {
+      expect(readFileSync(path, 'utf8'), path).not.toContain(':active')
+    })
+
+    const buttonWxml = readFileSync(resolve(outputRoot, 'components/ui/v-button.wxml'), 'utf8')
+    const appWxss = readFileSync(resolve(outputRoot, 'app.wxss'), 'utf8')
+    expect(buttonWxml).toContain('hover-class=\"{{hoverClass}}\"')
+    expect(appWxss).toContain('.varo-button--pressed')
   })
 })

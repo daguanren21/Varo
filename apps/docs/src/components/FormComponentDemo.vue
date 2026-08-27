@@ -1435,7 +1435,11 @@ function onFormArrayFailed() {
   --form-demo-surface-strong: var(--varo-demo-surface-strong);
   --form-demo-border: var(--varo-demo-border);
   --form-demo-shadow: var(--varo-demo-shadow);
-  --form-demo-code-bg: var(--varo-demo-code-bg);
+  --form-demo-code-bg: #0f1722;
+  --form-demo-code-surface: #172231;
+  --form-demo-code-border: #304056;
+  --form-demo-code-text: #e8eef5;
+  --form-demo-code-muted: #9eacc0;
   position: relative;
   margin: 20px 0 28px;
 }
@@ -1737,10 +1741,10 @@ function onFormArrayFailed() {
 .form-demo__code {
   margin-top: 12px;
   overflow: hidden;
-  border: 1px solid var(--form-demo-border);
-  border-radius: 18px;
+  border: 1px solid var(--form-demo-code-border);
+  border-radius: 14px;
   background: var(--form-demo-code-bg);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--varo-foreground) 10%, transparent);
+  box-shadow: 0 12px 28px color-mix(in srgb, #020617 22%, transparent);
 }
 
 .form-demo__code-toolbar {
@@ -1754,52 +1758,50 @@ function onFormArrayFailed() {
 
 .form-demo__tabs {
   display: inline-flex;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
-  padding: 4px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--varo-border-strong) 40%, transparent);
+  padding: 3px;
+  border: 1px solid var(--form-demo-code-border);
+  border-radius: 10px;
+  background: var(--form-demo-code-surface);
 }
 
 .form-demo__tab {
   min-height: 36px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 7px;
   padding: 0 14px;
   background: transparent;
-  color: color-mix(in srgb, var(--varo-card-solid) 72%, transparent);
+  color: var(--form-demo-code-muted);
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
   transition:
     background 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
+    color 0.18s ease;
 }
 
 .form-demo__tab[data-active='true'] {
-  background: var(--varo-card-solid);
-  color: var(--varo-foreground);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px color-mix(in srgb, var(--varo-foreground) 12%, transparent);
+  background: #243247;
+  color: var(--form-demo-code-text);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--varo-primary) 24%, transparent);
 }
 .form-demo__tab:hover:not([data-active='true']) {
-  color: color-mix(in srgb, var(--varo-card-solid) 92%, transparent);
-  background: color-mix(in srgb, var(--varo-card-solid) 10%, transparent);
+  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
+  color: var(--form-demo-code-text);
 }
 
 .form-demo__code-copy {
   display: inline-flex;
-  min-height: 32px;
+  min-height: 34px;
   align-items: center;
   justify-content: center;
   gap: 6px;
   padding: 0 12px;
-  border: 1px solid color-mix(in srgb, var(--varo-card-solid) 18%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-card-solid) 8%, transparent);
-  color: color-mix(in srgb, var(--varo-card-solid) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, var(--form-demo-code-border));
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
+  color: var(--form-demo-code-text);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -1811,9 +1813,9 @@ function onFormArrayFailed() {
 }
 
 .form-demo__code-copy:hover {
-  border-color: color-mix(in srgb, var(--varo-primary) 42%, transparent);
+  border-color: color-mix(in srgb, var(--varo-primary) 72%, var(--form-demo-code-border));
   background: color-mix(in srgb, var(--varo-primary) 16%, transparent);
-  color: color-mix(in srgb, var(--varo-card-solid) 96%, transparent);
+  color: #ffffff;
 }
 
 .form-demo__code-copy[data-state='copied'] {
@@ -1880,19 +1882,19 @@ function onFormArrayFailed() {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px 0;
-  color: color-mix(in srgb, var(--varo-card-solid) 88%, transparent);
+  color: var(--form-demo-code-text);
   font-size: 13px;
 }
 
 .form-demo__code-head span {
-  color: color-mix(in srgb, var(--varo-card-solid) 52%, transparent);
+  color: var(--form-demo-code-muted);
 }
 
 .form-demo__code pre {
   margin: 0;
   padding: 14px 16px 18px;
   overflow-x: auto;
-  color: color-mix(in srgb, var(--varo-card-solid) 92%, var(--varo-surface-strong));
+  color: var(--form-demo-code-text);
   font-size: 13px;
   line-height: 1.65;
 }
@@ -1903,7 +1905,7 @@ function onFormArrayFailed() {
 
 .form-demo__code-toast {
   margin: 0;
-  border-top: 1px solid color-mix(in srgb, #fff 10%, transparent);
+  border-top: 1px solid var(--form-demo-code-border);
   padding: 8px 16px;
   font-size: 11px;
   font-weight: 650;
