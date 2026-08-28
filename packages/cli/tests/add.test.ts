@@ -119,6 +119,25 @@ describe('varo add targets', () => {
     expect(weapp.files.map(file => file.to)).not.toContain('src/components/ui/selection.ts')
   })
 
+  it('installs retail blocks with Varo controls and shared retail contracts', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-retail-'))
+
+    const plan = await installRegistryItems(['blocks/retail-home'], {
+      projectRoot,
+      registryRoot,
+      target: 'weapp-vite',
+    })
+
+    expect(plan.items.map(item => item.name)).toEqual(
+      expect.arrayContaining(['retail', 'badge', 'button', 'card', 'image', 'input', 'tag', 'retail-home']),
+    )
+    expect(plan.files.map(file => file.to)).toContain('src/lib/retail.ts')
+    expect(plan.files.map(file => file.to)).toContain('src/components/blocks/retail-home.vue')
+    const source = readFileSync(join(projectRoot, 'src/components/blocks/retail-home.vue'), 'utf8')
+    expect(source).toContain('<VButton')
+    expect(source).not.toContain('<button')
+  })
+
   it('copies target-correct component, adapter, merge helper, and styles', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
 

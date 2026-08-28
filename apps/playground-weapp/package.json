@@ -13,6 +13,7 @@
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "smoke:runtime": "node e2e/runtime-smoke.mjs",
+    "smoke:retail": "node e2e/retail-runtime-smoke.mjs",
     "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {

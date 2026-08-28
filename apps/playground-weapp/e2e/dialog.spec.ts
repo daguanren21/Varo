@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -8,7 +8,7 @@ const readJson = <T>(path: string): T => JSON.parse(readFileSync(resolve(playgro
 function collectFiles(directory: string, extension: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = resolve(directory, entry.name)
-    if (entry.isDirectory()) return collectFiles(path, extension)
+    if (entry.isDirectory()) { return collectFiles(path, extension) }
     return entry.name.endsWith(extension) ? [path] : []
   })
 }
@@ -16,7 +16,7 @@ function collectFiles(directory: string, extension: string): string[] {
 describe('playground-weapp delivery contract', () => {
   it('declares deterministic build, AI dev, typecheck, and runtime smoke commands', () => {
     const pkg = readJson<{ scripts: Record<string, string> }>('package.json')
-    const project = readJson<{ appid: string; compileType: string; miniprogramRoot: string }>('project.config.json')
+    const project = readJson<{ appid: string, compileType: string, miniprogramRoot: string }>('project.config.json')
 
     expect(pkg.scripts.build).toBe('weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs')
     expect(pkg.scripts.dev).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite')
@@ -26,7 +26,7 @@ describe('playground-weapp delivery contract', () => {
     expect(project).toMatchObject({
       appid: '',
       compileType: 'miniprogram',
-      miniprogramRoot: 'devtools/build/mp-weixin/'
+      miniprogramRoot: 'devtools/build/mp-weixin/',
     })
   })
 
@@ -37,46 +37,53 @@ describe('playground-weapp delivery contract', () => {
     const viteConfig = readFileSync(resolve(playgroundRoot, 'vite.config.ts'), 'utf8')
 
     ;[...sfcFiles, ...pageFiles, ...featureFiles].forEach((path) => {
-      expect(readFileSync(path, 'utf8'), path).not.toMatch(/from ['\"]vue['\"]/)
+      expect(readFileSync(path, 'utf8'), path).not.toMatch(/from ['"]vue['"]/)
     })
-    expect(viteConfig).toContain("wevu: 'vue'")
-    expect(viteConfig).not.toContain("vue: 'wevu'")
+    expect(viteConfig).toContain('wevu: \'vue\'')
+    expect(viteConfig).not.toContain('vue: \'wevu\'')
   })
 
-  it('produces a compilable AI mall route when build output exists', () => {
+  it('produces compilable retail and AI mall routes when build output exists', () => {
     const outputRoot = resolve(playgroundRoot, 'devtools/build/mp-weixin')
     const appJsonPath = resolve(outputRoot, 'app.json')
     if (!existsSync(appJsonPath)) {
+      expect(existsSync(resolve(playgroundRoot, 'src/pages/retail-home/index.vue'))).toBe(true)
       expect(existsSync(resolve(playgroundRoot, 'src/pages/mall/index.vue'))).toBe(true)
       return
     }
 
     const app = readJson<{ pages: string[] }>('devtools/build/mp-weixin/app.json')
-    const page = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/mall/index.json')
+    const retailPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/retail-home/index.json')
+    const mallPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/mall/index.json')
 
-    expect(app.pages[0]).toBe('pages/mall/index')
-    expect(existsSync(resolve(outputRoot, 'pages/mall/index.js'))).toBe(true)
-    expect(existsSync(resolve(outputRoot, 'pages/mall/index.wxml'))).toBe(true)
-    expect(page.usingComponents).toMatchObject({
+    expect(app.pages[0]).toBe('pages/retail-home/index')
+    expect(app.pages).toContain('pages/mall/index')
+    expect(existsSync(resolve(outputRoot, 'pages/retail-home/index.js'))).toBe(true)
+    expect(existsSync(resolve(outputRoot, 'pages/retail-home/index.wxml'))).toBe(true)
+    expect(retailPage.usingComponents).toMatchObject({
+      'retail-product-card': '/components/retail/RetailProductCard',
+      'v-button': '/components/ui/v-button',
+      'v-card': '/components/ui/v-card',
+      'v-input': '/components/ui/v-input',
+    })
+    expect(mallPage.usingComponents).toMatchObject({
       'mall-agent-panel': '/components/mall/MallAgentPanel',
       'mall-header': '/components/mall/MallHeader',
-      'mall-product-grid': '/components/mall/MallProductGrid'
+      'mall-product-grid': '/components/mall/MallProductGrid',
     })
-    expect(Object.keys(page.usingComponents).every((name) => name === name.toLowerCase())).toBe(true)
-    Object.values(page.usingComponents)
-      .filter((componentPath) => componentPath.startsWith('/components/'))
-      .forEach((componentPath) => {
-        expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.json`))).toBe(true)
-        expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.wxml`))).toBe(true)
-        expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.js`))).toBe(true)
-      })
+    expect(Object.keys(retailPage.usingComponents).every(name => name === name.toLowerCase())).toBe(true)
+    ;[retailPage, mallPage].flatMap(page => Object.values(page.usingComponents)).filter(componentPath => componentPath.startsWith('/components/')).forEach((componentPath) => {
+      expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.json`))).toBe(true)
+      expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.wxml`))).toBe(true)
+      expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.js`))).toBe(true)
+    })
   })
 
   it('emits WXML-safe bindings and native pressed states when build output exists', () => {
     const outputRoot = resolve(playgroundRoot, 'devtools/build/mp-weixin')
-    if (!existsSync(resolve(outputRoot, 'app.json'))) return
+    if (!existsSync(resolve(outputRoot, 'app.json'))) { return }
 
-    const attributeTernary = /=\"\{\{[^\"}]*\?[^\"}]*:[^\"}]*\}\}\"/
+    const attributeTernary = /="\{\{[^"?}]*\?[^":}]*:[^"}]*\}\}"/
     collectFiles(outputRoot, '.wxml').forEach((path) => {
       const content = readFileSync(path, 'utf8')
       expect(content, path).not.toContain('?.')

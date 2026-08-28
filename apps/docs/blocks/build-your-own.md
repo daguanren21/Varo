@@ -4,20 +4,28 @@
 
 ## 当前可安装 Blocks
 
-| Registry 名称  | 用途                                 | Targets    |
-| -------------- | ------------------------------------ | ---------- |
-| `login-form`   | 登录、记住状态、错误和加载反馈       | H5 / Weapp |
-| `profile-card` | 用户身份、状态和统计信息             | H5 / Weapp |
-| `profile-edit` | 资料编辑与城市选择                   | H5 / Weapp |
-| `product-list` | 商品列表、库存、价格和加购动作       | H5 / Weapp |
-| `order-filter` | 订单状态与金额筛选                   | H5 / Weapp |
-| `agent-chat`   | 增量对话、推理、工具、审批与输入组合 | H5 / Weapp |
+| Registry 名称           | 用途                                   | Targets    |
+| ----------------------- | -------------------------------------- | ---------- |
+| `login-form`            | 登录、记住状态、错误和加载反馈         | H5 / Weapp |
+| `profile-card`          | 用户身份、状态和统计信息               | H5 / Weapp |
+| `profile-edit`          | 资料编辑与城市选择                     | H5 / Weapp |
+| `product-list`          | 商品列表、库存、价格和加购动作         | H5 / Weapp |
+| `order-filter`          | 订单状态与金额筛选                     | H5 / Weapp |
+| `agent-chat`            | 增量对话、推理、工具、审批与输入组合   | H5 / Weapp |
+| `retail-home`           | 零售首页、搜索、分类、商品与购物车入口 | Weapp      |
+| `retail-category`       | 双栏分类导航与商品网格                 | Weapp      |
+| `retail-cart`           | 受控购物车、数量、选择、合计与结算     | Weapp      |
+| `retail-product-detail` | 商品详情、库存、数量、加购与购买       | Weapp      |
+| `retail-checkout`       | 地址、商品、优惠、发票、金额与提交     | Weapp      |
+| `retail-order-list`     | 订单状态、商品摘要与履约动作           | Weapp      |
+| `retail-profile`        | 会员、订单、地址、优惠券与售后入口     | Weapp      |
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
 pnpm dlx @varo-ui/cli add --target h5 blocks/product-list
 pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
 pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/retail-home blocks/retail-category blocks/retail-cart blocks/retail-product-detail blocks/retail-checkout blocks/retail-order-list blocks/retail-profile
 ```
 
 文档展示必须来自这些真实 registry source；不得再用未导出的 `VCard`、`VBadge` 或不可编译的 JSX 字符串模拟 Block。

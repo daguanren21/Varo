@@ -1,0 +1,142 @@
+import type { RetailAddress, RetailCoupon, RetailOrder, RetailProduct } from './types'
+
+export const retailCategories = [
+  { id: 'women', label: '女装', shortLabel: '女装' },
+  { id: 'men', label: '男装', shortLabel: '男装' },
+  { id: 'digital', label: '数码', shortLabel: '数码' },
+  { id: 'home', label: '家居', shortLabel: '家居' },
+  { id: 'outdoor', label: '运动', shortLabel: '运动' },
+]
+
+export const retailProducts: RetailProduct[] = [
+  {
+    category: 'women',
+    description: '荷叶边裙摆与轻盈面料，适合通勤和周末出游。',
+    id: 'dress-white',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-09a.png',
+    linePrice: 40000,
+    name: '白色短袖连衣裙',
+    price: 29800,
+    sales: 1020,
+    stock: 510,
+    tags: ['限时抢购', '夏季新品'],
+  },
+  {
+    category: 'women',
+    description: '亲肤纯棉圆领版型，日常单穿或叠搭都舒适。',
+    id: 'tee-coral',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-08b.png',
+    linePrice: 31900,
+    name: '纯色纯棉圆领短袖',
+    price: 25900,
+    sales: 860,
+    stock: 260,
+    tags: ['夏季新款'],
+  },
+  {
+    category: 'women',
+    description: '轻薄连帽开衫，柔软细绒适合晨跑与日常通勤。',
+    id: 'hoodie-green',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-17a.png',
+    linePrice: 39900,
+    name: '运动连帽拉链卫衣',
+    price: 25900,
+    sales: 632,
+    stock: 180,
+    tags: ['2026 新款'],
+  },
+  {
+    category: 'digital',
+    description: '6K 解码、千兆网络与高分辨率输出的家庭影音中心。',
+    id: 'aurora-box',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/dz-3a.png',
+    linePrice: 69900,
+    name: '腾讯极光盒子 4',
+    price: 59900,
+    sales: 438,
+    stock: 72,
+    tags: ['联名系列'],
+  },
+  {
+    category: 'home',
+    description: '可披可盖的加厚午休毯，办公室和车内都适用。',
+    id: 'nap-blanket',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/muy-3a.png',
+    linePrice: 36900,
+    name: '带帽多功能午休毯',
+    price: 29900,
+    sales: 1290,
+    stock: 96,
+    tags: ['限时抢购'],
+  },
+  {
+    category: 'digital',
+    description: '低延迟蓝牙连接、触控操作与轻量便携充电盒。',
+    id: 'mini-earbuds',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/dz-2a.png',
+    linePrice: 32900,
+    name: '迷你触控蓝牙耳机',
+    price: 29000,
+    sales: 784,
+    stock: 3,
+    tags: ['低库存'],
+  },
+  {
+    category: 'home',
+    description: '耐热家用餐盘，哑光釉面适合日常摆盘。',
+    id: 'dinner-plate',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/gh-1a.png',
+    linePrice: 16800,
+    name: '简约耐热餐盘套装',
+    price: 12900,
+    sales: 510,
+    stock: 88,
+    tags: ['掌柜热卖'],
+  },
+  {
+    category: 'home',
+    description: '不锈钢刀叉勺组合，圆润边缘与耐用拉丝表面。',
+    id: 'cutlery-set',
+    image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/gh-2b.png',
+    linePrice: 18800,
+    name: '不锈钢西餐餐具套装',
+    price: 15900,
+    sales: 428,
+    stock: 140,
+    tags: ['秋季新款'],
+  },
+]
+
+export const initialRetailAddresses: RetailAddress[] = [
+  {
+    city: '上海市',
+    detail: '张江路 88 号 Varo 大厦 8 楼',
+    district: '浦东新区',
+    id: 'address-default',
+    isDefault: true,
+    name: '李一',
+    phone: '138****2026',
+  },
+]
+
+export const initialRetailCoupons: RetailCoupon[] = [
+  { condition: '满 299 元可用', discount: 3000, id: 'coupon-30', title: '新人满减券', validUntil: '2026-12-31' },
+  { condition: '全场通用', discount: 1000, id: 'coupon-10', title: '会员专享券', validUntil: '2026-10-31' },
+]
+
+export const initialRetailOrders: RetailOrder[] = [
+  {
+    createdAt: '2026-08-26 18:30',
+    id: 'VR20260826001',
+    items: [{ productId: 'aurora-box', quantity: 1 }],
+    status: 'pending-receipt',
+    total: 59900,
+  },
+  {
+    createdAt: '2026-08-18 09:12',
+    id: 'VR20260818002',
+    items: [{ productId: 'dress-white', quantity: 1 }],
+    status: 'completed',
+    total: 29800,
+  },
+]

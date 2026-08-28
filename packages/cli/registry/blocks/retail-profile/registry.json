@@ -1,0 +1,26 @@
+{
+  "name": "retail-profile",
+  "type": "block",
+  "title": "Retail Profile",
+  "description": "Controlled retail profile block with membership, points, order status badges, addresses, coupons, settings, and after-sale actions.",
+  "targets": ["weapp-vite"],
+  "dependencies": [],
+  "targetDependencies": {
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "components/avatar",
+    "components/badge",
+    "components/button",
+    "components/card",
+    "components/tag"
+  ],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/retail-profile/weapp-vite.vue",
+      "to": "src/components/blocks/retail-profile.vue"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

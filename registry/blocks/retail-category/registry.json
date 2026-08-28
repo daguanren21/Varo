@@ -1,0 +1,26 @@
+{
+  "name": "retail-category",
+  "type": "block",
+  "title": "Retail Category",
+  "description": "Two-column retail category block with active navigation, product grid, tags, prices, selection, and cart actions.",
+  "targets": ["weapp-vite"],
+  "dependencies": [],
+  "targetDependencies": {
+    "weapp-vite": ["wevu"]
+  },
+  "registryDependencies": [
+    "utils/retail",
+    "components/button",
+    "components/card",
+    "components/image",
+    "components/tag"
+  ],
+  "files": [
+    {
+      "target": "weapp-vite",
+      "from": "registry/blocks/retail-category/weapp-vite.vue",
+      "to": "src/components/blocks/retail-category.vue"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}
