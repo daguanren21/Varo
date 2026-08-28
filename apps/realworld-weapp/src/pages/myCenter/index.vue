@@ -131,7 +131,7 @@ const { userInfo, linkTo, auditCerFilter, serviceList, unReadNum } = userFn
             },
             {
               key: 'firstAidMap',
-              iconInfo: { value: 'my-aedmap' },
+              iconInfo: { value: 'first-aid-map' },
               value: 'AED急救地图',
             },
             {

@@ -18,7 +18,7 @@ beforeEach(() => {
   createStore()
 })
 
-describe('AED Map Wevu stores', () => {
+describe('Real-world Weapp Wevu stores', () => {
   it('updates domain state through explicit actions', () => {
     const store = useAedStore()
 

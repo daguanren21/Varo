@@ -1,5 +1,5 @@
 {
-  "description": "AED Map weapp-vite validation app",
+  "description": "Real-world weapp-vite validation app",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -36,7 +36,7 @@
   "compileType": "miniprogram",
   "libVersion": "3.10.0",
   "appid": "",
-  "projectname": "varo-aedmap-weapp",
+  "projectname": "varo-realworld-weapp",
   "condition": {},
   "miniprogramRoot": "devtools/build/mp-weixin/",
   "srcMiniprogramRoot": "devtools/build/mp-weixin/"

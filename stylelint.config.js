@@ -5,9 +5,9 @@ export default await defineStylelintConfig({
     ignoreFiles: [
       '**/dist/**',
       '**/devtools/**',
-      'apps/aedmap-weapp/src/**/*.scss',
-      'apps/aedmap-weapp/src/**/*.vue',
-      'apps/aedmap-weapp/src/assets/**/iconfont.css',
+      'apps/realworld-weapp/src/**/*.scss',
+      'apps/realworld-weapp/src/**/*.vue',
+      'apps/realworld-weapp/src/assets/**/iconfont.css',
     ],
     rules: {
       'declaration-block-single-line-max-declarations': null,

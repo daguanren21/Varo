@@ -110,9 +110,9 @@ function freshState(): GlobalState {
   }
 }
 
-export const useAedStore = defineStore('aedmap', () => {
+export const useAedStore = defineStore('realworld-weapp', () => {
   const state = reactive(freshState())
-  const persisted = wx.getStorageSync<Partial<GlobalState>>('aedmap-state')
+  const persisted = wx.getStorageSync<Partial<GlobalState>>('realworld-weapp-state')
   if (persisted && typeof persisted === 'object') { Object.assign(state, persisted) }
 
   const mapBounds = computed(() => ({
@@ -155,7 +155,7 @@ export const useAedStore = defineStore('aedmap', () => {
   async function loadBrands() { setBrands(await mapApi.getBrandOptions()) }
   async function loadHotCities() { setHotCities(await mapApi.getHotCity()) }
 
-  watch(state, value => wx.setStorageSync('aedmap-state', value), { deep: true })
+  watch(state, value => wx.setStorageSync('realworld-weapp-state', value), { deep: true })
 
   return {
     clearTagRecord,

@@ -87,7 +87,7 @@ export function useUserInfo(type = 'Main') {
       value: '意见反馈',
     }, {
       key: 'firstAidMap',
-      iconInfo: { value: 'my-aedmap' },
+      iconInfo: { value: 'first-aid-map' },
       value: 'AED急救地图',
     }, {
       key: 'serviceAgreement',

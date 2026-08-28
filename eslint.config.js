@@ -3,17 +3,17 @@ import { defineEslintConfig } from 'repoctl/tooling'
 export default await defineEslintConfig({
   configs: [
     {
-      name: 'varo/aedmap-weapp-generated-code',
+      name: 'varo/realworld-weapp-generated-code',
       ignores: [
-        'apps/aedmap-weapp/devtools/**',
-        'apps/aedmap-weapp/dist/**',
-        'apps/aedmap-weapp/.weapp-vite/**',
-        'apps/aedmap-weapp/src/commonjs/**',
-        'apps/aedmap-weapp/src/proto/**',
-        'apps/aedmap-weapp/src/weichatPb/**',
-        'apps/aedmap-weapp/src/esptouch-v2/kotlin.js',
-        'apps/aedmap-weapp/src/esptouch-v2/esptouch-v2.js',
-        'apps/aedmap-weapp/src/utils/proto-custom.js',
+        'apps/realworld-weapp/devtools/**',
+        'apps/realworld-weapp/dist/**',
+        'apps/realworld-weapp/.weapp-vite/**',
+        'apps/realworld-weapp/src/commonjs/**',
+        'apps/realworld-weapp/src/proto/**',
+        'apps/realworld-weapp/src/weichatPb/**',
+        'apps/realworld-weapp/src/esptouch-v2/kotlin.js',
+        'apps/realworld-weapp/src/esptouch-v2/esptouch-v2.js',
+        'apps/realworld-weapp/src/utils/proto-custom.js',
       ],
     },
     {
@@ -24,8 +24,8 @@ export default await defineEslintConfig({
       },
     },
     {
-      name: 'varo/aedmap-weapp-legacy-coercion',
-      files: ['apps/aedmap-weapp/**/*.{js,ts,vue}'],
+      name: 'varo/realworld-weapp-legacy-coercion',
+      files: ['apps/realworld-weapp/**/*.{js,ts,vue}'],
       languageOptions: {
         globals: {
           wx: 'readonly',
