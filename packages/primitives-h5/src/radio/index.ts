@@ -1,15 +1,17 @@
-import { defineComponent, h, inject, provide, toRef, type PropType } from 'vue'
+import type { RadioValue, UseRadioGroupResult } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
+
   useRadioGroup,
-  type RadioValue,
-  type UseRadioGroupResult
-} from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+
+} from '@varo-ui/headless'
+import { defineComponent, h, inject, provide, toRef } from 'vue'
 import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useRadioGroup } from './hooks'
 export type * from './types'
-export type { RadioValue } from '@varo/primitives-core'
+export type { RadioValue } from '@varo-ui/headless'
 
 const radioGroupContextKey = Symbol('varo-radio-group')
 const radioItemContextKey = Symbol('varo-radio-item')
@@ -21,13 +23,13 @@ interface RadioItemContext {
 
 function useRadioGroupContext() {
   const context = inject<UseRadioGroupResult | undefined>(radioGroupContextKey, undefined)
-  if (!context) throw new Error('RadioItem must be used within RadioGroup.')
+  if (!context) { throw new Error('RadioItem must be used within RadioGroup.') }
   return context
 }
 
 function useRadioItemContext() {
   const context = inject<RadioItemContext | undefined>(radioItemContextKey, undefined)
-  if (!context) throw new Error('RadioIndicator must be used within RadioItem.')
+  if (!context) { throw new Error('RadioIndicator must be used within RadioItem.') }
   return context
 }
 
@@ -36,17 +38,17 @@ export const RadioGroup = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     defaultValue: {
       type: [String, Number, Boolean] as PropType<RadioValue | undefined>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     value: {
       type: [String, Number, Boolean] as PropType<RadioValue | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:value', 'valueChange'],
   setup(props, { attrs, emit, slots }) {
@@ -60,13 +62,13 @@ export const RadioGroup = defineComponent({
       onValueChange(value) {
         emit('update:value', value)
         emit('valueChange', value)
-      }
+      },
     })
 
     provide(radioGroupContextKey, radio)
 
     return () => h(props.as, { ...attrs, ...radio.attrs.root }, slots.default?.())
-  }
+  },
 })
 
 export const RadioItem = defineComponent({
@@ -74,13 +76,13 @@ export const RadioItem = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     disabled: Boolean,
     value: {
       type: [String, Number, Boolean] as PropType<RadioValue>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { attrs, slots }) {
     const radio = useRadioGroupContext()
@@ -90,7 +92,7 @@ export const RadioItem = defineComponent({
       },
       get value() {
         return props.value
-      }
+      },
     })
 
     return () =>
@@ -105,13 +107,13 @@ export const RadioItem = defineComponent({
             runInteractiveClick(event, {
               action: () => radio.events.select(props.value),
               handler: attrs.onClick,
-              interactive: !props.disabled && radio.state.interactive.value
+              interactive: !props.disabled && radio.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const RadioIndicator = defineComponent({
@@ -119,8 +121,8 @@ export const RadioIndicator = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'span'
-    }
+      default: 'span',
+    },
   },
   setup(props, { attrs, slots }) {
     const radio = useRadioGroupContext()
@@ -130,5 +132,5 @@ export const RadioIndicator = defineComponent({
       radio.state.value.value === item.value
         ? h(props.as, { ...attrs, ...radio.api.getIndicatorAttrs(item.value) }, slots.default?.())
         : null
-  }
+  },
 })

@@ -1,3 +1,4 @@
+import type { RegistryTarget } from '../src/index'
 import { execFileSync } from 'node:child_process'
 import {
   existsSync,
@@ -6,15 +7,15 @@ import {
   readFileSync,
   rmSync,
   symlinkSync,
-  writeFileSync
+  writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   installRegistryItems,
+
   resolveRegistryItems,
-  type RegistryTarget
 } from '../src/index'
 
 const workspaceRoot = resolve(__dirname, '../../..')
@@ -37,7 +38,7 @@ function writeRegistryItem(
     targetDependencies?: Partial<Record<RegistryTarget, string[]>>
     targets?: RegistryTarget[]
     to?: string
-  } = {}
+  } = {},
 ) {
   const registryRoot = join(fixtureRoot, 'registry')
   const itemName = itemPath.split('/').at(-1)!
@@ -51,18 +52,18 @@ function writeRegistryItem(
     JSON.stringify({
       description: `${itemName} fixture`,
       docs: `/components/${itemName}`,
-      files: targets.map((target) => ({
+      files: targets.map(target => ({
         target,
         from: source,
-        to: options.to ?? `src/components/ui/${itemName}.ts`
+        to: options.to ?? `src/components/ui/${itemName}.ts`,
       })),
       name: itemName,
       registryDependencies: options.registryDependencies ?? [],
       targetDependencies: options.targetDependencies,
       targets,
       title: itemName,
-      type: itemPath.startsWith('blocks/') ? 'block' : 'component'
-    })
+      type: itemPath.startsWith('blocks/') ? 'block' : 'component',
+    }),
   )
 
   if (source === `registry/${itemPath}/${itemName}.ts`) {
@@ -77,17 +78,16 @@ describe('varo add targets', () => {
     const plan = resolveRegistryItems(['button'], { registryRoot, target: 'h5' })
 
     expect(plan.target).toBe('h5')
-    expect(plan.items.map((item) => item.name)).toEqual(['base', 'cn', 'primitives', 'button'])
-    expect(plan.files.map((file) => file.to)).toEqual([
+    expect(plan.items.map(item => item.name)).toEqual(['base', 'cn', 'primitives', 'button'])
+    expect(plan.files.map(file => file.to)).toEqual([
       'src/styles/varo.css',
       'src/lib/cn.ts',
       'src/lib/varo-primitives.ts',
-      'src/components/ui/button.ts'
+      'src/components/ui/button.ts',
     ])
     expect(plan.dependencies).toEqual(
-      expect.arrayContaining(['@varo/primitives-h5', '@varo/shared', '@varo/theme', 'clsx', 'tailwind-merge', 'vue'])
+      expect.arrayContaining(['@varo-ui/h5', '@varo-ui/headless', '@varo-ui/theme', 'clsx', 'tailwind-merge', 'vue']),
     )
-    expect(plan.dependencies).not.toContain('@varo/primitives-weapp')
     expect(plan.dependencies).not.toContain('@weapp-tailwindcss/merge')
   })
 
@@ -97,15 +97,14 @@ describe('varo add targets', () => {
     expect(plan.target).toBe('weapp-vite')
     expect(plan.dependencies).toEqual(
       expect.arrayContaining([
-        '@varo/primitives-weapp',
-        '@varo/shared',
-        '@varo/theme',
+        '@varo-ui/weapp',
+        '@varo-ui/headless',
+        '@varo-ui/theme',
         '@weapp-tailwindcss/merge',
         'clsx',
-        'wevu'
-      ])
+        'wevu',
+      ]),
     )
-    expect(plan.dependencies).not.toContain('@varo/primitives-h5')
     expect(plan.dependencies).not.toContain('tailwind-merge')
     expect(plan.dependencies).not.toContain('vue')
   })
@@ -114,10 +113,10 @@ describe('varo add targets', () => {
     const h5 = resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
     const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp-vite' })
 
-    expect(h5.items.map((item) => item.name)).toEqual(['base', 'selection', 'checkbox'])
-    expect(weapp.items.map((item) => item.name)).toEqual(['base', 'checkbox'])
-    expect(weapp.files.map((file) => file.to)).toContain('src/components/ui/v-checkbox.vue')
-    expect(weapp.files.map((file) => file.to)).not.toContain('src/components/ui/selection.ts')
+    expect(h5.items.map(item => item.name)).toEqual(['base', 'selection', 'checkbox'])
+    expect(weapp.items.map(item => item.name)).toEqual(['base', 'checkbox'])
+    expect(weapp.files.map(file => file.to)).toContain('src/components/ui/v-checkbox.vue')
+    expect(weapp.files.map(file => file.to)).not.toContain('src/components/ui/selection.ts')
   })
 
   it('copies target-correct component, adapter, merge helper, and styles', async () => {
@@ -126,13 +125,13 @@ describe('varo add targets', () => {
     const plan = await installRegistryItems(['button'], {
       projectRoot,
       registryRoot,
-      target: 'h5'
+      target: 'h5',
     })
 
-    expect(plan.files.map((file) => file.to)).toContain('src/components/ui/button.ts')
+    expect(plan.files.map(file => file.to)).toContain('src/components/ui/button.ts')
     expect(readFileSync(join(projectRoot, 'src/components/ui/button.ts'), 'utf8')).toContain('export const VButton')
-    expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo/primitives-h5')
-    expect(readFileSync(join(projectRoot, 'src/lib/cn.ts'), 'utf8')).toContain("from 'tailwind-merge'")
+    expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo-ui/h5/primitives')
+    expect(readFileSync(join(projectRoot, 'src/lib/cn.ts'), 'utf8')).toContain('from \'tailwind-merge\'')
     expect(readFileSync(join(projectRoot, 'src/styles/varo.css'), 'utf8')).toContain('--varo-ui-primary')
   })
 
@@ -144,12 +143,12 @@ describe('varo add targets', () => {
 
     const output = execFileSync(process.execPath, [binPath, 'add', '--target', 'h5', 'button'], {
       cwd: projectRoot,
-      encoding: 'utf8'
+      encoding: 'utf8',
     })
 
     expect(output).toContain('Installed base, cn, primitives, button for h5')
     expect(output).toContain('Dependencies:')
-    expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo/primitives-h5')
+    expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo-ui/h5/primitives')
   })
 
   it('reports unsupported CLI and registry targets clearly', () => {
@@ -161,13 +160,13 @@ describe('varo add targets', () => {
       execFileSync(process.execPath, [binPath, 'add', '--target', 'native', 'button'], {
         cwd: projectRoot,
         encoding: 'utf8',
-        stdio: 'pipe'
-      })
+        stdio: 'pipe',
+      }),
     ).toThrow(/Unsupported registry target: native/)
 
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/weapp-only', { targets: ['weapp-vite'] })
     expect(() => resolveRegistryItems(['weapp-only'], { registryRoot: fixtureRegistry, target: 'h5' })).toThrow(
-      'Registry item components/weapp-only does not support target h5'
+      'Registry item components/weapp-only does not support target h5',
     )
   })
 })
@@ -175,7 +174,7 @@ describe('varo add targets', () => {
 describe('varo add safety', () => {
   it('reports unknown registry items with the original request name', () => {
     expect(() => resolveRegistryItems(['components/not-found'], { registryRoot })).toThrow(
-      'Unknown registry item: components/not-found'
+      'Unknown registry item: components/not-found',
     )
   })
 
@@ -187,7 +186,7 @@ describe('varo add safety', () => {
 
     const output = execFileSync(process.execPath, [binPath, 'add', 'button'], {
       cwd: projectRoot,
-      encoding: 'utf8'
+      encoding: 'utf8',
     })
 
     expect(output).toContain('Installed base, cn, primitives, button for weapp-vite')
@@ -197,7 +196,7 @@ describe('varo add safety', () => {
     writeFileSync(installedPath, 'consumer customization\n')
     const forcedOutput = execFileSync(process.execPath, [binPath, 'add', '--force', 'button'], {
       cwd: projectRoot,
-      encoding: 'utf8'
+      encoding: 'utf8',
     })
 
     expect(forcedOutput).toContain('Installed base, cn, primitives, button for weapp-vite')
@@ -212,13 +211,13 @@ describe('varo add safety', () => {
     mkdirSync(consumerRoot)
 
     expect(() => resolveRegistryItems(['blocks/../../outside'], { registryRoot: fixtureRegistry })).toThrow(
-      'Invalid registry item name: blocks/../../outside'
+      'Invalid registry item name: blocks/../../outside',
     )
     expect(() => resolveRegistryItems(['source-escape'], { registryRoot: fixtureRegistry })).toThrow(
-      'outside the registry root'
+      'outside the registry root',
     )
     await expect(
-      installRegistryItems(['target-escape'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
+      installRegistryItems(['target-escape'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
     ).rejects.toThrow('outside the project root')
     expect(existsSync(join(projectRoot, 'outside.ts'))).toBe(false)
   })
@@ -226,14 +225,14 @@ describe('varo add safety', () => {
   it('reports cyclic registry dependencies with their chain', () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', {
-      registryDependencies: ['components/beta']
+      registryDependencies: ['components/beta'],
     })
     writeRegistryItem(projectRoot, 'components/beta', {
-      registryDependencies: ['components/alpha']
+      registryDependencies: ['components/alpha'],
     })
 
     expect(() => resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).toThrow(
-      'Cyclic registry dependency: components/alpha -> components/beta -> components/alpha'
+      'Cyclic registry dependency: components/alpha -> components/beta -> components/alpha',
     )
   })
 
@@ -246,7 +245,7 @@ describe('varo add safety', () => {
     writeFileSync(targetPath, 'consumer customization\n')
 
     await expect(
-      installRegistryItems(['alpha'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
+      installRegistryItems(['alpha'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
     ).rejects.toThrow('Refusing to overwrite existing file: src/components/ui/alpha.ts')
     expect(readFileSync(targetPath, 'utf8')).toBe('consumer customization\n')
 
@@ -263,7 +262,7 @@ describe('varo add safety', () => {
     mkdirSync(consumerRoot)
 
     await expect(
-      installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
+      installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
     ).rejects.toThrow('Registry items target the same file: src/components/ui/shared.ts')
     expect(existsSync(join(consumerRoot, target))).toBe(false)
   })

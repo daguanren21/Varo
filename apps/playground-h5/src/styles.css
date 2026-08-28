@@ -2,8 +2,6 @@
 @source './**/*.{ts,vue}';
 
 :root {
-  color: #172033;
-  background: #f4f7fb;
   font-family:
     'IBM Plex Sans',
     'SF Pro Text',
@@ -11,6 +9,8 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
+  color: #172033;
+  background: #f4f7fb;
 }
 
 * {
@@ -18,11 +18,11 @@
 }
 
 body {
-  margin: 0;
   min-height: 100vh;
+  margin: 0;
   background:
-    linear-gradient(rgba(23, 32, 51, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 32, 51, 0.04) 1px, transparent 1px),
+    linear-gradient(rgb(23 32 51 / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(23 32 51 / 4%) 1px, transparent 1px),
     #f4f7fb;
   background-size: 28px 28px;
 }

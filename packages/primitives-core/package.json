@@ -1,43 +1,48 @@
 {
-    "name":  "@varo/primitives-core",
-    "version":  "0.1.0",
-    "type":  "module",
-    "sideEffects":  false,
-    "repository":  {
-                       "type":  "git",
-                       "url":  "https://github.com/daguanren21/Varo.git"
-                   },
-    "publishConfig":  {
-                          "access":  "public",
-                          "registry":  "https://registry.npmjs.org/"
-                      },
-    "main":  "./dist/index.mjs",
-    "module":  "./dist/index.mjs",
-    "types":  "./dist/index.d.mts",
-    "files":  [
-                  "dist",
-                  "src"
-              ],
-    "exports":  {
-                    ".":  {
-                              "types":  "./dist/index.d.mts",
-                              "import":  "./dist/index.mjs"
-                          },
-                    "./source":  {
-                                     "types":  "./src/index.ts",
-                                     "import":  "./src/index.ts"
-                                 }
-                },
-    "scripts":  {
-                    "build":  "tsdown",
-                    "clean":  "rimraf dist",
-                    "dev":  "tsdown --watch",
-                    "lint":  "echo primitives-core lint pending",
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --passWithNoTests",
-                    "test:e2e":  "echo primitives-core has no e2e"
-                },
-    "dependencies":  {
-                         "@varo/shared":  "workspace:*"
-                     }
+  "name": "@varo-ui/headless",
+  "type": "module",
+  "version": "1.0.1",
+  "description": "Platform-neutral state machines, events, and controlled-state contracts for Varo runtimes.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/primitives-core"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rimraf dist",
+    "dev": "tsdown --watch",
+    "lint": "echo headless lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo headless has no e2e"
+  },
+  "devDependencies": {
+    "@varo/hooks": "workspace:*",
+    "@varo/shared": "workspace:*",
+    "@varo/utils": "workspace:*"
+  }
 }

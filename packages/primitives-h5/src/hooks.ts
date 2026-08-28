@@ -1,5 +1,6 @@
 export { useButtonRoot } from './button'
 export { useInputRoot } from './input'
+export { useSelectRoot } from './select'
 export {
   useAccordionRoot,
   useCheckboxRoot,
@@ -8,6 +9,5 @@ export {
   usePopoverRoot,
   useRadioGroup,
   useSwitchRoot,
-  useTabsRoot
-} from '@varo/primitives-core'
-export { useSelectRoot } from './select'
+  useTabsRoot,
+} from '@varo-ui/headless'

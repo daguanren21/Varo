@@ -10,42 +10,42 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 5175,
-    strictPort: true
+    strictPort: true,
   },
   resolve: {
     alias: [
       {
-        find: '@varo/ui-h5/source/style.css',
-        replacement: resolve(root, '../../packages/ui-h5/src/style.css')
+        find: '@varo-ui/h5/source/style.css',
+        replacement: resolve(root, '../../packages/ui-h5/src/style.css'),
       },
       {
         find: '@varo/hooks',
-        replacement: resolve(root, '../../packages/hooks/src/index.ts')
+        replacement: resolve(root, '../../packages/hooks/src/index.ts'),
       },
       {
-        find: '@varo/primitives-core',
-        replacement: resolve(root, '../../packages/primitives-core/src/index.ts')
+        find: '@varo-ui/headless',
+        replacement: resolve(root, '../../packages/primitives-core/src/index.ts'),
       },
       {
         find: '@varo/primitives-h5',
-        replacement: resolve(root, '../../packages/primitives-h5/src/index.ts')
+        replacement: resolve(root, '../../packages/primitives-h5/src/index.ts'),
       },
       {
         find: '@varo/shared',
-        replacement: resolve(root, '../../packages/shared/src/index.ts')
+        replacement: resolve(root, '../../packages/shared/src/index.ts'),
       },
       {
-        find: '@varo/theme',
-        replacement: resolve(root, '../../packages/theme/src/index.ts')
+        find: '@varo-ui/theme',
+        replacement: resolve(root, '../../packages/theme/src/index.ts'),
       },
       {
         find: '@varo/utils',
-        replacement: resolve(root, '../../packages/utils/src/index.ts')
+        replacement: resolve(root, '../../packages/utils/src/index.ts'),
       },
       {
-        find: '@varo/ui-h5',
-        replacement: resolve(root, '../../packages/ui-h5/src/index.ts')
-      }
-    ]
-  }
+        find: '@varo-ui/h5',
+        replacement: resolve(root, '../../packages/ui-h5/src/index.ts'),
+      },
+    ],
+  },
 })

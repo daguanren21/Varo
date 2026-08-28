@@ -9,8 +9,8 @@ Review tool details, allow once, remember access, or deny execution.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,26 +29,26 @@ import { AgentToolApproval } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `tool` | `string` | `required` | Tool name |
-| `description` | `string` | `—` | Description |
-| `details` | `{ label; value }[]` | `[]` | Tool details |
-| `remember` | `boolean` | `false` | Remember access |
+| Prop          | Type                 | Default    | Description     |
+| ------------- | -------------------- | ---------- | --------------- |
+| `tool`        | `string`             | `required` | Tool name       |
+| `description` | `string`             | `—`        | Description     |
+| `details`     | `{ label; value }[]` | `[]`       | Tool details    |
+| `remember`    | `boolean`            | `false`    | Remember access |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `allow` | `{ remember: boolean }` | Allow |
-| `deny` | `void` | Deny |
-| `update:remember` | `boolean` | Update remember |
+| Event             | Payload                 | Description     |
+| ----------------- | ----------------------- | --------------- |
+| `allow`           | `{ remember: boolean }` | Allow           |
+| `deny`            | `void`                  | Deny            |
+| `update:remember` | `boolean`               | Update remember |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                                            |
+| ---------- | ----------------------------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`                         |
 | weapp-vite | Default export from `@/components/agent-ui/AgentToolApproval.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

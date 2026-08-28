@@ -8,8 +8,8 @@
 
 ```vue
 <script setup lang="ts">
+import { VMenu, VMenuItem } from '@varo-ui/h5'
 import { ref } from 'vue'
-import { VMenu, VMenuItem } from '@varo/ui-h5'
 
 const activeName = ref()
 const value = ref('all')
@@ -29,31 +29,31 @@ const options = [
 
 ## VMenu Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `activeName` | `string \| number` | `undefined` | Open item name |
+| Prop                | Type               | Default     | Description                    |
+| ------------------- | ------------------ | ----------- | ------------------------------ |
+| `activeName`        | `string \| number` | `undefined` | Open item name                 |
 | `defaultActiveName` | `string \| number` | `undefined` | Default uncontrolled open item |
 
 ## VMenu Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event               | Payload                         | Description       |
+| ------------------- | ------------------------------- | ----------------- |
 | `update:activeName` | `string \| number \| undefined` | Open item changed |
-| `open` | `string \| number` | Item opened |
-| `close` | `void` | Item closed |
+| `open`              | `string \| number`              | Item opened       |
+| `close`             | `void`                          | Item closed       |
 
 ## VMenuItem Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `name` | `string \| number` | - | Item name |
-| `title` | `string` | `undefined` | Item title |
-| `options` | `MenuOption[]` | `[]` | Options |
+| Prop         | Type               | Default     | Description    |
+| ------------ | ------------------ | ----------- | -------------- |
+| `name`       | `string \| number` | -           | Item name      |
+| `title`      | `string`           | `undefined` | Item title     |
+| `options`    | `MenuOption[]`     | `[]`        | Options        |
 | `modelValue` | `string \| number` | `undefined` | Selected value |
 
 ## VMenuItem Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event               | Payload            | Description            |
+| ------------------- | ------------------ | ---------------------- |
 | `update:modelValue` | `string \| number` | Selected value changed |
-| `select` | `(value, option)` | Option selected |
+| `select`            | `(value, option)`  | Option selected        |

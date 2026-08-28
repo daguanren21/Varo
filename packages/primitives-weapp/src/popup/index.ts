@@ -1,17 +1,18 @@
+import type { PopupCloseIconPosition, PopupPosition } from '@varo-ui/headless'
+import type { PropType, StyleValue } from 'vue'
+import type { PopupDimension } from './types'
+import { useBodyScrollLock, usePopupRoot } from '@varo-ui/headless'
 import {
   computed,
   defineComponent,
   h,
   onBeforeUnmount,
   onMounted,
+
   toRef,
-  type PropType,
-  type StyleValue
 } from 'vue'
-import { useBodyScrollLock, usePopupRoot, type PopupCloseIconPosition, type PopupPosition } from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
 import { usePropPresence } from '../vue-control'
-import type { PopupDimension } from './types'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export type * from './types'
 
@@ -42,48 +43,48 @@ export const PopupRoot = defineComponent({
     defaultVisible: Boolean,
     visible: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     disabled: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     position: {
       type: String as PropType<PopupPosition>,
-      default: 'bottom'
+      default: 'bottom',
     },
     overlay: {
       type: Boolean,
-      default: true
+      default: true,
     },
     closeable: Boolean,
     closeIcon: {
       type: String,
-      default: '×'
+      default: '×',
     },
     closeIconPosition: {
       type: String as PropType<PopupCloseIconPosition>,
-      default: 'top-right'
+      default: 'top-right',
     },
     round: Boolean,
     safeAreaInsetBottom: Boolean,
     lockScroll: Boolean,
     closeOnClickOverlay: {
       type: Boolean,
-      default: true
+      default: true,
     },
     zIndex: {
       type: [Number, String] as PropType<PopupDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
     duration: {
       type: [Number, String] as PropType<PopupDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
     destroyOnClose: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   emits: ['update:visible', 'visibleChange', 'close', 'clickOverlay'],
   setup(props, { attrs, emit, slots }) {
@@ -101,17 +102,17 @@ export const PopupRoot = defineComponent({
       },
       onClose() {
         emit('close')
-      }
+      },
     })
     const visible = popup.state.visible
     const shouldRender = computed(() => visible.value || !props.destroyOnClose)
     const overlayStyle = computed(() => ({
-      zIndex: props.zIndex,
-      '--varo-overlay-duration': normalizeDuration(props.duration)
+      'zIndex': props.zIndex,
+      '--varo-overlay-duration': normalizeDuration(props.duration),
     }))
     const contentStyle = computed(() => ({
-      zIndex: normalizeContentZIndex(props.zIndex),
-      '--varo-popup-duration': normalizeDuration(props.duration)
+      'zIndex': normalizeContentZIndex(props.zIndex),
+      '--varo-popup-duration': normalizeDuration(props.duration),
     }))
 
     function handleDocumentKeydown(event: KeyboardEvent) {
@@ -142,35 +143,35 @@ export const PopupRoot = defineComponent({
         {
           ...attrs,
           ...popup.attrs.root,
-          class: attrs.class,
-          style: attrs.style as StyleValue,
+          'class': attrs.class,
+          'style': attrs.style as StyleValue,
           'data-state': visible.value ? 'open' : 'closed',
-          'data-position': props.position
+          'data-position': props.position,
         },
         [
           props.overlay && visible.value
             ? h('div', {
                 ...popup.attrs.overlay,
-                class: 'varo-popup__overlay',
-                style: overlayStyle.value,
+                'class': 'varo-popup__overlay',
+                'style': overlayStyle.value,
                 'data-state': visible.value ? 'open' : 'closed',
-                onClick: () => {
+                'onClick': () => {
                   emit('clickOverlay')
                   popup.events.onOverlayClick()
-                }
+                },
               })
             : null,
           h(
             'div',
             {
               ...popup.attrs.content,
-              class: 'varo-popup__content',
-              hidden: !visible.value,
-              style: contentStyle.value,
+              'class': 'varo-popup__content',
+              'hidden': !visible.value,
+              'style': contentStyle.value,
               'data-position': props.position,
               'data-round': String(props.round),
               'data-state': visible.value ? 'open' : 'closed',
-              'data-safe-area-inset-bottom': String(props.safeAreaInsetBottom)
+              'data-safe-area-inset-bottom': String(props.safeAreaInsetBottom),
             },
             [
               slots.default?.(),
@@ -178,19 +179,19 @@ export const PopupRoot = defineComponent({
                 ? h(
                     'button',
                     {
-                      type: 'button',
-                      class: 'varo-popup__close',
+                      'type': 'button',
+                      'class': 'varo-popup__close',
                       'aria-label': 'Close popup',
                       'data-position': props.closeIconPosition,
-                      onClick: () => popup.events.close()
+                      'onClick': () => popup.events.close(),
                     },
-                    slots.closeIcon?.() ?? props.closeIcon
+                    slots.closeIcon?.() ?? props.closeIcon,
                   )
-                : null
-            ]
-          )
-        ]
+                : null,
+            ],
+          ),
+        ],
       )
     }
-  }
+  },
 })

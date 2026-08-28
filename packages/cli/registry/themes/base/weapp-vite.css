@@ -1,21 +1,21 @@
 page {
   --varo-ui-bg: #f6f7f9;
-  --varo-ui-surface: #ffffff;
+  --varo-ui-surface: #fff;
   --varo-ui-surface-muted: #eef2f6;
   --varo-ui-text: #182433;
   --varo-ui-text-muted: #667085;
   --varo-ui-border: #d8dee7;
   --varo-ui-border-strong: #aeb8c6;
   --varo-ui-primary: #08786f;
-  --varo-ui-primary-foreground: #ffffff;
+  --varo-ui-primary-foreground: #fff;
   --varo-ui-success: #15803d;
   --varo-ui-warning: #b76b00;
   --varo-ui-danger: #c7372f;
   --varo-ui-radius: 8px;
   --varo-ui-radius-sm: 6px;
-  --varo-ui-shadow-sm: 0 1px 2px rgba(24, 36, 51, 0.06);
-  --varo-ui-shadow-md: 0 14px 34px rgba(24, 36, 51, 0.12);
-  --varo-ui-ring: rgba(8, 120, 111, 0.16);
+  --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
+  --varo-ui-shadow-md: 0 14px 34px rgb(24 36 51 / 12%);
+  --varo-ui-ring: rgb(8 120 111 / 16%);
 }
 
 .varo-button,
@@ -41,18 +41,18 @@ page {
 
 .varo-button {
   display: inline-flex;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   min-height: 42px;
   padding: 0 16px;
-  border: 1px solid transparent;
-  border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-primary);
-  color: var(--varo-ui-primary-foreground);
-  cursor: pointer;
   font-weight: 650;
   line-height: 1;
+  color: var(--varo-ui-primary-foreground);
+  cursor: pointer;
+  background: var(--varo-ui-primary);
+  border: 1px solid transparent;
+  border-radius: var(--varo-ui-radius);
   box-shadow: var(--varo-ui-shadow-sm);
   transition:
     background 0.18s ease,
@@ -63,33 +63,33 @@ page {
     transform 0.18s ease;
 }
 
-.varo-button:active {
+.varo-button--pressed {
   transform: translateY(1px);
 }
 
 .varo-button[data-size='sm'] {
   min-height: 34px;
   padding: 0 12px;
-  border-radius: var(--varo-ui-radius-sm);
   font-size: 14px;
+  border-radius: var(--varo-ui-radius-sm);
 }
 
 .varo-button[data-size='lg'] {
   min-height: 50px;
   padding: 0 20px;
-  border-radius: var(--varo-ui-radius);
   font-size: 16px;
+  border-radius: var(--varo-ui-radius);
 }
 
 .varo-button[data-variant='outline'] {
-  border-color: var(--varo-ui-border-strong);
-  background: var(--varo-ui-surface);
   color: var(--varo-ui-text);
+  background: var(--varo-ui-surface);
+  border-color: var(--varo-ui-border-strong);
 }
 
 .varo-button[data-variant='ghost'] {
-  background: var(--varo-ui-surface-muted);
   color: var(--varo-ui-text);
+  background: var(--varo-ui-surface-muted);
   box-shadow: none;
 }
 
@@ -126,7 +126,7 @@ page {
 .varo-button__loading-icon {
   width: 1em;
   height: 1em;
-  border: 2px solid currentColor;
+  border: 2px solid currentcolor;
   border-right-color: transparent;
   border-radius: 999px;
   animation: varo-spin 0.75s linear infinite;
@@ -146,21 +146,21 @@ page {
 }
 
 .varo-input__label {
-  color: var(--varo-ui-text-muted);
   font-size: 14px;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-input__body {
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
   gap: 8px;
-  min-height: 42px;
+  align-items: center;
   width: 100%;
+  min-height: 42px;
   padding: 0 12px;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
-  box-sizing: border-box;
   box-shadow: var(--varo-ui-shadow-sm);
   transition:
     border-color 0.18s ease,
@@ -179,11 +179,11 @@ page {
 .varo-input__control {
   flex: 1;
   min-width: 0;
-  border: 0;
+  font: inherit;
+  color: inherit;
   outline: 0;
   background: transparent;
-  color: inherit;
-  font: inherit;
+  border: 0;
 }
 
 textarea.varo-input__control {
@@ -197,25 +197,25 @@ textarea.varo-input__control {
 .varo-input__clear,
 .varo-input__word-limit {
   flex: none;
-  color: var(--varo-ui-text-muted);
   font-size: 13px;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-input__clear {
   display: inline-flex;
-  width: 24px;
-  height: 24px;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  background: var(--varo-ui-surface-muted);
   border: 0;
   border-radius: 999px;
-  background: var(--varo-ui-surface-muted);
-  cursor: pointer;
 }
 
 .varo-input__error {
-  color: var(--varo-ui-danger);
   font-size: 12px;
+  color: var(--varo-ui-danger);
 }
 
 .varo-checkbox-group,
@@ -233,27 +233,27 @@ textarea.varo-input__control {
 .varo-checkbox,
 .varo-radio {
   display: inline-flex;
-  width: fit-content;
-  align-items: center;
   gap: 9px;
-  border: 0;
-  background: transparent;
+  align-items: center;
+  width: fit-content;
+  font-weight: 560;
   color: var(--varo-ui-text);
   cursor: pointer;
-  font-weight: 560;
+  background: transparent;
+  border: 0;
 }
 
 .varo-checkbox__icon,
 .varo-radio__icon {
   display: inline-flex;
-  width: 20px;
-  height: 20px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #cbd5e1;
-  background: var(--varo-ui-surface);
-  color: var(--varo-ui-primary-foreground);
+  width: 20px;
+  height: 20px;
   font-size: 13px;
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-surface);
+  border: 1px solid #cbd5e1;
   transition:
     background 0.18s ease,
     border-color 0.18s ease,
@@ -265,15 +265,15 @@ textarea.varo-input__control {
 }
 
 .varo-radio__icon {
-  border-radius: 999px;
   font-size: 10px;
+  border-radius: 999px;
 }
 
 .varo-checkbox[data-checked='true'] .varo-checkbox__icon,
 .varo-radio[data-checked='true'] .varo-radio__icon {
-  border-color: var(--varo-ui-primary);
-  background: var(--varo-ui-primary);
   color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+  border-color: var(--varo-ui-primary);
 }
 
 .varo-checkbox[data-disabled='true'],
@@ -284,26 +284,26 @@ textarea.varo-input__control {
 
 .varo-input-number {
   display: inline-flex;
-  overflow: hidden;
   align-items: center;
+  overflow: hidden;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-sm);
 }
 
 .varo-input-number__minus,
 .varo-input-number__plus {
   display: inline-flex;
-  width: 36px;
-  height: 36px;
   align-items: center;
   justify-content: center;
-  border: 0;
-  background: var(--varo-ui-surface-muted);
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
   color: var(--varo-ui-text);
   cursor: pointer;
-  font-size: 18px;
+  background: var(--varo-ui-surface-muted);
+  border: 0;
 }
 
 .varo-input-number__minus:disabled,
@@ -315,24 +315,22 @@ textarea.varo-input__control {
 .varo-input-number__input {
   width: 56px;
   height: 36px;
+  font: inherit;
+  font-weight: 650;
+  color: var(--varo-ui-text);
+  text-align: center;
   appearance: textfield;
-  -moz-appearance: textfield;
+  outline: 0;
+  background: var(--varo-ui-surface);
   border: 0;
   border-right: 1px solid var(--varo-ui-border);
   border-left: 1px solid var(--varo-ui-border);
-  outline: 0;
-  background: var(--varo-ui-surface);
-  color: var(--varo-ui-text);
-  font: inherit;
-  font-weight: 650;
-  text-align: center;
 }
 
 .varo-input-number__input::-webkit-inner-spin-button,
 .varo-input-number__input::-webkit-outer-spin-button {
   margin: 0;
   appearance: none;
-  -webkit-appearance: none;
 }
 
 .varo-select {
@@ -345,17 +343,17 @@ textarea.varo-input__control {
 
 .varo-select__trigger {
   display: flex;
-  width: 100%;
-  min-height: 42px;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  width: 100%;
+  min-height: 42px;
   padding: 0 12px;
-  border: 1px solid var(--varo-ui-border, #d8dee8);
-  border-radius: 12px;
-  background: var(--varo-ui-surface, #fff);
   color: inherit;
   cursor: pointer;
+  background: var(--varo-ui-surface, #fff);
+  border: 1px solid var(--varo-ui-border, #d8dee8);
+  border-radius: 12px;
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease;
@@ -363,7 +361,7 @@ textarea.varo-input__control {
 
 .varo-select__trigger[data-open='true'] {
   border-color: color-mix(in srgb, var(--varo-ui-primary, #0f766e) 55%, var(--varo-ui-border, #d8dee8));
-  box-shadow: 0 0 0 3px var(--varo-ui-ring, rgba(8, 120, 111, 0.16));
+  box-shadow: 0 0 0 3px var(--varo-ui-ring, rgb(8 120 111 / 16%));
 }
 
 .varo-select__value {
@@ -376,8 +374,8 @@ textarea.varo-input__control {
 .varo-select__suffix {
   display: inline-flex;
   flex: none;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 
 .varo-select__clear {
@@ -388,9 +386,9 @@ textarea.varo-input__control {
 .varo-select__arrow {
   width: 8px;
   height: 8px;
-  border-right: 1.6px solid currentColor;
-  border-bottom: 1.6px solid currentColor;
   color: var(--varo-ui-text-muted, #64748b);
+  border-right: 1.6px solid currentcolor;
+  border-bottom: 1.6px solid currentcolor;
   opacity: 0.9;
   transform: translateY(-2px) rotate(45deg);
   transition: transform 0.18s ease, color 0.18s ease;
@@ -411,27 +409,27 @@ textarea.varo-input__control {
   display: grid;
   gap: 8px;
   padding: 10px;
+  background: var(--varo-ui-surface, #fff);
   border: 1px solid var(--varo-ui-border, #e2e8f0);
   border-radius: 14px;
-  background: var(--varo-ui-surface, #fff);
   box-shadow:
-    0 18px 40px rgba(15, 23, 42, 0.16),
-    0 2px 8px rgba(15, 23, 42, 0.08);
+    0 18px 40px rgb(15 23 42 / 16%),
+    0 2px 8px rgb(15 23 42 / 8%);
 }
 
 .varo-select__panel::before {
-  content: '';
   position: absolute;
   top: -6px;
   left: 18px;
   width: 12px;
   height: 12px;
+  content: '';
+  background: var(--varo-ui-surface, #fff);
   border-top: 1px solid var(--varo-ui-border, #e2e8f0);
   border-left: 1px solid var(--varo-ui-border, #e2e8f0);
   border-top-left-radius: 3px;
-  background: var(--varo-ui-surface, #fff);
+  box-shadow: -2px -2px 6px rgb(15 23 42 / 4%);
   transform: rotate(45deg);
-  box-shadow: -2px -2px 6px rgba(15, 23, 42, 0.04);
 }
 
 .varo-select--picker .varo-select__panel {
@@ -439,8 +437,8 @@ textarea.varo-input__control {
   top: 0;
   margin-top: 2px;
   box-shadow:
-    0 16px 36px rgba(15, 23, 42, 0.14),
-    0 2px 8px rgba(15, 23, 42, 0.06);
+    0 16px 36px rgb(15 23 42 / 14%),
+    0 2px 8px rgb(15 23 42 / 6%);
 }
 
 .varo-select--picker .varo-select__panel::before {
@@ -450,10 +448,10 @@ textarea.varo-input__control {
 .varo-select__search {
   min-height: 38px;
   padding: 0 10px;
+  font: inherit;
+  outline: 0;
   border: 1px solid var(--varo-ui-border, #d8dee8);
   border-radius: 10px;
-  outline: 0;
-  font: inherit;
 }
 
 .varo-select__options {
@@ -465,23 +463,23 @@ textarea.varo-input__control {
 
 .varo-select__option {
   display: flex;
-  min-height: 38px;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  min-height: 38px;
+  padding: 0 10px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
   border: 0;
   border-radius: 10px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
-  padding: 0 10px;
 }
 
 .varo-select__option[data-active='true'] {
-  background: color-mix(in srgb, var(--varo-ui-primary, #0f766e) 12%, transparent);
-  color: var(--varo-ui-primary, #0f766e);
   font-weight: 750;
+  color: var(--varo-ui-primary, #0f766e);
+  background: color-mix(in srgb, var(--varo-ui-primary, #0f766e) 12%, transparent);
 }
 
 .varo-select__option:disabled {
@@ -498,39 +496,39 @@ textarea.varo-input__control {
 
 .varo-select__footer {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
-  border-top: 1px solid var(--varo-ui-border, #eef2f7);
+  justify-content: flex-end;
   padding-top: 8px;
+  border-top: 1px solid var(--varo-ui-border, #eef2f7);
 }
 
 .varo-select__cancel,
 .varo-select__confirm {
   min-height: 34px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
+  font-weight: 650;
   color: var(--varo-ui-text-muted, #64748b);
   cursor: pointer;
-  font-weight: 650;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
 }
 
 .varo-select__confirm {
-  background: var(--varo-ui-primary, #0f766e);
-  color: var(--varo-ui-primary-foreground, #fff);
   padding: 0 14px;
+  color: var(--varo-ui-primary-foreground, #fff);
+  background: var(--varo-ui-primary, #0f766e);
 }
 
 .varo-switch {
   display: inline-flex;
+  align-items: center;
   width: 50px;
   height: 28px;
-  align-items: center;
+  padding: 2px;
+  cursor: pointer;
+  background: #cbd5e1;
   border: 0;
   border-radius: 999px;
-  background: #cbd5e1;
-  cursor: pointer;
-  padding: 2px;
   transition: background 0.18s ease;
 }
 
@@ -551,9 +549,9 @@ textarea.varo-input__control {
 .varo-switch__thumb {
   width: 24px;
   height: 24px;
-  border-radius: 999px;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 18%);
   transition: transform 0.18s ease;
 }
 
@@ -563,15 +561,15 @@ textarea.varo-input__control {
 
 .varo-loading {
   display: inline-flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   color: #64748b;
 }
 
 .varo-loading__spinner {
   width: 1em;
   height: 1em;
-  border: 2px solid currentColor;
+  border: 2px solid currentcolor;
   border-right-color: transparent;
   border-radius: 999px;
   animation: varo-spin 0.75s linear infinite;
@@ -594,13 +592,13 @@ textarea.varo-input__control {
   left: 50%;
   z-index: 1000;
   display: inline-flex;
-  max-width: min(320px, calc(100vw - 32px));
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  max-width: min(320px, calc(100vw - 32px));
   padding: 10px 14px;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.92);
   color: #fff;
+  background: rgb(15 23 42 / 92%);
+  border-radius: 12px;
   transform: translateX(-50%);
 }
 
@@ -622,12 +620,12 @@ textarea.varo-input__control {
 }
 
 .varo-toast__close {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
   font-size: 18px;
   line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
 }
 
 .varo-rate {
@@ -636,12 +634,12 @@ textarea.varo-input__control {
 }
 
 .varo-rate__item {
-  border: 0;
-  background: transparent;
-  color: #f59e0b;
-  cursor: pointer;
   font-size: 26px;
   line-height: 1;
+  color: #f59e0b;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
   transition: transform 0.16s ease;
 }
 
@@ -652,22 +650,22 @@ textarea.varo-input__control {
 .varo-range {
   position: relative;
   display: grid;
-  width: min(100%, 320px);
   gap: 8px;
+  width: min(100%, 320px);
 }
 
 .varo-range__track {
-  overflow: hidden;
   height: 6px;
-  border-radius: 999px;
+  overflow: hidden;
   background: var(--varo-ui-border);
+  border-radius: 999px;
 }
 
 .varo-range__fill {
   display: block;
   height: 100%;
-  border-radius: inherit;
   background: var(--varo-ui-primary);
+  border-radius: inherit;
 }
 
 .varo-range__input {
@@ -677,9 +675,9 @@ textarea.varo-input__control {
 
 .varo-searchbar {
   display: flex;
-  width: 100%;
-  align-items: center;
   gap: 10px;
+  align-items: center;
+  width: 100%;
 }
 
 .varo-searchbar__body {
@@ -693,11 +691,11 @@ textarea.varo-input__control {
 }
 
 .varo-searchbar__action {
-  border: 0;
-  background: transparent;
+  font-weight: 650;
   color: var(--varo-ui-primary);
   cursor: pointer;
-  font-weight: 650;
+  background: transparent;
+  border: 0;
 }
 
 .varo-form {
@@ -711,9 +709,9 @@ textarea.varo-input__control {
 }
 
 .varo-form-item__label {
-  color: var(--varo-ui-text);
   font-size: 14px;
   font-weight: 650;
+  color: var(--varo-ui-text);
 }
 
 .varo-form-item[data-required='true'] .varo-form-item__label::before {
@@ -728,8 +726,8 @@ textarea.varo-input__control {
 }
 
 .varo-form-item__error {
-  color: var(--varo-ui-danger);
   font-size: 12px;
+  color: var(--varo-ui-danger);
 }
 
 .varo-calendar,
@@ -739,9 +737,9 @@ textarea.varo-input__control {
 .varo-number-keyboard {
   width: min(100%, 360px);
   overflow: hidden;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-md);
 }
 
@@ -749,38 +747,38 @@ textarea.varo-input__control {
   display: grid;
   gap: 12px;
   padding: 14px;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-sm);
 }
 
 .varo-calendar-card__toolbar {
   display: grid;
-  align-items: center;
   grid-template-columns: 32px 32px minmax(0, 1fr) 32px 32px;
   gap: 6px;
+  align-items: center;
 }
 
 .varo-calendar-card__title {
-  text-align: center;
-  color: var(--varo-ui-text);
   font-weight: 750;
+  color: var(--varo-ui-text);
+  text-align: center;
 }
 
 .varo-calendar-card__nav {
   display: inline-flex;
-  width: 32px;
-  height: 32px;
   align-items: center;
   justify-content: center;
-  border: 0;
-  border-radius: var(--varo-ui-radius-sm);
-  background: var(--varo-ui-surface-muted);
-  color: var(--varo-ui-primary);
-  cursor: pointer;
+  width: 32px;
+  height: 32px;
   font-size: 16px;
   font-weight: 750;
+  color: var(--varo-ui-primary);
+  cursor: pointer;
+  background: var(--varo-ui-surface-muted);
+  border: 0;
+  border-radius: var(--varo-ui-radius-sm);
 }
 
 .varo-calendar-card__days {
@@ -791,20 +789,20 @@ textarea.varo-input__control {
 
 .varo-calendar-card__day {
   display: inline-flex;
-  aspect-ratio: 1;
   align-items: center;
   justify-content: center;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
+  aspect-ratio: 1;
   color: var(--varo-ui-text);
   cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
 }
 
 .varo-calendar-card__day[data-active='true'] {
-  background: var(--varo-ui-primary);
-  color: var(--varo-ui-primary-foreground);
   font-weight: 750;
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
 }
 
 .varo-calendar-card__day:disabled {
@@ -824,37 +822,37 @@ textarea.varo-input__control {
   width: calc(100% - 28px);
   min-height: 42px;
   margin: 0 14px 14px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--varo-ui-primary);
+  font-weight: 750;
   color: var(--varo-ui-primary-foreground);
   cursor: pointer;
-  font-weight: 750;
+  background: var(--varo-ui-primary);
+  border: 0;
+  border-radius: 999px;
 }
 
 .varo-picker__toolbar,
 .varo-cascader__toolbar {
   display: grid;
-  min-height: 48px;
-  align-items: center;
   grid-template-columns: 78px minmax(0, 1fr) 78px;
+  align-items: center;
+  min-height: 48px;
   border-bottom: 1px solid var(--varo-ui-border);
 }
 
 .varo-picker__title,
 .varo-cascader__title {
-  text-align: center;
   color: var(--varo-ui-text);
+  text-align: center;
 }
 
 .varo-picker__cancel,
 .varo-picker__confirm,
 .varo-cascader__cancel,
 .varo-cascader__confirm {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
   font-weight: 650;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
   transition:
     color 0.18s ease,
     opacity 0.18s ease,
@@ -889,12 +887,12 @@ textarea.varo-input__control {
 .varo-cascader__option {
   position: relative;
   min-height: 42px;
+  color: var(--varo-ui-text);
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
   border: 0;
   border-radius: var(--varo-ui-radius);
-  background: transparent;
-  color: var(--varo-ui-text);
-  cursor: pointer;
-  text-align: center;
   transition:
     background-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -905,10 +903,10 @@ textarea.varo-input__control {
 .varo-picker__option[data-active='true'],
 .varo-cascader__option:hover,
 .varo-picker__option:hover {
+  font-weight: 750;
+  color: var(--varo-ui-primary);
   background: var(--varo-ui-surface-muted);
   box-shadow: inset 0 0 0 1px var(--varo-ui-ring);
-  color: var(--varo-ui-primary);
-  font-weight: 750;
   transform: translateY(-1px);
 }
 
@@ -920,19 +918,19 @@ textarea.varo-input__control {
 
 .varo-cascader__tabs {
   display: flex;
-  min-height: 36px;
   gap: 8px;
   align-items: center;
+  min-height: 36px;
   padding: 0 12px;
   border-bottom: 1px solid var(--varo-ui-border);
 }
 
 .varo-cascader__tab {
-  border-radius: 999px;
-  color: var(--varo-ui-primary);
   padding: 3px 9px;
   font-size: 13px;
   font-weight: 650;
+  color: var(--varo-ui-primary);
+  border-radius: 999px;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
@@ -961,18 +959,18 @@ textarea.varo-input__control {
 .varo-number-keyboard__delete,
 .varo-number-keyboard__close {
   min-height: 42px;
-  border: 0;
-  border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
+  font-weight: 750;
   color: var(--varo-ui-text);
   cursor: pointer;
-  font-weight: 750;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+  background: var(--varo-ui-surface);
+  border: 0;
+  border-radius: var(--varo-ui-radius);
+  box-shadow: 0 1px 0 rgb(15 23 42 / 8%);
 }
 
 .varo-number-keyboard__close {
-  background: var(--varo-ui-primary);
   color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
 }
 
 .varo-short-password {
@@ -994,22 +992,22 @@ textarea.varo-input__control {
 .varo-short-password__cells {
   display: flex;
   overflow: hidden;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-sm);
 }
 
 .varo-short-password__cell {
   display: inline-flex;
-  width: 42px;
-  height: 42px;
   align-items: center;
   justify-content: center;
-  border-right: 1px solid var(--varo-ui-border);
-  color: var(--varo-ui-text);
+  width: 42px;
+  height: 42px;
   font-size: 20px;
   line-height: 1;
+  color: var(--varo-ui-text);
+  border-right: 1px solid var(--varo-ui-border);
 }
 
 .varo-short-password__cell:last-child {
@@ -1029,14 +1027,14 @@ textarea.varo-input__control {
 .varo-uploader__item {
   position: relative;
   display: grid;
-  min-height: 56px;
-  align-items: center;
-  gap: 10px;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 56px;
   padding: 10px 12px;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-sm);
   transition:
     border-color 0.2s ease,
@@ -1052,36 +1050,36 @@ textarea.varo-input__control {
 
 .varo-uploader__file-icon {
   display: inline-flex;
-  width: 34px;
-  height: 34px;
   align-items: center;
   justify-content: center;
-  border-radius: var(--varo-ui-radius-sm);
-  background: var(--varo-ui-surface-muted);
-  color: var(--varo-ui-primary);
+  width: 34px;
+  height: 34px;
   font-size: 10px;
   font-weight: 800;
+  color: var(--varo-ui-primary);
+  background: var(--varo-ui-surface-muted);
+  border-radius: var(--varo-ui-radius-sm);
 }
 
 .varo-uploader__meta {
   display: grid;
-  min-width: 0;
   gap: 7px;
+  min-width: 0;
 }
 
 .varo-uploader__name {
   overflow: hidden;
-  color: var(--varo-ui-text);
+  text-overflow: ellipsis;
   font-size: 13px;
   font-weight: 650;
-  text-overflow: ellipsis;
+  color: var(--varo-ui-text);
   white-space: nowrap;
 }
 
 .varo-uploader__status {
-  color: var(--varo-ui-text-muted);
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-uploader__item[data-status='uploading'] .varo-uploader__status {
@@ -1097,15 +1095,15 @@ textarea.varo-input__control {
   position: relative;
   height: 3px;
   overflow: hidden;
-  border-radius: 999px;
   background: var(--varo-ui-surface-muted);
+  border-radius: 999px;
 }
 
 .varo-uploader__progress-bar {
   display: block;
   height: 100%;
-  border-radius: inherit;
   background: var(--varo-ui-primary);
+  border-radius: inherit;
   transition: width 0.28s ease;
 }
 
@@ -1113,13 +1111,13 @@ textarea.varo-input__control {
   flex: none;
   width: 28px;
   height: 28px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: var(--varo-ui-surface-muted);
-  color: var(--varo-ui-danger);
-  cursor: pointer;
   font-size: 18px;
   line-height: 1;
+  color: var(--varo-ui-danger);
+  cursor: pointer;
+  background: var(--varo-ui-surface-muted);
+  border: 1px solid transparent;
+  border-radius: 999px;
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease,
@@ -1127,25 +1125,25 @@ textarea.varo-input__control {
 }
 
 .varo-uploader__delete:hover {
-  border-color: color-mix(in srgb, var(--varo-ui-danger) 24%, var(--varo-ui-border));
   background: color-mix(in srgb, var(--varo-ui-danger) 10%, var(--varo-ui-surface));
+  border-color: color-mix(in srgb, var(--varo-ui-danger) 24%, var(--varo-ui-border));
   transform: scale(1.04);
 }
 
 .varo-uploader__trigger {
   display: inline-flex;
-  width: fit-content;
-  min-height: 40px;
+  gap: 6px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  width: fit-content;
+  min-height: 40px;
   padding: 0 14px;
-  border: 1px dashed var(--varo-ui-border-strong);
-  border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface-muted);
+  font-weight: 650;
   color: var(--varo-ui-primary);
   cursor: pointer;
-  font-weight: 650;
+  background: var(--varo-ui-surface-muted);
+  border: 1px dashed var(--varo-ui-border-strong);
+  border-radius: var(--varo-ui-radius);
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -1154,8 +1152,8 @@ textarea.varo-input__control {
 }
 
 .varo-uploader__trigger:hover {
-  border-color: var(--varo-ui-primary);
   background: color-mix(in srgb, var(--varo-ui-primary) 10%, var(--varo-ui-surface));
+  border-color: var(--varo-ui-primary);
   box-shadow: var(--varo-ui-shadow-md);
   transform: translateY(-1px);
 }
@@ -1173,30 +1171,29 @@ textarea.varo-input__control {
 
 .varo-uploader[data-list-type='card'] .varo-uploader__item,
 .varo-uploader[data-list-type='card'] .varo-uploader__trigger {
+  place-content: start stretch;
   width: 112px;
   min-height: 112px;
-  align-content: start;
-  justify-content: stretch;
 }
 
 .varo-uploader[data-list-type='card'] .varo-uploader__item {
-  overflow: hidden;
   grid-template-columns: minmax(0, 1fr);
   padding: 0;
+  overflow: hidden;
 }
 
 .varo-uploader__card-preview {
   display: flex;
-  height: 100%;
-  min-height: 112px;
   align-items: center;
   justify-content: center;
-  border-radius: var(--varo-ui-radius);
+  height: 100%;
+  min-height: 112px;
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--varo-ui-primary) 8%, transparent), color-mix(in srgb, var(--varo-ui-primary) 14%, transparent)),
     var(--varo-ui-surface-muted);
   background-position: center;
   background-size: cover;
+  border-radius: var(--varo-ui-radius);
 }
 
 .varo-uploader__card-mask {
@@ -1205,11 +1202,11 @@ textarea.varo-input__control {
   display: grid;
   align-content: end;
   padding: 10px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.62));
   color: #fff;
-  opacity: 0;
   pointer-events: none;
+  background: linear-gradient(180deg, rgb(15 23 42 / 0%), rgb(15 23 42 / 62%));
+  border-radius: 14px;
+  opacity: 0;
   transform: translateY(6px);
   transition:
     opacity 0.2s ease,
@@ -1218,9 +1215,9 @@ textarea.varo-input__control {
 
 .varo-uploader__card-name {
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 12px;
   font-weight: 750;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -1234,8 +1231,8 @@ textarea.varo-input__control {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(15, 23, 42, 0.58);
   color: #fff;
+  background: rgb(15 23 42 / 58%);
   opacity: 0;
   transform: scale(0.92);
 }
@@ -1248,13 +1245,13 @@ textarea.varo-input__control {
 
 .varo-uploader[data-list-type='card'] .varo-uploader__progress {
   position: absolute;
-  left: 0;
   right: 0;
   bottom: 0;
+  left: 0;
   width: 100%;
   height: 3px;
+  background: rgb(15 23 42 / 12%);
   border-radius: 0;
-  background: rgba(15, 23, 42, 0.12);
 }
 
 .varo-uploader[data-list-type='card'] .varo-uploader__trigger {
@@ -1272,18 +1269,18 @@ textarea.varo-input__control {
 
 .varo-indicator {
   display: inline-flex;
-  align-items: center;
   gap: 7px;
+  align-items: center;
 }
 
 .varo-indicator__item {
   width: 7px;
   height: 7px;
   padding: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--varo-ui-text-muted) 28%, transparent);
   border: 0;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-ui-text-muted) 28%, transparent);
-  cursor: pointer;
   transition:
     width 0.2s ease,
     background-color 0.2s ease,
@@ -1318,20 +1315,20 @@ textarea.varo-input__control {
 
 .varo-elevator__content {
   display: grid;
-  align-content: start;
-  gap: 10px;
   grid-auto-rows: max-content;
+  gap: 10px;
+  align-content: start;
   max-height: 324px;
-  overflow-y: auto;
   padding-right: 6px;
+  overflow-y: auto;
   scroll-behavior: smooth;
 }
 
 .varo-elevator__group {
   overflow: hidden;
+  background: var(--varo-ui-surface-muted);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface-muted);
 }
 
 .varo-elevator__title {
@@ -1339,9 +1336,9 @@ textarea.varo-input__control {
   top: 0;
   z-index: 1;
   padding: 8px 12px;
-  background: color-mix(in srgb, var(--varo-ui-primary) 10%, var(--varo-ui-surface));
-  color: var(--varo-ui-primary);
   font-weight: 750;
+  color: var(--varo-ui-primary);
+  background: color-mix(in srgb, var(--varo-ui-primary) 10%, var(--varo-ui-surface));
 }
 
 .varo-elevator__item {
@@ -1349,12 +1346,12 @@ textarea.varo-input__control {
   width: 100%;
   min-height: 38px;
   padding: 0 12px;
+  color: var(--varo-ui-text);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
   border: 0;
   border-top: 1px solid var(--varo-ui-border);
-  background: transparent;
-  color: var(--varo-ui-text);
-  cursor: pointer;
-  text-align: left;
 }
 
 .varo-elevator__item:hover {
@@ -1363,11 +1360,11 @@ textarea.varo-input__control {
 
 .varo-elevator__indexes {
   display: grid;
-  align-self: center;
   gap: 6px;
+  align-self: center;
   padding: 8px 4px;
-  border-radius: 999px;
   background: color-mix(in srgb, var(--varo-ui-surface) 92%, transparent);
+  border-radius: 999px;
   box-shadow: var(--varo-ui-shadow-md);
 }
 
@@ -1375,18 +1372,18 @@ textarea.varo-input__control {
   width: 24px;
   height: 24px;
   padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--varo-ui-text-muted);
-  cursor: pointer;
   font-size: 12px;
   font-weight: 750;
+  color: var(--varo-ui-text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
 }
 
 .varo-elevator__index[data-active='true'] {
-  background: var(--varo-ui-primary);
   color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
 }
 
 .varo-menu {
@@ -1394,9 +1391,9 @@ textarea.varo-input__control {
   z-index: 1;
   display: flex;
   min-height: 44px;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-sm);
 }
 
@@ -1408,17 +1405,17 @@ textarea.varo-input__control {
 
 .varo-menu__title {
   display: inline-flex;
-  width: 100%;
-  min-height: 44px;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  width: 100%;
+  min-height: 44px;
   padding: 0 14px;
-  border: 0;
-  background: transparent;
+  font-weight: 750;
   color: var(--varo-ui-text);
   cursor: pointer;
-  font-weight: 750;
+  background: transparent;
+  border: 0;
 }
 
 .varo-menu__title-text {
@@ -1430,8 +1427,8 @@ textarea.varo-input__control {
 .varo-menu__arrow {
   width: 7px;
   height: 7px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
+  border-right: 1.5px solid currentcolor;
+  border-bottom: 1.5px solid currentcolor;
   opacity: 0.68;
   transform: translateY(-2px) rotate(45deg);
   transition: transform 0.2s ease;
@@ -1447,27 +1444,27 @@ textarea.varo-input__control {
   right: 0;
   left: 0;
   display: grid;
-  overflow: hidden;
   min-width: 180px;
+  overflow: hidden;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
   box-shadow: var(--varo-ui-shadow-md);
 }
 
 .varo-menu__option {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-height: 44px;
   padding: 0 14px;
+  color: var(--varo-ui-text);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
   border: 0;
   border-top: 1px solid var(--varo-ui-border);
-  background: transparent;
-  color: var(--varo-ui-text);
-  cursor: pointer;
-  text-align: left;
 }
 
 .varo-menu__option:first-child {
@@ -1484,8 +1481,8 @@ textarea.varo-input__control {
 }
 
 .varo-menu__option[data-active='true'] {
-  color: var(--varo-ui-primary);
   font-weight: 750;
+  color: var(--varo-ui-primary);
 }
 
 .varo-menu__option-text {
@@ -1495,8 +1492,8 @@ textarea.varo-input__control {
 }
 
 .varo-menu__check {
-  color: var(--varo-ui-primary);
   font-weight: 800;
+  color: var(--varo-ui-primary);
 }
 
 .varo-pagination {
@@ -1511,11 +1508,11 @@ textarea.varo-input__control {
   min-width: 34px;
   min-height: 34px;
   padding: 0 10px;
-  border: 1px solid var(--varo-ui-border);
-  border-radius: var(--varo-ui-radius-sm);
-  background: var(--varo-ui-surface);
   color: var(--varo-ui-text);
   cursor: pointer;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius-sm);
 }
 
 .varo-pagination__prev,
@@ -1526,9 +1523,9 @@ textarea.varo-input__control {
 }
 
 .varo-pagination button[data-active='true'] {
-  border-color: var(--varo-ui-primary);
-  background: var(--varo-ui-primary);
   color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+  border-color: var(--varo-ui-primary);
 }
 
 .varo-pagination button:disabled {
@@ -1540,8 +1537,8 @@ textarea.varo-input__control {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
-  color: var(--varo-ui-text-muted);
   font-weight: 650;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-icon {
@@ -1549,11 +1546,11 @@ textarea.varo-input__control {
   flex: none;
   align-items: center;
   justify-content: center;
-  color: currentColor;
   font-style: normal;
   font-weight: 750;
   line-height: 1;
   vertical-align: middle;
+  color: currentcolor;
 }
 
 .varo-icon[data-tone='primary'] {
@@ -1582,10 +1579,10 @@ textarea.varo-input__control {
 
 .varo-card {
   overflow: hidden;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface);
   border: 1px solid transparent;
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
-  color: var(--varo-ui-text);
 }
 
 .varo-card--padded {
@@ -1609,7 +1606,7 @@ textarea.varo-input__control {
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
-.varo-card--interactive:active {
+.varo-card--pressed {
   transform: translateY(1px);
 }
 
@@ -1634,28 +1631,28 @@ textarea.varo-input__control {
 }
 
 .varo-card__title {
-  color: var(--varo-ui-text);
   font-size: 16px;
   font-weight: 750;
+  color: var(--varo-ui-text);
 }
 
 .varo-card__description {
-  color: var(--varo-ui-text-muted);
   font-size: 13px;
   line-height: 1.55;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-avatar {
   display: inline-flex;
   flex: none;
-  overflow: hidden;
   align-items: center;
   justify-content: center;
-  background: var(--varo-ui-surface-muted);
-  color: var(--varo-ui-text-muted);
+  overflow: hidden;
   font-weight: 750;
   line-height: 1;
   vertical-align: middle;
+  color: var(--varo-ui-text-muted);
+  background: var(--varo-ui-surface-muted);
 }
 
 .varo-avatar[data-shape='circle'] {
@@ -1672,10 +1669,10 @@ textarea.varo-input__control {
 
 .varo-avatar__fallback {
   display: inline-flex;
-  width: 100%;
-  height: 100%;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .varo-avatar-group {
@@ -1694,39 +1691,39 @@ textarea.varo-input__control {
 
 .varo-avatar-group__more {
   display: inline-flex;
-  width: 40px;
-  height: 40px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  background: var(--varo-ui-surface-muted);
-  color: var(--varo-ui-text-muted);
+  width: 40px;
+  height: 40px;
   font-size: 12px;
   font-weight: 750;
+  color: var(--varo-ui-text-muted);
+  background: var(--varo-ui-surface-muted);
+  border-radius: 999px;
 }
 
 .varo-badge {
   display: inline-flex;
-  min-width: 20px;
-  min-height: 20px;
   align-items: center;
   justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
   padding: 0 6px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: var(--varo-ui-danger);
-  color: #fff;
   font-size: 11px;
   font-weight: 750;
   line-height: 1;
+  color: #fff;
   white-space: nowrap;
+  background: var(--varo-ui-danger);
+  border: 1px solid transparent;
+  border-radius: 999px;
 }
 
 .varo-badge[data-dot='true'] {
-  min-width: 8px;
-  min-height: 8px;
   width: 8px;
+  min-width: 8px;
   height: 8px;
+  min-height: 8px;
   padding: 0;
 }
 
@@ -1747,29 +1744,29 @@ textarea.varo-input__control {
 }
 
 .varo-badge[data-variant='soft'] {
-  background: var(--varo-ui-surface-muted);
   color: var(--varo-ui-text);
+  background: var(--varo-ui-surface-muted);
 }
 
 .varo-badge[data-variant='outline'] {
-  border-color: currentColor;
-  background: transparent;
   color: var(--varo-ui-text);
+  background: transparent;
+  border-color: currentcolor;
 }
 
 .varo-tag {
   display: inline-flex;
-  min-height: 28px;
-  align-items: center;
   gap: 5px;
+  align-items: center;
+  min-height: 28px;
   padding: 0 9px;
-  border: 1px solid transparent;
-  border-radius: var(--varo-ui-radius-sm);
-  background: var(--varo-ui-surface-muted);
-  color: var(--varo-ui-text);
   font-size: 12px;
   font-weight: 650;
   line-height: 1;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface-muted);
+  border: 1px solid transparent;
+  border-radius: var(--varo-ui-radius-sm);
 }
 
 .varo-tag[data-size='sm'] {
@@ -1790,28 +1787,28 @@ textarea.varo-input__control {
 
 .varo-tag[data-tone='primary'][data-variant='solid'],
 .varo-tag[data-checked='true'] {
-  background: var(--varo-ui-primary);
   color: #fff;
+  background: var(--varo-ui-primary);
 }
 
 .varo-tag[data-tone='success'][data-variant='solid'] {
-  background: var(--varo-ui-success);
   color: #fff;
+  background: var(--varo-ui-success);
 }
 
 .varo-tag[data-tone='warning'][data-variant='solid'] {
-  background: var(--varo-ui-warning);
   color: #fff;
+  background: var(--varo-ui-warning);
 }
 
 .varo-tag[data-tone='danger'][data-variant='solid'] {
-  background: var(--varo-ui-danger);
   color: #fff;
+  background: var(--varo-ui-danger);
 }
 
 .varo-tag[data-variant='outline'] {
-  border-color: currentColor;
   background: transparent;
+  border-color: currentcolor;
 }
 
 .varo-tag[data-disabled='true'] {
@@ -1821,23 +1818,23 @@ textarea.varo-input__control {
 
 .varo-tag__close {
   display: inline-flex;
-  width: 18px;
-  height: 18px;
   align-items: center;
   justify-content: center;
+  width: 18px;
+  height: 18px;
   padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
+  line-height: 1;
   color: inherit;
   cursor: pointer;
-  line-height: 1;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
 }
 
 .varo-empty {
   display: grid;
-  justify-items: center;
   gap: 10px;
+  justify-items: center;
   padding: 32px 16px;
   color: var(--varo-ui-text-muted);
   text-align: center;
@@ -1845,12 +1842,12 @@ textarea.varo-input__control {
 
 .varo-empty__visual {
   display: grid;
+  place-items: center;
   width: 64px;
   height: 64px;
-  place-items: center;
-  border-radius: 20px;
-  background: var(--varo-ui-surface-muted);
   color: var(--varo-ui-primary);
+  background: var(--varo-ui-surface-muted);
+  border-radius: 20px;
 }
 
 .varo-empty[data-size='sm'] .varo-empty__visual {
@@ -1871,8 +1868,8 @@ textarea.varo-input__control {
 }
 
 .varo-empty__title {
-  color: var(--varo-ui-text);
   font-size: 16px;
+  color: var(--varo-ui-text);
 }
 
 .varo-empty__description {
@@ -1887,8 +1884,8 @@ textarea.varo-input__control {
 
 .varo-skeleton {
   display: flex;
-  width: 100%;
   gap: 12px;
+  width: 100%;
 }
 
 .varo-skeleton__avatar,
@@ -1934,8 +1931,8 @@ textarea.varo-input__control {
 .varo-skeleton[data-animated='true'] .varo-skeleton__row::after {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.64), transparent);
   content: '';
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 64%), transparent);
   transform: translateX(-100%);
   animation: varo-skeleton-shimmer 1.35s ease-in-out infinite;
 }
@@ -1949,27 +1946,27 @@ textarea.varo-input__control {
 .varo-progress {
   position: relative;
   display: inline-flex;
-  align-items: center;
   gap: 10px;
-  color: var(--varo-ui-text);
+  align-items: center;
   font-size: 12px;
   font-weight: 650;
+  color: var(--varo-ui-text);
 }
 
 .varo-progress__track {
   width: 100%;
   height: var(--varo-progress-stroke, 8px);
   overflow: hidden;
-  border-radius: 999px;
   background: var(--varo-ui-surface-muted);
+  border-radius: 999px;
 }
 
 .varo-progress__bar {
   display: block;
   width: var(--varo-progress-value);
   height: 100%;
-  border-radius: inherit;
   background: var(--varo-ui-primary);
+  border-radius: inherit;
   transition: width 0.28s ease;
 }
 
@@ -2004,10 +2001,10 @@ textarea.varo-input__control {
 .varo-progress__circle {
   position: absolute;
   inset: 0;
-  border-radius: 999px;
   background:
     radial-gradient(circle, var(--varo-ui-surface) calc(50% - var(--varo-progress-stroke)), transparent calc(50% - var(--varo-progress-stroke) + 1px)),
     conic-gradient(var(--varo-progress-color, var(--varo-ui-primary)) var(--varo-progress-value), var(--varo-ui-surface-muted) 0);
+  border-radius: 999px;
 }
 
 .varo-progress[data-type='circle'] .varo-progress__text {
@@ -2018,8 +2015,8 @@ textarea.varo-input__control {
 .varo-steps {
   display: flex;
   width: 100%;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
@@ -2034,53 +2031,53 @@ textarea.varo-input__control {
   position: relative;
   z-index: 1;
   display: flex;
-  width: 100%;
-  align-items: flex-start;
   gap: 8px;
+  align-items: flex-start;
+  width: 100%;
   padding: 0;
-  border: 0;
-  background: transparent;
   color: var(--varo-ui-text-muted);
   text-align: left;
+  background: transparent;
+  border: 0;
 }
 
 .varo-steps__marker {
   display: inline-flex;
   flex: none;
-  width: 24px;
-  height: 24px;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--varo-ui-border);
-  border-radius: 999px;
-  background: var(--varo-ui-surface);
+  width: 24px;
+  height: 24px;
   font-size: 11px;
   font-weight: 800;
+  background: var(--varo-ui-surface);
+  border: 2px solid var(--varo-ui-border);
+  border-radius: 999px;
 }
 
 .varo-steps__item[data-status='current'] .varo-steps__marker,
 .varo-steps__item[data-status='completed'] .varo-steps__marker {
-  border-color: var(--varo-ui-primary);
-  background: var(--varo-ui-primary);
   color: #fff;
+  background: var(--varo-ui-primary);
+  border-color: var(--varo-ui-primary);
 }
 
 .varo-steps__body {
   display: grid;
-  min-width: 0;
   gap: 3px;
+  min-width: 0;
 }
 
 .varo-steps__title {
-  color: var(--varo-ui-text);
   font-size: 13px;
   font-weight: 700;
+  color: var(--varo-ui-text);
 }
 
 .varo-steps__description {
-  color: var(--varo-ui-text-muted);
   font-size: 11px;
   line-height: 1.4;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-steps__line {
@@ -2115,33 +2112,33 @@ textarea.varo-input__control {
 
 .varo-notice-bar {
   display: flex;
-  min-height: 42px;
-  align-items: center;
   gap: 9px;
+  align-items: center;
+  min-height: 42px;
   padding: 0 12px;
-  background: #fff7e6;
-  color: #8a5200;
   font-size: 13px;
+  color: #8a5200;
+  background: #fff7e6;
 }
 
 .varo-notice-bar[data-tone='info'] {
-  background: #eaf4ff;
   color: #155b9d;
+  background: #eaf4ff;
 }
 
 .varo-notice-bar[data-tone='success'] {
-  background: #eaf8ef;
   color: #146c32;
+  background: #eaf8ef;
 }
 
 .varo-notice-bar[data-tone='danger'] {
-  background: #fff0ef;
   color: #a82f28;
+  background: #fff0ef;
 }
 
 .varo-notice-bar__viewport {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -2169,15 +2166,15 @@ textarea.varo-input__control {
 
 .varo-notice-bar__close {
   display: inline-flex;
-  width: 28px;
-  height: 28px;
   flex: none;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: 0;
-  background: transparent;
   color: inherit;
+  background: transparent;
+  border: 0;
 }
 
 .varo-safe-area[data-top='true'] {
@@ -2198,9 +2195,9 @@ textarea.varo-input__control {
 
 .varo-collapse {
   overflow: hidden;
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
 }
 
 .varo-collapse-item + .varo-collapse-item {
@@ -2209,18 +2206,18 @@ textarea.varo-input__control {
 
 .varo-collapse-item__trigger {
   display: flex;
-  width: 100%;
-  min-height: 48px;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  width: 100%;
+  min-height: 48px;
   padding: 0 14px;
-  border: 0;
-  background: transparent;
-  color: var(--varo-ui-text);
   font: inherit;
   font-weight: 700;
+  color: var(--varo-ui-text);
   text-align: left;
+  background: transparent;
+  border: 0;
 }
 
 .varo-collapse-item__chevron {
@@ -2234,9 +2231,9 @@ textarea.varo-input__control {
 
 .varo-collapse-item__content {
   padding: 0 14px 14px;
-  color: var(--varo-ui-text-muted);
   font-size: 13px;
   line-height: 1.6;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-popover {
@@ -2250,10 +2247,10 @@ textarea.varo-input__control {
   width: max-content;
   max-width: min(300px, calc(100vw - 32px));
   padding: 10px 12px;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
-  background: var(--varo-ui-surface);
-  color: var(--varo-ui-text);
   box-shadow: var(--varo-ui-shadow-md);
 }
 
@@ -2311,14 +2308,14 @@ textarea.varo-input__control {
 }
 
 .varo-action-sheet__title {
-  color: var(--varo-ui-text);
   font-size: 16px;
+  color: var(--varo-ui-text);
 }
 
 .varo-action-sheet__description,
 .varo-action-sheet__item-description {
-  color: var(--varo-ui-text-muted);
   font-size: 12px;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-action-sheet__actions {
@@ -2328,15 +2325,15 @@ textarea.varo-input__control {
 .varo-action-sheet__action,
 .varo-action-sheet__cancel {
   display: grid;
-  min-height: 52px;
-  place-items: center;
   gap: 3px;
+  place-items: center;
+  min-height: 52px;
   padding: 8px 16px;
+  font: inherit;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface);
   border: 0;
   border-top: 1px solid var(--varo-ui-border);
-  background: var(--varo-ui-surface);
-  color: var(--varo-ui-text);
-  font: inherit;
 }
 
 .varo-action-sheet__action:active,
@@ -2354,8 +2351,8 @@ textarea.varo-input__control {
 
 .varo-action-sheet__cancel {
   margin-top: 8px;
-  border-top: 8px solid var(--varo-ui-surface-muted);
   font-weight: 700;
+  border-top: 8px solid var(--varo-ui-surface-muted);
 }
 
 .varo-swipe-cell {
@@ -2382,9 +2379,9 @@ textarea.varo-input__control {
 .varo-swipe-cell__content {
   position: relative;
   z-index: 1;
+  touch-action: pan-y;
   background: var(--varo-ui-surface);
   transition: transform 0.22s ease;
-  touch-action: pan-y;
   will-change: transform;
 }
 
@@ -2404,20 +2401,20 @@ textarea.varo-input__control {
 
 .varo-list__footer {
   display: flex;
-  min-height: 44px;
   align-items: center;
   justify-content: center;
-  color: var(--varo-ui-text-muted);
+  min-height: 44px;
   font-size: 12px;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-list__retry {
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid var(--varo-ui-border);
-  border-radius: var(--varo-ui-radius-sm);
-  background: var(--varo-ui-surface);
-  color: var(--varo-ui-primary);
   font: inherit;
   font-weight: 700;
+  color: var(--varo-ui-primary);
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius-sm);
 }

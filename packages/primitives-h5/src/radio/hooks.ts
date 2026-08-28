@@ -1,1 +1,1 @@
-export { useRadioGroup } from '@varo/primitives-core'
+export { useRadioGroup } from '@varo-ui/headless'

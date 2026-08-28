@@ -1,6 +1,6 @@
-import { computed, defineComponent, h } from 'vue'
+import { useVaroTheme } from '@varo-ui/theme'
 import { createVariantClass } from '@varo/shared'
-import { useVaroTheme } from '@varo/theme'
+import { computed, defineComponent, h } from 'vue'
 
 export const VRange = defineComponent({
   name: 'VRange',
@@ -8,20 +8,20 @@ export const VRange = defineComponent({
     disabled: Boolean,
     max: {
       type: Number,
-      default: 100
+      default: 100,
     },
     min: {
       type: Number,
-      default: 0
+      default: 0,
     },
     step: {
       type: Number,
-      default: 1
+      default: 1,
     },
     value: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   emits: ['update:value', 'change'],
   setup(props, { attrs, emit }) {
@@ -34,8 +34,8 @@ export const VRange = defineComponent({
     const classes = computed(() =>
       createVariantClass('varo-range', {
         radius: theme.value.components.button.borderRadius,
-        disabled: props.disabled
-      })
+        disabled: props.disabled,
+      }),
     )
 
     function update(value: number) {
@@ -45,12 +45,12 @@ export const VRange = defineComponent({
     }
 
     return () =>
-      h('div', { ...attrs, class: [classes.value, attrs.class], 'data-disabled': String(props.disabled) }, [
+      h('div', { ...attrs, 'class': [classes.value, attrs.class], 'data-disabled': String(props.disabled) }, [
         h('div', { class: 'varo-range__track' }, [
           h('span', {
             class: 'varo-range__fill',
-            style: { width: `${percent.value}%` }
-          })
+            style: { width: `${percent.value}%` },
+          }),
         ]),
         h('input', {
           class: 'varo-range__input',
@@ -60,8 +60,8 @@ export const VRange = defineComponent({
           step: props.step,
           type: 'range',
           value: String(currentValue.value),
-          onInput: (event: Event) => update(Number((event.target as HTMLInputElement).value))
-        })
+          onInput: (event: Event) => update(Number((event.target as HTMLInputElement).value)),
+        }),
       ])
-  }
+  },
 })

@@ -1,4 +1,4 @@
-import type { SelectOption, SelectValue as SelectPrimitiveValue } from '@varo/primitives-core'
+import type { SelectOption, SelectValue as SelectPrimitiveValue } from '@varo-ui/headless'
 
 export interface SelectPartProps {
   as?: string

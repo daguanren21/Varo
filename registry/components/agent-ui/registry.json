@@ -8,7 +8,7 @@
     "weapp-vite"
   ],
   "dependencies": [
-    "@varo/agent-core"
+    "@varo-ui/ai"
   ],
   "targetDependencies": {
     "h5": [

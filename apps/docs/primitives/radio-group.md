@@ -4,7 +4,7 @@
 
 ## 运行时
 
-同时提供 `@varo/primitives-h5` 与 `@varo/primitives-weapp`。
+状态契约由 `@varo-ui/headless` 提供；渲染 Parts 分别来自 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives`。
 
 ## 演示
 
@@ -13,9 +13,9 @@
 ## 安装
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # 或
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## 基础用法
@@ -28,37 +28,37 @@ pnpm add @varo/primitives-weapp
 
 ## Parts
 
-| Part | 作用 |
-| --- | --- |
-| `RadioGroup` | 组级 value 与上下文 |
-| `RadioItem` | 单个选项 |
-| `RadioIndicator` | 选中指示器 |
+| Part             | 作用                |
+| ---------------- | ------------------- |
+| `RadioGroup`     | 组级 value 与上下文 |
+| `RadioItem`      | 单个选项            |
+| `RadioIndicator` | 选中指示器          |
 
 ## Props
 
 ### RadioGroup
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `string \| number \| undefined` | `undefined` | 受控选中值 |
-| `defaultValue` | `string \| number` | `undefined` | 非受控初始值 |
-| `disabled` | `boolean` | `false` | 整组禁用 |
-| `as` | `string` | `'div'` | 根节点标签 |
+| Prop           | 类型                            | 默认值      | 描述         |
+| -------------- | ------------------------------- | ----------- | ------------ |
+| `value`        | `string \| number \| undefined` | `undefined` | 受控选中值   |
+| `defaultValue` | `string \| number`              | `undefined` | 非受控初始值 |
+| `disabled`     | `boolean`                       | `false`     | 整组禁用     |
+| `as`           | `string`                        | `'div'`     | 根节点标签   |
 
 ### RadioItem
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `string \| number` | 必填 | 选项值 |
-| `disabled` | `boolean` | `false` | 选项禁用 |
-| `as` | `string` | `'button'` | 选项节点标签 |
+| Prop       | 类型               | 默认值     | 描述         |
+| ---------- | ------------------ | ---------- | ------------ |
+| `value`    | `string \| number` | 必填       | 选项值       |
+| `disabled` | `boolean`          | `false`    | 选项禁用     |
+| `as`       | `string`           | `'button'` | 选项节点标签 |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
+| Event          | Payload            | 描述           |
+| -------------- | ------------------ | -------------- |
 | `update:value` | `string \| number` | 受控同步选中值 |
-| `valueChange` | `string \| number` | 选中值变化 |
+| `valueChange`  | `string \| number` | 选中值变化     |
 
 ## 无障碍
 

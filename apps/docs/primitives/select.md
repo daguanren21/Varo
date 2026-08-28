@@ -4,7 +4,7 @@
 
 ## 运行时
 
-同时提供 `@varo/primitives-h5` 与 `@varo/primitives-weapp`。
+状态契约由 `@varo-ui/headless` 提供；渲染 Parts 分别来自 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives`。
 
 ## 演示
 
@@ -13,9 +13,9 @@
 ## 安装
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # 或
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## 基础用法
@@ -28,46 +28,46 @@ pnpm add @varo/primitives-weapp
 
 ## Parts
 
-| Part | 作用 |
-| --- | --- |
-| `SelectRoot` | value/open 状态 |
-| `SelectTrigger` | 打开入口 |
-| `SelectValue` | 当前值展示 |
-| `SelectContent` | 选项容器 |
-| `SelectGroup` | 分组 |
-| `SelectLabel` | 分组标题 |
-| `SelectItem` | 单个选项 |
+| Part            | 作用            |
+| --------------- | --------------- |
+| `SelectRoot`    | value/open 状态 |
+| `SelectTrigger` | 打开入口        |
+| `SelectValue`   | 当前值展示      |
+| `SelectContent` | 选项容器        |
+| `SelectGroup`   | 分组            |
+| `SelectLabel`   | 分组标题        |
+| `SelectItem`    | 单个选项        |
 
 ## Props
 
 ### SelectRoot
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `unknown` | `undefined` | 受控值 |
-| `defaultValue` | `unknown` | `undefined` | 非受控初始值 |
-| `open` | `boolean \| undefined` | `undefined` | 受控打开态 |
-| `defaultOpen` | `boolean` | `false` | 非受控初始打开态 |
-| `options` | `array` | `undefined` | 选项数据 |
-| `placeholder` | `string` | `undefined` | 占位 |
-| `disabled` | `boolean` | `false` | 禁用 |
-| `readonly` | `boolean` | `false` | 只读 |
-| `multiple` | `boolean` | `false` | 多选语义 |
+| Prop           | 类型                   | 默认值      | 描述             |
+| -------------- | ---------------------- | ----------- | ---------------- |
+| `value`        | `unknown`              | `undefined` | 受控值           |
+| `defaultValue` | `unknown`              | `undefined` | 非受控初始值     |
+| `open`         | `boolean \| undefined` | `undefined` | 受控打开态       |
+| `defaultOpen`  | `boolean`              | `false`     | 非受控初始打开态 |
+| `options`      | `array`                | `undefined` | 选项数据         |
+| `placeholder`  | `string`               | `undefined` | 占位             |
+| `disabled`     | `boolean`              | `false`     | 禁用             |
+| `readonly`     | `boolean`              | `false`     | 只读             |
+| `multiple`     | `boolean`              | `false`     | 多选语义         |
 
 ### SelectItem
 
-| Prop | 类型 | 描述 |
-| --- | --- | --- |
+| Prop     | 类型     | 描述     |
+| -------- | -------- | -------- |
 | `option` | `object` | 选项对象 |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
-| `update:value` | `unknown` | 值同步 |
-| `valueChange` | `unknown` | 值变化 |
-| `update:open` | `boolean` | 打开态同步 |
-| `openChange` | `boolean` | 打开态变化 |
+| Event          | Payload   | 描述       |
+| -------------- | --------- | ---------- |
+| `update:value` | `unknown` | 值同步     |
+| `valueChange`  | `unknown` | 值变化     |
+| `update:open`  | `boolean` | 打开态同步 |
+| `openChange`   | `boolean` | 打开态变化 |
 
 ## 无障碍
 

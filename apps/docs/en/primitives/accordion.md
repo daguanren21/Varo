@@ -4,7 +4,7 @@ Accordion runtime: Root supports single/multiple, Item provides a unique value, 
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,39 +28,39 @@ With `type="multiple"`, value is an array; item values must stay unique.
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `AccordionRoot` | Collection state |
-| `AccordionItem` | One entry |
-| `AccordionTrigger` | Entry title |
-| `AccordionContent` | Entry body |
+| Part               | Purpose          |
+| ------------------ | ---------------- |
+| `AccordionRoot`    | Collection state |
+| `AccordionItem`    | One entry        |
+| `AccordionTrigger` | Entry title      |
+| `AccordionContent` | Entry body       |
 
 ## Props
 
 ### AccordionRoot
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `'single' \| 'multiple'` | implementation default | Single or multiple open |
-| `value` | `string \| string[] \| undefined` | `undefined` | Controlled value |
-| `defaultValue` | `string \| string[]` | `undefined` | Uncontrolled initial value |
-| `collapsible` | `boolean` | `false` | Allow all collapsed in single mode |
-| `disabled` | `boolean` | `false` | Disable whole root |
-| `id` | `string` | `undefined` | Association id |
+| Prop           | Type                              | Default                | Description                        |
+| -------------- | --------------------------------- | ---------------------- | ---------------------------------- |
+| `type`         | `'single' \| 'multiple'`          | implementation default | Single or multiple open            |
+| `value`        | `string \| string[] \| undefined` | `undefined`            | Controlled value                   |
+| `defaultValue` | `string \| string[]`              | `undefined`            | Uncontrolled initial value         |
+| `collapsible`  | `boolean`                         | `false`                | Allow all collapsed in single mode |
+| `disabled`     | `boolean`                         | `false`                | Disable whole root                 |
+| `id`           | `string`                          | `undefined`            | Association id                     |
 
 ### AccordionItem
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `value` | `string` | Unique item value |
-| `disabled` | `boolean` | Item disabled |
+| Prop       | Type      | Description       |
+| ---------- | --------- | ----------------- |
+| `value`    | `string`  | Unique item value |
+| `disabled` | `boolean` | Item disabled     |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event          | Payload              | Description     |
+| -------------- | -------------------- | --------------- |
 | `update:value` | `string \| string[]` | Controlled sync |
-| `valueChange` | `string \| string[]` | Value change |
+| `valueChange`  | `string \| string[]` | Value change    |
 
 ## Accessibility
 

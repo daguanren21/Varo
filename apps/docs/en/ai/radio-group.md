@@ -9,8 +9,8 @@ Agent single-choice control with a shared active indicator.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,24 +29,24 @@ import { AgentRadioGroup } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `choices` | `AgentRadioChoice[]` | `[]` | Choices |
-| `orientation` | `'horizontal' \| 'vertical'` | `vertical` | Orientation |
-| `value` | `string` | `''` | Selected value |
+| Prop          | Type                         | Default    | Description    |
+| ------------- | ---------------------------- | ---------- | -------------- |
+| `choices`     | `AgentRadioChoice[]`         | `[]`       | Choices        |
+| `orientation` | `'horizontal' \| 'vertical'` | `vertical` | Orientation    |
+| `value`       | `string`                     | `''`       | Selected value |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event          | Payload  | Description           |
+| -------------- | -------- | --------------------- |
 | `update:value` | `string` | Update selected value |
-| `change` | `string` | Selection changed |
+| `change`       | `string` | Selection changed     |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                      |
+| ---------- | ------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`   |
 | weapp-vite | `@/components/agent-ui/AgentRadioGroup.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

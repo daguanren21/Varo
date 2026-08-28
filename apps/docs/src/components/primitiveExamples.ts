@@ -1,24 +1,24 @@
 export type Locale = 'zh' | 'en'
-export type PrimitiveExampleName =
-  | 'checkbox'
-  | 'radio-group'
-  | 'switch'
-  | 'tabs'
-  | 'select'
-  | 'collapsible'
-  | 'accordion'
-  | 'popover'
+export type PrimitiveExampleName
+  = | 'checkbox'
+    | 'radio-group'
+    | 'switch'
+    | 'tabs'
+    | 'select'
+    | 'collapsible'
+    | 'accordion'
+    | 'popover'
 
 export interface PrimitiveExampleData {
   h5Code: string
   weappCode: string
-  contractRows: Array<{ label: string; value: string }>
+  contractRows: Array<{ label: string, value: string }>
 }
 
 const checkbox = {
   h5: `<script setup lang="ts">
 import { ref } from 'vue'
-import { CheckboxRoot, CheckboxIndicator } from '@varo/primitives-h5'
+import { CheckboxRoot, CheckboxIndicator } from '@varo-ui/h5/primitives'
 
 const checked = ref(false)
 </script>
@@ -30,8 +30,8 @@ const checked = ref(false)
   </CheckboxRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
-import { CheckboxRoot, CheckboxIndicator } from '@varo/primitives-weapp'
+import { ref } from 'wevu'
+import { CheckboxRoot, CheckboxIndicator } from '@varo-ui/weapp/primitives'
 
 const checked = ref(false)
 </script>
@@ -41,13 +41,13 @@ const checked = ref(false)
     <CheckboxIndicator>✓</CheckboxIndicator>
     Enable state
   </CheckboxRoot>
-</template>`
+</template>`,
 }
 
 const radio = {
   h5: `<script setup lang="ts">
 import { ref } from 'vue'
-import { RadioGroup, RadioItem, RadioIndicator } from '@varo/primitives-h5'
+import { RadioGroup, RadioItem, RadioIndicator } from '@varo-ui/h5/primitives'
 
 const value = ref('h5')
 </script>
@@ -59,8 +59,8 @@ const value = ref('h5')
   </RadioGroup>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
-import { RadioGroup, RadioItem, RadioIndicator } from '@varo/primitives-weapp'
+import { ref } from 'wevu'
+import { RadioGroup, RadioItem, RadioIndicator } from '@varo-ui/weapp/primitives'
 
 const value = ref('h5')
 </script>
@@ -70,13 +70,13 @@ const value = ref('h5')
     <RadioItem value="h5"><RadioIndicator>•</RadioIndicator>H5</RadioItem>
     <RadioItem value="weapp"><RadioIndicator>•</RadioIndicator>Weapp</RadioItem>
   </RadioGroup>
-</template>`
+</template>`,
 }
 
 const switchExample = {
   h5: `<script setup lang="ts">
 import { ref } from 'vue'
-import { SwitchRoot, SwitchThumb } from '@varo/primitives-h5'
+import { SwitchRoot, SwitchThumb } from '@varo-ui/h5/primitives'
 
 const on = ref(false)
 </script>
@@ -87,8 +87,8 @@ const on = ref(false)
   </SwitchRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
-import { SwitchRoot, SwitchThumb } from '@varo/primitives-weapp'
+import { ref } from 'wevu'
+import { SwitchRoot, SwitchThumb } from '@varo-ui/weapp/primitives'
 
 const on = ref(false)
 </script>
@@ -97,13 +97,13 @@ const on = ref(false)
   <SwitchRoot v-model:checked="on">
     <SwitchThumb />
   </SwitchRoot>
-</template>`
+</template>`,
 }
 
 const tabs = {
   h5: `<script setup lang="ts">
 import { ref } from 'vue'
-import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@varo/primitives-h5'
+import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@varo-ui/h5/primitives'
 
 const tab = ref('a')
 </script>
@@ -119,8 +119,8 @@ const tab = ref('a')
   </TabsRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
-import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@varo/primitives-weapp'
+import { ref } from 'wevu'
+import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@varo-ui/weapp/primitives'
 
 const tab = ref('a')
 </script>
@@ -134,7 +134,7 @@ const tab = ref('a')
     <TabsContent value="a">Panel A</TabsContent>
     <TabsContent value="b">Panel B</TabsContent>
   </TabsRoot>
-</template>`
+</template>`,
 }
 
 const select = {
@@ -146,7 +146,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem
-} from '@varo/primitives-h5'
+} from '@varo-ui/h5/primitives'
 
 const value = ref()
 const options = [
@@ -168,14 +168,14 @@ const options = [
   </SelectRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'wevu'
 import {
   SelectRoot,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem
-} from '@varo/primitives-weapp'
+} from '@varo-ui/weapp/primitives'
 
 const value = ref()
 const options = [
@@ -195,7 +195,7 @@ const options = [
       </SelectItem>
     </SelectContent>
   </SelectRoot>
-</template>`
+</template>`,
 }
 
 const collapsible = {
@@ -205,7 +205,7 @@ import {
   CollapsibleRoot,
   CollapsibleTrigger,
   CollapsibleContent
-} from '@varo/primitives-h5'
+} from '@varo-ui/h5/primitives'
 
 const open = ref(false)
 </script>
@@ -217,12 +217,12 @@ const open = ref(false)
   </CollapsibleRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'wevu'
 import {
   CollapsibleRoot,
   CollapsibleTrigger,
   CollapsibleContent
-} from '@varo/primitives-weapp'
+} from '@varo-ui/weapp/primitives'
 
 const open = ref(false)
 </script>
@@ -232,7 +232,7 @@ const open = ref(false)
     <CollapsibleTrigger>Toggle details</CollapsibleTrigger>
     <CollapsibleContent>Hidden content becomes visible when open.</CollapsibleContent>
   </CollapsibleRoot>
-</template>`
+</template>`,
 }
 
 const accordion = {
@@ -243,7 +243,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent
-} from '@varo/primitives-h5'
+} from '@varo-ui/h5/primitives'
 
 const value = ref('one')
 </script>
@@ -261,13 +261,13 @@ const value = ref('one')
   </AccordionRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'wevu'
 import {
   AccordionRoot,
   AccordionItem,
   AccordionTrigger,
   AccordionContent
-} from '@varo/primitives-weapp'
+} from '@varo-ui/weapp/primitives'
 
 const value = ref('one')
 </script>
@@ -283,7 +283,7 @@ const value = ref('one')
       <AccordionContent>Body two</AccordionContent>
     </AccordionItem>
   </AccordionRoot>
-</template>`
+</template>`,
 }
 
 const popover = {
@@ -294,7 +294,7 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverClose
-} from '@varo/primitives-h5'
+} from '@varo-ui/h5/primitives'
 
 const open = ref(false)
 </script>
@@ -309,13 +309,13 @@ const open = ref(false)
   </PopoverRoot>
 </template>`,
   weapp: `<script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'wevu'
 import {
   PopoverRoot,
   PopoverTrigger,
   PopoverContent,
   PopoverClose
-} from '@varo/primitives-weapp'
+} from '@varo-ui/weapp/primitives'
 
 const open = ref(false)
 </script>
@@ -328,130 +328,130 @@ const open = ref(false)
       <PopoverClose>Close</PopoverClose>
     </PopoverContent>
   </PopoverRoot>
-</template>`
+</template>`,
 }
 
-const catalog: Record<PrimitiveExampleName, { h5: string; weapp: string }> = {
+const catalog: Record<PrimitiveExampleName, { h5: string, weapp: string }> = {
   checkbox,
   'radio-group': radio,
-  switch: switchExample,
+  'switch': switchExample,
   tabs,
   select,
   collapsible,
   accordion,
-  popover
+  popover,
 }
 
-const contractsZh: Record<PrimitiveExampleName, Array<{ label: string; value: string }>> = {
-  checkbox: [
+const contractsZh: Record<PrimitiveExampleName, Array<{ label: string, value: string }>> = {
+  'checkbox': [
     { label: '状态', value: 'checked / disabled' },
     { label: '事件', value: 'update:checked, checkedChange' },
     { label: 'Parts', value: 'CheckboxRoot, CheckboxIndicator' },
-    { label: '差异', value: '不模拟浏览器焦点环' }
+    { label: '差异', value: '不模拟浏览器焦点环' },
   ],
   'radio-group': [
     { label: '状态', value: 'value / disabled' },
     { label: '事件', value: 'update:value, valueChange' },
     { label: 'Parts', value: 'RadioGroup, RadioItem, RadioIndicator' },
-    { label: '差异', value: '选项焦点由页面容器处理' }
+    { label: '差异', value: '选项焦点由页面容器处理' },
   ],
-  switch: [
+  'switch': [
     { label: '状态', value: 'checked / disabled / loading' },
     { label: '事件', value: 'update:checked, checkedChange' },
     { label: 'Parts', value: 'SwitchRoot, SwitchThumb' },
-    { label: '差异', value: 'loading 时保持不可切换' }
+    { label: '差异', value: 'loading 时保持不可切换' },
   ],
-  tabs: [
+  'tabs': [
     { label: '状态', value: 'value / orientation / disabled' },
     { label: '事件', value: 'update:value, valueChange' },
     { label: 'Parts', value: 'TabsRoot, TabsList, TabsTrigger, TabsContent' },
-    { label: '差异', value: 'H5 支持方向键；小程序保留 ARIA 与 value 关联' }
+    { label: '差异', value: 'H5 支持方向键；小程序保留 ARIA 与 value 关联' },
   ],
-  select: [
+  'select': [
     { label: '状态', value: 'value / open / disabled / readonly' },
     { label: '事件', value: 'update:value, valueChange, update:open, openChange' },
     { label: 'Parts', value: 'SelectRoot, Trigger, Value, Content, Item' },
-    { label: '差异', value: '浮层定位由 UI wrapper 负责' }
+    { label: '差异', value: '浮层定位由 UI wrapper 负责' },
   ],
-  collapsible: [
+  'collapsible': [
     { label: '状态', value: 'open / disabled' },
     { label: '事件', value: 'update:open, openChange' },
     { label: 'Parts', value: 'CollapsibleRoot, Trigger, Content' },
-    { label: '差异', value: '动画与高度过渡留给 UI 层' }
+    { label: '差异', value: '动画与高度过渡留给 UI 层' },
   ],
-  accordion: [
+  'accordion': [
     { label: '状态', value: 'value / type / collapsible / disabled' },
     { label: '事件', value: 'update:value, valueChange' },
     { label: 'Parts', value: 'AccordionRoot, Item, Trigger, Content' },
-    { label: '差异', value: 'item value 必须唯一' }
+    { label: '差异', value: 'item value 必须唯一' },
   ],
-  popover: [
+  'popover': [
     { label: '状态', value: 'open / disabled' },
     { label: '事件', value: 'update:open, openChange' },
     { label: 'Parts', value: 'PopoverRoot, Trigger, Content, Close' },
-    { label: '差异', value: '小程序用显式 Close/遮罩 dismiss，不依赖 document' }
-  ]
+    { label: '差异', value: '小程序用显式 Close/遮罩 dismiss，不依赖 document' },
+  ],
 }
 
-const contractsEn: Record<PrimitiveExampleName, Array<{ label: string; value: string }>> = {
-  checkbox: [
+const contractsEn: Record<PrimitiveExampleName, Array<{ label: string, value: string }>> = {
+  'checkbox': [
     { label: 'State', value: 'checked / disabled' },
     { label: 'Events', value: 'update:checked, checkedChange' },
     { label: 'Parts', value: 'CheckboxRoot, CheckboxIndicator' },
-    { label: 'Difference', value: 'No browser focus-ring simulation' }
+    { label: 'Difference', value: 'No browser focus-ring simulation' },
   ],
   'radio-group': [
     { label: 'State', value: 'value / disabled' },
     { label: 'Events', value: 'update:value, valueChange' },
     { label: 'Parts', value: 'RadioGroup, RadioItem, RadioIndicator' },
-    { label: 'Difference', value: 'Option focus stays page-owned' }
+    { label: 'Difference', value: 'Option focus stays page-owned' },
   ],
-  switch: [
+  'switch': [
     { label: 'State', value: 'checked / disabled / loading' },
     { label: 'Events', value: 'update:checked, checkedChange' },
     { label: 'Parts', value: 'SwitchRoot, SwitchThumb' },
-    { label: 'Difference', value: 'Loading keeps the control non-toggleable' }
+    { label: 'Difference', value: 'Loading keeps the control non-toggleable' },
   ],
-  tabs: [
+  'tabs': [
     { label: 'State', value: 'value / orientation / disabled' },
     { label: 'Events', value: 'update:value, valueChange' },
     { label: 'Parts', value: 'TabsRoot, TabsList, TabsTrigger, TabsContent' },
-    { label: 'Difference', value: 'H5 arrow keys; Weapp keeps ARIA and value association' }
+    { label: 'Difference', value: 'H5 arrow keys; Weapp keeps ARIA and value association' },
   ],
-  select: [
+  'select': [
     { label: 'State', value: 'value / open / disabled / readonly' },
     { label: 'Events', value: 'update:value, valueChange, update:open, openChange' },
     { label: 'Parts', value: 'SelectRoot, Trigger, Value, Content, Item' },
-    { label: 'Difference', value: 'Floating placement belongs to UI wrappers' }
+    { label: 'Difference', value: 'Floating placement belongs to UI wrappers' },
   ],
-  collapsible: [
+  'collapsible': [
     { label: 'State', value: 'open / disabled' },
     { label: 'Events', value: 'update:open, openChange' },
     { label: 'Parts', value: 'CollapsibleRoot, Trigger, Content' },
-    { label: 'Difference', value: 'Height animation stays in the UI layer' }
+    { label: 'Difference', value: 'Height animation stays in the UI layer' },
   ],
-  accordion: [
+  'accordion': [
     { label: 'State', value: 'value / type / collapsible / disabled' },
     { label: 'Events', value: 'update:value, valueChange' },
     { label: 'Parts', value: 'AccordionRoot, Item, Trigger, Content' },
-    { label: 'Difference', value: 'Item values must stay unique' }
+    { label: 'Difference', value: 'Item values must stay unique' },
   ],
-  popover: [
+  'popover': [
     { label: 'State', value: 'open / disabled' },
     { label: 'Events', value: 'update:open, openChange' },
     { label: 'Parts', value: 'PopoverRoot, Trigger, Content, Close' },
-    { label: 'Difference', value: 'Weapp dismiss uses explicit Close/mask, not document events' }
-  ]
+    { label: 'Difference', value: 'Weapp dismiss uses explicit Close/mask, not document events' },
+  ],
 }
 
 export function resolvePrimitiveExample(
   name: PrimitiveExampleName,
-  locale: Locale = 'zh'
+  locale: Locale = 'zh',
 ): PrimitiveExampleData {
   const sample = catalog[name]
   return {
     h5Code: sample.h5,
     weappCode: sample.weapp,
-    contractRows: locale === 'en' ? contractsEn[name] : contractsZh[name]
+    contractRows: locale === 'en' ? contractsEn[name] : contractsZh[name],
   }
 }

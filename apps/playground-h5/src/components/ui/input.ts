@@ -1,15 +1,16 @@
-import '../../styles/varo.css'
-import { computed, defineComponent, getCurrentInstance, h, ref, shallowRef, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { useVaroTheme } from '@varo/theme'
-import { InputRoot } from '../../lib/varo-primitives'
+import type { PropType, StyleValue } from 'vue'
 import type { PressableSize } from '../../lib/varo-primitives'
+import { useVaroTheme } from '@varo-ui/theme'
+import { createVariantClass } from '@varo/shared'
+import { computed, defineComponent, getCurrentInstance, h, ref, shallowRef } from 'vue'
+import { InputRoot } from '../../lib/varo-primitives'
+import '../../styles/varo.css'
 
 type InputAlign = 'left' | 'center' | 'right'
 type InputClearTrigger = 'focus' | 'always'
 type InputFormatTrigger = 'onInput' | 'onBlur'
-type InputAutosize = boolean | { minRows?: number; maxRows?: number }
-type InputRootExpose = {
+type InputAutosize = boolean | { minRows?: number, maxRows?: number }
+interface InputRootExpose {
   blur: () => void
   clear: () => boolean
   focus: () => void
@@ -27,69 +28,69 @@ export const VInput = defineComponent({
     showWordLimit: Boolean,
     value: {
       type: String as PropType<string | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultValue: {
       type: String,
-      default: ''
+      default: '',
     },
     placeholder: String,
     type: {
       type: String,
-      default: 'text'
+      default: 'text',
     },
     maxLength: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     formatter: {
       type: Function as PropType<(value: string) => string>,
-      default: undefined
+      default: undefined,
     },
     formatTrigger: {
       type: String as PropType<InputFormatTrigger>,
-      default: 'onInput'
+      default: 'onInput',
     },
     rows: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     autosize: {
       type: [Boolean, Object] as PropType<InputAutosize>,
-      default: false
+      default: false,
     },
     size: {
       type: String as PropType<PressableSize>,
-      default: 'md'
+      default: 'md',
     },
     align: {
       type: String as PropType<InputAlign>,
-      default: 'left'
+      default: 'left',
     },
     label: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     labelWidth: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     prefixIcon: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     suffixIcon: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     errorMessage: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     clearTrigger: {
       type: String as PropType<InputClearTrigger>,
-      default: 'focus'
-    }
+      default: 'focus',
+    },
   },
   emits: ['update:value', 'valueChange', 'clear', 'focus', 'blur'],
   setup(props, { attrs, emit, slots }) {
@@ -118,8 +119,8 @@ export const VInput = defineComponent({
         disabled: props.disabled,
         invalid: props.invalid,
         readonly: props.readonly,
-        clearable: props.clearable
-      })
+        clearable: props.clearable,
+      }),
     )
     const normalizedMaxLength = computed(() => {
       if (props.maxLength == null || props.maxLength === '') {
@@ -131,11 +132,11 @@ export const VInput = defineComponent({
     })
     const showClear = computed(
       () =>
-        props.clearable &&
-        currentValue.value.length > 0 &&
-        !props.disabled &&
-        !props.readonly &&
-        (props.clearTrigger === 'always' || focused.value)
+        props.clearable
+        && currentValue.value.length > 0
+        && !props.disabled
+        && !props.readonly
+        && (props.clearTrigger === 'always' || focused.value),
     )
     const wordLimit = computed(() => {
       const length = currentValue.value.length
@@ -178,10 +179,10 @@ export const VInput = defineComponent({
       return h(
         'span',
         {
-          class: `varo-input__${slotName}`,
-          'aria-hidden': icon ? 'true' : undefined
+          'class': `varo-input__${slotName}`,
+          'aria-hidden': icon ? 'true' : undefined,
         },
-        content
+        content,
       )
     }
 
@@ -194,15 +195,15 @@ export const VInput = defineComponent({
       return h(
         'div',
         {
-          class: [classes.value, className],
-          style: style as StyleValue,
+          'class': [classes.value, className],
+          'style': style as StyleValue,
           'data-align': props.align,
           'data-clearable': String(props.clearable),
           'data-disabled': String(props.disabled),
           'data-focused': String(focused.value),
           'data-invalid': String(props.invalid),
           'data-readonly': String(props.readonly),
-          'data-size': props.size
+          'data-size': props.size,
         },
         [
           props.label || slots.label
@@ -210,9 +211,9 @@ export const VInput = defineComponent({
                 'span',
                 {
                   class: 'varo-input__label',
-                  style: labelBasis.value ? { width: labelBasis.value, flexBasis: labelBasis.value } : undefined
+                  style: labelBasis.value ? { width: labelBasis.value, flexBasis: labelBasis.value } : undefined,
                 },
-                slots.label?.() ?? props.label
+                slots.label?.() ?? props.label,
               )
             : null,
           h('div', { class: 'varo-input__body' }, [
@@ -242,27 +243,27 @@ export const VInput = defineComponent({
                 focused.value = true
                 emit('focus', event)
               },
-              onValueChange: updateCurrentValue
+              onValueChange: updateCurrentValue,
             }),
             showClear.value
               ? h(
                   'button',
                   {
-                    class: 'varo-input__clear',
-                    type: 'button',
+                    'class': 'varo-input__clear',
+                    'type': 'button',
                     'aria-label': 'Clear input',
-                    onClick: clear,
-                    onMousedown: (event: MouseEvent) => event.preventDefault()
+                    'onClick': clear,
+                    'onMousedown': (event: MouseEvent) => event.preventDefault(),
                   },
-                  '×'
+                  '×',
                 )
               : null,
             props.showWordLimit ? h('span', { class: 'varo-input__word-limit' }, wordLimit.value) : null,
-            suffix
+            suffix,
           ]),
-          props.errorMessage ? h('div', { class: 'varo-input__error' }, props.errorMessage) : null
-        ]
+          props.errorMessage ? h('div', { class: 'varo-input__error' }, props.errorMessage) : null,
+        ],
       )
     }
-  }
+  },
 })

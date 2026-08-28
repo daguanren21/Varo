@@ -27,31 +27,31 @@ Varo 的 Dialog 采用 parts 暴露方式：`VDialogRoot`、`VDialogTrigger`、`
 
 ## 小程序封装建议
 
-小程序侧更推荐基于 `@varo/primitives-weapp` 再封一层企业内部弹层组件，因为不同小程序容器在 portal 与 overlay 行为上的差异通常更大；tabs 里的示例主要用于对齐统一的交互契约与 parts 组织方式。
+小程序侧更推荐基于 `@varo-ui/headless` 再封一层企业内部弹层组件，因为不同小程序容器在 portal 与 overlay 行为上的差异通常更大；tabs 里的示例主要用于对齐统一的交互契约与 parts 组织方式。
 
 ## Root Props
 
-| Prop | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `open` | `boolean \| undefined` | `undefined` | 受控打开状态 |
-| `defaultOpen` | `boolean` | `false` | 非受控初始状态 |
-| `disabled` | `boolean \| undefined` | `undefined` | 禁止触发打开或关闭行为 |
+| Prop          | 类型                   | 默认值      | 说明                   |
+| ------------- | ---------------------- | ----------- | ---------------------- |
+| `open`        | `boolean \| undefined` | `undefined` | 受控打开状态           |
+| `defaultOpen` | `boolean`              | `false`     | 非受控初始状态         |
+| `disabled`    | `boolean \| undefined` | `undefined` | 禁止触发打开或关闭行为 |
 
 ## Root Events
 
-| Event | Payload | 说明 |
-| --- | --- | --- |
+| Event         | Payload   | 说明                   |
+| ------------- | --------- | ---------------------- |
 | `update:open` | `boolean` | 受控模式下同步开关状态 |
-| `openChange` | `boolean` | 打开状态变化时触发 |
+| `openChange`  | `boolean` | 打开状态变化时触发     |
 
 ## Parts 说明
 
-| Part | 作用 |
-| --- | --- |
-| `VDialogTrigger` | 触发打开或切换 |
+| Part             | 作用               |
+| ---------------- | ------------------ |
+| `VDialogTrigger` | 触发打开或切换     |
 | `VDialogOverlay` | 蒙层，点击时可关闭 |
-| `VDialogContent` | 弹层主体内容 |
-| `VDialogClose` | 显式关闭动作 |
+| `VDialogContent` | 弹层主体内容       |
+| `VDialogClose`   | 显式关闭动作       |
 
 ## 行为说明
 

@@ -26,10 +26,10 @@ features:
 ## 开始使用
 
 <div class="varo-doc-links">
-  <a href="/components/">组件总览</a>
-  <a href="/ai/">AI Agent 组件</a>
-  <a href="/guide/installation">安装指南</a>
-  <a href="/examples/">跨端示例</a>
+  <a href="components/">组件总览</a>
+  <a href="ai/">AI Agent 组件</a>
+  <a href="guide/installation">安装指南</a>
+  <a href="examples/">跨端示例</a>
 </div>
 
 ## 小程序 Blocks
@@ -44,8 +44,8 @@ features:
       <li>每个 block 都保留源码入口，方便复制后继续业务封装</li>
     </ul>
     <div class="varo-block-actions">
-      <a href="/examples/">查看业务 Blocks</a>
-      <a href="/components/navbar">组合 Navbar</a>
+      <a href="examples/">查看业务 Blocks</a>
+      <a href="components/navbar">组合 Navbar</a>
     </div>
     <div class="varo-code-preview">
       <pre><code>&lt;v-navbar title="订单详情" /&gt;

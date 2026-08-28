@@ -9,8 +9,8 @@ Property inspector and tuning panel for Agent-generated designs.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,23 +29,23 @@ import { AgentFineTune } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `controls` | `AgentFineTuneControl[]` | `[]` | Controls |
-| `title` | `string` | `Fine tune` | Title |
+| Prop       | Type                     | Default     | Description |
+| ---------- | ------------------------ | ----------- | ----------- |
+| `controls` | `AgentFineTuneControl[]` | `[]`        | Controls    |
+| `title`    | `string`                 | `Fine tune` | Title       |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `apply` | `AgentFineTuneControl[]` | Apply |
+| Event             | Payload                  | Description     |
+| ----------------- | ------------------------ | --------------- |
+| `apply`           | `AgentFineTuneControl[]` | Apply           |
 | `update:controls` | `AgentFineTuneControl[]` | Update controls |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                                        |
+| ---------- | ------------------------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`                     |
 | weapp-vite | Default export from `@/components/agent-ui/AgentFineTune.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

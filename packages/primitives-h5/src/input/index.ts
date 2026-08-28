@@ -1,7 +1,8 @@
-import { computed, defineComponent, h, nextTick, onMounted, ref, toRef, watch, type PropType } from 'vue'
-import { useFieldRoot } from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+import type { PropType } from 'vue'
+import { useFieldRoot } from '@varo-ui/headless'
+import { computed, defineComponent, h, nextTick, onMounted, ref, toRef, watch } from 'vue'
 import { usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useInputRoot } from './hooks'
 export type * from './types'
@@ -33,40 +34,40 @@ export const InputRoot = defineComponent({
   props: {
     value: {
       type: String as PropType<string | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultValue: {
       type: String,
-      default: ''
+      default: '',
     },
     disabled: Boolean,
     invalid: Boolean,
     placeholder: String,
     type: {
       type: String,
-      default: 'text'
+      default: 'text',
     },
     readonly: Boolean,
     maxLength: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     formatter: {
       type: Function as PropType<(value: string) => string>,
-      default: undefined
+      default: undefined,
     },
     formatTrigger: {
       type: String as PropType<InputFormatTrigger>,
-      default: 'onInput'
+      default: 'onInput',
     },
     rows: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     autosize: {
       type: [Boolean, Object] as PropType<boolean | InputAutosizeConfig>,
-      default: false
-    }
+      default: false,
+    },
   },
   emits: ['update:value', 'valueChange', 'focus', 'blur'],
   setup(props, { attrs, emit, expose }) {
@@ -82,7 +83,7 @@ export const InputRoot = defineComponent({
       onValueChange(value) {
         emit('update:value', value)
         emit('valueChange', value)
-      }
+      },
     })
     const isTextarea = computed(() => props.type === 'textarea')
     const maxLength = computed(() => resolveMaxLength(props.maxLength))
@@ -169,7 +170,7 @@ export const InputRoot = defineComponent({
       blur,
       clear,
       focus,
-      setValue: field.api.setValue
+      setValue: field.api.setValue,
     })
 
     onMounted(resizeTextarea)
@@ -178,20 +179,20 @@ export const InputRoot = defineComponent({
     const inputAttrs = computed(() => ({
       ...attrs,
       ...field.attrs.input,
-      ref: control,
-      value: field.state.value.value,
-      placeholder: props.placeholder,
-      type: isTextarea.value ? undefined : props.type,
-      readonly: props.readonly || undefined,
-      rows: isTextarea.value ? props.rows : undefined,
-      maxlength: maxLength.value,
-      disabled: props.disabled || undefined,
+      'ref': control,
+      'value': field.state.value.value,
+      'placeholder': props.placeholder,
+      'type': isTextarea.value ? undefined : props.type,
+      'readonly': props.readonly || undefined,
+      'rows': isTextarea.value ? props.rows : undefined,
+      'maxlength': maxLength.value,
+      'disabled': props.disabled || undefined,
       'aria-invalid': props.invalid || undefined,
       'data-autosize': String(autosizeEnabled.value),
       'data-disabled': String(props.disabled),
       'data-invalid': String(props.invalid),
       'data-readonly': String(props.readonly),
-      onInput: (event: Event) => {
+      'onInput': (event: Event) => {
         const input = event.target as HTMLInputElement | null
         const nextValue = input?.value ?? ''
         const allowed = updateValue(nextValue, 'onInput')
@@ -200,11 +201,11 @@ export const InputRoot = defineComponent({
           callHandler(attrs.onInput, event)
         }
       },
-      onFocus: (event: FocusEvent) => {
+      'onFocus': (event: FocusEvent) => {
         emit('focus', event)
         callHandler(attrs.onFocus, event)
       },
-      onBlur: (event: FocusEvent) => {
+      'onBlur': (event: FocusEvent) => {
         if (props.formatTrigger === 'onBlur') {
           const input = event.target as HTMLInputElement | HTMLTextAreaElement | null
           updateValue(input?.value ?? field.state.value.value, 'onBlur')
@@ -212,9 +213,9 @@ export const InputRoot = defineComponent({
 
         emit('blur', event)
         callHandler(attrs.onBlur, event)
-      }
+      },
     }))
 
     return () => h(isTextarea.value ? 'textarea' : 'input', inputAttrs.value)
-  }
+  },
 })

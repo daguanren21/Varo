@@ -35,28 +35,29 @@ const props = withDefaults(
     showWordLimit: false,
     size: 'md',
     type: 'text',
-    value: ''
-  }
+    value: '',
+  },
 )
 
 const emit = defineEmits<{
-  blur: [event: unknown]
-  clear: [event: unknown]
-  focus: [event: unknown]
+  'blur': [event: unknown]
+  'clear': [event: unknown]
+  'focus': [event: unknown]
   'update:value': [value: string]
-  valueChange: [value: string]
+  'valueChange': [value: string]
 }>()
 
 const focused = shallowRef(false)
 const localValue = shallowRef(props.value)
 const isTextarea = computed(() => props.type === 'textarea')
 const maxLength = computed(() => Number(props.maxLength) || 140)
+const nativeType = computed(() => (props.type === 'tel' ? 'number' : props.type))
 
 watch(
   () => props.value,
   (value) => {
     localValue.value = value
-  }
+  },
 )
 
 function normalize(value: string, trigger: 'onInput' | 'onBlur') {
@@ -107,7 +108,11 @@ function clear(event: unknown) {
     :data-readonly="String(readonly)"
     :data-size="size"
   >
-    <text v-if="label || $slots.label" class="varo-input__label"><slot name="label">{{ label }}</slot></text>
+    <text v-if="label || $slots.label" class="varo-input__label">
+      <slot name="label">
+        {{ label }}
+      </slot>
+    </text>
     <view class="varo-input__body">
       <slot name="prefix" />
       <textarea
@@ -128,7 +133,7 @@ function clear(event: unknown) {
         class="varo-input__control"
         :value="localValue"
         :password="type === 'password'"
-        :type="type === 'tel' ? 'number' : type"
+        :type="nativeType"
         :placeholder="placeholder"
         :disabled="disabled || readonly"
         :maxlength="maxLength"
@@ -136,7 +141,7 @@ function clear(event: unknown) {
         @input="input"
         @focus="focus"
         @blur="blur"
-      />
+      >
       <button
         v-if="clearable && localValue && !disabled && !readonly"
         class="varo-input__clear"
@@ -149,8 +154,12 @@ function clear(event: unknown) {
       <slot name="suffix" />
     </view>
     <view v-if="showWordLimit || errorMessage" class="varo-input__footer">
-      <text v-if="errorMessage" class="varo-input__error">{{ errorMessage }}</text>
-      <text v-if="showWordLimit" class="varo-input__count">{{ localValue.length }}/{{ maxLength }}</text>
+      <text v-if="errorMessage" class="varo-input__error">
+        {{ errorMessage }}
+      </text>
+      <text v-if="showWordLimit" class="varo-input__count">
+        {{ localValue.length }}/{{ maxLength }}
+      </text>
     </view>
   </view>
 </template>

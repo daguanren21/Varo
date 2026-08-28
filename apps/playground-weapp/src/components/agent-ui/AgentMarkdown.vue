@@ -1,13 +1,15 @@
 <script setup lang="ts">
+import type { AgentMarkdownViewNode, StreamingMarkdownParser } from '@varo-ui/ai'
+import type { ClassValue } from '../../lib/cn'
 import {
+
   createStreamingMarkdownParser,
   normalizeMarkdownNodes,
-  type AgentMarkdownViewNode,
-  type StreamingMarkdownParser
-} from '@varo/agent-core'
+
+} from '@varo-ui/ai'
 import { computed } from 'wevu'
+import { cn } from '../../lib/cn'
 import AgentMarkdownNode from './AgentMarkdownNode.vue'
-import { cn, type ClassValue } from '../../lib/cn'
 
 const props = withDefaults(
   defineProps<{
@@ -19,37 +21,44 @@ const props = withDefaults(
   {
     content: '',
     customHtmlTags: () => [],
-    final: false
-  }
+    final: false,
+  },
 )
 
 const emit = defineEmits<{
+  error: [message: string]
   link: [href: string]
 }>()
 
 let parser: StreamingMarkdownParser | undefined
 try {
   parser = createStreamingMarkdownParser({ customHtmlTags: props.customHtmlTags })
-} catch (error) {
+}
+catch (error) {
   const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
-  console.error(`[Varo AgentMarkdown] ${message}`)
+  emit('error', message)
 }
 let previousContent = ''
 const nodes = computed<AgentMarkdownViewNode[]>(() => {
   const content = String(props.content ?? '')
-  if (!parser) return content ? [{ kind: 'text', text: content }] : []
-  if (!content.startsWith(previousContent)) parser.reset()
+  if (!parser) {
+    return content ? [{ kind: 'text', text: content }] : []
+  }
+  if (!content.startsWith(previousContent)) {
+    parser.reset()
+  }
   previousContent = content
   try {
     return normalizeMarkdownNodes(parser.parse(content, { final: props.final }))
-  } catch (error) {
+  }
+  catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
-    console.error(`[Varo AgentMarkdown] ${message}`)
+    emit('error', message)
     return content ? [{ kind: 'text', text: content }] : []
   }
 })
 const rootClass = computed(() =>
-  cn('agent-markdown break-words text-sm leading-7 text-inherit', props.className)
+  cn('agent-markdown break-words text-sm leading-7 text-inherit', props.className),
 )
 </script>
 

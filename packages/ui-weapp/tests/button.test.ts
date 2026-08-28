@@ -1,7 +1,8 @@
+import type { ThemeConfig } from '@varo-ui/theme'
+import type { Plugin } from 'vue'
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { createTheme, VaroConfigProvider, type ThemeConfig } from '@varo/theme'
-import type { Plugin } from 'vue'
 import { VButton } from '../src/button'
 
 const themeConfig: ThemeConfig = {
@@ -10,12 +11,12 @@ const themeConfig: ThemeConfig = {
     success: '#16a34a',
     warning: '#d97706',
     error: '#dc2626',
-    neutral: '#0f172a'
-  })
+    neutral: '#0f172a',
+  }),
 }
 const themePlugin: [Plugin, ThemeConfig] = [VaroConfigProvider, themeConfig]
 const global = {
-  plugins: [themePlugin]
+  plugins: [themePlugin],
 }
 
 describe('ui-weapp button', () => {
@@ -23,11 +24,11 @@ describe('ui-weapp button', () => {
     const wrapper = mount(VButton, {
       global,
       props: {
-        loading: true
+        loading: true,
       },
       slots: {
-        default: () => '保存'
-      }
+        default: () => '保存',
+      },
     })
 
     const loadingIcon = wrapper.get('.varo-button__loading-icon')
@@ -56,11 +57,11 @@ describe('ui-weapp button', () => {
         block: true,
         icon: '+',
         color: '#16a34a',
-        nativeType: 'submit'
+        nativeType: 'submit',
       },
       slots: {
-        default: () => '新增'
-      }
+        default: () => '新增',
+      },
     })
 
     expect(wrapper.attributes('data-tone')).toBe('success')

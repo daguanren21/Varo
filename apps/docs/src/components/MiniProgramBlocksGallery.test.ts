@@ -25,7 +25,7 @@ describe('MiniProgramBlocksGallery', () => {
     const wrapper = mount(MiniProgramBlocksGallery, { props: { locale: 'zh' } })
 
     expect(wrapper.get('.varo-real-blocks__command code').text()).toContain(
-      'add --target weapp-vite blocks/login-form'
+      'add --target weapp-vite blocks/login-form',
     )
 
     await wrapper.findAll('.varo-real-blocks__targets button')[1].trigger('click')
@@ -33,7 +33,7 @@ describe('MiniProgramBlocksGallery', () => {
     expect(wrapper.get('.varo-real-blocks__command code').text()).toContain('add --target h5 blocks/login-form')
 
     await wrapper.get('.varo-real-blocks__command button').trigger('click')
-    expect(writeText).toHaveBeenCalledWith('pnpm dlx @varo/cli add --target h5 blocks/login-form')
+    expect(writeText).toHaveBeenCalledWith('pnpm dlx @varo-ui/cli add --target h5 blocks/login-form')
     expect(wrapper.get('.varo-real-blocks__command button').text()).toBe('已复制')
     vi.unstubAllGlobals()
   })
@@ -45,6 +45,6 @@ describe('MiniProgramBlocksGallery', () => {
 
     expect(wrapper.get('.varo-real-blocks__detail-head h3').text()).toBe('Product List')
     expect(wrapper.get('.varo-real-blocks__command code').text()).toContain('add --target h5 blocks/product-list')
-    expect(wrapper.get('pre code').text()).toContain("from '@/components/blocks/product-list.vue'")
+    expect(wrapper.get('pre code').text()).toContain('from \'@/components/blocks/product-list.vue\'')
   })
 })

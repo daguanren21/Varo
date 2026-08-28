@@ -4,7 +4,7 @@ Composable select runtime: Root owns value/open; Trigger/Value/Content/Item spli
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,46 +28,46 @@ Use `SelectGroup/SelectLabel` for grouping; `readonly` blocks changes while stil
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `SelectRoot` | value/open state |
-| `SelectTrigger` | Open entry |
-| `SelectValue` | Current value display |
-| `SelectContent` | Options container |
-| `SelectGroup` | Group |
-| `SelectLabel` | Group label |
-| `SelectItem` | One option |
+| Part            | Purpose               |
+| --------------- | --------------------- |
+| `SelectRoot`    | value/open state      |
+| `SelectTrigger` | Open entry            |
+| `SelectValue`   | Current value display |
+| `SelectContent` | Options container     |
+| `SelectGroup`   | Group                 |
+| `SelectLabel`   | Group label           |
+| `SelectItem`    | One option            |
 
 ## Props
 
 ### SelectRoot
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `unknown` | `undefined` | Controlled value |
-| `defaultValue` | `unknown` | `undefined` | Uncontrolled initial value |
-| `open` | `boolean \| undefined` | `undefined` | Controlled open state |
-| `defaultOpen` | `boolean` | `false` | Uncontrolled initial open state |
-| `options` | `array` | `undefined` | Options data |
-| `placeholder` | `string` | `undefined` | Placeholder |
-| `disabled` | `boolean` | `false` | Disabled |
-| `readonly` | `boolean` | `false` | Read only |
-| `multiple` | `boolean` | `false` | Multiple semantics |
+| Prop           | Type                   | Default     | Description                     |
+| -------------- | ---------------------- | ----------- | ------------------------------- |
+| `value`        | `unknown`              | `undefined` | Controlled value                |
+| `defaultValue` | `unknown`              | `undefined` | Uncontrolled initial value      |
+| `open`         | `boolean \| undefined` | `undefined` | Controlled open state           |
+| `defaultOpen`  | `boolean`              | `false`     | Uncontrolled initial open state |
+| `options`      | `array`                | `undefined` | Options data                    |
+| `placeholder`  | `string`               | `undefined` | Placeholder                     |
+| `disabled`     | `boolean`              | `false`     | Disabled                        |
+| `readonly`     | `boolean`              | `false`     | Read only                       |
+| `multiple`     | `boolean`              | `false`     | Multiple semantics              |
 
 ### SelectItem
 
-| Prop | Type | Description |
-| --- | --- | --- |
+| Prop     | Type     | Description   |
+| -------- | -------- | ------------- |
 | `option` | `object` | Option object |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:value` | `unknown` | Value sync |
-| `valueChange` | `unknown` | Value change |
-| `update:open` | `boolean` | Open sync |
-| `openChange` | `boolean` | Open change |
+| Event          | Payload   | Description  |
+| -------------- | --------- | ------------ |
+| `update:value` | `unknown` | Value sync   |
+| `valueChange`  | `unknown` | Value change |
+| `update:open`  | `boolean` | Open sync    |
+| `openChange`   | `boolean` | Open change  |
 
 ## Accessibility
 

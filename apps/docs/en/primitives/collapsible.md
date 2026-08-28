@@ -4,7 +4,7 @@ Single disclosure runtime: Root owns open, Trigger toggles, Content shows by sta
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,27 +28,27 @@ Use `v-model:open` when routing/analytics need ownership; height animation stays
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `CollapsibleRoot` | Open state |
-| `CollapsibleTrigger` | Toggle entry |
+| Part                 | Purpose            |
+| -------------------- | ------------------ |
+| `CollapsibleRoot`    | Open state         |
+| `CollapsibleTrigger` | Toggle entry       |
 | `CollapsibleContent` | Expandable content |
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `open` | `boolean \| undefined` | `undefined` | Controlled open state |
-| `defaultOpen` | `boolean` | `false` | Uncontrolled initial state |
-| `disabled` | `boolean` | `false` | Disabled |
-| `as` | `string` | `'div'` | Root element tag |
+| Prop          | Type                   | Default     | Description                |
+| ------------- | ---------------------- | ----------- | -------------------------- |
+| `open`        | `boolean \| undefined` | `undefined` | Controlled open state      |
+| `defaultOpen` | `boolean`              | `false`     | Uncontrolled initial state |
+| `disabled`    | `boolean`              | `false`     | Disabled                   |
+| `as`          | `string`               | `'div'`     | Root element tag           |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event         | Payload   | Description     |
+| ------------- | --------- | --------------- |
 | `update:open` | `boolean` | Controlled sync |
-| `openChange` | `boolean` | Open change |
+| `openChange`  | `boolean` | Open change     |
 
 ## Accessibility
 

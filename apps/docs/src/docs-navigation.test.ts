@@ -1,5 +1,4 @@
-import { readFileSync, statSync } from 'node:fs'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -21,19 +20,19 @@ const baseKitPhase1Components = [
   'progress',
   'select',
   'switch',
-  'tag'
+  'tag',
 ]
 
 describe('docs navigation', () => {
   it('groups display layout components separately from navigation components', () => {
     const config = readFileSync(configPath, 'utf8')
 
-    expect(config).toContain("text: '布局组件'")
-    expect(config).toContain("text: '导航组件'")
-    expect(config).toContain("{ text: 'Divider 分割线', link: '/components/divider' }")
-    expect(config).toContain("{ text: 'Grid 宫格', link: '/components/grid' }")
-    expect(config).toContain("{ text: 'Tabs 选项卡切换', link: '/components/tabs' }")
-    expect(config).toContain("{ text: 'Menu 菜单', link: '/components/menu' }")
+    expect(config).toContain('text: \'布局组件\'')
+    expect(config).toContain('text: \'导航组件\'')
+    expect(config).toContain('{ text: \'Divider 分割线\', link: \'/components/divider\' }')
+    expect(config).toContain('{ text: \'Grid 宫格\', link: \'/components/grid\' }')
+    expect(config).toContain('{ text: \'Tabs 选项卡切换\', link: \'/components/tabs\' }')
+    expect(config).toContain('{ text: \'Menu 菜单\', link: \'/components/menu\' }')
   })
 
   it('adds a primitives catalog and dedicated pages for interactive behavior primitives', () => {
@@ -50,23 +49,23 @@ describe('docs navigation', () => {
       'select',
       'collapsible',
       'accordion',
-      'popover'
+      'popover',
     ]
 
-    expect(config).toContain("{ text: 'Primitives', link: '/primitives/' }")
-    expect(config).toContain("{ text: 'Primitives', link: '/en/primitives/' }")
-    expect(config).toContain("{ text: '总览', link: '/primitives/' }")
-    expect(config).toContain("{ text: 'Overview', link: '/en/primitives/' }")
+    expect(config).toContain('{ text: \'Primitives\', link: \'/primitives/\' }')
+    expect(config).toContain('{ text: \'Primitives\', link: \'/en/primitives/\' }')
+    expect(config).toContain('{ text: \'总览\', link: \'/primitives/\' }')
+    expect(config).toContain('{ text: \'Overview\', link: \'/en/primitives/\' }')
     expect(primitiveZh).toContain('<PrimitiveCatalog locale="zh" />')
     expect(primitiveEn).toContain('<PrimitiveCatalog locale="en" />')
     expect(primitiveZh).not.toContain('<PrimitiveInteractionDemo')
     expect(primitiveEn).not.toContain('<PrimitiveInteractionDemo')
     expect(primitiveZh).not.toContain('Reka-style anatomy')
     expect(primitiveEn).not.toContain('Reka-style anatomy')
-    expect(catalog).toContain("title: 'Checkbox'")
-    expect(catalog).toContain("href: '/primitives/checkbox'")
-    expect(catalog).toContain("href: '/en/primitives/popover'")
-    expect(example).toContain("name: PrimitiveExampleName")
+    expect(catalog).toContain('title: \'Checkbox\'')
+    expect(catalog).toContain('href: \'/primitives/checkbox\'')
+    expect(catalog).toContain('href: \'/en/primitives/popover\'')
+    expect(example).toContain('name: PrimitiveExampleName')
     expect(example).toContain('resolvePrimitiveExample')
 
     dedicatedPages.forEach((page) => {
@@ -75,10 +74,10 @@ describe('docs navigation', () => {
       expect(existsSync(resolve(docsRoot, `primitives/${page}.md`))).toBe(true)
       expect(existsSync(resolve(docsRoot, `en/primitives/${page}.md`))).toBe(true)
       expect(readFileSync(resolve(docsRoot, `primitives/${page}.md`), 'utf8')).toContain(
-        `<PrimitiveExample name="${page}" locale="zh" />`
+        `<PrimitiveExample name="${page}" locale="zh" />`,
       )
       expect(readFileSync(resolve(docsRoot, `en/primitives/${page}.md`), 'utf8')).toContain(
-        `<PrimitiveExample name="${page}" locale="en" />`
+        `<PrimitiveExample name="${page}" locale="en" />`,
       )
     })
 
@@ -90,7 +89,7 @@ describe('docs navigation', () => {
       'SelectRoot / Trigger / Value / Content / Item',
       'CollapsibleRoot / Trigger / Content',
       'AccordionRoot / Item / Trigger / Content',
-      'PopoverRoot / Trigger / Content / Close'
+      'PopoverRoot / Trigger / Content / Close',
     ].forEach((parts) => {
       expect(catalog).toContain(parts)
     })
@@ -135,12 +134,12 @@ describe('docs navigation', () => {
       'searchbar',
       'short-password',
       'textarea',
-      'uploader'
+      'uploader',
     ]
 
-    expect(config).toContain("text: '表单组件'")
-    expect(config).toContain("text: 'Form Components'")
-    expect(config).toContain("'@varo/ui-h5/source/style.css'")
+    expect(config).toContain('text: \'表单组件\'')
+    expect(config).toContain('text: \'Form Components\'')
+    expect(config).toContain('\'@varo-ui/h5/source/style.css\'')
 
     components.forEach((name) => {
       expect(config).toContain(`/components/${name}`)
@@ -156,8 +155,8 @@ describe('docs navigation', () => {
     const zhColors = readFileSync(resolve(docsRoot, 'guide/colors.md'), 'utf8')
     const enColors = readFileSync(resolve(docsRoot, 'en/guide/colors.md'), 'utf8')
 
-    expect(config).toContain("{ text: '色彩系统', link: '/guide/colors' }")
-    expect(config).toContain("{ text: 'Color System', link: '/en/guide/colors' }")
+    expect(config).toContain('{ text: \'色彩系统\', link: \'/guide/colors\' }')
+    expect(config).toContain('{ text: \'Color System\', link: \'/en/guide/colors\' }')
     expect(zhColors).toContain('Varo Jade')
     expect(zhColors).toContain('Ink Neutral')
     expect(zhColors).toContain('Success')
@@ -219,10 +218,10 @@ describe('docs navigation', () => {
   it('keeps code copy controls icon-only until hover or focus', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain(".vp-doc div[class*='language-'] > button.copy")
+    expect(css).toContain('.vp-doc div[class*=\'language-\'] > button.copy')
     expect(css).toContain('opacity: 0')
-    expect(css).toContain(".vp-doc div[class*='language-']:hover > button.copy")
-    expect(css).toContain(".vp-doc div[class*='language-'] > button.copy::before")
+    expect(css).toContain('.vp-doc div[class*=\'language-\']:hover > button.copy')
+    expect(css).toContain('.vp-doc div[class*=\'language-\'] > button.copy::before')
     expect(css).toContain('content: \"\"')
     expect(css).toContain('.varo-block-copy-icon')
     expect(css).not.toContain('Copy Code')
@@ -258,11 +257,11 @@ describe('docs navigation', () => {
       'public/brand-assets/varo-app-icon.svg',
       'public/brand-assets/varo-runtime-mark.png',
       'public/apple-touch-icon.png',
-      'public/favicon.ico'
+      'public/favicon.ico',
     ]
 
-    expect(config).toContain("light: '/brand-assets/varo-lockup.svg'")
-    expect(config).toContain("dark: '/brand-assets/varo-lockup-dark.svg'")
+    expect(config).toContain('light: \'/brand-assets/varo-lockup.svg\'')
+    expect(config).toContain('dark: \'/brand-assets/varo-lockup-dark.svg\'')
     expect(config).toContain('siteTitle: false')
     assets.forEach((asset) => {
       const path = resolve(docsRoot, asset)
@@ -296,10 +295,10 @@ describe('docs navigation', () => {
       targets: string[]
     }
     const componentTiers = JSON.parse(
-      readFileSync(resolve(workspaceRoot, 'registry/component-tiers.v0.1.json'), 'utf8')
+      readFileSync(resolve(workspaceRoot, 'registry/component-tiers.v0.1.json'), 'utf8'),
     ) as {
       agentUi: string[]
-      registryCatalog: { h5: number; weappSfcBaseKit: number; weappVite: number }
+      registryCatalog: { h5: number, weappSfcBaseKit: number, weappVite: number }
     }
     const requiredPages = [
       'components/select.md',
@@ -315,7 +314,7 @@ describe('docs navigation', () => {
       'en/components/toast.md',
       'en/blocks/build-your-own.md',
       'en/blocks/profile-edit.md',
-      'en/blocks/order-filter.md'
+      'en/blocks/order-filter.md',
     ]
 
     ;[
@@ -332,7 +331,7 @@ describe('docs navigation', () => {
       '/en/components/toast',
       '/en/blocks/build-your-own',
       '/en/blocks/profile-edit',
-      '/en/blocks/order-filter'
+      '/en/blocks/order-filter',
     ].forEach((route) => {
       expect(config).toContain(route)
     })
@@ -368,17 +367,17 @@ describe('docs navigation', () => {
     const shadcnZh = readFileSync(resolve(docsRoot, 'guide/shadcn-mode.md'), 'utf8')
     const shadcnEn = readFileSync(resolve(docsRoot, 'en/guide/shadcn-mode.md'), 'utf8')
 
-    expect(config).toContain("{ text: 'shadcn 模式', link: '/guide/shadcn-mode' }")
-    expect(config).toContain("{ text: 'shadcn Mode', link: '/en/guide/shadcn-mode' }")
-    expect(installationZh).toContain('pnpm dlx @varo/cli add --target weapp-vite button select card')
-    expect(installationZh).toContain('pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit')
+    expect(config).toContain('{ text: \'shadcn 模式\', link: \'/guide/shadcn-mode\' }')
+    expect(config).toContain('{ text: \'shadcn Mode\', link: \'/en/guide/shadcn-mode\' }')
+    expect(installationZh).toContain('pnpm dlx @varo-ui/cli add --target weapp-vite button select card')
+    expect(installationZh).toContain('pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit')
     expect(installationZh).toContain('pnpm dlx create-weapp-vite@latest varo-app')
     expect(installationZh).toContain('weapp-vite@6.23.0')
     expect(installationZh).toContain('wevu@6.23.0')
     expect(installationZh).toContain('weapp-tailwindcss@^5.3.6')
     expect(installationZh).toContain('@weapp-tailwindcss/merge')
-    expect(installationEn).toContain('pnpm dlx @varo/cli add --target weapp-vite button select card')
-    expect(installationEn).toContain('pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit')
+    expect(installationEn).toContain('pnpm dlx @varo-ui/cli add --target weapp-vite button select card')
+    expect(installationEn).toContain('pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit')
     expect(installationEn).toContain('pnpm dlx create-weapp-vite@latest varo-app')
     expect(installationEn).toContain('weapp-vite@6.23.0')
     expect(installationEn).toContain('wevu@6.23.0')
@@ -389,14 +388,14 @@ describe('docs navigation', () => {
     expect(shadcnZh).toContain('src/components/biz/user-select.ts')
     expect(shadcnZh).toContain('export const UserSelect')
     expect(shadcnZh).toContain('远程搜索、分组、分页')
-    expect(shadcnZh).toContain('pnpm dlx @varo/cli add --target weapp-vite --force button select')
+    expect(shadcnZh).toContain('pnpm dlx @varo-ui/cli add --target weapp-vite --force button select')
     expect(shadcnZh).toContain('components/agent-ui')
     expect(shadcnEn).toContain('src/components/ui/v-button.vue')
     expect(shadcnEn).toContain('src/components/ui/select.vue')
     expect(shadcnEn).toContain('src/components/biz/user-select.ts')
     expect(shadcnEn).toContain('export const UserSelect')
     expect(shadcnEn).toContain('remote search, grouping, and pagination')
-    expect(shadcnEn).toContain('pnpm dlx @varo/cli add --target weapp-vite --force button select')
+    expect(shadcnEn).toContain('pnpm dlx @varo-ui/cli add --target weapp-vite --force button select')
     expect(shadcnEn).toContain('components/agent-ui')
   })
 
@@ -411,9 +410,9 @@ describe('docs navigation', () => {
     }
 
     expect(packageJson.dependencies.vitepress).toBe('2.0.0-alpha.19')
-    expect(config).toContain("{ text: 'AI Agent', link: '/ai/' }")
-    expect(config).toContain("{ text: 'AI Agent', link: '/en/ai/' }")
-    expect(theme).toContain("app.component('AgentComponentsDemo', AgentComponentsDemo)")
+    expect(config).toContain('{ text: \'AI Agent\', link: \'/ai/\' }')
+    expect(config).toContain('{ text: \'AI Agent\', link: \'/en/ai/\' }')
+    expect(theme).toContain('app.component(\'AgentComponentsDemo\', AgentComponentsDemo)')
     expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
     expect(aiZh).toContain('36 个双端 Agent 组件')
@@ -425,14 +424,43 @@ describe('docs navigation', () => {
     expect(demo).toContain('AgentAttachmentList')
 
     const slugs = [
-      'loading', 'thinking', 'markdown', 'stream', 'message', 'conversation',
-      'tool-chip', 'task-list', 'radio-group', 'approval', 'recommendation',
-      'prompt-suggestions', 'composer', 'response-actions', 'artifact', 'sources',
-      'attachments', 'event-renderer', 'message-scroller', 'code-block',
-      'file-diff', 'tool-result', 'image-generation', 'tool-approval', 'citations',
-      'activity', 'sidebar', 'context-card', 'insight-card', 'selection-actions',
-      'diff-table', 'records-table', 'filter-table', 'command-search', 'flowchart',
-      'fine-tune', 'agent-chat'
+      'loading',
+      'thinking',
+      'markdown',
+      'stream',
+      'message',
+      'conversation',
+      'tool-chip',
+      'task-list',
+      'radio-group',
+      'approval',
+      'recommendation',
+      'prompt-suggestions',
+      'composer',
+      'response-actions',
+      'artifact',
+      'sources',
+      'attachments',
+      'event-renderer',
+      'message-scroller',
+      'code-block',
+      'file-diff',
+      'tool-result',
+      'image-generation',
+      'tool-approval',
+      'citations',
+      'activity',
+      'sidebar',
+      'context-card',
+      'insight-card',
+      'selection-actions',
+      'diff-table',
+      'records-table',
+      'filter-table',
+      'command-search',
+      'flowchart',
+      'fine-tune',
+      'agent-chat',
     ]
     slugs.forEach((slug) => {
       const zhPage = readFileSync(resolve(docsRoot, `ai/${slug}.md`), 'utf8')

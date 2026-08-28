@@ -1,1 +1,1 @@
-export { useCheckboxRoot } from '@varo/primitives-core'
+export { useCheckboxRoot } from '@varo-ui/headless'

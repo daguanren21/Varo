@@ -1,4 +1,4 @@
-import type { PressableSize, PressableVariant } from '@varo/primitives-core'
+import type { PressableSize, PressableVariant } from '@varo-ui/headless'
 
 export interface ButtonRootProps {
   as?: string

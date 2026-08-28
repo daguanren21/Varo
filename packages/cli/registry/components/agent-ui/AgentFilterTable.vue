@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { ClassValue } from '../../lib/cn'
+import type { AgentFilterOption, AgentTableColumn, AgentTableRow } from './agent-table'
 import { computed } from 'wevu'
-import { cn, type ClassValue } from '../../lib/cn'
+import { cn } from '../../lib/cn'
 import {
+
   agentTableCellValue,
-  type AgentFilterOption,
-  type AgentTableColumn,
-  type AgentTableRow
+
 } from './agent-table'
 
 const props = withDefaults(
@@ -22,12 +23,12 @@ const props = withDefaults(
     filter: 'all',
     filters: () => [],
     rows: () => [],
-    statusKey: 'status'
-  }
+    statusKey: 'status',
+  },
 )
 
 const emit = defineEmits<{
-  select: [row: AgentTableRow]
+  'select': [row: AgentTableRow]
   'update:filter': [value: string]
 }>()
 
@@ -35,10 +36,10 @@ const rootClass = computed(() => cn('agent-filter-table grid gap-2.5', props.cla
 const visibleRows = computed(() =>
   props.filter === 'all'
     ? props.rows
-    : props.rows.filter((row) => row[props.statusKey] === props.filter)
+    : props.rows.filter(row => row[props.statusKey] === props.filter),
 )
 const gridStyle = computed(() => ({
-  gridTemplateColumns: `repeat(${Math.max(1, props.columns.length)}, minmax(112px, 1fr))`
+  gridTemplateColumns: `repeat(${Math.max(1, props.columns.length)}, minmax(112px, 1fr))`,
 }))
 
 function filterClass(value: string) {
@@ -46,7 +47,7 @@ function filterClass(value: string) {
     'inline-flex min-h-[34px] items-center gap-1.5 rounded-full border px-3 py-0 text-[10px] font-bold leading-none',
     value === props.filter
       ? 'border-teal-700 bg-emerald-50 text-teal-700'
-      : 'border-slate-200 bg-white text-slate-500'
+      : 'border-slate-200 bg-white text-slate-500',
   )
 }
 </script>
@@ -58,6 +59,9 @@ function filterClass(value: string) {
         v-for="item in filters"
         :key="item.value"
         :class="filterClass(item.value)"
+        hover-class="border-teal-200 bg-teal-50"
+        :hover-start-time="20"
+        :hover-stay-time="70"
         type="button"
         :data-active="String(item.value === filter)"
         @click="emit('update:filter', item.value)"
@@ -82,7 +86,10 @@ function filterClass(value: string) {
         <button
           v-for="row in visibleRows"
           :key="row.id"
-          class="grid min-h-11 w-full border-0 border-b border-slate-100 bg-white p-0 text-left last:border-b-0 active:bg-slate-50"
+          class="grid min-h-11 w-full border-0 border-b border-slate-100 bg-white p-0 text-left last:border-b-0"
+          hover-class="bg-slate-50"
+          :hover-start-time="20"
+          :hover-stay-time="70"
           :style="gridStyle"
           type="button"
           role="row"
@@ -101,7 +108,9 @@ function filterClass(value: string) {
 </template>
 
 <style scoped>
-.agent-filter-table button::after { border: 0; }
+.agent-filter-table button::after {
+  border: 0;
+}
 </style>
 
 <json lang="jsonc">

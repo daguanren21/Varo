@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
 import {
   AgentArtifact,
   AgentAttachmentList,
@@ -8,9 +9,8 @@ import {
   AgentRecommendation,
   AgentResponseActions,
   AgentSourceList,
-  AgentTaskList
+  AgentTaskList,
 } from './agent-ui'
-import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
 
 type Locale = 'en' | 'zh'
 
@@ -18,36 +18,63 @@ const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'zh' })
 const { approve, busy, messages, prompt, reject, retry, run, snapshot } = useAgentDocsDemo()
 
 const capabilities = [
-  'AgentLoading', 'AgentThinking', 'AgentMarkdown', 'AgentStream', 'AgentMessage',
-  'AgentConversation', 'AgentMessageScroller', 'AgentToolChip', 'AgentToolResult',
-  'AgentTaskList', 'AgentActivity', 'AgentApproval', 'AgentToolApproval',
-  'AgentRecommendation', 'AgentEventRenderer', 'AgentRadioGroup',
-  'AgentPromptSuggestions', 'AgentComposer', 'AgentResponseActions',
-  'AgentSelectionActions', 'AgentCommandSearch', 'AgentArtifact',
-  'AgentAttachmentList', 'AgentSourceList', 'AgentCitations', 'AgentContextCard',
-  'AgentCodeBlock', 'AgentFileDiff', 'AgentImageGeneration', 'AgentSidebar',
-  'AgentInsightCard', 'AgentDiffTable', 'AgentRecordsTable', 'AgentFilterTable',
-  'AgentFlowchart', 'AgentFineTune', 'AgentChat Block'
+  'AgentLoading',
+  'AgentThinking',
+  'AgentMarkdown',
+  'AgentStream',
+  'AgentMessage',
+  'AgentConversation',
+  'AgentMessageScroller',
+  'AgentToolChip',
+  'AgentToolResult',
+  'AgentTaskList',
+  'AgentActivity',
+  'AgentApproval',
+  'AgentToolApproval',
+  'AgentRecommendation',
+  'AgentEventRenderer',
+  'AgentRadioGroup',
+  'AgentPromptSuggestions',
+  'AgentComposer',
+  'AgentResponseActions',
+  'AgentSelectionActions',
+  'AgentCommandSearch',
+  'AgentArtifact',
+  'AgentAttachmentList',
+  'AgentSourceList',
+  'AgentCitations',
+  'AgentContextCard',
+  'AgentCodeBlock',
+  'AgentFileDiff',
+  'AgentImageGeneration',
+  'AgentSidebar',
+  'AgentInsightCard',
+  'AgentDiffTable',
+  'AgentRecordsTable',
+  'AgentFilterTable',
+  'AgentFlowchart',
+  'AgentFineTune',
+  'AgentChat Block',
 ]
 const tasks = [
   { id: 'protocol', title: '统一事件协议', status: 'completed' as const, progress: 100 },
   { id: 'renderer', title: '双端增量渲染', status: 'completed' as const, progress: 100 },
-  { id: 'approval', title: '人工审批门禁', status: 'running' as const, progress: 72 }
+  { id: 'approval', title: '人工审批门禁', status: 'running' as const, progress: 72 },
 ]
 const artifact = {
   content: `const controller = createAgentStreamController()\nawait controller.connect(events)`,
   id: 'controller',
   kind: 'code' as const,
   language: 'ts',
-  title: '@varo/agent-core'
+  title: '@varo-ui/ai',
 }
 const sources = [
   { domain: 'github.com/Simon-He95', id: 'markstream', title: 'Markstream Core', url: 'https://github.com/Simon-He95/markstream-vue' },
-  { domain: 'ui.shadcn.com', id: 'shadcn', title: 'shadcn Registry', url: 'https://ui.shadcn.com/docs/registry' }
+  { domain: 'ui.shadcn.com', id: 'shadcn', title: 'shadcn Registry', url: 'https://ui.shadcn.com/docs/registry' },
 ]
 const attachments = [
   { id: 'schema', mimeType: 'application/json', name: 'agent-events.schema.json', size: '4.2 KB' },
-  { id: 'preview', mimeType: 'image/png', name: 'weapp-preview.png', size: '86 KB' }
+  { id: 'preview', mimeType: 'image/png', name: 'weapp-preview.png', size: '86 KB' },
 ]
 
 function t(zh: string, en: string) {
@@ -137,104 +164,104 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo__hero {
   display: flex;
+  gap: 24px;
   align-items: end;
   justify-content: space-between;
-  gap: 24px;
   padding: 22px;
-  border: 1px solid rgba(15, 118, 110, .18);
-  border-radius: 24px;
   background:
-    radial-gradient(circle at 88% 15%, rgba(45, 212, 191, .2), transparent 28%),
+    radial-gradient(circle at 88% 15%, rgb(45 212 191 / 20%), transparent 28%),
     linear-gradient(145deg, #f8fafc, #ecfdf5);
+  border: 1px solid rgb(15 118 110 / 18%);
+  border-radius: 24px;
 }
 
 .ai-docs-demo__hero p {
   margin: 0 0 8px;
-  color: #0f766e;
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: .16em;
+  color: #0f766e;
+  letter-spacing: 0.16em;
 }
 
 .ai-docs-demo__hero h2 {
   margin: 0;
-  border: 0;
   font-size: clamp(20px, 3vw, 30px);
-  letter-spacing: -.035em;
+  letter-spacing: -0.035em;
+  border: 0;
 }
 
 .ai-docs-demo__hero span {
   display: block;
   margin-top: 8px;
-  color: #64748b;
   font-size: 13px;
+  color: #64748b;
 }
 
 .ai-docs-demo__hero output {
   flex: none;
   min-width: 94px;
   padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 999px;
-  background: #fff;
-  color: #64748b;
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: .08em;
+  color: #64748b;
   text-align: center;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
 }
 
 .ai-docs-demo__hero output[data-status='streaming'],
 .ai-docs-demo__hero output[data-status='waiting'] {
-  border-color: #99f6e4;
-  background: #f0fdfa;
   color: #0f766e;
+  background: #f0fdfa;
+  border-color: #99f6e4;
 }
 
 .ai-docs-demo__hero output[data-status='completed'] {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
   color: #15803d;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
 }
 
 .ai-docs-demo__workspace {
   display: grid;
-  align-items: start;
+  grid-template-columns: minmax(0, 1.45fr) minmax(250px, 0.72fr);
   gap: 16px;
-  grid-template-columns: minmax(0, 1.45fr) minmax(250px, .72fr);
+  align-items: start;
 }
 
 .ai-docs-demo__chat {
   display: grid;
   min-width: 0;
   overflow: hidden;
+  background: #f8fafc;
   border: 1px solid #dbe4ee;
   border-radius: 24px;
-  background: #f8fafc;
-  box-shadow: 0 22px 60px rgba(15, 23, 42, .1);
+  box-shadow: 0 22px 60px rgb(15 23 42 / 10%);
 }
 
 .ai-docs-demo__chat-head {
   display: flex;
-  min-height: 64px;
-  align-items: center;
   gap: 12px;
+  align-items: center;
+  min-height: 64px;
   padding: 0 16px;
-  border-bottom: 1px solid #e2e8f0;
   background: #fff;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .ai-docs-demo__chat-head i {
   display: grid;
+  place-items: center;
   width: 40px;
   height: 40px;
-  place-items: center;
-  border-radius: 14px;
-  background: #0f766e;
-  color: #fff;
   font-style: normal;
   font-weight: 900;
+  color: #fff;
+  background: #0f766e;
+  border-radius: 14px;
 }
 
 .ai-docs-demo__chat-head span {
@@ -246,14 +273,14 @@ function t(zh: string, en: string) {
 }
 
 .ai-docs-demo__chat-head small {
-  color: #94a3b8;
   font-size: 11px;
+  color: #94a3b8;
 }
 
 .ai-docs-demo__transcript {
   display: grid;
-  align-content: start;
   gap: 12px;
+  align-content: start;
   min-height: 480px;
   max-height: 660px;
   padding: 16px;
@@ -262,8 +289,8 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo__chat > footer {
   padding: 12px;
-  border-top: 1px solid #e2e8f0;
   background: #fff;
+  border-top: 1px solid #e2e8f0;
 }
 
 .ai-docs-demo__specimens {
@@ -273,24 +300,24 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo__ledger {
   overflow: hidden;
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
-  background: #fff;
 }
 
 .ai-docs-demo__ledger header {
   display: flex;
-  min-height: 48px;
   align-items: center;
   justify-content: space-between;
+  min-height: 48px;
   padding: 0 16px;
   border-bottom: 1px solid #f1f5f9;
 }
 
 .ai-docs-demo__ledger header span {
-  color: #0f766e;
   font-size: 12px;
   font-weight: 800;
+  color: #0f766e;
 }
 
 .ai-docs-demo__ledger > div {
@@ -302,46 +329,46 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo__ledger > div span {
   padding: 6px 10px;
-  border: 1px solid #dbe4ee;
-  border-radius: 999px;
-  background: #f8fafc;
-  color: #475569;
   font-size: 11px;
   font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #dbe4ee;
+  border-radius: 999px;
 }
-
 
 .ai-docs-demo :deep(.agent-markdown__table-scroll) {
   overflow-x: auto;
+  background: #fff;
   border: 1px solid #dbe4ee;
   border-radius: 14px;
-  background: #fff;
 }
 
 .ai-docs-demo :deep(.agent-markdown__table) {
   width: 100%;
+  color: #334155;
+  background: #fff;
   border: 0;
   border-radius: 0;
-  background: #fff;
-  color: #334155;
   box-shadow: none;
 }
 
 .ai-docs-demo :deep(.agent-markdown__table th),
 .ai-docs-demo :deep(.agent-markdown__table td) {
-  border-color: #dbe4ee;
-  background: #fff;
   color: #334155;
+  background: #fff;
+  border-color: #dbe4ee;
 }
 
 .ai-docs-demo :deep(.agent-markdown__table th) {
-  background: #f1f5f9;
   color: #172033;
+  background: #f1f5f9;
 }
+
 @media (max-width: 760px) {
   .ai-docs-demo__hero {
-    align-items: start;
     flex-direction: column;
+    align-items: start;
   }
 
   .ai-docs-demo__workspace {

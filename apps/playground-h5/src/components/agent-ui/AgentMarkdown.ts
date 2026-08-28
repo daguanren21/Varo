@@ -1,14 +1,17 @@
+import type { AgentMarkdownViewNode } from '@varo-ui/ai'
+import type { PropType, VNodeChild } from 'vue'
+import type { ClassValue } from '../../lib/cn'
 import {
+
   createStreamingMarkdownParser,
   normalizeMarkdownNodes,
-  type AgentMarkdownViewNode
-} from '@varo/agent-core'
-import { defineComponent, h, shallowRef, watch, type PropType, type VNodeChild } from 'vue'
-import { cn, type ClassValue } from '../../lib/cn'
+} from '@varo-ui/ai'
+import { defineComponent, h, shallowRef, watch } from 'vue'
+import { cn } from '../../lib/cn'
 import './agent-markdown.css'
 
 function renderChildren(node: AgentMarkdownViewNode, onLink: (href: string) => void): VNodeChild[] {
-  return (node.children ?? []).map((child) => renderNode(child, onLink))
+  return (node.children ?? []).map(child => renderNode(child, onLink))
 }
 
 function renderNode(node: AgentMarkdownViewNode, onLink: (href: string) => void): VNodeChild {
@@ -28,16 +31,16 @@ function renderNode(node: AgentMarkdownViewNode, onLink: (href: string) => void)
         node.ordered ? 'ol' : 'ul',
         {
           class: ['agent-markdown__list', node.ordered ? 'agent-markdown__list--ordered' : 'agent-markdown__list--bullet'],
-          start: node.ordered ? node.start : undefined
+          start: node.ordered ? node.start : undefined,
         },
-        children()
+        children(),
       )
     case 'list-item':
       return h('li', { class: 'agent-markdown__list-item' }, children())
     case 'code-block':
-      return h('figure', { class: 'agent-markdown__code-block', 'data-loading': String(Boolean(node.loading)) }, [
+      return h('figure', { 'class': 'agent-markdown__code-block', 'data-loading': String(Boolean(node.loading)) }, [
         h('figcaption', { class: 'agent-markdown__code-head' }, node.language || 'text'),
-        h('pre', { class: 'agent-markdown__pre' }, [h('code', node.text ?? '')])
+        h('pre', { class: 'agent-markdown__pre' }, [h('code', node.text ?? '')]),
       ])
     case 'inline-code':
       return h('code', { class: 'agent-markdown__inline-code' }, node.text ?? '')
@@ -51,9 +54,9 @@ function renderNode(node: AgentMarkdownViewNode, onLink: (href: string) => void)
           rel: 'noreferrer noopener',
           target: '_blank',
           title: node.title,
-          onClick: () => node.href && onLink(node.href)
+          onClick: () => node.href && onLink(node.href),
         },
-        linkChildren.length > 0 ? linkChildren : node.text
+        linkChildren.length > 0 ? linkChildren : node.text,
       )
     }
     case 'image':
@@ -62,7 +65,7 @@ function renderNode(node: AgentMarkdownViewNode, onLink: (href: string) => void)
         class: 'agent-markdown__image',
         loading: 'lazy',
         src: node.href,
-        title: node.title
+        title: node.title,
       })
     case 'thematic-break':
       return h('hr', { class: 'agent-markdown__rule' })
@@ -97,9 +100,9 @@ function renderNode(node: AgentMarkdownViewNode, onLink: (href: string) => void)
     case 'footnote':
       return h('sup', { class: 'agent-markdown__footnote', title: node.title }, node.text || children())
     case 'admonition':
-      return h('aside', { class: 'agent-markdown__admonition', 'data-kind': node.text || 'note' }, [
+      return h('aside', { 'class': 'agent-markdown__admonition', 'data-kind': node.text || 'note' }, [
         node.title ? h('strong', { class: 'agent-markdown__admonition-title' }, node.title) : null,
-        ...children()
+        ...children(),
       ])
     case 'hardbreak':
       return h('br')
@@ -116,10 +119,10 @@ export const AgentMarkdown = defineComponent({
     className: { type: [String, Array, Object] as PropType<ClassValue>, default: undefined },
     content: { type: String, default: '' },
     customHtmlTags: { type: Array as PropType<string[]>, default: () => [] },
-    final: Boolean
+    final: Boolean,
   },
   emits: {
-    link: (_href: string) => true
+    link: (_href: string) => true,
   },
   setup(props, { emit }) {
     const parser = createStreamingMarkdownParser({ customHtmlTags: props.customHtmlTags })
@@ -129,21 +132,21 @@ export const AgentMarkdown = defineComponent({
     watch(
       [() => props.content, () => props.final],
       ([content, final]) => {
-        if (!content.startsWith(previousContent)) parser.reset()
+        if (!content.startsWith(previousContent)) { parser.reset() }
         previousContent = content
         nodes.value = normalizeMarkdownNodes(parser.parse(content, { final }))
       },
-      { immediate: true }
+      { immediate: true },
     )
 
     return () =>
       h(
         'div',
         {
-          class: cn('agent-markdown break-words text-sm leading-7', props.className),
-          'data-final': String(props.final)
+          'class': cn('agent-markdown break-words text-sm leading-7', props.className),
+          'data-final': String(props.final),
         },
-        nodes.value.map((node) => renderNode(node, (href) => emit('link', href)))
+        nodes.value.map(node => renderNode(node, href => emit('link', href))),
       )
-  }
+  },
 })

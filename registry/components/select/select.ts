@@ -1,16 +1,15 @@
-import '../../styles/varo.css'
-import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
+import type { VSelectFilter, VSelectMode, VSelectOption, VSelectValue } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
   clearSelectValue,
   createSelectDisplay,
   filterSelectOptions,
   normalizeSelectArray,
   toggleSelectValue,
-  type VSelectFilter,
-  type VSelectMode,
-  type VSelectOption,
-  type VSelectValue
-} from '@varo/shared'
+
+} from '@varo-ui/headless'
+import { computed, defineComponent, h, shallowRef, watch } from 'vue'
+import '../../styles/varo.css'
 
 type VSelectValueProp = VSelectValue | VSelectValue[] | undefined
 
@@ -19,19 +18,19 @@ export const VSelect = defineComponent({
   props: {
     value: {
       type: [String, Number, Array] as PropType<VSelectValueProp>,
-      default: undefined
+      default: undefined,
     },
     options: {
       type: Array as PropType<VSelectOption[]>,
-      default: () => []
+      default: () => [],
     },
     mode: {
       type: String as PropType<VSelectMode>,
-      default: 'picker'
+      default: 'picker',
     },
     placeholder: {
       type: String,
-      default: '请选择'
+      default: '请选择',
     },
     disabled: Boolean,
     readonly: Boolean,
@@ -39,22 +38,22 @@ export const VSelect = defineComponent({
     multiple: Boolean,
     max: {
       type: Number,
-      default: undefined
+      default: undefined,
     },
     searchable: Boolean,
     confirmable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     filterOption: {
       type: Function as PropType<VSelectFilter>,
-      default: undefined
+      default: undefined,
     },
     loading: Boolean,
     emptyText: {
       type: String,
-      default: '暂无数据'
-    }
+      default: '暂无数据',
+    },
   },
   emits: ['update:value', 'valueChange', 'clear', 'open', 'close', 'confirm', 'cancel', 'search', 'limit'],
   setup(props, { attrs, emit, slots }) {
@@ -73,7 +72,7 @@ export const VSelect = defineComponent({
         if (nextVisible) {
           draftValue.value = selectedArray.value
         }
-      }
+      },
     )
 
     watch(
@@ -82,7 +81,7 @@ export const VSelect = defineComponent({
         if (!visible.value || !props.confirmable) {
           draftValue.value = selectedArray.value
         }
-      }
+      },
     )
 
     function commit(value: VSelectValueProp) {
@@ -91,7 +90,7 @@ export const VSelect = defineComponent({
     }
 
     function open() {
-      if (props.disabled || props.readonly) return
+      if (props.disabled || props.readonly) { return }
       visible.value = true
       emit('open')
     }
@@ -122,7 +121,7 @@ export const VSelect = defineComponent({
       const current = props.multiple && props.confirmable ? draftValue.value : props.value
       const result = toggleSelectValue(current, option, {
         max: props.max,
-        multiple: props.multiple
+        multiple: props.multiple,
       })
 
       if (result.limited) {
@@ -131,7 +130,7 @@ export const VSelect = defineComponent({
       }
 
       if (!result.changed) {
-        if (!props.multiple && !option.disabled) close()
+        if (!props.multiple && !option.disabled) { close() }
         return
       }
 
@@ -171,44 +170,44 @@ export const VSelect = defineComponent({
       return h(
         'button',
         {
-          class: 'varo-select__option',
-          type: 'button',
-          disabled: option.disabled,
+          'class': 'varo-select__option',
+          'type': 'button',
+          'disabled': option.disabled,
           'data-active': String(selected),
-          onClick: () => select(option)
+          'onClick': () => select(option),
         },
         [
           h('span', { class: 'varo-select__option-label' }, slots.option?.({ option, selected }) ?? option.label),
-          selected ? h('span', { class: 'varo-select__check', 'aria-hidden': 'true' }, '✓') : null
-        ]
+          selected ? h('span', { 'class': 'varo-select__check', 'aria-hidden': 'true' }, '✓') : null,
+        ],
       )
     }
 
     function renderPanel() {
-      if (!visible.value) return null
+      if (!visible.value) { return null }
 
       const options = filteredOptions.value
 
-      return h('div', { class: 'varo-select__panel', 'data-mode': props.mode }, [
+      return h('div', { 'class': 'varo-select__panel', 'data-mode': props.mode }, [
         props.searchable
           ? h('input', {
               class: 'varo-select__search',
               value: query.value,
               placeholder: '搜索',
-              onInput: search
+              onInput: search,
             })
           : null,
         props.loading ? h('div', { class: 'varo-select__loading' }, '加载中') : null,
         !props.loading && options.length === 0 ? h('div', { class: 'varo-select__empty' }, props.emptyText) : null,
         !props.loading && options.length > 0
-          ? h('div', { class: 'varo-select__options' }, options.map((option) => renderOption(option)))
+          ? h('div', { class: 'varo-select__options' }, options.map(option => renderOption(option)))
           : null,
         props.multiple && props.confirmable
           ? h('div', { class: 'varo-select__footer' }, [
               h('button', { class: 'varo-select__cancel', type: 'button', onClick: cancel }, '取消'),
-              h('button', { class: 'varo-select__confirm', type: 'button', onClick: confirm }, '确认')
+              h('button', { class: 'varo-select__confirm', type: 'button', onClick: confirm }, '确认'),
             ])
-          : null
+          : null,
       ])
     }
 
@@ -217,33 +216,33 @@ export const VSelect = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-select', `varo-select--${props.mode}`, attrs.class],
+          'class': ['varo-select', `varo-select--${props.mode}`, attrs.class],
           'data-disabled': String(props.disabled),
           'data-readonly': String(props.readonly),
           'data-multiple': String(props.multiple),
-          'data-open': String(visible.value)
+          'data-open': String(visible.value),
         },
         [
           h(
             'button',
             {
-              class: 'varo-select__trigger',
-              type: 'button',
-              disabled: props.disabled,
+              'class': 'varo-select__trigger',
+              'type': 'button',
+              'disabled': props.disabled,
               'aria-expanded': String(visible.value),
               'aria-haspopup': 'listbox',
               'data-open': String(visible.value),
-              onClick: open
+              'onClick': open,
             },
             [
               h(
                 'span',
                 { class: 'varo-select__value' },
-                slots.value?.({ text: displayText.value }) ?? displayText.value
+                slots.value?.({ text: displayText.value }) ?? displayText.value,
               ),
               h(
                 'span',
-                { class: 'varo-select__suffix', 'aria-hidden': 'true' },
+                { 'class': 'varo-select__suffix', 'aria-hidden': 'true' },
                 [
                   props.clearable && selectedArray.value.length > 0 && !props.disabled && !props.readonly
                     ? h(
@@ -251,23 +250,23 @@ export const VSelect = defineComponent({
                         {
                           class: 'varo-select__clear',
                           role: 'button',
-                          onClick: clear
+                          onClick: clear,
                         },
-                        '×'
+                        '×',
                       )
                     : null,
                   h('span', {
-                    class: 'varo-select__arrow',
-                    'data-open': String(visible.value)
-                  })
-                ]
-              )
-            ]
+                    'class': 'varo-select__arrow',
+                    'data-open': String(visible.value),
+                  }),
+                ],
+              ),
+            ],
           ),
-          renderPanel()
-        ]
+          renderPanel(),
+        ],
       )
-  }
+  },
 })
 
 export type { VSelectMode, VSelectOption, VSelectValue }

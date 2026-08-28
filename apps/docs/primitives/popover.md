@@ -4,7 +4,7 @@
 
 ## 运行时
 
-同时提供 `@varo/primitives-h5` 与 `@varo/primitives-weapp`。
+状态契约由 `@varo-ui/headless` 提供；渲染 Parts 分别来自 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives`。
 
 ## 演示
 
@@ -13,9 +13,9 @@
 ## 安装
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # 或
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## 基础用法
@@ -28,27 +28,27 @@ H5 可处理 Escape/外部点击；小程序没有浏览器 `document`，应优�
 
 ## Parts
 
-| Part | 作用 |
-| --- | --- |
-| `PopoverRoot` | open 状态 |
-| `PopoverTrigger` | 打开入口 |
-| `PopoverContent` | 浮层内容 |
-| `PopoverClose` | 显式关闭 |
+| Part             | 作用      |
+| ---------------- | --------- |
+| `PopoverRoot`    | open 状态 |
+| `PopoverTrigger` | 打开入口  |
+| `PopoverContent` | 浮层内容  |
+| `PopoverClose`   | 显式关闭  |
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `open` | `boolean \| undefined` | `undefined` | 受控打开态 |
-| `defaultOpen` | `boolean` | `false` | 非受控初始态 |
-| `disabled` | `boolean` | `false` | 禁用 |
+| Prop          | 类型                   | 默认值      | 描述         |
+| ------------- | ---------------------- | ----------- | ------------ |
+| `open`        | `boolean \| undefined` | `undefined` | 受控打开态   |
+| `defaultOpen` | `boolean`              | `false`     | 非受控初始态 |
+| `disabled`    | `boolean`              | `false`     | 禁用         |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
-| `update:open` | `boolean` | 受控同步 |
-| `openChange` | `boolean` | 打开态变化 |
+| Event         | Payload   | 描述       |
+| ------------- | --------- | ---------- |
+| `update:open` | `boolean` | 受控同步   |
+| `openChange`  | `boolean` | 打开态变化 |
 
 ## 无障碍
 

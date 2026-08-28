@@ -9,7 +9,7 @@
     "weapp-vite"
   ],
   "dependencies": [
-    "@varo/shared",
+    "@varo-ui/headless",
     "vue"
   ],
   "registryDependencies": [

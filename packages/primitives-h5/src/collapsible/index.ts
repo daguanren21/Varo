@@ -1,9 +1,11 @@
-import { defineComponent, h, inject, provide, toRef, type PropType } from 'vue'
+import type { UseCollapsibleRootResult } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
   createPrimitiveContext,
   useCollapsibleRoot,
-  type UseCollapsibleRootResult
-} from '@varo/primitives-core'
+
+} from '@varo-ui/headless'
+import { defineComponent, h, inject, provide, toRef } from 'vue'
 import { runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
@@ -12,8 +14,8 @@ export type * from './types'
 
 const collapsibleContext = createPrimitiveContext<UseCollapsibleRootResult>('CollapsibleRoot')
 const provideCollapsibleContext = collapsibleContext.createProvider(provide)
-const useCollapsibleContext = collapsibleContext.createConsumer((key) =>
-  inject<UseCollapsibleRootResult | undefined>(key, undefined)
+const useCollapsibleContext = collapsibleContext.createConsumer(key =>
+  inject<UseCollapsibleRootResult | undefined>(key, undefined),
 )
 
 export const CollapsibleRoot = defineComponent({
@@ -21,14 +23,14 @@ export const CollapsibleRoot = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     defaultOpen: Boolean,
     disabled: Boolean,
     open: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:open', 'openChange'],
   setup(props, { attrs, emit, slots }) {
@@ -42,13 +44,13 @@ export const CollapsibleRoot = defineComponent({
       onOpenChange(open) {
         emit('update:open', open)
         emit('openChange', open)
-      }
+      },
     })
 
     provideCollapsibleContext(collapsible)
 
     return () => h(props.as, { ...attrs, ...collapsible.attrs.root }, slots.default?.())
-  }
+  },
 })
 
 export const CollapsibleTrigger = defineComponent({
@@ -56,8 +58,8 @@ export const CollapsibleTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const collapsible = useCollapsibleContext()
@@ -74,13 +76,13 @@ export const CollapsibleTrigger = defineComponent({
             runInteractiveClick(event, {
               action: collapsible.events.toggle,
               handler: attrs.onClick,
-              interactive: collapsible.state.interactive.value
+              interactive: collapsible.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const CollapsibleContent = defineComponent({
@@ -88,8 +90,8 @@ export const CollapsibleContent = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
-    }
+      default: 'div',
+    },
   },
   setup(props, { attrs, slots }) {
     const collapsible = useCollapsibleContext()
@@ -98,5 +100,5 @@ export const CollapsibleContent = defineComponent({
       collapsible.state.open.value
         ? h(props.as, { ...attrs, ...collapsible.attrs.content }, slots.default?.())
         : null
-  }
+  },
 })

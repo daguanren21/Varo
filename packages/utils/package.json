@@ -1,20 +1,21 @@
 {
   "name": "@varo/utils",
-  "version": "0.1.0",
   "type": "module",
-  "sideEffects": false,
+  "version": "0.0.0",
+  "private": true,
+  "description": "General-purpose utilities used across the Varo component ecosystem.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/daguanren21/Varo.git"
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/utils"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "files": ["dist", "src"],
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -25,6 +26,13 @@
       "import": "./src/index.ts"
     }
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsdown",
     "clean": "rimraf dist",

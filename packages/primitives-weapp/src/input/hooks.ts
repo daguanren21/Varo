@@ -1,1 +1,1 @@
-export { useFieldRoot as useInputRoot } from '@varo/primitives-core'
+export { useFieldRoot as useInputRoot } from '@varo-ui/headless'

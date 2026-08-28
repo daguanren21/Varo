@@ -8,8 +8,8 @@
 
 ```vue
 <script setup lang="ts">
+import { VSideNavbar, VSideNavbarItem } from '@varo-ui/h5'
 import { ref } from 'vue'
-import { VSideNavbar, VSideNavbarItem } from '@varo/ui-h5'
 
 const active = ref('orders')
 </script>
@@ -25,22 +25,22 @@ const active = ref('orders')
 
 ## VSideNavbar Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
+| Prop         | 类型               | 默认值      | 描述       |
+| ------------ | ------------------ | ----------- | ---------- |
 | `modelValue` | `string \| number` | `undefined` | 当前选中项 |
 
 ## VSideNavbar Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
+| Event               | Payload            | 描述       |
+| ------------------- | ------------------ | ---------- |
 | `update:modelValue` | `string \| number` | 选中项变化 |
-| `change` | `string \| number` | 选中项变化 |
+| `change`            | `string \| number` | 选中项变化 |
 
 ## VSideNavbarItem Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `name` | `string \| number` | - | 导航项标识 |
-| `title` | `string` | `undefined` | 导航标题 |
-| `badge` | `string \| number` | `undefined` | 徽标 |
-| `disabled` | `boolean` | `false` | 是否禁用 |
+| Prop       | 类型               | 默认值      | 描述       |
+| ---------- | ------------------ | ----------- | ---------- |
+| `name`     | `string \| number` | -           | 导航项标识 |
+| `title`    | `string`           | `undefined` | 导航标题   |
+| `badge`    | `string \| number` | `undefined` | 徽标       |
+| `disabled` | `boolean`          | `false`     | 是否禁用   |

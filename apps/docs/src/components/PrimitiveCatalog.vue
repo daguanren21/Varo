@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { withBase } from 'vitepress'
+
 type Locale = 'zh' | 'en'
 type Category = 'controls' | 'disclosure'
 
@@ -16,8 +18,8 @@ const props = withDefaults(
     locale?: Locale
   }>(),
   {
-    locale: 'zh'
-  }
+    locale: 'zh',
+  },
 )
 
 const copy = props.locale === 'en'
@@ -25,17 +27,17 @@ const copy = props.locale === 'en'
       controls: 'Controls',
       disclosure: 'Disclosure & Floating',
       parts: 'Parts',
-      open: 'Open page'
+      open: 'Open page',
     }
   : {
       controls: '选择控件',
       disclosure: '展开与浮层',
       parts: 'Parts',
-      open: '打开文档'
+      open: '打开文档',
     }
 
-const items: CatalogItem[] =
-  props.locale === 'en'
+const items: CatalogItem[]
+  = props.locale === 'en'
     ? [
         {
           id: 'checkbox',
@@ -43,7 +45,7 @@ const items: CatalogItem[] =
           title: 'Checkbox',
           parts: 'CheckboxRoot / CheckboxIndicator',
           summary: 'Checked state, disabled behavior, and indicator rendering.',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'radio-group',
@@ -51,7 +53,7 @@ const items: CatalogItem[] =
           title: 'Radio Group',
           parts: 'RadioGroup / RadioItem / RadioIndicator',
           summary: 'Single-select group value with item-level disabled support.',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'switch',
@@ -59,7 +61,7 @@ const items: CatalogItem[] =
           title: 'Switch',
           parts: 'SwitchRoot / SwitchThumb',
           summary: 'Binary toggle with loading and disabled contracts.',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'tabs',
@@ -67,7 +69,7 @@ const items: CatalogItem[] =
           title: 'Tabs',
           parts: 'TabsRoot / TabsList / TabsTrigger / TabsContent',
           summary: 'Tab value ownership, orientation, and panel association.',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'select',
@@ -75,7 +77,7 @@ const items: CatalogItem[] =
           title: 'Select',
           parts: 'SelectRoot / Trigger / Value / Content / Item',
           summary: 'Composable select state, open contract, and option rendering.',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'collapsible',
@@ -83,7 +85,7 @@ const items: CatalogItem[] =
           title: 'Collapsible',
           parts: 'CollapsibleRoot / Trigger / Content',
           summary: 'Single disclosure open state for expandable content.',
-          category: 'disclosure'
+          category: 'disclosure',
         },
         {
           id: 'accordion',
@@ -91,7 +93,7 @@ const items: CatalogItem[] =
           title: 'Accordion',
           parts: 'AccordionRoot / Item / Trigger / Content',
           summary: 'Single or multiple expandable sections with item disable.',
-          category: 'disclosure'
+          category: 'disclosure',
         },
         {
           id: 'popover',
@@ -99,8 +101,8 @@ const items: CatalogItem[] =
           title: 'Popover',
           parts: 'PopoverRoot / Trigger / Content / Close',
           summary: 'Lightweight floating layer open/close and dismiss contract.',
-          category: 'disclosure'
-        }
+          category: 'disclosure',
+        },
       ]
     : [
         {
@@ -109,7 +111,7 @@ const items: CatalogItem[] =
           title: 'Checkbox',
           parts: 'CheckboxRoot / CheckboxIndicator',
           summary: '选中态、禁用态与 indicator 渲染契约。',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'radio-group',
@@ -117,7 +119,7 @@ const items: CatalogItem[] =
           title: 'Radio Group',
           parts: 'RadioGroup / RadioItem / RadioIndicator',
           summary: '单选组 value 与选项级 disabled 语义。',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'switch',
@@ -125,7 +127,7 @@ const items: CatalogItem[] =
           title: 'Switch',
           parts: 'SwitchRoot / SwitchThumb',
           summary: '开关态、loading 与 disabled 契约。',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'tabs',
@@ -133,7 +135,7 @@ const items: CatalogItem[] =
           title: 'Tabs',
           parts: 'TabsRoot / TabsList / TabsTrigger / TabsContent',
           summary: '当前 tab value、orientation 与 panel 关联。',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'select',
@@ -141,7 +143,7 @@ const items: CatalogItem[] =
           title: 'Select',
           parts: 'SelectRoot / Trigger / Value / Content / Item',
           summary: '选择器状态、open 契约与选项组合。',
-          category: 'controls'
+          category: 'controls',
         },
         {
           id: 'collapsible',
@@ -149,7 +151,7 @@ const items: CatalogItem[] =
           title: 'Collapsible',
           parts: 'CollapsibleRoot / Trigger / Content',
           summary: '单个展开区域的 open 状态契约。',
-          category: 'disclosure'
+          category: 'disclosure',
         },
         {
           id: 'accordion',
@@ -157,7 +159,7 @@ const items: CatalogItem[] =
           title: 'Accordion',
           parts: 'AccordionRoot / Item / Trigger / Content',
           summary: 'single/multiple 展开集合与 item disabled。',
-          category: 'disclosure'
+          category: 'disclosure',
         },
         {
           id: 'popover',
@@ -165,21 +167,21 @@ const items: CatalogItem[] =
           title: 'Popover',
           parts: 'PopoverRoot / Trigger / Content / Close',
           summary: '轻量浮层开关与 dismiss 契约。',
-          category: 'disclosure'
-        }
+          category: 'disclosure',
+        },
       ]
 
 const groups = [
   {
     id: 'controls' as const,
     title: copy.controls,
-    items: items.filter((item) => item.category === 'controls')
+    items: items.filter(item => item.category === 'controls'),
   },
   {
     id: 'disclosure' as const,
     title: copy.disclosure,
-    items: items.filter((item) => item.category === 'disclosure')
-  }
+    items: items.filter(item => item.category === 'disclosure'),
+  },
 ]
 </script>
 
@@ -195,7 +197,7 @@ const groups = [
           v-for="item in group.items"
           :key="item.id"
           class="primitive-catalog__card"
-          :href="item.href"
+          :href="withBase(item.href)"
         >
           <div class="primitive-catalog__card-top">
             <strong>{{ item.title }}</strong>
@@ -226,9 +228,9 @@ const groups = [
 
 .primitive-catalog__group-head {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
 }
 
 .primitive-catalog__group-head h3 {
@@ -239,15 +241,15 @@ const groups = [
 
 .primitive-catalog__group-head span {
   display: inline-flex;
-  min-height: 24px;
   align-items: center;
-  border: 1px solid var(--varo-demo-border, var(--varo-border));
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-demo-surface-strong, var(--varo-card-solid)) 92%, transparent);
-  color: var(--varo-muted);
+  min-height: 24px;
   padding: 0 10px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-muted);
+  background: color-mix(in srgb, var(--varo-demo-surface-strong, var(--varo-card-solid)) 92%, transparent);
+  border: 1px solid var(--varo-demo-border, var(--varo-border));
+  border-radius: 999px;
 }
 
 .primitive-catalog__grid {
@@ -261,17 +263,16 @@ const groups = [
   gap: 10px;
   min-height: 132px;
   padding: 14px;
-  border: 1px solid var(--varo-demo-border, var(--varo-border));
-  border-radius: 16px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--varo-demo-surface, var(--varo-card-solid)) 94%, transparent),
-      var(--varo-demo-surface-strong, var(--varo-card-solid))
-    );
-  box-shadow: var(--varo-demo-shadow, var(--varo-shadow-sm));
   color: inherit;
   text-decoration: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--varo-demo-surface, var(--varo-card-solid)) 94%, transparent),
+    var(--varo-demo-surface-strong, var(--varo-card-solid))
+  );
+  border: 1px solid var(--varo-demo-border, var(--varo-border));
+  border-radius: 16px;
+  box-shadow: var(--varo-demo-shadow, var(--varo-shadow-sm));
   transition:
     border-color 160ms ease,
     transform 160ms ease,
@@ -291,9 +292,9 @@ const groups = [
 
 .primitive-catalog__card-top {
   display: flex;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
 }
 
 .primitive-catalog__card-top strong {
@@ -301,29 +302,29 @@ const groups = [
 }
 
 .primitive-catalog__card-top span {
-  color: var(--varo-demo-brand, var(--varo-primary));
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-demo-brand, var(--varo-primary));
 }
 
 .primitive-catalog__card p {
   margin: 0;
-  color: var(--varo-muted);
   font-size: 13px;
   line-height: 1.5;
+  color: var(--varo-muted);
 }
 
 .primitive-catalog__card small {
-  color: var(--varo-foreground);
   font-size: 12px;
   line-height: 1.45;
+  color: var(--varo-foreground);
 }
 
 .primitive-catalog__card small em {
   display: block;
   margin-bottom: 2px;
-  color: var(--varo-muted);
   font-style: normal;
   font-weight: 700;
+  color: var(--varo-muted);
 }
 </style>

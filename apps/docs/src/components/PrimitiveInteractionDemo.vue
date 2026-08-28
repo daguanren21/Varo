@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, shallowRef } from 'vue'
+import type { SelectOption, SelectPrimitiveValue } from '@varo/primitives-h5'
 import {
   AccordionContent,
   AccordionItem,
@@ -18,11 +18,11 @@ import {
   DialogTrigger,
   InputRoot,
   OverlayRoot,
-  PopupRoot,
   PopoverClose,
   PopoverContent,
   PopoverRoot,
   PopoverTrigger,
+  PopupRoot,
   RadioGroup,
   RadioIndicator,
   RadioItem,
@@ -39,9 +39,9 @@ import {
   TabsContent,
   TabsList,
   TabsRoot,
-  TabsTrigger
+  TabsTrigger,
 } from '@varo/primitives-h5'
-import type { SelectOption, SelectPrimitiveValue } from '@varo/primitives-h5'
+import { computed, onBeforeUnmount, shallowRef } from 'vue'
 
 type Locale = 'zh' | 'en'
 type StageId = 'foundation' | 'selection' | 'disclosure' | 'layers'
@@ -58,8 +58,8 @@ const props = withDefaults(
     locale?: Locale
   }>(),
   {
-    locale: 'zh'
-  }
+    locale: 'zh',
+  },
 )
 
 const activeStage = shallowRef<StageId>('foundation')
@@ -83,7 +83,7 @@ let copyFeedbackTimer: number | undefined
 const selectOptions = [
   { label: 'Starter', value: 'starter' },
   { label: 'Base Kit', value: 'base-kit' },
-  { disabled: true, label: 'Business Wrapper', value: 'business-wrapper' }
+  { disabled: true, label: 'Business Wrapper', value: 'business-wrapper' },
 ] satisfies SelectOption[]
 
 const copy = computed(() =>
@@ -96,7 +96,7 @@ const copy = computed(() =>
           foundation: '基础控件',
           selection: '选择与切换',
           disclosure: '展开与浮层',
-          layers: '遮罩与弹层'
+          layers: '遮罩与弹层',
         },
         stageTitle: '交互分组',
         foundationIntro: '入口控件与受控写入。',
@@ -149,7 +149,7 @@ const copy = computed(() =>
         popupBody: '弹出层 · 遮罩 · 关闭',
         close: '关闭',
         on: '开',
-        off: '关'
+        off: '关',
       }
     : {
         kicker: 'Primitives',
@@ -159,7 +159,7 @@ const copy = computed(() =>
           foundation: 'Foundation',
           selection: 'Selection',
           disclosure: 'Disclosure',
-          layers: 'Layers'
+          layers: 'Layers',
         },
         stageTitle: 'Stage groups',
         foundationIntro: 'Entry controls and controlled writes.',
@@ -212,15 +212,15 @@ const copy = computed(() =>
         popupBody: 'Popup · mask · close',
         close: 'Close',
         on: 'On',
-        off: 'Off'
-      }
+        off: 'Off',
+      },
 )
 
 const stages = computed(() =>
-  (['foundation', 'selection', 'disclosure', 'layers'] as const).map((id) => ({
+  (['foundation', 'selection', 'disclosure', 'layers'] as const).map(id => ({
     id,
-    label: copy.value.stages[id]
-  }))
+    label: copy.value.stages[id],
+  })),
 )
 
 const stageIntro = computed(() => {
@@ -244,112 +244,112 @@ const liveBadges = computed(() => {
         { label: 'radio', value: radioValue.value, tone: 'info' },
         { label: 'switch', value: switchChecked.value ? copy.value.on : copy.value.off, tone: switchChecked.value ? 'on' : 'off' },
         { label: 'select', value: String(selectValue.value ?? '—'), tone: 'info' },
-        { label: 'tabs', value: tabsValue.value, tone: 'info' }
+        { label: 'tabs', value: tabsValue.value, tone: 'info' },
       ]
     case 'disclosure':
       return [
         { label: 'collapsible', value: collapsibleOpen.value ? copy.value.on : copy.value.off, tone: collapsibleOpen.value ? 'on' : 'off' },
         { label: 'accordion', value: String(accordionValue.value ?? '—'), tone: 'info' },
-        { label: 'popover', value: popoverOpen.value ? copy.value.on : copy.value.off, tone: popoverOpen.value ? 'on' : 'off' }
+        { label: 'popover', value: popoverOpen.value ? copy.value.on : copy.value.off, tone: popoverOpen.value ? 'on' : 'off' },
       ]
     case 'layers':
       return [
         { label: 'dialog', value: dialogOpen.value ? copy.value.on : copy.value.off, tone: dialogOpen.value ? 'on' : 'off' },
         { label: 'overlay', value: overlayVisible.value ? copy.value.on : copy.value.off, tone: overlayVisible.value ? 'on' : 'off' },
-        { label: 'popup', value: popupVisible.value ? copy.value.on : copy.value.off, tone: popupVisible.value ? 'on' : 'off' }
+        { label: 'popup', value: popupVisible.value ? copy.value.on : copy.value.off, tone: popupVisible.value ? 'on' : 'off' },
       ]
     default:
       return [
         { label: 'clicks', value: String(buttonClicks.value), tone: 'info' },
-        { label: 'input', value: inputValue.value || '—', tone: 'info' }
+        { label: 'input', value: inputValue.value || '—', tone: 'info' },
       ]
   }
 })
 
 const partSnippets = computed((): PartSnippet[] => {
-  const pkg = '@varo/primitives-h5'
+  const pkg = '@varo-ui/h5/primitives'
   switch (activeStage.value) {
     case 'selection':
       return [
         {
           name: 'CheckboxRoot',
           note: 'v-model:checked',
-          code: `import { CheckboxRoot, CheckboxIndicator } from '${pkg}'\n\n<CheckboxRoot v-model:checked="checked">\n  <CheckboxIndicator>✓</CheckboxIndicator>\n  Label\n</CheckboxRoot>`
+          code: `import { CheckboxRoot, CheckboxIndicator } from '${pkg}'\n\n<CheckboxRoot v-model:checked="checked">\n  <CheckboxIndicator>✓</CheckboxIndicator>\n  Label\n</CheckboxRoot>`,
         },
         {
           name: 'RadioGroup',
           note: 'v-model:value',
-          code: `import { RadioGroup, RadioItem, RadioIndicator } from '${pkg}'\n\n<RadioGroup v-model:value="value">\n  <RadioItem value="h5">\n    <RadioIndicator>•</RadioIndicator>\n    H5\n  </RadioItem>\n</RadioGroup>`
+          code: `import { RadioGroup, RadioItem, RadioIndicator } from '${pkg}'\n\n<RadioGroup v-model:value="value">\n  <RadioItem value="h5">\n    <RadioIndicator>•</RadioIndicator>\n    H5\n  </RadioItem>\n</RadioGroup>`,
         },
         {
           name: 'SwitchRoot',
           note: 'v-model:checked',
-          code: `import { SwitchRoot, SwitchThumb } from '${pkg}'\n\n<SwitchRoot v-model:checked="on">\n  <SwitchThumb />\n</SwitchRoot>`
+          code: `import { SwitchRoot, SwitchThumb } from '${pkg}'\n\n<SwitchRoot v-model:checked="on">\n  <SwitchThumb />\n</SwitchRoot>`,
         },
         {
           name: 'SelectRoot',
           note: 'options + parts',
-          code: `import { SelectRoot, SelectTrigger, SelectValue, SelectContent, SelectItem } from '${pkg}'\n\n<SelectRoot v-model:value="value" :options="options">\n  <SelectTrigger><SelectValue placeholder="Pick" /></SelectTrigger>\n  <SelectContent>\n    <SelectItem :option="options[0]">{{ options[0].label }}</SelectItem>\n  </SelectContent>\n</SelectRoot>`
+          code: `import { SelectRoot, SelectTrigger, SelectValue, SelectContent, SelectItem } from '${pkg}'\n\n<SelectRoot v-model:value="value" :options="options">\n  <SelectTrigger><SelectValue placeholder="Pick" /></SelectTrigger>\n  <SelectContent>\n    <SelectItem :option="options[0]">{{ options[0].label }}</SelectItem>\n  </SelectContent>\n</SelectRoot>`,
         },
         {
           name: 'TabsRoot',
           note: 'v-model:value',
-          code: `import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '${pkg}'\n\n<TabsRoot v-model:value="tab">\n  <TabsList>\n    <TabsTrigger value="a">A</TabsTrigger>\n  </TabsList>\n  <TabsContent value="a">Panel A</TabsContent>\n</TabsRoot>`
-        }
+          code: `import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '${pkg}'\n\n<TabsRoot v-model:value="tab">\n  <TabsList>\n    <TabsTrigger value="a">A</TabsTrigger>\n  </TabsList>\n  <TabsContent value="a">Panel A</TabsContent>\n</TabsRoot>`,
+        },
       ]
     case 'disclosure':
       return [
         {
           name: 'CollapsibleRoot',
           note: 'v-model:open',
-          code: `import { CollapsibleRoot, CollapsibleTrigger, CollapsibleContent } from '${pkg}'\n\n<CollapsibleRoot v-model:open="open">\n  <CollapsibleTrigger>Toggle</CollapsibleTrigger>\n  <CollapsibleContent>Details</CollapsibleContent>\n</CollapsibleRoot>`
+          code: `import { CollapsibleRoot, CollapsibleTrigger, CollapsibleContent } from '${pkg}'\n\n<CollapsibleRoot v-model:open="open">\n  <CollapsibleTrigger>Toggle</CollapsibleTrigger>\n  <CollapsibleContent>Details</CollapsibleContent>\n</CollapsibleRoot>`,
         },
         {
           name: 'AccordionRoot',
           note: 'type=single',
-          code: `import { AccordionRoot, AccordionItem, AccordionTrigger, AccordionContent } from '${pkg}'\n\n<AccordionRoot v-model:value="value" type="single" collapsible>\n  <AccordionItem value="one">\n    <AccordionTrigger>One</AccordionTrigger>\n    <AccordionContent>Body</AccordionContent>\n  </AccordionItem>\n</AccordionRoot>`
+          code: `import { AccordionRoot, AccordionItem, AccordionTrigger, AccordionContent } from '${pkg}'\n\n<AccordionRoot v-model:value="value" type="single" collapsible>\n  <AccordionItem value="one">\n    <AccordionTrigger>One</AccordionTrigger>\n    <AccordionContent>Body</AccordionContent>\n  </AccordionItem>\n</AccordionRoot>`,
         },
         {
           name: 'PopoverRoot',
           note: 'v-model:open',
-          code: `import { PopoverRoot, PopoverTrigger, PopoverContent, PopoverClose } from '${pkg}'\n\n<PopoverRoot v-model:open="open">\n  <PopoverTrigger>Open</PopoverTrigger>\n  <PopoverContent>\n    Content\n    <PopoverClose>Close</PopoverClose>\n  </PopoverContent>\n</PopoverRoot>`
-        }
+          code: `import { PopoverRoot, PopoverTrigger, PopoverContent, PopoverClose } from '${pkg}'\n\n<PopoverRoot v-model:open="open">\n  <PopoverTrigger>Open</PopoverTrigger>\n  <PopoverContent>\n    Content\n    <PopoverClose>Close</PopoverClose>\n  </PopoverContent>\n</PopoverRoot>`,
+        },
       ]
     case 'layers':
       return [
         {
           name: 'DialogRoot',
           note: 'overlay + content',
-          code: `import { DialogRoot, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from '${pkg}'\n\n<DialogRoot v-model:open="open">\n  <DialogTrigger>Open</DialogTrigger>\n  <DialogOverlay />\n  <DialogContent>\n    Body\n    <DialogClose>Close</DialogClose>\n  </DialogContent>\n</DialogRoot>`
+          code: `import { DialogRoot, DialogTrigger, DialogOverlay, DialogContent, DialogClose } from '${pkg}'\n\n<DialogRoot v-model:open="open">\n  <DialogTrigger>Open</DialogTrigger>\n  <DialogOverlay />\n  <DialogContent>\n    Body\n    <DialogClose>Close</DialogClose>\n  </DialogContent>\n</DialogRoot>`,
         },
         {
           name: 'OverlayRoot',
           note: 'visible + click',
-          code: `import { OverlayRoot } from '${pkg}'\n\n<OverlayRoot\n  :visible="visible"\n  @update:visible="visible = $event"\n  @click="visible = false"\n/>`
+          code: `import { OverlayRoot } from '${pkg}'\n\n<OverlayRoot\n  :visible="visible"\n  @update:visible="visible = $event"\n  @click="visible = false"\n/>`,
         },
         {
           name: 'PopupRoot',
           note: 'visible slot',
-          code: `import { PopupRoot } from '${pkg}'\n\n<PopupRoot :visible="visible" @update:visible="visible = $event">\n  <template #default>\n    Body\n    <button type="button" @click="visible = false">Close</button>\n  </template>\n</PopupRoot>`
-        }
+          code: `import { PopupRoot } from '${pkg}'\n\n<PopupRoot :visible="visible" @update:visible="visible = $event">\n  <template #default>\n    Body\n    <button type="button" @click="visible = false">Close</button>\n  </template>\n</PopupRoot>`,
+        },
       ]
     default:
       return [
         {
           name: 'ButtonRoot',
           note: 'press events',
-          code: `import { ButtonRoot } from '${pkg}'\n\n<ButtonRoot @click="onPress">\n  Press\n</ButtonRoot>`
+          code: `import { ButtonRoot } from '${pkg}'\n\n<ButtonRoot @click="onPress">\n  Press\n</ButtonRoot>`,
         },
         {
           name: 'InputRoot',
           note: 'v-model:value',
-          code: `import { InputRoot } from '${pkg}'\n\n<InputRoot\n  :value="value"\n  @update:value="value = $event"\n/>`
+          code: `import { InputRoot } from '${pkg}'\n\n<InputRoot\n  :value="value"\n  @update:value="value = $event"\n/>`,
         },
         {
           name: 'StickyRoot',
           note: 'fixed slot prop',
-          code: `import { StickyRoot } from '${pkg}'\n\n<StickyRoot :offset-top="8">\n  <template #default="{ fixed }">\n    sticky · data-fixed={{ fixed }}\n  </template>\n</StickyRoot>`
-        }
+          code: `import { StickyRoot } from '${pkg}'\n\n<StickyRoot :offset-top="8">\n  <template #default="{ fixed }">\n    sticky · data-fixed={{ fixed }}\n  </template>\n</StickyRoot>`,
+        },
       ]
   }
 })
@@ -419,7 +419,9 @@ onBeforeUnmount(() => resetCopyState())
 
     <div class="primitive-demo__stage" role="tabpanel">
       <div class="primitive-demo__stage-bar">
-        <p class="primitive-demo__stage-intro">{{ stageIntro }}</p>
+        <p class="primitive-demo__stage-intro">
+          {{ stageIntro }}
+        </p>
         <div class="primitive-demo__live" :aria-label="copy.liveTitle">
           <span
             v-for="badge in liveBadges"
@@ -477,7 +479,9 @@ onBeforeUnmount(() => resetCopyState())
                 <code>{{ copy.checkbox }}</code>
               </header>
               <CheckboxRoot v-model:checked="checkboxChecked" class="primitive-demo__choice">
-                <CheckboxIndicator class="primitive-demo__choice-mark">v</CheckboxIndicator>
+                <CheckboxIndicator class="primitive-demo__choice-mark">
+                  v
+                </CheckboxIndicator>
                 <span class="primitive-demo__choice-text">{{ copy.checkboxLabel }}</span>
               </CheckboxRoot>
             </article>
@@ -488,11 +492,15 @@ onBeforeUnmount(() => resetCopyState())
               </header>
               <RadioGroup v-model:value="radioValue" class="primitive-demo__radio-group">
                 <RadioItem value="h5" class="primitive-demo__choice">
-                  <RadioIndicator class="primitive-demo__choice-mark">•</RadioIndicator>
+                  <RadioIndicator class="primitive-demo__choice-mark">
+                    •
+                  </RadioIndicator>
                   <span class="primitive-demo__choice-text">{{ copy.radioH5 }}</span>
                 </RadioItem>
                 <RadioItem value="weapp" class="primitive-demo__choice">
-                  <RadioIndicator class="primitive-demo__choice-mark">•</RadioIndicator>
+                  <RadioIndicator class="primitive-demo__choice-mark">
+                    •
+                  </RadioIndicator>
                   <span class="primitive-demo__choice-text">{{ copy.radioWeapp }}</span>
                 </RadioItem>
               </RadioGroup>
@@ -517,7 +525,9 @@ onBeforeUnmount(() => resetCopyState())
                 </SelectTrigger>
                 <SelectContent class="primitive-demo__select-content">
                   <SelectGroup>
-                    <SelectLabel class="primitive-demo__select-label">{{ copy.selectGroup }}</SelectLabel>
+                    <SelectLabel class="primitive-demo__select-label">
+                      {{ copy.selectGroup }}
+                    </SelectLabel>
                     <SelectItem
                       v-for="option in selectOptions"
                       :key="option.value"
@@ -608,7 +618,9 @@ onBeforeUnmount(() => resetCopyState())
                 </PopoverTrigger>
                 <PopoverContent class="primitive-demo__popover">
                   <p>{{ copy.popoverPanel }}</p>
-                  <PopoverClose class="primitive-demo__layer-close">{{ copy.close }}</PopoverClose>
+                  <PopoverClose class="primitive-demo__layer-close">
+                    {{ copy.close }}
+                  </PopoverClose>
                 </PopoverContent>
               </PopoverRoot>
             </article>
@@ -626,7 +638,9 @@ onBeforeUnmount(() => resetCopyState())
                 <DialogOverlay class="primitive-demo__overlay" />
                 <DialogContent class="primitive-demo__dialog">
                   <p>{{ copy.dialogBody }}</p>
-                  <DialogClose class="primitive-demo__layer-close">{{ copy.close }}</DialogClose>
+                  <DialogClose class="primitive-demo__layer-close">
+                    {{ copy.close }}
+                  </DialogClose>
                 </DialogContent>
               </DialogRoot>
             </article>
@@ -703,11 +717,12 @@ onBeforeUnmount(() => resetCopyState())
   --primitive-surface-strong: var(--varo-demo-surface-strong);
   --primitive-border: var(--varo-demo-border);
   --primitive-shadow: var(--varo-demo-shadow);
-  container-type: inline-size;
-  container-name: primitive-demo;
+
   display: grid;
   gap: 12px;
   margin: 20px 0 36px;
+  container-name: primitive-demo;
+  container-type: inline-size;
 }
 
 .primitive-demo__head {
@@ -719,25 +734,25 @@ onBeforeUnmount(() => resetCopyState())
 
 .primitive-demo__head h2 {
   margin: 2px 0 4px;
-  color: var(--varo-foreground);
   font-size: clamp(22px, 2.6vw, 30px);
   line-height: 1.15;
+  color: var(--varo-foreground);
 }
 
 .primitive-demo__head p {
-  margin: 0;
   max-width: 68ch;
-  color: var(--varo-muted);
+  margin: 0;
   font-size: 13px;
   line-height: 1.55;
+  color: var(--varo-muted);
 }
 
 .primitive-demo__kicker {
-  color: var(--varo-demo-brand);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  color: var(--varo-demo-brand);
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .primitive-demo__tabs {
@@ -748,17 +763,17 @@ onBeforeUnmount(() => resetCopyState())
 
 .primitive-demo__tabs button {
   display: inline-flex;
-  min-height: 36px;
   align-items: center;
-  border: 1px solid var(--primitive-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--primitive-surface-strong) 92%, transparent);
-  color: var(--varo-foreground);
+  min-height: 36px;
   padding: 0 12px;
   font: inherit;
   font-size: 13px;
   font-weight: 600;
+  color: var(--varo-foreground);
   cursor: pointer;
+  background: color-mix(in srgb, var(--primitive-surface-strong) 92%, transparent);
+  border: 1px solid var(--primitive-border);
+  border-radius: 999px;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -767,14 +782,14 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__tabs button:hover:not([data-active='true']) {
-  border-color: color-mix(in srgb, var(--varo-primary) 42%, var(--primitive-border));
   background: color-mix(in srgb, var(--varo-primary) 8%, var(--primitive-surface-strong));
+  border-color: color-mix(in srgb, var(--varo-primary) 42%, var(--primitive-border));
 }
 
 .primitive-demo__tabs button[data-active='true'] {
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
   color: var(--varo-primary-foreground);
+  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  border-color: transparent;
   box-shadow: 0 8px 18px color-mix(in srgb, var(--vp-c-brand-1) 28%, transparent);
 }
 
@@ -788,11 +803,15 @@ onBeforeUnmount(() => resetCopyState())
   gap: 12px;
   min-width: 0;
   padding: 16px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primitive-surface) 94%, transparent),
+      var(--primitive-surface-strong)
+    ),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--vp-c-brand-1) 10%, transparent), transparent 36%);
   border: 1px solid var(--primitive-border);
   border-radius: var(--varo-demo-radius);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--primitive-surface) 94%, transparent), var(--primitive-surface-strong)),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--vp-c-brand-1) 10%, transparent), transparent 36%);
   box-shadow: var(--primitive-shadow);
 }
 
@@ -806,60 +825,60 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__stage-intro {
-  margin: 0;
   max-width: 48ch;
-  color: var(--varo-muted);
+  margin: 0;
   font-size: 13px;
   line-height: 1.45;
+  color: var(--varo-muted);
 }
 
 .primitive-demo__live {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 6px;
+  justify-content: flex-end;
   max-width: 56%;
 }
 
 .primitive-demo__badge {
   display: inline-flex;
-  min-height: 26px;
-  align-items: center;
   gap: 6px;
+  align-items: center;
+  min-height: 26px;
   padding: 0 8px;
-  border: 1px solid var(--varo-border);
-  border-radius: 999px;
-  background: var(--varo-card-solid);
-  color: var(--varo-foreground);
   font-size: 11px;
   line-height: 1;
+  color: var(--varo-foreground);
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 999px;
 }
 
 .primitive-demo__badge em {
-  color: var(--varo-muted);
   font-style: normal;
   font-weight: 650;
+  color: var(--varo-muted);
 }
 
 .primitive-demo__badge strong {
-  font-weight: 720;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 720;
 }
 
 .primitive-demo__badge[data-tone='on'] {
-  border-color: color-mix(in srgb, #16a34a 42%, var(--varo-border));
-  background: color-mix(in srgb, #16a34a 12%, var(--varo-card-solid));
   color: color-mix(in srgb, #166534 70%, var(--varo-foreground));
+  background: color-mix(in srgb, #16a34a 12%, var(--varo-card-solid));
+  border-color: color-mix(in srgb, #16a34a 42%, var(--varo-border));
 }
 
 .primitive-demo__badge[data-tone='off'] {
-  border-color: var(--varo-border);
   color: var(--varo-muted);
+  border-color: var(--varo-border);
 }
 
 .primitive-demo__badge[data-tone='info'] {
-  border-color: color-mix(in srgb, var(--varo-primary) 28%, var(--varo-border));
   background: color-mix(in srgb, var(--varo-primary) 8%, var(--varo-card-solid));
+  border-color: color-mix(in srgb, var(--varo-primary) 28%, var(--varo-border));
 }
 
 .primitive-demo__workspace {
@@ -882,9 +901,9 @@ onBeforeUnmount(() => resetCopyState())
   align-content: start;
   min-height: 112px;
   padding: 12px;
+  background: color-mix(in srgb, var(--primitive-surface-strong) 92%, transparent);
   border: 1px solid var(--primitive-border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--primitive-surface-strong) 92%, transparent);
   box-shadow: 0 10px 24px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
@@ -900,16 +919,16 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__panel-head code {
-  color: var(--varo-foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
   font-weight: 740;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--varo-foreground);
 }
 
 .primitive-demo__panel-head small,
 .primitive-demo__panel small {
-  color: var(--varo-muted);
   font-size: 12px;
+  color: var(--varo-muted);
 }
 
 .primitive-demo__rail {
@@ -918,37 +937,37 @@ onBeforeUnmount(() => resetCopyState())
   align-content: start;
   min-width: 0;
   padding: 10px;
+  background: color-mix(in srgb, var(--primitive-surface-strong) 90%, transparent);
   border: 1px solid var(--primitive-border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--primitive-surface-strong) 90%, transparent);
 }
 
 .primitive-demo__rail-head {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--varo-border);
 }
 
 .primitive-demo__rail-head strong {
-  color: var(--varo-foreground);
   font-size: 12px;
   font-weight: 740;
+  color: var(--varo-foreground);
 }
 
 .primitive-demo__rail-head span {
-  color: var(--varo-muted);
   font-size: 11px;
   font-weight: 700;
+  color: var(--varo-muted);
 }
 
 .primitive-demo__part-list {
   display: grid;
   gap: 6px;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
@@ -958,9 +977,9 @@ onBeforeUnmount(() => resetCopyState())
   gap: 8px;
   align-items: center;
   padding: 8px;
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius);
-  background: var(--varo-card-solid);
 }
 
 .primitive-demo__part-meta {
@@ -971,33 +990,33 @@ onBeforeUnmount(() => resetCopyState())
 
 .primitive-demo__part-meta code {
   overflow: hidden;
-  color: var(--varo-foreground);
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
   font-weight: 720;
-  text-overflow: ellipsis;
+  color: var(--varo-foreground);
   white-space: nowrap;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .primitive-demo__part-meta small {
-  color: var(--varo-muted);
   font-size: 11px;
+  color: var(--varo-muted);
 }
 
 .primitive-demo__copy {
   display: inline-flex;
-  min-height: 30px;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--varo-primary) 28%, var(--varo-border));
-  border-radius: var(--varo-radius);
-  background: color-mix(in srgb, var(--varo-primary) 10%, var(--varo-card-solid));
-  color: var(--varo-primary);
+  min-height: 30px;
   padding: 0 10px;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-primary);
   cursor: pointer;
+  background: color-mix(in srgb, var(--varo-primary) 10%, var(--varo-card-solid));
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 28%, var(--varo-border));
+  border-radius: var(--varo-radius);
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -1005,8 +1024,8 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__copy:hover {
-  border-color: var(--varo-primary);
   background: color-mix(in srgb, var(--varo-primary) 16%, var(--varo-card-solid));
+  border-color: var(--varo-primary);
 }
 
 .primitive-demo__copy:focus-visible {
@@ -1015,15 +1034,15 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__copy[data-state='copied'] {
-  border-color: color-mix(in srgb, #16a34a 48%, var(--varo-border));
-  background: color-mix(in srgb, #16a34a 14%, var(--varo-card-solid));
   color: #15803d;
+  background: color-mix(in srgb, #16a34a 14%, var(--varo-card-solid));
+  border-color: color-mix(in srgb, #16a34a 48%, var(--varo-border));
 }
 
 .primitive-demo__copy[data-state='unsupported'] {
-  border-color: color-mix(in srgb, #d97706 48%, var(--varo-border));
-  background: color-mix(in srgb, #d97706 12%, var(--varo-card-solid));
   color: #b45309;
+  background: color-mix(in srgb, #d97706 12%, var(--varo-card-solid));
+  border-color: color-mix(in srgb, #d97706 48%, var(--varo-border));
 }
 
 .primitive-demo__button,
@@ -1032,12 +1051,12 @@ onBeforeUnmount(() => resetCopyState())
 .primitive-demo__select-trigger,
 .primitive-demo__accordion-trigger {
   min-height: 36px;
-  border: 1px solid var(--varo-border);
-  border-radius: var(--varo-radius);
-  background: var(--varo-card-solid);
-  color: var(--varo-foreground);
   font: inherit;
   font-size: 13px;
+  color: var(--varo-foreground);
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: var(--varo-radius);
 }
 
 .primitive-demo__button,
@@ -1045,9 +1064,9 @@ onBeforeUnmount(() => resetCopyState())
 .primitive-demo__select-trigger,
 .primitive-demo__accordion-trigger {
   display: inline-flex;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   padding: 0 12px;
   cursor: pointer;
   transition:
@@ -1061,8 +1080,8 @@ onBeforeUnmount(() => resetCopyState())
 .primitive-demo__layer-close:hover,
 .primitive-demo__select-trigger:hover,
 .primitive-demo__accordion-trigger:hover {
-  border-color: color-mix(in srgb, var(--varo-primary) 42%, var(--varo-border));
   background: color-mix(in srgb, var(--varo-primary) 8%, var(--varo-card-solid));
+  border-color: color-mix(in srgb, var(--varo-primary) 42%, var(--varo-border));
 }
 
 .primitive-demo__button:focus-visible,
@@ -1075,10 +1094,10 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__button {
+  font-weight: 650;
+  color: var(--varo-primary);
   background: color-mix(in srgb, var(--varo-primary) 10%, var(--varo-card-solid));
   border-color: color-mix(in srgb, var(--varo-primary) 28%, var(--varo-border));
-  color: var(--varo-primary);
-  font-weight: 650;
 }
 
 .primitive-demo__input {
@@ -1088,32 +1107,32 @@ onBeforeUnmount(() => resetCopyState())
 
 .primitive-demo__choice {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   min-height: 36px;
   padding: 0 10px;
+  cursor: pointer;
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius);
-  background: var(--varo-card-solid);
-  cursor: pointer;
 }
 
 .primitive-demo__choice-mark {
   display: inline-flex;
-  width: 18px;
-  height: 18px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--varo-border-strong);
-  border-radius: 4px;
-  color: var(--varo-primary);
+  width: 18px;
+  height: 18px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-primary);
+  border: 1px solid var(--varo-border-strong);
+  border-radius: 4px;
 }
 
 .primitive-demo__choice-text {
-  color: var(--varo-foreground);
   font-size: 13px;
+  color: var(--varo-foreground);
 }
 
 .primitive-demo__radio-group {
@@ -1124,14 +1143,14 @@ onBeforeUnmount(() => resetCopyState())
 .primitive-demo__switch {
   position: relative;
   display: inline-flex;
+  align-items: center;
   width: 44px;
   height: 26px;
-  align-items: center;
-  border: 1px solid var(--varo-border);
-  border-radius: 999px;
-  background: var(--varo-card-muted);
   padding: 0 3px;
   cursor: pointer;
+  background: var(--varo-card-muted);
+  border: 1px solid var(--varo-border);
+  border-radius: 999px;
 }
 
 .primitive-demo__switch[data-state='checked'] {
@@ -1142,8 +1161,8 @@ onBeforeUnmount(() => resetCopyState())
 .primitive-demo__switch-thumb {
   width: 18px;
   height: 18px;
-  border-radius: 999px;
   background: var(--varo-card-solid);
+  border-radius: 999px;
   box-shadow: var(--varo-shadow-sm);
   transition: transform 160ms ease;
 }
@@ -1153,47 +1172,47 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__select-trigger {
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
 }
 
 .primitive-demo__select-content {
   z-index: 30;
   min-width: 180px;
-  margin-top: 6px;
   padding: 6px;
+  margin-top: 6px;
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
-  background: var(--varo-card-solid);
   box-shadow: var(--varo-shadow-popover);
 }
 
 .primitive-demo__select-label {
   display: block;
   padding: 6px 8px;
-  color: var(--varo-muted);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  color: var(--varo-muted);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .primitive-demo__select-item {
   display: flex;
-  min-height: 32px;
   align-items: center;
-  border-radius: var(--varo-radius);
+  min-height: 32px;
   padding: 0 8px;
-  color: var(--varo-foreground);
   font-size: 13px;
+  color: var(--varo-foreground);
   cursor: pointer;
+  border-radius: var(--varo-radius);
 }
 
 .primitive-demo__select-item:hover,
 .primitive-demo__select-item[data-highlighted='true'],
 .primitive-demo__select-item[data-state='checked'] {
-  background: color-mix(in srgb, var(--varo-primary) 12%, transparent);
   color: var(--varo-primary);
+  background: color-mix(in srgb, var(--varo-primary) 12%, transparent);
 }
 
 .primitive-demo__select-item[data-disabled='true'] {
@@ -1214,31 +1233,31 @@ onBeforeUnmount(() => resetCopyState())
 
 .primitive-demo__tabs-trigger {
   min-height: 32px;
-  border: 1px solid var(--varo-border);
-  border-radius: var(--varo-radius);
-  background: var(--varo-card-solid);
-  color: var(--varo-muted);
   padding: 0 12px;
   font: inherit;
   font-size: 12px;
   font-weight: 650;
+  color: var(--varo-muted);
   cursor: pointer;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: var(--varo-radius);
 }
 
 .primitive-demo__tabs-trigger[data-state='active'] {
-  border-color: var(--varo-primary);
-  background: color-mix(in srgb, var(--varo-primary) 12%, var(--varo-card-solid));
   color: var(--varo-primary);
+  background: color-mix(in srgb, var(--varo-primary) 12%, var(--varo-card-solid));
+  border-color: var(--varo-primary);
 }
 
 .primitive-demo__panel-surface {
   padding: 10px 12px;
-  border: 1px solid var(--varo-border);
-  border-radius: var(--varo-radius);
-  background: var(--varo-card-muted);
-  color: var(--varo-muted);
   font-size: 13px;
   line-height: 1.55;
+  color: var(--varo-muted);
+  background: var(--varo-card-muted);
+  border: 1px solid var(--varo-border);
+  border-radius: var(--varo-radius);
 }
 
 .primitive-demo__collapsible,
@@ -1253,8 +1272,8 @@ onBeforeUnmount(() => resetCopyState())
 }
 
 .primitive-demo__accordion-trigger {
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
 }
 
 .primitive-demo__popover,
@@ -1264,11 +1283,11 @@ onBeforeUnmount(() => resetCopyState())
   gap: 12px;
   min-width: min(280px, 100%);
   padding: 14px;
+  color: var(--varo-foreground);
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
-  background: var(--varo-card-solid);
   box-shadow: var(--varo-shadow-popover);
-  color: var(--varo-foreground);
 }
 
 .primitive-demo__overlay {
@@ -1293,9 +1312,9 @@ onBeforeUnmount(() => resetCopyState())
   justify-content: space-between;
   min-height: 40px;
   padding: 0 12px;
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius);
-  background: var(--varo-card-solid);
 }
 
 .primitive-demo__sticky small {
@@ -1308,8 +1327,8 @@ onBeforeUnmount(() => resetCopyState())
   }
 
   .primitive-demo__live {
-    max-width: 100%;
     justify-content: flex-start;
+    max-width: 100%;
   }
 
   .primitive-demo__stage-bar {
@@ -1335,8 +1354,8 @@ onBeforeUnmount(() => resetCopyState())
     }
 
     .primitive-demo__live {
-      max-width: 100%;
       justify-content: flex-start;
+      max-width: 100%;
     }
 
     .primitive-demo__stage-bar {

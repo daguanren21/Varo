@@ -1,9 +1,10 @@
-import { computed, defineComponent, h, toRef, type PropType } from 'vue'
+import type { PressableSize, PressableVariant } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
+
   usePressableRoot,
-  type PressableSize,
-  type PressableVariant
-} from '@varo/primitives-core'
+} from '@varo-ui/headless'
+import { computed, defineComponent, h, toRef } from 'vue'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useButtonRoot } from './hooks'
@@ -21,22 +22,22 @@ export const ButtonRoot = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     disabled: Boolean,
     loading: Boolean,
     size: {
       type: String as PropType<PressableSize>,
-      default: 'md'
+      default: 'md',
     },
     variant: {
       type: String as PropType<PressableVariant>,
-      default: 'solid'
+      default: 'solid',
     },
     nativeType: {
       type: String as PropType<'button' | 'submit' | 'reset'>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   setup(props, { attrs, slots }) {
     const pressable = usePressableRoot({
@@ -44,7 +45,7 @@ export const ButtonRoot = defineComponent({
       disabled: toRef(props, 'disabled'),
       loading: toRef(props, 'loading'),
       size: toRef(props, 'size'),
-      variant: toRef(props, 'variant')
+      variant: toRef(props, 'variant'),
     })
 
     const rootAttrs = computed(() => ({
@@ -57,34 +58,34 @@ export const ButtonRoot = defineComponent({
       'data-pressed': String(pressable.state.pressed.value),
       'data-size': pressable.state.size.value,
       'data-variant': pressable.state.variant.value,
-      type: props.as === 'button' ? props.nativeType ?? attrs.type ?? 'button' : undefined,
-      disabled: props.as === 'button' ? !pressable.state.interactive.value : undefined,
-      onClick: (event: MouseEvent) => {
+      'type': props.as === 'button' ? props.nativeType ?? attrs.type ?? 'button' : undefined,
+      'disabled': props.as === 'button' ? !pressable.state.interactive.value : undefined,
+      'onClick': (event: MouseEvent) => {
         const allowed = pressable.events.click(event)
         if (allowed) {
           callHandler(attrs.onClick, event)
         }
       },
-      onMousedown: (event: MouseEvent) => {
+      'onMousedown': (event: MouseEvent) => {
         callHandler(attrs.onMousedown, event)
         pressable.events.pressStart()
       },
-      onMouseup: (event: MouseEvent) => {
+      'onMouseup': (event: MouseEvent) => {
         callHandler(attrs.onMouseup, event)
         pressable.events.pressEnd()
       },
-      onMouseleave: (event: MouseEvent) => {
+      'onMouseleave': (event: MouseEvent) => {
         callHandler(attrs.onMouseleave, event)
         pressable.events.pressCancel()
       },
-      onBlur: (event: FocusEvent) => {
+      'onBlur': (event: FocusEvent) => {
         callHandler(attrs.onBlur, event)
         pressable.events.pressCancel()
-      }
+      },
     }))
 
     return () => h(props.as, rootAttrs.value, slots.default?.())
-  }
+  },
 })
 
-export type { PressableSize, PressableVariant } from '@varo/primitives-core'
+export type { PressableSize, PressableVariant } from '@varo-ui/headless'

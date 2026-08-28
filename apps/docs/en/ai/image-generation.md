@@ -9,8 +9,8 @@ Stable image surface from queued work through refinement to completion.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,27 +29,27 @@ import { AgentImageGeneration } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `className` | `ClassValue` | `undefined` | Root classes merged by the target-specific `cn` helper |
-| `status` | `'queued' \| 'generating' \| 'completed' \| 'failed'` | `queued` | Generation status |
-| `progress` | `number` | `0` | Progress |
-| `src` | `string` | `—` | Image source |
-| `alt` | `string` | `Generated image` | Alt text |
-| `prompt` | `string` | `—` | Prompt |
+| Prop        | Type                                                  | Default           | Description                                            |
+| ----------- | ----------------------------------------------------- | ----------------- | ------------------------------------------------------ |
+| `className` | `ClassValue`                                          | `undefined`       | Root classes merged by the target-specific `cn` helper |
+| `status`    | `'queued' \| 'generating' \| 'completed' \| 'failed'` | `queued`          | Generation status                                      |
+| `progress`  | `number`                                              | `0`               | Progress                                               |
+| `src`       | `string`                                              | `—`               | Image source                                           |
+| `alt`       | `string`                                              | `Generated image` | Alt text                                               |
+| `prompt`    | `string`                                              | `—`               | Prompt                                                 |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `retry` | `void` | Retry |
-| `download` | `string` | Download |
+| Event      | Payload  | Description |
+| ---------- | -------- | ----------- |
+| `retry`    | `void`   | Retry       |
+| `download` | `string` | Download    |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                                               |
+| ---------- | -------------------------------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`                            |
 | weapp-vite | Default export from `@/components/agent-ui/AgentImageGeneration.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

@@ -1,0 +1,48 @@
+"@varo-ui/ai@1.0.0":
+  dir: packages/agent-core
+  intents:
+    - jolly-terms-repeat
+"@varo-ui/ai@1.0.1":
+  dir: packages/agent-core
+  intents:
+    - modern-bottles-smile
+"@varo-ui/cli@1.0.0":
+  dir: packages/cli
+  intents:
+    - jolly-terms-repeat
+"@varo-ui/cli@1.0.1":
+  dir: packages/cli
+  intents:
+    - modern-bottles-smile
+"@varo-ui/h5@1.0.0":
+  dir: packages/ui-h5
+  intents:
+    - jolly-terms-repeat
+"@varo-ui/h5@1.0.1":
+  dir: packages/ui-h5
+  intents:
+    - modern-bottles-smile
+"@varo-ui/headless@1.0.0":
+  dir: packages/primitives-core
+  intents:
+    - jolly-terms-repeat
+"@varo-ui/headless@1.0.1":
+  dir: packages/primitives-core
+  intents:
+    - modern-bottles-smile
+"@varo-ui/theme@1.0.0":
+  dir: packages/theme
+  intents:
+    - jolly-terms-repeat
+"@varo-ui/theme@1.0.1":
+  dir: packages/theme
+  intents:
+    - modern-bottles-smile
+"@varo-ui/weapp@1.0.0":
+  dir: packages/ui-weapp
+  intents:
+    - jolly-terms-repeat
+"@varo-ui/weapp@1.0.1":
+  dir: packages/ui-weapp
+  intents:
+    - modern-bottles-smile

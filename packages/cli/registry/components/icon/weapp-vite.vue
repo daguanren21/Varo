@@ -1,25 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'wevu'
 
-const GLYPH_BY_NAME: Record<string, string> = {
-  back: '‹',
-  check: '✓',
-  'chevron-down': '⌄',
-  chevronDown: '⌄',
-  'chevron-left': '‹',
-  'chevron-right': '›',
-  'chevron-up': '⌃',
-  close: '×',
-  info: 'i',
-  location: '⌖',
-  menu: '☰',
-  minus: '−',
-  more: '•••',
-  plus: '+',
-  search: '⌕',
-  warning: '!'
-}
-
 const props = withDefaults(
   defineProps<{
     color?: string
@@ -34,18 +15,39 @@ const props = withDefaults(
     label: '',
     size: 16,
     spin: false,
-    tone: 'default'
-  }
+    tone: 'default',
+  },
 )
 
+const GLYPH_BY_NAME: Record<string, string> = {
+  'back': '‹',
+  'check': '✓',
+  'chevron-down': '⌄',
+  'chevronDown': '⌄',
+  'chevron-left': '‹',
+  'chevron-right': '›',
+  'chevron-up': '⌃',
+  'close': '×',
+  'info': 'i',
+  'location': '⌖',
+  'menu': '☰',
+  'minus': '−',
+  'more': '•••',
+  'plus': '+',
+  'search': '⌕',
+  'warning': '!',
+}
+
 const dimension = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
+const accessibleLabel = computed(() => props.label || undefined)
+const ariaHidden = computed(() => (props.label ? undefined : 'true'))
 </script>
 
 <template>
   <text
     class="varo-icon"
-    :aria-hidden="label ? undefined : 'true'"
-    :aria-label="label || undefined"
+    :aria-hidden="ariaHidden"
+    :aria-label="accessibleLabel"
     :data-name="name"
     :data-spin="String(spin)"
     :data-tone="tone"

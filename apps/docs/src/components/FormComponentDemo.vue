@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, ref, useId } from 'vue'
 import {
   VButton,
   VCalendar,
@@ -25,31 +24,32 @@ import {
   VSwitch,
   VTextarea,
   VToast,
-  VUploader
-} from '@varo/ui-h5'
+  VUploader,
+} from '@varo-ui/h5'
+import { computed, onBeforeUnmount, reactive, ref, useId } from 'vue'
 
-type FormDemoKind =
-  | 'calendar'
-  | 'calendar-card'
-  | 'cascader'
-  | 'checkbox'
-  | 'date-picker'
-  | 'form'
-  | 'form-array'
-  | 'input-number'
-  | 'loading'
-  | 'number-keyboard'
-  | 'picker'
-  | 'radio'
-  | 'range'
-  | 'rate'
-  | 'searchbar'
-  | 'select'
-  | 'short-password'
-  | 'switch'
-  | 'textarea'
-  | 'toast'
-  | 'uploader'
+type FormDemoKind
+  = | 'calendar'
+    | 'calendar-card'
+    | 'cascader'
+    | 'checkbox'
+    | 'date-picker'
+    | 'form'
+    | 'form-array'
+    | 'input-number'
+    | 'loading'
+    | 'number-keyboard'
+    | 'picker'
+    | 'radio'
+    | 'range'
+    | 'rate'
+    | 'searchbar'
+    | 'select'
+    | 'short-password'
+    | 'switch'
+    | 'textarea'
+    | 'toast'
+    | 'uploader'
 type Locale = 'zh' | 'en'
 type Platform = 'h5' | 'weapp'
 
@@ -59,8 +59,8 @@ const props = withDefaults(
     locale?: Locale
   }>(),
   {
-    locale: 'zh'
-  }
+    locale: 'zh',
+  },
 )
 
 const codeExpanded = ref(false)
@@ -82,16 +82,16 @@ const formModel = reactive({
   budget: 40,
   contact: '',
   email: '',
-  files: [] as Array<{ name: string; status?: 'ready' | 'uploading' | 'done' | 'failed' }>,
+  files: [] as Array<{ name: string, status?: 'ready' | 'uploading' | 'done' | 'failed' }>,
   gender: '',
   interests: [] as string[],
   password: '',
   quantity: 1,
   remark: '',
-  score: 0
+  score: 0,
 })
 const formArrayModel = reactive({
-  companies: [{ name: '', contact: '', phone: '', type: '' }]
+  companies: [{ name: '', contact: '', phone: '', type: '' }],
 })
 const primaryCompanyIndex = ref(0)
 const calendarValue = ref('2026-05-14')
@@ -100,7 +100,7 @@ const pickerValue = ref<string | number>('apple')
 const shortPasswordValue = ref('123')
 const uploaderFiles = ref([
   { name: 'avatar.png', progress: 100, status: 'done' as const, url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80' },
-  { name: 'contract.pdf', progress: 64, status: 'uploading' as const }
+  { name: 'contract.pdf', progress: 64, status: 'uploading' as const },
 ])
 const calendarVisible = ref(true)
 const cascaderVisible = ref(true)
@@ -116,30 +116,30 @@ const blurTrigger = 'blur' as const
 const formRules = {
   account: [
     { required: true, trigger: changeTrigger },
-    { min: 3, trigger: changeTrigger }
+    { min: 3, trigger: changeTrigger },
   ],
   budget: { min: 50, trigger: changeTrigger },
   contact: [
     { required: true, trigger: [changeTrigger, blurTrigger] },
-    { length: 11, trigger: blurTrigger }
+    { length: 11, trigger: blurTrigger },
   ],
   email: [
     { required: true, trigger: [changeTrigger, blurTrigger] },
-    { email: true, trigger: blurTrigger }
+    { email: true, trigger: blurTrigger },
   ],
   files: { required: true, trigger: changeTrigger },
   gender: { required: true, trigger: changeTrigger },
   interests: { required: true, trigger: changeTrigger },
   password: [
     { required: true, trigger: changeTrigger },
-    { length: 6, trigger: changeTrigger }
+    { length: 6, trigger: changeTrigger },
   ],
   quantity: { min: 2, trigger: changeTrigger },
   remark: [
     { required: true, trigger: [changeTrigger, blurTrigger] },
-    { max: 80, trigger: blurTrigger }
+    { max: 80, trigger: blurTrigger },
   ],
-  score: { min: 1, trigger: changeTrigger }
+  score: { min: 1, trigger: changeTrigger },
 }
 const formArrayRules = computed(() =>
   Object.fromEntries(
@@ -148,26 +148,26 @@ const formArrayRules = computed(() =>
         `companies.${index}.name`,
         [
           { required: true, trigger: changeTrigger },
-          { min: 2, trigger: changeTrigger }
-        ]
+          { min: 2, trigger: changeTrigger },
+        ],
       ],
       [
         `companies.${index}.contact`,
-        [{ required: true, trigger: changeTrigger }]
+        [{ required: true, trigger: changeTrigger }],
       ],
       [
         `companies.${index}.phone`,
         [
           { required: true, trigger: [changeTrigger, blurTrigger] },
-          { length: 11, trigger: blurTrigger }
-        ]
+          { length: 11, trigger: blurTrigger },
+        ],
       ],
       [
         `companies.${index}.type`,
-        [{ required: true, trigger: changeTrigger }]
-      ]
-    ])
-  )
+        [{ required: true, trigger: changeTrigger }],
+      ],
+    ]),
+  ),
 )
 
 const copy = computed(() =>
@@ -233,7 +233,7 @@ const copy = computed(() =>
         removeCompany: 'Remove',
         companyCountSuffix: 'items',
         password: 'Password',
-        remark: 'Remark'
+        remark: 'Remark',
       }
     : {
         preview: '演示效果',
@@ -296,8 +296,8 @@ const copy = computed(() =>
         removeCompany: '删除',
         companyCountSuffix: '项',
         password: '短密码',
-        remark: '备注'
-      }
+        remark: '备注',
+      },
 )
 
 const cascaderOptions = computed(() =>
@@ -308,17 +308,17 @@ const cascaderOptions = computed(() =>
           value: 'zhejiang',
           children: [
             { label: 'Hangzhou', value: 'hangzhou' },
-            { label: 'Ningbo', value: 'ningbo' }
-          ]
+            { label: 'Ningbo', value: 'ningbo' },
+          ],
         },
         {
           label: 'Jiangsu',
           value: 'jiangsu',
           children: [
             { label: 'Nanjing', value: 'nanjing' },
-            { label: 'Suzhou', value: 'suzhou' }
-          ]
-        }
+            { label: 'Suzhou', value: 'suzhou' },
+          ],
+        },
       ]
     : [
         {
@@ -326,18 +326,18 @@ const cascaderOptions = computed(() =>
           value: 'zhejiang',
           children: [
             { label: '杭州', value: 'hangzhou' },
-            { label: '宁波', value: 'ningbo' }
-          ]
+            { label: '宁波', value: 'ningbo' },
+          ],
         },
         {
           label: '江苏',
           value: 'jiangsu',
           children: [
             { label: '南京', value: 'nanjing' },
-            { label: '苏州', value: 'suzhou' }
-          ]
-        }
-      ]
+            { label: '苏州', value: 'suzhou' },
+          ],
+        },
+      ],
 )
 
 const pickerColumns = computed(() =>
@@ -345,13 +345,13 @@ const pickerColumns = computed(() =>
     ? [
         { label: 'Apple', value: 'apple' },
         { label: 'Pear', value: 'pear' },
-        { label: 'Orange', value: 'orange' }
+        { label: 'Orange', value: 'orange' },
       ]
     : [
         { label: '苹果', value: 'apple' },
         { label: '梨', value: 'pear' },
-        { label: '橙子', value: 'orange' }
-      ]
+        { label: '橙子', value: 'orange' },
+      ],
 )
 
 const selectOptions = computed(() =>
@@ -359,17 +359,17 @@ const selectOptions = computed(() =>
     ? [
         { label: 'Shanghai', value: 'shanghai' },
         { label: 'Hangzhou', value: 'hangzhou' },
-        { label: 'Shenzhen', value: 'shenzhen' }
+        { label: 'Shenzhen', value: 'shenzhen' },
       ]
     : [
         { label: '上海', value: 'shanghai' },
         { label: '杭州', value: 'hangzhou' },
-        { label: '深圳', value: 'shenzhen' }
-      ]
+        { label: '深圳', value: 'shenzhen' },
+      ],
 )
 
-const platformPackage = computed(() => (activePlatform.value === 'h5' ? '@varo/ui-h5' : '@varo/ui-weapp'))
-const packageTag = computed(() => (activePlatform.value === 'h5' ? '@varo/ui-h5' : '@varo/ui-weapp'))
+const platformPackage = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
+const packageTag = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
 
 function codeFor(packageName: string) {
   const isEn = props.locale === 'en'
@@ -416,7 +416,7 @@ import { VCascader } from '${packageName}'
 
 const visible = ref(true)
 const value = ref(['zhejiang'])
-const options = ${isEn ? "[{ label: 'Zhejiang', value: 'zhejiang', children: [{ label: 'Hangzhou', value: 'hangzhou' }] }]" : "[{ label: '浙江', value: 'zhejiang', children: [{ label: '杭州', value: 'hangzhou' }] }]"}
+const options = ${isEn ? '[{ label: \'Zhejiang\', value: \'zhejiang\', children: [{ label: \'Hangzhou\', value: \'hangzhou\' }] }]' : '[{ label: \'浙江\', value: \'zhejiang\', children: [{ label: \'杭州\', value: \'hangzhou\' }] }]'}
 <\/script>
 
 <template>
@@ -686,7 +686,7 @@ import { VPicker } from '${packageName}'
 
 const visible = ref(true)
 const value = ref('apple')
-const columns = ${isEn ? "[{ label: 'Apple', value: 'apple' }, { label: 'Pear', value: 'pear' }]" : "[{ label: '苹果', value: 'apple' }, { label: '梨', value: 'pear' }]"}
+const columns = ${isEn ? '[{ label: \'Apple\', value: \'apple\' }, { label: \'Pear\', value: \'pear\' }]' : '[{ label: \'苹果\', value: \'apple\' }, { label: \'梨\', value: \'pear\' }]'}
 <\/script>
 
 <template>
@@ -797,7 +797,7 @@ import { ref } from 'vue'
 import { VSelect } from '${packageName}'
 
 const city = ref<string | number>('hangzhou')
-const options = ${isEn ? "[{ label: 'Shanghai', value: 'shanghai' }, { label: 'Hangzhou', value: 'hangzhou' }, { label: 'Shenzhen', value: 'shenzhen' }]" : "[{ label: '上海', value: 'shanghai' }, { label: '杭州', value: 'hangzhou' }, { label: '深圳', value: 'shenzhen' }]"}
+const options = ${isEn ? '[{ label: \'Shanghai\', value: \'shanghai\' }, { label: \'Hangzhou\', value: \'hangzhou\' }, { label: \'Shenzhen\', value: \'shenzhen\' }]' : '[{ label: \'上海\', value: \'shanghai\' }, { label: \'杭州\', value: \'hangzhou\' }, { label: \'深圳\', value: \'shenzhen\' }]'}
 <\/script>
 
 <template>
@@ -850,7 +850,7 @@ import { VLoading } from '${packageName}'
 
 const activeCode = computed(() => codeFor(platformPackage.value))
 const codeToggleLabel = computed(() =>
-  codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand
+  codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand,
 )
 const copyLabel = computed(() => {
   if (copyState.value === 'copied') {
@@ -909,7 +909,8 @@ function removeFormArrayCompany(index: number) {
   formArrayModel.companies.splice(index, 1)
   if (primaryCompanyIndex.value > index) {
     primaryCompanyIndex.value -= 1
-  } else if (primaryCompanyIndex.value >= formArrayModel.companies.length) {
+  }
+  else if (primaryCompanyIndex.value >= formArrayModel.companies.length) {
     primaryCompanyIndex.value = Math.max(0, formArrayModel.companies.length - 1)
   }
 }
@@ -933,7 +934,6 @@ function onFormArraySubmit() {
 function onFormArrayFailed() {
   formArrayStatus.value = copy.value.saveFailed
 }
-
 </script>
 
 <template>
@@ -1102,7 +1102,6 @@ function onFormArrayFailed() {
               <VUploader :value="value.value as []" :upload-text="copy.upload" @update:value="setValue" />
             </template>
           </VFormItem>
-
         </VForm>
 
         <div v-if="example === 'form'" class="form-demo__form-actions">
@@ -1407,7 +1406,7 @@ function onFormArrayFailed() {
           :title="copyLabel"
           @click="copySnippet"
         >
-          <span class="form-demo__code-copy-icon" aria-hidden="true"></span>
+          <span class="form-demo__code-copy-icon" aria-hidden="true" />
           <span class="form-demo__code-copy-label">{{ copyLabel }}</span>
         </button>
       </div>
@@ -1440,6 +1439,7 @@ function onFormArrayFailed() {
   --form-demo-code-border: #304056;
   --form-demo-code-text: #e8eef5;
   --form-demo-code-muted: #9eacc0;
+
   position: relative;
   margin: 20px 0 28px;
 }
@@ -1449,30 +1449,34 @@ function onFormArrayFailed() {
   display: grid;
   gap: 14px;
   padding: 18px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--form-demo-surface) 94%, transparent),
+      var(--form-demo-surface-strong)
+    ),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 10%, transparent), transparent 36%);
   border: 1px solid var(--form-demo-border);
   border-radius: var(--varo-demo-radius);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--form-demo-surface) 94%, transparent), var(--form-demo-surface-strong)),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 10%, transparent), transparent 36%);
   box-shadow: var(--form-demo-shadow);
 }
 
 .form-demo__label {
-  color: var(--vp-c-text-2);
   font-size: 13px;
   font-weight: 600;
+  color: var(--vp-c-text-2);
 }
 
 .form-demo__preview {
   display: grid;
   gap: 12px;
-  min-height: 88px;
   align-items: start;
+  min-height: 88px;
 }
 
 .form-demo__preview[data-example='select'] {
-  overflow: visible;
   padding-bottom: 8px;
+  overflow: visible;
 }
 
 .form-demo__preview[data-example='select'] :deep(.varo-select) {
@@ -1493,22 +1497,22 @@ function onFormArrayFailed() {
   min-height: 280px;
   padding: 12px;
   overflow: hidden;
+  background: var(--varo-demo-phone-screen);
   border: 1px solid var(--form-demo-border);
   border-radius: 20px;
-  background: var(--varo-demo-phone-screen);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--varo-card-solid) 18%, transparent),
     0 14px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
 .form-demo__preview[data-example='toast'] {
-  min-height: 148px;
   align-items: center;
   justify-content: center;
+  min-height: 148px;
   padding: 18px;
+  background: color-mix(in srgb, var(--form-demo-surface-strong) 88%, transparent);
   border: 1px solid var(--form-demo-border);
   border-radius: 18px;
-  background: color-mix(in srgb, var(--form-demo-surface-strong) 88%, transparent);
 }
 
 .form-demo__preview[data-example='calendar'] :deep(.varo-calendar),
@@ -1530,17 +1534,17 @@ function onFormArrayFailed() {
 .form-demo__reopen,
 .form-demo__array-add {
   display: inline-flex;
-  width: fit-content;
-  min-height: 38px;
   align-items: center;
   justify-content: center;
+  width: fit-content;
+  min-height: 38px;
   padding: 0 14px;
-  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, transparent);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  font-weight: 700;
   color: var(--varo-primary);
   cursor: pointer;
-  font-weight: 700;
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, transparent);
+  border-radius: 12px;
   transition:
     border-color 0.18s ease,
     background 0.18s ease,
@@ -1551,12 +1555,11 @@ function onFormArrayFailed() {
 
 .form-demo__reopen:hover,
 .form-demo__array-add:hover {
-  border-color: color-mix(in srgb, var(--varo-primary) 56%, transparent);
   background: color-mix(in srgb, var(--varo-primary) 16%, transparent);
-  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--varo-primary) 56%, transparent);
   box-shadow: 0 6px 14px color-mix(in srgb, var(--varo-primary) 14%, transparent);
+  transform: translateY(-1px);
 }
-
 
 .form-demo__array-toolbar,
 .form-demo__form-actions {
@@ -1571,35 +1574,35 @@ function onFormArrayFailed() {
 }
 
 .form-demo__form-status {
-  color: var(--vp-c-text-2);
   font-size: 13px;
   font-weight: 600;
+  color: var(--vp-c-text-2);
 }
 
 .form-demo__array-count {
   display: inline-flex;
-  min-height: 32px;
   align-items: center;
+  min-height: 32px;
   padding: 0 12px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-muted) 12%, transparent);
-  color: var(--vp-c-text-2);
   font-size: 12px;
   font-weight: 700;
+  color: var(--vp-c-text-2);
+  background: color-mix(in srgb, var(--varo-muted) 12%, transparent);
+  border-radius: 999px;
 }
 
 .form-demo__array-item {
   padding: 14px;
+  background: color-mix(in srgb, var(--varo-surface-strong) 72%, transparent);
   border: 1px solid var(--varo-border);
   border-radius: 14px;
-  background: color-mix(in srgb, var(--varo-surface-strong) 72%, transparent);
 }
 
 .form-demo__array-header {
   display: flex;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
   margin-bottom: 12px;
 }
 
@@ -1617,14 +1620,14 @@ function onFormArrayFailed() {
 
 .form-demo__array-badge {
   display: inline-flex;
-  min-height: 24px;
   align-items: center;
+  min-height: 24px;
   padding: 0 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-primary) 12%, transparent);
-  color: var(--varo-primary);
   font-size: 11px;
   font-weight: 800;
+  color: var(--varo-primary);
+  background: color-mix(in srgb, var(--varo-primary) 12%, transparent);
+  border-radius: 999px;
 }
 
 .form-demo__array-grid {
@@ -1648,15 +1651,15 @@ function onFormArrayFailed() {
 .form-demo__array-secondary,
 .form-demo__array-remove {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 72px;
   min-height: 36px;
   padding: 0 12px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  cursor: pointer;
   font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
+  border-radius: 10px;
   transition:
     border-color 0.18s ease,
     background 0.18s ease,
@@ -1666,29 +1669,28 @@ function onFormArrayFailed() {
 }
 
 .form-demo__array-secondary {
-  border: 1px solid var(--varo-border);
-  background: color-mix(in srgb, var(--varo-card-solid) 86%, transparent);
   color: var(--vp-c-text-2);
+  background: color-mix(in srgb, var(--varo-card-solid) 86%, transparent);
+  border: 1px solid var(--varo-border);
 }
 
 .form-demo__array-remove {
-  border: 1px solid color-mix(in srgb, var(--varo-danger) 18%, transparent);
-  background: color-mix(in srgb, var(--varo-danger) 12%, transparent);
   color: var(--varo-danger);
+  background: color-mix(in srgb, var(--varo-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--varo-danger) 18%, transparent);
 }
 
 .form-demo__array-secondary:hover {
-  border-color: color-mix(in srgb, var(--varo-primary) 34%, var(--varo-border));
-  background: color-mix(in srgb, var(--varo-primary) 8%, var(--varo-card-solid));
   color: var(--varo-foreground);
+  background: color-mix(in srgb, var(--varo-primary) 8%, var(--varo-card-solid));
+  border-color: color-mix(in srgb, var(--varo-primary) 34%, var(--varo-border));
 }
 
 .form-demo__array-remove:hover {
-  border-color: color-mix(in srgb, var(--varo-danger) 36%, transparent);
   background: color-mix(in srgb, var(--varo-danger) 18%, transparent);
+  border-color: color-mix(in srgb, var(--varo-danger) 36%, transparent);
   transform: translateY(-1px);
 }
-
 
 @media (max-width: 640px) {
   .form-demo__array-grid {
@@ -1703,16 +1705,16 @@ function onFormArrayFailed() {
   z-index: 2;
   display: inline-flex;
   gap: 8px;
-  min-height: 36px;
-  height: auto;
   align-items: center;
   justify-content: center;
+  height: auto;
+  min-height: 36px;
+  padding: 0 12px;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  background: color-mix(in srgb, var(--form-demo-surface-strong) 92%, transparent);
   border: 1px solid var(--form-demo-border);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--form-demo-surface-strong) 92%, transparent);
-  color: var(--vp-c-text-2);
-  padding: 0 12px;
-  cursor: pointer;
   transition:
     color 0.18s ease,
     border-color 0.18s ease,
@@ -1722,9 +1724,9 @@ function onFormArrayFailed() {
 
 .form-demo__code-toggle:hover,
 .form-demo__code-toggle[data-active='true'] {
-  border-color: color-mix(in srgb, var(--varo-primary) 46%, transparent);
-  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
   color: var(--varo-primary);
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--varo-primary) 46%, transparent);
   transform: translateY(-1px);
 }
 
@@ -1741,71 +1743,72 @@ function onFormArrayFailed() {
 .form-demo__code {
   margin-top: 12px;
   overflow: hidden;
+  background: var(--form-demo-code-bg);
   border: 1px solid var(--form-demo-code-border);
   border-radius: 14px;
-  background: var(--form-demo-code-bg);
   box-shadow: 0 12px 28px color-mix(in srgb, #020617 22%, transparent);
 }
 
 .form-demo__code-toolbar {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
   padding: 12px 12px 0;
 }
 
 .form-demo__tabs {
   display: inline-flex;
   gap: 4px;
-  margin: 0;
   padding: 3px;
+  margin: 0;
+  background: var(--form-demo-code-surface);
   border: 1px solid var(--form-demo-code-border);
   border-radius: 10px;
-  background: var(--form-demo-code-surface);
 }
 
 .form-demo__tab {
   min-height: 36px;
-  border: 0;
-  border-radius: 7px;
   padding: 0 14px;
-  background: transparent;
-  color: var(--form-demo-code-muted);
-  cursor: pointer;
   font-size: 13px;
   font-weight: 700;
+  color: var(--form-demo-code-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
   transition:
     background 0.18s ease,
     color 0.18s ease;
 }
 
 .form-demo__tab[data-active='true'] {
-  background: #243247;
   color: var(--form-demo-code-text);
+  background: #243247;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--varo-primary) 24%, transparent);
 }
+
 .form-demo__tab:hover:not([data-active='true']) {
-  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
   color: var(--form-demo-code-text);
+  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
 }
 
 .form-demo__code-copy {
   display: inline-flex;
-  min-height: 34px;
+  gap: 6px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  min-height: 34px;
   padding: 0 12px;
-  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, var(--form-demo-code-border));
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
-  color: var(--form-demo-code-text);
   font-size: 12px;
   font-weight: 700;
-  cursor: pointer;
+  color: var(--form-demo-code-text);
   white-space: nowrap;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, var(--form-demo-code-border));
+  border-radius: 9px;
   transition:
     border-color 0.18s ease,
     background 0.18s ease,
@@ -1813,21 +1816,21 @@ function onFormArrayFailed() {
 }
 
 .form-demo__code-copy:hover {
-  border-color: color-mix(in srgb, var(--varo-primary) 72%, var(--form-demo-code-border));
+  color: #fff;
   background: color-mix(in srgb, var(--varo-primary) 16%, transparent);
-  color: #ffffff;
+  border-color: color-mix(in srgb, var(--varo-primary) 72%, var(--form-demo-code-border));
 }
 
 .form-demo__code-copy[data-state='copied'] {
-  border-color: color-mix(in srgb, #4ade80 48%, transparent);
-  background: color-mix(in srgb, #4ade80 18%, transparent);
   color: #bbf7d0;
+  background: color-mix(in srgb, #4ade80 18%, transparent);
+  border-color: color-mix(in srgb, #4ade80 48%, transparent);
 }
 
 .form-demo__code-copy[data-state='unsupported'] {
-  border-color: color-mix(in srgb, #fbbf24 48%, transparent);
-  background: color-mix(in srgb, #fbbf24 14%, transparent);
   color: #fde68a;
+  background: color-mix(in srgb, #fbbf24 14%, transparent);
+  border-color: color-mix(in srgb, #fbbf24 48%, transparent);
 }
 
 .form-demo__code-copy-icon {
@@ -1839,11 +1842,11 @@ function onFormArrayFailed() {
 
 .form-demo__code-copy-icon::before,
 .form-demo__code-copy-icon::after {
-  content: '';
   position: absolute;
   width: 8px;
   height: 10px;
-  border: 1.5px solid currentColor;
+  content: '';
+  border: 1.5px solid currentcolor;
   border-radius: 2px;
 }
 
@@ -1855,7 +1858,7 @@ function onFormArrayFailed() {
 .form-demo__code-copy-icon::after {
   bottom: 0;
   left: 0;
-  background: currentColor;
+  background: currentcolor;
   opacity: 0.18;
 }
 
@@ -1878,12 +1881,12 @@ function onFormArrayFailed() {
 
 .form-demo__code-head {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   padding: 12px 16px 0;
-  color: var(--form-demo-code-text);
   font-size: 13px;
+  color: var(--form-demo-code-text);
 }
 
 .form-demo__code-head span {
@@ -1891,12 +1894,12 @@ function onFormArrayFailed() {
 }
 
 .form-demo__code pre {
-  margin: 0;
   padding: 14px 16px 18px;
+  margin: 0;
   overflow-x: auto;
-  color: var(--form-demo-code-text);
   font-size: 13px;
   line-height: 1.65;
+  color: var(--form-demo-code-text);
 }
 
 .form-demo__code code {
@@ -1904,22 +1907,22 @@ function onFormArrayFailed() {
 }
 
 .form-demo__code-toast {
-  margin: 0;
-  border-top: 1px solid var(--form-demo-code-border);
   padding: 8px 16px;
+  margin: 0;
   font-size: 11px;
   font-weight: 650;
   line-height: 1.3;
+  border-top: 1px solid var(--form-demo-code-border);
 }
 
 .form-demo__code-toast[data-state='copied'] {
-  background: color-mix(in srgb, #4ade80 12%, transparent);
   color: #bbf7d0;
+  background: color-mix(in srgb, #4ade80 12%, transparent);
 }
 
 .form-demo__code-toast[data-state='unsupported'] {
-  background: color-mix(in srgb, #fbbf24 12%, transparent);
   color: #fde68a;
+  background: color-mix(in srgb, #fbbf24 12%, transparent);
 }
 
 :deep(.varo-checkbox-group),
@@ -1947,8 +1950,8 @@ function onFormArrayFailed() {
   }
 
   .form-demo__code-head {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -1958,9 +1961,9 @@ function onFormArrayFailed() {
 }
 
 .form-demo__array-item {
+  background: var(--varo-card-solid);
   border-color: var(--varo-border);
   border-radius: var(--varo-radius-lg);
-  background: var(--varo-card-solid);
   box-shadow: var(--varo-shadow-sm);
 }
 
@@ -1983,40 +1986,40 @@ function onFormArrayFailed() {
 
 .form-demo__reopen,
 .form-demo__array-add {
-  border-color: var(--varo-primary);
-  background: var(--varo-primary);
   color: var(--varo-primary-foreground);
+  background: var(--varo-primary);
+  border-color: var(--varo-primary);
 }
 
 .form-demo__array-secondary,
 .form-demo__array-count {
-  border: 1px solid var(--varo-border);
-  background: var(--varo-card-muted);
   color: var(--varo-foreground);
+  background: var(--varo-card-muted);
+  border: 1px solid var(--varo-border);
 }
 
 .form-demo__array-badge {
-  background: var(--varo-card-muted);
   color: var(--varo-accent);
+  background: var(--varo-card-muted);
 }
 
 .form-demo__array-remove {
-  border-color: color-mix(in srgb, var(--varo-danger) 22%, transparent);
-  background: var(--varo-danger-soft);
   color: var(--varo-danger);
+  background: var(--varo-danger-soft);
+  border-color: color-mix(in srgb, var(--varo-danger) 22%, transparent);
 }
 
 .form-demo__code-toggle {
-  border-color: var(--varo-border);
-  background: var(--varo-card-solid);
   color: var(--varo-muted);
+  background: var(--varo-card-solid);
+  border-color: var(--varo-border);
 }
 
 .form-demo__code-toggle:hover,
 .form-demo__code-toggle[data-active='true'] {
-  border-color: var(--varo-border-strong);
-  background: var(--varo-card-muted);
   color: var(--varo-foreground);
+  background: var(--varo-card-muted);
+  border-color: var(--varo-border-strong);
 }
 
 .form-demo__tabs {
@@ -2024,8 +2027,8 @@ function onFormArrayFailed() {
 }
 
 .form-demo__tab[data-active='true'] {
-  background: var(--varo-card-solid);
   color: var(--varo-foreground);
+  background: var(--varo-card-solid);
 }
 
 :deep(.varo-input__body),

@@ -27,31 +27,31 @@ Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `
 
 ## Mini-program guidance
 
-For mini-programs, it is usually better to wrap `@varo/primitives-weapp` into an internal modal component because platform container differences tend to be larger around overlays and portals. The tabbed example focuses on the shared interaction contract and parts composition.
+For mini-programs, it is usually better to wrap `@varo-ui/headless` into an internal modal component because platform container differences tend to be larger around overlays and portals. The tabbed example focuses on the shared interaction contract and parts composition.
 
 ## Root Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `open` | `boolean \| undefined` | `undefined` | Controlled open state |
-| `defaultOpen` | `boolean` | `false` | Uncontrolled initial state |
-| `disabled` | `boolean \| undefined` | `undefined` | Blocks open and close behavior |
+| Prop          | Type                   | Default     | Description                    |
+| ------------- | ---------------------- | ----------- | ------------------------------ |
+| `open`        | `boolean \| undefined` | `undefined` | Controlled open state          |
+| `defaultOpen` | `boolean`              | `false`     | Uncontrolled initial state     |
+| `disabled`    | `boolean \| undefined` | `undefined` | Blocks open and close behavior |
 
 ## Root Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:open` | `boolean` | Sync controlled open state |
-| `openChange` | `boolean` | Fires when open state changes |
+| Event         | Payload   | Description                   |
+| ------------- | --------- | ----------------------------- |
+| `update:open` | `boolean` | Sync controlled open state    |
+| `openChange`  | `boolean` | Fires when open state changes |
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `VDialogTrigger` | Opens or toggles the dialog |
+| Part             | Purpose                               |
+| ---------------- | ------------------------------------- |
+| `VDialogTrigger` | Opens or toggles the dialog           |
 | `VDialogOverlay` | Overlay layer that can close on click |
-| `VDialogContent` | Modal content container |
-| `VDialogClose` | Explicit close action |
+| `VDialogContent` | Modal content container               |
+| `VDialogClose`   | Explicit close action                 |
 
 ## Behavior
 

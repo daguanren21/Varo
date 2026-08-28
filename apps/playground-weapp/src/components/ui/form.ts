@@ -1,21 +1,23 @@
-import '../../styles/varo.css'
+import type { ReactiveRuntime } from '@varo-ui/headless'
+import type { FieldRule, FormRules, FormValues, UseFormReturn } from '@varo/hooks'
+import type { InjectionKey, PropType, StyleValue } from 'vue'
+import { useVaroTheme } from '@varo-ui/theme'
+import { useForm } from '@varo/hooks'
+import { createVariantClass } from '@varo/shared'
 import {
   computed,
   defineComponent,
   h,
   inject,
+
   onBeforeUnmount,
+
   provide,
   ref,
+
   watch,
-  type InjectionKey,
-  type PropType,
-  type StyleValue
 } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { useVaroTheme } from '@varo/theme'
-import { useForm, type FieldRule, type FormRules, type FormValues, type UseFormReturn } from '@varo/hooks'
-import type { ReactiveRuntime } from '@varo/primitives-core'
+import '../../styles/varo.css'
 
 type FormSubmitPayload = Parameters<ReturnType<UseFormReturn['handleSubmit']>>[0]
 type FormLabelAlign = 'left' | 'center' | 'right'
@@ -28,11 +30,11 @@ const formContextKey: InjectionKey<{
 
 const vueRuntime: ReactiveRuntime = {
   computed,
-  ref
+  ref,
 }
 
 function normalizeLabelWidth(value: number | string | undefined): string | undefined {
-  if (value === undefined || value === '') return undefined
+  if (value === undefined || value === '') { return undefined }
   return typeof value === 'number' ? `${value}px` : value
 }
 
@@ -43,29 +45,29 @@ export const VForm = defineComponent({
     disabled: Boolean,
     model: {
       type: Object as PropType<FormValues | undefined>,
-      default: undefined
+      default: undefined,
     },
     initialValues: {
       type: Object as PropType<FormValues | undefined>,
-      default: undefined
+      default: undefined,
     },
     rules: {
       type: Object as PropType<FormRules>,
-      default: () => ({})
+      default: () => ({}),
     },
     labelAlign: {
       type: String as PropType<FormLabelAlign>,
-      default: 'left'
+      default: 'left',
     },
     labelWidth: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     showError: {
       type: Boolean,
-      default: true
+      default: true,
     },
-    validateOnChange: Boolean
+    validateOnChange: Boolean,
   },
   emits: ['submit', 'failed', 'reset'],
   setup(props, { attrs, emit, expose, slots }) {
@@ -76,38 +78,39 @@ export const VForm = defineComponent({
       set: (nextValues) => {
         if (props.model) {
           Object.keys(props.model).forEach((key) => {
-            if (!(key in nextValues)) delete props.model?.[key]
+            if (!(key in nextValues)) { delete props.model?.[key] }
           })
           Object.assign(props.model, nextValues)
-        } else {
+        }
+        else {
           localValues.value = nextValues
         }
-      }
+      },
     })
     const form = useForm({
       initialValues: (props.model ?? props.initialValues ?? {}) as FormValues,
       rules: props.rules,
       runtime: vueRuntime,
       validateOnChange: props.validateOnChange,
-      values
+      values,
     })
     const classes = computed(() =>
       createVariantClass('varo-form', {
         radius: theme.value.components.input.borderRadius,
-        disabled: props.disabled
-      })
+        disabled: props.disabled,
+      }),
     )
     const labelBasis = computed(() => normalizeLabelWidth(props.labelWidth))
 
     watch(
       () => props.rules,
-      (rules) => form.setRules(rules),
-      { deep: true }
+      rules => form.setRules(rules),
+      { deep: true },
     )
 
     provide(formContextKey, {
       form,
-      showError: props.showError
+      showError: props.showError,
     })
 
     async function submit(event?: Event) {
@@ -119,7 +122,7 @@ export const VForm = defineComponent({
         },
         (payload) => {
           emit('failed', payload)
-        }
+        },
       )(event)
     }
 
@@ -127,7 +130,7 @@ export const VForm = defineComponent({
       form.reset((props.initialValues ?? props.model ?? {}) as FormValues)
       emit('reset', {
         errors: form.errors.value,
-        values: form.values.value
+        values: form.values.value,
       })
     }
 
@@ -135,7 +138,7 @@ export const VForm = defineComponent({
       form,
       reset,
       validate: form.validate,
-      validateField: form.validateField
+      validateField: form.validateField,
     })
 
     return () => {
@@ -145,25 +148,25 @@ export const VForm = defineComponent({
         'form',
         {
           ...formAttrs,
-          class: [classes.value, className],
-          style: [
+          'class': [classes.value, className],
+          'style': [
             {
-              '--varo-form-label-width': labelBasis.value
+              '--varo-form-label-width': labelBasis.value,
             },
-            style as StyleValue
+            style as StyleValue,
           ],
           'data-disabled': String(props.disabled),
           'data-label-align': props.labelAlign,
-          onReset: (event: Event) => {
+          'onReset': (event: Event) => {
             event.preventDefault()
             reset()
           },
-          onSubmit: submit
+          'onSubmit': submit,
         },
-        slots.default?.({ form }) ?? []
+        slots.default?.({ form }) ?? [],
       )
     }
-  }
+  },
 })
 
 export const VFormItem = defineComponent({
@@ -172,29 +175,29 @@ export const VFormItem = defineComponent({
     colon: Boolean,
     label: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     labelWidth: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
+      default: undefined,
     },
     name: {
       type: String,
-      required: true
+      required: true,
     },
     required: Boolean,
     rules: {
       type: [String, Object, Function, Array] as PropType<FieldRule | undefined>,
-      default: undefined
+      default: undefined,
     },
     showError: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     validateTrigger: {
       type: String as PropType<FormValidateTrigger>,
-      default: 'submit'
-    }
+      default: 'submit',
+    },
   },
   setup(props, { attrs, slots }) {
     const context = inject(formContextKey)
@@ -206,7 +209,7 @@ export const VFormItem = defineComponent({
     const mergedRules = computed<FieldRule | undefined>(() => {
       const baseRules = props.rules ?? formContext.form.rules.value[props.name]
 
-      if (!props.required) return baseRules
+      if (!props.required) { return baseRules }
 
       if (!baseRules) {
         return { required: true }
@@ -226,25 +229,26 @@ export const VFormItem = defineComponent({
 
       return {
         required: true,
-        ...baseRules
+        ...baseRules,
       }
     })
     const field = formContext.form.registerField(props.name, {
       label: props.label,
-      rules: mergedRules.value
+      rules: mergedRules.value,
     })
     const invalid = computed(() => field.errorMessage.value.length > 0)
     const shouldShowError = computed(() => props.showError ?? formContext.showError)
     const labelBasis = computed(() => normalizeLabelWidth(props.labelWidth))
 
-    watch(mergedRules, (rules) => field.setRules(rules))
+    watch(mergedRules, rules => field.setRules(rules))
     onBeforeUnmount(() => field.unregister())
 
     function setValue(value: unknown) {
       field.value.value = value
       if (props.validateTrigger === 'change') {
         void field.validate()
-      } else if (formContext.form.shouldValidateField(props.name, 'change')) {
+      }
+      else if (formContext.form.shouldValidateField(props.name, 'change')) {
         void field.validate('change')
       }
     }
@@ -253,7 +257,8 @@ export const VFormItem = defineComponent({
       field.setTouched(true)
       if (props.validateTrigger === 'blur') {
         void field.validate()
-      } else if (formContext.form.shouldValidateField(props.name, 'blur')) {
+      }
+      else if (formContext.form.shouldValidateField(props.name, 'blur')) {
         void field.validate('blur')
       }
       return event
@@ -266,28 +271,28 @@ export const VFormItem = defineComponent({
         'div',
         {
           ...itemAttrs,
-          class: ['varo-form-item', className],
-          style: [
+          'class': ['varo-form-item', className],
+          'style': [
             labelBasis.value ? { '--varo-form-item-label-width': labelBasis.value } : undefined,
-            style as StyleValue
+            style as StyleValue,
           ],
           'data-invalid': String(invalid.value),
           'data-name': props.name,
           'data-required': String(props.required),
-          'data-validate-trigger': props.validateTrigger
+          'data-validate-trigger': props.validateTrigger,
         },
         [
           props.label || slots.label
             ? h('label', { class: 'varo-form-item__label' }, [
                 slots.label?.() ?? props.label,
-                props.colon ? h('span', { class: 'varo-form-item__colon' }, ':') : null
+                props.colon ? h('span', { class: 'varo-form-item__colon' }, ':') : null,
               ])
             : null,
           h('div', { class: 'varo-form-item__body' }, [
             h(
               'div',
               {
-                class: 'varo-form-item__control'
+                class: 'varo-form-item__control',
               },
               slots.default?.({
                 errorMessage: field.errorMessage,
@@ -295,17 +300,17 @@ export const VFormItem = defineComponent({
                 onBlur,
                 setValue,
                 validate: field.validate,
-                value: field.value
-              }) ?? []
+                value: field.value,
+              }) ?? [],
             ),
             shouldShowError.value && invalid.value
               ? h('div', { class: 'varo-form-item__error' }, field.errorMessage.value)
-              : null
-          ])
-        ]
+              : null,
+          ]),
+        ],
       )
     }
-  }
+  },
 })
 
 export type { FieldRule, FormRules, FormSubmitPayload, FormValues, UseFormReturn }

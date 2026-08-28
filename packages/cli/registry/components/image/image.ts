@@ -1,7 +1,9 @@
+import type { PropType, StyleValue } from 'vue'
+import type { ImageDimension, ImageFit } from '../../lib/varo-primitives'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
+import { ImageRoot } from '../../lib/varo-primitives'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { ImageRoot, type ImageDimension, type ImageFit } from '../../lib/varo-primitives'
 
 export const VImage = defineComponent({
   name: 'VImage',
@@ -9,58 +11,58 @@ export const VImage = defineComponent({
     src: String,
     alt: {
       type: String,
-      default: ''
+      default: '',
     },
     width: {
       type: [Number, String] as PropType<ImageDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
     height: {
       type: [Number, String] as PropType<ImageDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
     fit: {
       type: String as PropType<ImageFit>,
-      default: 'fill'
+      default: 'fill',
     },
     position: {
       type: String,
-      default: 'center'
+      default: 'center',
     },
     radius: {
       type: [Number, String] as PropType<ImageDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
     round: Boolean,
     lazyLoad: Boolean,
     showLoading: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showError: {
       type: Boolean,
-      default: true
+      default: true,
     },
     loadingText: {
       type: String,
-      default: ''
+      default: '',
     },
     errorText: {
       type: String,
-      default: ''
+      default: '',
     },
     draggable: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['load', 'error', 'click'],
   setup(props, { attrs, emit, slots }) {
     const classes = computed(() =>
       createVariantClass('varo-image', {
         fit: props.fit,
-        round: props.round
-      })
+        round: props.round,
+      }),
     )
 
     return () =>
@@ -86,9 +88,9 @@ export const VImage = defineComponent({
           width: props.width,
           onClick: (event: MouseEvent) => emit('click', event),
           onError: (event: Event) => emit('error', event),
-          onLoad: (event: Event) => emit('load', event)
+          onLoad: (event: Event) => emit('load', event),
         },
-        slots
+        slots,
       )
-  }
+  },
 })

@@ -4,7 +4,7 @@
 
 ## 运行时
 
-同时提供 `@varo/primitives-h5` 与 `@varo/primitives-weapp`。
+状态契约由 `@varo-ui/headless` 提供；渲染 Parts 分别来自 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives`。
 
 ## 演示
 
@@ -13,9 +13,9 @@
 ## 安装
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # 或
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## 基础用法
@@ -28,27 +28,27 @@ pnpm add @varo/primitives-weapp
 
 ## Parts
 
-| Part | 作用 |
-| --- | --- |
-| `SwitchRoot` | 状态与切换 |
-| `SwitchThumb` | 滑块 part |
+| Part          | 作用       |
+| ------------- | ---------- |
+| `SwitchRoot`  | 状态与切换 |
+| `SwitchThumb` | 滑块 part  |
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `checked` | `boolean \| undefined` | `undefined` | 受控开关态 |
-| `defaultChecked` | `boolean` | `false` | 非受控初始态 |
-| `disabled` | `boolean` | `false` | 禁用 |
-| `loading` | `boolean` | `false` | 加载中，不可切换 |
-| `as` | `string` | `'button'` | 根节点标签 |
+| Prop             | 类型                   | 默认值      | 描述             |
+| ---------------- | ---------------------- | ----------- | ---------------- |
+| `checked`        | `boolean \| undefined` | `undefined` | 受控开关态       |
+| `defaultChecked` | `boolean`              | `false`     | 非受控初始态     |
+| `disabled`       | `boolean`              | `false`     | 禁用             |
+| `loading`        | `boolean`              | `false`     | 加载中，不可切换 |
+| `as`             | `string`               | `'button'`  | 根节点标签       |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
+| Event            | Payload   | 描述     |
+| ---------------- | --------- | -------- |
 | `update:checked` | `boolean` | 受控同步 |
-| `checkedChange` | `boolean` | 状态变化 |
+| `checkedChange`  | `boolean` | 状态变化 |
 
 ## 无障碍
 

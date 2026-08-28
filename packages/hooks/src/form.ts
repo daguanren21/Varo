@@ -1,18 +1,18 @@
 import { getByPath, setByPath } from '@varo/utils'
 
-export interface Ref<T> {
+interface Ref<T> {
   value: T
 }
 
-export interface WritableRef<T> extends Ref<T> {
+interface WritableRef<T> extends Ref<T> {
   value: T
 }
 
-export interface ReactiveRuntime {
+interface ReactiveRuntime {
   ref: <T>(value: T) => WritableRef<T>
   computed: {
     <T>(getter: () => T): Ref<T>
-    <T>(options: { get: () => T; set: (value: T) => void }): WritableRef<T>
+    <T>(options: { get: () => T, set: (value: T) => void }): WritableRef<T>
   }
 }
 
@@ -34,7 +34,7 @@ export interface RuleContext<TValues extends FormValues = FormValues> {
 
 export type RuleValidator<TValues extends FormValues = FormValues> = (
   value: unknown,
-  context: RuleContext<TValues>
+  context: RuleContext<TValues>,
 ) => AsyncRuleResult
 
 export interface RuleRecord<TValues extends FormValues = FormValues> extends Record<string, unknown> {
@@ -42,11 +42,11 @@ export interface RuleRecord<TValues extends FormValues = FormValues> extends Rec
   trigger?: FieldValidateTriggerConfig
   validator?: RuleValidator<TValues>
 }
-export type FieldRule<TValues extends FormValues = FormValues> =
-  | string
-  | RuleRecord<TValues>
-  | RuleValidator<TValues>
-  | Array<string | RuleRecord<TValues> | RuleValidator<TValues>>
+export type FieldRule<TValues extends FormValues = FormValues>
+  = | string
+    | RuleRecord<TValues>
+    | RuleValidator<TValues>
+    | Array<string | RuleRecord<TValues> | RuleValidator<TValues>>
 export type FormRules<TValues extends FormValues = FormValues> = Partial<
   Record<keyof TValues | string, FieldRule<TValues>>
 >
@@ -102,11 +102,11 @@ export interface UseFormReturn<TValues extends FormValues = FormValues> {
   getFieldValue: <TValue = unknown>(name: string) => TValue
   handleSubmit: (
     onValid: (payload: SubmitPayload<TValues>) => unknown | Promise<unknown>,
-    onInvalid?: (payload: SubmitPayload<TValues>) => unknown | Promise<unknown>
+    onInvalid?: (payload: SubmitPayload<TValues>) => unknown | Promise<unknown>,
   ) => (event?: unknown) => Promise<FormValidationResult<TValues>>
   registerField: <TValue = unknown>(
     name: string,
-    options?: RegisterFieldOptions<TValues>
+    options?: RegisterFieldOptions<TValues>,
   ) => UseFieldReturn<TValue>
   reset: (values?: TValues) => void
   rules: WritableRef<FormRules<TValues>>
@@ -136,20 +136,20 @@ interface NormalizedRule<TValues extends FormValues = FormValues> {
   validator?: RuleValidator<TValues>
 }
 
-const ruleRegistry = new Map<string, RuleValidator>()
+const customRuleRegistry = new Map<string, RuleValidator>()
 
 function ref<T>(value: T): WritableRef<T> {
   return { value }
 }
 
 function computed<T>(getter: () => T): Ref<T>
-function computed<T>(options: { get: () => T; set: (value: T) => void }): WritableRef<T>
-function computed<T>(source: (() => T) | { get: () => T; set: (value: T) => void }) {
+function computed<T>(options: { get: () => T, set: (value: T) => void }): WritableRef<T>
+function computed<T>(source: (() => T) | { get: () => T, set: (value: T) => void }) {
   if (typeof source === 'function') {
     return {
       get value() {
         return source()
-      }
+      },
     }
   }
 
@@ -159,13 +159,13 @@ function computed<T>(source: (() => T) | { get: () => T; set: (value: T) => void
     },
     set value(value: T) {
       source.set(value)
-    }
+    },
   }
 }
 
 const defaultReactiveRuntime: ReactiveRuntime = {
   computed,
-  ref
+  ref,
 }
 
 function resolveRuntime(runtime?: ReactiveRuntime): ReactiveRuntime {
@@ -173,20 +173,20 @@ function resolveRuntime(runtime?: ReactiveRuntime): ReactiveRuntime {
 }
 
 function isEmpty(value: unknown): boolean {
-  if (value === null || value === undefined) return true
-  if (typeof value === 'string') return value.trim().length === 0
-  if (Array.isArray(value)) return value.length === 0
+  if (value === null || value === undefined) { return true }
+  if (typeof value === 'string') { return value.trim().length === 0 }
+  if (Array.isArray(value)) { return value.length === 0 }
   return false
 }
 
 function getSize(value: unknown): number {
-  if (typeof value === 'number') return value
-  if (typeof value === 'string' || Array.isArray(value)) return value.length
+  if (typeof value === 'number') { return value }
+  if (typeof value === 'string' || Array.isArray(value)) { return value.length }
   return Number(value)
 }
 
 function toLimit(params: unknown): number {
-  if (Array.isArray(params)) return Number(params[0])
+  if (Array.isArray(params)) { return Number(params[0]) }
   return Number(params)
 }
 
@@ -194,112 +194,109 @@ function fieldName(context: RuleContext): string {
   return context.label ?? context.name
 }
 
-export function defineRule(name: string, validator: RuleValidator): void {
-  ruleRegistry.set(name, validator)
+const defaultRuleRegistry: Record<string, RuleValidator> = {
+  required(value, context) {
+    return !isEmpty(value) || `${fieldName(context)} 为必填项`
+  },
+  min(value, context) {
+    if (isEmpty(value)) { return true }
+    const min = toLimit(context.params)
+    return getSize(value) >= min || `${fieldName(context)} 至少为 ${min}`
+  },
+  max(value, context) {
+    if (isEmpty(value)) { return true }
+    const max = toLimit(context.params)
+    return getSize(value) <= max || `${fieldName(context)} 最多为 ${max}`
+  },
+  length(value, context) {
+    if (isEmpty(value)) { return true }
+    const length = toLimit(context.params)
+    return getSize(value) === length || `${fieldName(context)} 长度必须为 ${length}`
+  },
+  email(value, context) {
+    if (isEmpty(value)) { return true }
+    return /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/.test(String(value)) || `${fieldName(context)} 请输入有效邮箱`
+  },
+  pattern(value, context) {
+    if (isEmpty(value)) { return true }
+    const pattern = context.params instanceof RegExp ? context.params : new RegExp(String(context.params))
+    return pattern.test(String(value)) || `${fieldName(context)} 格式不正确`
+  },
 }
 
-defineRule('required', (value, context) => {
-  return !isEmpty(value) || `${fieldName(context)} 为必填项`
-})
-
-defineRule('min', (value, context) => {
-  if (isEmpty(value)) return true
-  const min = toLimit(context.params)
-  return getSize(value) >= min || `${fieldName(context)} 至少为 ${min}`
-})
-
-defineRule('max', (value, context) => {
-  if (isEmpty(value)) return true
-  const max = toLimit(context.params)
-  return getSize(value) <= max || `${fieldName(context)} 最多为 ${max}`
-})
-
-defineRule('length', (value, context) => {
-  if (isEmpty(value)) return true
-  const length = toLimit(context.params)
-  return getSize(value) === length || `${fieldName(context)} 长度必须为 ${length}`
-})
-
-defineRule('email', (value, context) => {
-  if (isEmpty(value)) return true
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value)) || `${fieldName(context)} 请输入有效邮箱`
-})
-
-defineRule('pattern', (value, context) => {
-  if (isEmpty(value)) return true
-  const pattern = context.params instanceof RegExp ? context.params : new RegExp(String(context.params))
-  return pattern.test(String(value)) || `${fieldName(context)} 格式不正确`
-})
+export function defineRule(name: string, validator: RuleValidator): void {
+  customRuleRegistry.set(name, validator)
+}
 
 function parseParams(source: string): unknown {
-  if (!source) return true
-  const params = source.split(',').map((item) => item.trim())
+  if (!source) { return true }
+  const params = source.split(',').map(item => item.trim())
   return params.length === 1 ? params[0] : params
 }
 
 function normalizeStringRule<TValues extends FormValues>(rule: string): NormalizedRule<TValues>[] {
   return rule
     .split('|')
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean)
     .map((item) => {
       const separator = item.indexOf(':')
-      if (separator === -1) return { name: item, params: true }
+      if (separator === -1) { return { name: item, params: true } }
       return {
         name: item.slice(0, separator),
-        params: parseParams(item.slice(separator + 1))
+        params: parseParams(item.slice(separator + 1)),
       }
     })
 }
 
 function normalizeRule<TValues extends FormValues>(
-  rule?: FieldRule<TValues>
+  rule?: FieldRule<TValues>,
 ): NormalizedRule<TValues>[] {
-  if (!rule) return []
-  if (typeof rule === 'string') return normalizeStringRule(rule)
-  if (typeof rule === 'function') return [{ validator: rule }]
-  if (Array.isArray(rule)) return rule.flatMap((item) => normalizeRule<TValues>(item))
+  if (!rule) { return [] }
+  if (typeof rule === 'string') { return normalizeStringRule(rule) }
+  if (typeof rule === 'function') { return [{ validator: rule }] }
+  if (Array.isArray(rule)) { return rule.flatMap(item => normalizeRule<TValues>(item)) }
 
   if (typeof rule.validator === 'function') {
     return [
       {
         message: typeof rule.message === 'string' ? rule.message : undefined,
         trigger: rule.trigger,
-        validator: rule.validator
-      }
+        validator: rule.validator,
+      },
     ]
   }
 
   return Object.entries(rule)
     .filter(
       ([name, params]) =>
-        name !== 'message' &&
-        name !== 'trigger' &&
-        name !== 'validator' &&
-        params !== false &&
-        params !== null &&
-        params !== undefined
+        name !== 'message'
+        && name !== 'trigger'
+        && name !== 'validator'
+        && params !== false
+        && params !== null
+        && params !== undefined,
     )
     .map(([name, params]) => ({
       message: typeof rule.message === 'string' ? rule.message : undefined,
       name,
       params,
-      trigger: rule.trigger
+      trigger: rule.trigger,
     }))
 }
 
 function normalizeResult(result: RuleResult, fallback: string): string | undefined {
-  if (result === true || result === undefined || result === null) return undefined
-  if (result === false) return fallback
+  if (result === true || result === undefined || result === null) { return undefined }
+  if (result === false) { return fallback }
   return result
 }
 
 function matchesTrigger<TValues extends FormValues>(
   rule: NormalizedRule<TValues>,
-  trigger: FieldValidateTrigger
+  trigger: FieldValidateTrigger,
 ): boolean {
-  if (trigger === 'submit') return true
-  if (!rule.trigger) return false
+  if (trigger === 'submit') { return true }
+  if (!rule.trigger) { return false }
   const triggers = Array.isArray(rule.trigger) ? rule.trigger : [rule.trigger]
   return triggers.includes(trigger)
 }
@@ -307,7 +304,7 @@ function matchesTrigger<TValues extends FormValues>(
 function mergeMeta(source: FormMeta, name: string, value: boolean): FormMeta {
   return {
     ...source,
-    [name]: value
+    [name]: value,
   }
 }
 
@@ -316,7 +313,8 @@ function mergeErrors(source: FormErrors, name: string, error?: string): FormErro
 
   if (error) {
     next[name] = error
-  } else {
+  }
+  else {
     delete next[name]
   }
 
@@ -324,7 +322,7 @@ function mergeErrors(source: FormErrors, name: string, error?: string): FormErro
 }
 
 export function useForm<TValues extends FormValues = FormValues>(
-  options: UseFormOptions<TValues> = {}
+  options: UseFormOptions<TValues> = {},
 ): UseFormReturn<TValues> {
   const runtime = resolveRuntime(options.runtime)
   const initialValues = { ...(options.initialValues ?? {}) } as TValues
@@ -350,12 +348,13 @@ export function useForm<TValues extends FormValues = FormValues>(
         const payload: SubmitPayload<TValues> = {
           errors: result.errors,
           event,
-          values: result.values
+          values: result.values,
         }
 
         if (result.valid) {
           await onValid(payload)
-        } else {
+        }
+        else {
           await onInvalid?.(payload)
         }
 
@@ -380,7 +379,7 @@ export function useForm<TValues extends FormValues = FormValues>(
         setRules(nextRules?: FieldRule) {
           fields.set(name, {
             ...fields.get(name),
-            rules: nextRules as FieldRule<TValues> | undefined
+            rules: nextRules as FieldRule<TValues> | undefined,
           })
         },
         setTouched(nextTouched: boolean) {
@@ -396,8 +395,8 @@ export function useForm<TValues extends FormValues = FormValues>(
         },
         value: runtime.computed<TValue>({
           get: () => form.getFieldValue<TValue>(name),
-          set: (value) => form.setFieldValue(name, value)
-        })
+          set: value => form.setFieldValue(name, value),
+        }),
       }
 
       return field satisfies UseFieldReturn<TValue>
@@ -431,7 +430,7 @@ export function useForm<TValues extends FormValues = FormValues>(
       const field = fields.get(name)
       const fieldRules = field?.rules ?? (rules.value as FormRules<TValues>)[name]
 
-      return normalizeRule(fieldRules).some((rule) => matchesTrigger(rule, trigger))
+      return normalizeRule(fieldRules).some(rule => matchesTrigger(rule, trigger))
     },
     submitCount,
     touched,
@@ -445,7 +444,7 @@ export function useForm<TValues extends FormValues = FormValues>(
           if (!result.valid) {
             nextErrors[name] = result.errors[0] ?? `${name} is invalid`
           }
-        })
+        }),
       )
 
       errors.value = nextErrors
@@ -453,41 +452,43 @@ export function useForm<TValues extends FormValues = FormValues>(
       return {
         errors: nextErrors,
         valid: Object.keys(nextErrors).length === 0,
-        values: values.value
+        values: values.value,
       }
     },
     async validateField(name: string, trigger: FieldValidateTrigger = 'submit') {
       const field = fields.get(name)
       const fieldRules = field?.rules ?? (rules.value as FormRules<TValues>)[name]
-      const normalizedRules = normalizeRule(fieldRules).filter((rule) => matchesTrigger(rule, trigger))
+      const normalizedRules = normalizeRule(fieldRules).filter(rule => matchesTrigger(rule, trigger))
       const fieldErrors: string[] = []
       const value = form.getFieldValue(name)
 
       for (const rule of normalizedRules) {
-        const validator = rule.validator ?? (rule.name ? ruleRegistry.get(rule.name) : undefined)
-        if (!validator) continue
+        const validator
+          = rule.validator
+            ?? (rule.name ? customRuleRegistry.get(rule.name) ?? defaultRuleRegistry[rule.name] : undefined)
+        if (!validator) { continue }
 
         const result = await (validator as RuleValidator<TValues>)(value, {
           form,
           label: field?.label,
           name,
           params: rule.params,
-          values: values.value
+          values: values.value,
         })
         const error = normalizeResult(result, rule.message ?? `${field?.label ?? name} is invalid`)
 
-        if (error) fieldErrors.push(error)
+        if (error) { fieldErrors.push(error) }
       }
 
       form.setFieldError(name, fieldErrors[0])
 
       return {
         errors: fieldErrors,
-        valid: fieldErrors.length === 0
+        valid: fieldErrors.length === 0,
       }
     },
     validateOnChange,
-    values
+    values,
   }
 
   return form
@@ -496,7 +497,7 @@ export function useForm<TValues extends FormValues = FormValues>(
 export function useField<TValue = unknown, TValues extends FormValues = FormValues>(
   form: UseFormReturn<TValues>,
   name: string,
-  options?: RegisterFieldOptions<TValues>
+  options?: RegisterFieldOptions<TValues>,
 ): UseFieldReturn<TValue> {
   return form.registerField<TValue>(name, options)
 }

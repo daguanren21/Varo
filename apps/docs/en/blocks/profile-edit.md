@@ -9,8 +9,8 @@
 - File: `src/components/blocks/profile-edit.vue`
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target h5 blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target h5 blocks/profile-edit
 ```
 
 ## Boundary

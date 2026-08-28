@@ -1,1 +1,1 @@
-export * from '@varo/primitives-h5'
+export * from '@varo-ui/h5/primitives'

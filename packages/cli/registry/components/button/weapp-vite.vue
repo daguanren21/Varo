@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
+import { cn } from '../../lib/cn'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
 type ButtonVariant = 'solid' | 'outline' | 'ghost'
@@ -9,6 +11,7 @@ type ButtonShape = 'default' | 'square' | 'round'
 const props = withDefaults(
   defineProps<{
     block?: boolean
+    className?: ClassValue
     disabled?: boolean
     hairline?: boolean
     icon?: string
@@ -35,25 +38,30 @@ const props = withDefaults(
     shape: 'default',
     size: 'md',
     tone: 'primary',
-    variant: 'solid'
-  }
+    variant: 'solid',
+  },
 )
 
 const emit = defineEmits<{
   click: [event: unknown]
 }>()
 
-const classes = computed(() => [
-  'varo-button',
-  `varo-button--size-${props.size}`,
-  `varo-button--variant-${props.plain ? 'outline' : props.variant}`,
-  `varo-button--tone-${props.tone}`,
-  `varo-button--shape-${props.shape}`
-])
+const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
+const classes = computed(() =>
+  cn(
+    'varo-button',
+    `varo-button--size-${props.size}`,
+    `varo-button--variant-${visualVariant.value}`,
+    `varo-button--tone-${props.tone}`,
+    `varo-button--shape-${props.shape}`,
+    props.className,
+  ),
+)
 const formType = computed(() => (props.nativeType === 'submit' || props.nativeType === 'reset' ? props.nativeType : undefined))
+const hoverClass = computed(() => (props.disabled || props.loading ? 'none' : 'varo-button--pressed'))
 
 function click(event: unknown) {
-  if (!props.disabled && !props.loading) emit('click', event)
+  if (!props.disabled && !props.loading) { emit('click', event) }
 }
 </script>
 
@@ -62,6 +70,9 @@ function click(event: unknown) {
     :class="classes"
     :disabled="disabled || loading"
     :form-type="formType"
+    :hover-class="hoverClass"
+    :hover-start-time="20"
+    :hover-stay-time="70"
     :data-block="String(block)"
     :data-disabled="String(disabled)"
     :data-hairline="String(hairline)"
@@ -70,7 +81,7 @@ function click(event: unknown) {
     :data-shape="shape"
     :data-size="size"
     :data-tone="tone"
-    :data-variant="plain ? 'outline' : variant"
+    :data-variant="visualVariant"
     @click="click"
   >
     <template v-if="loading">
@@ -79,10 +90,14 @@ function click(event: unknown) {
     </template>
     <template v-else>
       <text v-if="$slots.icon || (icon && iconPosition === 'left')" class="varo-button__icon" data-position="left">
-        <slot name="icon">{{ icon }}</slot>
+        <slot name="icon">
+          {{ icon }}
+        </slot>
       </text>
       <slot />
-      <text v-if="icon && iconPosition === 'right'" class="varo-button__icon" data-position="right">{{ icon }}</text>
+      <text v-if="icon && iconPosition === 'right'" class="varo-button__icon" data-position="right">
+        {{ icon }}
+      </text>
     </template>
   </button>
 </template>

@@ -6,13 +6,13 @@ Varo 的 registry 目标不是只发布 npm 包，而是让业务项目拿到可
 
 ```bash
 # weapp-vite 小程序 Base Kit
-pnpm dlx @varo/cli add --target weapp-vite button select card
+pnpm dlx @varo-ui/cli add --target weapp-vite button select card
 
 # weapp-vite 高共识扩展
-pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
 
 # H5
-pnpm dlx @varo/cli add --target h5 button select card
+pnpm dlx @varo-ui/cli add --target h5 button select card
 ```
 
 小程序会得到：
@@ -30,24 +30,24 @@ H5 会得到同一公共 API 对应的 `.ts` 组件源码。小程序对与原�
 CLI 默认不会覆盖已经存在的文件。确认本地差异可以被替换后，再显式使用：
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite --force button select
+pnpm dlx @varo-ui/cli add --target weapp-vite --force button select
 ```
 
 安装 Block 时，CLI 会递归安装目标平台需要的组件和工具：
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target h5 blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target h5 blocks/profile-edit
 ```
 
 ## Agent UI
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
-pnpm dlx @varo/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 ```
 
-该条目安装 36 个双端 Agent 组件，覆盖 Loading、Thinking、Streaming、Message、Tool、Task、Approval、Composer、Code、Diff、Image Generation、Citations、Activity、Sidebar、Context、Tables、Flowchart、Fine-tune 与 Selection Actions；`blocks/agent-chat` 提供完整会话 Block。`@varo/agent-core` 提供模型无关事件协议、SSE/分块解码和双端平滑调度。
+该条目安装 36 个双端 Agent 组件，覆盖 Loading、Thinking、Streaming、Message、Tool、Task、Approval、Composer、Code、Diff、Image Generation、Citations、Activity、Sidebar、Context、Tables、Flowchart、Fine-tune 与 Selection Actions；`blocks/agent-chat` 提供完整会话 Block。`@varo-ui/ai` 提供模型无关事件协议、SSE/分块解码和双端平滑调度。
 
 ## 二次封装业务组件
 
@@ -73,7 +73,7 @@ export const UserSelect = defineComponent({
     const keyword = shallowRef('')
     const users = shallowRef<UserRecord[]>([])
     const options = computed(() =>
-      users.value.map((user) => ({
+      users.value.map(user => ({
         label: `${user.name} / ${user.team}`,
         value: user.id
       }))
@@ -81,11 +81,11 @@ export const UserSelect = defineComponent({
 
     return () =>
       h(VSelect, {
-        value: props.value,
-        options: options.value,
-        placeholder: '选择用户',
+        'value': props.value,
+        'options': options.value,
+        'placeholder': '选择用户',
         'onUpdate:value': (value: string) => emit('update:value', value),
-        onSearch: (value: string) => {
+        'onSearch': (value: string) => {
           keyword.value = value
         }
       })
@@ -97,10 +97,10 @@ export const UserSelect = defineComponent({
 
 ## 分层边界
 
-| 层级 | 位置 | 职责 |
-| --- | --- | --- |
-| Primitives | `@varo/primitives-*` | 状态、事件、Root/Trigger/Content 契约 |
-| Agent Core | `@varo/agent-core` | 事件协议、SSE/分块传输、平滑文本队列与 Markdown AST |
-| Base Kit | `src/components/ui/*` | 可复制、可改造的低层组件 |
-| Business Wrappers | `src/components/biz/*` | 远程搜索、分组、分页、接口字段和业务文案 |
-| Blocks | `src/components/blocks/*` | 可复制的业务页面切片 |
+| 层级              | 位置                      | 职责                                                   |
+| ----------------- | ------------------------- | ------------------------------------------------------ |
+| Headless          | `@varo-ui/headless`       | 跨 H5/App/Weapp 的状态机、事件、受控状态与无运行时工具 |
+| Agent Core        | `@varo-ui/ai`             | 事件协议、SSE/分块传输、平滑文本队列与 Markdown AST    |
+| Base Kit          | `src/components/ui/*`     | 可复制、可改造的低层组件                               |
+| Business Wrappers | `src/components/biz/*`    | 远程搜索、分组、分页、接口字段和业务文案               |
+| Blocks            | `src/components/blocks/*` | 可复制的业务页面切片                                   |

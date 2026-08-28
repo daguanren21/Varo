@@ -1,2 +1,1 @@
-export { useDialogRoot } from '@varo/primitives-core'
-
+export { useDialogRoot } from '@varo-ui/headless'

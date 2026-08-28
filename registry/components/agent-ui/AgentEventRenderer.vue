@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentChoice } from './types'
 import { computed } from 'wevu'
-import type { AgentStreamSnapshot } from '@varo/agent-core'
 import AgentApproval from './AgentApproval.vue'
 import AgentLoading from './AgentLoading.vue'
 import AgentMessage from './AgentMessage.vue'
 import AgentThinking from './AgentThinking.vue'
 import AgentToolChip from './AgentToolChip.vue'
-import type { AgentChoice } from './types'
 
 const props = defineProps<{
   snapshot: AgentStreamSnapshot
@@ -20,9 +20,15 @@ const emit = defineEmits<{
 const emptyChoices: AgentChoice[] = []
 
 const streamStatus = computed<'completed' | 'failed' | 'idle' | 'streaming'>(() => {
-  if (props.snapshot.status === 'completed') return 'completed'
-  if (props.snapshot.status === 'failed' || props.snapshot.status === 'cancelled') return 'failed'
-  if (props.snapshot.status === 'idle') return 'idle'
+  if (props.snapshot.status === 'completed') {
+    return 'completed'
+  }
+  if (props.snapshot.status === 'failed' || props.snapshot.status === 'cancelled') {
+    return 'failed'
+  }
+  if (props.snapshot.status === 'idle') {
+    return 'idle'
+  }
   return 'streaming'
 })
 const choices = computed<AgentChoice[]>(() => props.snapshot.approval?.choices ?? emptyChoices)
@@ -32,7 +38,6 @@ const approvalDescription = computed(() => String(props.snapshot.approval?.descr
 const approvalTitle = computed(() => String(props.snapshot.approval?.title ?? ''))
 const approvalId = computed(() => props.snapshot.approval?.id ?? '')
 const showApproval = computed(() => props.snapshot.approval?.status === 'waiting')
-
 </script>
 
 <template>

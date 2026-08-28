@@ -1,8 +1,8 @@
 {
   "name": "@varo/playground-weapp",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
     "clean": "rimraf dist devtools .weapp-vite",
@@ -16,14 +16,16 @@
     "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {
-    "@varo/agent-core": "workspace:^",
-    "@varo/theme": "workspace:*",
-    "@varo/ui-weapp": "workspace:*",
+    "@varo-ui/ai": "workspace:^",
+    "@varo-ui/headless": "workspace:*",
+    "@varo-ui/theme": "workspace:*",
+    "@varo-ui/weapp": "workspace:*",
     "@weapp-tailwindcss/merge": "^2.2.2",
     "clsx": "^2.1.1",
     "wevu": "6.23.0"
   },
   "devDependencies": {
+    "@varo/primitives-weapp": "workspace:*",
     "@vitejs/plugin-vue": "^6.0.7",
     "@weapp-vite/miniprogram-automator": "1.2.15",
     "tailwindcss": "^4.3.3",

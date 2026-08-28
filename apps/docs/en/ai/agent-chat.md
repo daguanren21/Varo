@@ -9,8 +9,8 @@ Complete block composing header, history, events, approval, and prompt input.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 blocks/agent-chat
-pnpm dlx @varo/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,32 +29,32 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `modelValue` | `string` | `''` | Prompt |
-| `busy` | `boolean` | `false` | Busy |
-| `messages` | `AgentConversationMessage[]` | `[]` | Messages |
-| `snapshot` | `AgentStreamSnapshot` | `—` | Snapshot |
-| `subtitle` | `string` | `—` | Subtitle |
-| `suggestions` | `string[]` | `[]` | Suggestions |
-| `title` | `string` | `Varo Agent` | Title |
+| Prop          | Type                         | Default      | Description |
+| ------------- | ---------------------------- | ------------ | ----------- |
+| `modelValue`  | `string`                     | `''`         | Prompt      |
+| `busy`        | `boolean`                    | `false`      | Busy        |
+| `messages`    | `AgentConversationMessage[]` | `[]`         | Messages    |
+| `snapshot`    | `AgentStreamSnapshot`        | `—`          | Snapshot    |
+| `subtitle`    | `string`                     | `—`          | Subtitle    |
+| `suggestions` | `string[]`                   | `[]`         | Suggestions |
+| `title`       | `string`                     | `Varo Agent` | Title       |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `approve` | `string` | Approve |
-| `close` | `void` | Close |
-| `reject` | `void` | Reject |
-| `retry` | `void` | Retry |
-| `submit` | `string` | Submit |
+| Event               | Payload  | Description   |
+| ------------------- | -------- | ------------- |
+| `approve`           | `string` | Approve       |
+| `close`             | `void`   | Close         |
+| `reject`            | `void`   | Reject        |
+| `retry`             | `void`   | Retry         |
+| `submit`            | `string` | Submit        |
 | `update:modelValue` | `string` | Update prompt |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | `@/components/blocks/agent-chat.vue` |
+| Target     | Import                               |
+| ---------- | ------------------------------------ |
+| H5         | `@/components/blocks/agent-chat.vue` |
 | weapp-vite | `@/components/blocks/agent-chat.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

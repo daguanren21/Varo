@@ -1,24 +1,24 @@
-import { defineComponent, h, inject, provide, toRef, useId, type PropType } from 'vue'
+import type { TabsNavigationKey, TabsOrientation, TabsValue, UseTabsRootResult } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
   getTabsNavigationIndex,
+
   useTabsRoot,
-  type TabsNavigationKey,
-  type TabsOrientation,
-  type TabsValue,
-  type UseTabsRootResult
-} from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+
+} from '@varo-ui/headless'
+import { defineComponent, h, inject, provide, toRef, useId } from 'vue'
 import { callHandler, runInteractiveClick, usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useTabsRoot } from './hooks'
 export type * from './types'
-export type { TabsOrientation, TabsValue } from '@varo/primitives-core'
+export type { TabsOrientation, TabsValue } from '@varo-ui/headless'
 
 const tabsRootContextKey = Symbol('varo-tabs-root')
 
 function useTabsRootContext() {
   const context = inject<UseTabsRootResult | undefined>(tabsRootContextKey, undefined)
-  if (!context) throw new Error('Tabs parts must be used within TabsRoot.')
+  if (!context) { throw new Error('Tabs parts must be used within TabsRoot.') }
   return context
 }
 
@@ -27,25 +27,25 @@ export const TabsRoot = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     defaultValue: {
       type: [String, Number] as PropType<TabsValue | undefined>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     id: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     orientation: {
       type: String as PropType<TabsOrientation>,
-      default: 'horizontal'
+      default: 'horizontal',
     },
     value: {
       type: [String, Number] as PropType<TabsValue | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:value', 'valueChange'],
   setup(props, { attrs, emit, slots }) {
@@ -62,13 +62,13 @@ export const TabsRoot = defineComponent({
       onValueChange(value) {
         emit('update:value', value)
         emit('valueChange', value)
-      }
+      },
     })
 
     provide(tabsRootContextKey, tabs)
 
     return () => h(props.as, { ...attrs, ...tabs.attrs.root }, slots.default?.())
-  }
+  },
 })
 
 export const TabsList = defineComponent({
@@ -76,13 +76,13 @@ export const TabsList = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
-    }
+      default: 'div',
+    },
   },
   setup(props, { attrs, slots }) {
     const tabs = useTabsRootContext()
     return () => h(props.as, { ...attrs, ...tabs.attrs.list }, slots.default?.())
-  }
+  },
 })
 
 export const TabsTrigger = defineComponent({
@@ -91,13 +91,13 @@ export const TabsTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     disabled: Boolean,
     value: {
       type: [String, Number] as PropType<TabsValue>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { attrs, slots }) {
     const tabs = useTabsRootContext()
@@ -111,25 +111,25 @@ export const TabsTrigger = defineComponent({
 
     function onKeydown(event: KeyboardEvent) {
       callHandler(attrs.onKeydown, event)
-      if (event.defaultPrevented || props.disabled || !tabs.state.interactive.value) return
+      if (event.defaultPrevented || props.disabled || !tabs.state.interactive.value) { return }
 
       const current = event.currentTarget as HTMLElement | null
       const list = current?.closest('[role="tablist"]') as HTMLElement | null
-      if (!current || !list) return
+      if (!current || !list) { return }
 
       const enabledTabs = Array.from(list.querySelectorAll<HTMLElement>('[role="tab"]')).filter(
-        (trigger) =>
-          trigger.closest('[role="tablist"]') === list &&
-          trigger.getAttribute('aria-disabled') !== 'true'
+        trigger =>
+          trigger.closest('[role="tablist"]') === list
+          && trigger.getAttribute('aria-disabled') !== 'true',
       )
       const nextIndex = getTabsNavigationIndex({
         currentIndex: enabledTabs.indexOf(current),
         itemCount: enabledTabs.length,
         key: event.key as TabsNavigationKey,
-        orientation: tabs.state.orientation.value
+        orientation: tabs.state.orientation.value,
       })
 
-      if (nextIndex === undefined) return
+      if (nextIndex === undefined) { return }
       event.preventDefault()
       enabledTabs[nextIndex]?.focus()
     }
@@ -146,15 +146,15 @@ export const TabsTrigger = defineComponent({
             runInteractiveClick(event, {
               action: () => tabs.events.select(props.value),
               handler: attrs.onClick,
-              interactive: !props.disabled && tabs.state.interactive.value
+              interactive: !props.disabled && tabs.state.interactive.value,
             })
           },
           onFocus,
-          onKeydown
+          onKeydown,
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const TabsContent = defineComponent({
@@ -162,12 +162,12 @@ export const TabsContent = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     value: {
       type: [String, Number] as PropType<TabsValue>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { attrs, slots }) {
     const tabs = useTabsRootContext()
@@ -176,5 +176,5 @@ export const TabsContent = defineComponent({
       tabs.state.value.value === props.value
         ? h(props.as, { ...attrs, ...tabs.api.getContentAttrs(props.value) }, slots.default?.())
         : null
-  }
+  },
 })

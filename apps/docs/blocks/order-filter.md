@@ -9,8 +9,8 @@
 - File: `src/components/blocks/order-filter.vue`
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/order-filter
-pnpm dlx @varo/cli add --target h5 blocks/order-filter
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/order-filter
+pnpm dlx @varo-ui/cli add --target h5 blocks/order-filter
 ```
 
 ## 边界

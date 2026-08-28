@@ -9,8 +9,8 @@ Response stream, cursor, errors, retry, and completion actions.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,32 +29,32 @@ import { AgentStream } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `className` | `ClassValue` | `undefined` | Root classes merged by the target-specific `cn` helper |
-| `content` | `string` | `''` | Visible content |
-| `cursor` | `boolean` | `true` | Show cursor |
-| `error` | `string` | `—` | Error text |
-| `final` | `boolean` | `false` | Whether Markdown is final |
-| `status` | `AgentStreamStatus` | `idle` | Stream status |
+| Prop        | Type                | Default     | Description                                            |
+| ----------- | ------------------- | ----------- | ------------------------------------------------------ |
+| `className` | `ClassValue`        | `undefined` | Root classes merged by the target-specific `cn` helper |
+| `content`   | `string`            | `''`        | Visible content                                        |
+| `cursor`    | `boolean`           | `true`      | Show cursor                                            |
+| `error`     | `string`            | `—`         | Error text                                             |
+| `final`     | `boolean`           | `false`     | Whether Markdown is final                              |
+| `status`    | `AgentStreamStatus` | `idle`      | Stream status                                          |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `retry` | `void` | Request retry |
+| Event   | Payload | Description   |
+| ------- | ------- | ------------- |
+| `retry` | `void`  | Request retry |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
+| Slot      | Description        |
+| --------- | ------------------ |
 | `actions` | Completion actions |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
-| weapp-vite | `@/components/agent-ui/AgentStream.vue` |
+| Target     | Import                                    |
+| ---------- | ----------------------------------------- |
+| H5         | Named export from `@/components/agent-ui` |
+| weapp-vite | `@/components/agent-ui/AgentStream.vue`   |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

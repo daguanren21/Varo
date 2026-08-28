@@ -1,15 +1,16 @@
-import { Fragment, defineComponent, h, inject, provide, toRef, type PropType } from 'vue'
+import type { SelectOption, SelectValue as SelectPrimitiveValue } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
   createSelectRootConsumer,
   createSelectRootProvider,
   provideSelectRootContext,
+
   useSelectRoot,
   useSelectRootContext,
-  type SelectOption,
-  type SelectValue as SelectPrimitiveValue
-} from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+} from '@varo-ui/headless'
+import { defineComponent, Fragment, h, inject, provide, toRef } from 'vue'
 import { usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useSelectRoot } from './hooks'
 export type * from './types'
@@ -29,27 +30,27 @@ export const SelectRoot = defineComponent({
     defaultOpen: Boolean,
     defaultValue: {
       type: [String, Number, Array] as PropType<SelectPrimitiveValue>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     multiple: Boolean,
     open: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     options: {
       type: Array as PropType<SelectOption[]>,
-      default: () => []
+      default: () => [],
     },
     placeholder: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     readonly: Boolean,
     value: {
       type: [String, Number, Array] as PropType<SelectPrimitiveValue>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:open', 'openChange', 'update:value', 'valueChange'],
   setup(props, { emit, slots }) {
@@ -75,13 +76,13 @@ export const SelectRoot = defineComponent({
       onValueChange(value) {
         emit('update:value', value)
         emit('valueChange', value)
-      }
+      },
     })
 
     provideRuntimeSelectRootContext(provideSelectRootContext(select))
 
     return () => h(Fragment, slots.default?.())
-  }
+  },
 })
 
 export const SelectTrigger = defineComponent({
@@ -89,8 +90,8 @@ export const SelectTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
@@ -108,12 +109,12 @@ export const SelectTrigger = defineComponent({
           onClick: (event: MouseEvent) => {
             callHandler(userClick, event)
             select.events.toggle()
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
     }
-  }
+  },
 })
 
 export const SelectValue = defineComponent({
@@ -121,12 +122,12 @@ export const SelectValue = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'text'
+      default: 'text',
     },
     placeholder: {
       type: String,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
@@ -140,12 +141,12 @@ export const SelectValue = defineComponent({
         props.as,
         {
           ...attrs,
-          ...select.attrs.value
+          ...select.attrs.value,
         },
-        slots.default?.({ value: select.state.value.value, text: select.state.displayValue.value }) ??
-          (hasValue(select.state.value.value) ? select.state.displayValue.value : props.placeholder ?? select.state.displayValue.value)
+        slots.default?.({ value: select.state.value.value, text: select.state.displayValue.value })
+        ?? (hasValue(select.state.value.value) ? select.state.displayValue.value : props.placeholder ?? select.state.displayValue.value),
       )
-  }
+  },
 })
 
 export const SelectContent = defineComponent({
@@ -153,8 +154,8 @@ export const SelectContent = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'view'
-    }
+      default: 'view',
+    },
   },
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
@@ -166,7 +167,7 @@ export const SelectContent = defineComponent({
 
       return h(props.as, { ...attrs, ...select.attrs.content }, slots.default?.())
     }
-  }
+  },
 })
 
 export const SelectGroup = defineComponent({
@@ -174,14 +175,14 @@ export const SelectGroup = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'view'
-    }
+      default: 'view',
+    },
   },
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
 
     return () => h(props.as, { ...attrs, ...select.api.getGroupAttrs() }, slots.default?.())
-  }
+  },
 })
 
 export const SelectLabel = defineComponent({
@@ -189,14 +190,14 @@ export const SelectLabel = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'text'
-    }
+      default: 'text',
+    },
   },
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
 
     return () => h(props.as, { ...attrs, ...select.attrs.label }, slots.default?.())
-  }
+  },
 })
 
 export const SelectItem = defineComponent({
@@ -204,12 +205,12 @@ export const SelectItem = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     option: {
       type: Object as PropType<SelectOption>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { attrs, slots }) {
     const select = useSelectRootContext(useRuntimeSelectRootContext())
@@ -224,9 +225,9 @@ export const SelectItem = defineComponent({
           onClick: (event: MouseEvent) => {
             callHandler(attrs.onClick, event)
             select.events.select(props.option)
-          }
+          },
         },
-        slots.default?.({ option: props.option }) ?? props.option.label
+        slots.default?.({ option: props.option }) ?? props.option.label,
       )
-  }
+  },
 })

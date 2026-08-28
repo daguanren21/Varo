@@ -9,8 +9,8 @@ Response action bar for copy, retry, like, and dislike.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,25 +29,25 @@ import { AgentResponseActions } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `content` | `string` | `''` | Response text |
-| `disabled` | `boolean` | `false` | Disabled |
+| Prop       | Type      | Default | Description   |
+| ---------- | --------- | ------- | ------------- |
+| `content`  | `string`  | `''`    | Response text |
+| `disabled` | `boolean` | `false` | Disabled      |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `copy` | `void` | Copied |
-| `retry` | `void` | Retry |
-| `like` | `void` | Like |
-| `dislike` | `void` | Dislike |
+| Event     | Payload | Description |
+| --------- | ------- | ----------- |
+| `copy`    | `void`  | Copied      |
+| `retry`   | `void`  | Retry       |
+| `like`    | `void`  | Like        |
+| `dislike` | `void`  | Dislike     |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                           |
+| ---------- | ------------------------------------------------ |
+| H5         | Named export from `@/components/agent-ui`        |
 | weapp-vite | `@/components/agent-ui/AgentResponseActions.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

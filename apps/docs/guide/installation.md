@@ -2,8 +2,8 @@
 
 ## 推荐接入路径
 
-- 业务项目优先使用 `@varo/cli` 安装可维护源码；runtime 包作为稳定 primitives 与官方封装
-- H5 使用 `@varo/primitives-h5`，小程序使用 `@varo/primitives-weapp`
+- 业务项目优先使用 `@varo-ui/cli` 安装可维护源码；runtime 包作为稳定 primitives 与官方封装
+- H5、App 与小程序共用 `@varo-ui/headless` 的平台无关状态机、事件和受控状态契约
 - 小程序工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`
 
 ## 初始化项目
@@ -17,16 +17,15 @@ pnpm install
 ## 官方 UI 封装
 
 ```bash
-pnpm add vue @varo/ui-h5 @varo/theme
-pnpm add vue wevu@6.23.0 @varo/ui-weapp @varo/theme
-pnpm add @varo/agent-core # 仅在接入 Agent 事件流与 Markdown 时需要
+pnpm add vue @varo-ui/h5 @varo-ui/theme
+pnpm add vue wevu@6.23.0 @varo-ui/weapp @varo-ui/theme
+pnpm add @varo-ui/ai # 仅在接入 Agent 事件流与 Markdown 时需要
 ```
 
 ## Primitives Only
 
 ```bash
-pnpm add vue @varo/primitives-h5
-pnpm add vue wevu@6.23.0 @varo/primitives-weapp
+pnpm add @varo-ui/headless
 ```
 
 ## shadcn 模式安装
@@ -34,11 +33,11 @@ pnpm add vue wevu@6.23.0 @varo/primitives-weapp
 如果你想像 shadcn/ui 一样把源码安装进业务项目，再做二次封装，使用 CLI 的 registry add 流程：
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite button select card
-pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target h5 button select card components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite button select card
+pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target h5 button select card components/agent-ui
 ```
 
 组件会进入 `src/components/ui/*`，blocks 会进入 `src/components/blocks/*`。业务项目可以继续在 `src/components/biz/*` 里封装 `UserSelect`、`DepartmentSelect`、`ProductSelect` 这类领域组件。
@@ -47,10 +46,10 @@ H5 Registry 覆盖 56 个 runtime 组件族；小程序 Registry 覆盖 45 个�
 
 ## Agent 流式接入
 
-`@varo/agent-core` 不绑定模型厂商。服务端只需输出 `message.start`、`text.delta`、`reasoning.*`、`tool.*`、`approval.*`、`message.end` 与 `done` 事件；H5 可接 Fetch/SSE，小程序可把 `wx.request({ enableChunked: true })` 的分块交给 `createAgentSseEventSource()`。
+`@varo-ui/ai` 不绑定模型厂商。服务端只需输出 `message.start`、`text.delta`、`reasoning.*`、`tool.*`、`approval.*`、`message.end` 与 `done` 事件；H5 可接 Fetch/SSE，小程序可把 `wx.request({ enableChunked: true })` 的分块交给 `createAgentSseEventSource()`。
 
 ```ts
-import { createAgentSseEventSource, createAgentStreamController } from '@varo/agent-core'
+import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
 
 const transport = createAgentSseEventSource()
 const controller = createAgentStreamController()
@@ -72,7 +71,7 @@ pnpm add clsx @weapp-tailwindcss/merge
 
 - 文档站、playground 与组件包统一放在 monorepo 内维护
 - 对外消费优先走正式包入口，workspace 开发阶段再切到源码入口
-- H5 与小程序共享 primitives 命名，视觉层由 `@varo/ui-h5` 与 `@varo/ui-weapp` 分别承接
+- H5 与小程序共享 primitives 命名，视觉层由 `@varo-ui/h5` 与 `@varo-ui/weapp` 分别承接
 
 ## 版本说明
 

@@ -4,7 +4,7 @@ Composable checkbox runtime: Root owns checked state; Indicator only renders whe
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,26 +28,26 @@ When `disabled` is set, `checkedChange` no longer fires. Indicator may still ref
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `CheckboxRoot` | State and toggle interaction |
+| Part                | Purpose                         |
+| ------------------- | ------------------------------- |
+| `CheckboxRoot`      | State and toggle interaction    |
 | `CheckboxIndicator` | Indicator rendered when checked |
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `checked` | `boolean \| undefined` | `undefined` | Controlled checked state |
-| `defaultChecked` | `boolean` | `false` | Uncontrolled initial checked state |
-| `disabled` | `boolean` | `false` | Disables interaction |
-| `as` | `string` | `'button'` | Root element tag |
+| Prop             | Type                   | Default     | Description                        |
+| ---------------- | ---------------------- | ----------- | ---------------------------------- |
+| `checked`        | `boolean \| undefined` | `undefined` | Controlled checked state           |
+| `defaultChecked` | `boolean`              | `false`     | Uncontrolled initial checked state |
+| `disabled`       | `boolean`              | `false`     | Disables interaction               |
+| `as`             | `string`               | `'button'`  | Root element tag                   |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event            | Payload   | Description                   |
+| ---------------- | --------- | ----------------------------- |
 | `update:checked` | `boolean` | Sync controlled checked state |
-| `checkedChange` | `boolean` | Fires when checked changes |
+| `checkedChange`  | `boolean` | Fires when checked changes    |
 
 ## Accessibility
 

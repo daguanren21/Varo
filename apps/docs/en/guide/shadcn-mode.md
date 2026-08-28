@@ -6,13 +6,13 @@ Varo registry is not only an npm package story. It gives product teams target-co
 
 ```bash
 # weapp-vite Base Kit
-pnpm dlx @varo/cli add --target weapp-vite button select card
+pnpm dlx @varo-ui/cli add --target weapp-vite button select card
 
 # weapp-vite high-consensus extensions
-pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
 
 # H5
-pnpm dlx @varo/cli add --target h5 button select card
+pnpm dlx @varo-ui/cli add --target h5 button select card
 ```
 
 The mini-program target receives:
@@ -30,24 +30,24 @@ Files that would shadow native mini-program tags use a `v-` prefix. The H5 targe
 The CLI preserves local files by default. Replace reviewed customizations explicitly:
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite --force button select
+pnpm dlx @varo-ui/cli add --target weapp-vite --force button select
 ```
 
 Blocks resolve target-specific registry dependencies first:
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target h5 blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target h5 blocks/profile-edit
 ```
 
 ## Agent UI
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
-pnpm dlx @varo/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 ```
 
-This installs 36 dual-target Agent components covering loading, reasoning, streaming, messages, tools, tasks, approval, prompt input, code, diffs, image generation, citations, activity, sidebars, context, tables, workflows, fine-tuning, and selection actions. `blocks/agent-chat` provides the complete conversation block, while `@varo/agent-core` supplies the provider-neutral event protocol, SSE/chunk decoding, and target-specific smooth scheduling.
+This installs 36 dual-target Agent components covering loading, reasoning, streaming, messages, tools, tasks, approval, prompt input, code, diffs, image generation, citations, activity, sidebars, context, tables, workflows, fine-tuning, and selection actions. `blocks/agent-chat` provides the complete conversation block, while `@varo-ui/ai` supplies the provider-neutral event protocol, SSE/chunk decoding, and target-specific smooth scheduling.
 
 ## Wrap Business Components
 
@@ -73,7 +73,7 @@ export const UserSelect = defineComponent({
     const keyword = shallowRef('')
     const users = shallowRef<UserRecord[]>([])
     const options = computed(() =>
-      users.value.map((user) => ({
+      users.value.map(user => ({
         label: `${user.name} / ${user.team}`,
         value: user.id
       }))
@@ -81,11 +81,11 @@ export const UserSelect = defineComponent({
 
     return () =>
       h(VSelect, {
-        value: props.value,
-        options: options.value,
-        placeholder: 'Select user',
+        'value': props.value,
+        'options': options.value,
+        'placeholder': 'Select user',
         'onUpdate:value': (value: string) => emit('update:value', value),
-        onSearch: (value: string) => {
+        'onSearch': (value: string) => {
           keyword.value = value
         }
       })
@@ -97,10 +97,10 @@ export const UserSelect = defineComponent({
 
 ## Layer Boundaries
 
-| Layer | Location | Responsibility |
-| --- | --- | --- |
-| Primitives | `@varo/primitives-*` | State, events, Root/Trigger/Content contracts |
-| Agent Core | `@varo/agent-core` | Event protocol, SSE/chunk transport, smooth text queue, and Markdown AST |
-| Base Kit | `src/components/ui/*` | Copied low-level components that teams can modify |
-| Business Wrappers | `src/components/biz/*` | Remote search, grouping, pagination, API fields, and product copy |
-| Blocks | `src/components/blocks/*` | Copied business screen slices |
+| Layer             | Location                  | Responsibility                                                                                    |
+| ----------------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
+| Headless          | `@varo-ui/headless`       | Runtime-neutral state machines, events, controlled state, and utilities across H5, app, and Weapp |
+| Agent Core        | `@varo-ui/ai`             | Event protocol, SSE/chunk transport, smooth text queue, and Markdown AST                          |
+| Base Kit          | `src/components/ui/*`     | Copied low-level components that teams can modify                                                 |
+| Business Wrappers | `src/components/biz/*`    | Remote search, grouping, pagination, API fields, and product copy                                 |
+| Blocks            | `src/components/blocks/*` | Copied business screen slices                                                                     |

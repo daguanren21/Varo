@@ -1,7 +1,9 @@
-import { defineComponent, h, inject, provide, toRef, type PropType } from 'vue'
-import { useSwitchRoot, type UseSwitchRootResult } from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+import type { UseSwitchRootResult } from '@varo-ui/headless'
+import type { PropType } from 'vue'
+import { useSwitchRoot } from '@varo-ui/headless'
+import { defineComponent, h, inject, provide, toRef } from 'vue'
 import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useSwitchRoot } from './hooks'
 export type * from './types'
@@ -10,7 +12,7 @@ const switchRootContextKey = Symbol('varo-switch-root')
 
 function useSwitchRootContext() {
   const context = inject<UseSwitchRootResult | undefined>(switchRootContextKey, undefined)
-  if (!context) throw new Error('Switch parts must be used within SwitchRoot.')
+  if (!context) { throw new Error('Switch parts must be used within SwitchRoot.') }
   return context
 }
 
@@ -19,15 +21,15 @@ export const SwitchRoot = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     checked: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultChecked: Boolean,
     disabled: Boolean,
-    loading: Boolean
+    loading: Boolean,
   },
   emits: ['update:checked', 'checkedChange'],
   setup(props, { attrs, emit, slots }) {
@@ -42,7 +44,7 @@ export const SwitchRoot = defineComponent({
       onCheckedChange(checked) {
         emit('update:checked', checked)
         emit('checkedChange', checked)
-      }
+      },
     })
 
     provide(switchRootContextKey, switchRoot)
@@ -62,14 +64,14 @@ export const SwitchRoot = defineComponent({
             runInteractiveClick(event, {
               action: switchRoot.events.toggle,
               handler: userClick,
-              interactive: switchRoot.state.interactive.value
+              interactive: switchRoot.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
     }
-  }
+  },
 })
 
 export const SwitchThumb = defineComponent({
@@ -77,12 +79,12 @@ export const SwitchThumb = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'view'
-    }
+      default: 'view',
+    },
   },
   setup(props, { attrs, slots }) {
     const switchRoot = useSwitchRootContext()
 
     return () => h(props.as, { ...attrs, ...switchRoot.attrs.thumb }, slots.default?.())
-  }
+  },
 })

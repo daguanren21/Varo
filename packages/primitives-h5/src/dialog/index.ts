@@ -1,23 +1,24 @@
-import {
-  Fragment,
-  defineComponent,
-  h,
-  inject,
-  onBeforeUnmount,
-  onMounted,
-  provide,
-  toRef,
-  type PropType
-} from 'vue'
+import type { PropType } from 'vue'
 import {
   createDialogRootConsumer,
   createDialogRootProvider,
   provideDialogRootContext,
   useDialogRoot,
-  useDialogRootContext
-} from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+  useDialogRootContext,
+} from '@varo-ui/headless'
+import {
+  defineComponent,
+  Fragment,
+  h,
+  inject,
+  onBeforeUnmount,
+  onMounted,
+
+  provide,
+  toRef,
+} from 'vue'
 import { usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useDialogRoot } from './hooks'
 export type * from './types'
@@ -37,12 +38,12 @@ export const DialogRoot = defineComponent({
     defaultOpen: Boolean,
     open: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     disabled: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:open', 'openChange'],
   setup(props, { emit, slots }) {
@@ -56,7 +57,7 @@ export const DialogRoot = defineComponent({
       onOpenChange(open) {
         emit('update:open', open)
         emit('openChange', open)
-      }
+      },
     })
 
     function handleDocumentKeydown(event: KeyboardEvent) {
@@ -78,7 +79,7 @@ export const DialogRoot = defineComponent({
     provideRuntimeDialogRootContext(provideDialogRootContext(dialog))
 
     return () => h(Fragment, slots.default?.())
-  }
+  },
 })
 
 export const DialogTrigger = defineComponent({
@@ -86,8 +87,8 @@ export const DialogTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const dialog = useDialogRootContext(useRuntimeDialogRootContext())
@@ -99,15 +100,15 @@ export const DialogTrigger = defineComponent({
           ...attrs,
           ...dialog.attrs.trigger,
           'data-state': dialog.state.open.value ? 'open' : 'closed',
-          disabled: dialog.state.disabled.value,
-          onClick: (event: MouseEvent) => {
+          'disabled': dialog.state.disabled.value,
+          'onClick': (event: MouseEvent) => {
             callHandler(attrs.onClick, event)
             dialog.events.toggle()
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const DialogOverlay = defineComponent({
@@ -115,8 +116,8 @@ export const DialogOverlay = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
-    }
+      default: 'div',
+    },
   },
   setup(props, { attrs, slots }) {
     const dialog = useDialogRootContext(useRuntimeDialogRootContext())
@@ -134,12 +135,12 @@ export const DialogOverlay = defineComponent({
           onClick: (event: MouseEvent) => {
             callHandler(attrs.onClick, event)
             dialog.events.onOverlayClick()
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
     }
-  }
+  },
 })
 
 export const DialogContent = defineComponent({
@@ -147,8 +148,8 @@ export const DialogContent = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
-    }
+      default: 'div',
+    },
   },
   setup(props, { attrs, slots }) {
     const dialog = useDialogRootContext(useRuntimeDialogRootContext())
@@ -160,7 +161,7 @@ export const DialogContent = defineComponent({
 
       return h(props.as, { ...attrs, ...dialog.attrs.content }, slots.default?.())
     }
-  }
+  },
 })
 
 export const DialogClose = defineComponent({
@@ -168,8 +169,8 @@ export const DialogClose = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const dialog = useDialogRootContext(useRuntimeDialogRootContext())
@@ -182,9 +183,9 @@ export const DialogClose = defineComponent({
           onClick: (event: MouseEvent) => {
             callHandler(attrs.onClick, event)
             dialog.events.close()
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })

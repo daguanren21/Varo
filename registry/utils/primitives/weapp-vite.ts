@@ -1,1 +1,1 @@
-export * from '@varo/primitives-weapp'
+export * from '@varo-ui/weapp/primitives'

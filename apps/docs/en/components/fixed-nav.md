@@ -8,8 +8,8 @@
 
 ```vue
 <script setup lang="ts">
+import { VFixedNav } from '@varo-ui/h5'
 import { ref } from 'vue'
-import { VFixedNav } from '@varo/ui-h5'
 
 const visible = ref(true)
 const navList = [
@@ -26,18 +26,18 @@ const navList = [
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `visible` | `boolean` | `undefined` | Expanded state |
-| `defaultVisible` | `boolean` | `false` | Default uncontrolled expanded state |
-| `navList` | `FixedNavItem[]` | `[]` | Navigation items |
-| `position` | `'left' \| 'right'` | `'right'` | Floating position |
-| `activeText` | `string` | `'导航'` | Trigger text |
+| Prop             | Type                | Default     | Description                         |
+| ---------------- | ------------------- | ----------- | ----------------------------------- |
+| `visible`        | `boolean`           | `undefined` | Expanded state                      |
+| `defaultVisible` | `boolean`           | `false`     | Default uncontrolled expanded state |
+| `navList`        | `FixedNavItem[]`    | `[]`        | Navigation items                    |
+| `position`       | `'left' \| 'right'` | `'right'`   | Floating position                   |
+| `activeText`     | `string`            | `'导航'`    | Trigger text                        |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:visible` | `boolean` | Expanded state changed |
-| `visibleChange` | `boolean` | Expanded state changed |
-| `select` | `(item, index)` | Navigation item selected |
+| Event            | Payload         | Description              |
+| ---------------- | --------------- | ------------------------ |
+| `update:visible` | `boolean`       | Expanded state changed   |
+| `visibleChange`  | `boolean`       | Expanded state changed   |
+| `select`         | `(item, index)` | Navigation item selected |

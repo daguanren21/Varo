@@ -8,8 +8,8 @@
     "h5"
   ],
   "dependencies": [
-    "@varo/shared",
-    "@varo/theme",
+    "@varo-ui/headless",
+    "@varo-ui/theme",
     "vue"
   ],
   "registryDependencies": [

@@ -1,23 +1,24 @@
 {
-  "name": "@varo/agent-core",
-  "version": "0.1.0",
+  "name": "@varo-ui/ai",
   "type": "module",
-  "sideEffects": false,
+  "version": "1.0.1",
+  "description": "Shared event protocol, streaming controller, and safe Markdown primitives for Varo Agent UI.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/daguanren21/Varo.git"
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/agent-core"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist",
-    "src"
-  ],
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
+  },
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -28,6 +29,13 @@
       "import": "./src/index.ts"
     }
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsdown",
     "clean": "rimraf dist",

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import {
   VButton,
   VDialogClose,
@@ -7,8 +6,9 @@ import {
   VDialogOverlay,
   VDialogRoot,
   VDialogTrigger,
-  VInput
-} from '@varo/ui-h5'
+  VInput,
+} from '@varo-ui/h5'
+import { computed, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -17,8 +17,8 @@ const props = withDefaults(
   }>(),
   {
     locale: 'zh',
-    surface: 'home'
-  }
+    surface: 'home',
+  },
 )
 
 const variants = ['solid', 'outline', 'ghost'] as const
@@ -53,7 +53,7 @@ const copy = computed(() => {
       dialogOpen: 'Open dialog',
       dialogClose: 'Close',
       dialogTitle: 'H5 dialog built from primitives.',
-      dialogText: 'This preview uses the same Button, Input, and Dialog components exported by @varo/ui-h5.'
+      dialogText: 'This preview uses the same Button, Input, and Dialog components exported by @varo-ui/h5.',
     }
   }
 
@@ -78,16 +78,18 @@ const copy = computed(() => {
     dialogOpen: '打开弹层',
     dialogClose: '关闭',
     dialogTitle: '基于 primitives 组合出的 H5 对话框。',
-    dialogText: '这里使用的 Button、Input 和 Dialog，就是你可以从 @varo/ui-h5 直接引入的组件。'
+    dialogText: '这里使用的 Button、Input 和 Dialog，就是你可以从 @varo-ui/h5 直接引入的组件。',
   }
 })
 </script>
 
 <template>
-  <section :class="['preview-shell', `preview-shell--${surface}`]">
+  <section class="preview-shell" :class="[`preview-shell--${surface}`]">
     <header v-if="surface === 'home'" class="preview-head">
       <div>
-        <p class="preview-kicker">{{ copy.runtime }}</p>
+        <p class="preview-kicker">
+          {{ copy.runtime }}
+        </p>
         <h2>{{ copy.title }}</h2>
         <p>{{ copy.description }}</p>
       </div>
@@ -95,7 +97,9 @@ const copy = computed(() => {
 
     <div class="preview-stage">
       <aside class="preview-sidebar">
-        <p class="preview-kicker">{{ copy.runtime }}</p>
+        <p class="preview-kicker">
+          {{ copy.runtime }}
+        </p>
         <h3>{{ copy.appTitle }}</h3>
         <p>{{ copy.description }}</p>
 
@@ -186,7 +190,9 @@ const copy = computed(() => {
                   >
                     {{ copy.primary }}
                   </VButton>
-                  <VButton variant="ghost" size="sm">{{ copy.secondary }}</VButton>
+                  <VButton variant="ghost" size="sm">
+                    {{ copy.secondary }}
+                  </VButton>
                 </div>
               </section>
 
@@ -198,13 +204,17 @@ const copy = computed(() => {
                   </div>
 
                   <VDialogRoot>
-                    <VDialogTrigger class="phone-trigger" type="button">{{ copy.dialogOpen }}</VDialogTrigger>
+                    <VDialogTrigger class="phone-trigger" type="button">
+                      {{ copy.dialogOpen }}
+                    </VDialogTrigger>
                     <VDialogOverlay class="phone-overlay" />
                     <VDialogContent class="phone-dialog">
                       <h5>{{ copy.dialogTitle }}</h5>
                       <p>{{ copy.dialogText }}</p>
                       <div class="phone-dialog-actions">
-                        <VDialogClose class="phone-dialog-close" type="button">{{ copy.dialogClose }}</VDialogClose>
+                        <VDialogClose class="phone-dialog-close" type="button">
+                          {{ copy.dialogClose }}
+                        </VDialogClose>
                       </div>
                     </VDialogContent>
                   </VDialogRoot>
@@ -229,13 +239,14 @@ const copy = computed(() => {
   --preview-phone-shell: var(--varo-demo-phone-shell);
   --preview-phone-screen: var(--varo-demo-phone-screen);
   --preview-phone-card: var(--varo-demo-phone-card);
-  margin: 24px 0;
+
   padding: 16px;
-  border: 1px solid var(--preview-border);
-  border-radius: var(--varo-demo-radius-lg);
+  margin: 24px 0;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--preview-surface) 94%, transparent), var(--preview-surface-strong)),
     radial-gradient(circle at top right, color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent), transparent 34%);
+  border: 1px solid var(--preview-border);
+  border-radius: var(--varo-demo-radius-lg);
   box-shadow: var(--preview-shadow);
 }
 
@@ -251,19 +262,19 @@ const copy = computed(() => {
 
 .preview-head p,
 .preview-sidebar p {
-  margin: 8px 0 0;
   max-width: 42ch;
+  margin: 8px 0 0;
   line-height: 1.55;
   color: var(--preview-text-muted);
 }
 
 .preview-kicker {
   margin: 0 0 10px;
-  color: var(--preview-brand);
   font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  color: var(--preview-brand);
   text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
 .preview-stage {
@@ -285,23 +296,23 @@ const copy = computed(() => {
 
 .preview-meta-grid {
   display: grid;
-  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .preview-meta-card,
 .preview-control-block {
   padding: 12px 14px;
+  background: color-mix(in srgb, var(--preview-surface-strong) 92%, transparent);
   border: 1px solid var(--preview-border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--preview-surface-strong) 92%, transparent);
 }
 
 .preview-meta-card span,
 .preview-control-block span {
   display: block;
-  color: var(--preview-text-muted);
   font-size: 0.78rem;
+  color: var(--preview-text-muted);
 }
 
 .preview-meta-card strong {
@@ -309,7 +320,6 @@ const copy = computed(() => {
   margin-top: 6px;
   font-size: 0.92rem;
 }
-
 
 .preview-segment {
   display: flex;
@@ -321,13 +331,13 @@ const copy = computed(() => {
 .preview-segment-btn {
   min-height: 36px;
   padding: 0 14px;
-  border: 1px solid var(--preview-border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--vp-c-text-1);
   font-size: 0.82rem;
   font-weight: 600;
+  color: var(--vp-c-text-1);
   cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--preview-border);
+  border-radius: 999px;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -336,15 +346,16 @@ const copy = computed(() => {
 }
 
 .preview-segment-btn[data-active='true'] {
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
   color: var(--varo-primary-foreground);
+  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  border-color: transparent;
   box-shadow: 0 8px 18px color-mix(in srgb, var(--vp-c-brand-1) 28%, transparent);
 }
+
 .preview-segment-btn:hover:not([data-active='true']) {
-  border-color: color-mix(in srgb, var(--preview-brand) 42%, var(--preview-border));
-  background: color-mix(in srgb, var(--preview-brand) 8%, transparent);
   color: var(--preview-brand);
+  background: color-mix(in srgb, var(--preview-brand) 8%, transparent);
+  border-color: color-mix(in srgb, var(--preview-brand) 42%, var(--preview-border));
 }
 
 .preview-segment-btn:focus-visible {
@@ -361,8 +372,8 @@ const copy = computed(() => {
   position: relative;
   width: min(100%, 390px);
   padding: 12px;
-  border-radius: 40px;
   background: var(--preview-phone-shell);
+  border-radius: 40px;
   box-shadow:
     0 28px 80px color-mix(in srgb, var(--varo-foreground) 28%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--varo-card-solid) 14%, transparent);
@@ -372,24 +383,24 @@ const copy = computed(() => {
   position: absolute;
   top: 16px;
   left: 50%;
+  z-index: 3;
   width: 118px;
   height: 22px;
+  background: color-mix(in srgb, var(--varo-foreground) 98%, var(--varo-bg));
   border-radius: 0 0 14px 14px;
   transform: translateX(-50%);
-  background: color-mix(in srgb, var(--varo-foreground) 98%, var(--varo-bg));
-  z-index: 3;
 }
 
 .phone-screen {
   position: relative;
-  overflow: hidden;
   min-height: 560px;
   aspect-ratio: 390 / 844;
-  border-radius: 30px;
+  overflow: hidden;
+  color: var(--vp-c-text-1);
   background:
     var(--preview-phone-screen),
     radial-gradient(circle at top, color-mix(in srgb, var(--varo-primary) 10%, transparent), transparent 28%);
-  color: var(--vp-c-text-1);
+  border-radius: 30px;
 }
 
 .phone-status-bar,
@@ -403,8 +414,8 @@ const copy = computed(() => {
   display: flex;
   justify-content: space-between;
   padding: 18px 20px 8px;
-  color: var(--vp-c-text-2);
   font-size: 0.74rem;
+  color: var(--vp-c-text-2);
 }
 
 .phone-appbar {
@@ -419,8 +430,8 @@ const copy = computed(() => {
 
 .phone-appbar p {
   margin: 6px 0 0;
-  color: var(--vp-c-text-2);
   font-size: 0.84rem;
+  color: var(--vp-c-text-2);
 }
 
 .phone-content {
@@ -431,9 +442,9 @@ const copy = computed(() => {
 
 .phone-card {
   padding: 14px;
+  background: var(--preview-phone-card);
   border: 1px solid var(--preview-border);
   border-radius: 18px;
-  background: var(--preview-phone-card);
   box-shadow: 0 10px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
@@ -452,9 +463,9 @@ const copy = computed(() => {
 
 .phone-card-head {
   display: flex;
-  justify-content: space-between;
   gap: 12px;
   align-items: baseline;
+  justify-content: space-between;
   margin-bottom: 12px;
 }
 
@@ -468,13 +479,13 @@ const copy = computed(() => {
   align-items: center;
   justify-content: center;
   min-height: 36px;
-  margin-top: 12px;
   padding: 0 14px;
-  border: 1px solid var(--varo-ring);
-  border-radius: 999px;
-  background: var(--varo-accent-soft);
+  margin-top: 12px;
   color: var(--vp-c-brand-1);
   cursor: pointer;
+  background: var(--varo-accent-soft);
+  border: 1px solid var(--varo-ring);
+  border-radius: 999px;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -483,9 +494,9 @@ const copy = computed(() => {
 }
 
 .phone-inline-action:hover {
-  border-color: color-mix(in srgb, var(--vp-c-brand-1) 48%, var(--varo-ring));
-  background: color-mix(in srgb, var(--vp-c-brand-1) 14%, var(--varo-accent-soft));
   color: var(--vp-c-brand-1);
+  background: color-mix(in srgb, var(--vp-c-brand-1) 14%, var(--varo-accent-soft));
+  border-color: color-mix(in srgb, var(--vp-c-brand-1) 48%, var(--varo-ring));
   box-shadow: 0 6px 14px color-mix(in srgb, var(--vp-c-brand-1) 14%, transparent);
 }
 
@@ -514,57 +525,57 @@ const copy = computed(() => {
 .phone-dialog-close,
 :deep(.varo-button) {
   display: inline-flex;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 42px;
   width: 100%;
+  min-height: 42px;
   padding: 0 16px;
-  border-radius: 16px;
-  border: 1px solid transparent;
   font-weight: 600;
   cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 16px;
 }
 
 :deep(.varo-button[data-size='sm']) {
   gap: 6px;
   min-height: 36px;
   padding: 0 12px;
-  border-radius: 12px;
   font-size: 0.82rem;
+  border-radius: 12px;
 }
 
 :deep(.varo-button[data-size='md']) {
   min-height: 42px;
   padding: 0 16px;
-  border-radius: 16px;
   font-size: 0.92rem;
+  border-radius: 16px;
 }
 
 :deep(.varo-button[data-size='lg']) {
   gap: 10px;
   min-height: 50px;
   padding: 0 20px;
-  border-radius: 18px;
   font-size: 1rem;
+  border-radius: 18px;
 }
 
 .phone-trigger,
 .phone-dialog-close,
 :deep(.varo-button[data-variant='solid']) {
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
   color: var(--varo-primary-foreground);
+  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
 }
 
 :deep(.varo-button[data-variant='outline']) {
+  color: var(--vp-c-text-1);
   background: transparent;
   border-color: var(--vp-c-divider);
-  color: var(--vp-c-text-1);
 }
 
 :deep(.varo-button[data-variant='ghost']) {
-  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
   color: var(--vp-c-brand-1);
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
 }
 
 :deep(.varo-button[data-shape='round']) {
@@ -583,7 +594,7 @@ const copy = computed(() => {
   flex: none;
   width: 1em;
   height: 1em;
-  border: 2px solid currentColor;
+  border: 2px solid currentcolor;
   border-right-color: transparent;
   border-radius: 999px;
   animation: phone-preview-spin 0.75s linear infinite;
@@ -603,26 +614,26 @@ const copy = computed(() => {
 }
 
 :deep(.varo-input__body) {
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
   gap: 8px;
-  min-height: 42px;
+  align-items: center;
   width: 100%;
+  min-height: 42px;
   padding: 0 12px;
+  background: color-mix(in srgb, var(--varo-card-solid) 80%, transparent);
   border: 1px solid var(--vp-c-divider);
   border-radius: 14px;
-  background: color-mix(in srgb, var(--varo-card-solid) 80%, transparent);
-  box-sizing: border-box;
 }
 
 :deep(.varo-input__control) {
   flex: 1;
   min-width: 0;
-  border: 0;
+  font: inherit;
+  color: inherit;
   outline: 0;
   background: transparent;
-  color: inherit;
-  font: inherit;
+  border: 0;
 }
 
 :deep(textarea.varo-input__control) {
@@ -635,8 +646,8 @@ const copy = computed(() => {
 :deep(.varo-input__clear),
 :deep(.varo-input__word-limit) {
   flex: none;
-  color: var(--vp-c-text-2);
   font-size: 0.82rem;
+  color: var(--vp-c-text-2);
 }
 
 :deep(.varo-input__clear) {
@@ -645,10 +656,10 @@ const copy = computed(() => {
   justify-content: center;
   width: 24px;
   height: 24px;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--varo-muted) 14%, transparent);
   border: 0;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-muted) 14%, transparent);
-  cursor: pointer;
 }
 
 :deep(.varo-input[data-invalid='true'] .varo-input__body) {
@@ -658,8 +669,8 @@ const copy = computed(() => {
 .phone-overlay {
   position: absolute;
   inset: 0;
-  border-radius: 18px;
   background: color-mix(in srgb, var(--varo-foreground) 36%, transparent);
+  border-radius: 18px;
   backdrop-filter: blur(4px);
 }
 
@@ -669,9 +680,9 @@ const copy = computed(() => {
   bottom: 12px;
   left: 12px;
   padding: 16px;
-  border-radius: 20px;
-  border: 1px solid var(--varo-border);
   background: color-mix(in srgb, var(--varo-card-solid) 95%, transparent);
+  border: 1px solid var(--varo-border);
+  border-radius: 20px;
   box-shadow: var(--varo-shadow-popover);
 }
 
@@ -711,33 +722,33 @@ const copy = computed(() => {
 
 .preview-meta-card,
 .preview-control-block {
+  background: color-mix(in srgb, var(--preview-surface-strong) 92%, transparent);
   border-color: var(--preview-border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--preview-surface-strong) 92%, transparent);
 }
 
 .phone-card {
+  background: var(--preview-phone-card);
   border-color: var(--preview-border);
   border-radius: 18px;
-  background: var(--preview-phone-card);
   box-shadow: 0 10px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
 .preview-segment-btn,
 .phone-inline-action {
+  color: var(--vp-c-text-1);
+  background: color-mix(in srgb, var(--preview-surface-strong) 92%, transparent);
   border-color: var(--preview-border);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--preview-surface-strong) 92%, transparent);
-  color: var(--vp-c-text-1);
 }
 
 .preview-segment-btn[data-active='true'],
 .phone-trigger,
 .phone-dialog-close,
 :deep(.varo-button[data-variant='solid']) {
-  border-color: var(--varo-primary);
-  background: var(--varo-primary);
   color: var(--varo-primary-foreground);
+  background: var(--varo-primary);
+  border-color: var(--varo-primary);
 }
 
 .phone-bezel {
@@ -766,13 +777,13 @@ const copy = computed(() => {
 }
 
 :deep(.varo-button[data-variant='ghost']) {
-  background: var(--varo-card-muted);
   color: var(--varo-foreground);
+  background: var(--varo-card-muted);
 }
 
 :deep(.varo-input__body) {
-  border-color: var(--varo-border);
   background: var(--varo-card);
+  border-color: var(--varo-border);
 }
 
 .phone-overlay {
@@ -780,9 +791,8 @@ const copy = computed(() => {
 }
 
 .phone-dialog {
-  border-color: var(--varo-border);
   background: var(--varo-card-solid);
+  border-color: var(--varo-border);
   box-shadow: var(--varo-shadow-popover);
 }
-
 </style>

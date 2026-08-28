@@ -4,7 +4,7 @@ Single-select runtime: Group owns value, Item represents options, Indicator rend
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,37 +28,37 @@ Set `disabled` on `RadioItem` to keep the group value contract while blocking on
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `RadioGroup` | Group value and context |
-| `RadioItem` | One option |
-| `RadioIndicator` | Selected indicator |
+| Part             | Purpose                 |
+| ---------------- | ----------------------- |
+| `RadioGroup`     | Group value and context |
+| `RadioItem`      | One option              |
+| `RadioIndicator` | Selected indicator      |
 
 ## Props
 
 ### RadioGroup
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string \| number \| undefined` | `undefined` | Controlled selected value |
-| `defaultValue` | `string \| number` | `undefined` | Uncontrolled initial value |
-| `disabled` | `boolean` | `false` | Disables the whole group |
-| `as` | `string` | `'div'` | Root element tag |
+| Prop           | Type                            | Default     | Description                |
+| -------------- | ------------------------------- | ----------- | -------------------------- |
+| `value`        | `string \| number \| undefined` | `undefined` | Controlled selected value  |
+| `defaultValue` | `string \| number`              | `undefined` | Uncontrolled initial value |
+| `disabled`     | `boolean`                       | `false`     | Disables the whole group   |
+| `as`           | `string`                        | `'div'`     | Root element tag           |
 
 ### RadioItem
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string \| number` | required | Option value |
-| `disabled` | `boolean` | `false` | Disables one option |
-| `as` | `string` | `'button'` | Option element tag |
+| Prop       | Type               | Default    | Description         |
+| ---------- | ------------------ | ---------- | ------------------- |
+| `value`    | `string \| number` | required   | Option value        |
+| `disabled` | `boolean`          | `false`    | Disables one option |
+| `as`       | `string`           | `'button'` | Option element tag  |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:value` | `string \| number` | Sync controlled value |
-| `valueChange` | `string \| number` | Fires when value changes |
+| Event          | Payload            | Description              |
+| -------------- | ------------------ | ------------------------ |
+| `update:value` | `string \| number` | Sync controlled value    |
+| `valueChange`  | `string \| number` | Fires when value changes |
 
 ## Accessibility
 

@@ -1,7 +1,10 @@
+import type { Component } from 'vue'
+import type { Platform } from './types'
 import {
   VButton as H5Button,
   VCell as H5Cell,
   VCellGroup as H5CellGroup,
+  VCol as H5Col,
   VDialogClose as H5DialogClose,
   VDialogContent as H5DialogContent,
   VDialogOverlay as H5DialogOverlay,
@@ -15,7 +18,6 @@ import {
   VImage as H5Image,
   VIndicator as H5Indicator,
   VInput as H5Input,
-  VCol as H5Col,
   VMenu as H5Menu,
   VMenuItem as H5MenuItem,
   VNavbar as H5Navbar,
@@ -27,15 +29,16 @@ import {
   VSideNavbarItem as H5SideNavbarItem,
   VSpace as H5Space,
   VSticky as H5Sticky,
+  VTab as H5Tab,
   VTabbar as H5Tabbar,
   VTabbarItem as H5TabbarItem,
-  VTab as H5Tab,
-  VTabs as H5Tabs
-} from '@varo/ui-h5'
+  VTabs as H5Tabs,
+} from '@varo-ui/h5'
 import {
   VButton as WeappButton,
   VCell as WeappCell,
   VCellGroup as WeappCellGroup,
+  VCol as WeappCol,
   VDialogClose as WeappDialogClose,
   VDialogContent as WeappDialogContent,
   VDialogOverlay as WeappDialogOverlay,
@@ -49,7 +52,6 @@ import {
   VImage as WeappImage,
   VIndicator as WeappIndicator,
   VInput as WeappInput,
-  VCol as WeappCol,
   VMenu as WeappMenu,
   VMenuItem as WeappMenuItem,
   VNavbar as WeappNavbar,
@@ -61,15 +63,13 @@ import {
   VSideNavbarItem as WeappSideNavbarItem,
   VSpace as WeappSpace,
   VSticky as WeappSticky,
+  VTab as WeappTab,
   VTabbar as WeappTabbar,
   VTabbarItem as WeappTabbarItem,
-  VTab as WeappTab,
-  VTabs as WeappTabs
-} from '@varo/ui-weapp'
-import type { Platform } from './types'
-import type { Component } from 'vue'
+  VTabs as WeappTabs,
+} from '@varo-ui/weapp'
 
-export type DemoRuntime = {
+export interface DemoRuntime {
   Button: Component
   Cell: Component
   CellGroup: Component
@@ -136,7 +136,7 @@ const h5Runtime: DemoRuntime = {
   Tabbar: H5Tabbar,
   TabbarItem: H5TabbarItem,
   Tab: H5Tab,
-  Tabs: H5Tabs
+  Tabs: H5Tabs,
 }
 
 const weappRuntime: DemoRuntime = {
@@ -171,7 +171,7 @@ const weappRuntime: DemoRuntime = {
   Tabbar: WeappTabbar,
   TabbarItem: WeappTabbarItem,
   Tab: WeappTab,
-  Tabs: WeappTabs
+  Tabs: WeappTabs,
 }
 
 export function getDemoRuntime(platform: Platform): DemoRuntime {

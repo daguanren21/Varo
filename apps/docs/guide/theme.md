@@ -1,12 +1,12 @@
 # 主题配置
 
-Varo 的主题能力集中在 `@varo/theme`，目标是让交互层、组件封装层与视觉 token 解耦。
+Varo 的主题能力集中在 `@varo-ui/theme`，目标是让交互层、组件封装层与视觉 token 解耦。
 
 ## 基础接入
 
 ```ts
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { createApp } from 'vue'
-import { createTheme, VaroConfigProvider } from '@varo/theme'
 import App from './App.vue'
 
 const theme = createTheme({

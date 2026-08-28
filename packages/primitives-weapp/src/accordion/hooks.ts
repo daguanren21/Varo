@@ -1,1 +1,1 @@
-export { useAccordionRoot } from '@varo/primitives-core'
+export { useAccordionRoot } from '@varo-ui/headless'

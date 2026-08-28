@@ -11,7 +11,7 @@ describe('AgentComponentsDemo', () => {
 
     expect(wrapper.get('.ai-docs-demo__hero').text()).toContain('真实增量事件流')
     expect(wrapper.findAll('.ai-docs-demo__ledger > div > span')).toHaveLength(37)
-    expect(wrapper.text()).toContain('@varo/agent-core')
+    expect(wrapper.text()).toContain('@varo-ui/ai')
     expect(wrapper.text()).toContain('Markstream Core')
     expect(wrapper.text()).toContain('agent-events.schema.json')
 

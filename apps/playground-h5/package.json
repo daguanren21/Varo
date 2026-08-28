@@ -1,8 +1,8 @@
 {
   "name": "@varo/playground-h5",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "build": "vite build",
     "clean": "rimraf dist",
@@ -14,15 +14,17 @@
     "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {
-    "@varo/agent-core": "workspace:^",
-    "@varo/theme": "workspace:*",
-    "@varo/ui-h5": "workspace:*",
+    "@varo-ui/ai": "workspace:^",
+    "@varo-ui/h5": "workspace:*",
+    "@varo-ui/headless": "workspace:*",
+    "@varo-ui/theme": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.6.0",
     "vue": "^3.5.41"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "@varo/primitives-h5": "workspace:*",
     "@vitejs/plugin-vue": "^6.0.7",
     "tailwindcss": "^4.3.3",
     "vite": "^8.1.3",

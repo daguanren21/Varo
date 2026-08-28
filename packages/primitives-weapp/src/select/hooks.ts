@@ -1,1 +1,1 @@
-export { useSelectRoot } from '@varo/primitives-core'
+export { useSelectRoot } from '@varo-ui/headless'

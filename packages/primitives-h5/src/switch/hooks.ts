@@ -1,1 +1,1 @@
-export { useSwitchRoot } from '@varo/primitives-core'
+export { useSwitchRoot } from '@varo-ui/headless'

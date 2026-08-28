@@ -1,7 +1,8 @@
+import type { ThemeConfig } from '@varo-ui/theme'
+import type { Plugin } from 'vue'
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createTheme, VaroConfigProvider, type ThemeConfig } from '@varo/theme'
-import type { Plugin } from 'vue'
 import FormComponentDemo from './FormComponentDemo.vue'
 
 const themeConfig: ThemeConfig = {
@@ -10,8 +11,8 @@ const themeConfig: ThemeConfig = {
     success: '#16a34a',
     warning: '#d97706',
     error: '#dc2626',
-    neutral: '#0f172a'
-  })
+    neutral: '#0f172a',
+  }),
 }
 const themePlugin: [Plugin, ThemeConfig] = [VaroConfigProvider, themeConfig]
 
@@ -26,12 +27,12 @@ describe('FormComponentDemo', () => {
 
     const wrapper = mount(FormComponentDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'picker',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.find('.form-demo__code').exists()).toBe(false)
@@ -47,8 +48,8 @@ describe('FormComponentDemo', () => {
     expect(toggle.text()).toContain('收起代码')
     expect(tabs).toHaveLength(2)
     expect(tabs[0]!.attributes('data-active')).toBe('true')
-    expect(code.get('code').text()).toContain("from '@varo/ui-h5'")
-    expect(code.get('code').text()).not.toContain("from '@varo/ui-weapp'")
+    expect(code.get('code').text()).toContain('from \'@varo-ui/h5\'')
+    expect(code.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
 
     const copyButton = code.get('.form-demo__code-copy')
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
@@ -57,15 +58,15 @@ describe('FormComponentDemo', () => {
 
     expect(tabs[0]!.attributes('data-active')).toBe('false')
     expect(tabs[1]!.attributes('data-active')).toBe('true')
-    expect(code.get('code').text()).toContain("from '@varo/ui-weapp'")
-    expect(code.get('code').text()).not.toContain("from '@varo/ui-h5'")
+    expect(code.get('code').text()).toContain('from \'@varo-ui/weapp\'')
+    expect(code.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
     expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
 
     await copyButton.trigger('click')
     await flushPromises()
 
     expect(writeText).toHaveBeenCalledTimes(1)
-    expect(writeText.mock.calls[0]![0]).toContain("from '@varo/ui-weapp'")
+    expect(writeText.mock.calls[0]![0]).toContain('from \'@varo-ui/weapp\'')
     expect(copyButton.attributes('aria-label')).toBe('已复制')
     expect(code.get('.form-demo__code-toast').text()).toContain('已复制到剪贴板')
 
@@ -77,12 +78,12 @@ describe('FormComponentDemo', () => {
   it('uses controlled visible state for popup-like form demos', async () => {
     const wrapper = mount(FormComponentDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'picker',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.find('.varo-picker').exists()).toBe(true)
@@ -100,12 +101,12 @@ describe('FormComponentDemo', () => {
   it('shows a full form example with change validation and save errors', async () => {
     const wrapper = mount(FormComponentDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'form',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.findAll('.varo-form-item').length).toBeGreaterThanOrEqual(8)
@@ -133,12 +134,12 @@ describe('FormComponentDemo', () => {
   it('validates dynamic company array fields', async () => {
     const wrapper = mount(FormComponentDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'form-array',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.findAll('.form-demo__array-item')).toHaveLength(1)
@@ -150,29 +151,29 @@ describe('FormComponentDemo', () => {
     await wrapper.get('.form-demo__save').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.findAll('.varo-form-item__error').some((node) => node.text().includes('公司 1 名称'))).toBe(true)
-    expect(wrapper.findAll('.varo-form-item__error').some((node) => node.text().includes('公司 1 联系人'))).toBe(true)
-    expect(wrapper.findAll('.varo-form-item__error').some((node) => node.text().includes('公司 2 电话'))).toBe(true)
-    expect(wrapper.findAll('.varo-form-item__error').some((node) => node.text().includes('公司 2 公司类型'))).toBe(true)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 1 名称'))).toBe(true)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 1 联系人'))).toBe(true)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 2 电话'))).toBe(true)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 2 公司类型'))).toBe(true)
 
     await wrapper.findAll('.form-demo__array-remove')[1]!.trigger('click')
     await flushPromises()
 
     expect(wrapper.findAll('.form-demo__array-item')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-form-item__error').some((node) => node.text().includes('公司 2'))).toBe(false)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 2'))).toBe(false)
   })
 
   it('renders select, switch, toast, and loading demos', async () => {
     const select = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
-      props: { example: 'select', locale: 'zh' }
+      props: { example: 'select', locale: 'zh' },
     })
     expect(select.find('.varo-select').exists()).toBe(true)
     expect(select.get('.varo-select__value').text()).toContain('杭州')
 
     const switchDemo = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
-      props: { example: 'switch', locale: 'zh' }
+      props: { example: 'switch', locale: 'zh' },
     })
     const switches = switchDemo.findAll('.varo-switch')
     expect(switches).toHaveLength(2)
@@ -181,7 +182,7 @@ describe('FormComponentDemo', () => {
 
     const toast = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
-      props: { example: 'toast', locale: 'zh' }
+      props: { example: 'toast', locale: 'zh' },
     })
     expect(toast.find('.varo-toast').exists()).toBe(true)
     await toast.get('.varo-toast__close').trigger('click')
@@ -192,10 +193,9 @@ describe('FormComponentDemo', () => {
 
     const loading = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
-      props: { example: 'loading', locale: 'en' }
+      props: { example: 'loading', locale: 'en' },
     })
     expect(loading.findAll('.varo-loading').length).toBeGreaterThanOrEqual(3)
     expect(loading.text()).toContain('Loading')
   })
-
 })

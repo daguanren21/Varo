@@ -4,32 +4,32 @@ This guide shows how to turn Base Kit components into a maintainable, installabl
 
 ## Installable Blocks
 
-| Registry name | Purpose | Targets |
-| --- | --- | --- |
-| `login-form` | Login, remember, error, and loading states | H5 / Weapp |
-| `profile-card` | Identity, status, and account statistics | H5 / Weapp |
-| `profile-edit` | Profile fields and city selection | H5 / Weapp |
-| `product-list` | Products, inventory, pricing, and cart actions | H5 / Weapp |
-| `order-filter` | Order status and amount filters | H5 / Weapp |
-| `agent-chat` | Incremental conversation, reasoning, tools, approval, and composer | H5 / Weapp |
+| Registry name  | Purpose                                                            | Targets    |
+| -------------- | ------------------------------------------------------------------ | ---------- |
+| `login-form`   | Login, remember, error, and loading states                         | H5 / Weapp |
+| `profile-card` | Identity, status, and account statistics                           | H5 / Weapp |
+| `profile-edit` | Profile fields and city selection                                  | H5 / Weapp |
+| `product-list` | Products, inventory, pricing, and cart actions                     | H5 / Weapp |
+| `order-filter` | Order status and amount filters                                    | H5 / Weapp |
+| `agent-chat`   | Incremental conversation, reasoning, tools, approval, and composer | H5 / Weapp |
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/product-list
-pnpm dlx @varo/cli add --target h5 blocks/product-list
-pnpm dlx @varo/cli add --target weapp-vite blocks/agent-chat
-pnpm dlx @varo/cli add --target h5 blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo-ui/cli add --target h5 blocks/product-list
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 ```
 
 Documentation previews must come from these real registry sources, not fictional exports or non-compiling JSX strings.
 
 ## 1. Understand the layers
 
-| Layer | Owns | Does not own |
-| --- | --- | --- |
-| **Primitives** | State, events, parts, cross-runtime semantics | Visual tokens, product copy |
-| **Base Kit / UI** | Copied low-level component source and default styles | Remote data, permissions, domain models |
-| **Business wrappers** | APIs, authz, field mapping, product copy | Generic interaction state machines |
-| **Blocks** | Reusable screen sections and local composition | Private backend details, one-off page glue |
+| Layer                 | Owns                                                 | Does not own                               |
+| --------------------- | ---------------------------------------------------- | ------------------------------------------ |
+| **Primitives**        | State, events, parts, cross-runtime semantics        | Visual tokens, product copy                |
+| **Base Kit / UI**     | Copied low-level component source and default styles | Remote data, permissions, domain models    |
+| **Business wrappers** | APIs, authz, field mapping, product copy             | Generic interaction state machines         |
+| **Blocks**            | Reusable screen sections and local composition       | Private backend details, one-off page glue |
 
 Rule of thumb: a block should feel like a portable page slice, not a page locked to one product API.
 
@@ -81,7 +81,7 @@ Do not import registry source paths directly from the block. Keep remote data an
 Install the base component:
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite components/select
+pnpm dlx @varo-ui/cli add --target weapp-vite components/select
 ```
 
 ## 4. Create the local block
@@ -121,7 +121,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   'update:modelValue': [value: string[]]
-  change: [value: string[]]
+  'change': [value: string[]]
 }>()
 
 const value = computed({
@@ -274,8 +274,8 @@ pnpm typecheck
 pnpm test
 
 # pack the CLI and install into a temporary fixture
-pnpm --filter @varo/cli build
-pnpm dlx @varo/cli add --target weapp-vite blocks/status-filter
+pnpm --filter @varo-ui/cli build
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/status-filter
 ```
 
 Confirm:
@@ -300,19 +300,19 @@ A contribution usually includes source, `registry.json`, tests, and bilingual do
 
 ## Troubleshooting
 
-| Symptom | Fix |
-| --- | --- |
-| Missing dependency install | Check `registryDependencies` spelling such as `components/select` |
-| Destination conflict | Review the `to` path; default is no-clobber, force only when explicit |
-| Hard to reuse | Move remote data/auth/analytics into a business wrapper |
-| Breaks on mini-program | Remove H5-only APIs and keep the shared contract |
-| Unit tests pass but install fails | Reproduce with packed CLI + temp fixture; verify file mappings |
+| Symptom                           | Fix                                                                   |
+| --------------------------------- | --------------------------------------------------------------------- |
+| Missing dependency install        | Check `registryDependencies` spelling such as `components/select`     |
+| Destination conflict              | Review the `to` path; default is no-clobber, force only when explicit |
+| Hard to reuse                     | Move remote data/auth/analytics into a business wrapper               |
+| Breaks on mini-program            | Remove H5-only APIs and keep the shared contract                      |
+| Unit tests pass but install fails | Reproduce with packed CLI + temp fixture; verify file mappings        |
 
 ## Install existing blocks
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target weapp-vite blocks/order-filter
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/order-filter
 ```
 
 After install:

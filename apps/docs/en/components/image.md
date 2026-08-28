@@ -40,38 +40,38 @@
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `src` | `string` | `undefined` | Image source |
-| `alt` | `string` | `''` | Alternative text |
-| `width` | `number \| string` | `undefined` | Container width |
-| `height` | `number \| string` | `undefined` | Container height |
-| `fit` | `'contain' \| 'cover' \| 'fill' \| 'none' \| 'scale-down'` | `'fill'` | Object fit mode |
-| `position` | `string` | `'center'` | `object-position` |
-| `radius` | `number \| string` | `undefined` | Border radius |
-| `round` | `boolean` | `false` | Render as a circle |
-| `lazyLoad` | `boolean` | `false` | Use native lazy loading |
-| `showLoading` | `boolean` | `true` | Show loading placeholder |
-| `showError` | `boolean` | `true` | Show error placeholder |
-| `loadingText` | `string` | `''` | Loading placeholder text |
-| `errorText` | `string` | `''` | Error placeholder text |
-| `draggable` | `boolean \| undefined` | `undefined` | Image draggable flag |
+| Prop          | Type                                                       | Default     | Description              |
+| ------------- | ---------------------------------------------------------- | ----------- | ------------------------ |
+| `src`         | `string`                                                   | `undefined` | Image source             |
+| `alt`         | `string`                                                   | `''`        | Alternative text         |
+| `width`       | `number \| string`                                         | `undefined` | Container width          |
+| `height`      | `number \| string`                                         | `undefined` | Container height         |
+| `fit`         | `'contain' \| 'cover' \| 'fill' \| 'none' \| 'scale-down'` | `'fill'`    | Object fit mode          |
+| `position`    | `string`                                                   | `'center'`  | `object-position`        |
+| `radius`      | `number \| string`                                         | `undefined` | Border radius            |
+| `round`       | `boolean`                                                  | `false`     | Render as a circle       |
+| `lazyLoad`    | `boolean`                                                  | `false`     | Use native lazy loading  |
+| `showLoading` | `boolean`                                                  | `true`      | Show loading placeholder |
+| `showError`   | `boolean`                                                  | `true`      | Show error placeholder   |
+| `loadingText` | `string`                                                   | `''`        | Loading placeholder text |
+| `errorText`   | `string`                                                   | `''`        | Error placeholder text   |
+| `draggable`   | `boolean \| undefined`                                     | `undefined` | Image draggable flag     |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `load` | `Event` | Image loaded |
-| `error` | `Event` | Image failed to load |
-| `click` | `MouseEvent` | Root click |
+| Event   | Payload      | Description          |
+| ------- | ------------ | -------------------- |
+| `load`  | `Event`      | Image loaded         |
+| `error` | `Event`      | Image failed to load |
+| `click` | `MouseEvent` | Root click           |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
+| Slot      | Description                |
+| --------- | -------------------------- |
 | `loading` | Custom loading placeholder |
-| `error` | Custom error placeholder |
+| `error`   | Custom error placeholder   |
 
 ## Primitives
 
-`ImageRoot` is available from both `@varo/primitives-h5` and `@varo/primitives-weapp`; `VImage` only adds the Varo API wrapper and classes.
+`ImageRoot` comes from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`; `@varo-ui/headless` only carries shared state contracts, while `VImage` adds the Varo API wrapper and classes.

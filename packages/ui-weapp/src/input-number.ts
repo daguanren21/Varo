@@ -1,6 +1,7 @@
-import { computed, defineComponent, h, type PropType } from 'vue'
+import type { PropType } from 'vue'
+import { useVaroTheme } from '@varo-ui/theme'
 import { createVariantClass } from '@varo/shared'
-import { useVaroTheme } from '@varo/theme'
+import { computed, defineComponent, h } from 'vue'
 
 export const VInputNumber = defineComponent({
   name: 'VInputNumber',
@@ -8,25 +9,25 @@ export const VInputNumber = defineComponent({
     disabled: Boolean,
     max: {
       type: Number,
-      default: Number.POSITIVE_INFINITY
+      default: Number.POSITIVE_INFINITY,
     },
     min: {
       type: Number,
-      default: Number.NEGATIVE_INFINITY
+      default: Number.NEGATIVE_INFINITY,
     },
     precision: {
       type: Number as PropType<number | undefined>,
-      default: undefined
+      default: undefined,
     },
     readonly: Boolean,
     step: {
       type: Number,
-      default: 1
+      default: 1,
     },
     value: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   emits: ['update:value', 'change', 'blur', 'focus'],
   setup(props, { attrs, emit }) {
@@ -38,8 +39,8 @@ export const VInputNumber = defineComponent({
       createVariantClass('varo-input-number', {
         radius: theme.value.components.button.borderRadius,
         disabled: props.disabled,
-        readonly: props.readonly
-      })
+        readonly: props.readonly,
+      }),
     )
 
     function clamp(value: number) {
@@ -54,16 +55,16 @@ export const VInputNumber = defineComponent({
     }
 
     return () =>
-      h('div', { ...attrs, class: [classes.value, attrs.class], 'data-disabled': String(props.disabled) }, [
+      h('div', { ...attrs, 'class': [classes.value, attrs.class], 'data-disabled': String(props.disabled) }, [
         h(
           'button',
           {
             class: 'varo-input-number__minus',
             type: 'button',
             disabled: !canMinus.value,
-            onClick: () => update(currentValue.value - props.step)
+            onClick: () => update(currentValue.value - props.step),
           },
-          '-'
+          '-',
         ),
         h('input', {
           class: 'varo-input-number__input',
@@ -73,7 +74,7 @@ export const VInputNumber = defineComponent({
           value: String(currentValue.value),
           onBlur: (event: FocusEvent) => emit('blur', event),
           onFocus: (event: FocusEvent) => emit('focus', event),
-          onInput: (event: Event) => update(Number((event.target as HTMLInputElement).value))
+          onInput: (event: Event) => update(Number((event.target as HTMLInputElement).value)),
         }),
         h(
           'button',
@@ -81,10 +82,10 @@ export const VInputNumber = defineComponent({
             class: 'varo-input-number__plus',
             type: 'button',
             disabled: !canPlus.value,
-            onClick: () => update(currentValue.value + props.step)
+            onClick: () => update(currentValue.value + props.step),
           },
-          '+'
-        )
+          '+',
+        ),
       ])
-  }
+  },
 })

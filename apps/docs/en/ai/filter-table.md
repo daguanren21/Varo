@@ -9,8 +9,8 @@ Live Agent data filtering with status chips.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,27 +29,27 @@ import { AgentFilterTable } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `className` | `ClassValue` | `undefined` | Root classes merged by the target-specific `cn` helper |
-| `filter` | `string` | `all` | Current filter |
-| `filters` | `AgentFilterOption[]` | `[]` | Filters |
-| `columns` | `AgentTableColumn[]` | `[]` | Columns |
-| `rows` | `AgentTableRow[]` | `[]` | Rows |
-| `statusKey` | `string` | `status` | Status key |
+| Prop        | Type                  | Default     | Description                                            |
+| ----------- | --------------------- | ----------- | ------------------------------------------------------ |
+| `className` | `ClassValue`          | `undefined` | Root classes merged by the target-specific `cn` helper |
+| `filter`    | `string`              | `all`       | Current filter                                         |
+| `filters`   | `AgentFilterOption[]` | `[]`        | Filters                                                |
+| `columns`   | `AgentTableColumn[]`  | `[]`        | Columns                                                |
+| `rows`      | `AgentTableRow[]`     | `[]`        | Rows                                                   |
+| `statusKey` | `string`              | `status`    | Status key                                             |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `select` | `AgentTableRow` | Select row |
-| `update:filter` | `string` | Update filter |
+| Event           | Payload         | Description   |
+| --------------- | --------------- | ------------- |
+| `select`        | `AgentTableRow` | Select row    |
+| `update:filter` | `string`        | Update filter |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                                                                                           |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`                                                                        |
 | weapp-vite | Default export from `@/components/agent-ui/AgentFilterTable.vue`; types from `@/components/agent-ui/agent-table` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

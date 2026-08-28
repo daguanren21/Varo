@@ -4,7 +4,7 @@ Tabs runtime: Root owns the active value; Trigger/Content associate through the 
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,39 +28,39 @@ Trigger/Content values must stay unique inside one `TabsRoot`; H5 automatic mode
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `TabsRoot` | Active value and orientation |
-| `TabsList` | Trigger container |
-| `TabsTrigger` | One tab title |
-| `TabsContent` | Matching panel |
+| Part          | Purpose                      |
+| ------------- | ---------------------------- |
+| `TabsRoot`    | Active value and orientation |
+| `TabsList`    | Trigger container            |
+| `TabsTrigger` | One tab title                |
+| `TabsContent` | Matching panel               |
 
 ## Props
 
 ### TabsRoot
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string \| number \| undefined` | `undefined` | Controlled active value |
-| `defaultValue` | `string \| number` | `undefined` | Uncontrolled initial value |
-| `orientation` | `string` | `undefined` | Orientation semantics |
-| `disabled` | `boolean` | `false` | Disables the whole tabs root |
-| `id` | `string` | `undefined` | Association id prefix |
-| `as` | `string` | `'div'` | Root element tag |
+| Prop           | Type                            | Default     | Description                  |
+| -------------- | ------------------------------- | ----------- | ---------------------------- |
+| `value`        | `string \| number \| undefined` | `undefined` | Controlled active value      |
+| `defaultValue` | `string \| number`              | `undefined` | Uncontrolled initial value   |
+| `orientation`  | `string`                        | `undefined` | Orientation semantics        |
+| `disabled`     | `boolean`                       | `false`     | Disables the whole tabs root |
+| `id`           | `string`                        | `undefined` | Association id prefix        |
+| `as`           | `string`                        | `'div'`     | Root element tag             |
 
 ### TabsTrigger / TabsContent
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `value` | `string \| number` | Unique value associated with Root |
-| `disabled` | `boolean` | Trigger-only disabled flag |
+| Prop       | Type               | Description                       |
+| ---------- | ------------------ | --------------------------------- |
+| `value`    | `string \| number` | Unique value associated with Root |
+| `disabled` | `boolean`          | Trigger-only disabled flag        |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:value` | `string \| number` | Controlled sync |
-| `valueChange` | `string \| number` | Active value change |
+| Event          | Payload            | Description         |
+| -------------- | ------------------ | ------------------- |
+| `update:value` | `string \| number` | Controlled sync     |
+| `valueChange`  | `string \| number` | Active value change |
 
 ## Accessibility
 

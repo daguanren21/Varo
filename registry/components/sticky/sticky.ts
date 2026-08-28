@@ -1,27 +1,29 @@
+import type { PropType, StyleValue } from 'vue'
+import type { StickyDimension, StickyScrollEvent } from '../../lib/varo-primitives'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
+import { StickyRoot } from '../../lib/varo-primitives'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { StickyRoot, type StickyDimension, type StickyScrollEvent } from '../../lib/varo-primitives'
 
 export const VSticky = defineComponent({
   name: 'VSticky',
   props: {
     offsetTop: {
       type: [Number, String] as PropType<StickyDimension>,
-      default: 0
+      default: 0,
     },
     zIndex: {
       type: [Number, String] as PropType<StickyDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
-    disabled: Boolean
+    disabled: Boolean,
   },
   emits: ['change', 'scroll'],
   setup(props, { attrs, emit, slots }) {
     const classes = computed(() =>
       createVariantClass('varo-sticky', {
-        disabled: props.disabled
-      })
+        disabled: props.disabled,
+      }),
     )
 
     return () =>
@@ -35,9 +37,9 @@ export const VSticky = defineComponent({
           style: attrs.style as StyleValue,
           zIndex: props.zIndex,
           onChange: (fixed: boolean) => emit('change', fixed),
-          onScroll: (event: StickyScrollEvent) => emit('scroll', event)
+          onScroll: (event: StickyScrollEvent) => emit('scroll', event),
         },
-        slots
+        slots,
       )
-  }
+  },
 })

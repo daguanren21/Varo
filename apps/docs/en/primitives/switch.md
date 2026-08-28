@@ -4,7 +4,7 @@ Switch runtime: Root owns checked plus loading/disabled; Thumb only consumes con
 
 ## Runtime
 
-Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
+State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
 
 ## Demo
 
@@ -13,9 +13,9 @@ Available on `@varo/primitives-h5` and `@varo/primitives-weapp`.
 ## Installation
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # or
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## Basic usage
@@ -28,27 +28,27 @@ Both `loading` and `disabled` close interaction; loading fits short async locks.
 
 ## Parts
 
-| Part | Purpose |
-| --- | --- |
-| `SwitchRoot` | State and toggle |
-| `SwitchThumb` | Thumb part |
+| Part          | Purpose          |
+| ------------- | ---------------- |
+| `SwitchRoot`  | State and toggle |
+| `SwitchThumb` | Thumb part       |
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `checked` | `boolean \| undefined` | `undefined` | Controlled checked state |
-| `defaultChecked` | `boolean` | `false` | Uncontrolled initial state |
-| `disabled` | `boolean` | `false` | Disabled |
-| `loading` | `boolean` | `false` | Loading; not toggleable |
-| `as` | `string` | `'button'` | Root element tag |
+| Prop             | Type                   | Default     | Description                |
+| ---------------- | ---------------------- | ----------- | -------------------------- |
+| `checked`        | `boolean \| undefined` | `undefined` | Controlled checked state   |
+| `defaultChecked` | `boolean`              | `false`     | Uncontrolled initial state |
+| `disabled`       | `boolean`              | `false`     | Disabled                   |
+| `loading`        | `boolean`              | `false`     | Loading; not toggleable    |
+| `as`             | `string`               | `'button'`  | Root element tag           |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event            | Payload   | Description     |
+| ---------------- | --------- | --------------- |
 | `update:checked` | `boolean` | Controlled sync |
-| `checkedChange` | `boolean` | State change |
+| `checkedChange`  | `boolean` | State change    |
 
 ## Accessibility
 

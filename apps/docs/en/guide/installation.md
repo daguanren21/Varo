@@ -2,8 +2,8 @@
 
 ## Recommended package path
 
-- Product teams: use `@varo/cli` to install owned source; runtime packages remain stable primitives and official wrappers
-- H5 uses `@varo/primitives-h5`; mini programs use `@varo/primitives-weapp`
+- Product teams: use `@varo-ui/cli` to install owned source; runtime packages remain stable primitives and official wrappers
+- H5, app, and mini-program targets share the platform-neutral state, event, and controlled-state contracts from `@varo-ui/headless`
 - Mini-program projects use `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`
 
 ## Initialize a project
@@ -17,16 +17,15 @@ pnpm install
 ## Official wrappers
 
 ```bash
-pnpm add vue @varo/ui-h5 @varo/theme
-pnpm add vue wevu@6.23.0 @varo/ui-weapp @varo/theme
-pnpm add @varo/agent-core # only when the product needs Agent events and Markdown
+pnpm add vue @varo-ui/h5 @varo-ui/theme
+pnpm add vue wevu@6.23.0 @varo-ui/weapp @varo-ui/theme
+pnpm add @varo-ui/ai # only when the product needs Agent events and Markdown
 ```
 
 ## Primitives only
 
 ```bash
-pnpm add vue @varo/primitives-h5
-pnpm add vue wevu@6.23.0 @varo/primitives-weapp
+pnpm add @varo-ui/headless
 ```
 
 ## shadcn-style install
@@ -34,11 +33,11 @@ pnpm add vue wevu@6.23.0 @varo/primitives-weapp
 If you want the shadcn/ui workflow, copy source into the product project first, then wrap it for business needs:
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite button select card
-pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target h5 button select card components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite button select card
+pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target h5 button select card components/agent-ui
 ```
 
 Components land in `src/components/ui/*`; blocks land in `src/components/blocks/*`. Your product can then create `UserSelect`, `DepartmentSelect`, and `ProductSelect` in `src/components/biz/*`.
@@ -47,10 +46,10 @@ The H5 registry covers all 56 runtime component families. The mini-program regis
 
 ## Agent streaming
 
-`@varo/agent-core` is model-provider neutral. A backend emits `message.start`, `text.delta`, `reasoning.*`, `tool.*`, `approval.*`, `message.end`, and `done` events. H5 can connect Fetch/SSE; a mini program can feed `wx.request({ enableChunked: true })` chunks into `createAgentSseEventSource()`.
+`@varo-ui/ai` is model-provider neutral. A backend emits `message.start`, `text.delta`, `reasoning.*`, `tool.*`, `approval.*`, `message.end`, and `done` events. H5 can connect Fetch/SSE; a mini program can feed `wx.request({ enableChunked: true })` chunks into `createAgentSseEventSource()`.
 
 ```ts
-import { createAgentSseEventSource, createAgentStreamController } from '@varo/agent-core'
+import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
 
 const transport = createAgentSseEventSource()
 const controller = createAgentStreamController()
@@ -72,7 +71,7 @@ The mini-program Base Kit ships real Vue SFCs and consumes Tailwind v4 utilities
 
 - Keep docs, playgrounds, and packages in the monorepo
 - Consume published package entries externally; use source aliases only for workspace development
-- H5 and mini-program wrappers share primitive naming, while `@varo/ui-h5` and `@varo/ui-weapp` own the visual layer
+- H5 and mini-program wrappers share primitive naming, while `@varo-ui/h5` and `@varo-ui/weapp` own the visual layer
 
 ## Version notes
 

@@ -1,14 +1,14 @@
+import type { AgentEventChannel, AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentConversationMessage } from '../components/agent-ui'
 import {
+
   createAgentEventChannel,
   createAgentStreamController,
-  type AgentEventChannel,
-  type AgentStreamSnapshot
-} from '@varo/agent-core'
+} from '@varo-ui/ai'
 import { computed, onBeforeUnmount, onMounted, shallowRef } from 'vue'
-import type { AgentConversationMessage } from '../components/agent-ui'
 
 function sleep(duration: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, duration))
+  return new Promise<void>(resolve => setTimeout(resolve, duration))
 }
 
 const RESPONSE = `## 双端 Agent 组件已连接
@@ -30,8 +30,8 @@ export function useAgentDocsDemo() {
       maxCharsPerSecond: 460,
       maxCommitFps: 30,
       minCharsPerSecond: 42,
-      targetLatencyMs: 620
-    }
+      targetLatencyMs: 620,
+    },
   })
   const snapshot = shallowRef<AgentStreamSnapshot>(controller.getSnapshot())
   const messages = shallowRef<AgentConversationMessage[]>([
@@ -39,8 +39,8 @@ export function useAgentDocsDemo() {
       content: '我是 Varo Agent UI 文档演示。下面的回答由真实增量事件流渲染。',
       id: 'welcome',
       role: 'assistant',
-      timestamp: 'Docs'
-    }
+      timestamp: 'Docs',
+    },
   ])
   const prompt = shallowRef('')
   const lastPrompt = shallowRef('分析双端 Agent 能力')
@@ -54,16 +54,16 @@ export function useAgentDocsDemo() {
   let runId = 0
 
   async function produce(activeRun: number, request: string) {
-    if (!channel) return
+    if (!channel) { return }
     try {
       channel.push({ id: 'intent', title: '识别组件需求', type: 'reasoning.start' })
       await sleep(160)
-      if (activeRun !== runId) return
+      if (activeRun !== runId) { return }
       channel.push({ delta: `正在分析“${request}”`, id: 'intent', type: 'reasoning.delta' })
       channel.push({ durationMs: 160, id: 'intent', type: 'reasoning.end' })
       channel.push({ id: 'registry', name: 'varo.registry.inspect', summary: '读取 Agent UI 双端清单', type: 'tool.start' })
       await sleep(180)
-      if (activeRun !== runId) return
+      if (activeRun !== runId) { return }
       channel.push({ id: 'registry', output: { components: 36, surfaces: 37, targets: 2 }, summary: '36 components + 1 block', type: 'tool.result' })
       channel.push({ messageId, role: 'assistant', type: 'message.start' })
 
@@ -73,7 +73,7 @@ export function useAgentDocsDemo() {
       const chunks = content.match(/[\s\S]{1,10}/g) ?? [content]
       for (const chunk of chunks) {
         await sleep(34)
-        if (activeRun !== runId) return
+        if (activeRun !== runId) { return }
         channel.push({ delta: chunk, messageId, type: 'text.delta' })
       }
 
@@ -82,40 +82,41 @@ export function useAgentDocsDemo() {
         channel.push({
           choices: [
             { description: '只执行检查，不产生发布副作用', label: '仅验证', value: 'verify' },
-            { description: '验证通过后进入发布流程', label: '验证并发布', value: 'publish' }
+            { description: '验证通过后进入发布流程', label: '验证并发布', value: 'publish' },
           ],
           description: '外部副作用必须由用户明确确认。',
           id: 'release',
           title: '确认发布动作',
-          type: 'approval.required'
+          type: 'approval.required',
         })
         return
       }
 
       finish('')
-    } catch (error) {
+    }
+    catch (error) {
       channel.fail(error)
     }
   }
 
   function archive() {
     const message = snapshot.value.message
-    if (!message?.source || !message.final) return
+    if (!message?.source || !message.final) { return }
     messages.value = [
       ...messages.value,
-      { content: message.source, id: message.id, role: message.role, timestamp: 'Now' }
+      { content: message.source, id: message.id, role: message.role, timestamp: 'Now' },
     ]
   }
 
   function run(value = prompt.value) {
     const request = value.trim()
-    if (!request || busy.value) return
+    if (!request || busy.value) { return }
     archive()
     runId += 1
     const activeRun = runId
     messages.value = [
       ...messages.value,
-      { content: request, id: `user-${activeRun}`, role: 'user', timestamp: 'Now' }
+      { content: request, id: `user-${activeRun}`, role: 'user', timestamp: 'Now' },
     ]
     prompt.value = ''
     lastPrompt.value = request
@@ -127,29 +128,29 @@ export function useAgentDocsDemo() {
   }
 
   function finish(delta: string) {
-    if (!channel) return
-    if (delta) channel.push({ delta, messageId, type: 'text.delta' })
+    if (!channel) { return }
+    if (delta) { channel.push({ delta, messageId, type: 'text.delta' }) }
     channel.push({ messageId, type: 'message.end' })
     channel.push({ type: 'done' })
     channel.end()
   }
 
   function approve(value: string) {
-    if (!channel || !awaitingApproval) return
+    if (!channel || !awaitingApproval) { return }
     awaitingApproval = false
     channel.push({ id: 'release', type: 'approval.resolved', value })
     finish(value === 'publish' ? '\n\n已记录发布授权。' : '\n\n已切换为仅验证模式。')
   }
 
   function reject() {
-    if (!channel || !awaitingApproval) return
+    if (!channel || !awaitingApproval) { return }
     awaitingApproval = false
     channel.push({ id: 'release', type: 'approval.resolved', value: 'reject' })
     finish('\n\n已取消操作，没有产生外部副作用。')
   }
 
   function retry() {
-    if (!busy.value) run(lastPrompt.value)
+    if (!busy.value) { run(lastPrompt.value) }
   }
 
   onMounted(() => run('分析双端 Agent 能力'))
@@ -169,6 +170,6 @@ export function useAgentDocsDemo() {
     reject,
     retry,
     run,
-    snapshot
+    snapshot,
   }
 }

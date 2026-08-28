@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo/agent-core'
+import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentConversationMessage } from '../agent-ui'
 import {
   AgentComposer,
   AgentConversation,
+
   AgentEventRenderer,
-  type AgentConversationMessage
 } from '../agent-ui'
 
 withDefaults(
@@ -22,11 +23,10 @@ withDefaults(
     snapshot: undefined,
     subtitle: '工具调用与外部操作始终可见、可确认',
     suggestions: () => [],
-    title: 'Varo Agent'
-  }
+    title: 'Varo Agent',
+  },
 )
 
-const prompt = defineModel<string>({ default: '' })
 const emit = defineEmits<{
   approve: [value: string]
   close: []
@@ -34,6 +34,7 @@ const emit = defineEmits<{
   retry: []
   submit: [prompt: string]
 }>()
+const prompt = defineModel<string>({ default: '' })
 </script>
 
 <template>
@@ -44,7 +45,9 @@ const emit = defineEmits<{
         <strong class="truncate text-sm text-slate-950">{{ title }}</strong>
         <small class="truncate text-[11px] text-slate-400">{{ subtitle }}</small>
       </span>
-      <button class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-lg text-slate-500" type="button" aria-label="Close Agent" @click="emit('close')">×</button>
+      <button class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-lg text-slate-500" type="button" aria-label="Close Agent" @click="emit('close')">
+        ×
+      </button>
     </header>
 
     <div class="grid min-h-0 content-start gap-3 overflow-y-auto px-4 py-4">
@@ -56,7 +59,9 @@ const emit = defineEmits<{
         @reject="emit('reject')"
         @retry="emit('retry')"
       >
-        <template v-if="$slots.actions" #actions><slot name="actions" /></template>
+        <template v-if="$slots.actions" #actions>
+          <slot name="actions" />
+        </template>
       </AgentEventRenderer>
       <slot />
     </div>

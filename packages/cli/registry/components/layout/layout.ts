@@ -1,7 +1,9 @@
+import type { PropType, StyleValue } from 'vue'
+import type { PairSizeValue } from './layout-utils'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
+import { normalizePairSize } from './layout-utils'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { normalizePairSize, type PairSizeValue } from './layout-utils'
 
 export type RowJustify = 'start' | 'end' | 'center' | 'space-around' | 'space-between'
 export type RowAlign = 'top' | 'middle' | 'bottom' | 'stretch'
@@ -11,34 +13,34 @@ export const VRow = defineComponent({
   props: {
     gutter: {
       type: [Number, String, Array] as PropType<PairSizeValue | undefined>,
-      default: undefined
+      default: undefined,
     },
     justify: {
       type: String as PropType<RowJustify>,
-      default: 'start'
+      default: 'start',
     },
     align: {
       type: String as PropType<RowAlign>,
-      default: 'top'
+      default: 'top',
     },
     wrap: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   setup(props, { attrs, slots }) {
     const classes = computed(() =>
       createVariantClass('varo-row', {
         justify: props.justify,
         align: props.align,
-        wrap: props.wrap
-      })
+        wrap: props.wrap,
+      }),
     )
     const style = computed(() => {
       const [gutterX, gutterY] = normalizePairSize(props.gutter)
       return {
         '--varo-row-gutter-x': gutterX,
-        '--varo-row-gutter-y': gutterY
+        '--varo-row-gutter-y': gutterY,
       }
     })
 
@@ -47,15 +49,15 @@ export const VRow = defineComponent({
         'div',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          style: [attrs.style as StyleValue, style.value],
+          'class': [classes.value, attrs.class],
+          'style': [attrs.style as StyleValue, style.value],
           'data-align': props.align,
           'data-justify': props.justify,
-          'data-wrap': String(props.wrap)
+          'data-wrap': String(props.wrap),
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const VCol = defineComponent({
@@ -63,23 +65,23 @@ export const VCol = defineComponent({
   props: {
     span: {
       type: [Number, String] as PropType<number | string>,
-      default: 24
+      default: 24,
     },
     offset: {
       type: [Number, String] as PropType<number | string>,
-      default: 0
-    }
+      default: 0,
+    },
   },
   setup(props, { attrs, slots }) {
     const classes = computed(() =>
       createVariantClass('varo-col', {
         span: String(props.span),
-        offset: String(props.offset)
-      })
+        offset: String(props.offset),
+      }),
     )
     const style = computed(() => ({
       '--varo-col-span': props.span,
-      '--varo-col-offset': props.offset
+      '--varo-col-offset': props.offset,
     }))
 
     return () =>
@@ -87,12 +89,12 @@ export const VCol = defineComponent({
         'div',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          style: [attrs.style as StyleValue, style.value],
+          'class': [classes.value, attrs.class],
+          'style': [attrs.style as StyleValue, style.value],
           'data-offset': String(props.offset),
-          'data-span': String(props.span)
+          'data-span': String(props.span),
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })

@@ -1,3 +1,23 @@
 packages:
   - apps/*
   - packages/*
+  - examples/*
+
+autoInstallPeers: false
+
+minimumReleaseAge: 0
+
+versioning:
+  fixed:
+    - ['@varo-ui/ai', '@varo-ui/cli', '@varo-ui/h5', '@varo-ui/headless', '@varo-ui/theme', '@varo-ui/weapp']
+  changelog:
+    storage: repository
+
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  msgpackr-extract: true
+  '@tailwindcss/oxide': true
+  sharp: true
+  vue-demi: true
+  workerd: true

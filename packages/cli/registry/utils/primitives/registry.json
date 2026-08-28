@@ -6,8 +6,8 @@
   "targets": ["h5", "weapp-vite"],
   "dependencies": [],
   "targetDependencies": {
-    "h5": ["@varo/primitives-h5"],
-    "weapp-vite": ["@varo/primitives-weapp"]
+    "h5": ["@varo-ui/h5"],
+    "weapp-vite": ["@varo-ui/weapp"]
   },
   "registryDependencies": [],
   "files": [

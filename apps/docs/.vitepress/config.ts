@@ -1,43 +1,45 @@
-import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vitepress'
 
 const workspacePath = (relativePath: string) => fileURLToPath(new URL(relativePath, import.meta.url))
+const docsBase = process.env.DOCS_BASE || '/'
+const docsAsset = (path: string) => `${docsBase}${path.replace(/^\/+/, '')}`
 
 export default defineConfig({
   title: 'Varo',
   description: '面向 H5 与小程序封装的 primitives-first Vue 组件体系。',
+  base: docsBase,
   cleanUrls: true,
   lastUpdated: true,
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/brand-assets/varo-symbol.svg' }],
-    ['link', { rel: 'alternate icon', href: '/favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: docsAsset('/brand-assets/varo-symbol.svg') }],
+    ['link', { rel: 'alternate icon', href: docsAsset('/favicon.ico') }],
+    ['link', { rel: 'apple-touch-icon', href: docsAsset('/apple-touch-icon.png') }],
     ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#f7f8fa' }],
-    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0b1016' }]
+    ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0b1016' }],
   ],
   vite: {
     plugins: [tailwindcss()],
     resolve: {
       alias: {
-        '@varo/agent-core': workspacePath('../../../packages/agent-core/src/index.ts'),
+        '@varo-ui/ai': workspacePath('../../../packages/agent-core/src/index.ts'),
         '@varo/shared': workspacePath('../../../packages/shared/src/index.ts'),
         '@varo/utils': workspacePath('../../../packages/utils/src/index.ts'),
-        '@varo/theme': workspacePath('../../../packages/theme/src/index.ts'),
-        '@varo/primitives-core': workspacePath('../../../packages/primitives-core/src/index.ts'),
+        '@varo-ui/theme': workspacePath('../../../packages/theme/src/index.ts'),
+        '@varo-ui/headless': workspacePath('../../../packages/primitives-core/src/index.ts'),
         '@varo/primitives-h5': workspacePath('../../../packages/primitives-h5/src/index.ts'),
-        '@varo/primitives-weapp': workspacePath('../../../packages/primitives-weapp/src/index.ts'),
-        '@varo/ui-h5/source/style.css': workspacePath('../../../packages/ui-h5/src/style.css'),
-        '@varo/ui-h5': workspacePath('../../../packages/ui-h5/src/index.ts'),
-        '@varo/ui-weapp': workspacePath('../../../packages/ui-weapp/src/index.ts')
-      }
-    }
+        '@varo-ui/h5/source/style.css': workspacePath('../../../packages/ui-h5/src/style.css'),
+        '@varo-ui/h5': workspacePath('../../../packages/ui-h5/src/index.ts'),
+        '@varo-ui/weapp': workspacePath('../../../packages/ui-weapp/src/index.ts'),
+      },
+    },
   },
   themeConfig: {
     logo: {
       light: '/brand-assets/varo-lockup.svg',
       dark: '/brand-assets/varo-lockup-dark.svg',
-      alt: 'Varo'
+      alt: 'Varo',
     },
     siteTitle: false,
     search: {
@@ -54,9 +56,9 @@ export default defineConfig({
             footer: {
               selectText: '选择',
               navigateText: '切换',
-              closeText: '关闭'
-            }
-          }
+              closeText: '关闭',
+            },
+          },
         },
         locales: {
           en: {
@@ -70,14 +72,14 @@ export default defineConfig({
                 footer: {
                   selectText: 'Select',
                   navigateText: 'Navigate',
-                  closeText: 'Close'
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                  closeText: 'Close',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   locales: {
     root: {
@@ -100,11 +102,11 @@ export default defineConfig({
                 footer: {
                   selectText: '选择',
                   navigateText: '切换',
-                  closeText: '关闭'
-                }
-              }
-            }
-          }
+                  closeText: '关闭',
+                },
+              },
+            },
+          },
         },
         nav: [
           { text: '开始', link: '/guide/installation' },
@@ -119,9 +121,9 @@ export default defineConfig({
               { text: '主题配置', link: '/guide/theme' },
               { text: '色彩系统', link: '/guide/colors' },
               { text: '国际化', link: '/guide/i18n' },
-              { text: '参与贡献', link: '/guide/contributing' }
-            ]
-          }
+              { text: '参与贡献', link: '/guide/contributing' },
+            ],
+          },
         ],
         sidebar: [
           {
@@ -131,8 +133,8 @@ export default defineConfig({
               { text: 'shadcn 模式', link: '/guide/shadcn-mode' },
               { text: '主题配置', link: '/guide/theme' },
               { text: '色彩系统', link: '/guide/colors' },
-              { text: '国际化配置', link: '/guide/i18n' }
-            ]
+              { text: '国际化配置', link: '/guide/i18n' },
+            ],
           },
           {
             text: '组件文档',
@@ -145,8 +147,8 @@ export default defineConfig({
                   { text: 'Button 按钮', link: '/components/button' },
                   { text: 'Cell 单元格', link: '/components/cell' },
                   { text: 'Image 图片', link: '/components/image' },
-                  { text: 'Input 输入框', link: '/components/input' }
-                ]
+                  { text: 'Input 输入框', link: '/components/input' },
+                ],
               },
               {
                 text: '表单组件',
@@ -169,8 +171,8 @@ export default defineConfig({
                   { text: 'Searchbar 搜索栏', link: '/components/searchbar' },
                   { text: 'ShortPassword 短密码', link: '/components/short-password' },
                   { text: 'Textarea 文本域', link: '/components/textarea' },
-                  { text: 'Uploader 上传', link: '/components/uploader' }
-                ]
+                  { text: 'Uploader 上传', link: '/components/uploader' },
+                ],
               },
               {
                 text: '布局组件',
@@ -180,8 +182,8 @@ export default defineConfig({
                   { text: 'Grid 宫格', link: '/components/grid' },
                   { text: 'Layout 布局', link: '/components/layout' },
                   { text: 'Space 间距', link: '/components/space' },
-                  { text: 'Sticky 粘性布局', link: '/components/sticky' }
-                ]
+                  { text: 'Sticky 粘性布局', link: '/components/sticky' },
+                ],
               },
               {
                 text: '导航组件',
@@ -195,8 +197,8 @@ export default defineConfig({
                   { text: 'Pagination 分页', link: '/components/pagination' },
                   { text: 'SideNavbar 侧边栏导航', link: '/components/side-navbar' },
                   { text: 'Tabbar 标签栏', link: '/components/tabbar' },
-                  { text: 'Tabs 选项卡切换', link: '/components/tabs' }
-                ]
+                  { text: 'Tabs 选项卡切换', link: '/components/tabs' },
+                ],
               },
               {
                 text: '反馈组件',
@@ -205,15 +207,15 @@ export default defineConfig({
                   { text: 'Loading 加载', link: '/components/loading' },
                   { text: 'Overlay 遮罩层', link: '/components/overlay' },
                   { text: 'Popup 弹出层', link: '/components/popup' },
-                  { text: 'Toast 轻提示', link: '/components/toast' }
-                ]
+                  { text: 'Toast 轻提示', link: '/components/toast' },
+                ],
               },
               {
                 text: '高级组件',
                 collapsed: true,
-                items: [{ text: 'Dialog 对话框', link: '/components/dialog' }]
-              }
-            ]
+                items: [{ text: 'Dialog 对话框', link: '/components/dialog' }],
+              },
+            ],
           },
           {
             text: 'AI Agent 组件',
@@ -229,8 +231,8 @@ export default defineConfig({
                   { text: 'AgentStream', link: '/ai/stream' },
                   { text: 'AgentMessage', link: '/ai/message' },
                   { text: 'AgentConversation', link: '/ai/conversation' },
-                  { text: 'AgentMessageScroller', link: '/ai/message-scroller' }
-                ]
+                  { text: 'AgentMessageScroller', link: '/ai/message-scroller' },
+                ],
               },
               {
                 text: '执行与审批',
@@ -243,8 +245,8 @@ export default defineConfig({
                   { text: 'AgentApproval', link: '/ai/approval' },
                   { text: 'AgentToolApproval', link: '/ai/tool-approval' },
                   { text: 'AgentRecommendation', link: '/ai/recommendation' },
-                  { text: 'AgentEventRenderer', link: '/ai/event-renderer' }
-                ]
+                  { text: 'AgentEventRenderer', link: '/ai/event-renderer' },
+                ],
               },
               {
                 text: '输入与操作',
@@ -255,8 +257,8 @@ export default defineConfig({
                   { text: 'AgentComposer', link: '/ai/composer' },
                   { text: 'AgentResponseActions', link: '/ai/response-actions' },
                   { text: 'AgentSelectionActions', link: '/ai/selection-actions' },
-                  { text: 'AgentCommandSearch', link: '/ai/command-search' }
-                ]
+                  { text: 'AgentCommandSearch', link: '/ai/command-search' },
+                ],
               },
               {
                 text: '上下文与产物',
@@ -269,8 +271,8 @@ export default defineConfig({
                   { text: 'AgentContextCard', link: '/ai/context-card' },
                   { text: 'AgentCodeBlock', link: '/ai/code-block' },
                   { text: 'AgentFileDiff', link: '/ai/file-diff' },
-                  { text: 'AgentImageGeneration', link: '/ai/image-generation' }
-                ]
+                  { text: 'AgentImageGeneration', link: '/ai/image-generation' },
+                ],
               },
               {
                 text: '数据与工作区',
@@ -283,10 +285,10 @@ export default defineConfig({
                   { text: 'AgentFilterTable', link: '/ai/filter-table' },
                   { text: 'AgentFlowchart', link: '/ai/flowchart' },
                   { text: 'AgentFineTune', link: '/ai/fine-tune' },
-                  { text: 'AgentChat Block', link: '/ai/agent-chat' }
-                ]
-              }
-            ]
+                  { text: 'AgentChat Block', link: '/ai/agent-chat' },
+                ],
+              },
+            ],
           },
           {
             text: 'Primitives',
@@ -299,8 +301,8 @@ export default defineConfig({
               { text: 'Select', link: '/primitives/select' },
               { text: 'Collapsible', link: '/primitives/collapsible' },
               { text: 'Accordion', link: '/primitives/accordion' },
-              { text: 'Popover', link: '/primitives/popover' }
-            ]
+              { text: 'Popover', link: '/primitives/popover' },
+            ],
           },
           {
             text: 'Blocks',
@@ -308,24 +310,24 @@ export default defineConfig({
               { text: '构建你自己的 Block', link: '/blocks/build-your-own' },
               { text: 'Profile Edit', link: '/blocks/profile-edit' },
               { text: 'Order Filter', link: '/blocks/order-filter' },
-              { text: 'Agent Chat', link: '/ai/' }
-            ]
+              { text: 'Agent Chat', link: '/ai/' },
+            ],
           },
           {
             text: '示例',
-            items: [{ text: '跨端演示', link: '/examples/' }]
+            items: [{ text: '跨端演示', link: '/examples/' }],
           },
           {
             text: '社区',
-            items: [{ text: '如何贡献', link: '/guide/contributing' }]
-          }
+            items: [{ text: '如何贡献', link: '/guide/contributing' }],
+          },
         ],
         outline: { level: [2, 3], label: '本页导航' },
         docFooter: { prev: '上一页', next: '下一页' },
         darkModeSwitchLabel: '外观',
         sidebarMenuLabel: '菜单',
-        returnToTopLabel: '返回顶部'
-      }
+        returnToTopLabel: '返回顶部',
+      },
     },
     en: {
       label: 'English',
@@ -347,11 +349,11 @@ export default defineConfig({
                 footer: {
                   selectText: 'Select',
                   navigateText: 'Navigate',
-                  closeText: 'Close'
-                }
-              }
-            }
-          }
+                  closeText: 'Close',
+                },
+              },
+            },
+          },
         },
         nav: [
           { text: 'Start', link: '/en/guide/installation' },
@@ -366,9 +368,9 @@ export default defineConfig({
               { text: 'Theme', link: '/en/guide/theme' },
               { text: 'Color System', link: '/en/guide/colors' },
               { text: 'Internationalization', link: '/en/guide/i18n' },
-              { text: 'Contributing', link: '/en/guide/contributing' }
-            ]
-          }
+              { text: 'Contributing', link: '/en/guide/contributing' },
+            ],
+          },
         ],
         sidebar: [
           {
@@ -378,8 +380,8 @@ export default defineConfig({
               { text: 'shadcn Mode', link: '/en/guide/shadcn-mode' },
               { text: 'Theme', link: '/en/guide/theme' },
               { text: 'Color System', link: '/en/guide/colors' },
-              { text: 'Internationalization', link: '/en/guide/i18n' }
-            ]
+              { text: 'Internationalization', link: '/en/guide/i18n' },
+            ],
           },
           {
             text: 'Components',
@@ -392,8 +394,8 @@ export default defineConfig({
                   { text: 'Button', link: '/en/components/button' },
                   { text: 'Cell', link: '/en/components/cell' },
                   { text: 'Image', link: '/en/components/image' },
-                  { text: 'Input', link: '/en/components/input' }
-                ]
+                  { text: 'Input', link: '/en/components/input' },
+                ],
               },
               {
                 text: 'Form Components',
@@ -416,8 +418,8 @@ export default defineConfig({
                   { text: 'Searchbar', link: '/en/components/searchbar' },
                   { text: 'ShortPassword', link: '/en/components/short-password' },
                   { text: 'Textarea', link: '/en/components/textarea' },
-                  { text: 'Uploader', link: '/en/components/uploader' }
-                ]
+                  { text: 'Uploader', link: '/en/components/uploader' },
+                ],
               },
               {
                 text: 'Layout',
@@ -427,8 +429,8 @@ export default defineConfig({
                   { text: 'Grid', link: '/en/components/grid' },
                   { text: 'Layout', link: '/en/components/layout' },
                   { text: 'Space', link: '/en/components/space' },
-                  { text: 'Sticky', link: '/en/components/sticky' }
-                ]
+                  { text: 'Sticky', link: '/en/components/sticky' },
+                ],
               },
               {
                 text: 'Navigation',
@@ -442,8 +444,8 @@ export default defineConfig({
                   { text: 'Pagination', link: '/en/components/pagination' },
                   { text: 'SideNavbar', link: '/en/components/side-navbar' },
                   { text: 'Tabbar', link: '/en/components/tabbar' },
-                  { text: 'Tabs', link: '/en/components/tabs' }
-                ]
+                  { text: 'Tabs', link: '/en/components/tabs' },
+                ],
               },
               {
                 text: 'Feedback',
@@ -452,15 +454,15 @@ export default defineConfig({
                   { text: 'Loading', link: '/en/components/loading' },
                   { text: 'Overlay', link: '/en/components/overlay' },
                   { text: 'Popup', link: '/en/components/popup' },
-                  { text: 'Toast', link: '/en/components/toast' }
-                ]
+                  { text: 'Toast', link: '/en/components/toast' },
+                ],
               },
               {
                 text: 'Advanced',
                 collapsed: true,
-                items: [{ text: 'Dialog', link: '/en/components/dialog' }]
-              }
-            ]
+                items: [{ text: 'Dialog', link: '/en/components/dialog' }],
+              },
+            ],
           },
           {
             text: 'AI Agent Components',
@@ -476,8 +478,8 @@ export default defineConfig({
                   { text: 'AgentStream', link: '/en/ai/stream' },
                   { text: 'AgentMessage', link: '/en/ai/message' },
                   { text: 'AgentConversation', link: '/en/ai/conversation' },
-                  { text: 'AgentMessageScroller', link: '/en/ai/message-scroller' }
-                ]
+                  { text: 'AgentMessageScroller', link: '/en/ai/message-scroller' },
+                ],
               },
               {
                 text: 'Execution and Approval',
@@ -490,8 +492,8 @@ export default defineConfig({
                   { text: 'AgentApproval', link: '/en/ai/approval' },
                   { text: 'AgentToolApproval', link: '/en/ai/tool-approval' },
                   { text: 'AgentRecommendation', link: '/en/ai/recommendation' },
-                  { text: 'AgentEventRenderer', link: '/en/ai/event-renderer' }
-                ]
+                  { text: 'AgentEventRenderer', link: '/en/ai/event-renderer' },
+                ],
               },
               {
                 text: 'Prompt and Actions',
@@ -502,8 +504,8 @@ export default defineConfig({
                   { text: 'AgentComposer', link: '/en/ai/composer' },
                   { text: 'AgentResponseActions', link: '/en/ai/response-actions' },
                   { text: 'AgentSelectionActions', link: '/en/ai/selection-actions' },
-                  { text: 'AgentCommandSearch', link: '/en/ai/command-search' }
-                ]
+                  { text: 'AgentCommandSearch', link: '/en/ai/command-search' },
+                ],
               },
               {
                 text: 'Context and Artifacts',
@@ -516,8 +518,8 @@ export default defineConfig({
                   { text: 'AgentContextCard', link: '/en/ai/context-card' },
                   { text: 'AgentCodeBlock', link: '/en/ai/code-block' },
                   { text: 'AgentFileDiff', link: '/en/ai/file-diff' },
-                  { text: 'AgentImageGeneration', link: '/en/ai/image-generation' }
-                ]
+                  { text: 'AgentImageGeneration', link: '/en/ai/image-generation' },
+                ],
               },
               {
                 text: 'Data and Workspace',
@@ -530,10 +532,10 @@ export default defineConfig({
                   { text: 'AgentFilterTable', link: '/en/ai/filter-table' },
                   { text: 'AgentFlowchart', link: '/en/ai/flowchart' },
                   { text: 'AgentFineTune', link: '/en/ai/fine-tune' },
-                  { text: 'AgentChat Block', link: '/en/ai/agent-chat' }
-                ]
-              }
-            ]
+                  { text: 'AgentChat Block', link: '/en/ai/agent-chat' },
+                ],
+              },
+            ],
           },
           {
             text: 'Primitives',
@@ -546,8 +548,8 @@ export default defineConfig({
               { text: 'Select', link: '/en/primitives/select' },
               { text: 'Collapsible', link: '/en/primitives/collapsible' },
               { text: 'Accordion', link: '/en/primitives/accordion' },
-              { text: 'Popover', link: '/en/primitives/popover' }
-            ]
+              { text: 'Popover', link: '/en/primitives/popover' },
+            ],
           },
           {
             text: 'Blocks',
@@ -555,24 +557,24 @@ export default defineConfig({
               { text: 'Build Your Own Block', link: '/en/blocks/build-your-own' },
               { text: 'Profile Edit', link: '/en/blocks/profile-edit' },
               { text: 'Order Filter', link: '/en/blocks/order-filter' },
-              { text: 'Agent Chat', link: '/en/ai/' }
-            ]
+              { text: 'Agent Chat', link: '/en/ai/' },
+            ],
           },
           {
             text: 'Examples',
-            items: [{ text: 'Cross-platform Demo', link: '/en/examples/' }]
+            items: [{ text: 'Cross-platform Demo', link: '/en/examples/' }],
           },
           {
             text: 'Community',
-            items: [{ text: 'Contributing', link: '/en/guide/contributing' }]
-          }
+            items: [{ text: 'Contributing', link: '/en/guide/contributing' }],
+          },
         ],
         outline: { level: [2, 3], label: 'On this page' },
         docFooter: { prev: 'Previous page', next: 'Next page' },
         darkModeSwitchLabel: 'Appearance',
         sidebarMenuLabel: 'Menu',
-        returnToTopLabel: 'Back to top'
-      }
-    }
-  }
+        returnToTopLabel: 'Back to top',
+      },
+    },
+  },
 })

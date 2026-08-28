@@ -1,54 +1,69 @@
 {
-    "name": "@varo/ui-weapp",
-    "version": "0.1.0",
-    "type": "module",
-    "sideEffects": [
-        "./src/style.css"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/daguanren21/Varo.git"
+  "name": "@varo-ui/weapp",
+  "type": "module",
+  "version": "1.0.1",
+  "description": "Production-ready component wrappers for native WeChat mini-program products.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/ui-weapp"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
+  },
+  "sideEffects": [
+    "./src/style.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     },
-    "publishConfig": {
-        "access": "public",
-        "registry": "https://registry.npmjs.org/"
+    "./primitives": {
+      "types": "./dist/primitives.d.mts",
+      "import": "./dist/primitives.mjs"
     },
-    "main": "./dist/index.mjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.mts",
-    "files": [
-        "dist",
-        "src"
-    ],
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.mts",
-            "import": "./dist/index.mjs"
-        },
-        "./style.css": "./src/style.css",
-        "./source/style.css": "./src/style.css",
-        "./source": {
-            "types": "./src/index.ts",
-            "import": "./src/index.ts"
-        }
-    },
-    "scripts": {
-        "build": "tsdown",
-        "clean": "rimraf dist",
-        "dev": "tsdown --watch",
-        "lint": "echo ui-weapp lint pending",
-        "typecheck": "tsc -p tsconfig.json --noEmit",
-        "test": "vitest run --passWithNoTests",
-        "test:e2e": "echo ui-weapp has no e2e"
-    },
-    "dependencies": {
-        "@varo/hooks": "workspace:*",
-        "@varo/primitives-weapp": "workspace:*",
-        "@varo/shared": "workspace:*",
-        "@varo/theme": "workspace:*",
-        "vue": "^3.5.41"
-    },
-    "peerDependencies": {
-        "wevu": "^6.23.0"
+    "./style.css": "./src/style.css",
+    "./source/style.css": "./src/style.css",
+    "./source": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rimraf dist",
+    "dev": "tsdown --watch",
+    "lint": "echo ui-weapp lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo ui-weapp has no e2e"
+  },
+  "peerDependencies": {
+    "wevu": ">=6.22.0 <7"
+  },
+  "dependencies": {
+    "@varo-ui/headless": "workspace:*",
+    "@varo-ui/theme": "workspace:*",
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@varo/hooks": "workspace:*",
+    "@varo/primitives-weapp": "workspace:*",
+    "@varo/shared": "workspace:*"
+  }
 }

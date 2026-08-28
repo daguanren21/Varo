@@ -8,8 +8,8 @@
 
 ```vue
 <script setup lang="ts">
+import { VPagination } from '@varo-ui/h5'
 import { ref } from 'vue'
-import { VPagination } from '@varo/ui-h5'
 
 const page = ref(2)
 </script>
@@ -22,17 +22,17 @@ const page = ref(2)
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `modelValue` | `number` | `1` | Current page |
-| `pageCount` | `number` | `1` | Total page count |
-| `mode` | `'multi' \| 'simple'` | `'multi'` | Pagination mode |
-| `prevText` | `string` | `'上一页'` | Previous button text |
-| `nextText` | `string` | `'下一页'` | Next button text |
+| Prop         | Type                  | Default    | Description          |
+| ------------ | --------------------- | ---------- | -------------------- |
+| `modelValue` | `number`              | `1`        | Current page         |
+| `pageCount`  | `number`              | `1`        | Total page count     |
+| `mode`       | `'multi' \| 'simple'` | `'multi'`  | Pagination mode      |
+| `prevText`   | `string`              | `'上一页'` | Previous button text |
+| `nextText`   | `string`              | `'下一页'` | Next button text     |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event               | Payload  | Description  |
+| ------------------- | -------- | ------------ |
 | `update:modelValue` | `number` | Page changed |
-| `change` | `number` | Page changed |
+| `change`            | `number` | Page changed |

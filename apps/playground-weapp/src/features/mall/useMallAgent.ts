@@ -1,10 +1,11 @@
-import {
-  createAgentStreamController,
-  type AgentStreamEvent,
-  type AgentStreamSnapshot
-} from '@varo/agent-core'
-import { computed, onUnload, onUnmounted, shallowRef, type ComputedRef, type ShallowRef } from 'wevu'
+import type { AgentStreamEvent, AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ComputedRef, ShallowRef } from 'wevu'
 import type { AgentChoice, AgentTask, AgentToolCall, AgentTraceStep } from '../../components/agent-ui/types'
+import {
+
+  createAgentStreamController,
+} from '@varo-ui/ai'
+import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 
 export interface MallProduct {
   accent: string
@@ -53,9 +54,9 @@ export interface MallAgentMessage {
   timestamp: string
 }
 
-export type PendingAction =
-  | { product: MallProduct; quantity: number; type: 'purchase' }
-  | { order: MallOrder; reason: string; type: 'return' }
+export type PendingAction
+  = | { product: MallProduct, quantity: number, type: 'purchase' }
+    | { order: MallOrder, reason: string, type: 'return' }
 
 export type MallAddressDraft = Omit<MallAddress, 'id'> & { id?: string }
 
@@ -83,7 +84,6 @@ export interface MallAgentController {
   tasks: ShallowRef<AgentTask[]>
 }
 
-
 const INITIAL_PRODUCTS: MallProduct[] = [
   {
     accent: 'linear-gradient(145deg, #111827, #334155)',
@@ -93,7 +93,7 @@ const INITIAL_PRODUCTS: MallProduct[] = [
     price: 39900,
     rating: '98% 好评',
     stock: 18,
-    subtitle: '40dB 主动降噪 · 36 小时续航'
+    subtitle: '40dB 主动降噪 · 36 小时续航',
   },
   {
     accent: 'linear-gradient(145deg, #dbeafe, #93c5fd)',
@@ -103,7 +103,7 @@ const INITIAL_PRODUCTS: MallProduct[] = [
     price: 5990,
     rating: '99% 好评',
     stock: 42,
-    subtitle: '原生高钙 · 250mL × 12'
+    subtitle: '原生高钙 · 250mL × 12',
   },
   {
     accent: 'linear-gradient(145deg, #fee2e2, #fca5a5)',
@@ -113,7 +113,7 @@ const INITIAL_PRODUCTS: MallProduct[] = [
     price: 26900,
     rating: '97% 好评',
     stock: 9,
-    subtitle: '智能预约 · 8 段控温'
+    subtitle: '智能预约 · 8 段控温',
   },
   {
     accent: 'linear-gradient(145deg, #dcfce7, #86efac)',
@@ -123,15 +123,15 @@ const INITIAL_PRODUCTS: MallProduct[] = [
     price: 32900,
     rating: '96% 好评',
     stock: 24,
-    subtitle: '轻量回弹 · 日常慢跑'
-  }
+    subtitle: '轻量回弹 · 日常慢跑',
+  },
 ]
 
 const PRODUCT_ALIASES: Record<string, string[]> = {
-  headphones: ['耳机', '降噪'],
-  milk: ['牛奶', '鲜奶'],
+  'headphones': ['耳机', '降噪'],
+  'milk': ['牛奶', '鲜奶'],
   'rice-cooker': ['电饭煲', '饭煲'],
-  'running-shoes': ['跑步鞋', '运动鞋', '鞋']
+  'running-shoes': ['跑步鞋', '运动鞋', '鞋'],
 }
 
 function nowLabel() {
@@ -144,12 +144,11 @@ function nextId(prefix: string) {
 }
 
 function sleep(duration: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, duration))
+  return new Promise<void>(resolve => setTimeout(resolve, duration))
 }
 
-
 export function useMallAgent(): MallAgentController {
-  const products = shallowRef<MallProduct[]>(INITIAL_PRODUCTS.map((product) => ({ ...product })))
+  const products = shallowRef<MallProduct[]>(INITIAL_PRODUCTS.map(product => ({ ...product })))
   const orders = shallowRef<MallOrder[]>([
     {
       address: '上海市浦东新区张江路 88 号',
@@ -159,8 +158,8 @@ export function useMallAgent(): MallAgentController {
       productName: '鲜京采纯牛奶 12 盒',
       quantity: 1,
       status: 'delivered',
-      total: 5990
-    }
+      total: 5990,
+    },
   ])
   const addresses = shallowRef<MallAddress[]>([
     {
@@ -168,8 +167,8 @@ export function useMallAgent(): MallAgentController {
       id: 'address-home',
       isDefault: true,
       name: '李小京',
-      phone: '13800138000'
-    }
+      phone: '13800138000',
+    },
   ])
   const history = shallowRef<MallHistoryItem[]>([
     {
@@ -177,16 +176,16 @@ export function useMallAgent(): MallAgentController {
       id: 'history-initial',
       time: '昨天 18:42',
       title: '订单完成',
-      type: 'order'
-    }
+      type: 'order',
+    },
   ])
   const messages = shallowRef<MallAgentMessage[]>([
     {
       content: '你好，我是 Varo 购物 Agent。我可以帮你找商品、下单、退货、查看记录或配置收货地址。执行购买和退货前，我都会先请你确认。',
       id: 'welcome',
       role: 'assistant',
-      timestamp: nowLabel()
-    }
+      timestamp: nowLabel(),
+    },
   ])
   const tools = shallowRef<AgentToolCall[]>([])
   const traceSteps = shallowRef<AgentTraceStep[]>([])
@@ -200,8 +199,8 @@ export function useMallAgent(): MallAgentController {
       maxCharsPerSecond: 420,
       maxCommitFps: 20,
       minCharsPerSecond: 36,
-      targetLatencyMs: 520
-    }
+      targetLatencyMs: 520,
+    },
   })
   const streamSnapshot = shallowRef<AgentStreamSnapshot>(agentStream.getSnapshot())
   const unsubscribeStream = agentStream.subscribe(() => {
@@ -212,8 +211,8 @@ export function useMallAgent(): MallAgentController {
   const historyOpen = shallowRef(false)
   let activeRun = 0
 
-  const defaultAddress = computed(() => addresses.value.find((address) => address.isDefault) ?? addresses.value[0])
-  const cartCount = computed(() => orders.value.filter((order) => order.status === 'paid').length)
+  const defaultAddress = computed(() => addresses.value.find(address => address.isDefault) ?? addresses.value[0])
+  const cartCount = computed(() => orders.value.filter(order => order.status === 'paid').length)
 
   function addMessage(role: MallAgentMessage['role'], content: string) {
     messages.value = [...messages.value, { content, id: nextId('message'), role, timestamp: nowLabel() }]
@@ -222,14 +221,15 @@ export function useMallAgent(): MallAgentController {
   async function* createTextEventStream(text: string, run: number): AsyncGenerator<AgentStreamEvent> {
     for (const step of traceSteps.value) {
       yield { id: step.id, title: step.title, type: 'reasoning.start' }
-      if (step.detail) yield { delta: step.detail, id: step.id, type: 'reasoning.delta' }
-      if (step.status === 'completed') yield { id: step.id, type: 'reasoning.end' }
+      if (step.detail) { yield { delta: step.detail, id: step.id, type: 'reasoning.delta' } }
+      if (step.status === 'completed') { yield { id: step.id, type: 'reasoning.end' } }
     }
     for (const tool of tools.value) {
       yield { id: tool.id, name: tool.name, summary: tool.summary, type: 'tool.start' }
       if (tool.status === 'completed') {
         yield { id: tool.id, summary: tool.summary, type: 'tool.result' }
-      } else if (tool.status === 'failed') {
+      }
+      else if (tool.status === 'failed') {
         yield { error: tool.summary ?? 'Tool execution failed', id: tool.id, type: 'tool.error' }
       }
     }
@@ -239,7 +239,7 @@ export function useMallAgent(): MallAgentController {
     const chunks = text.match(/.{1,4}/gu) ?? [text]
     for (const chunk of chunks) {
       await sleep(36)
-      if (run !== activeRun) return
+      if (run !== activeRun) { return }
       yield { delta: chunk, messageId, type: 'text.delta' }
     }
     yield { messageId, type: 'message.end' }
@@ -248,28 +248,28 @@ export function useMallAgent(): MallAgentController {
 
   async function stream(text: string, run: number) {
     const result = await agentStream.connect(createTextEventStream(text, run))
-    if (run !== activeRun || result.status === 'cancelled') return
-    if (result.status === 'failed') return
+    if (run !== activeRun || result.status === 'cancelled') { return }
+    if (result.status === 'failed') { return }
     addMessage('assistant', result.message?.source ?? text)
     agentStream.reset()
   }
 
   function setStep(id: string, status: AgentTraceStep['status'], detail?: string) {
-    traceSteps.value = traceSteps.value.map((step) => (step.id === id ? { ...step, detail: detail ?? step.detail, status } : step))
+    traceSteps.value = traceSteps.value.map(step => (step.id === id ? { ...step, detail: detail ?? step.detail, status } : step))
   }
 
   function findProduct(prompt: string) {
-    return products.value.find((product) => PRODUCT_ALIASES[product.id].some((alias) => prompt.includes(alias)))
+    return products.value.find(product => PRODUCT_ALIASES[product.id].some(alias => prompt.includes(alias)))
   }
 
   function parseQuantity(prompt: string) {
-    const match = prompt.match(/(\d+)\s*(?:件|个|盒|双|台)?/)
+    const match = prompt.match(/(\d+)\s*[件个盒双台]?/)
     return Math.max(1, Math.min(9, Number(match?.[1] ?? 1)))
   }
 
   async function send(prompt: string) {
     const value = prompt.trim()
-    if (!value || busy.value) return
+    if (!value || busy.value) { return }
 
     activeRun += 1
     const run = activeRun
@@ -283,7 +283,7 @@ export function useMallAgent(): MallAgentController {
     traceSteps.value = [
       { id: 'intent', title: '理解你的请求', status: 'running' },
       { id: 'lookup', title: '读取商城数据', status: 'waiting' },
-      { id: 'plan', title: '生成安全执行计划', status: 'waiting' }
+      { id: 'plan', title: '生成安全执行计划', status: 'waiting' },
     ]
     tools.value = [{ id: 'catalog', name: 'mall.catalog.search', status: 'running', summary: '正在检索商品与订单' }]
     await sleep(180)
@@ -292,7 +292,7 @@ export function useMallAgent(): MallAgentController {
 
     try {
       if (value.includes('退货') || value.includes('退款')) {
-        const order = orders.value.find((item) => item.status === 'delivered' || item.status === 'shipping')
+        const order = orders.value.find(item => item.status === 'delivered' || item.status === 'shipping')
         await sleep(180)
         setStep('lookup', 'completed', order ? `找到订单 ${order.id}` : '没有可退订单')
         setStep('plan', 'completed')
@@ -305,7 +305,7 @@ export function useMallAgent(): MallAgentController {
         approvalChoices.value = [
           { label: '不想要了', value: 'changed-mind' },
           { label: '商品问题', value: 'quality', description: '破损、故障或与描述不符' },
-          { label: '发错商品', value: 'wrong-item' }
+          { label: '发错商品', value: 'wrong-item' },
         ]
         approvalValue.value = 'changed-mind'
         await stream(`我找到了订单 ${order.id}：${order.productName}。请选择退货原因，确认后我再提交申请。`, run)
@@ -345,10 +345,10 @@ export function useMallAgent(): MallAgentController {
           return
         }
         pendingAction.value = { product: selectedProduct, quantity, type: 'purchase' }
-        approvalChoices.value = [1, 2, 3].map((count) => ({
+        approvalChoices.value = [1, 2, 3].map(count => ({
           description: `${(selectedProduct.price * count / 100).toFixed(2)} 元`,
           label: `${count} 件`,
-          value: String(count)
+          value: String(count),
         }))
         approvalValue.value = String(Math.min(3, quantity))
         await stream(`已找到 ${selectedProduct.name}，当前价 ${(selectedProduct.price / 100).toFixed(2)} 元。请选择数量并确认下单。`, run)
@@ -360,22 +360,23 @@ export function useMallAgent(): MallAgentController {
       setStep('plan', 'completed')
       tools.value = [{ id: 'recommend', name: 'mall.recommend', status: 'completed', summary: '生成个性化推荐' }]
       await stream('我可以帮你购买降噪耳机、牛奶、电饭煲或跑步鞋。也可以说“查看订单历史”“我要退货”或“修改收货地址”。', run)
-    } finally {
-      if (run === activeRun) busy.value = false
+    }
+    finally {
+      if (run === activeRun) { busy.value = false }
     }
   }
 
   async function approve(value = approvalValue.value) {
     const action = pendingAction.value
-    if (!action || busy.value) return
+    if (!action || busy.value) { return }
     busy.value = true
     tasks.value = [
       { id: 'validate', title: '校验订单与库存', status: 'running', progress: 20 },
       { id: 'execute', title: action.type === 'purchase' ? '创建商城订单' : '提交退货申请', status: 'waiting' },
-      { id: 'record', title: '写入操作记录', status: 'waiting' }
+      { id: 'record', title: '写入操作记录', status: 'waiting' },
     ]
     await sleep(220)
-    tasks.value = tasks.value.map((task) => task.id === 'validate' ? { ...task, progress: 100, status: 'completed' } : task.id === 'execute' ? { ...task, progress: 45, status: 'running' } : task)
+    tasks.value = tasks.value.map(task => task.id === 'validate' ? { ...task, progress: 100, status: 'completed' } : task.id === 'execute' ? { ...task, progress: 45, status: 'running' } : task)
 
     if (action.type === 'purchase') {
       const quantity = Math.max(1, Number(value) || action.quantity)
@@ -396,15 +397,15 @@ export function useMallAgent(): MallAgentController {
         productName: action.product.name,
         quantity,
         status: 'paid',
-        total: action.product.price * quantity
+        total: action.product.price * quantity,
       }
       orders.value = [order, ...orders.value]
-      products.value = products.value.map((product) => product.id === action.product.id ? { ...product, stock: product.stock - quantity } : product)
+      products.value = products.value.map(product => product.id === action.product.id ? { ...product, stock: product.stock - quantity } : product)
       history.value = [
         { detail: `${action.product.name} × ${quantity} · ${(order.total / 100).toFixed(2)} 元`, id: nextId('history'), time: nowLabel(), title: 'AI 下单成功', type: 'order' },
-        ...history.value
+        ...history.value,
       ]
-      tasks.value = tasks.value.map((task) => ({ ...task, progress: 100, status: 'completed' }))
+      tasks.value = tasks.value.map(task => ({ ...task, progress: 100, status: 'completed' }))
       pendingAction.value = undefined
       approvalChoices.value = []
       approvalValue.value = ''
@@ -414,12 +415,12 @@ export function useMallAgent(): MallAgentController {
     }
 
     await sleep(260)
-    orders.value = orders.value.map((order) => order.id === action.order.id ? { ...order, status: 'returned' } : order)
+    orders.value = orders.value.map(order => order.id === action.order.id ? { ...order, status: 'returned' } : order)
     history.value = [
       { detail: `${action.order.productName} · ${value || action.reason}`, id: nextId('history'), time: nowLabel(), title: 'AI 退货申请已提交', type: 'return' },
-      ...history.value
+      ...history.value,
     ]
-    tasks.value = tasks.value.map((task) => ({ ...task, progress: 100, status: 'completed' }))
+    tasks.value = tasks.value.map(task => ({ ...task, progress: 100, status: 'completed' }))
     pendingAction.value = undefined
     approvalChoices.value = []
     approvalValue.value = ''
@@ -437,11 +438,11 @@ export function useMallAgent(): MallAgentController {
   async function saveAddress(address: MallAddressDraft) {
     const saved: MallAddress = { ...address, id: address.id ?? nextId('address') }
     addresses.value = address.isDefault
-      ? [saved, ...addresses.value.filter((item) => item.id !== saved.id).map((item) => ({ ...item, isDefault: false }))]
-      : [saved, ...addresses.value.filter((item) => item.id !== saved.id)]
+      ? [saved, ...addresses.value.filter(item => item.id !== saved.id).map(item => ({ ...item, isDefault: false }))]
+      : [saved, ...addresses.value.filter(item => item.id !== saved.id)]
     history.value = [
       { detail: saved.detail, id: nextId('history'), time: nowLabel(), title: '收货地址已更新', type: 'address' },
-      ...history.value
+      ...history.value,
     ]
     addressEditorOpen.value = false
     await stream(`收货地址已保存：${saved.detail}`, ++activeRun)
@@ -476,7 +477,7 @@ export function useMallAgent(): MallAgentController {
     saveAddress,
     send,
     streamSnapshot,
-    tasks
+    tasks,
   }
 
   const cleanup = () => {
@@ -485,8 +486,10 @@ export function useMallAgent(): MallAgentController {
     unsubscribeStream()
     agentStream.destroy()
   }
-  if (typeof onUnload === 'function') onUnload(cleanup)
-  else onUnmounted(cleanup)
+  if (typeof onUnload === 'function') {
+    onUnload(cleanup)
+  }
+  else { onUnmounted(cleanup) }
 
   return controller
 }

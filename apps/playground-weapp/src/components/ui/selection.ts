@@ -1,6 +1,7 @@
-import { computed, defineComponent, h, inject, provide, type InjectionKey, type PropType } from 'vue'
+import type { InjectionKey, PropType } from 'vue'
+import { useVaroTheme } from '@varo-ui/theme'
 import { createVariantClass } from '@varo/shared'
-import { useVaroTheme } from '@varo/theme'
+import { computed, defineComponent, h, inject, provide } from 'vue'
 
 export type SelectionDirection = 'horizontal' | 'vertical'
 export type CheckboxValue = string | number | boolean
@@ -31,36 +32,37 @@ export const VCheckboxGroup = defineComponent({
     disabled: Boolean,
     direction: {
       type: String as PropType<SelectionDirection>,
-      default: 'vertical'
+      default: 'vertical',
     },
     max: {
       type: Number,
-      default: undefined
+      default: undefined,
     },
     value: {
       type: Array as PropType<CheckboxValue[]>,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   emits: ['update:value', 'change'],
   setup(props, { attrs, emit, slots }) {
     provide(checkboxGroupKey, {
       disabled: () => props.disabled,
-      isChecked: (value) => props.value.includes(value),
+      isChecked: value => props.value.includes(value),
       toggle: (value) => {
         const next = normalizeArray(props.value)
         const index = next.indexOf(value)
 
         if (index >= 0) {
           next.splice(index, 1)
-        } else {
-          if (props.max !== undefined && next.length >= props.max) return
+        }
+        else {
+          if (props.max !== undefined && next.length >= props.max) { return }
           next.push(value)
         }
 
         emit('update:value', next)
         emit('change', next)
-      }
+      },
     })
 
     return () =>
@@ -68,13 +70,13 @@ export const VCheckboxGroup = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-checkbox-group', attrs.class],
+          'class': ['varo-checkbox-group', attrs.class],
           'data-direction': props.direction,
-          'data-disabled': String(props.disabled)
+          'data-disabled': String(props.disabled),
         },
-        slots.default?.() ?? []
+        slots.default?.() ?? [],
       )
-  }
+  },
 })
 
 export const VCheckbox = defineComponent({
@@ -82,17 +84,17 @@ export const VCheckbox = defineComponent({
   props: {
     checked: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     label: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     value: {
       type: [String, Number, Boolean] as PropType<CheckboxValue>,
-      default: true
-    }
+      default: true,
+    },
   },
   emits: ['update:checked', 'change'],
   setup(props, { attrs, emit, slots }) {
@@ -104,12 +106,12 @@ export const VCheckbox = defineComponent({
       createVariantClass('varo-checkbox', {
         radius: theme.value.components.button.borderRadius,
         checked: isChecked.value,
-        disabled: isDisabled.value
-      })
+        disabled: isDisabled.value,
+      }),
     )
 
     function toggle() {
-      if (isDisabled.value) return
+      if (isDisabled.value) { return }
 
       if (group) {
         group.toggle(props.value)
@@ -126,22 +128,22 @@ export const VCheckbox = defineComponent({
         'button',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          type: 'button',
-          role: 'checkbox',
+          'class': [classes.value, attrs.class],
+          'type': 'button',
+          'role': 'checkbox',
           'aria-checked': String(isChecked.value),
           'aria-disabled': String(isDisabled.value),
           'data-checked': String(isChecked.value),
           'data-disabled': String(isDisabled.value),
-          disabled: isDisabled.value,
-          onClick: toggle
+          'disabled': isDisabled.value,
+          'onClick': toggle,
         },
         [
-          h('span', { class: 'varo-checkbox__icon', 'aria-hidden': 'true' }, isChecked.value ? '✓' : ''),
-          h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label)
-        ]
+          h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, isChecked.value ? '✓' : ''),
+          h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
+        ],
       )
-  }
+  },
 })
 
 export const VRadioGroup = defineComponent({
@@ -150,23 +152,23 @@ export const VRadioGroup = defineComponent({
     disabled: Boolean,
     direction: {
       type: String as PropType<SelectionDirection>,
-      default: 'vertical'
+      default: 'vertical',
     },
     value: {
       type: [String, Number, Boolean] as PropType<RadioValue | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:value', 'change'],
   setup(props, { attrs, emit, slots }) {
     provide(radioGroupKey, {
       disabled: () => props.disabled,
-      isChecked: (value) => props.value === value,
+      isChecked: value => props.value === value,
       select: (value) => {
-        if (props.value === value) return
+        if (props.value === value) { return }
         emit('update:value', value)
         emit('change', value)
-      }
+      },
     })
 
     return () =>
@@ -174,13 +176,13 @@ export const VRadioGroup = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-radio-group', attrs.class],
+          'class': ['varo-radio-group', attrs.class],
           'data-direction': props.direction,
-          'data-disabled': String(props.disabled)
+          'data-disabled': String(props.disabled),
         },
-        slots.default?.() ?? []
+        slots.default?.() ?? [],
       )
-  }
+  },
 })
 
 export const VRadio = defineComponent({
@@ -188,17 +190,17 @@ export const VRadio = defineComponent({
   props: {
     checked: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     label: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     value: {
       type: [String, Number, Boolean] as PropType<RadioValue>,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ['update:checked', 'change'],
   setup(props, { attrs, emit, slots }) {
@@ -210,12 +212,12 @@ export const VRadio = defineComponent({
       createVariantClass('varo-radio', {
         radius: theme.value.components.button.borderRadius,
         checked: isChecked.value,
-        disabled: isDisabled.value
-      })
+        disabled: isDisabled.value,
+      }),
     )
 
     function select() {
-      if (isDisabled.value) return
+      if (isDisabled.value) { return }
 
       if (group) {
         group.select(props.value)
@@ -231,20 +233,20 @@ export const VRadio = defineComponent({
         'button',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          type: 'button',
-          role: 'radio',
+          'class': [classes.value, attrs.class],
+          'type': 'button',
+          'role': 'radio',
           'aria-checked': String(isChecked.value),
           'aria-disabled': String(isDisabled.value),
           'data-checked': String(isChecked.value),
           'data-disabled': String(isDisabled.value),
-          disabled: isDisabled.value,
-          onClick: select
+          'disabled': isDisabled.value,
+          'onClick': select,
         },
         [
-          h('span', { class: 'varo-radio__icon', 'aria-hidden': 'true' }, isChecked.value ? '●' : ''),
-          h('span', { class: 'varo-radio__label' }, slots.default?.() ?? props.label)
-        ]
+          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, isChecked.value ? '●' : ''),
+          h('span', { class: 'varo-radio__label' }, slots.default?.() ?? props.label),
+        ],
       )
-  }
+  },
 })

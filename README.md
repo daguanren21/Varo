@@ -26,26 +26,26 @@ Varo 是面向 Vue 3、H5 与 `weapp-vite` 小程序的 registry-first 组件系
 
 ```bash
 # 小程序 SFC
-pnpm dlx @varo/cli add --target weapp-vite button input card
+pnpm dlx @varo-ui/cli add --target weapp-vite button input card
 
 # H5 源码
-pnpm dlx @varo/cli add --target h5 button input card
+pnpm dlx @varo-ui/cli add --target h5 button input card
 
 # 双端业务 Block
-pnpm dlx @varo/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
 
 # 双端 Agent Chat Block
-pnpm dlx @varo/cli add --target weapp-vite blocks/agent-chat
-pnpm dlx @varo/cli add --target h5 blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 
 # 小程序 Agent UI 套件
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 
 # H5 Agent UI 套件
-pnpm dlx @varo/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 
 # 高共识小程序组件
-pnpm dlx @varo/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
 ```
 
 CLI 默认不覆盖已有文件。确认本地定制可以被替换后，显式添加 `--force`。

@@ -1,8 +1,8 @@
 {
   "name": "@varo/docs",
-  "private": true,
-  "version": "0.1.0",
   "type": "module",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "build": "vitepress build .",
     "clean": "rimraf .vitepress/dist dist",
@@ -14,10 +14,11 @@
     "test:e2e": "vitest run e2e --passWithNoTests"
   },
   "dependencies": {
-    "@varo/agent-core": "workspace:^",
-    "@varo/theme": "workspace:*",
-    "@varo/ui-h5": "workspace:*",
-    "@varo/ui-weapp": "workspace:*",
+    "@varo-ui/ai": "workspace:^",
+    "@varo-ui/h5": "workspace:*",
+    "@varo-ui/headless": "workspace:*",
+    "@varo-ui/theme": "workspace:*",
+    "@varo-ui/weapp": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.6.0",
     "vitepress": "2.0.0-alpha.19",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
+    "@varo/primitives-h5": "workspace:*",
     "tailwindcss": "4.3.3"
   }
 }

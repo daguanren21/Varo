@@ -1,7 +1,9 @@
+import type { PropType, StyleValue } from 'vue'
+import type { SizeValue } from './layout-utils'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
+import { normalizeSize } from './layout-utils'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { normalizeSize, type SizeValue } from './layout-utils'
 
 export type DividerContentPosition = 'left' | 'center' | 'right'
 
@@ -10,12 +12,12 @@ export const VDivider = defineComponent({
   props: {
     contentPosition: {
       type: String as PropType<DividerContentPosition>,
-      default: 'center'
+      default: 'center',
     },
     dashed: Boolean,
     hairline: {
       type: Boolean,
-      default: true
+      default: true,
     },
     vertical: Boolean,
     lineColor: String,
@@ -23,8 +25,8 @@ export const VDivider = defineComponent({
     borderColor: String,
     spacing: {
       type: [Number, String] as PropType<SizeValue | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   setup(props, { attrs, slots }) {
     const classes = computed(() =>
@@ -32,13 +34,13 @@ export const VDivider = defineComponent({
         position: props.contentPosition,
         dashed: props.dashed,
         hairline: props.hairline,
-        vertical: props.vertical
-      })
+        vertical: props.vertical,
+      }),
     )
     const style = computed(() => ({
       '--varo-divider-line-color': props.lineColor ?? props.borderColor,
       '--varo-divider-text-color': props.textColor,
-      '--varo-divider-spacing': normalizeSize(props.spacing)
+      '--varo-divider-spacing': normalizeSize(props.spacing),
     }))
 
     return () => {
@@ -48,17 +50,17 @@ export const VDivider = defineComponent({
         props.vertical ? 'span' : 'div',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          role: 'separator',
-          style: [attrs.style as StyleValue, style.value],
+          'class': [classes.value, attrs.class],
+          'role': 'separator',
+          'style': [attrs.style as StyleValue, style.value],
           'aria-orientation': props.vertical ? 'vertical' : 'horizontal',
           'data-content-position': props.contentPosition,
           'data-dashed': String(props.dashed),
           'data-hairline': String(props.hairline),
-          'data-vertical': String(props.vertical)
+          'data-vertical': String(props.vertical),
         },
-        props.vertical || content.length === 0 ? undefined : h('span', { class: 'varo-divider__text' }, content)
+        props.vertical || content.length === 0 ? undefined : h('span', { class: 'varo-divider__text' }, content),
       )
     }
-  }
+  },
 })

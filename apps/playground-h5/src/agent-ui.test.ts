@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
+import type { AgentStreamSnapshot } from '@varo-ui/ai'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import type { AgentStreamSnapshot } from '@varo/agent-core'
 import { AgentComposer, AgentEventRenderer, AgentFileDiff, AgentMarkdown, AgentThinking } from './components/agent-ui'
 import AgentChat from './components/blocks/agent-chat.vue'
 
@@ -11,8 +11,8 @@ describe('H5 Agent UI', () => {
     const wrapper = mount(AgentMarkdown, {
       props: {
         content: '## 结果\n\n| 平台 | 状态 |\n| --- | --- |\n| H5 | **完成** |\n\n[危险链接](javascript:alert(1))',
-        final: true
-      }
+        final: true,
+      },
     })
 
     expect(wrapper.get('h2').text()).toBe('结果')
@@ -27,7 +27,7 @@ describe('H5 Agent UI', () => {
         choices: [{ label: '仅验证', value: 'verify' }],
         id: 'approval',
         status: 'waiting',
-        title: '确认发布'
+        title: '确认发布',
       },
       data: [],
       eventCount: 8,
@@ -36,51 +36,51 @@ describe('H5 Agent UI', () => {
         id: 'message',
         role: 'assistant',
         source: '**发布计划**',
-        visible: '**发布计划**'
+        visible: '**发布计划**',
       },
       reasoning: [{ content: '检查 Registry', id: 'reason', status: 'completed', title: '分析依赖' }],
       status: 'waiting',
-      tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '双端通过' }]
+      tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '双端通过' }],
     }
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
 
-    await wrapper.findAll('button').find((button) => button.text().includes('推理过程'))!.trigger('click')
+    await wrapper.findAll('button').find(button => button.text().includes('推理过程'))!.trigger('click')
     expect(wrapper.text()).toContain('分析依赖')
     expect(wrapper.text()).toContain('registry.inspect')
     expect(wrapper.get('.agent-markdown__strong').text()).toBe('发布计划')
     expect(wrapper.text()).toContain('确认发布')
 
     await wrapper.get('input[type="radio"]').setValue(true)
-    await wrapper.findAll('button').find((button) => button.text() === '确认')!.trigger('click')
+    await wrapper.findAll('button').find(button => button.text() === '确认')!.trigger('click')
     expect(wrapper.emitted('approve')?.[0]).toEqual(['verify'])
   })
 
   it('submits explicit composer input and prompt suggestions', async () => {
     const composer = mount(AgentComposer, {
-      props: { modelValue: '分析双端方案', suggestions: ['生成发布计划'] }
+      props: { modelValue: '分析双端方案', suggestions: ['生成发布计划'] },
     })
 
     await composer.get('button[aria-label="发送"]').trigger('click')
     expect(composer.emitted('submit')?.[0]).toEqual(['分析双端方案'])
 
-    await composer.findAll('button').find((button) => button.text() === '生成发布计划')!.trigger('click')
+    await composer.findAll('button').find(button => button.text() === '生成发布计划')!.trigger('click')
     expect(composer.emitted('submit')?.[1]).toEqual(['生成发布计划'])
   })
 
   it('reviews diffs in unified and split layouts', async () => {
     const lines = [
       { content: '@@ -17,2 +17,3 @@ stream', type: 'hunk' as const },
-      { content: "status: 'idle'", id: 'old', oldNumber: 17, type: 'remove' as const },
-      { content: "status: 'streaming'", id: 'new', newNumber: 17, type: 'add' as const },
+      { content: 'status: \'idle\'', id: 'old', oldNumber: 17, type: 'remove' as const },
+      { content: 'status: \'streaming\'', id: 'new', newNumber: 17, type: 'add' as const },
       { content: 'schedule(frame)', newNumber: 18, type: 'add' as const },
-      { collapsedLines: 12, content: '@@ More context', id: 'context', type: 'hunk' as const }
+      { collapsedLines: 12, content: '@@ More context', id: 'context', type: 'hunk' as const },
     ]
     const wrapper = mount(AgentFileDiff, {
-      props: { filename: 'src/runtime/stream.ts', lines }
+      props: { filename: 'src/runtime/stream.ts', lines },
     })
 
     expect(wrapper.get('.agent-file-diff__counts').text()).toBe('+2−1')
-    expect(wrapper.findAll('.agent-file-diff__inline-change').map((node) => node.text())).toEqual(['idle', 'streaming'])
+    expect(wrapper.findAll('.agent-file-diff__inline-change').map(node => node.text())).toEqual(['idle', 'streaming'])
 
     await wrapper.findAll('.agent-file-diff__segmented button')[1].trigger('click')
     expect(wrapper.attributes('data-view')).toBe('split')
@@ -100,8 +100,8 @@ describe('H5 Agent UI', () => {
         filename: 'src/controlled.ts',
         lines: [{ content: 'const ready = true', newNumber: 1, type: 'add' }],
         open: false,
-        view: 'unified'
-      }
+        view: 'unified',
+      },
     })
 
     expect(wrapper.find('.agent-file-diff__body').exists()).toBe(false)
@@ -117,8 +117,8 @@ describe('H5 Agent UI', () => {
       props: {
         className: 'rounded-none shadow-none',
         defaultOpen: true,
-        steps: [{ id: 'registry', title: '检查 Registry', detail: '已读取组件清单', status: 'completed' }]
-      }
+        steps: [{ id: 'registry', title: '检查 Registry', detail: '已读取组件清单', status: 'completed' }],
+      },
     })
 
     expect(wrapper.classes()).toContain('rounded-none')
@@ -136,8 +136,8 @@ describe('H5 Agent UI', () => {
       props: {
         messages: [{ content: '欢迎使用', id: 'welcome', role: 'assistant' }],
         suggestions: ['分析需求'],
-        title: '项目 Agent'
-      }
+        title: '项目 Agent',
+      },
     })
 
     expect(wrapper.get('[aria-label="Agent conversation"]').text()).toContain('项目 Agent')

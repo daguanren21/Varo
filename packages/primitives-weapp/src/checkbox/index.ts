@@ -1,7 +1,9 @@
-import { defineComponent, h, inject, provide, toRef, type PropType } from 'vue'
-import { useCheckboxRoot, type UseCheckboxRootResult } from '@varo/primitives-core'
-import { vueReactiveRuntime } from '../vue-runtime'
+import type { UseCheckboxRootResult } from '@varo-ui/headless'
+import type { PropType } from 'vue'
+import { useCheckboxRoot } from '@varo-ui/headless'
+import { defineComponent, h, inject, provide, toRef } from 'vue'
 import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useCheckboxRoot } from './hooks'
 export type * from './types'
@@ -10,7 +12,7 @@ const checkboxRootContextKey = Symbol('varo-checkbox-root')
 
 function useCheckboxRootContext() {
   const context = inject<UseCheckboxRootResult | undefined>(checkboxRootContextKey, undefined)
-  if (!context) throw new Error('Checkbox parts must be used within CheckboxRoot.')
+  if (!context) { throw new Error('Checkbox parts must be used within CheckboxRoot.') }
   return context
 }
 
@@ -19,14 +21,14 @@ export const CheckboxRoot = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     checked: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultChecked: Boolean,
-    disabled: Boolean
+    disabled: Boolean,
   },
   emits: ['update:checked', 'checkedChange'],
   setup(props, { attrs, emit, slots }) {
@@ -40,7 +42,7 @@ export const CheckboxRoot = defineComponent({
       onCheckedChange(checked) {
         emit('update:checked', checked)
         emit('checkedChange', checked)
-      }
+      },
     })
 
     provide(checkboxRootContextKey, checkbox)
@@ -56,13 +58,13 @@ export const CheckboxRoot = defineComponent({
             runInteractiveClick(event, {
               action: checkbox.events.toggle,
               handler: attrs.onClick,
-              interactive: checkbox.state.interactive.value
+              interactive: checkbox.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const CheckboxIndicator = defineComponent({
@@ -70,8 +72,8 @@ export const CheckboxIndicator = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'text'
-    }
+      default: 'text',
+    },
   },
   setup(props, { attrs, slots }) {
     const checkbox = useCheckboxRootContext()
@@ -80,5 +82,5 @@ export const CheckboxIndicator = defineComponent({
       checkbox.state.checked.value
         ? h(props.as, { ...attrs, ...checkbox.attrs.indicator }, slots.default?.())
         : null
-  }
+  },
 })

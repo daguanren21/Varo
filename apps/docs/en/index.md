@@ -26,10 +26,10 @@ features:
 ## Start Here
 
 <div class="varo-doc-links">
-  <a href="/en/components/">Component Overview</a>
-  <a href="/en/ai/">AI Agent Components</a>
-  <a href="/en/guide/installation">Installation</a>
-  <a href="/en/examples/">Cross-platform Examples</a>
+  <a href="components/">Component Overview</a>
+  <a href="ai/">AI Agent Components</a>
+  <a href="guide/installation">Installation</a>
+  <a href="examples/">Cross-platform Examples</a>
 </div>
 
 ## Mini-program Blocks
@@ -44,8 +44,8 @@ features:
       <li>Each block keeps a source-oriented entry point for product reuse</li>
     </ul>
     <div class="varo-block-actions">
-      <a href="/en/examples/">View business blocks</a>
-      <a href="/en/components/navbar">Compose Navbar</a>
+      <a href="examples/">View business blocks</a>
+      <a href="components/navbar">Compose Navbar</a>
     </div>
     <div class="varo-code-preview">
       <pre><code>&lt;v-navbar title="Order Detail" /&gt;

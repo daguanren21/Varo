@@ -9,8 +9,8 @@ General human approval, choice, reject, and confirm card.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,34 +29,34 @@ import { AgentApproval } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `approveText` | `string` | `确认` | Approve label |
-| `choices` | `AgentChoice[]` | `[]` | Approval choices |
-| `description` | `string` | `—` | Description |
-| `rejectText` | `string` | `拒绝` | Reject label |
-| `title` | `string` | `required` | Approval title |
-| `value` | `string` | `''` | Current choice |
+| Prop          | Type            | Default    | Description      |
+| ------------- | --------------- | ---------- | ---------------- |
+| `approveText` | `string`        | `确认`     | Approve label    |
+| `choices`     | `AgentChoice[]` | `[]`       | Approval choices |
+| `description` | `string`        | `—`        | Description      |
+| `rejectText`  | `string`        | `拒绝`     | Reject label     |
+| `title`       | `string`        | `required` | Approval title   |
+| `value`       | `string`        | `''`       | Current choice   |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `approve` | `string` | Approved |
-| `reject` | `void` | Rejected |
+| Event          | Payload  | Description   |
+| -------------- | -------- | ------------- |
+| `approve`      | `string` | Approved      |
+| `reject`       | `void`   | Rejected      |
 | `update:value` | `string` | Update choice |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
+| Slot      | Description        |
+| --------- | ------------------ |
 | `default` | Additional content |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                    |
+| ---------- | ----------------------------------------- |
+| H5         | Named export from `@/components/agent-ui` |
 | weapp-vite | `@/components/agent-ui/AgentApproval.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { withBase } from 'vitepress'
 import { computed } from 'vue'
 
 type Locale = 'en' | 'zh'
@@ -29,8 +30,8 @@ const catalog: CatalogGroup[] = [
       { id: 'button', name: 'Button', label: { zh: '按钮', en: 'Button' } },
       { id: 'cell', name: 'Cell', label: { zh: '单元格', en: 'Cell' } },
       { id: 'image', name: 'Image', label: { zh: '图片', en: 'Image' } },
-      { id: 'input', name: 'Input', label: { zh: '输入框', en: 'Input' } }
-    ]
+      { id: 'input', name: 'Input', label: { zh: '输入框', en: 'Input' } },
+    ],
   },
   {
     id: 'form',
@@ -54,8 +55,8 @@ const catalog: CatalogGroup[] = [
       { id: 'searchbar', name: 'Searchbar', label: { zh: '搜索栏', en: 'Searchbar' } },
       { id: 'short-password', name: 'ShortPassword', label: { zh: '短密码', en: 'Short Password' } },
       { id: 'textarea', name: 'Textarea', label: { zh: '文本域', en: 'Textarea' } },
-      { id: 'uploader', name: 'Uploader', label: { zh: '上传', en: 'Uploader' } }
-    ]
+      { id: 'uploader', name: 'Uploader', label: { zh: '上传', en: 'Uploader' } },
+    ],
   },
   {
     id: 'layout',
@@ -66,8 +67,8 @@ const catalog: CatalogGroup[] = [
       { id: 'grid', name: 'Grid', label: { zh: '宫格', en: 'Grid' } },
       { id: 'layout', name: 'Layout', label: { zh: '布局', en: 'Layout' } },
       { id: 'space', name: 'Space', label: { zh: '间距', en: 'Space' } },
-      { id: 'sticky', name: 'Sticky', label: { zh: '粘性布局', en: 'Sticky' } }
-    ]
+      { id: 'sticky', name: 'Sticky', label: { zh: '粘性布局', en: 'Sticky' } },
+    ],
   },
   {
     id: 'navigation',
@@ -82,8 +83,8 @@ const catalog: CatalogGroup[] = [
       { id: 'pagination', name: 'Pagination', label: { zh: '分页', en: 'Pagination' } },
       { id: 'side-navbar', name: 'SideNavbar', label: { zh: '侧边栏导航', en: 'Side Navbar' } },
       { id: 'tabbar', name: 'Tabbar', label: { zh: '标签栏', en: 'Tabbar' } },
-      { id: 'tabs', name: 'Tabs', label: { zh: '选项卡', en: 'Tabs' } }
-    ]
+      { id: 'tabs', name: 'Tabs', label: { zh: '选项卡', en: 'Tabs' } },
+    ],
   },
   {
     id: 'feedback',
@@ -93,17 +94,17 @@ const catalog: CatalogGroup[] = [
       { id: 'loading', name: 'Loading', label: { zh: '加载', en: 'Loading' } },
       { id: 'overlay', name: 'Overlay', label: { zh: '遮罩层', en: 'Overlay' } },
       { id: 'popup', name: 'Popup', label: { zh: '弹出层', en: 'Popup' } },
-      { id: 'toast', name: 'Toast', label: { zh: '轻提示', en: 'Toast' } }
-    ]
+      { id: 'toast', name: 'Toast', label: { zh: '轻提示', en: 'Toast' } },
+    ],
   },
   {
     id: 'advanced',
     title: { zh: '高级组件', en: 'Advanced' },
     summary: { zh: '组合焦点、遮罩与高风险确认流程。', en: 'Compose focus, overlays, and high-risk confirmation flows.' },
     items: [
-      { id: 'dialog', name: 'Dialog', label: { zh: '对话框', en: 'Dialog' } }
-    ]
-  }
+      { id: 'dialog', name: 'Dialog', label: { zh: '对话框', en: 'Dialog' } },
+    ],
+  },
 ]
 
 const copy = computed(() => props.locale === 'zh'
@@ -111,24 +112,24 @@ const copy = computed(() => props.locale === 'zh'
       count: '个组件',
       eyebrow: 'H5 与小程序同页对照',
       open: '查看文档',
-      summary: '从任务类型进入组件，再在同一页面检查 H5 与小程序的行为、代码和平台差异。'
+      summary: '从任务类型进入组件，再在同一页面检查 H5 与小程序的行为、代码和平台差异。',
     }
   : {
       count: 'components',
       eyebrow: 'H5 and mini-program side by side',
       open: 'Open docs',
-      summary: 'Start from the task category, then inspect H5 and mini-program behavior, code, and platform differences on one page.'
+      summary: 'Start from the task category, then inspect H5 and mini-program behavior, code, and platform differences on one page.',
     })
 
-const groups = computed(() => catalog.map((group) => ({
+const groups = computed(() => catalog.map(group => ({
   ...group,
   summary: group.summary[props.locale],
   title: group.title[props.locale],
-  items: group.items.map((item) => ({
+  items: group.items.map(item => ({
     ...item,
-    href: `${props.locale === 'en' ? '/en' : ''}/components/${item.id}`,
-    label: item.label[props.locale]
-  }))
+    href: withBase(`${props.locale === 'en' ? '/en' : ''}/components/${item.id}`),
+    label: item.label[props.locale],
+  })),
 })))
 
 const componentCount = computed(() => catalog.reduce((count, group) => count + group.items.length, 0))
@@ -161,7 +162,7 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
               <small>{{ item.label }}</small>
             </span>
             <em aria-hidden="true">↗</em>
-            <span class="sr-only">{{ copy.open }}</span>
+            <span class="component-catalog__sr-only">{{ copy.open }}</span>
           </a>
         </div>
       </section>
@@ -178,13 +179,13 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
 
 .component-catalog__intro {
   display: flex;
+  gap: 20px;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
   padding: 18px 20px;
+  background: color-mix(in srgb, var(--varo-accent-soft) 56%, var(--varo-card-solid));
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
-  background: color-mix(in srgb, var(--varo-accent-soft) 56%, var(--varo-card-solid));
 }
 
 .component-catalog__intro > div {
@@ -192,24 +193,24 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
 }
 
 .component-catalog__intro span {
-  color: var(--varo-accent);
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  color: var(--varo-accent);
   text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .component-catalog__intro p {
   max-width: 68ch;
   margin: 7px 0 0;
-  color: var(--varo-muted);
   line-height: 1.65;
+  color: var(--varo-muted);
 }
 
 .component-catalog__intro strong {
   flex: none;
-  color: var(--varo-foreground);
   font-size: 0.9rem;
+  color: var(--varo-foreground);
 }
 
 .component-catalog__groups {
@@ -221,46 +222,46 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
 .component-catalog__group {
   min-width: 0;
   padding: 18px;
+  background: color-mix(in srgb, var(--varo-card) 82%, transparent);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
-  background: color-mix(in srgb, var(--varo-card) 82%, transparent);
 }
 
 .component-catalog__group > header {
   display: flex;
+  gap: 16px;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
   margin-bottom: 16px;
 }
 
 .component-catalog__group h2 {
-  margin: 0;
-  border: 0;
   padding: 0;
-  color: var(--varo-foreground);
+  margin: 0;
   font-size: 1.05rem;
+  color: var(--varo-foreground);
   letter-spacing: -0.02em;
+  border: 0;
 }
 
 .component-catalog__group p {
   margin: 5px 0 0;
-  color: var(--varo-muted);
   font-size: 0.82rem;
   line-height: 1.55;
+  color: var(--varo-muted);
 }
 
 .component-catalog__group > header > span {
   display: inline-grid;
+  place-items: center;
   min-width: 30px;
   height: 26px;
-  place-items: center;
-  border: 1px solid var(--varo-border);
-  border-radius: 7px;
-  background: var(--varo-surface-strong);
-  color: var(--varo-muted);
   font-size: 0.72rem;
   font-weight: 800;
+  color: var(--varo-muted);
+  background: var(--varo-surface-strong);
+  border: 1px solid var(--varo-border);
+  border-radius: 7px;
 }
 
 .component-catalog__links {
@@ -271,17 +272,17 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
 
 .component-catalog__links a {
   display: flex;
-  min-width: 0;
-  min-height: 58px;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  min-width: 0;
+  min-height: 58px;
   padding: 9px 11px;
-  border: 1px solid transparent;
-  border-radius: var(--varo-radius);
-  background: color-mix(in srgb, var(--varo-surface-strong) 72%, transparent);
   color: var(--varo-foreground);
   text-decoration: none;
+  background: color-mix(in srgb, var(--varo-surface-strong) 72%, transparent);
+  border: 1px solid transparent;
+  border-radius: var(--varo-radius);
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -289,9 +290,9 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
 }
 
 .component-catalog__links a:hover {
-  border-color: color-mix(in srgb, var(--varo-accent) 36%, var(--varo-border));
-  background: var(--varo-accent-soft);
   color: var(--varo-accent);
+  background: var(--varo-accent-soft);
+  border-color: color-mix(in srgb, var(--varo-accent) 36%, var(--varo-border));
 }
 
 .component-catalog__links a:focus-visible {
@@ -312,29 +313,31 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
 }
 
 .component-catalog__links strong {
-  color: inherit;
   font-size: 0.84rem;
+  color: inherit;
 }
 
 .component-catalog__links small {
-  color: var(--varo-muted);
   font-size: 0.72rem;
+  color: var(--varo-muted);
 }
 
 .component-catalog__links em {
   flex: none;
-  color: var(--varo-muted);
   font-style: normal;
+  color: var(--varo-muted);
 }
 
-.sr-only {
+.component-catalog__sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
-  overflow: hidden;
+  padding: 0;
   margin: -1px;
-  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
   white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
 }
 
 @media (max-width: 760px) {
@@ -343,8 +346,8 @@ const componentCount = computed(() => catalog.reduce((count, group) => count + g
   }
 
   .component-catalog__intro {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 

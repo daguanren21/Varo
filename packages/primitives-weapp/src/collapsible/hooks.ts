@@ -1,1 +1,1 @@
-export { useCollapsibleRoot } from '@varo/primitives-core'
+export { useCollapsibleRoot } from '@varo-ui/headless'

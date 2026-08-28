@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { shallowRef } from 'vue'
 import {
   VButton,
   VDialogClose,
@@ -8,12 +7,13 @@ import {
   VDialogRoot,
   VDialogTrigger,
   VInput,
-  VSwitch
-} from '@varo/ui-h5'
+  VSwitch,
+} from '@varo-ui/h5'
+import { shallowRef } from 'vue'
 import {
   AgentArtifact,
   AgentResponseActions,
-  AgentSourceList
+  AgentSourceList,
 } from './components/agent-ui'
 import AgentChat from './components/blocks/agent-chat.vue'
 import LoginForm from './components/blocks/login-form.vue'
@@ -36,23 +36,23 @@ const {
   reject: rejectAgent,
   retry: retryAgent,
   send: sendAgent,
-  snapshot: agentSnapshot
+  snapshot: agentSnapshot,
 } = useAgentDemo()
 const cities = [
   { label: '上海', value: 'shanghai' },
   { label: '杭州', value: 'hangzhou' },
-  { label: '深圳', value: 'shenzhen' }
+  { label: '深圳', value: 'shenzhen' },
 ]
 const profile = {
   fallback: 'VA',
   name: 'Varo Maintainer',
   status: 'Pro',
-  subtitle: '负责 H5 与小程序设计系统'
+  subtitle: '负责 H5 与小程序设计系统',
 }
 const profileStats = [
   { label: '组件', value: 56 },
   { label: 'Blocks', value: 6 },
-  { label: '平台', value: 2 }
+  { label: '平台', value: 2 },
 ]
 const products = [
   {
@@ -61,36 +61,36 @@ const products = [
     description: '双端主题、组件源码与基础 Blocks。',
     price: 9900,
     badge: '推荐',
-    inventory: 32
+    inventory: 32,
   },
   {
     id: 'commerce',
     name: 'Commerce Blocks',
     description: '商品、订单和筛选业务组合。',
     price: 19900,
-    inventory: 8
-  }
+    inventory: 8,
+  },
 ]
 const agentArtifact = {
   content: `export const events = createAgentSseEventSource()\nrequestTask.onChunkReceived(({ data }) => events.feed(data))\nawait controller.connect(events.source)`,
   id: 'transport-adapter',
   kind: 'code' as const,
   language: 'ts',
-  title: '微信分块传输适配器'
+  title: '微信分块传输适配器',
 }
 const agentSources = [
   {
     domain: 'github.com/Simon-He95',
     id: 'markstream',
     title: 'Markstream Vue / Core',
-    url: 'https://github.com/Simon-He95/markstream-vue'
+    url: 'https://github.com/Simon-He95/markstream-vue',
   },
   {
     domain: 'ui.shadcn.com',
     id: 'shadcn',
     title: 'shadcn/ui Registry',
-    url: 'https://ui.shadcn.com/docs/registry'
-  }
+    url: 'https://ui.shadcn.com/docs/registry',
+  },
 ]
 
 function onPrimaryClick() {
@@ -109,7 +109,9 @@ function record(message: string) {
 <template>
   <div class="pg">
     <header class="pg__hero">
-      <p class="pg__kicker">@varo/playground-h5</p>
+      <p class="pg__kicker">
+        @varo/playground-h5
+      </p>
       <h1>H5 Playground</h1>
       <p>真实 Vite + Vue + Tailwind v4 运行时，验证 runtime components、registry source 与 Blocks。</p>
     </header>
@@ -121,8 +123,12 @@ function record(message: string) {
           <VButton :loading="loading" tone="primary" @click="onPrimaryClick">
             主操作 {{ clicks }}
           </VButton>
-          <VButton variant="outline">次要操作</VButton>
-          <VButton variant="ghost" :disabled="!enabled">Ghost</VButton>
+          <VButton variant="outline">
+            次要操作
+          </VButton>
+          <VButton variant="ghost" :disabled="!enabled">
+            Ghost
+          </VButton>
         </div>
         <label class="pg__switch">
           <span>启用 Ghost 按钮</span>
@@ -133,19 +139,25 @@ function record(message: string) {
       <section class="pg__card">
         <h2>Input</h2>
         <VInput v-model:value="name" clearable placeholder="输入名称" />
-        <p class="pg__meta">当前值：{{ name || '空' }}</p>
+        <p class="pg__meta">
+          当前值：{{ name || '空' }}
+        </p>
       </section>
 
       <section class="pg__card">
         <h2>Dialog</h2>
         <VDialogRoot>
-          <VDialogTrigger class="pg__trigger" type="button">打开对话框</VDialogTrigger>
+          <VDialogTrigger class="pg__trigger" type="button">
+            打开对话框
+          </VDialogTrigger>
           <VDialogOverlay class="pg__overlay" />
           <VDialogContent class="pg__dialog">
             <h3>H5 Dialog</h3>
             <p>这是 playground 中的 composable parts 对话框，用于验证 overlay / close 契约。</p>
             <div class="pg__dialog-actions">
-              <VDialogClose class="pg__trigger" type="button">关闭</VDialogClose>
+              <VDialogClose class="pg__trigger" type="button">
+                关闭
+              </VDialogClose>
             </div>
           </VDialogContent>
         </VDialogRoot>
@@ -154,7 +166,9 @@ function record(message: string) {
       <section class="pg__agent">
         <header class="pg__block-intro">
           <div>
-            <p class="pg__kicker">Real Agent Runtime</p>
+            <p class="pg__kicker">
+              Real Agent Runtime
+            </p>
             <h2>增量 Markdown、工具调用与人工审批</h2>
             <p>同一事件协议驱动 H5 与微信小程序；这里运行真实的增量控制器，不是逐字 CSS 动画。</p>
           </div>
@@ -197,7 +211,9 @@ function record(message: string) {
       <section class="pg__blocks">
         <header class="pg__block-intro">
           <div>
-            <p class="pg__kicker">Registry-driven</p>
+            <p class="pg__kicker">
+              Registry-driven
+            </p>
             <h2>可安装的双端 Blocks</h2>
             <p>以下界面直接使用 CLI 安装到本应用的源码，不是文档站中的静态示意图。</p>
           </div>
@@ -244,8 +260,8 @@ function record(message: string) {
 <style scoped>
 .pg {
   width: min(960px, calc(100% - 32px));
-  margin: 0 auto;
   padding: 32px 0 48px;
+  margin: 0 auto;
 }
 
 .pg__hero {
@@ -254,11 +270,11 @@ function record(message: string) {
 
 .pg__kicker {
   margin: 0 0 8px;
-  color: #0f766e;
   font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  color: #0f766e;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .pg__hero h1 {
@@ -268,10 +284,10 @@ function record(message: string) {
 }
 
 .pg__hero p {
-  margin: 10px 0 0;
   max-width: 52ch;
-  color: #5b677a;
+  margin: 10px 0 0;
   line-height: 1.6;
+  color: #5b677a;
 }
 
 .pg__grid {
@@ -283,10 +299,10 @@ function record(message: string) {
   display: grid;
   gap: 14px;
   padding: 18px;
-  border: 1px solid rgba(23, 32, 51, 0.1);
+  background: rgb(255 255 255 / 90%);
+  border: 1px solid rgb(23 32 51 / 10%);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 12px 32px rgba(23, 32, 51, 0.06);
+  box-shadow: 0 12px 32px rgb(23 32 51 / 6%);
 }
 
 .pg__card h2 {
@@ -305,34 +321,34 @@ function record(message: string) {
 
 .pg__switch {
   justify-content: space-between;
-  color: #5b677a;
   font-size: 14px;
+  color: #5b677a;
 }
 
 .pg__meta {
   margin: 0;
-  color: #5b677a;
   font-size: 13px;
+  color: #5b677a;
 }
 
 .pg__trigger {
   display: inline-flex;
-  min-height: 40px;
   align-items: center;
   justify-content: center;
-  border: 0;
-  border-radius: 999px;
-  background: #0f766e;
-  color: #fff;
+  min-height: 40px;
   padding: 0 16px;
   font-weight: 700;
+  color: #fff;
   cursor: pointer;
+  background: #0f766e;
+  border: 0;
+  border-radius: 999px;
 }
 
 .pg__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.48);
+  background: rgb(15 23 42 / 48%);
 }
 
 .pg__dialog {
@@ -341,9 +357,9 @@ function record(message: string) {
   left: 50%;
   width: min(420px, calc(100vw - 32px));
   padding: 18px;
-  border-radius: 18px;
   background: #fff;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgb(15 23 42 / 24%);
   transform: translate(-50%, -50%);
 }
 
@@ -353,23 +369,23 @@ function record(message: string) {
 
 .pg__dialog p {
   margin: 10px 0 0;
-  color: #5b677a;
   line-height: 1.6;
+  color: #5b677a;
 }
 
 .pg__agent {
   display: grid;
   gap: 18px;
-  margin-top: 10px;
   padding-top: 24px;
-  border-top: 1px solid rgba(23, 32, 51, 0.12);
+  margin-top: 10px;
+  border-top: 1px solid rgb(23 32 51 / 12%);
 }
 
 .pg__agent-grid {
   display: grid;
-  align-items: start;
+  grid-template-columns: minmax(0, 1.55fr) minmax(240px, 0.75fr);
   gap: 16px;
-  grid-template-columns: minmax(0, 1.55fr) minmax(240px, .75fr);
+  align-items: start;
 }
 
 .pg__agent-chat {
@@ -384,43 +400,43 @@ function record(message: string) {
 .pg__agent-status {
   min-width: 86px;
   padding: 7px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 999px;
-  background: #fff;
-  color: #64748b;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: .08em;
+  color: #64748b;
   text-align: center;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
 }
 
 .pg__agent-status[data-status='streaming'],
 .pg__agent-status[data-status='waiting'] {
-  border-color: #99f6e4;
-  background: #f0fdfa;
   color: #0f766e;
+  background: #f0fdfa;
+  border-color: #99f6e4;
 }
 
 .pg__agent-status[data-status='completed'] {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
   color: #15803d;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
 }
 
 .pg__blocks {
   display: grid;
   gap: 18px;
-  margin-top: 10px;
   padding-top: 24px;
-  border-top: 1px solid rgba(23, 32, 51, 0.12);
+  margin-top: 10px;
+  border-top: 1px solid rgb(23 32 51 / 12%);
 }
 
 .pg__block-intro {
   display: flex;
+  gap: 20px;
   align-items: end;
   justify-content: space-between;
-  gap: 20px;
 }
 
 .pg__block-intro h2 {
@@ -430,35 +446,35 @@ function record(message: string) {
 }
 
 .pg__block-intro p:not(.pg__kicker) {
-  margin: 8px 0 0;
   max-width: 58ch;
-  color: #5b677a;
+  margin: 8px 0 0;
   line-height: 1.6;
+  color: #5b677a;
 }
 
 .pg__event {
   flex: none;
   max-width: 320px;
   padding: 8px 12px;
-  border: 1px solid rgba(15, 118, 110, 0.18);
-  border-radius: 999px;
-  background: rgba(204, 251, 241, 0.72);
-  color: #115e59;
   font-size: 12px;
   font-weight: 700;
+  color: #115e59;
+  background: rgb(204 251 241 / 72%);
+  border: 1px solid rgb(15 118 110 / 18%);
+  border-radius: 999px;
 }
 
 .pg__block-grid {
   display: grid;
-  align-items: start;
-  gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
 }
 
 @media (max-width: 720px) {
   .pg__block-intro {
-    align-items: start;
     flex-direction: column;
+    align-items: start;
   }
 
   .pg__event {

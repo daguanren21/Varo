@@ -9,8 +9,8 @@ Live-filtered Agent command search with empty state.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,25 +29,25 @@ import { AgentCommandSearch } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `modelValue` | `string` | `''` | Query |
-| `items` | `AgentSearchItem[]` | `[]` | Commands |
-| `placeholder` | `string` | `Search commands…` | Placeholder |
-| `emptyText` | `string` | `No commands found` | Empty state |
+| Prop          | Type                | Default             | Description |
+| ------------- | ------------------- | ------------------- | ----------- |
+| `modelValue`  | `string`            | `''`                | Query       |
+| `items`       | `AgentSearchItem[]` | `[]`                | Commands    |
+| `placeholder` | `string`            | `Search commands…`  | Placeholder |
+| `emptyText`   | `string`            | `No commands found` | Empty state |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `select` | `AgentSearchItem` | Select command |
-| `update:modelValue` | `string` | Update query |
+| Event               | Payload           | Description    |
+| ------------------- | ----------------- | -------------- |
+| `select`            | `AgentSearchItem` | Select command |
+| `update:modelValue` | `string`          | Update query   |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                                             |
+| ---------- | ------------------------------------------------------------------ |
+| H5         | Named export from `@/components/agent-ui`                          |
 | weapp-vite | Default export from `@/components/agent-ui/AgentCommandSearch.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

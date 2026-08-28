@@ -1,1 +1,1 @@
-export { usePopoverRoot } from '@varo/primitives-core'
+export { usePopoverRoot } from '@varo-ui/headless'

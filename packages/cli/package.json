@@ -1,27 +1,24 @@
 {
-  "name": "@varo/cli",
-  "version": "0.0.1",
+  "name": "@varo-ui/cli",
   "type": "module",
-  "sideEffects": false,
+  "version": "1.0.1",
+  "description": "CLI for installing editable Varo components and blocks from the Registry.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/daguanren21/Varo.git"
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/cli"
   },
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
+  },
+  "sideEffects": false,
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "bin": {
-    "varo": "./dist/index.mjs"
-  },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist",
-    "registry",
-    "src"
-  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -32,6 +29,17 @@
       "import": "./src/index.ts"
     }
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "varo": "./dist/index.mjs"
+  },
+  "files": [
+    "dist",
+    "registry",
+    "src"
+  ],
   "scripts": {
     "build": "tsdown",
     "clean": "rimraf dist",

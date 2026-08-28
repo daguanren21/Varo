@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
+
 const props = withDefaults(
   defineProps<{
     checkable?: boolean
@@ -18,21 +20,22 @@ const props = withDefaults(
     round: false,
     size: 'md',
     tone: 'default',
-    variant: 'soft'
-  }
+    variant: 'soft',
+  },
 )
-
 const emit = defineEmits<{
-  change: [checked: boolean]
-  click: [event: unknown]
-  close: [event: unknown]
+  'change': [checked: boolean]
+  'click': [event: unknown]
+  'close': [event: unknown]
   'update:checked': [checked: boolean]
 }>()
+const checkableRole = computed(() => (props.checkable ? 'checkbox' : undefined))
+const checkableValue = computed(() => (props.checkable ? props.checked : undefined))
 
 function click(event: unknown) {
-  if (props.disabled) return
+  if (props.disabled) { return }
   emit('click', event)
-  if (!props.checkable) return
+  if (!props.checkable) { return }
   const checked = !props.checked
   emit('update:checked', checked)
   emit('change', checked)
@@ -40,15 +43,15 @@ function click(event: unknown) {
 
 function close(event: { stopPropagation?: () => void }) {
   event.stopPropagation?.()
-  if (!props.disabled) emit('close', event)
+  if (!props.disabled) { emit('close', event) }
 }
 </script>
 
 <template>
   <view
     class="varo-tag"
-    :role="checkable ? 'checkbox' : undefined"
-    :aria-checked="checkable ? checked : undefined"
+    :role="checkableRole"
+    :aria-checked="checkableValue"
     :aria-disabled="disabled"
     :data-checked="String(checked)"
     :data-disabled="String(disabled)"
@@ -58,8 +61,12 @@ function close(event: { stopPropagation?: () => void }) {
     :data-variant="variant"
     @click="click"
   >
-    <text class="varo-tag__content"><slot /></text>
-    <button v-if="closeable" class="varo-tag__close" type="button" :disabled="disabled" aria-label="Remove" @click="close">×</button>
+    <text class="varo-tag__content">
+      <slot />
+    </text>
+    <button v-if="closeable" class="varo-tag__close" type="button" :disabled="disabled" aria-label="Remove" @click="close">
+      ×
+    </button>
   </view>
 </template>
 

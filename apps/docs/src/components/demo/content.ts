@@ -8,7 +8,7 @@ export const demoContent: Record<Locale, Partial<Record<DemoKind, DemoContent>>>
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 页面',
           appSubtitle: '浏览器组件预览',
           statusRight: '5G · H5',
@@ -17,7 +17,7 @@ export const demoContent: Record<Locale, Partial<Record<DemoKind, DemoContent>>>
           disabledText: '禁用态',
           code: `
 <script setup lang="ts">
-import { VButton } from '@varo/ui-h5'
+import { VButton } from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -25,11 +25,11 @@ import { VButton } from '@varo/ui-h5'
   <VButton variant="outline" size="sm">次要操作</VButton>
   <VButton variant="ghost" :disabled="true">禁用态</VButton>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序页面',
           appSubtitle: '跨端组件预览',
           statusRight: '微信 · 小程序',
@@ -38,7 +38,7 @@ import { VButton } from '@varo/ui-h5'
           disabledText: '禁用态',
           code: `
 <script setup lang="ts">
-import { VButton } from '@varo/ui-weapp'
+import { VButton } from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -48,9 +48,9 @@ import { VButton } from '@varo/ui-weapp'
     <VButton variant="ghost" :disabled="true">禁用态</VButton>
   </view>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     input: {
       title: 'Input 跨端示例与演示',
@@ -58,7 +58,7 @@ import { VButton } from '@varo/ui-weapp'
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 表单',
           appSubtitle: '浏览器输入体验',
           statusRight: '5G · H5',
@@ -69,7 +69,7 @@ import { VButton } from '@varo/ui-weapp'
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VInput } from '@varo/ui-h5'
+import { VInput } from '@varo-ui/h5'
 
 const value = ref('')
 <\/script>
@@ -78,11 +78,11 @@ const value = ref('')
   <VInput v-model:value="value" placeholder="请输入内容" />
   <VInput default-value="默认内容" />
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序表单',
           appSubtitle: '跨端输入体验',
           statusRight: '微信 · 小程序',
@@ -93,7 +93,7 @@ const value = ref('')
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VInput } from '@varo/ui-weapp'
+import { VInput } from '@varo-ui/weapp'
 
 const mobile = ref('')
 <\/script>
@@ -102,9 +102,9 @@ const mobile = ref('')
   <VInput v-model:value="mobile" placeholder="请输入手机号" />
   <VInput default-value="留言备注" />
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     cell: {
       title: 'Cell 跨端示例与演示',
@@ -112,7 +112,7 @@ const mobile = ref('')
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 列表',
           appSubtitle: '浏览器信息项预览',
           statusRight: '5G · H5',
@@ -125,7 +125,7 @@ const mobile = ref('')
           cellLinkDesc: '去设置',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo/ui-h5'
+import { VCell, VCellGroup } from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -134,11 +134,11 @@ import { VCell, VCellGroup } from '@varo/ui-h5'
     <VCell title="收货地址" desc="去设置" is-link />
   </VCellGroup>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序列表',
           appSubtitle: '跨端信息项预览',
           statusRight: '微信 · 小程序',
@@ -151,7 +151,7 @@ import { VCell, VCellGroup } from '@varo/ui-h5'
           cellLinkDesc: '查看',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo/ui-weapp'
+import { VCell, VCellGroup } from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -160,9 +160,9 @@ import { VCell, VCellGroup } from '@varo/ui-weapp'
     <VCell title="物流详情" desc="查看" is-link />
   </VCellGroup>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     image: {
       title: 'Image 跨端示例与演示',
@@ -170,13 +170,13 @@ import { VCell, VCellGroup } from '@varo/ui-weapp'
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 图片',
           appSubtitle: '图片状态与裁剪预览',
           statusRight: '5G · H5',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo/ui-h5'
+import { VImage } from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -184,17 +184,17 @@ import { VImage } from '@varo/ui-h5'
   <VImage src="/logo.png" width="64" height="64" round />
   <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序图片',
           appSubtitle: '跨端图片状态预览',
           statusRight: '微信 · 小程序',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo/ui-weapp'
+import { VImage } from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -202,9 +202,9 @@ import { VImage } from '@varo/ui-weapp'
   <VImage src="/logo.png" width="64" height="64" round />
   <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     overlay: {
       title: 'Overlay 跨端示例与演示',
@@ -212,7 +212,7 @@ import { VImage } from '@varo/ui-weapp'
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 遮罩',
           appSubtitle: '遮罩层行为预览',
           statusRight: '5G · H5',
@@ -221,7 +221,7 @@ import { VImage } from '@varo/ui-weapp'
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VOverlay } from '@varo/ui-h5'
+import { VButton, VOverlay } from '@varo-ui/h5'
 
 const visible = ref(false)
 <\/script>
@@ -230,11 +230,11 @@ const visible = ref(false)
   <VButton @click="visible = true">打开遮罩</VButton>
   <VOverlay v-model:visible="visible" :z-index="2000" />
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序遮罩',
           appSubtitle: '跨端遮罩行为预览',
           statusRight: '微信 · 小程序',
@@ -243,7 +243,7 @@ const visible = ref(false)
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VOverlay } from '@varo/ui-weapp'
+import { VButton, VOverlay } from '@varo-ui/weapp'
 
 const visible = ref(false)
 <\/script>
@@ -252,9 +252,9 @@ const visible = ref(false)
   <VButton @click="visible = true">打开遮罩</VButton>
   <VOverlay v-model:visible="visible" :z-index="2000" />
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     popup: {
       title: 'Popup 跨端示例与演示',
@@ -262,7 +262,7 @@ const visible = ref(false)
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 弹出层',
           appSubtitle: '底部弹出预览',
           statusRight: '5G · H5',
@@ -273,7 +273,7 @@ const visible = ref(false)
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VPopup } from '@varo/ui-h5'
+import { VButton, VPopup } from '@varo-ui/h5'
 
 const visible = ref(false)
 <\/script>
@@ -284,11 +284,11 @@ const visible = ref(false)
     <div class="popup-body">弹层内容</div>
   </VPopup>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序弹出层',
           appSubtitle: '跨端弹出预览',
           statusRight: '微信 · 小程序',
@@ -299,7 +299,7 @@ const visible = ref(false)
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VPopup } from '@varo/ui-weapp'
+import { VButton, VPopup } from '@varo-ui/weapp'
 
 const visible = ref(false)
 <\/script>
@@ -310,9 +310,9 @@ const visible = ref(false)
     <view class="popup-body">弹层内容</view>
   </VPopup>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     dialog: {
       title: 'Dialog 跨端示例与演示',
@@ -320,7 +320,7 @@ const visible = ref(false)
       platforms: {
         h5: {
           runtime: 'H5 parts',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 弹层',
           appSubtitle: 'parts 组合预览',
           statusRight: '5G · H5',
@@ -337,7 +337,7 @@ import {
   VDialogOverlay,
   VDialogRoot,
   VDialogTrigger
-} from '@varo/ui-h5'
+} from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -350,11 +350,11 @@ import {
     </VDialogContent>
   </VDialogRoot>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序 parts',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: '小程序弹层',
           appSubtitle: 'parts 组合预览',
           statusRight: '微信 · 小程序',
@@ -371,7 +371,7 @@ import {
   VDialogOverlay,
   VDialogRoot,
   VDialogTrigger
-} from '@varo/ui-weapp'
+} from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -384,9 +384,9 @@ import {
     </VDialogContent>
   </VDialogRoot>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     overview: {
       title: '跨端总览示例与演示',
@@ -394,7 +394,7 @@ import {
       platforms: {
         h5: {
           runtime: 'H5 官方 UI',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Demo',
           appSubtitle: '浏览器端组合示例',
           statusRight: '5G · H5',
@@ -420,7 +420,7 @@ import {
   VDialogRoot,
   VDialogTrigger,
   VInput
-} from '@varo/ui-h5'
+} from '@varo-ui/h5'
 
 const name = ref('')
 <\/script>
@@ -440,11 +440,11 @@ const name = ref('')
     </VDialogRoot>
   </section>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: '小程序官方 UI',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Weapp Demo',
           appSubtitle: '小程序端组合示例',
           statusRight: '微信 · 小程序',
@@ -470,7 +470,7 @@ import {
   VDialogRoot,
   VDialogTrigger,
   VInput
-} from '@varo/ui-weapp'
+} from '@varo-ui/weapp'
 
 const mobile = ref('')
 <\/script>
@@ -490,10 +490,10 @@ const mobile = ref('')
     </VDialogRoot>
   </view>
 </template>
-          `.trim()
-        }
-      }
-    }
+          `.trim(),
+        },
+      },
+    },
   },
   en: {
     button: {
@@ -502,7 +502,7 @@ const mobile = ref('')
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Page',
           appSubtitle: 'Browser wrapper preview',
           statusRight: '5G · H5',
@@ -511,7 +511,7 @@ const mobile = ref('')
           disabledText: 'Disabled',
           code: `
 <script setup lang="ts">
-import { VButton } from '@varo/ui-h5'
+import { VButton } from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -519,11 +519,11 @@ import { VButton } from '@varo/ui-h5'
   <VButton variant="outline" size="sm">Secondary</VButton>
   <VButton variant="ghost" :disabled="true">Disabled</VButton>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program Page',
           appSubtitle: 'Cross-platform wrapper preview',
           statusRight: 'WeChat · Mini-program',
@@ -532,7 +532,7 @@ import { VButton } from '@varo/ui-h5'
           disabledText: 'Disabled',
           code: `
 <script setup lang="ts">
-import { VButton } from '@varo/ui-weapp'
+import { VButton } from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -542,9 +542,9 @@ import { VButton } from '@varo/ui-weapp'
     <VButton variant="ghost" :disabled="true">Disabled</VButton>
   </view>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     input: {
       title: 'Input Cross-platform Example and Preview',
@@ -552,7 +552,7 @@ import { VButton } from '@varo/ui-weapp'
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Form',
           appSubtitle: 'Browser input preview',
           statusRight: '5G · H5',
@@ -563,7 +563,7 @@ import { VButton } from '@varo/ui-weapp'
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VInput } from '@varo/ui-h5'
+import { VInput } from '@varo-ui/h5'
 
 const value = ref('')
 <\/script>
@@ -572,11 +572,11 @@ const value = ref('')
   <VInput v-model:value="value" placeholder="Type here" />
   <VInput default-value="Default content" />
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program Form',
           appSubtitle: 'Cross-platform input preview',
           statusRight: 'WeChat · Mini-program',
@@ -587,7 +587,7 @@ const value = ref('')
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VInput } from '@varo/ui-weapp'
+import { VInput } from '@varo-ui/weapp'
 
 const mobile = ref('')
 <\/script>
@@ -596,9 +596,9 @@ const mobile = ref('')
   <VInput v-model:value="mobile" placeholder="Phone number" />
   <VInput default-value="Additional notes" />
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     cell: {
       title: 'Cell Cross-platform Example and Preview',
@@ -606,7 +606,7 @@ const mobile = ref('')
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 List',
           appSubtitle: 'Browser cell preview',
           statusRight: '5G · H5',
@@ -619,7 +619,7 @@ const mobile = ref('')
           cellLinkDesc: 'Configure',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo/ui-h5'
+import { VCell, VCellGroup } from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -628,11 +628,11 @@ import { VCell, VCellGroup } from '@varo/ui-h5'
     <VCell title="Address" desc="Configure" is-link />
   </VCellGroup>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program List',
           appSubtitle: 'Cross-platform cell preview',
           statusRight: 'WeChat · Mini-program',
@@ -645,7 +645,7 @@ import { VCell, VCellGroup } from '@varo/ui-h5'
           cellLinkDesc: 'View',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo/ui-weapp'
+import { VCell, VCellGroup } from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -654,9 +654,9 @@ import { VCell, VCellGroup } from '@varo/ui-weapp'
     <VCell title="Logistics" desc="View" is-link />
   </VCellGroup>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     image: {
       title: 'Image Cross-platform Example and Preview',
@@ -664,13 +664,13 @@ import { VCell, VCellGroup } from '@varo/ui-weapp'
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Image',
           appSubtitle: 'Image state preview',
           statusRight: '5G · H5',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo/ui-h5'
+import { VImage } from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -678,17 +678,17 @@ import { VImage } from '@varo/ui-h5'
   <VImage src="/logo.png" width="64" height="64" round />
   <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program Image',
           appSubtitle: 'Cross-platform image preview',
           statusRight: 'WeChat · Mini-program',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo/ui-weapp'
+import { VImage } from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -696,9 +696,9 @@ import { VImage } from '@varo/ui-weapp'
   <VImage src="/logo.png" width="64" height="64" round />
   <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     overlay: {
       title: 'Overlay Cross-platform Example and Preview',
@@ -706,7 +706,7 @@ import { VImage } from '@varo/ui-weapp'
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Overlay',
           appSubtitle: 'Overlay behavior preview',
           statusRight: '5G · H5',
@@ -715,7 +715,7 @@ import { VImage } from '@varo/ui-weapp'
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VOverlay } from '@varo/ui-h5'
+import { VButton, VOverlay } from '@varo-ui/h5'
 
 const visible = ref(false)
 <\/script>
@@ -724,11 +724,11 @@ const visible = ref(false)
   <VButton @click="visible = true">Open overlay</VButton>
   <VOverlay v-model:visible="visible" :z-index="2000" />
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program Overlay',
           appSubtitle: 'Cross-platform overlay preview',
           statusRight: 'WeChat · Mini-program',
@@ -737,7 +737,7 @@ const visible = ref(false)
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VOverlay } from '@varo/ui-weapp'
+import { VButton, VOverlay } from '@varo-ui/weapp'
 
 const visible = ref(false)
 <\/script>
@@ -746,9 +746,9 @@ const visible = ref(false)
   <VButton @click="visible = true">Open overlay</VButton>
   <VOverlay v-model:visible="visible" :z-index="2000" />
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     popup: {
       title: 'Popup Cross-platform Example and Preview',
@@ -756,7 +756,7 @@ const visible = ref(false)
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Popup',
           appSubtitle: 'Bottom popup preview',
           statusRight: '5G · H5',
@@ -767,7 +767,7 @@ const visible = ref(false)
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VPopup } from '@varo/ui-h5'
+import { VButton, VPopup } from '@varo-ui/h5'
 
 const visible = ref(false)
 <\/script>
@@ -778,11 +778,11 @@ const visible = ref(false)
     <div class="popup-body">Popup content</div>
   </VPopup>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program wrapper',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program Popup',
           appSubtitle: 'Cross-platform popup preview',
           statusRight: 'WeChat · Mini-program',
@@ -793,7 +793,7 @@ const visible = ref(false)
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VButton, VPopup } from '@varo/ui-weapp'
+import { VButton, VPopup } from '@varo-ui/weapp'
 
 const visible = ref(false)
 <\/script>
@@ -804,9 +804,9 @@ const visible = ref(false)
     <view class="popup-body">Popup content</view>
   </VPopup>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     dialog: {
       title: 'Dialog Cross-platform Example and Preview',
@@ -814,7 +814,7 @@ const visible = ref(false)
       platforms: {
         h5: {
           runtime: 'H5 parts',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Dialog',
           appSubtitle: 'Parts composition preview',
           statusRight: '5G · H5',
@@ -831,7 +831,7 @@ import {
   VDialogOverlay,
   VDialogRoot,
   VDialogTrigger
-} from '@varo/ui-h5'
+} from '@varo-ui/h5'
 <\/script>
 
 <template>
@@ -844,11 +844,11 @@ import {
     </VDialogContent>
   </VDialogRoot>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Mini-program parts',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Mini-program Dialog',
           appSubtitle: 'Parts composition preview',
           statusRight: 'WeChat · Mini-program',
@@ -865,7 +865,7 @@ import {
   VDialogOverlay,
   VDialogRoot,
   VDialogTrigger
-} from '@varo/ui-weapp'
+} from '@varo-ui/weapp'
 <\/script>
 
 <template>
@@ -878,9 +878,9 @@ import {
     </VDialogContent>
   </VDialogRoot>
 </template>
-          `.trim()
-        }
-      }
+          `.trim(),
+        },
+      },
     },
     overview: {
       title: 'Cross-platform Overview Example and Preview',
@@ -888,7 +888,7 @@ import {
       platforms: {
         h5: {
           runtime: 'Official H5 UI',
-          packageName: '@varo/ui-h5',
+          packageName: '@varo-ui/h5',
           appTitle: 'H5 Demo',
           appSubtitle: 'Browser composition example',
           statusRight: '5G · H5',
@@ -914,7 +914,7 @@ import {
   VDialogRoot,
   VDialogTrigger,
   VInput
-} from '@varo/ui-h5'
+} from '@varo-ui/h5'
 
 const name = ref('')
 <\/script>
@@ -934,11 +934,11 @@ const name = ref('')
     </VDialogRoot>
   </section>
 </template>
-          `.trim()
+          `.trim(),
         },
         weapp: {
           runtime: 'Official mini-program UI',
-          packageName: '@varo/ui-weapp',
+          packageName: '@varo-ui/weapp',
           appTitle: 'Weapp Demo',
           appSubtitle: 'Mini-program composition example',
           statusRight: 'WeChat · Mini-program',
@@ -952,7 +952,7 @@ const name = ref('')
           dialogOpenText: 'Open dialog',
           dialogCloseText: 'Close',
           dialogTitle: 'Mini-program Composition Demo',
-          dialogBody: 'This tab keeps the same interaction model visible while switching the wrapper package to @varo/ui-weapp.',
+          dialogBody: 'This tab keeps the same interaction model visible while switching the wrapper package to @varo-ui/weapp.',
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -964,7 +964,7 @@ import {
   VDialogRoot,
   VDialogTrigger,
   VInput
-} from '@varo/ui-weapp'
+} from '@varo-ui/weapp'
 
 const mobile = ref('')
 <\/script>
@@ -984,31 +984,31 @@ const mobile = ref('')
     </VDialogRoot>
   </view>
 </template>
-          `.trim()
-        }
-      }
-    }
-  }
+          `.trim(),
+        },
+      },
+    },
+  },
 }
 
 export const componentDemoContent: Record<DemoKind, DemoContent> = {
-  button: {
+  'button': {
     title: 'Button 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.button!.platforms
+    platforms: demoContent.zh.button!.platforms,
   },
-  cell: {
+  'cell': {
     title: 'Cell 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.cell!.platforms
+    platforms: demoContent.zh.cell!.platforms,
   },
-  divider: {
+  'divider': {
     title: 'Divider 跨端示例与演示',
     description: '展示基础分割线、带文字分割线、虚线和纵向分割线。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 分割线',
         appSubtitle: '内容分隔预览',
         statusRight: '5G · H5',
@@ -1018,11 +1018,11 @@ export const componentDemoContent: Record<DemoKind, DemoContent> = {
   <VDivider>文本分割线</VDivider>
   <VDivider dashed content-position="left">虚线</VDivider>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序分割线',
         appSubtitle: '跨端分隔预览',
         statusRight: '微信 · 小程序',
@@ -1032,24 +1032,24 @@ export const componentDemoContent: Record<DemoKind, DemoContent> = {
   <VDivider>文本分割线</VDivider>
   <VDivider dashed content-position="left">虚线</VDivider>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  elevator: {
+  'elevator': {
     title: 'Elevator 跨端示例与演示',
     description: '展示楼层索引、分组列表和索引点击切换。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 电梯楼层',
         appSubtitle: '索引导航预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VElevator } from '@varo/ui-h5'
+import { VElevator } from '@varo-ui/h5'
 
 const activeIndex = ref('A')
 const indexes = [
@@ -1063,18 +1063,18 @@ const indexes = [
 <template>
   <VElevator v-model:active-index="activeIndex" :indexes="indexes" />
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序电梯楼层',
         appSubtitle: '跨端索引导航',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VElevator } from '@varo/ui-weapp'
+import { VElevator } from '@varo-ui/weapp'
 
 const activeIndex = ref('A')
 const indexes = [
@@ -1088,9 +1088,9 @@ const indexes = [
 <template>
   <VElevator v-model:active-index="activeIndex" :indexes="indexes" />
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
   'fixed-nav': {
     title: 'FixedNav 跨端示例与演示',
@@ -1098,14 +1098,14 @@ const indexes = [
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 悬浮导航',
         appSubtitle: '快捷入口预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VFixedNav } from '@varo/ui-h5'
+import { VFixedNav } from '@varo-ui/h5'
 
 const visible = ref(true)
 const navList = [
@@ -1117,18 +1117,18 @@ const navList = [
 <template>
   <VFixedNav v-model:visible="visible" :nav-list="navList" active-text="导航" />
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序悬浮导航',
         appSubtitle: '跨端快捷入口',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VFixedNav } from '@varo/ui-weapp'
+import { VFixedNav } from '@varo-ui/weapp'
 
 const visible = ref(true)
 const navList = [
@@ -1140,17 +1140,17 @@ const navList = [
 <template>
   <VFixedNav v-model:visible="visible" :nav-list="navList" active-text="导航" />
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  grid: {
+  'grid': {
     title: 'Grid 跨端示例与演示',
     description: '按常见宫格入口展示列数、徽标、图标、点击态和间距。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 宫格',
         appSubtitle: '功能入口预览',
         statusRight: '5G · H5',
@@ -1161,11 +1161,11 @@ const navList = [
     <VGridItem icon="◎" text="物流" badge="3" />
   </VGrid>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序宫格',
         appSubtitle: '跨端入口预览',
         statusRight: '微信 · 小程序',
@@ -1176,29 +1176,29 @@ const navList = [
     <VGridItem icon="◎" text="物流" badge="3" />
   </VGrid>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  image: {
+  'image': {
     title: 'Image 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.image!.platforms
+    platforms: demoContent.zh.image!.platforms,
   },
-  indicator: {
+  'indicator': {
     title: 'Indicator 跨端示例与演示',
     description: '展示点状和线状进度指示能力。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 指示器',
         appSubtitle: '轮播进度预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VIndicator } from '@varo/ui-h5'
+import { VIndicator } from '@varo-ui/h5'
 
 const current = ref(0)
 <\/script>
@@ -1207,18 +1207,18 @@ const current = ref(0)
   <VIndicator v-model:current="current" :total="4" />
   <VIndicator v-model:current="current" :total="4" type="line" />
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序指示器',
         appSubtitle: '跨端进度预览',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VIndicator } from '@varo/ui-weapp'
+import { VIndicator } from '@varo-ui/weapp'
 
 const current = ref(0)
 <\/script>
@@ -1227,22 +1227,22 @@ const current = ref(0)
   <VIndicator v-model:current="current" :total="4" />
   <VIndicator v-model:current="current" :total="4" type="line" />
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  input: {
+  'input': {
     title: 'Input 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.input!.platforms
+    platforms: demoContent.zh.input!.platforms,
   },
-  layout: {
+  'layout': {
     title: 'Layout 跨端示例与演示',
     description: '展示 24 栅格、列偏移、行间距和主轴对齐。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 布局',
         appSubtitle: '24 栅格预览',
         statusRight: '5G · H5',
@@ -1254,11 +1254,11 @@ const current = ref(0)
     <VCol :span="8">8</VCol>
   </VRow>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序布局',
         appSubtitle: '跨端栅格预览',
         statusRight: '微信 · 小程序',
@@ -1270,24 +1270,24 @@ const current = ref(0)
     <VCol :span="8">8</VCol>
   </VRow>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  menu: {
+  'menu': {
     title: 'Menu 跨端示例与演示',
     description: '展示下拉菜单、选项选择和受控展开状态。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 菜单',
         appSubtitle: '筛选菜单预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VMenu, VMenuItem } from '@varo/ui-h5'
+import { VMenu, VMenuItem } from '@varo-ui/h5'
 
 const activeName = ref()
 const value = ref('all')
@@ -1310,18 +1310,18 @@ const stockOptions = [
     <VMenuItem v-model="stock" name="stock" title="库存" :options="stockOptions" />
   </VMenu>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序菜单',
         appSubtitle: '跨端筛选菜单',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VMenu, VMenuItem } from '@varo/ui-weapp'
+import { VMenu, VMenuItem } from '@varo-ui/weapp'
 
 const activeName = ref()
 const value = ref('all')
@@ -1344,17 +1344,17 @@ const stockOptions = [
     <VMenuItem v-model="stock" name="stock" title="库存" :options="stockOptions" />
   </VMenu>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  navbar: {
+  'navbar': {
     title: 'Navbar 跨端示例与演示',
     description: '展示标题、左右区域、返回箭头和点击事件。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 头部导航',
         appSubtitle: '页面导航预览',
         statusRight: '5G · H5',
@@ -1362,11 +1362,11 @@ const stockOptions = [
 <template>
   <VNavbar title="订单详情" left-text="返回" right-text="更多" left-arrow />
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序头部导航',
         appSubtitle: '跨端导航预览',
         statusRight: '微信 · 小程序',
@@ -1374,29 +1374,29 @@ const stockOptions = [
 <template>
   <VNavbar title="订单详情" left-text="返回" right-text="更多" left-arrow />
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  overlay: {
+  'overlay': {
     title: 'Overlay 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.overlay!.platforms
+    platforms: demoContent.zh.overlay!.platforms,
   },
-  pagination: {
+  'pagination': {
     title: 'Pagination 跨端示例与演示',
     description: '展示上一页、下一页、多页码和简单模式。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 分页',
         appSubtitle: '翻页控制预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VPagination } from '@varo/ui-h5'
+import { VPagination } from '@varo-ui/h5'
 
 const page = ref(2)
 <\/script>
@@ -1404,18 +1404,18 @@ const page = ref(2)
 <template>
   <VPagination v-model="page" :page-count="5" />
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序分页',
         appSubtitle: '跨端翻页控制',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VPagination } from '@varo/ui-weapp'
+import { VPagination } from '@varo-ui/weapp'
 
 const page = ref(2)
 <\/script>
@@ -1423,14 +1423,14 @@ const page = ref(2)
 <template>
   <VPagination v-model="page" :page-count="5" />
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  popup: {
+  'popup': {
     title: 'Popup 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.popup!.platforms
+    platforms: demoContent.zh.popup!.platforms,
   },
   'side-navbar': {
     title: 'SideNavbar 跨端示例与演示',
@@ -1438,14 +1438,14 @@ const page = ref(2)
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 侧边栏导航',
         appSubtitle: '分组入口预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VSideNavbar, VSideNavbarItem } from '@varo/ui-h5'
+import { VSideNavbar, VSideNavbarItem } from '@varo-ui/h5'
 
 const active = ref('orders')
 <\/script>
@@ -1456,18 +1456,18 @@ const active = ref('orders')
     <VSideNavbarItem name="assets" title="资产" badge="3" />
   </VSideNavbar>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序侧边栏导航',
         appSubtitle: '跨端分组入口',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VSideNavbar, VSideNavbarItem } from '@varo/ui-weapp'
+import { VSideNavbar, VSideNavbarItem } from '@varo-ui/weapp'
 
 const active = ref('orders')
 <\/script>
@@ -1478,17 +1478,17 @@ const active = ref('orders')
     <VSideNavbarItem name="assets" title="资产" badge="3" />
   </VSideNavbar>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  space: {
+  'space': {
     title: 'Space 跨端示例与演示',
     description: '展示横向间距、纵向间距、换行和填充宽度。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 间距',
         appSubtitle: '元素间距预览',
         statusRight: '5G · H5',
@@ -1499,11 +1499,11 @@ const active = ref('orders')
     <VButton size="sm">按钮</VButton>
   </VSpace>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序间距',
         appSubtitle: '跨端间距预览',
         statusRight: '微信 · 小程序',
@@ -1514,17 +1514,17 @@ const active = ref('orders')
     <VButton size="sm">按钮</VButton>
   </VSpace>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  sticky: {
+  'sticky': {
     title: 'Sticky 跨端示例与演示',
     description: '展示吸顶容器、顶部偏移和固定态标记。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 粘性布局',
         appSubtitle: '滚动吸顶预览',
         statusRight: '5G · H5',
@@ -1534,11 +1534,11 @@ const active = ref('orders')
     <div class="sticky-bar">吸顶区域</div>
   </VSticky>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序粘性布局',
         appSubtitle: '跨端吸顶预览',
         statusRight: '微信 · 小程序',
@@ -1548,24 +1548,24 @@ const active = ref('orders')
     <view class="sticky-bar">吸顶区域</view>
   </VSticky>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  tabbar: {
+  'tabbar': {
     title: 'Tabbar 跨端示例与演示',
     description: '展示底部标签栏、图标、徽标和选中态。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 标签栏',
         appSubtitle: '底部导航预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VTabbar, VTabbarItem } from '@varo/ui-h5'
+import { VTabbar, VTabbarItem } from '@varo-ui/h5'
 
 const active = ref('home')
 <\/script>
@@ -1576,18 +1576,18 @@ const active = ref('home')
     <VTabbarItem name="profile" icon="○" dot>我的</VTabbarItem>
   </VTabbar>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序标签栏',
         appSubtitle: '跨端底部导航',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VTabbar, VTabbarItem } from '@varo/ui-weapp'
+import { VTabbar, VTabbarItem } from '@varo-ui/weapp'
 
 const active = ref('home')
 <\/script>
@@ -1598,24 +1598,24 @@ const active = ref('home')
     <VTabbarItem name="profile" icon="○" dot>我的</VTabbarItem>
   </VTabbar>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  tabs: {
+  'tabs': {
     title: 'Tabs 跨端示例与演示',
     description: '展示顶部选项卡、内容面板和受控选中态。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
-        packageName: '@varo/ui-h5',
+        packageName: '@varo-ui/h5',
         appTitle: 'H5 选项卡',
         appSubtitle: '内容切换预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VTab, VTabs } from '@varo/ui-h5'
+import { VTab, VTabs } from '@varo-ui/h5'
 
 const active = ref('overview')
 <\/script>
@@ -1626,18 +1626,18 @@ const active = ref('overview')
     <VTab name="detail" title="明细">明细列表</VTab>
   </VTabs>
 </template>
-        `.trim()
+        `.trim(),
       },
       weapp: {
         runtime: '小程序 wrapper',
-        packageName: '@varo/ui-weapp',
+        packageName: '@varo-ui/weapp',
         appTitle: '小程序选项卡',
         appSubtitle: '跨端内容切换',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
 import { ref } from 'vue'
-import { VTab, VTabs } from '@varo/ui-weapp'
+import { VTab, VTabs } from '@varo-ui/weapp'
 
 const active = ref('overview')
 <\/script>
@@ -1648,20 +1648,20 @@ const active = ref('overview')
     <VTab name="detail" title="明细">明细列表</VTab>
   </VTabs>
 </template>
-        `.trim()
-      }
-    }
+        `.trim(),
+      },
+    },
   },
-  dialog: {
+  'dialog': {
     title: 'Dialog 跨端示例与演示',
     description: '',
-    platforms: demoContent.zh.dialog!.platforms
+    platforms: demoContent.zh.dialog!.platforms,
   },
-  overview: {
+  'overview': {
     title: '跨端总览示例与演示',
     description: '',
-    platforms: demoContent.zh.overview!.platforms
-  }
+    platforms: demoContent.zh.overview!.platforms,
+  },
 }
 
 export function resolveDemoContent(locale: Locale, example: DemoKind): DemoContent {

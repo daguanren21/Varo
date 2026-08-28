@@ -4,32 +4,32 @@
 
 ## 当前可安装 Blocks
 
-| Registry 名称 | 用途 | Targets |
-| --- | --- | --- |
-| `login-form` | 登录、记住状态、错误和加载反馈 | H5 / Weapp |
-| `profile-card` | 用户身份、状态和统计信息 | H5 / Weapp |
-| `profile-edit` | 资料编辑与城市选择 | H5 / Weapp |
-| `product-list` | 商品列表、库存、价格和加购动作 | H5 / Weapp |
-| `order-filter` | 订单状态与金额筛选 | H5 / Weapp |
-| `agent-chat` | 增量对话、推理、工具、审批与输入组合 | H5 / Weapp |
+| Registry 名称  | 用途                                 | Targets    |
+| -------------- | ------------------------------------ | ---------- |
+| `login-form`   | 登录、记住状态、错误和加载反馈       | H5 / Weapp |
+| `profile-card` | 用户身份、状态和统计信息             | H5 / Weapp |
+| `profile-edit` | 资料编辑与城市选择                   | H5 / Weapp |
+| `product-list` | 商品列表、库存、价格和加购动作       | H5 / Weapp |
+| `order-filter` | 订单状态与金额筛选                   | H5 / Weapp |
+| `agent-chat`   | 增量对话、推理、工具、审批与输入组合 | H5 / Weapp |
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/product-list
-pnpm dlx @varo/cli add --target h5 blocks/product-list
-pnpm dlx @varo/cli add --target weapp-vite blocks/agent-chat
-pnpm dlx @varo/cli add --target h5 blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo-ui/cli add --target h5 blocks/product-list
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 ```
 
 文档展示必须来自这些真实 registry source；不得再用未导出的 `VCard`、`VBadge` 或不可编译的 JSX 字符串模拟 Block。
 
 ## 1. 先分清分层
 
-| 层 | 负责 | 不负责 |
-| --- | --- | --- |
-| **Primitives** | 状态、事件、parts、跨端交互语义 | 视觉 token、业务文案 |
-| **Base Kit / UI** | 可复制的低层组件源码与默认样式 | 远程数据、权限、领域模型 |
-| **业务 wrapper** | 接口、权限、字段映射、产品文案 | 通用交互状态机 |
-| **Blocks** | 可复用页面切片与本地组合 | 私有后端细节、一次性页面胶水 |
+| 层                | 负责                            | 不负责                       |
+| ----------------- | ------------------------------- | ---------------------------- |
+| **Primitives**    | 状态、事件、parts、跨端交互语义 | 视觉 token、业务文案         |
+| **Base Kit / UI** | 可复制的低层组件源码与默认样式  | 远程数据、权限、领域模型     |
+| **业务 wrapper**  | 接口、权限、字段映射、产品文案  | 通用交互状态机               |
+| **Blocks**        | 可复用页面切片与本地组合        | 私有后端细节、一次性页面胶水 |
 
 经验法则：block 应该像“可搬运的页面切片”，不是“绑死某业务接口的页面”。
 
@@ -81,7 +81,7 @@ src/components/ui/*
 安装底座组件：
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite components/select
+pnpm dlx @varo-ui/cli add --target weapp-vite components/select
 ```
 
 ## 4. 创建本地 block
@@ -121,7 +121,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   'update:modelValue': [value: string[]]
-  change: [value: string[]]
+  'change': [value: string[]]
 }>()
 
 const value = computed({
@@ -274,8 +274,8 @@ pnpm typecheck
 pnpm test
 
 # 打包 CLI 后在临时目录验证安装
-pnpm --filter @varo/cli build
-pnpm dlx @varo/cli add --target weapp-vite blocks/status-filter
+pnpm --filter @varo-ui/cli build
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/status-filter
 ```
 
 确认：
@@ -300,19 +300,19 @@ pnpm dlx @varo/cli add --target weapp-vite blocks/status-filter
 
 ## 故障排查
 
-| 现象 | 处理 |
-| --- | --- |
-| 依赖没装上 | 检查 `registryDependencies` 拼写，如 `components/select` |
-| 目标文件冲突 | 确认 `to` 路径；默认 no-clobber，覆盖需显式 force |
-| block 难复用 | 把远程数据/权限/埋点移到业务 wrapper |
-| 小程序不可用 | 删除 H5-only API，保持双端契约 |
-| 单测过但安装失败 | 用 packed CLI + 临时 fixture 复现，检查 files 映射 |
+| 现象             | 处理                                                     |
+| ---------------- | -------------------------------------------------------- |
+| 依赖没装上       | 检查 `registryDependencies` 拼写，如 `components/select` |
+| 目标文件冲突     | 确认 `to` 路径；默认 no-clobber，覆盖需显式 force        |
+| block 难复用     | 把远程数据/权限/埋点移到业务 wrapper                     |
+| 小程序不可用     | 删除 H5-only API，保持双端契约                           |
+| 单测过但安装失败 | 用 packed CLI + 临时 fixture 复现，检查 files 映射       |
 
 ## 安装现有 block
 
 ```bash
-pnpm dlx @varo/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo/cli add --target weapp-vite blocks/order-filter
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp-vite blocks/order-filter
 ```
 
 安装后：

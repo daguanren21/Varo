@@ -1,52 +1,67 @@
 {
-    "name": "@varo/ui-h5",
-    "version": "0.1.0",
-    "type": "module",
-    "sideEffects": [
-        "./src/style.css",
-        "./dist/style.css"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/daguanren21/Varo.git"
+  "name": "@varo-ui/h5",
+  "type": "module",
+  "version": "1.0.1",
+  "description": "Production-ready Vue components for mobile H5 products.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/ui-h5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
+  },
+  "sideEffects": [
+    "./src/style.css",
+    "./dist/style.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
-    "publishConfig": {
-        "access": "public",
-        "registry": "https://registry.npmjs.org/"
+    "./primitives": {
+      "types": "./dist/primitives.d.ts",
+      "import": "./dist/primitives.js"
     },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "files": [
-        "dist",
-        "src"
-    ],
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js"
-        },
-        "./style.css": "./dist/style.css",
-        "./source/style.css": "./src/style.css",
-        "./source": {
-            "types": "./src/index.ts",
-            "import": "./src/index.ts"
-        }
-    },
-    "scripts": {
-        "build": "vite build",
-        "clean": "rimraf dist",
-        "dev": "vite build --watch",
-        "lint": "echo ui-h5 lint pending",
-        "typecheck": "tsc -p tsconfig.json --noEmit",
-        "test": "vitest run --passWithNoTests",
-        "test:e2e": "echo ui-h5 has no e2e"
-    },
-    "dependencies": {
-        "@varo/hooks": "workspace:*",
-        "@varo/primitives-h5": "workspace:*",
-        "@varo/shared": "workspace:*",
-        "@varo/theme": "workspace:*",
-        "vue": "^3.5.41"
+    "./style.css": "./dist/style.css",
+    "./source/style.css": "./src/style.css",
+    "./source": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
     }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf dist",
+    "dev": "vite build --watch",
+    "lint": "echo ui-h5 lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo ui-h5 has no e2e"
+  },
+  "dependencies": {
+    "@varo-ui/headless": "workspace:*",
+    "@varo-ui/theme": "workspace:*",
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@varo/hooks": "workspace:*",
+    "@varo/primitives-h5": "workspace:*",
+    "@varo/shared": "workspace:*"
+  }
 }

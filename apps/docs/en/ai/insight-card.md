@@ -9,8 +9,8 @@ Paged Agent insights with metrics and action suggestions.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,24 +29,24 @@ import { AgentInsightCard } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `current` | `number` | `0` | Current page |
-| `insights` | `AgentInsightItem[]` | `[]` | Insights |
-| `title` | `string` | `Insights` | Title |
+| Prop       | Type                 | Default    | Description  |
+| ---------- | -------------------- | ---------- | ------------ |
+| `current`  | `number`             | `0`        | Current page |
+| `insights` | `AgentInsightItem[]` | `[]`       | Insights     |
+| `title`    | `string`             | `Insights` | Title        |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `action` | `AgentInsightItem` | Run action |
-| `update:current` | `number` | Update page |
+| Event            | Payload            | Description |
+| ---------------- | ------------------ | ----------- |
+| `action`         | `AgentInsightItem` | Run action  |
+| `update:current` | `number`           | Update page |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                                           |
+| ---------- | ---------------------------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`                        |
 | weapp-vite | Default export from `@/components/agent-ui/AgentInsightCard.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

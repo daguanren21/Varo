@@ -1,9 +1,9 @@
 # Theme
 
-Varo keeps theme ownership inside `@varo/theme` so wrappers can remain token-driven.
+Varo keeps theme ownership inside `@varo-ui/theme` so wrappers can remain token-driven.
 
 ```ts
-import { createTheme, VaroConfigProvider } from '@varo/theme'
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 ```
 
 ## Principles

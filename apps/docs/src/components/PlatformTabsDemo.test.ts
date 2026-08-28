@@ -1,7 +1,8 @@
+import type { ThemeConfig } from '@varo-ui/theme'
+import type { Plugin } from 'vue'
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createTheme, VaroConfigProvider, type ThemeConfig } from '@varo/theme'
-import type { Plugin } from 'vue'
 import PlatformTabsDemo from './PlatformTabsDemo.vue'
 
 const themeConfig: ThemeConfig = {
@@ -10,8 +11,8 @@ const themeConfig: ThemeConfig = {
     success: '#16a34a',
     warning: '#d97706',
     error: '#dc2626',
-    neutral: '#0f172a'
-  })
+    neutral: '#0f172a',
+  }),
 }
 const themePlugin: [Plugin, ThemeConfig] = [VaroConfigProvider, themeConfig]
 
@@ -23,12 +24,12 @@ describe('PlatformTabsDemo', () => {
   it('renders phone-frame preview chrome with compact metadata and collapsed example code', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'overview',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.find('.platform-demo__note').exists()).toBe(false)
@@ -71,9 +72,9 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('false')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo/ui-h5')
-    expect(codeSection.get('code').text()).toContain("from '@varo/ui-h5'")
-    expect(codeSection.get('code').text()).not.toContain("from '@varo/ui-weapp'")
+    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/h5')
+    expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
+    expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
 
     const copyButton = wrapper.get('.platform-demo__code-copy')
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
@@ -84,12 +85,12 @@ describe('PlatformTabsDemo', () => {
   it('supports roving keyboard selection for platform tabs', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'button',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     const stage = wrapper.get('.platform-demo__stage')
@@ -120,12 +121,12 @@ describe('PlatformTabsDemo', () => {
 
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'button',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     await wrapper.get('.platform-demo__code-toggle').trigger('click')
@@ -140,9 +141,9 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('true')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序组件')
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo/ui-weapp')
-    expect(codeSection.get('code').text()).toContain("from '@varo/ui-weapp'")
-    expect(codeSection.get('code').text()).not.toContain("from '@varo/ui-h5'")
+    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/weapp')
+    expect(codeSection.get('code').text()).toContain('from \'@varo-ui/weapp\'')
+    expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
     expect(wrapper.get('.platform-demo__runtime-pill').text()).toContain('小程序')
 
@@ -152,7 +153,7 @@ describe('PlatformTabsDemo', () => {
     await flushPromises()
 
     expect(writeText).toHaveBeenCalledTimes(1)
-    expect(writeText.mock.calls[0]![0]).toContain("from '@varo/ui-weapp'")
+    expect(writeText.mock.calls[0]![0]).toContain('from \'@varo-ui/weapp\'')
     expect(copyButton.attributes('aria-label')).toBe('已复制')
     expect(wrapper.get('.platform-demo__code-toast').text()).toContain('已复制到剪贴板')
 
@@ -166,12 +167,12 @@ describe('PlatformTabsDemo', () => {
   it('uses a preview-only layout for demos without controls', () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'cell',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
@@ -185,12 +186,12 @@ describe('PlatformTabsDemo', () => {
   it('renders layout component previews without controls', () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'grid',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
@@ -202,12 +203,12 @@ describe('PlatformTabsDemo', () => {
   it('renders navigation component previews without controls', () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'tabs',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
@@ -219,12 +220,12 @@ describe('PlatformTabsDemo', () => {
   it('opens menu options in the navigation demo', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'menu',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.find('.varo-menu__popup').exists()).toBe(false)
@@ -239,12 +240,12 @@ describe('PlatformTabsDemo', () => {
     vi.useFakeTimers()
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'indicator',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     const indicator = wrapper.findAll('.varo-indicator')[0]!
@@ -264,12 +265,12 @@ describe('PlatformTabsDemo', () => {
   it('renders enough elevator floors for the demo effect', () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
-        plugins: [themePlugin]
+        plugins: [themePlugin],
       },
       props: {
         example: 'elevator',
-        locale: 'zh'
-      }
+        locale: 'zh',
+      },
     })
 
     expect(wrapper.findAll('.varo-elevator__group').length).toBeGreaterThanOrEqual(8)

@@ -1,21 +1,23 @@
+import type { UsePopoverRootResult } from '@varo-ui/headless'
+import type { PropType, ShallowRef } from 'vue'
 import {
-  Fragment,
+  createPrimitiveContext,
+  usePopoverRoot,
+
+} from '@varo-ui/headless'
+import {
   defineComponent,
+  Fragment,
   h,
   inject,
   onBeforeUnmount,
   onMounted,
+
   provide,
   shallowRef,
+
   toRef,
-  type PropType,
-  type ShallowRef
 } from 'vue'
-import {
-  createPrimitiveContext,
-  usePopoverRoot,
-  type UsePopoverRootResult
-} from '@varo/primitives-core'
 import { runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
@@ -30,8 +32,8 @@ interface PopoverRuntimeContext {
 
 const popoverContext = createPrimitiveContext<PopoverRuntimeContext>('PopoverRoot')
 const providePopoverContext = popoverContext.createProvider(provide)
-const usePopoverContext = popoverContext.createConsumer((key) =>
-  inject<PopoverRuntimeContext | undefined>(key, undefined)
+const usePopoverContext = popoverContext.createConsumer(key =>
+  inject<PopoverRuntimeContext | undefined>(key, undefined),
 )
 
 export const PopoverRoot = defineComponent({
@@ -41,8 +43,8 @@ export const PopoverRoot = defineComponent({
     disabled: Boolean,
     open: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:open', 'openChange'],
   setup(props, { emit, slots }) {
@@ -58,7 +60,7 @@ export const PopoverRoot = defineComponent({
       onOpenChange(open) {
         emit('update:open', open)
         emit('openChange', open)
-      }
+      },
     })
 
     function handleDocumentKeydown(event: KeyboardEvent) {
@@ -73,8 +75,8 @@ export const PopoverRoot = defineComponent({
       }
 
       if (
-        triggerElement.value?.contains(event.target) ||
-        contentElement.value?.contains(event.target)
+        triggerElement.value?.contains(event.target)
+        || contentElement.value?.contains(event.target)
       ) {
         return
       }
@@ -95,7 +97,7 @@ export const PopoverRoot = defineComponent({
     providePopoverContext({ contentElement, popover, triggerElement })
 
     return () => h(Fragment, slots.default?.())
-  }
+  },
 })
 
 export const PopoverTrigger = defineComponent({
@@ -103,8 +105,8 @@ export const PopoverTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const context = usePopoverContext()
@@ -122,13 +124,13 @@ export const PopoverTrigger = defineComponent({
             runInteractiveClick(event, {
               action: context.popover.events.toggle,
               handler: attrs.onClick,
-              interactive: context.popover.state.interactive.value
+              interactive: context.popover.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const PopoverContent = defineComponent({
@@ -136,8 +138,8 @@ export const PopoverContent = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
-    }
+      default: 'div',
+    },
   },
   setup(props, { attrs, slots }) {
     const context = usePopoverContext()
@@ -149,12 +151,12 @@ export const PopoverContent = defineComponent({
             {
               ...attrs,
               ...context.popover.attrs.content,
-              ref: context.contentElement
+              ref: context.contentElement,
             },
-            slots.default?.()
+            slots.default?.(),
           )
         : null
-  }
+  },
 })
 
 export const PopoverClose = defineComponent({
@@ -162,8 +164,8 @@ export const PopoverClose = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const context = usePopoverContext()
@@ -180,11 +182,11 @@ export const PopoverClose = defineComponent({
             runInteractiveClick(event, {
               action: context.popover.events.close,
               handler: attrs.onClick,
-              interactive: context.popover.state.interactive.value
+              interactive: context.popover.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })

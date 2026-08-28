@@ -9,10 +9,8 @@
     "weapp-vite"
   ],
   "dependencies": [
-    "@varo/hooks",
-    "@varo/primitives-core",
-    "@varo/shared",
-    "@varo/theme",
+    "@varo-ui/headless",
+    "@varo-ui/theme",
     "vue"
   ],
   "registryDependencies": [

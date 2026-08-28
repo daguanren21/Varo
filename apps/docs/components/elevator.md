@@ -8,8 +8,8 @@
 
 ```vue
 <script setup lang="ts">
+import { VElevator } from '@varo-ui/h5'
 import { ref } from 'vue'
-import { VElevator } from '@varo/ui-h5'
 
 const activeIndex = ref('A')
 const indexes = [
@@ -26,16 +26,16 @@ const indexes = [
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `activeIndex` | `string` | `undefined` | 当前激活索引 |
-| `defaultActiveIndex` | `string` | `undefined` | 非受控默认索引 |
-| `indexes` | `ElevatorGroup[]` | `[]` | 楼层分组 |
+| Prop                 | 类型              | 默认值      | 描述           |
+| -------------------- | ----------------- | ----------- | -------------- |
+| `activeIndex`        | `string`          | `undefined` | 当前激活索引   |
+| `defaultActiveIndex` | `string`          | `undefined` | 非受控默认索引 |
+| `indexes`            | `ElevatorGroup[]` | `[]`        | 楼层分组       |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
-| `update:activeIndex` | `string` | 索引变化 |
-| `change` | `string` | 索引变化 |
-| `clickItem` | `(item, index)` | 点击分组内容 |
+| Event                | Payload         | 描述         |
+| -------------------- | --------------- | ------------ |
+| `update:activeIndex` | `string`        | 索引变化     |
+| `change`             | `string`        | 索引变化     |
+| `clickItem`          | `(item, index)` | 点击分组内容 |

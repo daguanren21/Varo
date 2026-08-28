@@ -1,17 +1,18 @@
-import { defineComponent, h, inject, provide, toRef, useId, type PropType } from 'vue'
+import type { AccordionType, AccordionValue, UseAccordionRootResult } from '@varo-ui/headless'
+import type { PropType } from 'vue'
 import {
+
   createPrimitiveContext,
   useAccordionRoot,
-  type AccordionType,
-  type AccordionValue,
-  type UseAccordionRootResult
-} from '@varo/primitives-core'
+
+} from '@varo-ui/headless'
+import { defineComponent, h, inject, provide, toRef, useId } from 'vue'
 import { runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useAccordionRoot } from './hooks'
 export type * from './types'
-export type { AccordionType, AccordionValue } from '@varo/primitives-core'
+export type { AccordionType, AccordionValue } from '@varo-ui/headless'
 
 interface AccordionItemContext {
   readonly disabled: boolean
@@ -22,11 +23,11 @@ const accordionContext = createPrimitiveContext<UseAccordionRootResult>('Accordi
 const accordionItemContext = createPrimitiveContext<AccordionItemContext>('AccordionItem')
 const provideAccordionContext = accordionContext.createProvider(provide)
 const provideAccordionItemContext = accordionItemContext.createProvider(provide)
-const useAccordionContext = accordionContext.createConsumer((key) =>
-  inject<UseAccordionRootResult | undefined>(key, undefined)
+const useAccordionContext = accordionContext.createConsumer(key =>
+  inject<UseAccordionRootResult | undefined>(key, undefined),
 )
-const useAccordionItemContext = accordionItemContext.createConsumer((key) =>
-  inject<AccordionItemContext | undefined>(key, undefined)
+const useAccordionItemContext = accordionItemContext.createConsumer(key =>
+  inject<AccordionItemContext | undefined>(key, undefined),
 )
 
 export const AccordionRoot = defineComponent({
@@ -34,23 +35,23 @@ export const AccordionRoot = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     collapsible: Boolean,
     defaultValue: {
       type: [String, Array] as PropType<AccordionValue>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     id: String,
     type: {
       type: String as PropType<AccordionType>,
-      default: 'single'
+      default: 'single',
     },
     value: {
       type: [String, Array] as PropType<AccordionValue>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:value', 'valueChange'],
   setup(props, { attrs, emit, slots }) {
@@ -68,13 +69,13 @@ export const AccordionRoot = defineComponent({
       onValueChange(value) {
         emit('update:value', value)
         emit('valueChange', value)
-      }
+      },
     })
 
     provideAccordionContext(accordion)
 
     return () => h(props.as, { ...attrs, ...accordion.attrs.root }, slots.default?.())
-  }
+  },
 })
 
 export const AccordionItem = defineComponent({
@@ -82,13 +83,13 @@ export const AccordionItem = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     disabled: Boolean,
     value: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { attrs, slots }) {
     const accordion = useAccordionContext()
@@ -98,16 +99,16 @@ export const AccordionItem = defineComponent({
       },
       get value() {
         return props.value
-      }
+      },
     })
 
     return () =>
       h(
         props.as,
         { ...attrs, ...accordion.api.getItemAttrs(props.value, props.disabled) },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const AccordionTrigger = defineComponent({
@@ -115,8 +116,8 @@ export const AccordionTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     const accordion = useAccordionContext()
@@ -134,13 +135,13 @@ export const AccordionTrigger = defineComponent({
             runInteractiveClick(event, {
               action: () => accordion.events.toggle(item.value, item.disabled),
               handler: attrs.onClick,
-              interactive: !item.disabled && accordion.state.interactive.value
+              interactive: !item.disabled && accordion.state.interactive.value,
             })
-          }
+          },
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const AccordionContent = defineComponent({
@@ -148,8 +149,8 @@ export const AccordionContent = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
-    }
+      default: 'div',
+    },
   },
   setup(props, { attrs, slots }) {
     const accordion = useAccordionContext()
@@ -159,5 +160,5 @@ export const AccordionContent = defineComponent({
       accordion.api.isOpen(item.value)
         ? h(props.as, { ...attrs, ...accordion.api.getContentAttrs(item.value) }, slots.default?.())
         : null
-  }
+  },
 })

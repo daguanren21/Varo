@@ -9,8 +9,8 @@ Agent recommendation card with confidence and accept action.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,31 +29,31 @@ import { AgentRecommendation } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `acceptText` | `string` | `采用建议` | Action label |
-| `confidence` | `number` | `80` | Confidence |
-| `description` | `string` | `—` | Description |
-| `title` | `string` | `required` | Title |
+| Prop          | Type     | Default    | Description  |
+| ------------- | -------- | ---------- | ------------ |
+| `acceptText`  | `string` | `采用建议` | Action label |
+| `confidence`  | `number` | `80`       | Confidence   |
+| `description` | `string` | `—`        | Description  |
+| `title`       | `string` | `required` | Title        |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `accept` | `void` | Accept recommendation |
+| Event    | Payload | Description           |
+| -------- | ------- | --------------------- |
+| `accept` | `void`  | Accept recommendation |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
-| `default` | Additional content |
-| `secondary` | Secondary action |
+| Slot        | Description        |
+| ----------- | ------------------ |
+| `default`   | Additional content |
+| `secondary` | Secondary action   |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                          |
+| ---------- | ----------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`       |
 | weapp-vite | `@/components/agent-ui/AgentRecommendation.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

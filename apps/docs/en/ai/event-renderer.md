@@ -9,8 +9,8 @@ Projects AgentStreamSnapshot into reasoning, tools, response, and approval UI.
 ## Install
 
 ```bash
-pnpm dlx @varo/cli add --target h5 components/agent-ui
-pnpm dlx @varo/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -29,30 +29,30 @@ import { AgentEventRenderer } from '@/components/agent-ui'
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
+| Prop       | Type                  | Default    | Description           |
+| ---------- | --------------------- | ---------- | --------------------- |
 | `snapshot` | `AgentStreamSnapshot` | `required` | Event stream snapshot |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `approve` | `string` | Approve |
-| `reject` | `void` | Reject |
-| `retry` | `void` | Retry |
+| Event     | Payload  | Description |
+| --------- | -------- | ----------- |
+| `approve` | `string` | Approve     |
+| `reject`  | `void`   | Reject      |
+| `retry`   | `void`   | Retry       |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
+| Slot      | Description        |
+| --------- | ------------------ |
 | `actions` | Completion actions |
-| `default` | Trailing content |
+| `default` | Trailing content   |
 
 ## Target Notes
 
-| Target | Import |
-| --- | --- |
-| H5 | Named export from `@/components/agent-ui` |
+| Target     | Import                                         |
+| ---------- | ---------------------------------------------- |
+| H5         | Named export from `@/components/agent-ui`      |
 | weapp-vite | `@/components/agent-ui/AgentEventRenderer.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

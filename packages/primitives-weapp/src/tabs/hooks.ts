@@ -1,1 +1,1 @@
-export { useTabsRoot } from '@varo/primitives-core'
+export { useTabsRoot } from '@varo-ui/headless'

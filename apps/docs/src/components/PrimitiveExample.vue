@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { Locale, PrimitiveExampleName } from './primitiveExamples'
 import { computed, onBeforeUnmount, ref, useSlots } from 'vue'
-import {
-  resolvePrimitiveExample,
-  type Locale,
-  type PrimitiveExampleName
-} from './primitiveExamples'
 import PrimitiveExamplePreview from './PrimitiveExamplePreview.vue'
+import {
+
+  resolvePrimitiveExample,
+} from './primitiveExamples'
 
 type Platform = 'h5' | 'weapp'
 type ViewMode = 'preview' | 'code' | 'contract'
@@ -17,15 +17,15 @@ const props = withDefaults(
     packageName?: string
     h5Code?: string
     weappCode?: string
-    contractRows?: Array<{ label: string; value: string }>
+    contractRows?: Array<{ label: string, value: string }>
   }>(),
   {
     locale: 'zh',
     packageName: '',
     h5Code: '',
     weappCode: '',
-    contractRows: () => []
-  }
+    contractRows: () => [],
+  },
 )
 
 const example = computed(() => resolvePrimitiveExample(props.name, props.locale))
@@ -52,7 +52,7 @@ const copy = computed(() =>
         success: 'Copied to clipboard',
         unsupported: 'Copy the code manually',
         contractNote: 'Documentation contract only — not a mini-program runtime preview.',
-        noPreview: 'This example does not include a live H5 preview slot.'
+        noPreview: 'This example does not include a live H5 preview slot.',
       }
     : {
         platform: '运行时',
@@ -68,43 +68,47 @@ const copy = computed(() =>
         success: '已复制到剪贴板',
         unsupported: '请手动复制代码',
         contractNote: '仅文档契约说明，不是小程序运行时预览。',
-        noPreview: '当前示例未提供 H5 实时预览插槽。'
-      }
+        noPreview: '当前示例未提供 H5 实时预览插槽。',
+      },
 )
 
 const activePackage = computed(
   () =>
-    props.packageName ||
-    (platform.value === 'h5' ? '@varo/primitives-h5' : '@varo/primitives-weapp')
+    props.packageName
+    || (platform.value === 'h5' ? '@varo-ui/headless' : '@varo-ui/headless'),
 )
 
 const activeCode = computed(
   () =>
     (platform.value === 'h5'
       ? props.h5Code || example.value.h5Code
-      : props.weappCode || example.value.weappCode)
+      : props.weappCode || example.value.weappCode),
 )
 
 const activeContractRows = computed(() =>
-  props.contractRows?.length ? props.contractRows : example.value.contractRows
+  props.contractRows?.length ? props.contractRows : example.value.contractRows,
 )
 
 const viewOptions = computed(() => {
   if (platform.value === 'h5') {
     return [
       { id: 'preview' as const, label: copy.value.preview },
-      { id: 'code' as const, label: copy.value.code }
+      { id: 'code' as const, label: copy.value.code },
     ]
   }
   return [
     { id: 'contract' as const, label: copy.value.contract },
-    { id: 'code' as const, label: copy.value.code }
+    { id: 'code' as const, label: copy.value.code },
   ]
 })
 
 const copyLabel = computed(() => {
-  if (copyState.value === 'copied') return copy.value.copied
-  if (copyState.value === 'unsupported') return copy.value.manual
+  if (copyState.value === 'copied') {
+    return copy.value.copied
+  }
+  if (copyState.value === 'unsupported') {
+    return copy.value.manual
+  }
   return copy.value.copy
 })
 
@@ -200,7 +204,9 @@ onBeforeUnmount(() => resetCopy())
     </div>
 
     <div v-else-if="showContract" class="primitive-example__contract">
-      <p class="primitive-example__contract-note">{{ copy.contractNote }}</p>
+      <p class="primitive-example__contract-note">
+        {{ copy.contractNote }}
+      </p>
       <table>
         <tbody>
           <tr v-for="row in activeContractRows" :key="row.label">
@@ -244,14 +250,14 @@ onBeforeUnmount(() => resetCopy())
   --pe-surface-strong: var(--varo-demo-surface-strong, var(--varo-card-solid));
   --pe-border: var(--varo-demo-border, var(--varo-border));
   --pe-shadow: var(--varo-demo-shadow, var(--varo-shadow-sm));
+
   display: grid;
   gap: 12px;
-  margin: 18px 0 28px;
   padding: 14px;
+  margin: 18px 0 28px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--pe-surface) 94%, transparent), var(--pe-surface-strong));
   border: 1px solid var(--pe-border);
   border-radius: var(--varo-demo-radius, 22px);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--pe-surface) 94%, transparent), var(--pe-surface-strong));
   box-shadow: var(--pe-shadow);
 }
 
@@ -272,17 +278,17 @@ onBeforeUnmount(() => resetCopy())
 .primitive-example__tab,
 .primitive-example__copy {
   display: inline-flex;
-  min-height: 34px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--pe-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--pe-surface-strong) 92%, transparent);
-  color: var(--varo-foreground);
+  min-height: 34px;
   padding: 0 12px;
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-foreground);
   cursor: pointer;
+  background: color-mix(in srgb, var(--pe-surface-strong) 92%, transparent);
+  border: 1px solid var(--pe-border);
+  border-radius: 999px;
   transition:
     border-color 160ms ease,
     background 160ms ease,
@@ -290,17 +296,17 @@ onBeforeUnmount(() => resetCopy())
 }
 
 .primitive-example__tab[data-active='true'] {
-  border-color: transparent;
-  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
   color: var(--varo-primary-foreground);
+  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  border-color: transparent;
   box-shadow: 0 8px 16px color-mix(in srgb, var(--vp-c-brand-1) 24%, transparent);
 }
 
 .primitive-example__tab:hover:not([data-active='true']),
 .primitive-example__copy:hover {
-  border-color: color-mix(in srgb, var(--varo-primary) 42%, var(--pe-border));
-  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
   color: var(--varo-primary);
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--varo-primary) 42%, var(--pe-border));
 }
 
 .primitive-example__tab:focus-visible,
@@ -310,15 +316,15 @@ onBeforeUnmount(() => resetCopy())
 }
 
 .primitive-example__copy[data-state='copied'] {
-  border-color: color-mix(in srgb, var(--varo-color-success, #16a34a) 48%, var(--pe-border));
-  background: color-mix(in srgb, var(--varo-color-success, #16a34a) 14%, transparent);
   color: var(--varo-color-success, #16a34a);
+  background: color-mix(in srgb, var(--varo-color-success, #16a34a) 14%, transparent);
+  border-color: color-mix(in srgb, var(--varo-color-success, #16a34a) 48%, var(--pe-border));
 }
 
 .primitive-example__copy[data-state='unsupported'] {
-  border-color: color-mix(in srgb, var(--varo-color-warning, #d97706) 48%, var(--pe-border));
-  background: color-mix(in srgb, var(--varo-color-warning, #d97706) 14%, transparent);
   color: var(--varo-color-warning, #d97706);
+  background: color-mix(in srgb, var(--varo-color-warning, #d97706) 14%, transparent);
+  border-color: color-mix(in srgb, var(--varo-color-warning, #d97706) 48%, var(--pe-border));
 }
 
 .primitive-example__meta {
@@ -326,23 +332,23 @@ onBeforeUnmount(() => resetCopy())
   flex-wrap: wrap;
   gap: 8px 12px;
   align-items: baseline;
-  color: var(--varo-muted);
   font-size: 12px;
+  color: var(--varo-muted);
 }
 
 .primitive-example__meta strong {
-  color: var(--varo-foreground);
   font-family: var(--vp-font-family-mono);
   font-size: 12px;
   font-weight: 700;
+  color: var(--varo-foreground);
 }
 
 .primitive-example__preview,
 .primitive-example__contract,
 .primitive-example__code {
+  background: color-mix(in srgb, var(--pe-surface-strong) 90%, transparent);
   border: 1px solid var(--pe-border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--pe-surface-strong) 90%, transparent);
 }
 
 .primitive-example__contract,
@@ -352,15 +358,15 @@ onBeforeUnmount(() => resetCopy())
 
 .primitive-example__preview {
   position: relative;
-  overflow: visible;
   min-height: 88px;
   padding: 16px;
+  overflow: visible;
 }
 
 .primitive-example__empty {
   margin: 0;
-  color: var(--varo-muted);
   font-size: 13px;
+  color: var(--varo-muted);
 }
 
 .primitive-example__contract {
@@ -369,45 +375,45 @@ onBeforeUnmount(() => resetCopy())
 
 .primitive-example__contract-note {
   margin: 0 0 10px;
-  color: var(--varo-muted);
   font-size: 12px;
   line-height: 1.5;
+  color: var(--varo-muted);
 }
 
 .primitive-example__contract table {
   width: 100%;
-  border-collapse: collapse;
   font-size: 13px;
+  border-collapse: collapse;
 }
 
 .primitive-example__contract th,
 .primitive-example__contract td {
   padding: 8px 0;
-  border-top: 1px solid var(--pe-border);
-  text-align: left;
   vertical-align: top;
+  text-align: left;
+  border-top: 1px solid var(--pe-border);
 }
 
 .primitive-example__contract th {
   width: 34%;
-  color: var(--varo-muted);
   font-weight: 650;
+  color: var(--varo-muted);
 }
 
 .primitive-example__code-head {
   display: flex;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
   padding: 10px 12px;
   border-bottom: 1px solid var(--pe-border);
 }
 
 .primitive-example__code pre {
-  margin: 0;
-  padding: 12px 14px 16px;
-  overflow: auto;
   max-height: 320px;
+  padding: 12px 14px 16px;
+  margin: 0;
+  overflow: auto;
   font-size: 12.5px;
   line-height: 1.6;
 }
@@ -417,21 +423,21 @@ onBeforeUnmount(() => resetCopy())
 }
 
 .primitive-example__toast {
-  margin: 0;
-  border-top: 1px solid var(--pe-border);
   padding: 8px 12px;
+  margin: 0;
   font-size: 12px;
   font-weight: 650;
+  border-top: 1px solid var(--pe-border);
 }
 
 .primitive-example__toast[data-state='copied'] {
-  background: color-mix(in srgb, var(--varo-color-success, #16a34a) 12%, transparent);
   color: var(--varo-color-success, #16a34a);
+  background: color-mix(in srgb, var(--varo-color-success, #16a34a) 12%, transparent);
 }
 
 .primitive-example__toast[data-state='unsupported'] {
-  background: color-mix(in srgb, var(--varo-color-warning, #d97706) 12%, transparent);
   color: var(--varo-color-warning, #d97706);
+  background: color-mix(in srgb, var(--varo-color-warning, #d97706) 12%, transparent);
 }
 
 @media (max-width: 720px) {

@@ -4,7 +4,7 @@
 
 ## 运行时
 
-同时提供 `@varo/primitives-h5` 与 `@varo/primitives-weapp`。
+状态契约由 `@varo-ui/headless` 提供；渲染 Parts 分别来自 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives`。
 
 ## 演示
 
@@ -13,9 +13,9 @@
 ## 安装
 
 ```bash
-pnpm add @varo/primitives-h5
+pnpm add @varo-ui/headless @varo-ui/h5
 # 或
-pnpm add @varo/primitives-weapp
+pnpm add @varo-ui/headless @varo-ui/weapp
 ```
 
 ## 基础用法
@@ -28,39 +28,39 @@ pnpm add @varo/primitives-weapp
 
 ## Parts
 
-| Part | 作用 |
-| --- | --- |
-| `TabsRoot` | 当前 value 与 orientation |
-| `TabsList` | trigger 容器 |
-| `TabsTrigger` | 单个标题 |
-| `TabsContent` | 对应面板 |
+| Part          | 作用                      |
+| ------------- | ------------------------- |
+| `TabsRoot`    | 当前 value 与 orientation |
+| `TabsList`    | trigger 容器              |
+| `TabsTrigger` | 单个标题                  |
+| `TabsContent` | 对应面板                  |
 
 ## Props
 
 ### TabsRoot
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `string \| number \| undefined` | `undefined` | 受控激活项 |
-| `defaultValue` | `string \| number` | `undefined` | 非受控初始项 |
-| `orientation` | `string` | `undefined` | 方向语义 |
-| `disabled` | `boolean` | `false` | 整组禁用 |
-| `id` | `string` | `undefined` | 关联 id 前缀 |
-| `as` | `string` | `'div'` | 根节点标签 |
+| Prop           | 类型                            | 默认值      | 描述         |
+| -------------- | ------------------------------- | ----------- | ------------ |
+| `value`        | `string \| number \| undefined` | `undefined` | 受控激活项   |
+| `defaultValue` | `string \| number`              | `undefined` | 非受控初始项 |
+| `orientation`  | `string`                        | `undefined` | 方向语义     |
+| `disabled`     | `boolean`                       | `false`     | 整组禁用     |
+| `id`           | `string`                        | `undefined` | 关联 id 前缀 |
+| `as`           | `string`                        | `'div'`     | 根节点标签   |
 
 ### TabsTrigger / TabsContent
 
-| Prop | 类型 | 描述 |
-| --- | --- | --- |
-| `value` | `string \| number` | 与 Root 关联的唯一值 |
-| `disabled` | `boolean` | 仅 Trigger 支持禁用 |
+| Prop       | 类型               | 描述                 |
+| ---------- | ------------------ | -------------------- |
+| `value`    | `string \| number` | 与 Root 关联的唯一值 |
+| `disabled` | `boolean`          | 仅 Trigger 支持禁用  |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
-| `update:value` | `string \| number` | 受控同步 |
-| `valueChange` | `string \| number` | 激活项变化 |
+| Event          | Payload            | 描述       |
+| -------------- | ------------------ | ---------- |
+| `update:value` | `string \| number` | 受控同步   |
+| `valueChange`  | `string \| number` | 激活项变化 |
 
 ## 无障碍
 

@@ -1,14 +1,14 @@
+import type { AgentEventChannel, AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentConversationMessage } from '../components/agent-ui'
 import {
+
   createAgentEventChannel,
   createAgentStreamController,
-  type AgentEventChannel,
-  type AgentStreamSnapshot
-} from '@varo/agent-core'
+} from '@varo-ui/ai'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
-import type { AgentConversationMessage } from '../components/agent-ui'
 
 function sleep(duration: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, duration))
+  return new Promise<void>(resolve => setTimeout(resolve, duration))
 }
 
 function messageId(prefix: string) {
@@ -41,8 +41,8 @@ export function useAgentDemo() {
       maxCharsPerSecond: 520,
       maxCommitFps: 30,
       minCharsPerSecond: 45,
-      targetLatencyMs: 650
-    }
+      targetLatencyMs: 650,
+    },
   })
   const snapshot = shallowRef<AgentStreamSnapshot>(controller.getSnapshot())
   const messages = shallowRef<AgentConversationMessage[]>([
@@ -50,8 +50,8 @@ export function useAgentDemo() {
       content: '你好，我是 Varo Agent。试试“分析双端方案”或“生成发布计划”。',
       id: 'welcome',
       role: 'assistant',
-      timestamp: '刚刚'
-    }
+      timestamp: '刚刚',
+    },
   ])
   const prompt = shallowRef('')
   const lastPrompt = shallowRef('分析双端 Agent 方案')
@@ -65,15 +65,15 @@ export function useAgentDemo() {
 
   function archiveCurrentResponse() {
     const message = snapshot.value.message
-    if (!message?.source || !message.final) return
+    if (!message?.source || !message.final) { return }
     messages.value = [
       ...messages.value,
       {
         content: message.source,
         id: message.id,
         role: message.role,
-        timestamp: '刚刚'
-      }
+        timestamp: '刚刚',
+      },
     ]
   }
 
@@ -105,12 +105,12 @@ export function useAgentDemo() {
         channel.push({
           choices: [
             { description: '运行检查但不发布包', label: '仅验证', value: 'verify' },
-            { description: '验证通过后进入发布流程', label: '验证并发布', value: 'publish' }
+            { description: '验证通过后进入发布流程', label: '验证并发布', value: 'publish' },
           ],
           description: '发布属于外部副作用，Agent 必须获得明确授权。',
           id: 'release-approval',
           title: '确认发布动作',
-          type: 'approval.required'
+          type: 'approval.required',
         })
         return
       }
@@ -118,18 +118,19 @@ export function useAgentDemo() {
       channel.push({ messageId: id, type: 'message.end' })
       channel.push({ type: 'done', usage: { inputTokens: 96, outputTokens: 218 } })
       channel.end()
-    } catch (error) {
+    }
+    catch (error) {
       channel.fail(error)
     }
   }
 
   function send(value = prompt.value) {
     const request = value.trim()
-    if (!request || busy.value) return
+    if (!request || busy.value) { return }
     archiveCurrentResponse()
     messages.value = [
       ...messages.value,
-      { content: request, id: messageId('user'), role: 'user', timestamp: '刚刚' }
+      { content: request, id: messageId('user'), role: 'user', timestamp: '刚刚' },
     ]
     prompt.value = ''
     lastPrompt.value = request
@@ -141,7 +142,7 @@ export function useAgentDemo() {
   }
 
   function approve(value: string) {
-    if (!activeChannel || !awaitingApproval) return
+    if (!activeChannel || !awaitingApproval) { return }
     awaitingApproval = false
     activeChannel.push({ id: 'release-approval', type: 'approval.resolved', value })
     activeChannel.push({
@@ -149,7 +150,7 @@ export function useAgentDemo() {
         ? '\n\n已记录发布授权；演示环境不会写入真实 npm registry。'
         : '\n\n已切换为仅验证模式，不会执行发布。',
       messageId: activeMessageId,
-      type: 'text.delta'
+      type: 'text.delta',
     })
     activeChannel.push({ messageId: activeMessageId, type: 'message.end' })
     activeChannel.push({ type: 'done' })
@@ -157,7 +158,7 @@ export function useAgentDemo() {
   }
 
   function reject() {
-    if (!activeChannel || !awaitingApproval) return
+    if (!activeChannel || !awaitingApproval) { return }
     awaitingApproval = false
     activeChannel.push({ id: 'release-approval', type: 'approval.resolved', value: 'reject' })
     activeChannel.push({ delta: '\n\n已取消发布动作，未产生任何外部副作用。', messageId: activeMessageId, type: 'text.delta' })
@@ -167,7 +168,7 @@ export function useAgentDemo() {
   }
 
   function retry() {
-    if (busy.value) return
+    if (busy.value) { return }
     send(lastPrompt.value)
   }
 
@@ -186,6 +187,6 @@ export function useAgentDemo() {
     reject,
     retry,
     send,
-    snapshot
+    snapshot,
   }
 }

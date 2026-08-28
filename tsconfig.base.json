@@ -1,31 +1,32 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM"],
+    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "paths": {
+      "@varo/shared": ["packages/shared/src/index.ts"],
+      "@varo/utils": ["packages/utils/src/index.ts"],
+      "@varo-ui/theme": ["packages/theme/src/index.ts"],
+      "@varo/hooks": ["packages/hooks/src/index.ts"],
+      "@varo-ui/headless": ["packages/primitives-core/src/index.ts"],
+      "@varo/primitives-h5": ["packages/primitives-h5/src/index.ts"],
+      "@varo/primitives-weapp": ["packages/primitives-weapp/src/index.ts"],
+      "@varo-ui/ai": ["packages/agent-core/src/index.ts"],
+      "@varo-ui/h5": ["packages/ui-h5/src/index.ts"],
+      "@varo-ui/weapp": ["packages/ui-weapp/src/index.ts"]
+    },
+    "resolveJsonModule": true,
+    "types": ["node", "vitest/globals"],
     "strict": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "jsx": "preserve",
-    "resolveJsonModule": true,
     "ignoreDeprecations": "6.0",
     "isolatedModules": true,
-    "skipLibCheck": true,
     "verbatimModuleSyntax": true,
-    "lib": ["ES2022", "DOM"],
-    "baseUrl": ".",
-    "types": ["node", "vitest/globals"],
-    "paths": {
-      "@varo/shared": ["packages/shared/src/index.ts"],
-      "@varo/utils": ["packages/utils/src/index.ts"],
-      "@varo/theme": ["packages/theme/src/index.ts"],
-      "@varo/hooks": ["packages/hooks/src/index.ts"],
-      "@varo/primitives-core": ["packages/primitives-core/src/index.ts"],
-      "@varo/primitives-h5": ["packages/primitives-h5/src/index.ts"],
-      "@varo/primitives-weapp": ["packages/primitives-weapp/src/index.ts"],
-      "@varo/ui-h5": ["packages/ui-h5/src/index.ts"],
-      "@varo/ui-weapp": ["packages/ui-weapp/src/index.ts"]
-    }
+    "skipLibCheck": true
   }
 }

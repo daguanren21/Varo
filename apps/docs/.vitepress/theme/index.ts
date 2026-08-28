@@ -1,6 +1,4 @@
-import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
-import { createTheme, VaroConfigProvider } from '@varo/theme'
 import {
   VCalendar,
   VCalendarCard,
@@ -25,12 +23,12 @@ import {
   VSwitch,
   VTextarea,
   VToast,
-  VUploader
-} from '@varo/ui-h5'
-import '@varo/ui-h5/source/style.css'
-import './tailwind.css'
-import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
+  VUploader,
+} from '@varo-ui/h5'
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
+import DefaultTheme from 'vitepress/theme'
 import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
+import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
 import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
@@ -40,6 +38,8 @@ import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import DocsLayout from './DocsLayout.vue'
+import '@varo-ui/h5/source/style.css'
+import './tailwind.css'
 import './custom.css'
 import './agent-docs.css'
 
@@ -48,7 +48,7 @@ const docsTheme = createTheme({
   success: '#15803d',
   warning: '#c2410c',
   error: '#b91c1c',
-  neutral: '#172033'
+  neutral: '#172033',
 })
 
 const theme: Theme = {
@@ -90,7 +90,7 @@ const theme: Theme = {
     app.component('VTextarea', VTextarea)
     app.component('VToast', VToast)
     app.component('VUploader', VUploader)
-  }
+  },
 }
 
 export default theme

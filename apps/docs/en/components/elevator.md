@@ -8,8 +8,8 @@
 
 ```vue
 <script setup lang="ts">
+import { VElevator } from '@varo-ui/h5'
 import { ref } from 'vue'
-import { VElevator } from '@varo/ui-h5'
 
 const activeIndex = ref('A')
 const indexes = [
@@ -26,16 +26,16 @@ const indexes = [
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `activeIndex` | `string` | `undefined` | Active index |
-| `defaultActiveIndex` | `string` | `undefined` | Default uncontrolled index |
-| `indexes` | `ElevatorGroup[]` | `[]` | Indexed groups |
+| Prop                 | Type              | Default     | Description                |
+| -------------------- | ----------------- | ----------- | -------------------------- |
+| `activeIndex`        | `string`          | `undefined` | Active index               |
+| `defaultActiveIndex` | `string`          | `undefined` | Default uncontrolled index |
+| `indexes`            | `ElevatorGroup[]` | `[]`        | Indexed groups             |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:activeIndex` | `string` | Active index changed |
-| `change` | `string` | Active index changed |
-| `clickItem` | `(item, index)` | Group item clicked |
+| Event                | Payload         | Description          |
+| -------------------- | --------------- | -------------------- |
+| `update:activeIndex` | `string`        | Active index changed |
+| `change`             | `string`        | Active index changed |
+| `clickItem`          | `(item, index)` | Group item clicked   |

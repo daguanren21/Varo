@@ -10,12 +10,12 @@ const weappJsonBlockTestPlugin = {
   name: 'varo-weapp-json-block-test',
   enforce: 'post' as const,
   transform(code: string, id: string) {
-    if (!id.includes('vue&type=json')) return
+    if (!id.includes('vue&type=json')) { return }
     return {
       code: `export default ${code.trim()}`,
-      map: null
+      map: null,
     }
-  }
+  },
 }
 
 export default defineConfig({
@@ -24,11 +24,11 @@ export default defineConfig({
         vue({
           template: {
             compilerOptions: {
-              isCustomElement: (tag) => tag === 'scroll-view'
-            }
-          }
+              isCustomElement: tag => tag === 'scroll-view',
+            },
+          },
         }),
-        weappJsonBlockTestPlugin
+        weappJsonBlockTestPlugin,
       ]
     : [
         weappTailwindcss({
@@ -36,32 +36,32 @@ export default defineConfig({
           cssEntries: [resolve(root, 'src/styles.css')],
           cssOptions: {
             rem2rpx: true,
-            cssRemoveActivePseudoClass: true
+            cssRemoveActivePseudoClass: true,
           },
           ignoreCallExpressionIdentifiers: ['cn'],
-          logLevel: 'warn'
-        })
+          logLevel: 'warn',
+        }),
       ],
   build: {
     outDir: isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
-    minify: 'esbuild'
+    minify: 'esbuild',
   },
   esbuild: {
-    keepNames: true
+    keepNames: true,
   },
   oxc: false,
   resolve: {
     alias: {
       ...(isTest ? { wevu: 'vue' } : {}),
-      '@varo/ui-weapp/source/style.css': resolve(root, '../../packages/ui-weapp/src/style.css'),
+      '@varo-ui/weapp/source/style.css': resolve(root, '../../packages/ui-weapp/src/style.css'),
       '@varo/hooks': resolve(import.meta.dirname, '../../packages/hooks/src/index.ts'),
-      '@varo/primitives-core': resolve(import.meta.dirname, '../../packages/primitives-core/src/index.ts'),
+      '@varo-ui/headless': resolve(import.meta.dirname, '../../packages/primitives-core/src/index.ts'),
       '@varo/primitives-weapp': resolve(import.meta.dirname, '../../packages/primitives-weapp/src/index.ts'),
       '@varo/shared': resolve(import.meta.dirname, '../../packages/shared/src/index.ts'),
-      '@varo/theme': resolve(import.meta.dirname, '../../packages/theme/src/index.ts'),
+      '@varo-ui/theme': resolve(import.meta.dirname, '../../packages/theme/src/index.ts'),
       '@varo/utils': resolve(import.meta.dirname, '../../packages/utils/src/index.ts'),
-      '@varo/ui-weapp': resolve(import.meta.dirname, '../../packages/ui-weapp/src/index.ts')
-    }
+      '@varo-ui/weapp': resolve(import.meta.dirname, '../../packages/ui-weapp/src/index.ts'),
+    },
   },
   weapp: {
     srcRoot: 'src',
@@ -69,18 +69,18 @@ export default defineConfig({
     forwardConsole: {
       enabled: true,
       logLevels: ['log', 'info', 'warn', 'error'],
-      unhandledErrors: true
+      unhandledErrors: true,
     },
     mcp: {
       enabled: true,
-      autoStart: true
+      autoStart: true,
     },
     vue: {
       enable: true,
       template: {
         htmlTagToWxml: true,
-        htmlTagToWxmlTagClass: true
-      }
-    }
-  }
+        htmlTagToWxmlTagClass: true,
+      },
+    },
+  },
 })
