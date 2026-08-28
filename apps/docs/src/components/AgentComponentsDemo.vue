@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { nextTick, onBeforeUnmount, shallowRef, useTemplateRef, watch } from 'vue'
 import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
 import {
   AgentArtifact,
@@ -16,6 +17,61 @@ type Locale = 'en' | 'zh'
 
 const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'zh' })
 const { approve, busy, messages, prompt, reject, retry, run, snapshot } = useAgentDocsDemo()
+
+const transcript = useTemplateRef<HTMLElement>('transcript')
+const followsLatest = shallowRef(true)
+let scrollFrame: number | undefined
+
+function transcriptAtLiveEdge() {
+  const element = transcript.value
+  return !element || element.scrollHeight - element.scrollTop - element.clientHeight <= 64
+}
+
+function syncTranscriptLiveEdge() {
+  followsLatest.value = transcriptAtLiveEdge()
+}
+
+function followLatest(force = false) {
+  if (!force && !followsLatest.value) {
+    return
+  }
+  if (scrollFrame !== undefined) {
+    cancelAnimationFrame(scrollFrame)
+  }
+  void nextTick(() => {
+    scrollFrame = requestAnimationFrame(() => {
+      const element = transcript.value
+      if (!element) {
+        return
+      }
+      element.scrollTop = element.scrollHeight
+      followsLatest.value = true
+      scrollFrame = undefined
+    })
+  })
+}
+
+function submitPrompt(value: string) {
+  followsLatest.value = true
+  run(value)
+  followLatest(true)
+}
+
+watch(
+  [
+    () => messages.value.at(-1)?.content,
+    () => snapshot.value.message?.visible,
+    () => snapshot.value.status,
+  ],
+  () => followLatest(),
+  { flush: 'post' },
+)
+
+onBeforeUnmount(() => {
+  if (scrollFrame !== undefined) {
+    cancelAnimationFrame(scrollFrame)
+  }
+})
 
 const capabilities = [
   'AgentLoading',
@@ -103,7 +159,7 @@ function t(zh: string, en: string) {
           </span>
         </header>
 
-        <div class="ai-docs-demo__transcript">
+        <div ref="transcript" class="ai-docs-demo__transcript" @scroll.passive="syncTranscriptLiveEdge">
           <AgentConversation :messages="messages" />
           <AgentEventRenderer
             v-if="snapshot.status !== 'idle'"
@@ -116,6 +172,14 @@ function t(zh: string, en: string) {
               <AgentResponseActions :content="snapshot.message?.source" @retry="retry" />
             </template>
           </AgentEventRenderer>
+          <button
+            v-if="!followsLatest"
+            class="ai-docs-demo__follow"
+            type="button"
+            @click="followLatest(true)"
+          >
+            {{ t('跳到最新', 'Jump to latest') }}
+          </button>
         </div>
 
         <footer>
@@ -124,12 +188,19 @@ function t(zh: string, en: string) {
             :busy="busy"
             :placeholder="t('向 Agent 提问…', 'Ask the Agent…')"
             :suggestions="[t('分析双端能力', 'Analyze both targets'), t('生成发布计划', 'Generate a release plan')]"
-            @submit="run"
+            @submit="submitPrompt"
           />
         </footer>
       </div>
 
       <aside class="ai-docs-demo__specimens">
+        <header class="ai-docs-demo__specimens-head">
+          <span>
+            <small>CONTEXT RAIL</small>
+            <strong>{{ t('运行上下文', 'Run context') }}</strong>
+          </span>
+          <i>LIVE</i>
+        </header>
         <AgentRecommendation
           :title="t('推荐统一事件协议', 'Use the shared event protocol')"
           :description="t('业务只负责事件来源，组件负责状态投影。', 'The product owns event sources; components own state projection.')"
@@ -227,7 +298,7 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo__workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(250px, 0.72fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.9fr);
   gap: 16px;
   align-items: start;
 }
@@ -278,13 +349,36 @@ function t(zh: string, en: string) {
 }
 
 .ai-docs-demo__transcript {
+  position: relative;
   display: grid;
   gap: 12px;
   align-content: start;
-  min-height: 480px;
-  max-height: 660px;
+  height: clamp(420px, 62vh, 560px);
   padding: 16px;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  scrollbar-color: #94a3b8 transparent;
+  scrollbar-width: thin;
+}
+
+.ai-docs-demo__follow {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  justify-self: center;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f766e;
+  cursor: pointer;
+  background: rgb(255 255 255 / 94%);
+  border: 1px solid #99f6e4;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+  backdrop-filter: blur(10px);
 }
 
 .ai-docs-demo__chat > footer {
@@ -294,8 +388,56 @@ function t(zh: string, en: string) {
 }
 
 .ai-docs-demo__specimens {
+  position: sticky;
+  top: 88px;
   display: grid;
   gap: 12px;
+  max-height: calc(100vh - 112px);
+  padding: 12px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-color: #94a3b8 transparent;
+  scrollbar-width: thin;
+  background: #eef2f6;
+  border: 1px solid #dbe4ee;
+  border-radius: 24px;
+  box-shadow: 0 18px 44px rgb(15 23 42 / 8%);
+}
+
+.ai-docs-demo__specimens-head {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  justify-content: space-between;
+  padding: 2px 2px 4px;
+}
+
+.ai-docs-demo__specimens-head span {
+  display: grid;
+  gap: 1px;
+}
+
+.ai-docs-demo__specimens-head small {
+  font-size: 9px;
+  font-weight: 900;
+  color: #0f766e;
+  letter-spacing: 0.14em;
+}
+
+.ai-docs-demo__specimens-head strong {
+  font-size: 13px;
+  color: #172033;
+}
+
+.ai-docs-demo__specimens-head i {
+  padding: 4px 8px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+  color: #0f766e;
+  letter-spacing: 0.08em;
+  background: #ccfbf1;
+  border-radius: 999px;
 }
 
 .ai-docs-demo__ledger {
@@ -375,8 +517,14 @@ function t(zh: string, en: string) {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .ai-docs-demo__specimens {
+    position: static;
+    max-height: none;
+  }
+
   .ai-docs-demo__transcript {
-    min-height: 420px;
+    height: min(520px, 64vh);
+    min-height: 380px;
   }
 }
 </style>

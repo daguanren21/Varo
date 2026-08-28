@@ -19,6 +19,10 @@ export default defineConfig({
         replacement: resolve(root, '../../packages/ui-h5/src/style.css'),
       },
       {
+        find: '@varo-ui/ai',
+        replacement: resolve(root, '../../packages/agent-core/src/index.ts'),
+      },
+      {
         find: '@varo/hooks',
         replacement: resolve(root, '../../packages/hooks/src/index.ts'),
       },

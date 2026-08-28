@@ -378,10 +378,10 @@ export const AgentComposer = defineComponent({
     }
     return () => h('div', { class: 'grid w-full min-w-0 gap-2.5' }, [
       h(AgentPromptSuggestions, { suggestions: props.suggestions, onSelect: submit }),
-      h('div', { class: 'flex min-w-0 items-end gap-2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-lg' }, [
+      h('div', { class: 'flex min-h-14 min-w-0 items-center gap-2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-lg' }, [
         slots.leading?.(),
         h('textarea', {
-          class: 'max-h-40 min-h-10 min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400',
+          class: 'max-h-40 min-h-10 min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2.5 text-sm leading-5 text-slate-900 outline-none placeholder:text-slate-400',
           disabled: props.busy,
           maxlength: props.maxLength,
           placeholder: props.placeholder,
@@ -398,7 +398,27 @@ export const AgentComposer = defineComponent({
           },
         }),
         slots.trailing?.(),
-        h('button', { 'aria-label': props.busy ? 'Agent 正在处理' : '发送', 'class': 'grid h-10 w-10 flex-none place-items-center rounded-full bg-teal-700 text-lg font-bold text-white disabled:opacity-45', 'disabled': props.busy || !props.modelValue.trim(), 'type': 'button', 'onClick': () => submit() }, props.busy ? '…' : '↑'),
+        h(
+          'button',
+          {
+            'aria-label': props.busy ? 'Agent 正在处理' : '发送',
+            'class': 'grid h-10 w-10 flex-none place-items-center self-center rounded-full bg-teal-700 text-lg font-bold text-white shadow-sm transition-transform active:scale-95 disabled:opacity-45',
+            'disabled': props.busy || !props.modelValue.trim(),
+            'type': 'button',
+            'onClick': () => submit(),
+          },
+          props.busy
+            ? h(
+                'span',
+                { 'aria-hidden': 'true', 'class': 'flex items-center gap-0.5' },
+                Array.from({ length: 3 }, (_, index) =>
+                  h('i', {
+                    class: 'agent-ui__pulse h-1 w-1 rounded-full bg-current',
+                    style: { animationDelay: `${index * 90}ms` },
+                  })),
+              )
+            : h('span', { 'aria-hidden': 'true', 'class': '-translate-y-px' }, '↑'),
+        ),
       ]),
     ])
   },
@@ -456,11 +476,34 @@ export const AgentArtifact = defineComponent({
   props: { artifact: { type: Object as PropType<AgentArtifactItem>, required: true } },
   emits: { open: (_artifact: AgentArtifactItem) => true },
   setup(props, { emit }) {
-    return () => h('article', { class: 'overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm' }, [
-      h('header', { class: 'flex min-h-11 items-center justify-between border-b border-slate-100 px-3.5' }, [h('span', { class: 'grid' }, [h('strong', { class: 'text-xs text-slate-800' }, props.artifact.title), h('small', { class: 'text-[10px] uppercase tracking-wider text-slate-400' }, props.artifact.kind || 'document')]), h('button', { class: quietButton, type: 'button', onClick: () => emit('open', props.artifact) }, '打开')]),
-      props.artifact.content ? h('pre', { class: 'm-0 max-h-72 overflow-auto bg-slate-950 p-3.5 text-xs leading-5 text-slate-200' }, props.artifact.content) : null,
-      props.artifact.previewUrl ? h('img', { alt: props.artifact.title, class: 'block max-h-80 w-full object-contain', src: props.artifact.previewUrl }) : null,
-    ])
+    return () =>
+      h('article', { class: 'overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg' }, [
+        h('header', { class: 'flex min-h-14 items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-4' }, [
+          h('span', { class: 'grid min-w-0 gap-0.5' }, [
+            h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-300' }, props.artifact.kind || 'artifact'),
+            h('strong', { class: 'truncate text-xs text-slate-100' }, props.artifact.title),
+          ]),
+          h(
+            'button',
+            {
+              class: 'min-h-8 flex-none rounded-lg border border-slate-700 bg-slate-800 px-3 text-[10px] font-bold text-slate-200 transition-colors hover:border-teal-500 hover:text-white',
+              type: 'button',
+              onClick: () => emit('open', props.artifact),
+            },
+            '打开',
+          ),
+        ]),
+        props.artifact.content
+          ? h(
+              'pre',
+              { class: 'm-0 max-h-72 overflow-auto whitespace-pre-wrap break-words bg-slate-950 px-4 py-3.5 font-mono text-[11px] leading-5 text-slate-200' },
+              props.artifact.content,
+            )
+          : null,
+        props.artifact.previewUrl
+          ? h('img', { alt: props.artifact.title, class: 'block max-h-80 w-full bg-slate-950 object-contain', src: props.artifact.previewUrl })
+          : null,
+      ])
   },
 })
 
@@ -470,26 +513,37 @@ export const AgentSourceList = defineComponent({
   emits: { open: (_source: AgentSourceItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('section', { class: 'grid gap-2' }, [
-        h('strong', { class: 'text-xs text-slate-700' }, props.title),
-        ...props.sources.map((source, index) =>
-          h(
-            'a',
-            {
-              class: 'flex min-h-11 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 hover:border-teal-300',
-              href: source.url,
-              key: source.id,
-              rel: 'noreferrer noopener',
-              target: '_blank',
-              onClick: () => emit('open', source),
-            },
-            [
-              h('span', { class: 'grid h-6 w-6 flex-none place-items-center rounded-full bg-slate-100 text-[10px] font-bold' }, String(index + 1)),
-              h('span', { class: 'grid min-w-0 flex-1' }, [
-                h('strong', { class: 'truncate' }, source.title),
-                h('small', { class: 'truncate text-slate-400' }, source.domain || source.description || source.url),
-              ]),
-            ],
+      h('section', { class: 'grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
+        h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
+          h('span', { class: 'grid gap-0.5' }, [
+            h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-700' }, 'Sources'),
+            h('strong', { class: 'text-xs text-slate-800' }, props.title),
+          ]),
+          h('small', { class: 'rounded-full bg-white px-2 py-1 text-[9px] font-bold text-slate-500 ring-1 ring-slate-200' }, `${props.sources.length} refs`),
+        ]),
+        h(
+          'div',
+          { class: 'grid gap-2' },
+          props.sources.map((source, index) =>
+            h(
+              'a',
+              {
+                class: 'group flex min-h-14 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 shadow-sm transition-all hover:-translate-y-px hover:border-teal-300 hover:shadow-md',
+                href: source.url,
+                key: source.id,
+                rel: 'noreferrer noopener',
+                target: '_blank',
+                onClick: () => emit('open', source),
+              },
+              [
+                h('span', { class: 'grid h-8 w-8 flex-none place-items-center rounded-xl bg-teal-50 text-[11px] font-black text-teal-700' }, String(index + 1).padStart(2, '0')),
+                h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
+                  h('strong', { class: 'truncate text-[11px] text-slate-800' }, source.title),
+                  h('small', { class: 'truncate text-[9px] text-slate-400' }, source.domain || source.description || source.url),
+                ]),
+                h('span', { 'aria-hidden': 'true', 'class': 'text-xs text-slate-300 transition-colors group-hover:text-teal-600' }, '↗'),
+              ],
+            ),
           ),
         ),
       ])
@@ -501,7 +555,45 @@ export const AgentAttachmentList = defineComponent({
   props: { attachments: { type: Array as PropType<AgentAttachmentItem[]>, default: () => [] } },
   emits: { remove: (_item: AgentAttachmentItem) => true },
   setup(props, { emit }) {
-    return () => h('div', { class: 'flex flex-wrap gap-2' }, props.attachments.map(item => h('span', { class: 'inline-flex min-h-10 max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2.5', key: item.id }, [item.previewUrl ? h('img', { alt: '', class: 'h-7 w-7 rounded-lg object-cover', src: item.previewUrl }) : h('i', { class: 'grid h-7 w-7 place-items-center rounded-lg bg-white text-[10px] font-bold text-slate-500' }, 'FILE'), h('span', { class: 'grid min-w-0' }, [h('strong', { class: 'max-w-40 truncate text-[11px] text-slate-700' }, item.name), item.size ? h('small', { class: 'text-[9px] text-slate-400' }, item.size) : null]), h('button', { 'aria-label': `移除 ${item.name}`, 'class': 'grid h-7 w-7 place-items-center rounded-full text-slate-400 hover:bg-white hover:text-red-600', 'type': 'button', 'onClick': () => emit('remove', item) }, '×')])))
+    return () =>
+      h('section', { class: 'grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
+        h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
+          h('span', { class: 'grid gap-0.5' }, [
+            h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-700' }, 'Files'),
+            h('strong', { class: 'text-xs text-slate-800' }, '附件'),
+          ]),
+          h('small', { class: 'text-[9px] font-bold text-slate-400' }, `${props.attachments.length} items`),
+        ]),
+        h(
+          'div',
+          { class: 'grid gap-2' },
+          props.attachments.map(item =>
+            h('article', { class: 'flex min-h-14 min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 shadow-sm', key: item.id }, [
+              item.previewUrl
+                ? h('img', { alt: '', class: 'h-9 w-9 flex-none rounded-xl object-cover', src: item.previewUrl })
+                : h(
+                    'i',
+                    { class: 'grid h-9 w-9 flex-none place-items-center rounded-xl bg-slate-900 text-[9px] font-black not-italic text-white' },
+                    item.name.split('.').pop()?.slice(0, 4).toUpperCase() || 'FILE',
+                  ),
+              h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
+                h('strong', { class: 'truncate text-[11px] text-slate-800' }, item.name),
+                h('small', { class: 'text-[9px] text-slate-400' }, [item.size, item.mimeType].filter(Boolean).join(' · ')),
+              ]),
+              h(
+                'button',
+                {
+                  'aria-label': `移除 ${item.name}`,
+                  'class': 'min-h-8 flex-none rounded-lg border border-transparent px-2 text-[9px] font-bold text-slate-400 transition-colors hover:border-red-100 hover:bg-red-50 hover:text-red-600',
+                  'type': 'button',
+                  'onClick': () => emit('remove', item),
+                },
+                '移除',
+              ),
+            ]),
+          ),
+        ),
+      ])
   },
 })
 

@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Add package READMEs and tree-shakeable module entries.
+- Polish Agent artifact, source, attachment, composer, and streaming conversation Registry demos.
 
 ## 1.0.0
 
