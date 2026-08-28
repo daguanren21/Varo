@@ -16,6 +16,7 @@
       "@varo/primitives-weapp": ["packages/primitives-weapp/src/index.ts"],
       "@varo-ui/ai": ["packages/agent-core/src/index.ts"],
       "@varo-ui/h5": ["packages/ui-h5/src/index.ts"],
+      "@varo-ui/h5/primitives": ["packages/ui-h5/src/primitives.ts"],
       "@varo-ui/weapp": ["packages/ui-weapp/src/index.ts"]
     },
     "resolveJsonModule": true,

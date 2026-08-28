@@ -177,7 +177,7 @@ describe('FormComponentDemo', () => {
     })
     const switches = switchDemo.findAll('.varo-switch')
     expect(switches).toHaveLength(2)
-    expect(switches[0]!.attributes('data-checked')).toBe('true')
+    expect(switches[0]!.attributes('aria-checked')).toBe('true')
     expect(switches[1]!.attributes('disabled')).toBeDefined()
 
     const toast = mount(FormComponentDemo, {
