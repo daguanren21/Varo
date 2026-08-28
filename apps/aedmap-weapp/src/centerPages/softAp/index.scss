@@ -1,0 +1,28 @@
+.wifi {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  &_title {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    &_wrap {
+      font-size: 36px;
+      font-weight: bold;
+      color: #333;
+    }
+    &_tip {
+      margin-top: 25px;
+    }
+  }
+  &_content {
+    flex: 1;
+  }
+  &_btn {
+    padding-bottom: 40px;
+
+    .btn {
+      width: 600px;
+    }
+  }
+}

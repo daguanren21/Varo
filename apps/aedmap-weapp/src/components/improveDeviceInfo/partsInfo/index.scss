@@ -1,0 +1,13 @@
+.info_form_wrap {
+  .varo-input__label {
+    width: 240px;
+  }
+}
+
+.scan_electrode {
+  position: absolute;
+  right: 42px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+}

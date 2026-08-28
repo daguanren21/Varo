@@ -1,0 +1,93 @@
+@mixin mixin-module-btn() {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 129px;
+  height: 129px;
+  border-radius: 15px;
+  font-size: 30px;
+  font-weight: 400;
+  color: #ffffff;
+}
+.qiehuan {
+  width: 18rpx;
+  height: 18rpx;
+  color: #ff6216;
+}
+.module_modal {
+  display: flex;
+  justify-content: center;
+
+  .content_wrap {
+    display: flex;
+    margin: 0 auto;
+    justify-content: space-evenly;
+    width: 330px;
+
+    .test {
+      @include mixin-module-btn();
+      background-color: #182987;
+    }
+
+    .ft {
+      width: 60px;
+      font-size: 30px;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 37px;
+      word-wrap: break-word;
+    }
+
+    .formal {
+      @include mixin-module-btn();
+      background-color: #ff6216;
+    }
+  }
+
+  .tip {
+    width: 330px;
+    margin: 0 auto;
+    margin-top: 24px;
+    line-height: 24px;
+    font-size: 19px;
+    font-weight: 400;
+    color: #717071;
+  }
+}
+
+@mixin pBtn() {
+  color: #717071;
+  font-size: 36px !important;
+}
+
+.p_content_wrap {
+  .aed-legacy-row {
+    border-bottom: 1px solid #dbdcdc;
+  }
+
+  .tip {
+    margin-top: 15px;
+    font-size: 26px;
+    font-weight: 400;
+    color: #e73828;
+  }
+
+  .p_input {
+    .varo-input {
+      input {
+        font-size: 28px;
+      }
+    }
+  }
+
+  .p_action {
+    .add {
+      @include pBtn();
+    }
+
+    .del {
+      margin-left: 40px;
+      @include pBtn();
+    }
+  }
+}

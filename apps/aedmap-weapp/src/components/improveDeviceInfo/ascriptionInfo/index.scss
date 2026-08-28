@@ -1,0 +1,30 @@
+.smscode {
+  font-size: 27px !important;
+  font-weight: 400;
+  color: #e95513 !important;
+}
+
+.info {
+  .list_wrap {
+    .item_ins {
+      position: relative;
+
+      .ins {
+        .item-extra__info {
+          padding-right: 70px;
+        }
+      }
+
+      &_icon {
+        position: absolute;
+        top: 35%;
+        transform: translateY(-50%);
+        right: 54px;
+
+        .icon {
+          font-size: 30px !important;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+.map_center {
+  position: absolute;
+  right: 20px;
+  bottom: 50px;
+  z-index: 9;
+
+  .myLocation {
+    width: 75px;
+    height: 75px;
+  }
+}
+
+.map_md {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+
+  .img {
+    width: 88px;
+    height: 88px;
+    margin-bottom: 15px;
+  }
+
+  .varo-button {
+    width: 120px;
+    height: 60px;
+    font-size: 24px;
+    line-height: 60px;
+  }
+
+  .varo-button--primary {
+    background: #EA6000;
+    border: 1PX solid #EA6000;
+  }
+
+  .varo-button--secondary {
+    color: #EA6000;
+    border: 1PX solid #EA6000;
+  }
+}
+
+.map_chart {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  padding: 20px;
+  background: #2E3147;
+  border-radius: 15px;
+
+  .item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+    image {
+      width: 50px;
+      height: 50px;
+    }
+
+    text {
+      margin-left: 10px;
+      font-size: 26px;
+      color: #fff;
+    }
+  }
+}

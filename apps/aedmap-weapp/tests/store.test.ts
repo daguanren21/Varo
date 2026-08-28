@@ -1,0 +1,48 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createStore } from 'wevu'
+import { useAedStore } from '../src/store'
+import { useNavigationStore } from '../src/store/navigation'
+
+const { storage } = vi.hoisted(() => {
+  const storage = new Map<string, unknown>()
+  vi.stubGlobal('wx', {
+    getAccountInfoSync: vi.fn(() => ({ miniProgram: { envVersion: 'develop' } })),
+    getStorageSync: vi.fn((key: string) => storage.get(key)),
+    setStorageSync: vi.fn((key: string, value: unknown) => storage.set(key, value)),
+  })
+  return { storage }
+})
+
+beforeEach(() => {
+  storage.clear()
+  createStore()
+})
+
+describe('AED Map Wevu stores', () => {
+  it('updates domain state through explicit actions', () => {
+    const store = useAedStore()
+
+    store.setAccessToken('token-1')
+    store.setManageComponent('deviceMap')
+    store.setManageSearch({ keyword: 'AED-001', page: 1, size: 10 })
+    store.setMyLocation({ myAddress: '苏州', myLatitude: 31.2, myLongitude: 120.7 })
+
+    expect(store.state.accessToken).toBe('token-1')
+    expect(store.state.home.componentId).toBe('deviceMap')
+    expect(store.state.home.searchParams).toEqual({ keyword: 'AED-001', page: 1, size: 10 })
+    expect(store.state.myAddress).toBe('苏州')
+    expect(store.state.myLatitude).toBe(31.2)
+    expect(store.state.myLongitude).toBe(120.7)
+  })
+
+  it('keeps navigation payloads outside URL query strings', () => {
+    const navigation = useNavigationStore()
+    const payload = { info: { id: 42, serialNumber: 'AED-42' } }
+
+    navigation.setPayload(payload)
+
+    expect(navigation.payload.value).toEqual(payload)
+    navigation.setPayload()
+    expect(navigation.payload.value).toBeUndefined()
+  })
+})

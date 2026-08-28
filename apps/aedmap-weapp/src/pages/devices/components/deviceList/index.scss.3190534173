@@ -1,0 +1,136 @@
+.manage {
+  box-sizing: border-box;
+  height: 100%;
+
+  &>view {
+    height: 100%;
+  }
+
+  &_item {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 30px;
+    overflow: hidden;
+    background-color: rgb(242 243 248);
+    border-radius: 30px;
+
+    .top {
+      display: flex;
+
+      .left {
+        width: 153px;
+        height: 153px;
+        margin-right: 26px;
+
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .right {
+        flex: 1;
+        overflow: hidden;
+
+        .line {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .sn {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 27px;
+            font-weight: bold;
+            color: #3E3A39;
+            white-space: nowrap;
+          }
+
+          .btn {
+            width: 69px;
+            height: 31px;
+            margin: 0;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 31px;
+            color: #888;
+            background-color: #DBDCDC;
+            border-color: transparent;
+
+            &.active {
+              color: #FF6216;
+              background-color: #FFE0D0;
+            }
+          }
+
+
+          .l {
+            display: flex;
+
+            .icon {
+              margin-right: 24px;
+              font-size: 34px !important;
+            }
+
+            .text {
+              max-width: 345px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-size: 24px;
+              font-weight: 400;
+              color: #595757;
+              white-space: nowrap;
+
+              .label {
+                margin-right: 10px;
+              }
+            }
+
+          }
+
+
+          .r {}
+        }
+
+
+      }
+    }
+
+    .bottom {
+      margin-top: 15px;
+
+      .item {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+
+        .icon_module {
+          display: flex;
+          align-items: center;
+          width: 100px;
+        }
+
+        .flex_dot {
+          margin-left: 30px;
+        }
+
+        .ft {
+          margin: 15px 0;
+          font-size: 24px;
+          font-weight: 400;
+          color: #595757;
+        }
+
+        .jx-status {
+          width: auto;
+          border: none
+        }
+      }
+
+    }
+  }
+
+
+  .page {}
+}

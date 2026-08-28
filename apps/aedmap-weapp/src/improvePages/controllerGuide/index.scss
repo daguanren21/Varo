@@ -1,0 +1,53 @@
+@mixin guideBtn {
+  font-size: 36px;
+  font-weight: 400;
+  color: #ffffff;
+  border: none;
+}
+
+page {
+  height: 100%;
+  background: #f2f2f2;
+
+  .ml-30 {
+    margin-left: 30px;
+  }
+
+  .controller_guide {
+    .guide_image {
+      display: flex;
+      margin: 0 auto;
+      margin-top: 60px;
+      margin-bottom: 37px;
+      width: 459px;
+      height: 414px;
+      border-radius: 25px;
+      background-color: #fff;
+    }
+
+    .guide_text {
+      display: flex;
+      justify-content: center;
+
+      .ft {
+        display: block;
+        width: 459px;
+        font-size: 30px;
+      }
+    }
+  }
+
+  .guide_btn_wrap {
+    margin-top: 33px;
+
+    .guide {
+      @include guideBtn;
+      background-color: #ff6216;
+    }
+
+    .improve {
+      @include guideBtn;
+      background-color: #182987;
+    }
+  }
+}

@@ -1,0 +1,347 @@
+.device_map {
+  height: 100%;
+  width: 100%;
+  .quick_search {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    .aed-search-bar {
+      width: 100%;
+      background-color: transparent;
+    }
+  }
+  .lastest_aed {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 120px;
+    right: 10px;
+
+    .img {
+      width: 88px;
+      height: 88px;
+      margin-bottom: 15px;
+      // line-height: 88px;
+      // border: none;
+      // border-radius: 15px;
+      // font-size: 11px;
+      // color: #FFFFFF;
+      // background-color: #182987;
+    }
+  }
+
+  .map_center {
+    position: absolute;
+    bottom: 150px;
+    right: 10px;
+    z-index: 9;
+
+    .myLocation {
+      width: 75px;
+      height: 75px;
+    }
+  }
+}
+
+.index {
+  .call_for_help {
+    .header {
+      text-align: center;
+      font-size: 35px;
+      font-weight: 400;
+      color: #000000;
+    }
+
+    .content {
+      margin-top: 25px;
+      font-size: 20px;
+      font-weight: 400;
+      color: #ff6216;
+      line-height: 35px;
+      width: 410px;
+    }
+
+    .list {
+      .aed-cell {
+        padding: 12px;
+        font-size: 24px;
+
+        .aed-cell__extra {
+          max-width: 280px;
+        }
+
+        .item-extra__info {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+
+  .rescue_btn {
+    .btn {
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .img {
+        height: 70px;
+        width: 70px;
+      }
+    }
+  }
+
+  .call_for_help_btn {
+    .cancel {
+      background: #dbdcdc;
+      color: #fff;
+    }
+
+    .confirm {
+      background: #ff6216;
+      color: #fff;
+    }
+  }
+}
+.toShop {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+  .shop-content {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 10px;
+    .shop-tip {
+      width: 28px;
+      height: 28px;
+    }
+    .shop-text {
+      margin: 0 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .shop-to {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+@mixin mixin-map-btn() {
+  border: none;
+  width: 442px;
+  height: 90px;
+  line-height: 90px;
+  font-size: 36px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+@mixin ellipsis() {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.map_btn_wrap {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+
+  .varo-button {
+    display: flex;
+  }
+
+  .jx_icon {
+    margin-right: 12px;
+  }
+
+  .call {
+    @include mixin-map-btn();
+    background-color: #ff6216;
+  }
+
+  .register {
+    @include mixin-map-btn();
+    background-color: #182987;
+  }
+}
+
+.detailModal {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  width: 500px;
+  padding: 15px 30px 20px 30px;
+  border-radius: 30px;
+  background-color: rgba(46, 49, 71, 0.8);
+
+  .aed-modal__container {
+    bottom: 45px;
+    top: unset;
+  }
+
+  .device_content {
+    .close_wrap {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+
+      .fa-modal-close {
+        font-size: 36px !important;
+      }
+    }
+
+    .detail {
+      display: flex;
+      align-items: center;
+      margin-top: 40px;
+
+      .d-l {
+        width: 153px;
+        height: 153px;
+        margin-right: 24px;
+        background-color: #e5e8f2;
+
+        image {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .d-r {
+        width: calc(100% - 177px);
+
+        .item-t {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .sn {
+            font-size: 25px;
+            font-weight: bold;
+            color: #fff;
+          }
+        }
+
+        .time {
+          display: flex;
+          margin-bottom: 10px;
+          font-size: 23px;
+          font-weight: 400;
+          color: #fff;
+        }
+
+        .item-m {
+          margin: 18px 0;
+
+          .code {
+            color: #fff;
+          }
+        }
+
+        .item-b {
+          .address {
+            margin-bottom: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &_info {
+              display: flex;
+              flex-direction: column;
+              width: 80%;
+
+              .distance {
+                margin-top: 10px;
+                font-size: 21px;
+                font-weight: 400;
+                color: #fff;
+              }
+
+              .ft {
+                @include ellipsis();
+                font-size: 22px;
+                font-weight: 400;
+                color: #fff;
+              }
+            }
+
+            .icon {
+              font-size: 48px !important;
+              color: #fff;
+            }
+          }
+
+          .time {
+            font-size: 19px;
+            font-weight: 400;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+}
+
+.volunteer-rescue-info {
+  height: 200px;
+  background-color: #edf4f0;
+  opacity: 0.85;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+
+  .info {
+    .item {
+      text-align: center;
+
+      .img {
+        width: 78px;
+        height: 78px;
+      }
+
+      .ft {
+        margin-top: 16px;
+        font-size: 20px;
+        font-weight: 400;
+        color: #717071;
+      }
+    }
+  }
+}
+
+.apply {
+  line-height: 1.5;
+  color: #000;
+}
+
+.mt-40 {
+  margin-top: 40px;
+}
+
+.shop {
+  background: rgb(87, 202, 145);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  &_icon {
+    margin-top: 8px;
+    color: #fff;
+  }
+  &_text {
+    color: #fff;
+    font-size: 16px;
+    margin-top: 4px;
+  }
+}

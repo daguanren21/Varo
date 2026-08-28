@@ -1,0 +1,64 @@
+@mixin guideBtn {
+  font-size: 36px;
+  font-weight: 400;
+  color: #ffffff;
+  border: none;
+}
+
+.ml-30 {
+  margin-left: 30px;
+}
+
+.device_info {
+  height: 100%;
+  overflow: auto;
+
+  .steps {
+    padding: 48px 0;
+    background: #fff;
+    margin-top: 20px;
+    margin-bottom: 5px;
+
+    // .aed-legacy-steps__item--active .aed-legacy-steps__title {
+    //   color: #FF6216;
+    // }
+
+    .aed-legacy-steps__item--inactive .aed-legacy-steps__circular {
+      color: #ffffff;
+      background-color: #c8c9ca;
+    }
+
+    .aed-legacy-steps__item--inactive .aed-legacy-steps__title {
+      color: #b4b4b5;
+    }
+
+    .aed-legacy-steps__item--active .aed-legacy-steps__circular {
+      background-color: #ff6216;
+    }
+
+    .aed-legacy-steps__item {
+      .aed-legacy-steps__title {
+        font-size: 22px;
+      }
+    }
+  }
+
+  .component_wrap {
+    max-height: calc(100% - 372px);
+    overflow: auto;
+  }
+
+  .btn_wrap {
+    margin-top: 33px;
+
+    .guide {
+      @include guideBtn;
+      background-color: #ff6216;
+    }
+
+    .improve {
+      @include guideBtn;
+      background-color: #4ace7f;
+    }
+  }
+}

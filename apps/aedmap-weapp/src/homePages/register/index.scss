@@ -1,0 +1,112 @@
+.register {
+  height: 100%;
+  overflow: hidden;
+  background-image: url('../../static/images/jx-login.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom;
+
+  .form_wrap {
+    margin-top: 65px;
+    display: flex;
+    justify-content: center;
+
+    .jx-form {
+      width: 640px;
+
+      .jx-input {
+        padding: 24rpx;
+        color: #333;
+        background-color: #fff;
+        margin-left: 0;
+        margin-bottom: 7px;
+        border: 1px solid #e1e2e2;
+
+        .smscode {
+          font-size: 27px;
+          font-weight: 400;
+          color: #e95513;
+        }
+      }
+    }
+  }
+
+  .tip_wrap {
+    margin-top: 16px;
+    text-align: center;
+
+    .tip {
+      font-size: 27px;
+      font-weight: bold;
+      color: #e95513;
+    }
+
+    .private {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin-top: 27px;
+      padding: 0 40px;
+      font-size: 23px;
+      font-weight: 400;
+
+      .aed-checkbox-group::before {
+        border: none;
+      }
+
+      .aed-checkbox-group::after {
+        border: none;
+      }
+
+      .aed-checkbox-group {
+        .varo-checkbox {
+          padding-left: 0;
+
+          .varo-checkbox {
+            padding: 0;
+            padding-right: 12px;
+          }
+        }
+      }
+
+      .check {
+        width: 25px;
+        height: 25px;
+      }
+
+      .agree_wrap {
+        text-align: left;
+        line-height: 1.5;
+        padding-top: 2px;
+      }
+
+      .agree {
+        color: #9e9e9f;
+      }
+
+      .service {
+        color: #00a199;
+      }
+    }
+  }
+
+  .btn_wrap {
+    margin-top: 74px;
+    text-align: center;
+
+    .btn {
+      width: 443px;
+      margin-bottom: 33px;
+      font-size: 36px;
+      font-weight: bold;
+      color: #ffffff;
+      border: none;
+    }
+
+    .ft {
+      font-size: 36px;
+      font-weight: bold;
+      color: #ff6216;
+    }
+  }
+}

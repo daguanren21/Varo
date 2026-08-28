@@ -21,3 +21,4 @@ allowBuilds:
   sharp: true
   vue-demi: true
   workerd: true
+  '@parcel/watcher': true

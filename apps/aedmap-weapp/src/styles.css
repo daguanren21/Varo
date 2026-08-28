@@ -1,0 +1,13 @@
+@import './assets/fonts/iconfont.css';
+@import './assets/jousingFonts/iconfont.css';
+@import 'tailwindcss';
+
+@layer base {
+  button {
+    line-height: inherit;
+  }
+
+  button::after {
+    border: 0;
+  }
+}

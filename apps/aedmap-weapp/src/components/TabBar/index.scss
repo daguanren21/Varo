@@ -1,0 +1,23 @@
+.tabBar {
+  display: flex;
+  height: 70px;
+  width: 100%;
+  .tab {
+    flex: 1;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-weight: bold;
+    font-size: 32px;
+    color: #595757;
+    background-color: rgba(228, 232, 241, 1);
+  }
+
+  .active {
+    font-weight: bold;
+    color: #ea6000;
+    background-color: #fff;
+  }
+}

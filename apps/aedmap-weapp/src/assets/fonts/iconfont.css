@@ -1,0 +1,317 @@
+@font-face {
+  font-family: 'fa';
+  /* Project id 2885707 */
+  src:
+    url('../../static/fonts/fa.woff2') format('woff2'),
+    url('../../static/fonts/fa.woff') format('woff'),
+    url('../../static/fonts/fa.ttf') format('truetype');
+}
+
+.fa {
+  font-family: 'fa' !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-lock:before {
+  content: '\e64f';
+}
+
+.fa-search-area:before {
+  content: '\e602';
+}
+
+.fa-device-use:before {
+  content: '\e659';
+}
+
+.fa-search-ins:before {
+  content: '\e60d';
+}
+
+.icon-icon_unlock:before {
+  content: '\e68b';
+}
+
+.fa-volunteer-cpr:before {
+  content: '\e648';
+}
+
+.fa-volunteer-aed:before {
+  content: '\e649';
+}
+
+.fa-feedback:before {
+  content: '\e60b';
+}
+
+.fa-service-agree:before {
+  content: '\e60c';
+}
+
+.fa-my-aedmap:before {
+  content: '\e62a';
+}
+
+.fa-cert-wrong:before {
+  content: '\e62b';
+}
+
+.fa-my-message:before {
+  content: '\e62c';
+}
+
+.fa-inspection:before {
+  content: '\e62d';
+}
+
+.fa-selfCheck-time:before {
+  content: '\e62f';
+}
+
+.fa-address:before {
+  content: '\e630';
+}
+
+.fa-highSearch:before {
+  content: '\e631';
+}
+
+.fa-controller:before {
+  content: '\e632';
+}
+
+.fa-manage-phone:before {
+  content: '\e635';
+}
+
+.fa-buildIn:before {
+  content: '\e636';
+}
+
+.icon-a-20211015jiuxinxiaochengxuUItubiao-65:before {
+  content: '\e637';
+}
+
+.fa-cert-check:before {
+  content: '\e638';
+}
+
+.fa-certification:before {
+  content: '\e63d';
+}
+
+.fa-module-type:before {
+  content: '\e63e';
+}
+
+.fa-person-info:before {
+  content: '\e63f';
+}
+
+.fa-honor-info:before {
+  content: '\e640';
+}
+
+.fa-act-center:before {
+  content: '\e641';
+}
+
+.fa-question-look:before {
+  content: '\e642';
+}
+
+.fa-callHelp:before {
+  content: '\e643';
+}
+
+.fa-customer-center:before {
+  content: '\e645';
+}
+
+.fa-point-center:before {
+  content: '\e646';
+}
+
+.fa-message-notice:before {
+  content: '\e606';
+}
+
+.fa-jx-bluetooth:before {
+  content: '\e620';
+}
+
+.fa-jx-wifi:before {
+  content: '\e621';
+}
+
+.fa-my-wifi::before {
+  content: '\e658';
+}
+
+.fa-my-warning::before {
+  content: '\e656';
+}
+
+.fa-news:before {
+  content: '\e624';
+}
+
+.fa-knowLedge:before {
+  content: '\e625';
+}
+.fa-video:before {
+  content: '\e65c';
+}
+
+.fa-course-phone:before {
+  content: '\e627';
+}
+
+.fa-modal-close:before {
+  content: '\e654';
+}
+
+.fa-selfTestResult:before {
+  content: '\e60e';
+}
+
+.fa-jx-brand:before {
+  content: '\e60f';
+}
+
+.fa-run:before {
+  content: '\e613';
+}
+
+.fa-location:before {
+  content: '\e614';
+}
+
+.fa-battery:before {
+  content: '\e615';
+}
+
+.fa-wifi:before {
+  content: '\e616';
+}
+
+.fa-electrode:before {
+  content: '\e617';
+}
+
+.fa-edit:before {
+  content: '\e618';
+}
+
+.fa-repair:before {
+  content: '\e619';
+}
+
+.fa-exit:before {
+  content: '\e61b';
+}
+
+.fa-manage-brand:before {
+  content: '\e61c';
+}
+
+.fa-manage-exchange:before {
+  content: '\e64b';
+}
+
+.fa-dh:before {
+  content: '\e64a';
+}
+
+.fa-openBagSelfTestResult:before {
+  content: '\e64c';
+}
+
+.fa-batterySelfTestResult:before {
+  content: '\e653';
+}
+
+.fa-cabinetDoorState:before {
+  content: '\e64e';
+}
+
+.fa-powerSupplyMode:before {
+  content: '\e655';
+}
+
+.fa-warranty:before {
+  content: '\e61d';
+}
+
+.fa-hasCheck:before {
+  content: '\e652';
+}
+
+.fa-checkAct:before {
+  content: '\e6c6';
+}
+
+.fa-contact-person:before {
+  content: '\e61e';
+}
+
+.fa-contributor:before {
+  content: '\e61f';
+}
+
+.fa-volunteer-cpr-active:before {
+  content: '\e608';
+}
+
+.fa-module-right:before {
+  content: '\e603';
+}
+
+.fa-module-left:before {
+  content: '\e604';
+}
+
+.fa-dingwei:before {
+  content: '\e675';
+}
+
+.fa-add-device:before {
+  content: '\e600';
+}
+
+.fa-scan:before {
+  content: '\e601';
+}
+
+.fa-heart:before {
+  content: '\e602';
+}
+
+.fa-lock:before {
+  content: '\e64f';
+}
+
+.fa-unlock:before {
+  content: '\e68b';
+}
+
+.fa-navigation:before {
+  content: '\e64a';
+}
+.fa-like:before {
+  content: '\e85c';
+}
+.fa-nolike:before {
+  content: '\e83f';
+}
+
+.fa-video-link:before {
+  content: '\e65d';
+}
+
+.fa-shop:before {
+  content: '\e66d';
+}

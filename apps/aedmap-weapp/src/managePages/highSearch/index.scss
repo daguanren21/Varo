@@ -1,0 +1,89 @@
+.jx_loc_content {
+  padding: 0 38px;
+  overflow: hidden;
+  height: 100%;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .hot {
+    margin: 25px 0;
+
+    .title {
+      margin-bottom: 9px;
+      margin-left: 8px;
+      font-size: 21px;
+      font-weight: 400;
+      color: #9e9e9f;
+    }
+
+    &_list {
+      .col {
+        .btn {
+          margin-top: 19px;
+          width: 151px;
+          height: 60px;
+          line-height: 60px;
+        }
+
+        .varo-button {
+          font-size: 24px;
+          font-weight: bold;
+          color: #3e3a39;
+        }
+      }
+    }
+  }
+
+  .tab {
+    margin-bottom: 28px;
+  }
+
+  .tag {
+    &_list {
+      .col {
+        .varo-tag {
+          border: none;
+          background-color: transparent;
+          font-size: 24px;
+        }
+
+        .varo-tag--active.varo-tag--primary {
+          background-color: transparent;
+          border-color: transparent;
+          color: #78a4f4;
+        }
+      }
+    }
+  }
+  .max_ht {
+    max-height: 650px !important;
+  }
+  .indexes {
+    max-height: 800px;
+    min-height: 450px;
+    overflow: auto;
+    height: 100vh;
+
+    .aed-cell .item-content__info-title {
+      font-size: 24px;
+    }
+  }
+}
+
+.aed-popup__container {
+  min-height: 1100px;
+  max-height: 1200px;
+}
+
+.aed-popup .layout-body {
+  max-height: unset;
+  min-height: unset;
+  height: 100%;
+}
+
+.aed-popup .layout-body__content {
+  max-height: unset;
+  min-height: unset;
+}

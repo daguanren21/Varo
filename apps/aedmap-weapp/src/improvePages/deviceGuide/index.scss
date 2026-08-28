@@ -1,0 +1,40 @@
+@mixin guideBtn {
+  font-size: 36px;
+  font-weight: 400;
+  color: #ffffff;
+  border: none;
+}
+
+page {
+  height: 100%;
+  background: #f2f2f2;
+  .ml-30 {
+    margin-left: 30px;
+  }
+  .device_guide {
+    background: #fff;
+    padding-top: 48px;
+
+    .scan {
+      width: 723px;
+      margin: 0 auto;
+      margin-top: 48px;
+      background-color: #ededed;
+      text-align: center;
+    }
+  }
+
+  .guide_btn_wrap {
+    margin-top: 33px;
+
+    .guide {
+      @include guideBtn;
+      background-color: #ff6216;
+    }
+
+    .improve {
+      @include guideBtn;
+      background-color: #182987;
+    }
+  }
+}

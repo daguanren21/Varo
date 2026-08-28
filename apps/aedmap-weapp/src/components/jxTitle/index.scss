@@ -1,0 +1,26 @@
+.jx_title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .jx-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .title {
+      display: flex;
+      flex-direction: column;
+      font-size: 36px;
+      text-align: center;
+      font-weight: bold;
+      color: #231815;
+
+      .device_num {
+        font-size: 26px;
+        color: #717071;
+        margin-top: 15rpx;
+      }
+    }
+  }
+}

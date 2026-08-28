@@ -1,0 +1,15 @@
+.label_required {
+  .aed-cell__content {
+    .item-content__info {
+      &-title::before {
+        display: inline-block;
+        margin-right: 8rpx;
+        color: #ff4949;
+        font-size: 28rpx;
+        font-family: SimSun, sans-serif;
+        line-height: 1;
+        content: '*';
+      }
+    }
+  }
+}
