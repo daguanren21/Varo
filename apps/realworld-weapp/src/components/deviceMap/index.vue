@@ -63,7 +63,7 @@ const { isShow, mapScale, mapCenterLatitude, mapCenterLongitude, available, resc
 <template>
   <AedToast has-mask :is-opened="globalTip.isOpened" :text="globalTip.message" :status="globalTip.status" :duration="5000" />
   <map
-    v-if="isShow" id="indexMap" :setting="{}" class="device_map" :longitude="mapCenterLongitude" :latitude="mapCenterLatitude" :scale="mapScale"
+    v-if="isShow" id="indexMap" class="device_map" :longitude="mapCenterLongitude" :latitude="mapCenterLatitude" :scale="mapScale"
     :markers="markers" :show-location="true" :showScale="true" @regionchange="regionchange" @markertap="markertap"
     @callouttap="markertap"
   >

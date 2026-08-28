@@ -33,6 +33,6 @@
     "vitest": "^4.1.11",
     "vue-tsc": "^3.3.6",
     "weapp-tailwindcss": "^5.3.6",
-    "weapp-vite": "6.23.0"
+    "weapp-vite": "6.24.0"
   }
 }

@@ -74,8 +74,7 @@ const filterText = computed(() => {
 onMounted(() => {
   wx.setNavigationBarTitle({ title: '我的任务' })
 
-  const systemInfo = wx.getSystemInfoSync()
-  const windowHeight = systemInfo.windowHeight
+  const { windowHeight } = wx.getWindowInfo()
   // 减去统计面板、筛选栏和 padding 的高度
   info.listHeight = windowHeight - 80 - 60 - 20
 })

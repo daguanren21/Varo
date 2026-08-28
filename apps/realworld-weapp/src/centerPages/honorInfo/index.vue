@@ -8,6 +8,29 @@ definePageJson({
 const fn = useHonorList()
 
 const { honorList, handleAdd, handleClick, globalTip } = fn
+
+const honorActions = [
+  {
+    key: 'delete',
+    text: '删除',
+    style: {
+      backgroundColor: '#FF4949',
+    },
+  },
+  {
+    key: 'edit',
+    text: '编辑',
+    style: {
+      backgroundColor: '#6190E8',
+    },
+  },
+]
+
+const honorIconInfo = {
+  size: 25,
+  color: '#78A4FA',
+  value: 'honor-info',
+}
 </script>
 
 <template>
@@ -23,31 +46,12 @@ const { honorList, handleAdd, handleClick, globalTip } = fn
       <template v-for="item in honorList" :key="item.id">
         <AedSwipeAction
           auto-close
-          :options="[
-            {
-              key: 'delete',
-              text: '删除',
-              style: {
-                backgroundColor: '#FF4949',
-              },
-            },
-            {
-              key: 'edit',
-              text: '编辑',
-              style: {
-                backgroundColor: '#6190E8',
-              },
-            },
-          ]"
+          :options="honorActions"
           @click="handleClick($event, item)"
         >
           <viewItem
             has-border
-            :icon-info="{
-              size: 25,
-              color: '#78A4FA',
-              value: 'honor-info',
-            }"
+            :icon-info="honorIconInfo"
             :title="item.honorContent"
           />
         </AedSwipeAction>

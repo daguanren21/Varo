@@ -1,5 +1,6 @@
 @import './assets/fonts/iconfont.css';
 @import './assets/jousingFonts/iconfont.css';
+@import './styles/varo.css';
 @import 'tailwindcss';
 
 @layer base {

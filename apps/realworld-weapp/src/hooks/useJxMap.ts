@@ -345,12 +345,7 @@ export function useJxMap(props: { type?: string }) {
     mapAreaState.areaList = res.data
   }
   /** 适配微信版本8.0.51 */
-  const deviceInfo = wx.getSystemInfoSync()
-  console.log(deviceInfo)
-  let appVersion = ''
-  if (deviceInfo) {
-    appVersion = deviceInfo.version
-  }
+  const { version: appVersion } = wx.getAppBaseInfo()
   const isExcuteAndriod = computed(() => {
     // return platform === 'android' && compareVersion(appVersion, '8.0.51')
     return compareVersion(appVersion, '8.0.51')

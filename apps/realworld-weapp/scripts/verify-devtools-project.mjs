@@ -80,7 +80,14 @@ for (const path of wxmlFiles) {
 if (unsafeWxml.length > 0) { throw new Error(`Unsafe WXML expressions:\n${unsafeWxml.join('\n')}`) }
 
 const wxssFiles = await collectFiles(outputRoot, '.wxss')
-const wxss = (await Promise.all(wxssFiles.map(path => readFile(path, 'utf8')))).join('\n')
+const wxssSources = await Promise.all(wxssFiles.map(path => readFile(path, 'utf8')))
+const unresolvedAssetFiles = wxssFiles
+  .filter((_, index) => wxssSources[index].includes('__VITE_ASSET__'))
+  .map(path => path.replace(`${outputRoot}/`, ''))
+if (unresolvedAssetFiles.length > 0) {
+  throw new Error(`Unresolved Vite asset placeholders:\n${unresolvedAssetFiles.join('\n')}`)
+}
+const wxss = wxssSources.join('\n')
 if (!wxss.includes('bg-orange-500') || wxss.includes('@import "tailwindcss"')) {
   throw new Error('Tailwind utilities were not transformed into production WXSS')
 }

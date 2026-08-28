@@ -91,8 +91,7 @@ onMounted(() => {
   }
 
   // 动态计算列表高度
-  const systemInfo = wx.getSystemInfoSync()
-  const windowHeight = systemInfo.windowHeight
+  const { windowHeight } = wx.getWindowInfo()
   // 减去头部和Tab高度
   info.listHeight = windowHeight - 80 - 50 - 20
 })

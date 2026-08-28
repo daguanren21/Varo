@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const normalizedOptions = computed(() =>
   props.options.map(option => ({
     ...option,
-    label: option.label ?? option.value,
+    label: option.label ?? '',
   })),
 )
 

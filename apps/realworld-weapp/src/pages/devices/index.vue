@@ -11,7 +11,6 @@ definePageJson({
   navigationBarBackgroundColor: '#FCEFE6',
   backgroundTextStyle: 'light',
   navigationStyle: 'custom',
-  enableShareTimeline: true,
 })
 
 const listFn = useManageIndex()

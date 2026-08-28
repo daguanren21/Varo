@@ -11,6 +11,11 @@ export default defineConfig({
       cssEntries: [resolve(root, 'src/styles.css')],
       cssOptions: {
         rem2rpx: true,
+        px2rpx: {
+          platform: 'weapp',
+          designWidth: 750,
+          selectorBlackList: [/^page$/, /\.varo-/],
+        },
         cssRemoveActivePseudoClass: true,
       },
       ignoreCallExpressionIdentifiers: ['cn'],
@@ -36,7 +41,7 @@ export default defineConfig({
     platform: 'weapp',
     styles: {
       source: 'styles.css',
-      include: ['app.vue'],
+      include: '**/*.vue',
     },
     autoImportComponents: {
       globs: ['components/ui/**/*.vue', 'components/aed/**/*.vue'],

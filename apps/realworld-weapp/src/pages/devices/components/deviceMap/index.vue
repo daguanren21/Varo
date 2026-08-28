@@ -20,7 +20,6 @@ const { isShow, mapScale, centerLongitude, regionchange, markertap, centerLatitu
   <map
     v-if="isShow"
     id="manageMap"
-    :setting="{}"
     class="device_map"
     style="height: 100%; width: 100%"
     :longitude="centerLongitude"
