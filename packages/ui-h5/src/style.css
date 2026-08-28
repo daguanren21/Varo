@@ -2398,3 +2398,30 @@ textarea.varo-input__control {
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius-sm);
 }
+
+.varo-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--varo-ui-surface-muted);
+}
+
+.varo-image__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: inherit;
+  object-position: inherit;
+}
+
+.varo-image__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  font-size: 12px;
+  color: var(--varo-ui-text-muted);
+  background: var(--varo-ui-surface-muted);
+}

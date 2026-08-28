@@ -1,29 +1,26 @@
 <script setup lang="ts">
+import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 
-const props = withDefaults(
-  defineProps<{
-    content?: number | string
-    dot?: boolean
-    max?: number
-    showZero?: boolean
-    tone?: 'default' | 'primary' | 'success' | 'warning' | 'danger'
-    variant?: 'solid' | 'soft' | 'outline'
-  }>(),
-  {
-    content: undefined,
-    dot: false,
-    max: 99,
-    showZero: false,
-    tone: 'danger',
-    variant: 'solid'
-  }
-)
+const props = defineProps({
+  content: { type: null as unknown as PropType<number | string | undefined>, default: undefined },
+  dot: { type: Boolean, default: false },
+  max: { type: Number, default: 99 },
+  showZero: { type: Boolean, default: false },
+  tone: {
+    type: String as PropType<'default' | 'primary' | 'success' | 'warning' | 'danger'>,
+    default: 'danger',
+  },
+  variant: {
+    type: String as PropType<'solid' | 'soft' | 'outline'>,
+    default: 'solid',
+  },
+})
 
 const displayContent = computed(() => {
-  if (props.dot) return ''
-  if (typeof props.content === 'number' && props.content > props.max) return `${props.max}+`
-  return props.content
+  if (props.dot) { return '' }
+  if (typeof props.content === 'number' && props.content > props.max) { return `${props.max}+` }
+  return props.content ?? ''
 })
 const visible = computed(() => props.dot || props.content === undefined || props.showZero || props.content !== 0)
 </script>

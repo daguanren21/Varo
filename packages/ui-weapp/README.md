@@ -17,4 +17,30 @@ import '@varo-ui/weapp/style.css'
 
 Target render primitives are available from `@varo-ui/weapp/primitives`. For editable native SFC source, use `@varo-ui/cli` with `--target weapp-vite`.
 
+## Editable Registry source resolver
+
+`VaroResolver` discovers only Varo SFCs already copied into the consumer project and lets
+`weapp-vite` compile them on demand. Unreferenced candidates stay out of production entries.
+
+```ts
+import { VaroResolver } from '@varo-ui/weapp/resolver'
+import { defineConfig } from 'weapp-vite/config'
+
+const root = import.meta.dirname
+
+export default defineConfig({
+  weapp: {
+    autoImportComponents: {
+      resolvers: [VaroResolver({ root })],
+      typedComponents: true,
+      vueComponents: true,
+    },
+  },
+})
+```
+
+The default source directory is `src/components/ui`. Both `<VButton>` and `<v-button>` resolve
+to copied files named `VButton.vue`, `vButton.vue`, or `v-button.vue`. The resolver does not
+install components; continue using `@varo-ui/cli --target weapp-vite` to copy editable source.
+
 [Component documentation](https://daguanren21.github.io/Varo/components/) · [Repository](https://github.com/daguanren21/Varo)

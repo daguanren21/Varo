@@ -17,8 +17,7 @@
       "vue"
     ],
     "weapp-vite": [
-      "wevu",
-      "vue"
+      "wevu"
     ]
   },
   "registryDependencies": [

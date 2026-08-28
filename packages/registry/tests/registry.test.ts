@@ -172,6 +172,43 @@ describe('registry catalog', () => {
     })
   })
 
+  it('composes Block controls through headless-backed Base Kit components', () => {
+    const headlessComponents = new Map([
+      ['button', 'usePressableRoot'],
+      ['card', 'usePressableRoot'],
+      ['checkbox', 'useCheckboxRoot'],
+      ['image', 'useImageRoot'],
+      ['input', 'useFieldRoot'],
+      ['input-number', 'useNumberFieldRoot'],
+      ['select', 'useSelectRoot'],
+      ['switch', 'useSwitchRoot'],
+    ])
+
+    registryItemFiles().forEach((registryPath) => {
+      const item = readJson<RegistryItem>(registryPath)
+      if (item.type !== 'block') { return }
+
+      item.files.filter(file => file.from.endsWith('.vue')).forEach((file) => {
+        expect(readText(file.from), file.from).not.toMatch(/<(?:button|input|textarea|select|picker|checkbox|switch)\b/)
+      })
+    })
+
+    headlessComponents.forEach((primitive, name) => {
+      const manifest = readJson<RegistryItem & {
+        targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
+      }>(`registry/components/${name}/registry.json`)
+      const weappSource = manifest.files.find(file => file.target === 'weapp-vite' && file.from.endsWith('.vue'))
+      const registryDependencies = [
+        ...manifest.registryDependencies,
+        ...(manifest.targetRegistryDependencies?.['weapp-vite'] ?? []),
+      ]
+
+      expect(manifest.dependencies, name).toContain('@varo-ui/headless')
+      expect(registryDependencies, name).toContain('utils/primitives')
+      expect(readText(weappSource!.from), name).toContain(primitive)
+    })
+  })
+
   it('keeps every registry item valid, target-complete, documented, and backed by source files', () => {
     registryItemFiles().forEach((registryPath) => {
       const item = readJson<RegistryItem>(registryPath)
@@ -275,9 +312,10 @@ describe('registry catalog', () => {
     const primitives = readJson<RegistryItem>('registry/utils/primitives/registry.json')
     const cn = readJson<RegistryItem>('registry/utils/cn/registry.json')
 
+    expect(primitives.dependencies).toEqual(['@varo-ui/headless'])
     expect(primitives.targetDependencies).toEqual({
-      'h5': ['@varo-ui/h5'],
-      'weapp-vite': ['@varo-ui/weapp'],
+      'h5': ['@varo-ui/h5', 'vue'],
+      'weapp-vite': ['@varo-ui/weapp', 'wevu'],
     })
     expect(cn.dependencies).toEqual(['clsx'])
     expect(cn.targetDependencies).toEqual({

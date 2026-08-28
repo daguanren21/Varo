@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="珊瑚色纯棉短袖">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0e8"/><stop offset="1" stop-color="#efb39c"/></linearGradient><filter id="s"><feDropShadow dy="24" stdDeviation="24" flood-color="#934f3d" flood-opacity=".2"/></filter></defs>
+  <rect width="800" height="800" rx="72" fill="url(#b)"/><path d="M292 191c25 28 61 42 108 42s83-14 108-42l133 91-69 118-69-40v262H297V360l-69 40-69-118 133-91Z" fill="#e77f68" filter="url(#s)"/>
+  <path d="M318 192c16 73 148 73 164 0" fill="none" stroke="#ffd7cc" stroke-width="20"/><path d="M340 485h120" stroke="#f6a18d" stroke-width="18" stroke-linecap="round"/>
+</svg>

@@ -69,7 +69,7 @@ onBeforeUnmount(stop)
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-loading__pixel {
   animation: agent-pixel 1.1s ease-in-out infinite;
 }

@@ -1,5 +1,6 @@
 export { useButtonRoot } from './button'
 export { useInputRoot } from './input'
+export { useNumberFieldRoot } from './number-field'
 export { useSelectRoot } from './select'
 export {
   useAccordionRoot,

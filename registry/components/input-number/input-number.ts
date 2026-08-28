@@ -2,40 +2,28 @@ import type { PropType } from 'vue'
 import { createVariantClass } from '@varo-ui/headless'
 import { useVaroTheme } from '@varo-ui/theme'
 import { computed, defineComponent, h } from 'vue'
+import {
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldRoot,
+} from '../../lib/varo-primitives'
 import '../../styles/varo.css'
 
 export const VInputNumber = defineComponent({
   name: 'VInputNumber',
   props: {
     disabled: Boolean,
-    max: {
-      type: Number,
-      default: Number.POSITIVE_INFINITY,
-    },
-    min: {
-      type: Number,
-      default: Number.NEGATIVE_INFINITY,
-    },
-    precision: {
-      type: Number as PropType<number | undefined>,
-      default: undefined,
-    },
+    max: { type: Number, default: Number.POSITIVE_INFINITY },
+    min: { type: Number, default: Number.NEGATIVE_INFINITY },
+    precision: { type: Number as PropType<number | undefined>, default: undefined },
     readonly: Boolean,
-    step: {
-      type: Number,
-      default: 1,
-    },
-    value: {
-      type: Number,
-      default: 0,
-    },
+    step: { type: Number, default: 1 },
+    value: { type: Number, default: 0 },
   },
   emits: ['update:value', 'change', 'blur', 'focus'],
   setup(props, { attrs, emit }) {
     const theme = useVaroTheme()
-    const currentValue = computed(() => clamp(props.value))
-    const canMinus = computed(() => !props.disabled && !props.readonly && currentValue.value > props.min)
-    const canPlus = computed(() => !props.disabled && !props.readonly && currentValue.value < props.max)
     const classes = computed(() =>
       createVariantClass('varo-input-number', {
         radius: theme.value.components.button.borderRadius,
@@ -44,49 +32,33 @@ export const VInputNumber = defineComponent({
       }),
     )
 
-    function clamp(value: number) {
-      const bounded = Math.min(props.max, Math.max(props.min, Number.isFinite(value) ? value : props.min))
-      return props.precision === undefined ? bounded : Number(bounded.toFixed(props.precision))
-    }
-
-    function update(value: number) {
-      const next = clamp(value)
-      emit('update:value', next)
-      emit('change', next)
-    }
-
     return () =>
-      h('div', { ...attrs, 'class': [classes.value, attrs.class], 'data-disabled': String(props.disabled) }, [
-        h(
-          'button',
-          {
-            class: 'varo-input-number__minus',
-            type: 'button',
-            disabled: !canMinus.value,
-            onClick: () => update(currentValue.value - props.step),
-          },
-          '-',
-        ),
-        h('input', {
-          class: 'varo-input-number__input',
-          disabled: props.disabled,
-          readonly: props.readonly,
-          type: 'number',
-          value: String(currentValue.value),
-          onBlur: (event: FocusEvent) => emit('blur', event),
-          onFocus: (event: FocusEvent) => emit('focus', event),
-          onInput: (event: Event) => update(Number((event.target as HTMLInputElement).value)),
-        }),
-        h(
-          'button',
-          {
-            class: 'varo-input-number__plus',
-            type: 'button',
-            disabled: !canPlus.value,
-            onClick: () => update(currentValue.value + props.step),
-          },
-          '+',
-        ),
-      ])
+      h(
+        NumberFieldRoot,
+        {
+          ...attrs,
+          'class': [classes.value, attrs.class],
+          'disabled': props.disabled,
+          'max': props.max,
+          'min': props.min,
+          'precision': props.precision,
+          'readonly': props.readonly,
+          'step': props.step,
+          'value': props.value,
+          'onUpdate:value': (value: number) => emit('update:value', value),
+          'onValueChange': (value: number) => emit('change', value),
+        },
+        {
+          default: () => [
+            h(NumberFieldDecrement, { class: 'varo-input-number__minus' }, () => '-'),
+            h(NumberFieldInput, {
+              class: 'varo-input-number__input',
+              onBlur: (event: FocusEvent) => emit('blur', event),
+              onFocus: (event: FocusEvent) => emit('focus', event),
+            }),
+            h(NumberFieldIncrement, { class: 'varo-input-number__plus' }, () => '+'),
+          ],
+        },
+      )
   },
 })

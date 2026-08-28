@@ -8,13 +8,19 @@ import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
 import VImage from '../../components/ui/v-image.vue'
 import VInput from '../../components/ui/v-input.vue'
+import { useWeappChrome } from '../../composables/useWeappChrome'
 import { retailCategories } from '../../features/retail/data'
 import { navigateRetail, switchRetailTab } from '../../features/retail/navigation'
-import { useRetailStore } from '../../features/retail/store'
+import { formatRetailMoney, useRetailStore } from '../../features/retail/store'
 
 const keyword = shallowRef('')
 const { addToCart, cartCount, products } = useRetailStore()
+const { navigationStyle, rootStyle } = useWeappChrome()
 const featuredProducts = computed(() => products.value.slice(0, 8))
+const heroProducts = computed(() => products.value.slice(0, 3).map(product => ({
+  ...product,
+  priceLabel: formatRetailMoney(product.price),
+})))
 
 function search() {
   navigateRetail('/retail-goods/result/index', { keyword: keyword.value || '精选推荐' })
@@ -35,9 +41,9 @@ function addProduct(product: RetailProduct) {
 </script>
 
 <template>
-  <view class="min-h-screen bg-[#f4f6f8] pb-24 text-slate-950">
-    <view class="sticky top-0 z-30 grid gap-2 bg-white/95 px-3 pb-3 pt-[calc(env(safe-area-inset-top)+10px)] shadow-sm backdrop-blur">
-      <view class="flex items-center justify-between gap-3">
+  <view class="retail-page-enter min-h-screen bg-[#f4f6f8] pb-24 text-slate-950">
+    <view class="sticky top-0 z-30 grid gap-2 bg-white/95 px-3 pb-3 shadow-sm backdrop-blur" :style="rootStyle">
+      <view class="flex items-center justify-between gap-3" :style="navigationStyle">
         <view class="grid gap-0.5">
           <text class="text-[10px] font-black uppercase tracking-[0.18em] text-teal-700">
             VARO RETAIL
@@ -65,64 +71,77 @@ function addProduct(product: RetailProduct) {
       </view>
     </view>
 
-    <view class="grid gap-4 px-3 py-3">
-      <VCard :padding="false" class-name="relative overflow-hidden bg-slate-950 text-white">
-        <VImage
-          src="https://tdesign.gtimg.com/miniprogram/template/retail/home/v2/banner1.png"
-          alt="Varo 零售生活馆"
-          fit="cover"
-          width="100%"
-          height="196px"
-          :show-error="false"
-        />
-        <view class="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,23,42,.88),rgba(15,23,42,.18))]" />
-        <view class="absolute inset-y-0 left-0 grid w-[68%] content-center gap-2 p-5">
-          <text class="text-[10px] font-black tracking-[0.16em] text-teal-200">
-            NEW RETAIL EXPERIENCE
-          </text>
-          <text class="text-[24px] font-black leading-8">
-            好物、订单与服务，一套 Varo 组件完成
-          </text>
-          <text class="text-[11px] leading-[18px] text-white/75">
-            参考 TDesign 零售黄金链路，以可维护的小程序原生 SFC 重新实现。
-          </text>
-          <VButton size="sm" class-name="mt-1 w-fit" @click="openCategory('women')">
-            立即逛逛
+    <view class="retail-section-enter grid gap-4 px-3 py-3">
+      <swiper
+        class="h-[220px] overflow-hidden rounded-2xl bg-slate-950"
+        autoplay
+        circular
+        indicator-dots
+        indicator-color="rgba(255,255,255,.38)"
+        indicator-active-color="#5eead4"
+        :interval="4500"
+        :duration="420"
+      >
+        <swiper-item v-for="product in heroProducts" :key="product.id">
+          <view class="relative h-[220px] overflow-hidden">
+            <VImage :src="product.image" :alt="product.name" fit="cover" width="100%" height="220px" />
+            <view class="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,15,20,.94)_0%,rgba(3,15,20,.78)_48%,rgba(3,15,20,.16)_100%)]" />
+            <view class="absolute inset-y-0 left-0 grid w-[72%] content-center gap-2 p-5 pb-7 text-white">
+              <text class="text-[9px] font-black tracking-[0.18em] text-teal-200">
+                FEATURED PRODUCT
+              </text>
+              <text class="line-clamp-2 text-[22px] font-black leading-7">
+                {{ product.name }}
+              </text>
+              <text class="line-clamp-2 text-[10px] leading-[17px] text-white/80">
+                {{ product.description }}
+              </text>
+              <text class="text-lg font-black text-white">
+                ¥{{ product.priceLabel }}
+              </text>
+              <VButton size="sm" class-name="mt-2 w-fit !bg-teal-600 !px-4" @click="openProduct(product)">
+                查看商品
+              </VButton>
+            </view>
+          </view>
+        </swiper-item>
+      </swiper>
+
+      <VCard variant="default">
+        <view class="grid grid-cols-5 gap-2 pb-2">
+          <VButton
+            v-for="category in retailCategories"
+            :key="category.id"
+            size="sm"
+            variant="ghost"
+            tone="default"
+            class-name="!grid !min-h-18 !w-full !place-items-center !gap-1 !p-0 !pb-2"
+            @click="openCategory(category.id)"
+          >
+            <text class="grid h-10 w-10 place-items-center rounded-2xl bg-teal-50 text-xs font-black text-teal-700">
+              {{ category.shortLabel.slice(0, 1) }}
+            </text>
+            <text class="text-[10px] font-semibold text-slate-600">
+              {{ category.label }}
+            </text>
           </VButton>
         </view>
       </VCard>
 
-      <VCard class-name="grid grid-cols-5 gap-2" variant="default">
-        <VButton
-          v-for="category in retailCategories"
-          :key="category.id"
-          size="sm"
-          variant="ghost"
-          tone="default"
-          class-name="!grid !min-h-16 !w-full !place-items-center !gap-1 !p-0"
-          @click="openCategory(category.id)"
-        >
-          <text class="grid h-10 w-10 place-items-center rounded-2xl bg-teal-50 text-xs font-black text-teal-700">
-            {{ category.shortLabel.slice(0, 1) }}
-          </text>
-          <text class="text-[10px] font-semibold text-slate-600">
-            {{ category.label }}
-          </text>
-        </VButton>
-      </VCard>
-
-      <VCard class-name="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-[linear-gradient(135deg,#ecfdf5,#f0fdfa)]" variant="outline">
-        <view class="grid gap-1">
-          <text class="text-sm font-black text-teal-950">
-            会员本周权益
-          </text>
-          <text class="text-[10px] text-teal-700">
-            新人券、会员券与满减活动已准备好
-          </text>
+      <VCard class-name="bg-[linear-gradient(135deg,#ecfdf5,#f0fdfa)]" variant="outline">
+        <view class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <view class="grid gap-1">
+            <text class="text-sm font-black text-teal-950">
+              会员本周权益
+            </text>
+            <text class="text-[10px] text-teal-700">
+              新人券、会员券与满减活动已准备好
+            </text>
+          </view>
+          <VButton size="sm" variant="outline" @click="navigateRetail('/retail-coupon/coupon-list/index')">
+            领券
+          </VButton>
         </view>
-        <VButton size="sm" variant="outline" @click="navigateRetail('/retail-coupon/coupon-list/index')">
-          领券
-        </VButton>
       </VCard>
 
       <RetailSectionHeader

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="不锈钢旅行餐具">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff5df"/><stop offset="1" stop-color="#d9b978"/></linearGradient><linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fbfc"/><stop offset=".45" stop-color="#98a7ad"/><stop offset="1" stop-color="#eef3f5"/></linearGradient><filter id="s"><feDropShadow dy="24" stdDeviation="20" flood-color="#604b20" flood-opacity=".2"/></filter></defs>
+  <rect width="800" height="800" rx="72" fill="url(#b)"/><g filter="url(#s)" fill="url(#m)"><path d="M248 139h30v154h27V139h30v154h27V139h30v180c0 55-29 95-72 106v239h-72V425c-43-11-72-51-72-106V139h30v154h12V139h30Z"/><path d="M474 139h69c43 0 78 35 78 78v188c0 49-27 87-68 100v159h-72V504c-41-13-68-51-68-100V217c0-43 27-78 61-78Z"/></g><rect x="206" y="615" width="394" height="48" rx="24" fill="#0f766e" opacity=".2"/>
+</svg>

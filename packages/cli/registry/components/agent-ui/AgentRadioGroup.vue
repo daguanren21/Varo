@@ -28,6 +28,27 @@ const rootStyle = computed(() => ({
   '--agent-choice-index': String(selectedIndex.value),
   'gridTemplateColumns': props.orientation === 'horizontal' ? `repeat(${Math.max(1, props.choices.length)}, minmax(0, 1fr))` : undefined,
 }))
+const rootClass = computed(() => [
+  'agent-radio relative grid overflow-hidden rounded-[14px] border border-slate-200 bg-white',
+  props.orientation === 'horizontal' && 'agent-radio--horizontal grid-flow-col bg-slate-100 p-1',
+  props.reducedMotion && 'agent-radio--reduced-motion',
+])
+
+function itemClass(choice: AgentChoice) {
+  return [
+    'agent-radio__item relative z-10 flex w-full items-center gap-3 border-0 bg-transparent text-left text-slate-600 transition-[transform,color] duration-200',
+    props.orientation === 'horizontal' ? 'min-h-11 justify-center px-2.5 py-1.5 text-center' : 'min-h-14 px-3.5 py-2',
+    choice.value === props.value && 'text-slate-950',
+    choice.disabled && 'agent-radio__item--disabled',
+  ]
+}
+
+function indicatorClass(choice: AgentChoice) {
+  return [
+    'h-[18px] w-[18px] flex-none rounded-full border-2 transition-colors',
+    choice.value === props.value ? 'border-teal-700' : 'border-slate-300',
+  ]
+}
 
 function select(choice: AgentChoice) {
   if (choice.disabled || choice.value === props.value) { return }
@@ -38,9 +59,7 @@ function select(choice: AgentChoice) {
 
 <template>
   <view
-    class="agent-radio relative grid overflow-hidden rounded-[14px] border border-slate-200 bg-white" :class="[
-      orientation === 'horizontal' && 'grid-flow-col bg-slate-100 p-1',
-    ]"
+    :class="rootClass"
     role="radiogroup"
     :data-orientation="orientation"
     :data-reduced-motion="String(reducedMotion)"
@@ -50,15 +69,13 @@ function select(choice: AgentChoice) {
     <button
       v-for="choice in choices"
       :key="choice.value"
-      class="agent-radio__item relative z-10 flex w-full items-center gap-3 border-0 bg-transparent text-left text-slate-600 transition-[transform,color] duration-200" :class="[
-        orientation === 'horizontal' ? 'min-h-11 justify-center px-2.5 py-1.5 text-center' : 'min-h-14 px-3.5 py-2',
-        choice.value === value && 'text-slate-950',
-      ]"
+      :class="itemClass(choice)"
       type="button"
       role="radio"
       :disabled="choice.disabled"
       :aria-checked="choice.value === value"
       :data-selected="String(choice.value === value)"
+      :data-disabled="String(Boolean(choice.disabled))"
       hover-class="agent-radio__item--pressed"
       :hover-start-time="20"
       :hover-stay-time="70"
@@ -66,7 +83,7 @@ function select(choice: AgentChoice) {
     >
       <text
         v-if="orientation === 'vertical'"
-        class="h-[18px] w-[18px] flex-none rounded-full border-2 transition-colors" :class="[choice.value === value ? 'border-teal-700' : 'border-slate-300']"
+        :class="indicatorClass(choice)"
         aria-hidden="true"
       />
       <view class="grid min-w-0 flex-1 gap-0.5">
@@ -81,7 +98,7 @@ function select(choice: AgentChoice) {
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-radio {
   --agent-radio-spring: cubic-bezier(0.2, 0.9, 0.25, 1.18);
 }
@@ -90,7 +107,7 @@ function select(choice: AgentChoice) {
   transform: scale(0.975);
 }
 
-.agent-radio__item:disabled {
+.agent-radio__item--disabled {
   opacity: 0.45;
 }
 
@@ -103,7 +120,7 @@ function select(choice: AgentChoice) {
   transition: transform 0.32s var(--agent-radio-spring);
 }
 
-.agent-radio[data-orientation='horizontal'] .agent-radio__indicator {
+.agent-radio--horizontal .agent-radio__indicator {
   top: 4px;
   bottom: 4px;
   left: 4px;
@@ -115,8 +132,8 @@ function select(choice: AgentChoice) {
   transform: translateX(calc(var(--agent-choice-index) * 100%));
 }
 
-.agent-radio[data-reduced-motion='true'] .agent-radio__indicator,
-.agent-radio[data-reduced-motion='true'] .agent-radio__item {
+.agent-radio--reduced-motion .agent-radio__indicator,
+.agent-radio--reduced-motion .agent-radio__item {
   transition: none;
 }
 

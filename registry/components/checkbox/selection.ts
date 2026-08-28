@@ -2,6 +2,7 @@ import type { InjectionKey, PropType } from 'vue'
 import { createVariantClass } from '@varo-ui/headless'
 import { useVaroTheme } from '@varo-ui/theme'
 import { computed, defineComponent, h, inject, provide } from 'vue'
+import { CheckboxIndicator, CheckboxRoot } from '../../lib/varo-primitives'
 
 export type SelectionDirection = 'horizontal' | 'vertical'
 export type CheckboxValue = string | number | boolean
@@ -110,38 +111,34 @@ export const VCheckbox = defineComponent({
       }),
     )
 
-    function toggle() {
-      if (isDisabled.value) { return }
-
+    function update(checked: boolean) {
       if (group) {
         group.toggle(props.value)
         return
       }
 
-      const next = !isChecked.value
-      emit('update:checked', next)
-      emit('change', next)
+      emit('update:checked', checked)
+      emit('change', checked)
     }
 
     return () =>
       h(
-        'button',
+        CheckboxRoot,
         {
           ...attrs,
           'class': [classes.value, attrs.class],
-          'type': 'button',
-          'role': 'checkbox',
-          'aria-checked': String(isChecked.value),
-          'aria-disabled': String(isDisabled.value),
-          'data-checked': String(isChecked.value),
-          'data-disabled': String(isDisabled.value),
+          'checked': isChecked.value,
           'disabled': isDisabled.value,
-          'onClick': toggle,
+          'onUpdate:checked': update,
         },
-        [
-          h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, isChecked.value ? '✓' : ''),
-          h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
-        ],
+        {
+          default: () => [
+            h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, [
+              h(CheckboxIndicator, { as: 'span' }, () => '✓'),
+            ]),
+            h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
+          ],
+        },
       )
   },
 })

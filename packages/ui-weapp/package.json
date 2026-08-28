@@ -30,6 +30,10 @@
       "types": "./dist/primitives.d.mts",
       "import": "./dist/primitives.mjs"
     },
+    "./resolver": {
+      "types": "./dist/resolver.d.mts",
+      "import": "./dist/resolver.mjs"
+    },
     "./style.css": "./src/style.css",
     "./source/style.css": "./src/style.css",
     "./source": {
@@ -54,6 +58,7 @@
     "test:e2e": "echo ui-weapp has no e2e"
   },
   "peerDependencies": {
+    "weapp-vite": ">=6.23.0 <7",
     "wevu": ">=6.22.0 <7"
   },
   "dependencies": {
@@ -64,6 +69,7 @@
   "devDependencies": {
     "@varo/hooks": "workspace:*",
     "@varo/primitives-weapp": "workspace:*",
-    "@varo/shared": "workspace:*"
+    "@varo/shared": "workspace:*",
+    "weapp-vite": "6.23.0"
   }
 }

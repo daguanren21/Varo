@@ -5,6 +5,7 @@ import VTag from '../../components/ui/tag.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
 import VImage from '../../components/ui/v-image.vue'
+import { useWeappChrome } from '../../composables/useWeappChrome'
 import { navigateRetail, switchRetailTab } from '../../features/retail/navigation'
 import { findRetailProduct, formatRetailMoney, useRetailStore } from '../../features/retail/store'
 
@@ -12,6 +13,7 @@ const productId = shallowRef('dress-white')
 const quantity = shallowRef(1)
 const product = computed(() => findRetailProduct(productId.value))
 const { addToCart, cartCount } = useRetailStore()
+const { navigationStyle, rootStyle } = useWeappChrome()
 
 onLoad((options) => {
   productId.value = String(options?.id ?? productId.value)
@@ -33,32 +35,34 @@ function back() {
 </script>
 
 <template>
-  <view class="min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
+  <view class="retail-page-enter min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
     <view class="relative h-[420px] overflow-hidden bg-white">
       <VImage :src="product.image" :alt="product.name" fit="cover" width="100%" height="420px" />
-      <view class="absolute left-3 top-[calc(env(safe-area-inset-top)+10px)] flex gap-2">
-        <VButton
-          size="sm"
-          shape="round"
-          tone="default"
-          class-name="!h-10 !min-h-10 !bg-black/45 !px-3 !text-[10px] !text-white !backdrop-blur"
-          @click="back"
-        >
-          返回
-        </VButton>
+      <view class="absolute inset-x-0 top-0 z-20 px-3" :style="rootStyle">
+        <view class="flex items-center justify-between gap-3" :style="navigationStyle">
+          <VButton
+            size="sm"
+            shape="round"
+            tone="default"
+            class-name="!h-10 !min-h-10 !bg-black/45 !px-3 !text-[10px] !text-white !backdrop-blur"
+            @click="back"
+          >
+            返回
+          </VButton>
+          <VButton
+            size="sm"
+            shape="round"
+            tone="default"
+            class-name="!h-10 !min-h-10 !bg-black/45 !px-3 !text-[10px] !text-white !backdrop-blur"
+            @click="switchRetailTab('cart')"
+          >
+            购物车 {{ cartCount }}
+          </VButton>
+        </view>
       </view>
-      <VButton
-        size="sm"
-        shape="round"
-        tone="default"
-        class-name="absolute right-3 top-[calc(env(safe-area-inset-top)+10px)] !h-10 !min-h-10 !bg-black/45 !px-3 !text-[10px] !text-white !backdrop-blur"
-        @click="switchRetailTab('cart')"
-      >
-        购物车 {{ cartCount }}
-      </VButton>
     </view>
 
-    <view class="grid gap-3 px-3 py-3">
+    <view class="retail-section-enter grid gap-3 px-3 py-3">
       <VCard class-name="grid gap-3" variant="elevated">
         <view class="flex items-baseline gap-1">
           <text class="text-sm font-black text-[#f04438]">
@@ -72,9 +76,7 @@ function back() {
           </text>
         </view>
         <view class="flex flex-wrap gap-1.5">
-          <VTag v-for="tag in product.tags" :key="tag" tone="danger" variant="soft" size="sm">
-            {{ tag }}
-          </VTag>
+          <VTag v-for="tag in product.tags" :key="tag" :label="tag" tone="danger" variant="soft" size="sm" />
         </view>
         <text class="text-lg font-black leading-7">
           {{ product.name }}
@@ -123,13 +125,17 @@ function back() {
     </view>
 
     <view class="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3 shadow-[0_-8px_28px_rgba(15,23,42,.08)]">
-      <view class="grid grid-cols-2 gap-2">
-        <VButton size="lg" variant="outline" tone="danger" @click="add">
-          加入购物车
-        </VButton>
-        <VButton size="lg" tone="danger" @click="buy">
-          立即购买
-        </VButton>
+      <view class="grid grid-cols-2 gap-3">
+        <view class="min-w-0">
+          <VButton block size="lg" variant="outline" tone="danger" class-name="!w-full" @click="add">
+            加入购物车
+          </VButton>
+        </view>
+        <view class="min-w-0">
+          <VButton block size="lg" tone="danger" class-name="!w-full" @click="buy">
+            立即购买
+          </VButton>
+        </view>
       </view>
     </view>
   </view>

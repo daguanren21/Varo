@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowRef } from 'wevu'
+import { useWeappChrome } from '../../composables/useWeappChrome'
 import VIcon from '../ui/v-icon.vue'
-import { useWeappChrome } from '../../features/mall/useWeappChrome'
 
 withDefaults(
   defineProps<{
@@ -10,8 +10,8 @@ withDefaults(
   }>(),
   {
     address: '请选择收货地址',
-    cartCount: 0
-  }
+    cartCount: 0,
+  },
 )
 
 const emit = defineEmits<{
@@ -25,7 +25,7 @@ const { navigationStyle, rootStyle } = useWeappChrome()
 
 function search() {
   const value = keyword.value.trim()
-  if (value) emit('search', value)
+  if (value) { emit('search', value) }
 }
 </script>
 
@@ -41,8 +41,12 @@ function search() {
         @click="emit('address')"
       >
         <VIcon name="location" size="16" />
-        <text class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">{{ address }}</text>
-        <text aria-hidden="true">›</text>
+        <text class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+          {{ address }}
+        </text>
+        <text aria-hidden="true">
+          ›
+        </text>
       </button>
       <button
         class="relative m-0 flex min-h-9 flex-none items-center gap-1.5 bg-transparent p-0 text-xs font-bold text-white"
@@ -64,7 +68,7 @@ function search() {
         placeholder="搜索京东好物，或让 AI 帮你买"
         confirm-type="search"
         @confirm="search"
-      />
+      >
       <button
         class="m-0 inline-flex min-h-[34px] min-w-[58px] items-center justify-center rounded-full border-0 bg-[#e1251b] px-3 text-xs font-bold text-white"
         type="button"

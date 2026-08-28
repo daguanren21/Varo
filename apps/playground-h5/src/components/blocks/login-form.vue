@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { ClassValue } from '../../lib/cn'
 import { computed, shallowRef } from 'vue'
+import { cn } from '../../lib/cn'
 import { VButton } from '../ui/button'
 import { VInput } from '../ui/input'
 import { VSwitch } from '../ui/switch'
-import { cn, type ClassValue } from '../../lib/cn'
 
 interface LoginCredentials {
   password: string
@@ -25,8 +26,8 @@ const props = withDefaults(
     error: '',
     initialPhone: '',
     loading: false,
-    title: '欢迎回来'
-  }
+    title: '欢迎回来',
+  },
 )
 
 const emit = defineEmits<{
@@ -39,15 +40,15 @@ const phone = shallowRef(props.initialPhone)
 const remember = shallowRef(true)
 const canSubmit = computed(() => phone.value.trim().length > 0 && password.value.length > 0 && !props.loading)
 const rootClass = computed(() =>
-  cn('w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className)
+  cn('w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className),
 )
 
 function submit() {
-  if (!canSubmit.value) return
+  if (!canSubmit.value) { return }
   emit('submit', {
     password: password.value,
     phone: phone.value.trim(),
-    remember: remember.value
+    remember: remember.value,
   })
 }
 </script>
@@ -55,9 +56,15 @@ function submit() {
 <template>
   <section :class="rootClass" aria-labelledby="login-title">
     <header class="mb-6 space-y-1.5">
-      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">Varo Account</p>
-      <h2 id="login-title" class="text-2xl font-bold tracking-tight text-slate-950">{{ title }}</h2>
-      <p class="text-sm leading-6 text-slate-500">{{ description }}</p>
+      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">
+        Varo Account
+      </p>
+      <h2 id="login-title" class="text-2xl font-bold tracking-tight text-slate-950">
+        {{ title }}
+      </h2>
+      <p class="text-sm leading-6 text-slate-500">
+        {{ description }}
+      </p>
     </header>
 
     <form class="space-y-4" @submit.prevent="submit">
@@ -73,9 +80,9 @@ function submit() {
           <VSwitch v-model="remember" />
           <span>记住我</span>
         </label>
-        <button class="font-semibold text-teal-700" type="button" @click="emit('forgotPassword')">
+        <VButton size="sm" tone="default" variant="ghost" class="!min-h-0 !p-0 !font-semibold !text-teal-700" @click="emit('forgotPassword')">
           忘记密码？
-        </button>
+        </VButton>
       </div>
 
       <VButton block native-type="submit" :disabled="!canSubmit" :loading="loading" loading-text="登录中...">

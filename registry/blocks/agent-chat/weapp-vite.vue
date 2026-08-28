@@ -3,6 +3,7 @@ import type { AgentStreamSnapshot } from '@varo-ui/ai'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
+import VButton from '../ui/v-button.vue'
 
 interface AgentConversationMessage {
   content: string
@@ -55,9 +56,9 @@ const prompt = defineModel<string>({ default: '' })
           {{ subtitle }}
         </text>
       </view>
-      <button class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-lg text-slate-500" type="button" aria-label="关闭 Agent" @click="emit('close')">
-        ×
-      </button>
+      <VButton size="sm" shape="round" tone="default" variant="ghost" class-name="!h-10 !min-h-10 !px-3 !text-xs" aria-label="关闭 Agent" @click="emit('close')">
+        关闭
+      </VButton>
     </view>
 
     <scroll-view class="box-border min-h-0 w-full px-4 py-4" scroll-y :scroll-with-animation="true">

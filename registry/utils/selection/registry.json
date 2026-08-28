@@ -12,7 +12,9 @@
     "@varo-ui/theme",
     "vue"
   ],
-  "registryDependencies": [],
+  "registryDependencies": [
+    "utils/primitives"
+  ],
   "files": [
     {
       "target": "h5",

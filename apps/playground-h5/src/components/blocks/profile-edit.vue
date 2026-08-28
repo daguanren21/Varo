@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { ClassValue } from '../../lib/cn'
 import { computed, shallowRef } from 'vue'
+import { cn } from '../../lib/cn'
 import { VButton } from '../ui/button'
 import { VInput } from '../ui/input'
 import { VSelect } from '../ui/select'
-import { cn, type ClassValue } from '../../lib/cn'
 
 interface ProfileDraft {
   bio: string
@@ -29,8 +30,8 @@ const props = withDefaults(
     cities: () => [],
     initialProfile: () => ({}),
     loading: false,
-    title: '编辑个人资料'
-  }
+    title: '编辑个人资料',
+  },
 )
 
 const emit = defineEmits<{
@@ -44,7 +45,7 @@ const name = shallowRef(props.initialProfile.name ?? '')
 const phone = shallowRef(props.initialProfile.phone ?? '')
 const canSubmit = computed(() => name.value.trim().length > 0 && phone.value.trim().length > 0 && !props.loading)
 const rootClass = computed(() =>
-  cn('w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className)
+  cn('w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className),
 )
 
 function formatPhone(value: string) {
@@ -52,12 +53,12 @@ function formatPhone(value: string) {
 }
 
 function submit() {
-  if (!canSubmit.value) return
+  if (!canSubmit.value) { return }
   emit('submit', {
     bio: bio.value.trim(),
     city: city.value,
     name: name.value.trim(),
-    phone: phone.value.trim()
+    phone: phone.value.trim(),
   })
 }
 </script>
@@ -65,11 +66,15 @@ function submit() {
 <template>
   <section :class="rootClass" aria-labelledby="profile-edit-title">
     <header class="mb-5">
-      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">Profile</p>
-      <h2 id="profile-edit-title" class="mt-1 text-xl font-bold text-slate-950">{{ title }}</h2>
+      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">
+        Profile
+      </p>
+      <h2 id="profile-edit-title" class="mt-1 text-xl font-bold text-slate-950">
+        {{ title }}
+      </h2>
     </header>
 
-    <form class="space-y-4" @submit.prevent="submit">
+    <form class="space-y-6" @submit.prevent="submit">
       <VInput v-model:value="name" label="姓名" clearable placeholder="请输入姓名" />
       <VInput
         v-model:value="phone"
@@ -95,7 +100,9 @@ function submit() {
       />
 
       <div class="flex justify-end gap-3 border-t border-slate-100 pt-4">
-        <VButton variant="ghost" native-type="button" @click="emit('cancel')">取消</VButton>
+        <VButton variant="ghost" native-type="button" @click="emit('cancel')">
+          取消
+        </VButton>
         <VButton native-type="submit" :disabled="!canSubmit" :loading="loading" loading-text="保存中...">
           保存资料
         </VButton>

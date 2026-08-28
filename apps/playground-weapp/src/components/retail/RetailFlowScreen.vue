@@ -49,45 +49,47 @@ function submit() {
 </script>
 
 <template>
-  <view class="min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
-    <view class="bg-[linear-gradient(135deg,#0f172a,#134e4a)] px-4 pb-10 pt-7 text-white">
-      <text class="text-[9px] font-black tracking-[0.18em] text-teal-200">
+  <view class="retail-page-enter min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
+    <view class="retail-section-enter bg-slate-950 px-4 pb-10 pt-7 text-white">
+      <text class="text-[9px] font-black tracking-[0.18em] text-teal-300">
         {{ screen.eyebrow }}
       </text>
       <text class="mt-1 block text-2xl font-black">
         {{ screen.title }}
       </text>
-      <text class="mt-2 block max-w-[88%] text-xs leading-5 text-white/70">
+      <text class="mt-2 block max-w-[88%] text-xs leading-5 text-slate-300">
         {{ screen.description }}
       </text>
     </view>
 
-    <view class="-mt-4 grid gap-3 px-3 pb-4">
-      <VCard v-for="section in visibleSections" :key="section.title" class-name="grid gap-2" :variant="section.variant">
-        <view class="flex items-center justify-between gap-3">
-          <text class="text-sm font-black">
-            {{ section.title }}
+    <view class="retail-section-enter -mt-4 grid gap-3 px-3 pb-4">
+      <VCard v-for="section in visibleSections" :key="section.title" :variant="section.variant">
+        <view class="grid gap-2">
+          <view class="flex items-center justify-between gap-3">
+            <text class="text-sm font-black">
+              {{ section.title }}
+            </text>
+            <VTag v-if="section.status" :label="section.status" :tone="section.tone" variant="soft" size="sm" />
+          </view>
+          <text class="text-xs leading-5 text-slate-500">
+            {{ section.detail }}
           </text>
-          <VTag v-if="section.status" :tone="section.tone" variant="soft" size="sm">
-            {{ section.status }}
-          </VTag>
         </view>
-        <text class="text-xs leading-5 text-slate-500">
-          {{ section.detail }}
-        </text>
       </VCard>
 
-      <VCard v-if="hasFields" class-name="grid gap-3" variant="default">
-        <VInput
-          v-for="field in visibleFields"
-          :key="field.label"
-          :value="field.value"
-          :label="field.label"
-          :placeholder="field.placeholder"
-          :type="field.inputType"
-          :rows="field.rows"
-          @update:value="updateField(field.label, $event)"
-        />
+      <VCard v-if="hasFields" variant="default">
+        <view class="grid gap-6">
+          <VInput
+            v-for="field in visibleFields"
+            :key="field.label"
+            :value="field.value"
+            :label="field.label"
+            :placeholder="field.placeholder"
+            :type="field.inputType"
+            :rows="field.rows"
+            @update:value="updateField(field.label, $event)"
+          />
+        </view>
       </VCard>
     </view>
 

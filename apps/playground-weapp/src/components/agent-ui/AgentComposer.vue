@@ -1,34 +1,28 @@
 <script setup lang="ts">
+import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 import AgentPromptSuggestions from './AgentPromptSuggestions.vue'
 
-const props = withDefaults(
-  defineProps<{
-    busy?: boolean
-    disabled?: boolean
-    modelValue?: string
-    placeholder?: string
-    suggestions?: string[]
-  }>(),
-  {
-    busy: false,
-    disabled: false,
-    modelValue: '',
-    placeholder: '告诉 Agent 你想买什么、退什么或查看什么',
-    suggestions: () => []
-  }
-)
+const props = defineProps({
+  busy: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
+  modelValue: { type: null as unknown as PropType<string>, default: '' },
+  placeholder: { type: null as unknown as PropType<string>, default: '告诉 Agent 你想买什么、退什么或查看什么' },
+  suggestions: { type: null as unknown as PropType<string[]>, default: () => [] },
+})
 
 const emit = defineEmits<{
-  submit: [prompt: string]
+  'submit': [prompt: string]
   'update:modelValue': [value: string]
 }>()
 
-const canSubmit = computed(() => props.modelValue.trim().length > 0 && !props.busy && !props.disabled)
+const promptValue = computed(() => props.modelValue || '')
+const promptSuggestions = computed(() => Array.isArray(props.suggestions) ? props.suggestions : [])
+const canSubmit = computed(() => promptValue.value.trim().length > 0 && !props.busy && !props.disabled)
 
-function submit(prompt = props.modelValue) {
+function submit(prompt = promptValue.value) {
   const value = prompt.trim()
-  if (!value || props.busy || props.disabled) return
+  if (!value || props.busy || props.disabled) { return }
   emit('submit', value)
 }
 
@@ -42,8 +36,8 @@ function update(event: Event) {
 <template>
   <view class="agent-composer grid w-full min-w-0 gap-2.5 overflow-hidden">
     <AgentPromptSuggestions
-      v-if="suggestions.length"
-      :suggestions="suggestions"
+      v-if="promptSuggestions.length"
+      :suggestions="promptSuggestions"
       :disabled="busy || disabled"
       @select="submit"
     />
@@ -52,7 +46,7 @@ function update(event: Event) {
       <textarea
         class="box-border h-[42px] min-h-[42px] min-w-0 flex-1 overflow-hidden bg-transparent px-2 py-2 text-[13px] leading-[26px] text-slate-900"
         :style="{ width: 'auto', height: '42px', minHeight: '42px' }"
-        :value="modelValue"
+        :value="promptValue"
         :disabled="disabled"
         :placeholder="placeholder"
         :maxlength="500"
@@ -70,7 +64,9 @@ function update(event: Event) {
         aria-label="发送消息"
         @click="submit()"
       >
-        <text class="text-lg font-black leading-none" aria-hidden="true">{{ busy ? '…' : '↑' }}</text>
+        <text class="text-lg font-black leading-none" aria-hidden="true">
+          {{ busy ? '…' : '↑' }}
+        </text>
       </button>
     </view>
   </view>

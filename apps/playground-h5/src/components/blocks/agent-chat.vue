@@ -7,6 +7,7 @@ import {
 
   AgentEventRenderer,
 } from '../agent-ui'
+import { VButton } from '../ui/button'
 
 withDefaults(
   defineProps<{
@@ -45,9 +46,9 @@ const prompt = defineModel<string>({ default: '' })
         <strong class="truncate text-sm text-slate-950">{{ title }}</strong>
         <small class="truncate text-[11px] text-slate-400">{{ subtitle }}</small>
       </span>
-      <button class="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-lg text-slate-500" type="button" aria-label="Close Agent" @click="emit('close')">
-        ×
-      </button>
+      <VButton size="sm" shape="round" tone="default" variant="ghost" class="!h-10 !min-h-10 !px-3 !text-xs" aria-label="Close Agent" @click="emit('close')">
+        Close
+      </VButton>
     </header>
 
     <div class="grid min-h-0 content-start gap-3 overflow-y-auto px-4 py-4">

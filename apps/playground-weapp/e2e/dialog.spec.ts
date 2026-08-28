@@ -21,6 +21,7 @@ describe('playground-weapp delivery contract', () => {
     expect(pkg.scripts.build).toBe('weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs')
     expect(pkg.scripts.dev).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite')
     expect(pkg.scripts['dev:ai']).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite --open')
+    expect(pkg.scripts.open).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite open devtools/build')
     expect(pkg.scripts.typecheck).toBe('vue-tsc -p tsconfig.json --noEmit')
     expect(pkg.scripts['smoke:runtime']).toBe('node e2e/runtime-smoke.mjs')
     expect(project).toMatchObject({
@@ -40,6 +41,7 @@ describe('playground-weapp delivery contract', () => {
       expect(readFileSync(path, 'utf8'), path).not.toMatch(/from ['"]vue['"]/)
     })
     expect(viteConfig).toContain('wevu: \'vue\'')
+    expect(viteConfig).toContain('autoImportComponents: false')
     expect(viteConfig).not.toContain('vue: \'wevu\'')
   })
 
@@ -52,12 +54,21 @@ describe('playground-weapp delivery contract', () => {
       return
     }
 
-    const app = readJson<{ pages: string[] }>('devtools/build/mp-weixin/app.json')
+    const app = readJson<{
+      pages: string[]
+      tabBar: { list: Array<{ iconPath: string, pagePath: string, selectedIconPath: string, text: string }> }
+    }>('devtools/build/mp-weixin/app.json')
     const retailPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/retail-home/index.json')
     const mallPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/mall/index.json')
 
     expect(app.pages[0]).toBe('pages/retail-home/index')
     expect(app.pages).toContain('pages/mall/index')
+    expect(app.tabBar.list).toHaveLength(4)
+    const tabIcons = app.tabBar.list.flatMap(item => [item.iconPath, item.selectedIconPath])
+    expect(tabIcons).toHaveLength(8)
+    tabIcons.forEach((iconPath) => {
+      expect(existsSync(resolve(outputRoot, iconPath)), iconPath).toBe(true)
+    })
     expect(existsSync(resolve(outputRoot, 'pages/retail-home/index.js'))).toBe(true)
     expect(existsSync(resolve(outputRoot, 'pages/retail-home/index.wxml'))).toBe(true)
     expect(retailPage.usingComponents).toMatchObject({
@@ -99,5 +110,8 @@ describe('playground-weapp delivery contract', () => {
     const appWxss = readFileSync(resolve(outputRoot, 'app.wxss'), 'utf8')
     expect(buttonWxml).toContain('hover-class=\"{{hoverClass}}\"')
     expect(appWxss).toContain('.varo-button--pressed')
+    expect(appWxss).toContain('.retail-page-enter')
+    expect(appWxss).toContain('@keyframes retail-page-in')
+    expect(appWxss).toContain('prefers-reduced-motion')
   })
 })

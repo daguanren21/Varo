@@ -10,11 +10,16 @@
   ],
   "dependencies": [
     "@varo-ui/headless",
-    "@varo-ui/theme",
-    "vue"
+    "@varo-ui/theme"
   ],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ]
+  },
   "registryDependencies": [
-    "themes/base"
+    "themes/base",
+    "utils/primitives"
   ],
   "files": [
     {

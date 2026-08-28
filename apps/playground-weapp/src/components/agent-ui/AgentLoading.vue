@@ -12,8 +12,8 @@ const props = withDefaults(
     active: true,
     label: 'Agent 正在处理',
     startedAt: undefined,
-    variant: 'grid'
-  }
+    variant: 'grid',
+  },
 )
 
 const elapsed = shallowRef(0)
@@ -27,7 +27,7 @@ function updateElapsed() {
 }
 
 function start() {
-  if (timer || !props.active) return
+  if (timer || !props.active) { return }
   updateElapsed()
   timer = setInterval(updateElapsed, 100)
 }
@@ -37,7 +37,7 @@ function stop() {
   timer = undefined
 }
 
-if (props.active) start()
+if (props.active) { start() }
 onBeforeUnmount(stop)
 </script>
 
@@ -59,19 +59,54 @@ onBeforeUnmount(stop)
       <text class="agent-loading__orbit-dot absolute left-1/2 top-[-2px] h-2 w-2 -translate-x-1/2 rounded-full bg-teal-700" />
     </view>
     <view class="flex min-w-0 flex-1 items-baseline justify-between gap-3">
-      <text class="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-semibold">{{ label }}</text>
-      <text class="text-[11px] tabular-nums text-slate-400">{{ elapsedLabel }}</text>
+      <text class="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-semibold">
+        {{ label }}
+      </text>
+      <text class="text-[11px] tabular-nums text-slate-400">
+        {{ elapsedLabel }}
+      </text>
     </view>
   </view>
 </template>
 
-<style scoped>
-.agent-loading__pixel { animation: agent-pixel 1.1s ease-in-out infinite; }
-.agent-loading__orbit { animation: agent-orbit 1.2s linear infinite; }
-.agent-loading__orbit-dot { box-shadow: 0 0 0 3px rgba(204,251,241,.9); }
-@keyframes agent-orbit { to { transform: rotate(360deg); } }
-@keyframes agent-pixel { 0%, 100% { opacity: .18; transform: scale(.82); } 50% { opacity: 1; transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) { .agent-loading__pixel, .agent-loading__orbit { animation: none; } }
+<style>
+.agent-loading__pixel {
+  animation: agent-pixel 1.1s ease-in-out infinite;
+}
+
+.agent-loading__orbit {
+  animation: agent-orbit 1.2s linear infinite;
+}
+
+.agent-loading__orbit-dot {
+  box-shadow: 0 0 0 3px rgb(204 251 241 / 90%);
+}
+
+@keyframes agent-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes agent-pixel {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(0.82);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-loading__pixel,
+  .agent-loading__orbit {
+    animation: none;
+  }
+}
 </style>
 
 <json lang="jsonc">

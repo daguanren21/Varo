@@ -387,6 +387,9 @@ importers:
       '@varo/shared':
         specifier: workspace:*
         version: link:../shared
+      weapp-vite:
+        specifier: 6.23.0
+        version: 6.23.0(@babel/core@8.0.1)(@types/node@26.1.0)(esbuild@0.28.2)(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(jiti@2.7.0)(miniprogram-api-typings@5.2.3)(sass@1.103.1)(supports-color@10.2.2)(yaml@2.9.0)
 
   packages/utils: {}
 

@@ -1,23 +1,18 @@
 <script setup lang="ts">
+import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 
-const props = withDefaults(
-  defineProps<{
-    color?: string
-    label?: string
-    name: string
-    size?: number | string
-    spin?: boolean
-    tone?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'muted'
-  }>(),
-  {
-    color: '',
-    label: '',
-    size: 16,
-    spin: false,
-    tone: 'default',
+const props = defineProps({
+  color: { type: null as unknown as PropType<string>, default: '' },
+  label: { type: null as unknown as PropType<string>, default: '' },
+  name: { type: null as unknown as PropType<string>, default: '' },
+  size: { type: null as unknown as PropType<number | string>, default: 16 },
+  spin: { type: Boolean, default: false },
+  tone: {
+    type: null as unknown as PropType<'default' | 'primary' | 'success' | 'warning' | 'danger' | 'muted'>,
+    default: 'default',
   },
-)
+})
 
 const GLYPH_BY_NAME: Record<string, string> = {
   'back': '‹',
@@ -38,7 +33,12 @@ const GLYPH_BY_NAME: Record<string, string> = {
   'warning': '!',
 }
 
-const dimension = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
+const safeName = computed(() => props.name || '')
+const safeTone = computed(() => props.tone || 'default')
+const dimension = computed(() => {
+  const value = props.size || 16
+  return typeof value === 'number' ? `${value}px` : value
+})
 const accessibleLabel = computed(() => props.label || undefined)
 const ariaHidden = computed(() => (props.label ? undefined : 'true'))
 </script>
@@ -48,12 +48,12 @@ const ariaHidden = computed(() => (props.label ? undefined : 'true'))
     class="varo-icon"
     :aria-hidden="ariaHidden"
     :aria-label="accessibleLabel"
-    :data-name="name"
-    :data-spin="String(spin)"
-    :data-tone="tone"
-    :style="{ color, fontSize: dimension, width: dimension, height: dimension }"
+    :data-name="safeName"
+    :data-spin="String(props.spin)"
+    :data-tone="safeTone"
+    :style="{ color: props.color || '', fontSize: dimension, width: dimension, height: dimension }"
   >
-    <slot>{{ GLYPH_BY_NAME[name] || name }}</slot>
+    <slot>{{ GLYPH_BY_NAME[safeName] || safeName }}</slot>
   </text>
 </template>
 
