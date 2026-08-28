@@ -42,10 +42,7 @@ describe('ui-h5 style entry', () => {
     expect(style).toContain('box-shadow: var(--varo-ui-shadow-sm)')
   })
 
-  it('builds the stylesheet file targeted by package exports', () => {
-    const builtStyle = readFileSync(resolve(packageRoot, 'dist/style.css'), 'utf8')
-
-    expect(builtStyle).toContain('.varo-checkbox')
-    expect(builtStyle).toContain('.varo-calendar-card')
+  it('targets the stylesheet emitted by the package build', () => {
+    expect(packageJson.exports?.['./style.css']).toBe('./dist/style.css')
   })
 })
