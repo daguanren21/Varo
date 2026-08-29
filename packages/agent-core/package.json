@@ -1,7 +1,7 @@
 {
   "name": "@varo-ui/ai",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Shared event protocol, streaming controller, and safe Markdown primitives for Varo Agent UI.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",
