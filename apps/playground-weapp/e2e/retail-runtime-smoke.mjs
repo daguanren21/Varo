@@ -28,7 +28,10 @@ async function main() {
     assert.equal((await home.data('featuredProducts')).length, 8, 'Retail home must expose eight product cards')
 
     await inspectPage('/pages/retail-category/index')
-    await inspectPage('/pages/retail-cart/index')
+    const cart = await inspectPage('/pages/retail-cart/index')
+    const quantityInput = await cart.$('.varo-input-number__input')
+    assert.ok(quantityInput, 'Retail cart must render the quantity value input')
+    assert.equal(await quantityInput.attr('value'), '1', 'Retail cart must display the current quantity')
     await inspectPage('/retail-showcase/index/index')
     await inspectPage('/pages/retail-profile/index')
 

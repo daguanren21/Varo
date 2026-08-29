@@ -285,9 +285,6 @@ textarea.varo-input__control {
 .varo-input-number {
   display: inline-flex;
   align-items: center;
-  width: 100%;
-  min-width: 0;
-  max-width: 128px;
   overflow: hidden;
   background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
@@ -298,7 +295,6 @@ textarea.varo-input__control {
 .varo-input-number__minus,
 .varo-input-number__plus {
   display: inline-flex;
-  flex: 0 0 36px;
   align-items: center;
   justify-content: center;
   width: 36px;
@@ -317,9 +313,7 @@ textarea.varo-input__control {
 }
 
 .varo-input-number__input {
-  flex: 1 1 auto;
-  width: 0;
-  min-width: 0;
+  width: 56px;
   height: 36px;
   font: inherit;
   font-weight: 650;
