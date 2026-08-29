@@ -300,6 +300,7 @@ textarea.varo-input__control {
   width: 36px;
   height: 36px;
   font-size: 18px;
+  font-weight: 700;
   color: var(--varo-ui-text);
   cursor: pointer;
   background: var(--varo-ui-surface-muted);
@@ -307,9 +308,11 @@ textarea.varo-input__control {
 }
 
 .varo-input-number__minus:disabled,
-.varo-input-number__plus:disabled {
+.varo-input-number__plus:disabled,
+.varo-input-number__control--disabled {
+  color: var(--varo-ui-text-muted);
   cursor: not-allowed;
-  opacity: 0.42;
+  opacity: 1;
 }
 
 .varo-input-number__input {

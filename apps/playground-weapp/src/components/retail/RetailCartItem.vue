@@ -14,10 +14,16 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  quantityChange: [quantity: number]
-  select: [selected: boolean]
-  view: [product: RetailProduct]
+  'quantity-change': [quantity: number]
+  'select': [selected: boolean]
+  'view': [product: RetailProduct]
 }>()
+
+function changeQuantity(quantity: number) {
+  // Wevu forwards camelCase names unchanged; the native listener is kebab-case.
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('quantity-change', quantity)
+}
 </script>
 
 <template>
@@ -56,7 +62,7 @@ const emit = defineEmits<{
             :value="quantity"
             :min="1"
             :max="Math.max(1, product.stock)"
-            @update:value="emit('quantityChange', $event)"
+            @change="changeQuantity"
           />
         </view>
       </view>
