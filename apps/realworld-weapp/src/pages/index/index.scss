@@ -72,12 +72,8 @@
     color: #e73828;
   }
 
-  .p_input {
-    .varo-input {
-      input {
-        font-size: 28px;
-      }
-    }
+  .p_input .varo-input .varo-input__control {
+    font-size: 28px;
   }
 
   .p_action {

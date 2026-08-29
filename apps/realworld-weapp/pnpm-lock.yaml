@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@varo-ui/theme':
+        specifier: 1.0.1
+        version: 1.0.1(typescript@6.0.3)
       '@weapp-tailwindcss/merge':
         specifier: ^2.2.2
         version: 2.2.2
@@ -2070,6 +2073,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@varo-ui/theme@1.0.1':
+    resolution: {integrity: sha512-5NUDZtGqnprD+CBEAiebQt66BAAwy8jTVBzMC6/Wo8/BUSqP3tczIynfZxNCGXp7+9FJ6Y/1EPxiB3JS79oTlg==}
 
   '@vercel/detect-agent@1.2.5':
     resolution: {integrity: sha512-0krENrjuitlW8s6TJu0MlqCevyCU7K7JK63jZAf7xZ6n17tx+vUEwzHT3sTxawtwZxaW21hu+oFUpoOrm49FsQ==}
@@ -5356,6 +5362,12 @@ snapshots:
   '@types/lodash@4.17.25': {}
 
   '@types/trusted-types@2.0.7': {}
+
+  '@varo-ui/theme@1.0.1(typescript@6.0.3)':
+    dependencies:
+      vue: 3.5.42(typescript@6.0.3)
+    transitivePeerDependencies:
+      - typescript
 
   '@vercel/detect-agent@1.2.5': {}
 

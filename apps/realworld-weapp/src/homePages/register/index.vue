@@ -104,16 +104,23 @@ const { checkboxOption, checkedList } = toRefs(check)
       </view>
     </view>
     <view class="btn_wrap">
-      <VButton
-        :disabled="getReg"
-        class="btn" shape="round" tone="warning"
-        @click="onSubmit"
-      >
-        注册
-      </VButton>
-      <VButton class="btn" shape="round" tone="warning" @click="onReset">
-        返回
-      </VButton>
+      <view class="register-action">
+        <VButton
+          block
+          :disabled="getReg"
+          shape="round"
+          size="lg"
+          tone="warning"
+          @click="onSubmit"
+        >
+          注册
+        </VButton>
+      </view>
+      <view class="register-action">
+        <VButton block shape="round" size="lg" tone="warning" @click="onReset">
+          返回
+        </VButton>
+      </view>
     </view>
   </view>
 </template>

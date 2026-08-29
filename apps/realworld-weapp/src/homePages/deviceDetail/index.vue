@@ -25,10 +25,10 @@ const { devicePublicFilter, deviceUseStateFilter, noDataFilter, minuteFilter, di
     <view class="image_wrap">
       <template v-for="(item, index) in detail.deployedImageUrls" :key="index">
         <view v-if="item" class="item" @tap="previewImages(item, detail.oldDeployedImageUrls)">
-          <image :src="item" />
+          <image class="device-image" :src="item" />
         </view>
         <view v-else class="item">
-          <image src="../../static/images/jx-without-image.svg" />
+          <image class="device-image" src="../../static/images/jx-without-image.svg" />
         </view>
       </template>
 

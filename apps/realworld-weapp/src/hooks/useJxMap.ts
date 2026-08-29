@@ -350,7 +350,6 @@ export function useJxMap(props: { type?: string }) {
     // return platform === 'android' && compareVersion(appVersion, '8.0.51')
     return compareVersion(appVersion, '8.0.51')
   })
-  console.log('Android', appVersion, isExcuteAndriod.value)
   if (!isExcuteAndriod.value) {
     // 获取地图上下文对象
     mapData.mapCtx = wx.createMapContext('indexMap')

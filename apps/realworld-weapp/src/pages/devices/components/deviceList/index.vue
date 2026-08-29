@@ -41,6 +41,7 @@ const { list, status, handleReachBottom, noDataFilter, dateFilter, activationSta
     <!-- 列表 -->
     <!-- :scroll-into-item="toItem" -->
     <AedVirtualList
+      class="manage-list"
       bench="5" :items="list" height="100%" :item-height="itemHeight" :reach-bottom-threshold="30"
       @reach-bottom="handleReachBottom"
     >
@@ -53,8 +54,8 @@ const { list, status, handleReachBottom, noDataFilter, dateFilter, activationSta
         <view :key="`d${index}`" class="manage_item" @tap="goToDetail(item)">
           <view class="top">
             <view class="left">
-              <image v-if="item.brandLogo" :src="item.brandLogo" />
-              <image v-else src="../../../../static/images/jx-without-image.svg" />
+              <image v-if="item.brandLogo" class="device-brand-image" :src="item.brandLogo" />
+              <image v-else class="device-brand-image" src="../../../../static/images/jx-without-image.svg" />
             </view>
             <view class="right">
               <view class="line">

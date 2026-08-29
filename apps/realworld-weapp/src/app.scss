@@ -1,4 +1,15 @@
+@import './styles/varo.css';
+/* @varo-theme */
+
 page {
+  button {
+    line-height: inherit;
+  }
+
+  button::after {
+    border: 0;
+  }
+
   height: 100%;
   overflow: hidden;
 

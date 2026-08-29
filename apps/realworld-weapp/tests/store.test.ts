@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createStore } from 'wevu'
 import { useAedStore } from '../src/store'
 import { useNavigationStore } from '../src/store/navigation'
+import { realworldTheme, renderRealworldThemeCss } from '../src/theme'
 
 const { storage } = vi.hoisted(() => {
   const storage = new Map<string, unknown>()
@@ -44,5 +45,14 @@ describe('Real-world Weapp Wevu stores', () => {
     expect(navigation.payload.value).toEqual(payload)
     navigation.setPayload()
     expect(navigation.payload.value).toBeUndefined()
+  })
+})
+
+describe('Real-world Varo theme', () => {
+  it('renders the branded semantic tokens into global mini-program CSS', () => {
+    expect(realworldTheme.seed.primary).toBe('#ff6216')
+    expect(realworldTheme.components.button.borderRadius).toBe('12px')
+    expect(renderRealworldThemeCss()).toContain('--varo-ui-primary: #ff6216;')
+    expect(renderRealworldThemeCss()).toContain('--varo-ui-text: #231815;')
   })
 })

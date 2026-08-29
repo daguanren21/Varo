@@ -18,7 +18,7 @@ const { lockType, lockCategory, lockState, lockSerialNumber, isVolunteer, wxOneK
     :status="globalTip.status"
     :duration="5000"
   />
-  <view>
+  <view class="open-lock-page">
     <view class="lock_number" style="height: 15vw; color: #0078ff">
       <block v-if="lockType === 'BLUETOOTH'">
         <text>蓝牙锁编号：</text>
@@ -90,16 +90,24 @@ const { lockType, lockCategory, lockState, lockSerialNumber, isVolunteer, wxOneK
     </view>
 
     <view v-if="lockState == 1" class="text-wrapper text-wait">
-      <text>急救设备，请勿擅自取出！</text>
+      <text class="lock-message">
+        急救设备，请勿擅自取出！
+      </text>
     </view>
     <view v-if="lockState == 2" class="text-wrapper text-opening">
-      <text>急救设备，请勿擅自取出！</text>
+      <text class="lock-message">
+        急救设备，请勿擅自取出！
+      </text>
     </view>
     <view v-if="lockState == 3" class="text-wrapper text-success">
-      <text>请马上拉开箱门，取出AED！</text>
+      <text class="lock-message">
+        请马上拉开箱门，取出AED！
+      </text>
     </view>
     <view v-if="lockState == 4" class="text-wrapper text-failed">
-      <text>请立即使用安全锤砸碎透明窗或按下一键开门按钮，取出AED！</text>
+      <text class="lock-message">
+        请立即使用安全锤砸碎透明窗或按下一键开门按钮，取出AED！
+      </text>
     </view>
     <view
       v-if="lockState == 3 || lockState == 4 || lockState == 5"

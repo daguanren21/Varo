@@ -402,6 +402,7 @@ describe('docs navigation', () => {
   it('publishes interactive AI component docs on VitePress 2 alpha', () => {
     const config = readFileSync(configPath, 'utf8')
     const theme = readFileSync(resolve(docsRoot, '.vitepress/theme/index.ts'), 'utf8')
+    const tailwind = readFileSync(resolve(docsRoot, '.vitepress/theme/tailwind.css'), 'utf8')
     const demo = readFileSync(resolve(docsRoot, 'src/components/AgentComponentsDemo.vue'), 'utf8')
     const aiZh = readFileSync(resolve(docsRoot, 'ai/index.md'), 'utf8')
     const aiEn = readFileSync(resolve(docsRoot, 'en/ai/index.md'), 'utf8')
@@ -413,6 +414,9 @@ describe('docs navigation', () => {
     expect(config).toContain('{ text: \'AI Agent\', link: \'/ai/\' }')
     expect(config).toContain('{ text: \'AI Agent\', link: \'/en/ai/\' }')
     expect(theme).toContain('app.component(\'AgentComponentsDemo\', AgentComponentsDemo)')
+    expect(tailwind).toContain('@import "tailwindcss/utilities.css";')
+    expect(tailwind).not.toContain('@import "tailwindcss/utilities.css" layer(utilities);')
+    expect(tailwind).toContain('@source "../../src/components/agent-ui/**/*.{ts,vue}";')
     expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
     expect(aiZh).toContain('36 个双端 Agent 组件')

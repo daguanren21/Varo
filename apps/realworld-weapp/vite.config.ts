@@ -1,15 +1,62 @@
+import type { Plugin } from 'vite'
 import { resolve } from 'node:path'
 import { weappTailwindcss } from 'weapp-tailwindcss/vite'
 import { defineConfig } from 'weapp-vite/config'
+import { renderRealworldThemeCss } from './src/theme.ts'
 
 const root = import.meta.dirname
+const appStylePath = resolve(root, 'src/app.scss')
+const themeMarker = '/* @varo-theme */'
+
+function realworldThemePlugin(): Plugin {
+  return {
+    name: 'varo:realworld-theme',
+    enforce: 'pre',
+    transform(source, id) {
+      if (id.split('?')[0] !== appStylePath) {
+        return
+      }
+      if (!source.includes(themeMarker)) {
+        throw new Error(`Missing ${themeMarker} in src/app.scss`)
+      }
+      return {
+        code: source.replace(themeMarker, renderRealworldThemeCss()),
+        map: null,
+      }
+    },
+  }
+}
+
+function realworldGlobalStylesPlugin(): Plugin {
+  return {
+    name: 'varo:realworld-global-styles',
+    enforce: 'post',
+    generateBundle(_options, bundle) {
+      const appStyle = Object.values(bundle)
+        .find(output => output.type === 'asset' && output.fileName === 'app.wxss')
+      const sharedStyle = Object.values(bundle)
+        .find(output => output.type === 'asset' && output.fileName === 'styles.wxss')
+
+      if (!appStyle || appStyle.type !== 'asset' || !sharedStyle) {
+        throw new Error('Expected app.wxss and styles.wxss assets')
+      }
+
+      const source = typeof appStyle.source === 'string'
+        ? appStyle.source
+        : new TextDecoder().decode(appStyle.source)
+      appStyle.source = `@import "./styles.wxss";\n${source}`
+    },
+  }
+}
 
 export default defineConfig({
   plugins: [
+    realworldThemePlugin(),
     weappTailwindcss({
       appType: 'weapp-vite',
       cssEntries: [resolve(root, 'src/styles.css')],
       cssOptions: {
+        cssPreflight: false,
         rem2rpx: true,
         px2rpx: {
           platform: 'weapp',
@@ -21,6 +68,7 @@ export default defineConfig({
       ignoreCallExpressionIdentifiers: ['cn'],
       logLevel: 'warn',
     }),
+    realworldGlobalStylesPlugin(),
   ],
   build: {
     outDir: process.env.VARO_WEAPP_OUTPUT === 'development' ? 'dist/dev/mp-weixin' : 'devtools/build/mp-weixin',
@@ -41,7 +89,7 @@ export default defineConfig({
     platform: 'weapp',
     styles: {
       source: 'styles.css',
-      include: '**/*.vue',
+      inject: false,
     },
     autoImportComponents: {
       globs: ['components/ui/**/*.vue', 'components/aed/**/*.vue'],

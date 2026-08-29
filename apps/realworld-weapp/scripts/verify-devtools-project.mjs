@@ -47,6 +47,7 @@ if (pages.length !== 51) { throw new Error(`Expected 51 migrated pages, received
 
 const queue = [appJsonPath, ...pages.map(page => resolve(outputRoot, `${page}.json`))]
 const visited = new Set()
+const componentStylePaths = new Set()
 const missing = []
 while (queue.length > 0) {
   const ownerPath = queue.shift()
@@ -61,6 +62,7 @@ while (queue.length > 0) {
     if (typeof componentPath !== 'string') { continue }
     const basePath = componentBasePath(ownerPath, componentPath)
     if (!basePath) { continue }
+    componentStylePaths.add(`${basePath}.wxss`)
     for (const extension of requiredComponentExtensions) {
       if (!await exists(`${basePath}${extension}`)) {
         missing.push(`${ownerPath.replace(`${projectRoot}/`, '')}: ${name} -> ${componentPath}${extension}`)
@@ -91,4 +93,69 @@ const wxss = wxssSources.join('\n')
 if (!wxss.includes('bg-orange-500') || wxss.includes('@import "tailwindcss"')) {
   throw new Error('Tailwind utilities were not transformed into production WXSS')
 }
-console.log('Verified 51 pages, component paths, WXML safety, and Tailwind WXSS')
+
+async function collectImportedStyles(path, visitedStyles = new Set()) {
+  if (visitedStyles.has(path) || !await exists(path)) {
+    return []
+  }
+  visitedStyles.add(path)
+  const source = await readFile(path, 'utf8')
+  const styles = [{ path, source }]
+  for (const match of source.matchAll(/@import\s+['"]([^'"]+)['"]/g)) {
+    styles.push(...await collectImportedStyles(resolve(dirname(path), match[1]), visitedStyles))
+  }
+  return styles
+}
+
+function findUnsafeSelectors(source) {
+  const unsafe = []
+  const normalizedSource = source.replace(/\/\*[\s\S]*?\*\//g, '')
+  for (const block of normalizedSource.split('{').slice(0, -1)) {
+    const selectorText = block.slice(block.lastIndexOf('}') + 1).trim()
+    for (const selector of selectorText.split(',').map(value => value.trim()).filter(Boolean)) {
+      if (selector.startsWith('@') || /^(?:from|to|\d+%)$/.test(selector)) {
+        continue
+      }
+      const hasAttribute = /(?:^|[^\\])\[/.test(selector)
+      const hasId = /(?:^|[\s>+~])#[\w-]+/.test(selector)
+      const hasTag = /(?:^|[\s>+~])[a-z][\w-]*(?=[:.#\s>+~]|$)/i.test(selector)
+      if (hasAttribute || hasId || hasTag) {
+        unsafe.push(selector)
+      }
+    }
+  }
+  return unsafe
+}
+
+const unsafeComponentSelectors = []
+const analyzedStyles = new Set()
+for (const componentStylePath of componentStylePaths) {
+  for (const style of await collectImportedStyles(componentStylePath)) {
+    if (analyzedStyles.has(style.path)) {
+      continue
+    }
+    analyzedStyles.add(style.path)
+    for (const selector of findUnsafeSelectors(style.source)) {
+      unsafeComponentSelectors.push(`${style.path.replace(`${outputRoot}/`, '')}: ${selector}`)
+    }
+  }
+}
+if (unsafeComponentSelectors.length > 0) {
+  throw new Error(`Component WXSS contains unsupported selectors:\n${unsafeComponentSelectors.join('\n')}`)
+}
+
+const appWxss = await readFile(resolve(outputRoot, 'app.wxss'), 'utf8')
+if (!appWxss.startsWith('@import "./styles.wxss";')) {
+  throw new Error('app.wxss does not import the generated global Tailwind stylesheet')
+}
+const requiredThemeVariables = [
+  '--varo-ui-primary: #ff6216;',
+  '--varo-ui-text: #231815;',
+  '--varo-ui-success: #21cf3c;',
+  '--varo-ui-danger: #e73828;',
+]
+const missingThemeVariables = requiredThemeVariables.filter(variable => !appWxss.includes(variable))
+if (missingThemeVariables.length > 0) {
+  throw new Error(`Realworld Varo theme variables were not generated:\n${missingThemeVariables.join('\n')}`)
+}
+console.log('Verified 51 pages, component paths, WXML and selector safety, Varo theme, and Tailwind WXSS')

@@ -1,14 +1,5 @@
-@import './assets/fonts/iconfont.css';
-@import './assets/jousingFonts/iconfont.css';
-@import './styles/varo.css';
-@import 'tailwindcss';
-
-@layer base {
-  button {
-    line-height: inherit;
-  }
-
-  button::after {
-    border: 0;
-  }
-}
+@layer theme, utilities;
+@import "./assets/fonts/iconfont.css";
+@import "./assets/jousingFonts/iconfont.css";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css";

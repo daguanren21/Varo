@@ -129,15 +129,6 @@
     }
   }
 }
-@mixin mixin-map-btn() {
-  border: none;
-  width: 442px;
-  height: 90px;
-  line-height: 90px;
-  font-size: 36px;
-  font-weight: bold;
-  color: #ffffff;
-}
 
 @mixin ellipsis() {
   display: block;
@@ -151,23 +142,13 @@
   position: absolute;
   bottom: 30px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  .varo-button {
-    display: flex;
-  }
-
-  .jx_icon {
-    margin-right: 12px;
-  }
-
-  .call {
-    @include mixin-map-btn();
-    background-color: #ff6216;
-  }
-
-  .register {
-    @include mixin-map-btn();
-    background-color: #182987;
+  .map-primary-action {
+    width: 442px;
+    max-width: calc(100% - 48px);
   }
 }
 
@@ -207,7 +188,7 @@
         margin-right: 24px;
         background-color: #e5e8f2;
 
-        image {
+        .device-brand-image {
           width: 100%;
           height: 100%;
         }

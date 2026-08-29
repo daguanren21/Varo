@@ -181,9 +181,7 @@ export function useManageMap(updateTotal: (total: number) => void) {
     // return platform === 'android' && compareVersion(appVersion, '8.0.51')
     return compareVersion(appVersion, '8.0.51')
   })
-  console.log('Android', appVersion, isExcuteAndriod.value)
   const isShow = ref(!isExcuteAndriod.value)
-  console.log('Android', appVersion, isExcuteAndriod.value)
   if (!isExcuteAndriod.value) {
     // 获取地图上下文对象
     mapCtx = wx.createMapContext('manageMap')

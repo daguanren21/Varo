@@ -21,7 +21,7 @@ const props = withDefaults(
     showWordLimit?: boolean
     size?: 'sm' | 'md' | 'lg'
     type?: InputType
-    value?: string
+    value?: unknown
   }>(),
   {
     align: 'left',
@@ -38,7 +38,6 @@ const props = withDefaults(
     showWordLimit: false,
     size: 'md',
     type: 'text',
-    value: '',
   },
 )
 
@@ -51,7 +50,7 @@ const emit = defineEmits<{
 }>()
 
 const focused = shallowRef(false)
-const localValue = shallowRef(props.value)
+const localValue = shallowRef(String(props.value ?? ''))
 const isTextarea = computed(() => props.type === 'textarea')
 const maxLength = computed(() => Number(props.maxLength) || 140)
 const nativeType = computed<NativeInputType>(() => {
@@ -63,7 +62,7 @@ const nativeType = computed<NativeInputType>(() => {
 watch(
   () => props.value,
   (value) => {
-    localValue.value = value
+    localValue.value = String(value ?? '')
   },
 )
 

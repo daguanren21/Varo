@@ -224,6 +224,9 @@ importers:
 
   apps/realworld-weapp:
     dependencies:
+      '@varo-ui/theme':
+        specifier: 1.0.1
+        version: 1.0.1(typescript@6.0.3)
       '@weapp-tailwindcss/merge':
         specifier: ^2.2.2
         version: 2.2.2
@@ -4297,6 +4300,9 @@ packages:
     resolution: {integrity: sha512-3qkmU6KXWh8GIThEAW3kuRHPQBMjWkKy+Ppz3WkUucx53DTpOa6siMn4xDGSOhlVyMrDaJTCTMLYPZVAIk1P0A==}
     peerDependencies:
       valibot: ^1.4.0
+
+  '@varo-ui/theme@1.0.1':
+    resolution: {integrity: sha512-5NUDZtGqnprD+CBEAiebQt66BAAwy8jTVBzMC6/Wo8/BUSqP3tczIynfZxNCGXp7+9FJ6Y/1EPxiB3JS79oTlg==}
 
   '@vercel/detect-agent@1.2.5':
     resolution: {integrity: sha512-0krENrjuitlW8s6TJu0MlqCevyCU7K7JK63jZAf7xZ6n17tx+vUEwzHT3sTxawtwZxaW21hu+oFUpoOrm49FsQ==}
@@ -9585,7 +9591,7 @@ packages:
 
 snapshots:
 
-  '@antfu/eslint-config@9.3.0(@eslint-react/eslint-plugin@5.18.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.68.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.41)(eslint-plugin-format@2.0.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint-plugin-react-refresh@0.5.5(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@4.1.11)':
+  '@antfu/eslint-config@9.3.0(@eslint-react/eslint-plugin@5.18.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.68.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.42)(eslint-plugin-format@2.0.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint-plugin-react-refresh@0.5.5(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@4.1.11)':
     dependencies:
       '@antfu/install-pkg': 2.0.1
       '@clack/prompts': 1.7.0
@@ -9617,7 +9623,7 @@ snapshots:
       eslint-plugin-unused-imports: 4.4.1(@typescript-eslint/eslint-plugin@8.68.0(@typescript-eslint/parser@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-vue: 10.10.0(@stylistic/eslint-plugin@5.10.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(@typescript-eslint/parser@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(vue-eslint-parser@10.4.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))
       eslint-plugin-yml: 3.8.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))
-      eslint-processor-vue-blocks: 2.0.0(@vue/compiler-sfc@3.5.41)(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))
+      eslint-processor-vue-blocks: 2.0.0(@vue/compiler-sfc@3.5.42)(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))
       globals: 17.11.0
       local-pkg: 1.2.1
       parse-gitignore: 2.0.0
@@ -11198,13 +11204,13 @@ snapshots:
 
   '@icebreakers/eslint-config@7.1.0(eslint-plugin-pnpm@1.8.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(postcss@8.5.26)(stylelint-config-html@2.0.0(postcss-html@2.0.0(postcss@8.5.26))(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3)))(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3))(supports-color@10.2.2)(tailwindcss@4.3.3)(typescript@6.0.3)(vitest@4.1.11)':
     dependencies:
-      '@antfu/eslint-config': 9.3.0(@eslint-react/eslint-plugin@5.18.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.68.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.41)(eslint-plugin-format@2.0.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint-plugin-react-refresh@0.5.5(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@4.1.11)
+      '@antfu/eslint-config': 9.3.0(@eslint-react/eslint-plugin@5.18.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.68.0(supports-color@10.2.2)(typescript@6.0.3))(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.42)(eslint-plugin-format@2.0.1(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint-plugin-react-refresh@0.5.5(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@4.1.11)
       '@eslint-react/eslint-plugin': 5.18.6(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       '@icebreakers/stylelint-config': 5.0.6(postcss@8.5.26)(stylelint-config-html@2.0.0(postcss-html@2.0.0(postcss@8.5.26))(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3)))(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3))(tailwindcss@4.3.3)
       '@typescript-eslint/rule-tester': 8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/typescript-estree': 8.68.0(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/utils': 8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
-      '@vue/compiler-sfc': 3.5.41
+      '@vue/compiler-sfc': 3.5.42
       '@weapp-vite/eslint': 0.1.0(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))
       eslint-flat-config-utils: 3.2.0
       eslint-plugin-better-stylelint: 2.0.3(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2))(stylelint@17.14.1(supports-color@10.2.2)(typescript@6.0.3))
@@ -13678,6 +13684,12 @@ snapshots:
     dependencies:
       valibot: 1.4.2(typescript@6.0.3)
 
+  '@varo-ui/theme@1.0.1(typescript@6.0.3)':
+    dependencies:
+      vue: 3.5.42(typescript@6.0.3)
+    transitivePeerDependencies:
+      - typescript
+
   '@vercel/detect-agent@1.2.5': {}
 
   '@vitejs/plugin-vue@6.0.7(vite@8.1.3(@types/node@26.1.0)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.103.1)(yaml@2.9.0))(vue@3.5.41(typescript@6.0.3))':
@@ -13790,7 +13802,7 @@ snapshots:
       '@babel/types': 8.0.4
       '@vue/babel-helper-vue-transform-on': 3.0.0
       '@vue/babel-plugin-resolve-type': 3.0.0(@babel/core@8.0.1)
-      '@vue/shared': 3.5.41
+      '@vue/shared': 3.5.42
     optionalDependencies:
       '@babel/core': 8.0.1
 
@@ -13801,7 +13813,7 @@ snapshots:
       '@babel/helper-module-imports': 8.0.0
       '@babel/helper-plugin-utils': 8.0.1(@babel/core@8.0.1)
       '@babel/parser': 8.0.4
-      '@vue/compiler-sfc': 3.5.41
+      '@vue/compiler-sfc': 3.5.42
 
   '@vue/compiler-core@3.5.41':
     dependencies:
@@ -13879,8 +13891,8 @@ snapshots:
   '@vue/language-core@3.3.11':
     dependencies:
       '@volar/language-core': 2.4.28
-      '@vue/compiler-dom': 3.5.41
-      '@vue/shared': 3.5.41
+      '@vue/compiler-dom': 3.5.42
+      '@vue/shared': 3.5.42
       alien-signals: 3.2.1
       muggle-string: 0.4.1
       path-browserify: 1.0.1
@@ -15563,9 +15575,9 @@ snapshots:
       natural-compare: 1.4.0
       yaml-eslint-parser: 2.1.0
 
-  eslint-processor-vue-blocks@2.0.0(@vue/compiler-sfc@3.5.41)(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)):
+  eslint-processor-vue-blocks@2.0.0(@vue/compiler-sfc@3.5.42)(eslint@10.9.1(jiti@2.7.0)(supports-color@10.2.2)):
     dependencies:
-      '@vue/compiler-sfc': 3.5.41
+      '@vue/compiler-sfc': 3.5.42
       eslint: 10.9.1(jiti@2.7.0)(supports-color@10.2.2)
 
   eslint-scope@9.1.2:
