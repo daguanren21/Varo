@@ -1,5 +1,11 @@
 # @varo-ui/theme
 
+## 1.2.0
+
+### Minor Changes
+
+- Add the official Weapp theme CSS renderer and Vite integration, plus the editable `VThemeProvider` Registry component for reactive page-root theme switching.
+
 ## 1.1.0
 
 ### Minor Changes
