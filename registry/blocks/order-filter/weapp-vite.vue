@@ -125,15 +125,12 @@ function reset() {
         <text class="mb-3 block text-sm font-bold text-slate-800">
           订单金额
         </text>
-        <view class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <view class="grid gap-1.5 text-xs text-slate-500">
+        <view class="grid grid-cols-2 gap-3">
+          <view class="grid min-w-0 gap-1.5 text-xs text-slate-500">
             <text>最低金额</text>
             <VInputNumber v-model:value="minPrice" :min="0" :max="9999" :step="50" />
           </view>
-          <text class="pt-5 text-slate-400">
-            —
-          </text>
-          <view class="grid gap-1.5 text-xs text-slate-500">
+          <view class="grid min-w-0 gap-1.5 text-xs text-slate-500">
             <text>最高金额</text>
             <VInputNumber v-model:value="maxPrice" :min="0" :max="9999" :step="50" />
           </view>

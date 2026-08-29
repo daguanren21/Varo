@@ -60,7 +60,7 @@ export default defineConfig({
       '@varo-ui/headless': resolve(import.meta.dirname, '../../packages/primitives-core/src/index.ts'),
       '@varo/primitives-weapp': resolve(import.meta.dirname, '../../packages/primitives-weapp/src/index.ts'),
       '@varo/shared': resolve(import.meta.dirname, '../../packages/shared/src/index.ts'),
-      '@varo-ui/theme': resolve(import.meta.dirname, '../../packages/theme/src/index.ts'),
+      '@varo-ui/theme': resolve(import.meta.dirname, '../../packages/theme/src'),
       '@varo/utils': resolve(import.meta.dirname, '../../packages/utils/src/index.ts'),
       '@varo-ui/weapp': resolve(import.meta.dirname, '../../packages/ui-weapp/src/index.ts'),
     },

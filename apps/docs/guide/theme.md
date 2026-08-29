@@ -2,7 +2,7 @@
 
 Varo 的主题能力集中在 `@varo-ui/theme`，目标是让交互层、组件封装层与视觉 token 解耦。
 
-## 基础接入
+## H5 基础接入
 
 ```ts
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
@@ -19,6 +19,62 @@ const theme = createTheme({
 
 createApp(App).use(VaroConfigProvider, { theme }).mount('#app')
 ```
+
+## Weapp 构建时主题
+
+固定品牌主题应在构建时写入全局 WXSS。`createVaroWeappThemePlugin` 会把完整的 `page { --varo-ui-* }` 变量附加到应用样式：
+
+```ts
+import { resolve } from 'node:path'
+import { createVaroWeappThemePlugin } from '@varo-ui/theme/weapp-vite'
+import { defineConfig } from 'weapp-vite/config'
+import { theme } from './src/theme'
+
+export default defineConfig({
+  plugins: [
+    createVaroWeappThemePlugin({
+      appStyle: resolve(import.meta.dirname, 'src/app.scss'),
+      theme
+    })
+  ]
+})
+```
+
+这层集成运行在 Vite `transform` 阶段，不需要提交生成后的 WXSS。
+
+## Weapp 运行时切换
+
+安装目标专用的可编辑 Provider：
+
+```bash
+pnpm dlx @varo-ui/cli add --target weapp-vite components/theme-provider
+```
+
+小程序的 App 没有可承载样式的 DOM 根节点，因此运行时变量需要绑定到页面根组件：
+
+```vue
+<script setup lang="ts">
+import { createTheme } from '@varo-ui/theme/weapp'
+import { shallowRef } from 'wevu'
+import VThemeProvider from '@/components/ui/v-theme-provider.vue'
+
+const activeTheme = shallowRef(createTheme({
+  primary: '#0f766e',
+  success: '#15803d',
+  warning: '#c2410c',
+  error: '#b91c1c',
+  neutral: '#172033'
+}))
+</script>
+
+<template>
+  <VThemeProvider :theme="activeTheme">
+    <view>页面内容</view>
+  </VThemeProvider>
+</template>
+```
+
+用新的 `ThemeDefinition` 替换 `activeTheme.value` 后，Provider 会重新计算内联 CSS Variables；子树中的 Varo 组件通过变量继承立即更新。多页面应用应把 Provider 放进共享页面壳，而不是在 App 生命周期中操作样式。
 
 ## 设计原则
 

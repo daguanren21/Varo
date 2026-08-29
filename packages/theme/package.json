@@ -24,6 +24,14 @@
       "types": "./dist/index.d.mts",
       "import": "./dist/index.mjs"
     },
+    "./weapp": {
+      "types": "./dist/weapp.d.mts",
+      "import": "./dist/weapp.mjs"
+    },
+    "./weapp-vite": {
+      "types": "./dist/weapp-vite.d.mts",
+      "import": "./dist/weapp-vite.mjs"
+    },
     "./source": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
@@ -31,6 +39,14 @@
     "./source/theme": {
       "types": "./src/theme.ts",
       "import": "./src/theme.ts"
+    },
+    "./source/weapp": {
+      "types": "./src/weapp.ts",
+      "import": "./src/weapp.ts"
+    },
+    "./source/weapp-vite": {
+      "types": "./src/weapp-vite.ts",
+      "import": "./src/weapp-vite.ts"
     }
   },
   "main": "./dist/index.mjs",
@@ -51,5 +67,8 @@
   },
   "dependencies": {
     "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "vite": "8.2.2"
   }
 }

@@ -1,13 +1,13 @@
 import type { Plugin } from 'vite'
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { posix, relative, resolve } from 'node:path'
+import { createVaroWeappThemePlugin } from '@varo-ui/theme/source/weapp-vite'
 import { weappTailwindcss } from 'weapp-tailwindcss/vite'
 import { defineConfig } from 'weapp-vite/config'
-import { renderRealworldThemeCss } from './src/theme.ts'
+import { realworldTheme } from './src/theme.ts'
 
 const root = import.meta.dirname
 const appStylePath = resolve(root, 'src/app.scss')
-const themeMarker = '/* @varo-theme */'
 const iconFontStylePaths = [
   resolve(root, 'src/assets/fonts/iconfont.css'),
   resolve(root, 'src/assets/jousingFonts/iconfont.css'),
@@ -39,25 +39,6 @@ async function collectJavaScriptFiles(directory: string, files: string[] = []): 
     }
   }
   return files
-}
-
-function realworldThemePlugin(): Plugin {
-  return {
-    name: 'varo:realworld-theme',
-    enforce: 'pre',
-    transform(source, id) {
-      if (id.split('?')[0] !== appStylePath) {
-        return
-      }
-      if (!source.includes(themeMarker)) {
-        throw new Error(`Missing ${themeMarker} in src/app.scss`)
-      }
-      return {
-        code: source.replace(themeMarker, renderRealworldThemeCss()),
-        map: null,
-      }
-    },
-  }
 }
 
 function realworldGlobalStylesPlugin(): Plugin {
@@ -176,7 +157,10 @@ function realworldGlobalStylesPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [
-    realworldThemePlugin(),
+    createVaroWeappThemePlugin({
+      appStyle: appStylePath,
+      theme: realworldTheme,
+    }),
     weappTailwindcss({
       appType: 'weapp-vite',
       cssEntries: [resolve(root, 'src/styles.css')],

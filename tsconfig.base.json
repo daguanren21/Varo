@@ -10,6 +10,8 @@
       "@varo/shared": ["packages/shared/src/index.ts"],
       "@varo/utils": ["packages/utils/src/index.ts"],
       "@varo-ui/theme": ["packages/theme/src/index.ts"],
+      "@varo-ui/theme/weapp": ["packages/theme/src/weapp.ts"],
+      "@varo-ui/theme/weapp-vite": ["packages/theme/src/weapp-vite.ts"],
       "@varo/hooks": ["packages/hooks/src/index.ts"],
       "@varo-ui/headless": ["packages/primitives-core/src/index.ts"],
       "@varo/primitives-h5": ["packages/primitives-h5/src/index.ts"],

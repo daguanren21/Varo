@@ -16,6 +16,7 @@
     "test": "vitest run --passWithNoTests",
     "smoke:blocks": "node e2e/block-runtime-smoke.mjs",
     "smoke:runtime": "node e2e/runtime-smoke.mjs",
+    "smoke:theme": "node e2e/theme-runtime-smoke.mjs",
     "smoke:retail": "node e2e/retail-runtime-smoke.mjs",
     "test:e2e": "vitest run e2e --passWithNoTests"
   },
