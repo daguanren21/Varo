@@ -77,7 +77,9 @@ const wxmlFiles = await collectFiles(outputRoot, '.wxml')
 const unsafeWxml = []
 for (const path of wxmlFiles) {
   const source = await readFile(path, 'utf8')
-  if (/\?\.|\?\?/.test(source)) { unsafeWxml.push(path.replace(`${outputRoot}/`, '')) }
+  if (/\?\.|\?\?|="(?!\{\{)[^"\n]*\n[^"]*"/.test(source)) {
+    unsafeWxml.push(path.replace(`${outputRoot}/`, ''))
+  }
 }
 if (unsafeWxml.length > 0) { throw new Error(`Unsafe WXML expressions:\n${unsafeWxml.join('\n')}`) }
 

@@ -360,8 +360,7 @@ const { isControllerOrSingle, globalTip, info, goToRepair, goToImprove, goToModu
             />
             <viewItem v-if="info.hasScreen" title="屏幕码" :extra-text="noDataFilter(info.screenCode)" />
             <viewItem
-              v-if="info.hasScreen" has-border title="屏幕MAC地址
-                " :extra-text="noDataFilter(info.macAddress)"
+              v-if="info.hasScreen" has-border title="屏幕MAC地址" :extra-text="noDataFilter(info.macAddress)"
             />
           </view>
         </view>
