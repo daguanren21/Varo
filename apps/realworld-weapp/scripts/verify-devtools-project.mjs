@@ -1,5 +1,5 @@
-import { access, readdir, readFile } from 'node:fs/promises'
-import { dirname, extname, resolve } from 'node:path'
+import { access, readdir, readFile, stat } from 'node:fs/promises'
+import { dirname, extname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -32,8 +32,23 @@ async function collectFiles(directory, extension, files = []) {
   return files
 }
 
+async function collectAllFiles(directory, files = []) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = resolve(directory, entry.name)
+    if (entry.isDirectory()) { await collectAllFiles(path, files) }
+    else if (entry.isFile()) { files.push(path) }
+  }
+  return files
+}
+
 const devtoolsProject = JSON.parse(await readFile(resolve(projectRoot, 'devtools/build/project.config.json'), 'utf8'))
-if (devtoolsProject.appid && !/^wx[0-9a-f]{16}$/i.test(devtoolsProject.appid)) {
+const localConfig = JSON.parse(
+  await readFile(resolve(projectRoot, 'project.local.json'), 'utf8').catch(() => '{}'),
+)
+const allowSimulationAppId = process.env.GITHUB_ACTIONS !== 'true'
+  && localConfig.allowSimulationAppId === true
+  && devtoolsProject.appid === localConfig.appid
+if (devtoolsProject.appid && !allowSimulationAppId && !/^wx[0-9a-f]{16}$/i.test(devtoolsProject.appid)) {
   throw new Error('DevTools project contains an invalid AppID')
 }
 
@@ -103,7 +118,7 @@ if (/@import\s+["']\.\/assets\//.test(globalStyle)) {
 if (globalStyle.includes('../../static/fonts/')) {
   throw new Error('styles.wxss contains font paths relative to the source tree')
 }
-for (const font of ['fa.woff2', 'fa.woff', 'fa.ttf', 'joufont.woff2', 'joufont.woff', 'joufont.ttf']) {
+for (const font of ['fa.woff2', 'joufont.woff2']) {
   if (!await exists(resolve(outputRoot, 'static/fonts', font))) {
     throw new Error(`Missing emitted icon font: ${font}`)
   }
@@ -163,6 +178,9 @@ const appWxss = await readFile(resolve(outputRoot, 'app.wxss'), 'utf8')
 if (!appWxss.startsWith('@import "./styles.wxss";')) {
   throw new Error('app.wxss does not import the generated global Tailwind stylesheet')
 }
+if (/@import\s+["']\.\/assets\//.test(appWxss)) {
+  throw new Error('app.wxss contains unresolved source CSS imports')
+}
 const requiredThemeVariables = [
   '--varo-ui-primary: #ff6216;',
   '--varo-ui-text: #231815;',
@@ -173,4 +191,58 @@ const missingThemeVariables = requiredThemeVariables.filter(variable => !appWxss
 if (missingThemeVariables.length > 0) {
   throw new Error(`Realworld Varo theme variables were not generated:\n${missingThemeVariables.join('\n')}`)
 }
+
+const localizedChunks = [
+  ['ascriptionInfo.js', 'improvePages/_chunks/ascriptionInfo.js'],
+  ['basicInfo.js', 'improvePages/_chunks/basicInfo.js'],
+  ['deployInfo.js', 'improvePages/_chunks/deployInfo.js'],
+  ['openInfo.js', 'improvePages/_chunks/openInfo.js'],
+  ['partsInfo.js', 'improvePages/_chunks/partsInfo.js'],
+  ['check.js', 'managePages/_chunks/check.js'],
+  ['checkShanghai.js', 'managePages/_chunks/checkShanghai.js'],
+  ['detail.js', 'managePages/_chunks/detail.js'],
+  ['highSearch.js', 'managePages/_chunks/highSearch.js'],
+  ['module.js', 'managePages/_chunks/module.js'],
+  ['repair.js', 'managePages/_chunks/repair.js'],
+]
+for (const [original, localized] of localizedChunks) {
+  if (await exists(resolve(outputRoot, original)) || !await exists(resolve(outputRoot, localized))) {
+    throw new Error(`Subpackage chunk was not localized: ${original} -> ${localized}`)
+  }
+}
+
+const jsFiles = await collectFiles(outputRoot, '.js')
+const unresolvedRequires = []
+for (const path of jsFiles) {
+  const source = await readFile(path, 'utf8')
+  for (const match of source.matchAll(/require\((['"])(\.[^'"]+)\1\)/g)) {
+    const target = resolve(dirname(path), match[2])
+    if (!await exists(target)) {
+      unresolvedRequires.push(`${relative(outputRoot, path)} -> ${match[2]}`)
+    }
+  }
+}
+if (unresolvedRequires.length > 0) {
+  throw new Error(`Unresolved generated JS imports:\n${unresolvedRequires.join('\n')}`)
+}
+
+const outputFiles = await collectAllFiles(outputRoot)
+const subPackageRoots = new Set((appJson.subPackages ?? appJson.subpackages ?? []).map(item => item.root))
+const fileSizes = await Promise.all(outputFiles.map(async path => [path, (await stat(path)).size]))
+const mainPackageBytes = fileSizes
+  .filter(([path]) => !subPackageRoots.has(relative(outputRoot, path).split('/')[0]))
+  .reduce((total, [, size]) => total + size, 0)
+if (mainPackageBytes >= 1_500_000) {
+  throw new Error(`Main package exceeds 1.5 MB: ${mainPackageBytes} bytes`)
+}
+
+const mediaExtensions = new Set(['.gif', '.jpeg', '.jpg', '.mp3', '.mp4', '.png', '.svg', '.wav'])
+const oversizedMedia = fileSizes
+  .filter(([path, size]) => mediaExtensions.has(extname(path).toLowerCase()) && size > 200 * 1024)
+  .map(([path, size]) => `${relative(outputRoot, path)}: ${size} bytes`)
+if (oversizedMedia.length > 0) {
+  throw new Error(`Media assets exceed 200 KB:\n${oversizedMedia.join('\n')}`)
+}
+
+console.log(`Verified package analyzer budgets; main package is ${mainPackageBytes} bytes`)
 console.log('Verified 51 pages, component paths, WXML and selector safety, Varo theme, and Tailwind WXSS')

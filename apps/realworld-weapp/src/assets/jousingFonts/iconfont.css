@@ -1,9 +1,6 @@
 @font-face {
   font-family: 'joufont'; /* Project id 5102612 */
-  src:
-    url('../../static/fonts/joufont.woff2') format('woff2'),
-    url('../../static/fonts/joufont.woff') format('woff'),
-    url('../../static/fonts/joufont.ttf') format('truetype');
+  src: url('../../static/fonts/joufont.woff2') format('woff2');
 }
 
 .joufont {
