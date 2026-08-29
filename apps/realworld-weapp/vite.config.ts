@@ -31,20 +31,30 @@ function realworldGlobalStylesPlugin(): Plugin {
   return {
     name: 'varo:realworld-global-styles',
     enforce: 'post',
-    generateBundle(_options, bundle) {
-      const appStyle = Object.values(bundle)
-        .find(output => output.type === 'asset' && output.fileName === 'app.wxss')
-      const sharedStyle = Object.values(bundle)
-        .find(output => output.type === 'asset' && output.fileName === 'styles.wxss')
+    generateBundle: {
+      order: 'post',
+      handler(_options, bundle) {
+        const appStyle = Object.values(bundle)
+          .find(output => output.type === 'asset' && output.fileName === 'app.wxss')
+        const sharedStyle = Object.values(bundle)
+          .find(output => output.type === 'asset' && output.fileName === 'styles.wxss')
 
-      if (!appStyle || appStyle.type !== 'asset' || !sharedStyle) {
-        throw new Error('Expected app.wxss and styles.wxss assets')
-      }
+        if (!appStyle || appStyle.type !== 'asset' || !sharedStyle) {
+          throw new Error('Expected app.wxss and styles.wxss assets')
+        }
 
-      const source = typeof appStyle.source === 'string'
-        ? appStyle.source
-        : new TextDecoder().decode(appStyle.source)
-      appStyle.source = `@import "./styles.wxss";\n${source}`
+        const appSource = typeof appStyle.source === 'string'
+          ? appStyle.source
+          : new TextDecoder().decode(appStyle.source)
+        const sharedSource = typeof sharedStyle.source === 'string'
+          ? sharedStyle.source
+          : new TextDecoder().decode(sharedStyle.source)
+
+        sharedStyle.source = sharedSource
+          .replace(/^@import\s+["']\.\/assets\/(?:fonts|jousingFonts)\/iconfont\.css["'];\s*$/gm, '')
+          .replaceAll('../../static/fonts/', './static/fonts/')
+        appStyle.source = `@import "./styles.wxss";\n${appSource}`
+      },
     },
   }
 }
@@ -87,6 +97,9 @@ export default defineConfig({
   weapp: {
     srcRoot: 'src',
     platform: 'weapp',
+    copy: {
+      include: ['static/fonts/**/*'],
+    },
     styles: {
       source: 'styles.css',
       inject: false,

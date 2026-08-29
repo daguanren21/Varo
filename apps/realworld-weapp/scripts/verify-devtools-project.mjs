@@ -94,6 +94,19 @@ if (!wxss.includes('bg-orange-500') || wxss.includes('@import "tailwindcss"')) {
   throw new Error('Tailwind utilities were not transformed into production WXSS')
 }
 
+const globalStyle = await readFile(resolve(outputRoot, 'styles.wxss'), 'utf8')
+if (/@import\s+["']\.\/assets\//.test(globalStyle)) {
+  throw new Error('styles.wxss contains unresolved source CSS imports')
+}
+if (globalStyle.includes('../../static/fonts/')) {
+  throw new Error('styles.wxss contains font paths relative to the source tree')
+}
+for (const font of ['fa.woff2', 'fa.woff', 'fa.ttf', 'joufont.woff2', 'joufont.woff', 'joufont.ttf']) {
+  if (!await exists(resolve(outputRoot, 'static/fonts', font))) {
+    throw new Error(`Missing emitted icon font: ${font}`)
+  }
+}
+
 async function collectImportedStyles(path, visitedStyles = new Set()) {
   if (visitedStyles.has(path) || !await exists(path)) {
     return []
