@@ -18,6 +18,10 @@
   dir: packages/cli
   intents:
     - upset-bees-invite
+"@varo-ui/cli@1.2.0":
+  dir: packages/cli
+  intents:
+    - warm-themes-flow
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -54,6 +58,10 @@
   dir: packages/theme
   intents:
     - upset-bees-invite
+"@varo-ui/theme@1.2.0":
+  dir: packages/theme
+  intents:
+    - warm-themes-flow
 "@varo-ui/weapp@1.0.0":
   dir: packages/ui-weapp
   intents:
