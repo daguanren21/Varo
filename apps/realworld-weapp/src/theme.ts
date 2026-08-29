@@ -1,5 +1,5 @@
-import type { ThemeDefinition } from '@varo-ui/theme'
-import { createTheme } from '@varo-ui/theme'
+import type { ThemeDefinition } from '@varo-ui/theme/source'
+import { createTheme } from '@varo-ui/theme/source/theme'
 
 export const realworldTheme = createTheme({
   primary: '#ff6216',

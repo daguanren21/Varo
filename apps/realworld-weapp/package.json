@@ -15,7 +15,7 @@
     "verify:migration": "node scripts/verify-migration.mjs"
   },
   "dependencies": {
-    "@varo-ui/theme": "1.0.1",
+    "@varo-ui/theme": "workspace:^",
     "@weapp-tailwindcss/merge": "^2.2.2",
     "clsx": "^2.1.1",
     "lodash.isequal": "^4.5.0",
