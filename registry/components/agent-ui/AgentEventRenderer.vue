@@ -42,7 +42,7 @@ const showApproval = computed(() => props.snapshot.approval?.status === 'waiting
 
 <template>
   <view class="agent-event-renderer grid gap-3" :data-status="snapshot.status">
-    <AgentThinking v-if="snapshot.reasoning.length" label="推理过程" :streaming="snapshot.status === 'streaming'" :steps="snapshot.reasoning" />
+    <AgentThinking v-if="snapshot.reasoning.length" label="推理过程" :default-open="snapshot.status === 'streaming'" :steps="snapshot.reasoning" />
 
     <view v-if="snapshot.tools.length" class="flex flex-wrap gap-2">
       <AgentToolChip v-for="tool in snapshot.tools" :key="tool.id" :tool="tool" />

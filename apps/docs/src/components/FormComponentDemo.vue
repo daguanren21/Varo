@@ -26,9 +26,7 @@ import {
   VToast,
   VUploader,
 } from '@varo-ui/h5'
-import { computed, reactive, ref, useId } from 'vue'
-import { DemoCodePanel } from './demo-system'
-import type { DemoCodeItem } from './demo-system'
+import { computed, onBeforeUnmount, reactive, ref, useId } from 'vue'
 
 type FormDemoKind
   = | 'calendar'
@@ -67,6 +65,8 @@ const props = withDefaults(
 
 const codeExpanded = ref(false)
 const activePlatform = ref<Platform>('h5')
+const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
+let copyFeedbackTimer: number | undefined
 const checkboxValue = ref(['apple'])
 const radioValue = ref('wechat')
 const selectValue = ref<string | number>('hangzhou')
@@ -368,6 +368,8 @@ const selectOptions = computed(() =>
       ],
 )
 
+const platformPackage = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
+const packageTag = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
 
 function codeFor(packageName: string) {
   const isEn = props.locale === 'en'
@@ -846,28 +848,58 @@ import { VLoading } from '${packageName}'
   }
 }
 
-const codeItems = computed<DemoCodeItem[]>(() => [
-  {
-    id: 'h5',
-    label: copy.value.h5,
-    meta: '@varo-ui/h5',
-    code: codeFor('@varo-ui/h5'),
-  },
-  {
-    id: 'weapp',
-    label: copy.value.weapp,
-    meta: '@varo-ui/weapp',
-    code: codeFor('@varo-ui/weapp'),
-  },
-])
-const activeCodeId = computed({
-  get: () => activePlatform.value,
-  set: (value: string) => setPlatform(value as Platform),
+const activeCode = computed(() => codeFor(platformPackage.value))
+const codeToggleLabel = computed(() =>
+  codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand,
+)
+const copyLabel = computed(() => {
+  if (copyState.value === 'copied') {
+    return copy.value.copied
+  }
+
+  if (copyState.value === 'unsupported') {
+    return copy.value.copyManual
+  }
+
+  return activePlatform.value === 'h5' ? copy.value.copyCodeH5 : copy.value.copyCodeWeapp
 })
+
+function resetCopyState() {
+  if (copyFeedbackTimer) {
+    window.clearTimeout(copyFeedbackTimer)
+    copyFeedbackTimer = undefined
+  }
+
+  copyState.value = 'idle'
+}
+
+async function copySnippet() {
+  if (!navigator?.clipboard?.writeText) {
+    copyState.value = 'unsupported'
+    return
+  }
+
+  await navigator.clipboard.writeText(activeCode.value)
+  copyState.value = 'copied'
+  copyFeedbackTimer = window.setTimeout(() => {
+    copyState.value = 'idle'
+    copyFeedbackTimer = undefined
+  }, 1800)
+}
 
 function setPlatform(platform: Platform) {
   activePlatform.value = platform
+  resetCopyState()
 }
+
+function toggleCodeExpanded() {
+  codeExpanded.value = !codeExpanded.value
+  if (!codeExpanded.value) {
+    resetCopyState()
+  }
+}
+
+onBeforeUnmount(() => resetCopyState())
 
 function addFormArrayCompany() {
   formArrayModel.companies.push({ name: '', contact: '', phone: '', type: '' })
@@ -1308,14 +1340,91 @@ function onFormArrayFailed() {
         </button>
       </div>
 
+      <button
+        class="form-demo__code-toggle"
+        :data-active="String(codeExpanded)"
+        type="button"
+        :aria-expanded="codeExpanded"
+        :aria-label="codeToggleLabel"
+        @click="toggleCodeExpanded"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="form-demo__code-icon">
+          <path
+            d="M9 9.75V8a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-1.75"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+          />
+          <rect
+            x="4"
+            y="7"
+            width="10"
+            height="12"
+            rx="2"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+          />
+        </svg>
+        <span>{{ codeToggleLabel }}</span>
+      </button>
     </div>
 
-    <DemoCodePanel
-      v-model:active-id="activeCodeId"
-      v-model:expanded="codeExpanded"
-      :items="codeItems"
-      :locale="locale"
-    />
+    <div v-if="codeExpanded" class="form-demo__code" :data-expanded="String(codeExpanded)">
+      <div class="form-demo__code-toolbar">
+        <div class="form-demo__tabs" role="tablist" :aria-label="copy.code">
+          <button
+            class="form-demo__tab"
+            :data-active="activePlatform === 'h5'"
+            type="button"
+            role="tab"
+            :aria-selected="activePlatform === 'h5'"
+            @click="setPlatform('h5')"
+          >
+            {{ copy.h5 }}
+          </button>
+          <button
+            class="form-demo__tab"
+            :data-active="activePlatform === 'weapp'"
+            type="button"
+            role="tab"
+            :aria-selected="activePlatform === 'weapp'"
+            @click="setPlatform('weapp')"
+          >
+            {{ copy.weapp }}
+          </button>
+        </div>
+        <button
+          class="form-demo__code-copy"
+          type="button"
+          :data-state="copyState"
+          :aria-label="copyLabel"
+          :title="copyLabel"
+          @click="copySnippet"
+        >
+          <span class="form-demo__code-copy-icon" aria-hidden="true" />
+          <span class="form-demo__code-copy-label">{{ copyLabel }}</span>
+        </button>
+      </div>
+      <div class="form-demo__code-head">
+        <strong>{{ activePlatform === 'h5' ? copy.h5 : copy.weapp }}</strong>
+        <span>{{ packageTag }}</span>
+      </div>
+      <pre><code>{{ activeCode }}</code></pre>
+      <p
+        v-if="copyState !== 'idle'"
+        class="form-demo__code-toast"
+        :data-state="copyState"
+        role="status"
+        aria-live="polite"
+      >
+        {{ copyState === 'copied' ? copy.copySuccess : copy.copyUnsupported }}
+      </p>
+    </div>
   </section>
 </template>
 
@@ -1325,6 +1434,11 @@ function onFormArrayFailed() {
   --form-demo-surface-strong: var(--varo-demo-surface-strong);
   --form-demo-border: var(--varo-demo-border);
   --form-demo-shadow: var(--varo-demo-shadow);
+  --form-demo-code-bg: #0f1722;
+  --form-demo-code-surface: #172231;
+  --form-demo-code-border: #304056;
+  --form-demo-code-text: #e8eef5;
+  --form-demo-code-muted: #9eacc0;
 
   position: relative;
   margin: 20px 0 28px;
@@ -1584,14 +1698,232 @@ function onFormArrayFailed() {
   }
 }
 
+.form-demo__code-toggle {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: 36px;
+  padding: 0 12px;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  background: color-mix(in srgb, var(--form-demo-surface-strong) 92%, transparent);
+  border: 1px solid var(--form-demo-border);
+  border-radius: 999px;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.form-demo__code-toggle:hover,
+.form-demo__code-toggle[data-active='true'] {
+  color: var(--varo-primary);
+  background: color-mix(in srgb, var(--varo-primary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--varo-primary) 46%, transparent);
+  transform: translateY(-1px);
+}
+
+.form-demo__code-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.form-demo__code-toggle span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.form-demo__code {
+  margin-top: 12px;
+  overflow: hidden;
+  background: var(--form-demo-code-bg);
+  border: 1px solid var(--form-demo-code-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px color-mix(in srgb, #020617 22%, transparent);
+}
+
+.form-demo__code-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 0;
+}
+
+.form-demo__tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  margin: 0;
+  background: var(--form-demo-code-surface);
+  border: 1px solid var(--form-demo-code-border);
+  border-radius: 10px;
+}
+
+.form-demo__tab {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--form-demo-code-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.form-demo__tab[data-active='true'] {
+  color: var(--form-demo-code-text);
+  background: #243247;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--varo-primary) 24%, transparent);
+}
+
+.form-demo__tab:hover:not([data-active='true']) {
+  color: var(--form-demo-code-text);
+  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
+}
+
+.form-demo__code-copy {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--form-demo-code-text);
+  white-space: nowrap;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 38%, var(--form-demo-code-border));
+  border-radius: 9px;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.form-demo__code-copy:hover {
+  color: #fff;
+  background: color-mix(in srgb, var(--varo-primary) 16%, transparent);
+  border-color: color-mix(in srgb, var(--varo-primary) 72%, var(--form-demo-code-border));
+}
+
+.form-demo__code-copy[data-state='copied'] {
+  color: #bbf7d0;
+  background: color-mix(in srgb, #4ade80 18%, transparent);
+  border-color: color-mix(in srgb, #4ade80 48%, transparent);
+}
+
+.form-demo__code-copy[data-state='unsupported'] {
+  color: #fde68a;
+  background: color-mix(in srgb, #fbbf24 14%, transparent);
+  border-color: color-mix(in srgb, #fbbf24 48%, transparent);
+}
+
+.form-demo__code-copy-icon {
+  position: relative;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+}
+
+.form-demo__code-copy-icon::before,
+.form-demo__code-copy-icon::after {
+  position: absolute;
+  width: 8px;
+  height: 10px;
+  content: '';
+  border: 1.5px solid currentcolor;
+  border-radius: 2px;
+}
+
+.form-demo__code-copy-icon::before {
+  top: 0;
+  right: 0;
+}
+
+.form-demo__code-copy-icon::after {
+  bottom: 0;
+  left: 0;
+  background: currentcolor;
+  opacity: 0.18;
+}
+
+.form-demo__code-copy-label {
+  font-size: 12px;
+  font-weight: 720;
+  line-height: 1;
+}
+
+.form-demo__tab:focus-visible,
 .form-demo__reopen:focus-visible,
 .form-demo__array-add:focus-visible,
 .form-demo__array-secondary:focus-visible,
-.form-demo__array-remove:focus-visible {
-  outline: 2px solid var(--varo-ring);
+.form-demo__array-remove:focus-visible,
+.form-demo__code-toggle:focus-visible,
+.form-demo__code-copy:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--varo-primary) 70%, transparent);
   outline-offset: 2px;
 }
 
+.form-demo__code-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 0;
+  font-size: 13px;
+  color: var(--form-demo-code-text);
+}
+
+.form-demo__code-head span {
+  color: var(--form-demo-code-muted);
+}
+
+.form-demo__code pre {
+  padding: 14px 16px 18px;
+  margin: 0;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--form-demo-code-text);
+}
+
+.form-demo__code code {
+  font-family: var(--vp-font-family-mono);
+}
+
+.form-demo__code-toast {
+  padding: 8px 16px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.3;
+  border-top: 1px solid var(--form-demo-code-border);
+}
+
+.form-demo__code-toast[data-state='copied'] {
+  color: #bbf7d0;
+  background: color-mix(in srgb, #4ade80 12%, transparent);
+}
+
+.form-demo__code-toast[data-state='unsupported'] {
+  color: #fde68a;
+  background: color-mix(in srgb, #fbbf24 12%, transparent);
+}
 
 :deep(.varo-checkbox-group),
 :deep(.varo-radio-group) {
@@ -1640,10 +1972,17 @@ function onFormArrayFailed() {
 .form-demo__array-remove,
 .form-demo__array-count,
 .form-demo__array-badge,
-.form-demo__array-secondary {
+.form-demo__array-secondary,
+.form-demo__code-toggle,
+.form-demo__code-copy {
   border-radius: 999px;
 }
 
+.form-demo__code,
+.form-demo__tabs,
+.form-demo__tab {
+  border-radius: var(--varo-radius);
+}
 
 .form-demo__reopen,
 .form-demo__array-add {
@@ -1670,6 +2009,27 @@ function onFormArrayFailed() {
   border-color: color-mix(in srgb, var(--varo-danger) 22%, transparent);
 }
 
+.form-demo__code-toggle {
+  color: var(--varo-muted);
+  background: var(--varo-card-solid);
+  border-color: var(--varo-border);
+}
+
+.form-demo__code-toggle:hover,
+.form-demo__code-toggle[data-active='true'] {
+  color: var(--varo-foreground);
+  background: var(--varo-card-muted);
+  border-color: var(--varo-border-strong);
+}
+
+.form-demo__tabs {
+  background: color-mix(in srgb, var(--varo-card-solid) 8%, transparent);
+}
+
+.form-demo__tab[data-active='true'] {
+  color: var(--varo-foreground);
+  background: var(--varo-card-solid);
+}
 
 :deep(.varo-input__body),
 :deep(.varo-calendar),
@@ -1682,101 +2042,5 @@ function onFormArrayFailed() {
 :deep(.varo-uploader__item),
 :deep(.varo-uploader__trigger) {
   border-radius: var(--varo-radius);
-}
-
-/* Perceptual demo shell */
-.form-demo {
-  margin: 20px 0 28px;
-}
-
-.form-demo__stage {
-  padding: 16px;
-  background: var(--varo-demo-surface-strong);
-  border-color: var(--varo-demo-border);
-  border-radius: var(--varo-demo-radius-lg);
-  box-shadow: var(--varo-demo-shadow);
-}
-
-.form-demo__label {
-  display: none;
-}
-
-.form-demo__preview {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
-  padding: 16px;
-  color: var(--varo-foreground);
-  background: var(--varo-demo-surface);
-  border: 1px solid var(--varo-demo-border);
-  border-radius: var(--varo-demo-radius);
-}
-
-.form-demo__preview > * {
-  box-sizing: border-box;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.form-demo__preview[data-example='form'],
-.form-demo__preview[data-example='form-array'] {
-  max-width: 720px;
-  margin-inline: auto;
-}
-
-.form-demo :deep(button),
-.form-demo :deep([role='button']) {
-  min-height: 44px;
-  touch-action: manipulation;
-}
-
-.form-demo :deep(button:focus-visible),
-.form-demo :deep([role='button']:focus-visible) {
-  outline: 2px solid var(--varo-ring);
-  outline-offset: 2px;
-}
-
-.form-demo > :deep(.demo-code-panel) {
-  margin-top: 12px;
-  overflow: clip;
-  border-radius: var(--varo-demo-radius);
-}
-
-
-.form-demo :deep(.varo-input-number__minus),
-.form-demo :deep(.varo-input-number__plus),
-.form-demo :deep(.varo-rate__item),
-.form-demo :deep(.varo-input__clear),
-.form-demo :deep(.varo-searchbar__action),
-.form-demo :deep(.varo-select__clear),
-.form-demo :deep(.varo-toast__close),
-.form-demo :deep(.varo-uploader__delete),
-.form-demo :deep(.varo-calendar-card__nav) {
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.form-demo :deep(.varo-input-number__input),
-.form-demo :deep(.varo-range__input) {
-  min-height: 44px;
-}
-@media (max-width: 640px) {
-  .form-demo__stage,
-  .form-demo__preview {
-    padding: 12px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .form-demo *,
-  .form-demo *::before,
-  .form-demo *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0ms !important;
-  }
 }
 </style>

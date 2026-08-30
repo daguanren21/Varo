@@ -59,8 +59,6 @@ export const VTag = defineComponent({
           tabindex: props.checkable && !props.disabled ? 0 : undefined,
           'aria-checked': props.checkable ? String(props.checked) : undefined,
           'aria-disabled': String(props.disabled),
-          'data-checkable': String(props.checkable),
-          'data-closeable': String(props.closeable),
           'data-checked': String(props.checked),
           'data-disabled': String(props.disabled),
           'data-round': String(props.round),

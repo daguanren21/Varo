@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import type { AgentTraceStep } from './types'
-import { computed, shallowRef, watch } from 'wevu'
+import { computed, shallowRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { agentChevronDownIcon as chevronIcon, agentSparklesIcon as thinkingIcon } from './agent-icons'
 
@@ -12,14 +12,12 @@ const props = withDefaults(
     label?: string
     open?: boolean
     steps?: AgentTraceStep[]
-    streaming?: boolean
   }>(),
   {
     defaultOpen: false,
     label: '思考过程',
     open: undefined,
     steps: () => [],
-    streaming: false,
   },
 )
 
@@ -27,15 +25,9 @@ const emit = defineEmits<{
   'update:open': [open: boolean]
 }>()
 
-const internalOpen = shallowRef(props.open ?? (props.defaultOpen || props.streaming))
-const manuallyToggled = shallowRef(false)
+const internalOpen = shallowRef(props.open ?? props.defaultOpen)
 const currentOpen = computed(() => props.open ?? internalOpen.value)
 const completedCount = computed(() => props.steps.filter(step => step.status === 'completed').length)
-watch(() => props.streaming, (streaming) => {
-  if (props.open === undefined && !manuallyToggled.value) {
-    internalOpen.value = streaming
-  }
-})
 const rootClass = computed(() =>
   cn(
     'agent-thinking overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 shadow-sm',
@@ -45,7 +37,6 @@ const rootClass = computed(() =>
 )
 
 function toggle() {
-  manuallyToggled.value = true
   const open = !currentOpen.value
   internalOpen.value = open
   emit('update:open', open)
@@ -120,7 +111,7 @@ function detailText(step: AgentTraceStep) {
 }
 
 .agent-thinking__chevron {
-  transition: transform var(--varo-ui-motion-move, 200ms) var(--varo-ui-ease-move, ease-in-out);
+  transition: transform 200ms ease;
 }
 
 .agent-thinking--open .agent-thinking__chevron {

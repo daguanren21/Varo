@@ -31,15 +31,17 @@ import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
 import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
 import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
-import ExtendedComponentDemo from '../../src/components/ExtendedComponentDemo.vue'
+import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
+import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import DocsLayout from './DocsLayout.vue'
 import '@varo-ui/h5/source/style.css'
 import './tailwind.css'
 import './custom.css'
+import './agent-docs.css'
 
 const docsTheme = createTheme({
   primary: '#0f766e',
@@ -57,12 +59,13 @@ const theme: Theme = {
     app.component('AgentComponentsDemo', AgentComponentsDemo)
     app.component('AgentComponentDemo', AgentComponentDemo)
     app.component('FormComponentDemo', FormComponentDemo)
-    app.component('ExtendedComponentDemo', ExtendedComponentDemo)
+    app.component('InteractivePreview', InteractivePreview)
     app.component('ComponentCatalog', ComponentCatalog)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
     app.component('PrimitiveCatalog', PrimitiveCatalog)
     app.component('PrimitiveExample', PrimitiveExample)
+    app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)
     app.component('VCalendar', VCalendar)
     app.component('VCalendarCard', VCalendarCard)
     app.component('VCascader', VCascader)

@@ -1,180 +1,121 @@
 :root {
   --vp-c-brand-1: #0f766e;
-  --vp-c-brand-2: #0b645e;
-  --vp-c-brand-3: #129487;
-  --vp-c-brand-soft: rgb(15 118 110 / 10%);
+  --vp-c-brand-2: #0b5f59;
+  --vp-c-brand-3: #14a89b;
+  --vp-c-brand-soft: rgba(15, 118, 110, 0.1);
   --vp-sidebar-width: 224px;
   --vp-aside-width: 188px;
   --vp-content-container: 960px;
   --vp-home-hero-name-color: var(--varo-accent);
   --vp-home-hero-image-background-image: none;
   --vp-home-hero-image-filter: none;
-  --varo-neutral-1: #f7f8fa;
-  --varo-neutral-2: #f2f4f7;
-  --varo-neutral-3: #ffffff;
-  --varo-neutral-4: #eef1f4;
-  --varo-neutral-5: #e6ebf0;
-  --varo-neutral-6: #dde3ea;
-  --varo-neutral-7: #b8c3ce;
-  --varo-neutral-8: #8494a5;
-  --varo-neutral-9: #7b8794;
-  --varo-neutral-10: #6e7a87;
-  --varo-neutral-11: #526173;
-  --varo-neutral-12: #1b2430;
-  --varo-bg: var(--varo-neutral-1);
-  --varo-foreground: var(--varo-neutral-12);
-  --varo-muted: var(--varo-neutral-11);
-  --varo-surface: var(--varo-neutral-3);
-  --varo-surface-strong: var(--varo-neutral-2);
-  --varo-card: rgb(255 255 255 / 94%);
-  --varo-card-solid: var(--varo-neutral-3);
-  --varo-card-muted: var(--varo-neutral-2);
-  --varo-border: var(--varo-neutral-6);
-  --varo-border-strong: var(--varo-neutral-8);
-  --varo-gridline: rgb(27 36 48 / 4%);
+  --varo-bg: #f7f8fa;
+  --varo-foreground: #18212f;
+  --varo-muted: #5e6b7c;
+  --varo-surface: #ffffff;
+  --varo-surface-strong: #eef2f5;
+  --varo-card: rgba(255, 255, 255, 0.9);
+  --varo-card-solid: #ffffff;
+  --varo-card-muted: #f0f3f6;
+  --varo-border: #d9e0e8;
+  --varo-border-strong: #acb7c5;
+  --varo-gridline: rgba(24, 33, 47, 0.045);
   --varo-accent: #0f766e;
-  --varo-accent-hover: #0b645e;
-  --varo-accent-active: #09564f;
-  --varo-accent-soft: #e7f5f2;
-  --varo-accent-border: #7fb9b2;
-  --varo-ring: #0d9488;
-  --varo-shadow: 0 1px 2px rgb(27 36 48 / 5%), 0 12px 30px rgb(27 36 48 / 7%);
-  --varo-shadow-sm: 0 1px 2px rgb(27 36 48 / 6%);
-  --varo-shadow-popover: 0 16px 36px rgb(27 36 48 / 14%);
+  --varo-accent-soft: rgba(15, 118, 110, 0.08);
+  --varo-ring: rgba(15, 118, 110, 0.22);
+  --varo-shadow: 0 1px 2px rgba(24, 33, 47, 0.05), 0 14px 34px rgba(24, 33, 47, 0.08);
+  --varo-shadow-sm: 0 1px 2px rgba(24, 33, 47, 0.06);
+  --varo-shadow-popover: 0 18px 42px rgba(24, 33, 47, 0.15);
   --varo-radius: 8px;
   --varo-radius-lg: 12px;
-  --varo-primary: var(--varo-accent);
+  --varo-primary: #0f766e;
   --varo-primary-foreground: #ffffff;
-  --varo-danger: #bd3f38;
-  --varo-danger-soft: #fff0ee;
-  --varo-color-primary: var(--varo-accent);
-  --varo-color-success: #15803d;
-  --varo-color-warning: #a85d00;
-  --varo-color-danger: var(--varo-danger);
-  --varo-color-text: var(--varo-foreground);
-  --varo-color-text-muted: var(--varo-muted);
-  --varo-color-background: var(--varo-bg);
-  --varo-color-surface: var(--varo-surface);
-  --varo-color-border: var(--varo-border);
-  --varo-color-border-strong: var(--varo-border-strong);
-  --varo-ui-bg: var(--varo-neutral-2);
-  --varo-ui-surface: var(--varo-neutral-3);
-  --varo-ui-surface-muted: var(--varo-neutral-2);
-  --varo-ui-text: var(--varo-neutral-12);
-  --varo-ui-text-muted: var(--varo-neutral-11);
-  --varo-ui-border: var(--varo-neutral-6);
-  --varo-ui-border-strong: var(--varo-neutral-8);
-  --varo-ui-primary: var(--varo-accent);
-  --varo-ui-primary-foreground: var(--varo-primary-foreground);
-  --varo-ui-success: var(--varo-color-success);
-  --varo-ui-warning: var(--varo-color-warning);
-  --varo-ui-danger: var(--varo-danger);
-  --varo-ui-radius: 10px;
-  --varo-ui-radius-sm: 8px;
-  --varo-ui-shadow-sm: var(--varo-shadow-sm);
-  --varo-ui-shadow-md: var(--varo-shadow);
-  --varo-ui-ring: rgb(13 148 136 / 24%);
-  --varo-motion-press: 80ms;
-  --varo-motion-state: 120ms;
-  --varo-motion-enter: 180ms;
-  --varo-motion-move: 200ms;
-  --varo-motion-overlay: 240ms;
-  --varo-motion-exit: 140ms;
-  --varo-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --varo-ease-move: cubic-bezier(0.65, 0, 0.35, 1);
-  --varo-ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --varo-demo-surface: var(--varo-neutral-2);
-  --varo-demo-surface-strong: var(--varo-neutral-3);
-  --varo-demo-border: var(--varo-neutral-6);
-  --varo-demo-border-strong: var(--varo-neutral-8);
-  --varo-demo-text-muted: var(--varo-neutral-11);
-  --varo-demo-brand: var(--varo-accent);
-  --varo-demo-shadow: var(--varo-shadow-sm);
-  --varo-demo-phone-shell: transparent;
-  --varo-demo-phone-screen: var(--varo-neutral-2);
-  --varo-demo-phone-card: var(--varo-neutral-3);
-  --varo-demo-code-bg: #0b111a;
-  --varo-demo-radius: 12px;
-  --varo-demo-radius-lg: 16px;
+  --varo-danger: #c7372f;
+  --varo-danger-soft: rgba(199, 55, 47, 0.1);
+  --varo-color-primary: #0f766e;
+  --varo-color-success: #16824c;
+  --varo-color-warning: #b86f00;
+  --varo-color-danger: #c7372f;
+  --varo-color-text: #18212f;
+  --varo-color-text-muted: #5e6b7c;
+  --varo-color-background: #f7f8fa;
+  --varo-color-surface: #ffffff;
+  --varo-color-border: #d9e0e8;
+  --varo-color-border-strong: #acb7c5;
+  --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 90%, transparent);
+  --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 96%, transparent);
+  --varo-demo-border: color-mix(in srgb, var(--vp-c-divider) 88%, transparent);
+  --varo-demo-text-muted: var(--vp-c-text-2);
+  --varo-demo-brand: var(--vp-c-brand-1);
+  --varo-demo-shadow: 0 14px 34px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
+  --varo-demo-phone-shell: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--varo-foreground) 86%, var(--varo-bg)),
+    color-mix(in srgb, var(--varo-foreground) 94%, var(--varo-bg))
+  );
+  --varo-demo-phone-screen: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--varo-bg) 74%, var(--varo-card-solid)) 0%,
+    color-mix(in srgb, var(--varo-bg) 86%, var(--varo-accent-soft)) 100%
+  );
+  --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg) 96%, var(--varo-card-solid));
+  --varo-demo-code-bg: #0f1722;
+  --varo-demo-radius: 14px;
+  --varo-demo-radius-lg: 18px;
 }
 
 .dark {
-  --vp-c-brand-1: #5cc8be;
-  --vp-c-brand-2: #70d6cc;
-  --vp-c-brand-3: #3ba99f;
-  --vp-c-brand-soft: rgb(92 200 190 / 12%);
-  --varo-neutral-1: #0c1117;
-  --varo-neutral-2: #10171f;
-  --varo-neutral-3: #151d26;
-  --varo-neutral-4: #1a2530;
-  --varo-neutral-5: #21303c;
-  --varo-neutral-6: #2b3847;
-  --varo-neutral-7: #3a4b5d;
-  --varo-neutral-8: #637488;
-  --varo-neutral-9: #6b7c90;
-  --varo-neutral-10: #7a8b9d;
-  --varo-neutral-11: #a6b2bf;
-  --varo-neutral-12: #e4eaf0;
-  --varo-bg: var(--varo-neutral-1);
-  --varo-foreground: var(--varo-neutral-12);
-  --varo-muted: var(--varo-neutral-11);
-  --varo-surface: var(--varo-neutral-3);
-  --varo-surface-strong: var(--varo-neutral-2);
-  --varo-card: rgb(21 29 38 / 94%);
-  --varo-card-solid: var(--varo-neutral-3);
-  --varo-card-muted: var(--varo-neutral-4);
-  --varo-border: var(--varo-neutral-6);
-  --varo-border-strong: var(--varo-neutral-8);
-  --varo-gridline: rgb(228 234 240 / 4%);
-  --varo-accent: #5cc8be;
-  --varo-accent-hover: #70d6cc;
-  --varo-accent-active: #45b4aa;
-  --varo-accent-soft: #143531;
-  --varo-accent-border: #3d746f;
-  --varo-ring: #7be3d9;
-  --varo-shadow: 0 1px 2px rgb(0 0 0 / 28%), 0 14px 34px rgb(0 0 0 / 20%);
-  --varo-shadow-sm: 0 1px 2px rgb(0 0 0 / 26%);
-  --varo-shadow-popover: 0 18px 42px rgb(0 0 0 / 34%);
-  --varo-primary: var(--varo-accent);
-  --varo-primary-foreground: #061310;
-  --varo-danger: #ff7b72;
-  --varo-danger-soft: #3d2021;
-  --varo-color-primary: var(--varo-accent);
-  --varo-color-success: #64c98c;
-  --varo-color-warning: #f2b560;
-  --varo-color-danger: var(--varo-danger);
-  --varo-color-text: var(--varo-foreground);
-  --varo-color-text-muted: var(--varo-muted);
-  --varo-color-background: var(--varo-bg);
-  --varo-color-surface: var(--varo-surface);
-  --varo-color-border: var(--varo-border);
-  --varo-color-border-strong: var(--varo-border-strong);
-  --varo-ui-bg: var(--varo-neutral-2);
-  --varo-ui-surface: var(--varo-neutral-3);
-  --varo-ui-surface-muted: var(--varo-neutral-4);
-  --varo-ui-text: var(--varo-neutral-12);
-  --varo-ui-text-muted: var(--varo-neutral-11);
-  --varo-ui-border: var(--varo-neutral-6);
-  --varo-ui-border-strong: var(--varo-neutral-8);
-  --varo-ui-primary: var(--varo-accent);
-  --varo-ui-primary-foreground: var(--varo-primary-foreground);
-  --varo-ui-success: var(--varo-color-success);
-  --varo-ui-warning: var(--varo-color-warning);
-  --varo-ui-danger: var(--varo-danger);
-  --varo-ui-shadow-sm: var(--varo-shadow-sm);
-  --varo-ui-shadow-md: var(--varo-shadow);
-  --varo-ui-ring: rgb(123 227 217 / 28%);
-  --varo-demo-surface: var(--varo-neutral-2);
-  --varo-demo-surface-strong: var(--varo-neutral-3);
-  --varo-demo-border: var(--varo-neutral-6);
-  --varo-demo-border-strong: var(--varo-neutral-8);
-  --varo-demo-text-muted: var(--varo-neutral-11);
-  --varo-demo-brand: var(--varo-accent);
-  --varo-demo-shadow: var(--varo-shadow-sm);
-  --varo-demo-phone-shell: transparent;
-  --varo-demo-phone-screen: var(--varo-neutral-2);
-  --varo-demo-phone-card: var(--varo-neutral-3);
-  --varo-demo-code-bg: #080d13;
+  --vp-c-brand-1: #65d7cb;
+  --vp-c-brand-2: #35b8ad;
+  --vp-c-brand-3: #14968d;
+  --vp-c-brand-soft: rgba(101, 215, 203, 0.12);
+  --varo-bg: #0b1016;
+  --varo-foreground: #f2f5f8;
+  --varo-muted: #a8b4c2;
+  --varo-surface: #111821;
+  --varo-surface-strong: #18222e;
+  --varo-card: rgba(17, 24, 33, 0.92);
+  --varo-card-solid: #111821;
+  --varo-card-muted: #17212c;
+  --varo-border: #273342;
+  --varo-border-strong: #445469;
+  --varo-gridline: rgba(242, 245, 248, 0.045);
+  --varo-accent: #65d7cb;
+  --varo-accent-soft: rgba(101, 215, 203, 0.1);
+  --varo-ring: rgba(101, 215, 203, 0.22);
+  --varo-shadow: 0 1px 2px rgba(0, 0, 0, 0.32), 0 16px 38px rgba(0, 0, 0, 0.22);
+  --varo-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --varo-shadow-popover: 0 22px 50px rgba(0, 0, 0, 0.34);
+  --varo-primary: #65d7cb;
+  --varo-primary-foreground: #071310;
+  --varo-danger: #ff827a;
+  --varo-danger-soft: rgba(255, 130, 122, 0.16);
+  --varo-color-primary: #65d7cb;
+  --varo-color-success: #55d98a;
+  --varo-color-warning: #f2c14e;
+  --varo-color-danger: #ff827a;
+  --varo-color-text: #f2f5f8;
+  --varo-color-text-muted: #a8b4c2;
+  --varo-color-background: #0b1016;
+  --varo-color-surface: #111821;
+  --varo-color-border: #273342;
+  --varo-color-border-strong: #445469;
+  --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 76%, var(--varo-bg));
+  --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 82%, var(--varo-bg));
+  --varo-demo-border: color-mix(in srgb, var(--vp-c-divider) 58%, var(--varo-border));
+  --varo-demo-shadow: 0 18px 42px color-mix(in srgb, #000 32%, transparent);
+  --varo-demo-phone-shell: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--varo-foreground) 56%, var(--varo-bg)),
+    color-mix(in srgb, var(--varo-bg) 94%, #000)
+  );
+  --varo-demo-phone-screen: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--varo-surface) 86%, var(--varo-bg)) 0%,
+    color-mix(in srgb, var(--varo-surface-strong) 92%, var(--varo-bg)) 100%
+  );
+  --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg-soft) 86%, var(--varo-surface));
+  --varo-demo-code-bg: #0a1018;
 }
 
 html {
@@ -188,7 +129,7 @@ html.dark {
 body {
   background: var(--varo-bg);
   color: var(--varo-foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+  font-family: Inter, "SF Pro Text", "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
   text-rendering: optimizeLegibility;
 }
@@ -1389,6 +1330,27 @@ body {
   min-height: 448px;
 }
 
+.dark .vp-doc :is(.varo-form-item__label, .varo-checkbox, .varo-radio, .varo-input__label) {
+  color: color-mix(in srgb, var(--varo-bg) 90%, #e6e4df);
+}
+
+.dark .vp-doc :is(.varo-form-item__error) {
+  color: color-mix(in srgb, var(--varo-danger) 70%, #fff);
+}
+
+.dark .vp-doc :is(.varo-input__body, .varo-input-number, .varo-checkbox__icon, .varo-radio__icon, .varo-textarea__control) {
+  border-color: color-mix(in srgb, var(--varo-border) 70%, var(--varo-foreground));
+  background: color-mix(in srgb, var(--varo-foreground) 94%, #000);
+  color: color-mix(in srgb, var(--varo-bg) 94%, #fff);
+}
+
+.dark .vp-doc :is(.varo-input__prefix, .varo-input__suffix, .varo-input__word-limit) {
+  color: color-mix(in srgb, var(--varo-muted) 80%, #fff);
+}
+
+.dark .vp-doc :is(.varo-checkbox__icon, .varo-radio__icon) {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 2%, transparent);
+}
 
 .varo-architecture {
   position: relative;

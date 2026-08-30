@@ -17,13 +17,6 @@ export interface ThemeCssVariables {
   '--varo-ui-radius-sm': string
   '--varo-ui-shadow-sm': string
   '--varo-ui-shadow-md': string
-  '--varo-ui-motion-press': string
-  '--varo-ui-motion-state': string
-  '--varo-ui-motion-enter': string
-  '--varo-ui-motion-move': string
-  '--varo-ui-motion-exit': string
-  '--varo-ui-ease-out': string
-  '--varo-ui-ease-move': string
   '--varo-ui-ring': string
   [name: `--${string}`]: string
 }
@@ -68,13 +61,6 @@ export function createThemeCssVariables(
     '--varo-ui-shadow-sm': '0 1px 2px rgb(24 36 51 / 6%)',
     '--varo-ui-shadow-md': '0 14px 34px rgb(24 36 51 / 12%)',
     '--varo-ui-ring': colorWithAlpha(theme.semantic.primaryBase, 16),
-    '--varo-ui-motion-press': '80ms',
-    '--varo-ui-motion-state': '120ms',
-    '--varo-ui-motion-enter': '180ms',
-    '--varo-ui-motion-move': '200ms',
-    '--varo-ui-motion-exit': '140ms',
-    '--varo-ui-ease-out': 'cubic-bezier(0.16, 1, 0.3, 1)',
-    '--varo-ui-ease-move': 'cubic-bezier(0.65, 0, 0.35, 1)',
     ...overrides,
   }
 }

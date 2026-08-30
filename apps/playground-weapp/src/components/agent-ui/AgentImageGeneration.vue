@@ -27,10 +27,6 @@ const emit = defineEmits<{
 }>()
 
 const progressValue = computed(() => Math.min(100, Math.max(0, props.progress)))
-const progressStyle = computed(() => ({
-  '--agent-progress-scale': String(progressValue.value / 100),
-  transform: 'scaleX(var(--agent-progress-scale))'
-}))
 const rootClass = computed(() =>
   cn('agent-image-generation overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm', props.className)
 )
@@ -67,7 +63,7 @@ const hasAction = computed(() =>
           <text class="text-[10px] font-bold tabular-nums text-teal-700">{{ progressValue }}%</text>
         </view>
         <view class="block h-[5px] overflow-hidden rounded-full bg-white/80">
-          <text class="agent-image-generation__track block h-full w-full origin-left rounded-full bg-gradient-to-r from-teal-700 to-teal-300" :style="progressStyle" />
+          <text class="agent-image-generation__track block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300" :style="{ width: `${progressValue}%` }" />
         </view>
       </view>
     </view>
@@ -110,7 +106,7 @@ const hasAction = computed(() =>
   box-shadow: 0 0 10px rgba(20, 184, 166, .45);
   animation: agent-image-scan 1.8s ease-in-out infinite;
 }
-.agent-image-generation__track { box-shadow: 0 0 12px rgba(20,184,166,.28); transform-origin: left center; transition: transform var(--varo-ui-motion-move, 200ms) var(--varo-ui-ease-move, ease-in-out); }
+.agent-image-generation__track { box-shadow: 0 0 12px rgba(20,184,166,.28); transition: width 280ms ease; }
 .agent-image-generation button::after { border: 0; }
 @keyframes agent-image-scan {
   0%, 100% { top: 15px; opacity: .35; }

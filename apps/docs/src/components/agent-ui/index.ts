@@ -118,7 +118,7 @@ export const AgentLoading = defineComponent({
     onMounted(start)
     onBeforeUnmount(stop)
 
-    return () => h('div', { class: 'agent-loading flex min-h-12 items-center gap-3 text-slate-700', role: 'status' }, [
+    return () => h('div', { class: 'flex min-h-12 items-center gap-3 text-slate-700', role: 'status' }, [
       h('span', { 'class': 'agent-ui__loading flex h-6 w-8 items-center justify-center gap-1', 'aria-hidden': 'true' }, Array.from({ length: props.variant === 'grid' ? 6 : 3 }, (_, index) =>
         h('i', { class: 'h-1.5 w-1.5 rounded-full bg-teal-700', style: { animationDelay: `${index * 80}ms` } }))),
       h('span', { class: 'min-w-0 flex-1 truncate text-[13px] font-semibold' }, props.label),
@@ -168,19 +168,12 @@ export const AgentThinking = defineComponent({
     label: { type: String, default: 'Agent 执行轨迹' },
     open: { type: Boolean as PropType<boolean | undefined>, default: undefined },
     steps: { type: Array as PropType<AgentTraceStep[]>, default: () => [] },
-    streaming: { type: Boolean, default: false },
   },
   emits: { 'update:open': (_value: boolean) => true },
   setup(props, { emit }) {
-    const localOpen = shallowRef(props.defaultOpen || props.streaming)
-    const manuallyToggled = shallowRef(false)
+    const localOpen = shallowRef(props.defaultOpen)
     const currentOpen = computed(() => props.open ?? localOpen.value)
     const completed = computed(() => props.steps.filter(step => step.status === 'completed').length)
-    watch(() => props.streaming, (streaming) => {
-      if (props.open === undefined && !manuallyToggled.value) {
-        localOpen.value = streaming
-      }
-    })
 
     return () => h('section', {
       'class': cn('agent-thinking overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm', props.className),
@@ -191,7 +184,6 @@ export const AgentThinking = defineComponent({
         'class': 'agent-thinking__trigger',
         'type': 'button',
         'onClick': () => {
-          manuallyToggled.value = true
           const open = !currentOpen.value
           if (props.open === undefined) { localOpen.value = open }
           emit('update:open', open)
@@ -256,7 +248,7 @@ export const AgentToolChip = defineComponent({
     tool: { type: Object as PropType<AgentToolPart>, required: true },
   },
   setup(props) {
-    return () => h('span', { class: 'agent-tool-chip inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5' }, [
+    return () => h('span', { class: 'inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5' }, [
       h('i', { class: ['h-2 w-2 flex-none rounded-full', partMark(props.tool.status)] }),
       h('span', { class: 'grid min-w-0' }, [
         h('strong', { class: 'truncate text-[11px] text-slate-700' }, props.tool.name),
@@ -274,7 +266,7 @@ export const AgentTaskList = defineComponent({
   },
   setup(props) {
     const completed = computed(() => props.tasks.filter(task => task.status === 'completed').length)
-    return () => h('section', { 'class': 'agent-task-list overflow-hidden rounded-2xl border border-slate-200 bg-white', 'aria-live': 'polite' }, [
+    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-slate-200 bg-white', 'aria-live': 'polite' }, [
       h('header', { class: 'flex min-h-11 items-center justify-between border-b border-slate-100 px-3.5' }, [
         h('strong', { class: 'text-[13px] text-slate-950' }, props.title),
         h('span', { class: 'text-[11px] tabular-nums text-slate-400' }, `${completed.value}/${props.tasks.length}`),
@@ -306,7 +298,7 @@ export const AgentApproval = defineComponent({
     'update:value': (_value: string) => true,
   },
   setup(props, { emit, slots }) {
-    return () => h('section', { 'class': 'agent-approval grid gap-3.5 rounded-2xl border border-amber-200 bg-gradient-to-br from-white to-amber-50 p-4 shadow-sm', 'role': 'group', 'aria-label': props.title }, [
+    return () => h('section', { 'class': 'grid gap-3.5 rounded-2xl border border-amber-200 bg-gradient-to-br from-white to-amber-50 p-4 shadow-sm', 'role': 'group', 'aria-label': props.title }, [
       h('header', { class: 'flex items-start gap-3' }, [
         h('span', { class: 'grid h-9 w-9 flex-none place-items-center rounded-xl bg-amber-100 font-black text-amber-700' }, '!'),
         h('span', { class: 'grid min-w-0 gap-0.5' }, [
@@ -343,11 +335,11 @@ export const AgentRecommendation = defineComponent({
   emits: { accept: () => true },
   setup(props, { emit, slots }) {
     const confidence = computed(() => Math.min(100, Math.max(0, props.confidence)))
-    return () => h('section', { class: 'agent-recommendation grid gap-3 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-4 shadow-sm' }, [
+    return () => h('section', { class: 'grid gap-3 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-4 shadow-sm' }, [
       h('header', { class: 'flex justify-between text-[10px] font-extrabold tracking-widest text-blue-700' }, [h('span', 'AGENT 建议'), h('span', `${confidence.value}%`)]),
       h('strong', { class: 'text-[15px] text-slate-950' }, props.title),
       props.description ? h('p', { class: 'm-0 text-xs leading-5 text-slate-600' }, props.description) : null,
-      h('span', { class: 'agent-recommendation__track h-1.5 overflow-hidden rounded-full bg-blue-100' }, [h('i', { class: 'agent-recommendation__bar block h-full rounded-full bg-blue-600', style: { width: `${confidence.value}%` } })]),
+      h('span', { class: 'h-1.5 overflow-hidden rounded-full bg-blue-100' }, [h('i', { class: 'block h-full rounded-full bg-blue-600', style: { width: `${confidence.value}%` } })]),
       slots.default?.(),
       h('footer', { class: 'flex justify-end gap-2' }, [slots.secondary?.(), h('button', { class: primaryButton, type: 'button', onClick: () => emit('accept') }, props.acceptText)]),
     ])
@@ -359,7 +351,7 @@ export const AgentPromptSuggestions = defineComponent({
   props: { suggestions: { type: Array as PropType<string[]>, default: () => [] } },
   emits: { select: (_value: string) => true },
   setup(props, { emit }) {
-    return () => h('div', { class: 'agent-prompt-suggestions flex max-w-full gap-2 overflow-x-auto pb-1' }, props.suggestions.map(suggestion =>
+    return () => h('div', { class: 'flex max-w-full gap-2 overflow-x-auto pb-1' }, props.suggestions.map(suggestion =>
       h('button', { class: 'min-h-9 flex-none rounded-full border border-slate-200 bg-white px-3 text-[11px] font-semibold text-slate-600 hover:border-teal-300 hover:text-teal-800', key: suggestion, type: 'button', onClick: () => emit('select', suggestion) }, suggestion),
     ))
   },
@@ -384,7 +376,7 @@ export const AgentComposer = defineComponent({
       if (!normalized || props.busy) { return }
       emit('submit', normalized)
     }
-    return () => h('div', { class: 'agent-composer grid w-full min-w-0 gap-2.5' }, [
+    return () => h('div', { class: 'grid w-full min-w-0 gap-2.5' }, [
       h(AgentPromptSuggestions, { suggestions: props.suggestions, onSelect: submit }),
       h('div', { class: 'flex min-h-14 min-w-0 items-center gap-2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-lg' }, [
         slots.leading?.(),
@@ -470,7 +462,7 @@ export const AgentResponseActions = defineComponent({
     }
     onBeforeUnmount(() => clearTimeout(timer))
     const action = (label: string, value: string, handler: () => void) => h('button', { 'aria-label': label, 'class': quietButton, 'disabled': props.disabled, 'type': 'button', 'onClick': handler }, value)
-    return () => h('div', { 'class': 'agent-response-actions flex flex-wrap gap-1.5', 'role': 'toolbar', 'aria-label': '回答操作' }, [
+    return () => h('div', { 'class': 'flex flex-wrap gap-1.5', 'role': 'toolbar', 'aria-label': '回答操作' }, [
       action('复制回答', copied.value ? '已复制' : '复制', copy),
       action('重新生成', '重试', () => emit('retry')),
       action('有帮助', '赞', () => emit('like')),
@@ -485,7 +477,7 @@ export const AgentArtifact = defineComponent({
   emits: { open: (_artifact: AgentArtifactItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('article', { class: 'agent-artifact overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg' }, [
+      h('article', { class: 'overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg' }, [
         h('header', { class: 'flex min-h-14 items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-4' }, [
           h('span', { class: 'grid min-w-0 gap-0.5' }, [
             h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-300' }, props.artifact.kind || 'artifact'),
@@ -521,7 +513,7 @@ export const AgentSourceList = defineComponent({
   emits: { open: (_source: AgentSourceItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('section', { class: 'agent-source-list grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
+      h('section', { class: 'grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
         h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
           h('span', { class: 'grid gap-0.5' }, [
             h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-700' }, 'Sources'),
@@ -564,7 +556,7 @@ export const AgentAttachmentList = defineComponent({
   emits: { remove: (_item: AgentAttachmentItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('section', { class: 'agent-attachment-list grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
+      h('section', { class: 'grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
         h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
           h('span', { class: 'grid gap-0.5' }, [
             h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-700' }, 'Files'),
@@ -632,7 +624,7 @@ export const AgentEventRenderer = defineComponent({
     })))
 
     return () => h('div', { 'class': 'grid gap-3', 'data-status': props.snapshot.status }, [
-      props.snapshot.reasoning.length > 0 ? h(AgentThinking, { label: '推理过程', streaming: props.snapshot.status === 'streaming', steps: traces.value }) : null,
+      props.snapshot.reasoning.length > 0 ? h(AgentThinking, { label: '推理过程', defaultOpen: props.snapshot.status === 'streaming', steps: traces.value }) : null,
       props.snapshot.tools.length > 0 ? h('div', { class: 'flex flex-wrap gap-2' }, props.snapshot.tools.map(tool => h(AgentToolChip, { key: tool.id, tool }))) : null,
       props.snapshot.message ? h(AgentMessage, { role: props.snapshot.message.role }, { default: () => h(AgentStream, { content: props.snapshot.message?.visible, error: props.snapshot.error?.message, final: props.snapshot.message?.final, status: props.snapshot.status, onRetry: () => emit('retry') }, { actions: slots.actions }) }) : null,
       props.snapshot.status === 'streaming' && !props.snapshot.message?.visible ? h(AgentLoading, { label: '正在生成回答' }) : null,

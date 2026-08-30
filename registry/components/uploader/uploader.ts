@@ -93,7 +93,7 @@ export const VUploader = defineComponent({
         [
           h('span', {
             class: 'varo-uploader__progress-bar',
-            style: { '--varo-upload-scale': String(progress / 100), transform: 'scaleX(var(--varo-upload-scale))' }
+            style: { width: `${progress}%` }
           })
         ]
       )

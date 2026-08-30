@@ -45,23 +45,26 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(false)
     expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
     expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
-    expect(wrapper.find('.demo-code-panel__body').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__code-section').exists()).toBe(false)
 
-    const toggle = wrapper.get('.demo-code-panel__toggle')
+    const toggle = wrapper.get('.platform-demo__code-toggle')
+    expect(toggle.attributes('aria-label')).toBe('展开代码')
     expect(toggle.attributes('aria-expanded')).toBe('false')
     expect(toggle.text()).toContain('展开代码')
-    expect(wrapper.find('.demo-code-panel__copy').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__code-copy').exists()).toBe(false)
 
     await toggle.trigger('click')
 
-    const codeShell = wrapper.get('.demo-code-panel')
-    const codeSection = wrapper.get('.demo-code-panel__body')
+    const codeShell = wrapper.get('.platform-demo__code-shell')
+    const codeSection = wrapper.get('.platform-demo__code-section')
     expect(stage.element.contains(codeShell.element)).toBe(true)
     expect(codeShell.attributes('data-expanded')).toBe('true')
+    expect(toggle.attributes('data-active')).toBe('true')
     expect(toggle.attributes('aria-expanded')).toBe('true')
+    expect(toggle.attributes('aria-label')).toBe('收起代码')
     expect(toggle.text()).toContain('收起代码')
 
-    const codeTabs = codeShell.findAll('.demo-code-panel__tab')
+    const codeTabs = codeShell.findAll('.platform-demo__code-tab')
     expect(codeTabs).toHaveLength(2)
     expect(codeTabs[0]!.text()).toBe('H5 组件')
     expect(codeTabs[1]!.text()).toBe('小程序组件')
@@ -69,13 +72,15 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[1]!.attributes('data-active')).toBe('false')
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('false')
-    expect(codeSection.get('header').text()).toContain('@varo-ui/h5')
+    expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
+    expect(codeSection.get('.platform-demo__code-head').text()).not.toContain('@varo-ui/h5')
     expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
     expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
 
-    const copyButton = wrapper.get('.demo-code-panel__copy')
-    expect(copyButton.attributes('aria-label')).toBe('复制代码')
-    expect(copyButton.text()).toContain('复制代码')
+    const copyButton = wrapper.get('.platform-demo__code-copy')
+    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
+    expect(copyButton.text()).toContain('复制 H5 代码')
+    expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
   })
 
   it('presents Image as a theme-aware content component', async () => {
@@ -164,35 +169,37 @@ describe('PlatformTabsDemo', () => {
       },
     })
 
-    await wrapper.get('.demo-code-panel__toggle').trigger('click')
-    const codeShell = wrapper.get('.demo-code-panel')
-    const codeSection = wrapper.get('.demo-code-panel__body')
-    const codeTabs = codeShell.findAll('.demo-code-panel__tab')
+    await wrapper.get('.platform-demo__code-toggle').trigger('click')
+    const codeShell = wrapper.get('.platform-demo__code-shell')
+    const codeSection = wrapper.get('.platform-demo__code-section')
+    const codeTabs = codeShell.findAll('.platform-demo__code-tab')
     await codeTabs[1]!.trigger('click')
 
     expect(codeTabs[0]!.attributes('data-active')).toBe('false')
     expect(codeTabs[1]!.attributes('data-active')).toBe('true')
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('false')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('true')
-    expect(codeSection.get('header').text()).toContain('小程序组件')
-    expect(codeSection.get('header').text()).toContain('@varo-ui/weapp')
+    expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
+    expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序组件')
+    expect(codeSection.get('.platform-demo__code-head').text()).not.toContain('@varo-ui/weapp')
     expect(codeSection.get('code').text()).toContain('from \'@varo-ui/weapp\'')
     expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
+    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
 
-    const copyButton = wrapper.get('.demo-code-panel__copy')
-    expect(copyButton.attributes('aria-label')).toBe('复制代码')
+    const copyButton = wrapper.get('.platform-demo__code-copy')
+    expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
     await copyButton.trigger('click')
     await flushPromises()
 
     expect(writeText).toHaveBeenCalledTimes(1)
     expect(writeText.mock.calls[0]![0]).toContain('from \'@varo-ui/weapp\'')
     expect(copyButton.attributes('aria-label')).toBe('已复制')
-    expect(wrapper.get('.demo-code-panel__body p').text()).toContain('已复制')
+    expect(wrapper.get('.platform-demo__code-toast').text()).toContain('已复制到剪贴板')
 
     await codeTabs[0]!.trigger('click')
-    expect(copyButton.attributes('aria-label')).toBe('复制代码')
-    expect(wrapper.find('.demo-code-panel__body p').exists()).toBe(false)
+    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
+    expect(wrapper.find('.platform-demo__code-toast').exists()).toBe(false)
 
     vi.unstubAllGlobals()
   })
@@ -269,7 +276,8 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.findAll('.varo-menu__option').length).toBe(3)
   })
 
-  it('keeps indicator movement under direct user control', async () => {
+  it('auto-advances and supports clicking indicator items', async () => {
+    vi.useFakeTimers()
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -284,6 +292,10 @@ describe('PlatformTabsDemo', () => {
 
     expect(indicator.attributes('data-current')).toBe('0')
     expect(wrapper.get('.platform-demo__indicator-slide span').text()).toBe('01')
+
+    await vi.advanceTimersByTimeAsync(1800)
+    expect(indicator.attributes('data-current')).toBe('1')
+    expect(wrapper.get('.platform-demo__indicator-slide span').text()).toBe('02')
 
     await indicator.findAll('.varo-indicator__item')[3]!.trigger('click')
     expect(indicator.attributes('data-current')).toBe('3')
