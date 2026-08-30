@@ -7,10 +7,14 @@ page {
   --varo-ui-border: #d8dee7;
   --varo-ui-border-strong: #aeb8c6;
   --varo-ui-primary: #08786f;
+  --varo-ui-primary-hover: #308e86;
   --varo-ui-primary-foreground: #fff;
   --varo-ui-success: #15803d;
+  --varo-ui-success-hover: #3a945c;
   --varo-ui-warning: #b76b00;
+  --varo-ui-warning-hover: #c38329;
   --varo-ui-danger: #c7372f;
+  --varo-ui-danger-hover: #d05750;
   --varo-ui-radius: 8px;
   --varo-ui-radius-sm: 6px;
   --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
@@ -40,6 +44,9 @@ page {
 }
 
 .varo-button {
+  --varo-button-fill: var(--varo-ui-primary);
+  --varo-button-hover-fill: var(--varo-ui-primary-hover);
+
   display: inline-flex;
   gap: 8px;
   align-items: center;
@@ -50,7 +57,7 @@ page {
   line-height: 1;
   color: var(--varo-ui-primary-foreground);
   cursor: pointer;
-  background: var(--varo-ui-primary);
+  background: var(--varo-button-fill);
   border: 1px solid transparent;
   border-radius: var(--varo-ui-radius);
   box-shadow: var(--varo-ui-shadow-sm);
@@ -63,8 +70,16 @@ page {
     transform 0.18s ease;
 }
 
+.varo-button[data-variant='solid'] {
+  border: 0;
+}
+
 .varo-button--pressed {
   transform: translateY(1px);
+}
+
+.varo-button[data-variant='solid'].varo-button--pressed {
+  background: var(--varo-button-hover-fill);
 }
 
 .varo-button[data-size='sm'] {
@@ -94,15 +109,18 @@ page {
 }
 
 .varo-button[data-tone='success'][data-variant='solid'] {
-  background: var(--varo-ui-success);
+  --varo-button-fill: var(--varo-ui-success);
+  --varo-button-hover-fill: var(--varo-ui-success-hover);
 }
 
 .varo-button[data-tone='warning'][data-variant='solid'] {
-  background: var(--varo-ui-warning);
+  --varo-button-fill: var(--varo-ui-warning);
+  --varo-button-hover-fill: var(--varo-ui-warning-hover);
 }
 
 .varo-button[data-tone='danger'][data-variant='solid'] {
-  background: var(--varo-ui-danger);
+  --varo-button-fill: var(--varo-ui-danger);
+  --varo-button-hover-fill: var(--varo-ui-danger-hover);
 }
 
 .varo-button[data-shape='square'] {

@@ -52,10 +52,14 @@
   --varo-ui-border: var(--varo-border);
   --varo-ui-border-strong: var(--varo-border-strong);
   --varo-ui-primary: var(--varo-primary);
+  --varo-ui-primary-hover: color-mix(in srgb, var(--varo-primary) 84%, #fff);
   --varo-ui-primary-foreground: var(--varo-primary-foreground);
   --varo-ui-success: var(--varo-color-success);
+  --varo-ui-success-hover: color-mix(in srgb, var(--varo-color-success) 84%, #fff);
   --varo-ui-warning: var(--varo-color-warning);
+  --varo-ui-warning-hover: color-mix(in srgb, var(--varo-color-warning) 84%, #fff);
   --varo-ui-danger: var(--varo-color-danger);
+  --varo-ui-danger-hover: color-mix(in srgb, var(--varo-color-danger) 84%, #fff);
   --varo-ui-radius: var(--varo-radius);
   --varo-ui-radius-sm: calc(var(--varo-radius) - 2px);
   --varo-ui-shadow-sm: var(--varo-shadow-sm);
@@ -381,9 +385,6 @@ body {
   height: 15px;
   content: "";
   background: currentcolor;
-  mask:
-    linear-gradient(#000 0 0) 5px 1px / 9px 11px no-repeat,
-    linear-gradient(#000 0 0) 1px 5px / 9px 11px no-repeat;
   mask:
     linear-gradient(#000 0 0) 5px 1px / 9px 11px no-repeat,
     linear-gradient(#000 0 0) 1px 5px / 9px 11px no-repeat;

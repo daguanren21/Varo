@@ -2768,8 +2768,7 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__trigger,
-.platform-demo__dialog-close,
-:deep(.varo-button[data-variant='solid']) {
+.platform-demo__dialog-close {
   color: var(--varo-primary-foreground);
   background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
 }
@@ -2789,18 +2788,6 @@ onBeforeUnmount(() => {
 :deep(.varo-button[data-variant='ghost']) {
   color: var(--varo-foreground, var(--demo-brand));
   background: var(--varo-card-muted, color-mix(in srgb, var(--demo-brand) 10%, transparent));
-}
-
-:deep(.varo-button[data-tone='success'][data-variant='solid']) {
-  background: var(--varo-color-success);
-}
-
-:deep(.varo-button[data-tone='warning'][data-variant='solid']) {
-  background: var(--varo-color-warning);
-}
-
-:deep(.varo-button[data-tone='danger'][data-variant='solid']) {
-  background: var(--varo-danger);
 }
 
 :deep(.varo-button[data-shape='square']) {
@@ -3126,7 +3113,6 @@ onBeforeUnmount(() => {
 .platform-demo__trigger,
 .platform-demo__dialog-close,
 .platform-demo__sticky-bar,
-:deep(.varo-button[data-variant='solid']),
 :deep(.varo-fixed-nav__trigger),
 :deep(.varo-elevator__index[data-active='true']),
 :deep(.varo-pagination button[data-active='true']),

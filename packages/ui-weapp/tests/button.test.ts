@@ -1,5 +1,7 @@
 import type { ThemeConfig } from '@varo-ui/theme'
 import type { Plugin } from 'vue'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -70,5 +72,16 @@ describe('ui-weapp button', () => {
     expect(wrapper.attributes('type')).toBe('submit')
     expect(wrapper.attributes('style')).toContain('--varo-button-color: #16a34a')
     expect(wrapper.get('.varo-button__icon').text()).toBe('+')
+  })
+
+  it('uses borderless solid buttons and the lighter pressed-state token', () => {
+    const style = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8')
+
+    expect(style).toContain('--varo-ui-primary-hover: #308e86')
+    expect(style).toContain('--varo-button-hover-fill: var(--varo-ui-primary-hover)')
+    expect(style).toContain('.varo-button[data-variant=\'solid\']')
+    expect(style).toContain('border: 0')
+    expect(style).toContain('.varo-button[data-variant=\'solid\'].varo-button--pressed')
+    expect(style).toContain('background: var(--varo-button-hover-fill)')
   })
 })
