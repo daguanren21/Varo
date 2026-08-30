@@ -203,13 +203,13 @@ describe('docs navigation', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
     expect(css).toContain('--varo-bg: #f7f8fa')
-    expect(css).toContain('--varo-surface: #ffffff')
+    expect(css).toContain('--varo-surface: #fff')
     expect(css).toContain('--varo-surface-strong: #eef2f5')
     expect(css).toContain('--varo-primary: #0f766e')
-    expect(css).toContain('--varo-primary-foreground: #ffffff')
+    expect(css).toContain('--varo-primary-foreground: #fff')
     expect(css).toContain('--varo-radius: 8px')
     expect(css).toContain('--varo-radius-lg: 12px')
-    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
+    expect(css).toContain('--varo-gridline: rgb(24 33 47 / 4.5%)')
     expect(css).toContain('font-family: Inter, \"SF Pro Text\", \"PingFang SC\",')
     expect(css).toContain('--varo-ui-text: var(--varo-foreground)')
     expect(css).toContain('--varo-ui-text-muted: var(--varo-muted)')
@@ -235,7 +235,7 @@ describe('docs navigation', () => {
   it('keeps docs chrome quieter than the content surface', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
+    expect(css).toContain('--varo-gridline: rgb(24 33 47 / 4.5%)')
     expect(css).toContain('.VPNavBar {')
     expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important')
     expect(css).toContain('backdrop-filter: blur(12px)')
