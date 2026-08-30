@@ -43,7 +43,10 @@ export const VProgress = defineComponent({
             height: size.value,
             width: size.value
           }
-        : { '--varo-progress-value': `${value.value}%`, '--varo-progress-stroke': `${props.strokeWidth}px` }
+        : {
+            '--varo-progress-scale': String(value.value / 100),
+            '--varo-progress-stroke': `${props.strokeWidth}px`
+          }
     )
 
     return () =>

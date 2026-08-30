@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import AgentComponentDemo from './AgentComponentDemo.vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
+import { AgentThinking } from './agent-ui'
 
 const components = [
   'loading', 'thinking', 'markdown', 'stream', 'message', 'conversation',
@@ -20,9 +21,9 @@ describe('AgentComponentDemo', () => {
       const wrapper = mount(AgentComponentDemo, { props: { component } })
       expect(wrapper.attributes('data-demo')).toBe(component)
       expect(wrapper.get('.agent-component-demo__stage').text().trim().length, component).toBeGreaterThan(0)
-      await wrapper.findAll('button').find((button) => button.text() === 'Code')!.trigger('click')
-      expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].name)
-      expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].importPath)
+      await wrapper.get('.demo-code-panel__toggle').trigger('click')
+      expect(wrapper.get('.demo-code-panel__body').text(), component).toContain(agentDemoCatalog[component].name)
+      expect(wrapper.get('.demo-code-panel__body').text(), component).toContain(agentDemoCatalog[component].importPath)
       wrapper.unmount()
     }
   })
@@ -33,9 +34,9 @@ describe('AgentComponentDemo', () => {
     expect(wrapper.get('output').text()).toBe('分析双端能力')
 
 
-    await wrapper.findAll('button').find((button) => button.text() === 'Code')!.trigger('click')
-    expect(wrapper.get('.agent-component-demo__source').text()).toContain('AgentPromptSuggestions')
-    expect(wrapper.get('.agent-component-demo__source').text()).toContain(':suggestions=\"suggestions\"')
+    await wrapper.get('.demo-code-panel__toggle').trigger('click')
+    expect(wrapper.get('.demo-code-panel__body').text()).toContain('AgentPromptSuggestions')
+    expect(wrapper.get('.demo-code-panel__body').text()).toContain(':suggestions="suggestions"')
   })
 
   it('renders multiline Agent content as structure instead of escaped text', () => {
@@ -60,5 +61,27 @@ describe('AgentComponentDemo', () => {
     expect(image.get('.agent-image-generation__preview svg').attributes('viewBox')).toBe('0 0 24 24')
     expect(image.get('.agent-image-generation__progress-meta').text()).toContain('68%')
     expect(image.find('.agent-image-generation__placeholder > i').exists()).toBe(false)
+  })
+
+  it('follows streaming state until the user manually takes control', async () => {
+    const steps = [
+      { id: 'inspect', status: 'running' as const, title: 'Inspect' },
+    ]
+    const wrapper = mount(AgentThinking, {
+      props: {
+        steps,
+        streaming: true,
+      },
+    })
+
+    expect(wrapper.attributes('data-open')).toBe('true')
+    await wrapper.setProps({ streaming: false })
+    expect(wrapper.attributes('data-open')).toBe('false')
+
+    await wrapper.get('.agent-thinking__trigger').trigger('click')
+    expect(wrapper.attributes('data-open')).toBe('true')
+    await wrapper.setProps({ streaming: true })
+    await wrapper.setProps({ streaming: false })
+    expect(wrapper.attributes('data-open')).toBe('true')
   })
 })

@@ -1,168 +1,106 @@
 # 色彩系统
 
-Varo 的色彩系统更接近产品组件库而不是营销页面：中性色负责结构，Jade 负责品牌识别，Blue、Amber、Rose、Violet 负责状态与业务强调。色阶组织参考成熟设计系统的“连续色板”思路，但命名、用途和组合方式都围绕 H5 与小程序运行时重写。
+Varo 使用 **Perceptual Neutral / 知觉中性** 主题模型：中性色承担空间和层级，Varo Teal 只承担操作、选择、焦点和品牌。明暗主题分别映射，不做颜色反相，也不让组件直接消费原始色阶。
 
 <div class="varo-color-system">
   <section class="varo-color-intro">
     <div>
-      <h2>Runtime Palette</h2>
-      <p>每组颜色提供 10 个阶梯，从浅背景到深色文本都能覆盖。默认界面以 Ink Neutral 为底，Varo Jade 只用于主要操作、焦点和跨端状态同步。</p>
+      <h2>Semantic first</h2>
+      <p>12 级 neutral scale 先描述背景、组件状态、边框和文字，再映射为 canvas、surface、text、border 与 focus 等语义 token。每个组件只使用语义角色。</p>
     </div>
     <div class="varo-color-token-card">
-      <span>Primary role</span>
-      <strong>Varo Jade</strong>
-      <code>#13c2c2</code>
+      <span>Accent role</span>
+      <strong>Varo Teal</strong>
+      <code>#0f766e / #5cc8be</code>
     </div>
   </section>
+
   <section class="varo-color-roles">
     <div class="varo-role-card primary">
-      <span>Primary</span>
-      <strong>Varo Jade</strong>
-      <code>#13c2c2</code>
-      <p>主操作、选中态、焦点环。</p>
+      <span>Accent</span><strong>Varo Teal</strong><code>#0f766e</code><p>主操作、选中态、链接与焦点。</p>
     </div>
     <div class="varo-role-card success">
-      <span>Success</span>
-      <strong>Success Green</strong>
-      <code>#16a34a</code>
-      <p>成功反馈、完成状态、可继续流程。</p>
+      <span>Success</span><strong>Success Green</strong><code>#15803d</code><p>完成、成功和可继续流程。</p>
     </div>
     <div class="varo-role-card warning">
-      <span>Warning</span>
-      <strong>Warning Amber</strong>
-      <code>#f59e0b</code>
-      <p>等待、注意、支付确认和可修正风险。</p>
+      <span>Warning</span><strong>Warning Amber</strong><code>#a85d00</code><p>等待、注意和可修正风险。</p>
     </div>
     <div class="varo-role-card danger">
-      <span>Danger</span>
-      <strong>Danger Rose</strong>
-      <code>#ef4444</code>
-      <p>失败、破坏性动作、不可逆确认。</p>
+      <span>Danger</span><strong>Danger Red</strong><code>#bd3f38</code><p>失败、破坏性和不可逆操作。</p>
     </div>
   </section>
+
   <section class="varo-token-grid">
-    <div><span>Text</span><strong>Ink 10</strong><code>#18181b</code></div>
-    <div><span>Muted text</span><strong>Ink 6</strong><code>#71717a</code></div>
-    <div><span>Background</span><strong>Ink 1</strong><code>#fbfbfa</code></div>
-    <div><span>Surface</span><strong>White</strong><code>#ffffff</code></div>
-    <div><span>Border</span><strong>Ink 3</strong><code>#e4e4e7</code></div>
-    <div><span>Strong border</span><strong>Ink 4</strong><code>#d4d4d8</code></div>
+    <div><span>Canvas</span><strong>Neutral 1</strong><code>#f7f8fa / #0c1117</code></div>
+    <div><span>Surface</span><strong>Neutral 3</strong><code>#ffffff / #151d26</code></div>
+    <div><span>Text</span><strong>Neutral 12</strong><code>#1b2430 / #e4eaf0</code></div>
+    <div><span>Muted text</span><strong>Neutral 11</strong><code>#526173 / #a6b2bf</code></div>
+    <div><span>Border</span><strong>Neutral 6</strong><code>#dde3ea / #2b3847</code></div>
+    <div><span>Interactive border</span><strong>Neutral 8</strong><code>#8494a5 / #637488</code></div>
   </section>
+
   <section class="varo-color-component-system">
     <div>
-      <h2>Component States</h2>
-      <p>色彩不只存在于色板里。每个语义色都要回答状态提示、边框反馈、文字强调和操作优先级，确保 H5 与小程序 block 可以复用同一套判断。</p>
+      <h2>Component states</h2>
+      <p>默认、hover、pressed、selected、disabled、focus、loading 和 error 均有明确角色；状态不能只靠颜色表达。</p>
     </div>
     <div class="varo-color-state-strip">
-      <div class="varo-color-state-item primary"><span>Primary</span><strong>主操作</strong><small>选中、聚焦、提交</small></div>
-      <div class="varo-color-state-item success"><span>Success</span><strong>成功反馈</strong><small>完成、可继续</small></div>
-      <div class="varo-color-state-item warning"><span>Warning</span><strong>等待确认</strong><small>待处理、可修正</small></div>
-      <div class="varo-color-state-item danger"><span>Danger</span><strong>风险操作</strong><small>失败、不可逆</small></div>
+      <div class="varo-color-state-item primary"><span>Selected</span><strong>Accent soft</strong><small>文字、背景和边框共同变化</small></div>
+      <div class="varo-color-state-item success"><span>Success</span><strong>图标 + 文案</strong><small>颜色不是唯一信息</small></div>
+      <div class="varo-color-state-item warning"><span>Warning</span><strong>说明 + 恢复</strong><small>风险必须可理解</small></div>
+      <div class="varo-color-state-item danger"><span>Danger</span><strong>分离危险操作</strong><small>不可逆动作需确认</small></div>
     </div>
   </section>
+
   <section class="varo-color-scale">
-    <h2>Varo Jade</h2>
-    <p>品牌主色。用于主按钮、链接、焦点环、选中态和跨端同步提示。</p>
+    <h2>Light neutral</h2>
+    <p>亮色模式通过稳定的灰阶建立结构；交互边框强于装饰边框。</p>
     <div class="varo-swatch-grid">
-      <div class="varo-swatch" style="--swatch:#e6fffb"><span>1</span><code>#e6fffb</code></div>
-      <div class="varo-swatch" style="--swatch:#b5f5ec"><span>2</span><code>#b5f5ec</code></div>
-      <div class="varo-swatch" style="--swatch:#87e8de"><span>3</span><code>#87e8de</code></div>
-      <div class="varo-swatch" style="--swatch:#5cdbd3"><span>4</span><code>#5cdbd3</code></div>
-      <div class="varo-swatch" style="--swatch:#36cfc9"><span>5</span><code>#36cfc9</code></div>
-      <div class="varo-swatch" style="--swatch:#13c2c2"><span>6</span><code>#13c2c2</code></div>
-      <div class="varo-swatch" style="--swatch:#08979c"><span>7</span><code>#08979c</code></div>
-      <div class="varo-swatch" style="--swatch:#006d75"><span>8</span><code>#006d75</code></div>
-      <div class="varo-swatch" style="--swatch:#00474f"><span>9</span><code>#00474f</code></div>
-      <div class="varo-swatch" style="--swatch:#002329"><span>10</span><code>#002329</code></div>
+      <div class="varo-swatch" style="--swatch:#f7f8fa"><span>1</span><code>#f7f8fa</code></div>
+      <div class="varo-swatch" style="--swatch:#f2f4f7"><span>2</span><code>#f2f4f7</code></div>
+      <div class="varo-swatch" style="--swatch:#ffffff"><span>3</span><code>#ffffff</code></div>
+      <div class="varo-swatch" style="--swatch:#eef1f4"><span>4</span><code>#eef1f4</code></div>
+      <div class="varo-swatch" style="--swatch:#e6ebf0"><span>5</span><code>#e6ebf0</code></div>
+      <div class="varo-swatch" style="--swatch:#dde3ea"><span>6</span><code>#dde3ea</code></div>
+      <div class="varo-swatch" style="--swatch:#b8c3ce"><span>7</span><code>#b8c3ce</code></div>
+      <div class="varo-swatch" style="--swatch:#8494a5"><span>8</span><code>#8494a5</code></div>
+      <div class="varo-swatch" style="--swatch:#7b8794"><span>9</span><code>#7b8794</code></div>
+      <div class="varo-swatch" style="--swatch:#6e7a87"><span>10</span><code>#6e7a87</code></div>
+      <div class="varo-swatch" style="--swatch:#526173"><span>11</span><code>#526173</code></div>
+      <div class="varo-swatch" style="--swatch:#1b2430"><span>12</span><code>#1b2430</code></div>
     </div>
   </section>
+
   <section class="varo-color-scale">
-    <h2>Ink Neutral</h2>
-    <p>界面骨架。用于背景、边框、文字层级和 shadcn 风格的低噪声面板。</p>
+    <h2>Dark neutral</h2>
+    <p>暗色模式重新分配明度与色度，避免纯黑、纯白和大面积高饱和色互相竞争。</p>
     <div class="varo-swatch-grid">
-      <div class="varo-swatch" style="--swatch:#fafafa"><span>1</span><code>#fafafa</code></div>
-      <div class="varo-swatch" style="--swatch:#f4f4f5"><span>2</span><code>#f4f4f5</code></div>
-      <div class="varo-swatch" style="--swatch:#e4e4e7"><span>3</span><code>#e4e4e7</code></div>
-      <div class="varo-swatch" style="--swatch:#d4d4d8"><span>4</span><code>#d4d4d8</code></div>
-      <div class="varo-swatch" style="--swatch:#a1a1aa"><span>5</span><code>#a1a1aa</code></div>
-      <div class="varo-swatch" style="--swatch:#71717a"><span>6</span><code>#71717a</code></div>
-      <div class="varo-swatch" style="--swatch:#52525b"><span>7</span><code>#52525b</code></div>
-      <div class="varo-swatch" style="--swatch:#3f3f46"><span>8</span><code>#3f3f46</code></div>
-      <div class="varo-swatch" style="--swatch:#27272a"><span>9</span><code>#27272a</code></div>
-      <div class="varo-swatch" style="--swatch:#18181b"><span>10</span><code>#18181b</code></div>
+      <div class="varo-swatch" style="--swatch:#0c1117"><span>1</span><code>#0c1117</code></div>
+      <div class="varo-swatch" style="--swatch:#10171f"><span>2</span><code>#10171f</code></div>
+      <div class="varo-swatch" style="--swatch:#151d26"><span>3</span><code>#151d26</code></div>
+      <div class="varo-swatch" style="--swatch:#1a2530"><span>4</span><code>#1a2530</code></div>
+      <div class="varo-swatch" style="--swatch:#21303c"><span>5</span><code>#21303c</code></div>
+      <div class="varo-swatch" style="--swatch:#2b3847"><span>6</span><code>#2b3847</code></div>
+      <div class="varo-swatch" style="--swatch:#3a4b5d"><span>7</span><code>#3a4b5d</code></div>
+      <div class="varo-swatch" style="--swatch:#637488"><span>8</span><code>#637488</code></div>
+      <div class="varo-swatch" style="--swatch:#6b7c90"><span>9</span><code>#6b7c90</code></div>
+      <div class="varo-swatch" style="--swatch:#7a8b9d"><span>10</span><code>#7a8b9d</code></div>
+      <div class="varo-swatch" style="--swatch:#a6b2bf"><span>11</span><code>#a6b2bf</code></div>
+      <div class="varo-swatch" style="--swatch:#e4eaf0"><span>12</span><code>#e4eaf0</code></div>
     </div>
   </section>
+
   <section class="varo-color-matrix">
-    <div class="varo-color-scale">
-      <h2>Success</h2>
-      <p>成功、完成、可继续。</p>
-      <div class="varo-swatch-grid compact">
-        <div class="varo-swatch" style="--swatch:#f0fdf4"><span>1</span><code>#f0fdf4</code></div>
-        <div class="varo-swatch" style="--swatch:#dcfce7"><span>2</span><code>#dcfce7</code></div>
-        <div class="varo-swatch" style="--swatch:#bbf7d0"><span>3</span><code>#bbf7d0</code></div>
-        <div class="varo-swatch" style="--swatch:#86efac"><span>4</span><code>#86efac</code></div>
-        <div class="varo-swatch" style="--swatch:#4ade80"><span>5</span><code>#4ade80</code></div>
-        <div class="varo-swatch" style="--swatch:#16a34a"><span>6</span><code>#16a34a</code></div>
-        <div class="varo-swatch" style="--swatch:#15803d"><span>7</span><code>#15803d</code></div>
-        <div class="varo-swatch" style="--swatch:#166534"><span>8</span><code>#166534</code></div>
-        <div class="varo-swatch" style="--swatch:#14532d"><span>9</span><code>#14532d</code></div>
-        <div class="varo-swatch" style="--swatch:#052e16"><span>10</span><code>#052e16</code></div>
-      </div>
-    </div>
-    <div class="varo-color-scale">
-      <h2>Warning</h2>
-      <p>等待、警告、支付确认和轻量促销。</p>
-      <div class="varo-swatch-grid compact">
-        <div class="varo-swatch" style="--swatch:#fffbe6"><span>1</span><code>#fffbe6</code></div>
-        <div class="varo-swatch" style="--swatch:#fff1b8"><span>2</span><code>#fff1b8</code></div>
-        <div class="varo-swatch" style="--swatch:#ffe58f"><span>3</span><code>#ffe58f</code></div>
-        <div class="varo-swatch" style="--swatch:#ffd666"><span>4</span><code>#ffd666</code></div>
-        <div class="varo-swatch" style="--swatch:#ffc53d"><span>5</span><code>#ffc53d</code></div>
-        <div class="varo-swatch" style="--swatch:#faad14"><span>6</span><code>#faad14</code></div>
-        <div class="varo-swatch" style="--swatch:#d48806"><span>7</span><code>#d48806</code></div>
-        <div class="varo-swatch" style="--swatch:#ad6800"><span>8</span><code>#ad6800</code></div>
-        <div class="varo-swatch" style="--swatch:#874d00"><span>9</span><code>#874d00</code></div>
-        <div class="varo-swatch" style="--swatch:#613400"><span>10</span><code>#613400</code></div>
-      </div>
-    </div>
-    <div class="varo-color-scale">
-      <h2>Danger</h2>
-      <p>危险动作、失败状态、不可逆确认。</p>
-      <div class="varo-swatch-grid compact">
-        <div class="varo-swatch" style="--swatch:#fff1f0"><span>1</span><code>#fff1f0</code></div>
-        <div class="varo-swatch" style="--swatch:#ffccc7"><span>2</span><code>#ffccc7</code></div>
-        <div class="varo-swatch" style="--swatch:#ffa39e"><span>3</span><code>#ffa39e</code></div>
-        <div class="varo-swatch" style="--swatch:#ff7875"><span>4</span><code>#ff7875</code></div>
-        <div class="varo-swatch" style="--swatch:#ff4d4f"><span>5</span><code>#ff4d4f</code></div>
-        <div class="varo-swatch" style="--swatch:#f5222d"><span>6</span><code>#f5222d</code></div>
-        <div class="varo-swatch" style="--swatch:#cf1322"><span>7</span><code>#cf1322</code></div>
-        <div class="varo-swatch" style="--swatch:#a8071a"><span>8</span><code>#a8071a</code></div>
-        <div class="varo-swatch" style="--swatch:#820014"><span>9</span><code>#820014</code></div>
-        <div class="varo-swatch" style="--swatch:#5c0011"><span>10</span><code>#5c0011</code></div>
-      </div>
-    </div>
-    <div class="varo-color-scale">
-      <h2>Violet</h2>
-      <p>高级能力、实验区、AI 或自动化状态。</p>
-      <div class="varo-swatch-grid compact">
-        <div class="varo-swatch" style="--swatch:#f9f0ff"><span>1</span><code>#f9f0ff</code></div>
-        <div class="varo-swatch" style="--swatch:#efdbff"><span>2</span><code>#efdbff</code></div>
-        <div class="varo-swatch" style="--swatch:#d3adf7"><span>3</span><code>#d3adf7</code></div>
-        <div class="varo-swatch" style="--swatch:#b37feb"><span>4</span><code>#b37feb</code></div>
-        <div class="varo-swatch" style="--swatch:#9254de"><span>5</span><code>#9254de</code></div>
-        <div class="varo-swatch" style="--swatch:#722ed1"><span>6</span><code>#722ed1</code></div>
-        <div class="varo-swatch" style="--swatch:#531dab"><span>7</span><code>#531dab</code></div>
-        <div class="varo-swatch" style="--swatch:#391085"><span>8</span><code>#391085</code></div>
-        <div class="varo-swatch" style="--swatch:#22075e"><span>9</span><code>#22075e</code></div>
-        <div class="varo-swatch" style="--swatch:#120338"><span>10</span><code>#120338</code></div>
-      </div>
-    </div>
+    <div class="varo-color-scale"><h2>Text</h2><p>正文遵守 WCAG 2.2 AA，并使用 APCA 辅助检查暗色知觉对比度。</p></div>
+    <div class="varo-color-scale"><h2>Boundary</h2><p>交互边界和焦点环达到 3:1；装饰 divider 保持安静。</p></div>
+    <div class="varo-color-scale"><h2>State</h2><p>成功、警告和错误同时提供图标、文字或结构变化。</p></div>
+    <div class="varo-color-scale"><h2>Motion</h2><p>颜色变化使用 120ms 状态 token；主题切换不播放大面积位移动画。</p></div>
   </section>
 </div>
 
 ## 使用建议
 
-- 主操作使用 Jade 6，hover/active 使用 Jade 7/8，浅背景使用 Jade 1/2。
-- 页面结构优先使用 Ink Neutral，避免整页被品牌色覆盖。
-- 小程序 blocks 内的状态色只用于局部块，不作为大面积背景。
-- 暗色模式优先调换文字和背景阶梯，不改变语义色名称。
+- 页面骨架使用 Neutral 1–6；交互边界使用 7–8；文字使用 11–12。
+- Accent 只用于主要操作、焦点、链接和选中态，不用于大面积背景。
+- 暗色主题必须独立测试正文、次级文字、交互边界和语义状态。
+- 正文以 WCAG 2.2 AA 为硬门槛，并用 APCA 作为知觉检查补充。

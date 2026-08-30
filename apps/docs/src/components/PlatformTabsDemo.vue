@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import {
   getDemoCopy,
   getDemoRuntime,
@@ -8,6 +8,8 @@ import {
   type Locale,
   type Platform
 } from './demo'
+import { DemoCodePanel } from './demo-system'
+import type { DemoCodeItem } from './demo-system'
 
 const props = withDefaults(
   defineProps<{
@@ -31,10 +33,7 @@ const inputValue = ref('Varo')
 const inputInvalid = ref(false)
 const activePlatform = ref<Platform>('h5')
 const codeExpanded = ref(false)
-const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 const platformPanelId = computed(() => `platform-${props.example}-panel`)
-const codePanelId = computed(() => `platform-${props.example}-code-panel`)
-let copyFeedbackTimer: number | undefined
 const overlayVisible = ref(true)
 const popupVisible = ref(true)
 const elevatorActive = ref('A')
@@ -97,70 +96,32 @@ const runtime = computed(() => getDemoRuntime(activePlatform.value))
 const currentIndicatorLabel = computed(
   () => copy.value.indicatorSlides[indicatorCurrent.value] ?? copy.value.indicatorSlides[0]
 )
-const codeExamples = computed(() => [
+const codeExamples = computed<DemoCodeItem[]>(() => [
   {
-    key: 'h5' as Platform,
-    title: copy.value.h5CodeTitle,
+    id: 'h5',
+    label: copy.value.h5CodeTitle,
+    meta: '@varo-ui/h5',
     code: demo.value.platforms.h5.code
   },
   {
-    key: 'weapp' as Platform,
-    title: copy.value.weappCodeTitle,
+    id: 'weapp',
+    label: copy.value.weappCodeTitle,
+    meta: '@varo-ui/weapp',
     code: demo.value.platforms.weapp.code
   }
 ])
-const activeCodeExample = computed(
-  () => codeExamples.value.find((item) => item.key === activePlatform.value) ?? codeExamples.value[0]!
-)
+const activeCodeId = computed({
+  get: () => activePlatform.value,
+  set: (value: string) => setPlatform(value as Platform)
+})
 const hasControls = computed(
   () => props.example === 'button' || props.example === 'input' || props.example === 'overview'
 )
-const codeToggleLabel = computed(() =>
-  codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand
-)
-const copyLabel = computed(() => {
-  if (copyState.value === 'copied') {
-    return copy.value.copied
-  }
-
-  if (copyState.value === 'unsupported') {
-    return copy.value.copyManual
-  }
-
-  return activePlatform.value === 'h5' ? copy.value.copyCodeH5 : copy.value.copyCodeWeapp
-})
-
-function resetCopyState() {
-  if (copyFeedbackTimer) {
-    window.clearTimeout(copyFeedbackTimer)
-    copyFeedbackTimer = undefined
-  }
-
-  copyState.value = 'idle'
-}
-
-async function copySnippet() {
-  if (!navigator?.clipboard?.writeText) {
-    copyState.value = 'unsupported'
-    return
-  }
-
-  await navigator.clipboard.writeText(activeCodeExample.value.code)
-  copyState.value = 'copied'
-  copyFeedbackTimer = window.setTimeout(() => {
-    copyState.value = 'idle'
-    copyFeedbackTimer = undefined
-  }, 1800)
-}
 
 function setPlatform(platform: Platform) {
   activePlatform.value = platform
-  resetCopyState()
 }
 
-function codeTabId(platform: Platform) {
-  return `platform-${props.example}-code-tab-${platform}`
-}
 
 function platformTabId(platform: Platform) {
   return `platform-${props.example}-tab-${platform}`
@@ -191,31 +152,6 @@ function handlePlatformTabKeydown(event: KeyboardEvent) {
   })
 }
 
-function toggleCodeExpanded() {
-  codeExpanded.value = !codeExpanded.value
-  if (!codeExpanded.value) {
-    resetCopyState()
-  }
-}
-
-let indicatorTimer: ReturnType<typeof setInterval> | undefined
-
-onMounted(() => {
-  if (props.example !== 'indicator') {
-    return
-  }
-
-  indicatorTimer = setInterval(() => {
-    indicatorCurrent.value = (indicatorCurrent.value + 1) % copy.value.indicatorSlides.length
-  }, 1800)
-})
-
-onBeforeUnmount(() => {
-  if (indicatorTimer) {
-    clearInterval(indicatorTimer)
-  }
-  resetCopyState()
-})
 </script>
 
 <template>
@@ -917,76 +853,13 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div class="platform-demo__code-shell" :data-expanded="String(codeExpanded)">
-          <div class="platform-demo__code-head-row">
-            <div class="platform-demo__code-tabs" role="tablist" :aria-label="copy.codeTitle">
-              <button
-                v-for="codeExample in codeExamples"
-                :id="codeTabId(codeExample.key)"
-                :key="codeExample.key"
-                class="platform-demo__code-tab"
-                :data-platform="codeExample.key"
-                :data-active="activePlatform === codeExample.key"
-                type="button"
-                role="tab"
-                :aria-controls="codePanelId"
-                :aria-selected="activePlatform === codeExample.key"
-                :tabindex="activePlatform === codeExample.key ? 0 : -1"
-                @click="setPlatform(codeExample.key)"
-                @keydown="handlePlatformTabKeydown"
-              >
-                {{ codeExample.title }}
-              </button>
-            </div>
-            <div class="platform-demo__code-actions">
-              <button
-                v-if="codeExpanded"
-                class="platform-demo__code-copy"
-                type="button"
-                :data-state="copyState"
-                :aria-label="copyLabel"
-                :title="copyLabel"
-                @click="copySnippet"
-              >
-                <span class="platform-demo__code-copy-icon" aria-hidden="true"></span>
-                <span class="platform-demo__code-copy-label">{{ copyLabel }}</span>
-              </button>
-              <button
-                class="platform-demo__code-toggle"
-                :data-active="String(codeExpanded)"
-                type="button"
-                :aria-expanded="codeExpanded"
-                :aria-label="codeToggleLabel"
-                @click="toggleCodeExpanded"
-              >
-                <span>{{ codeToggleLabel }}</span>
-              </button>
-            </div>
-          </div>
-
-          <section
-            v-if="codeExpanded"
-            :id="codePanelId"
-            class="platform-demo__code-section"
-            role="tabpanel"
-            :aria-labelledby="codeTabId(activePlatform)"
-          >
-            <div class="platform-demo__code-head">
-              <strong>{{ activeCodeExample.title }}</strong>
-            </div>
-            <pre><code>{{ activeCodeExample.code }}</code></pre>
-            <p
-              v-if="copyState !== 'idle'"
-              class="platform-demo__code-toast"
-              :data-state="copyState"
-              role="status"
-              aria-live="polite"
-            >
-              {{ copyState === 'copied' ? copy.copySuccess : copy.copyUnsupported }}
-            </p>
-          </section>
-        </div>
       </section>
+      <DemoCodePanel
+        v-model:active-id="activeCodeId"
+        v-model:expanded="codeExpanded"
+        :items="codeExamples"
+        :locale="locale"
+      />
     </div>
   </section>
 </template>
@@ -1004,15 +877,10 @@ onBeforeUnmount(() => {
   --demo-phone-screen: var(--varo-demo-phone-screen);
   --demo-phone-card: var(--varo-demo-phone-card);
   --demo-shadow: var(--varo-demo-shadow);
-  --demo-code-bg: #0f1722;
-  --demo-code-surface: #172231;
-  --demo-code-border: #304056;
-  --demo-code-text: #e8eef5;
-  --demo-code-muted: #9eacc0;
-  --demo-duration-instant: 100ms;
-  --demo-duration-fast: 160ms;
-  --demo-duration-enter: 180ms;
-  --demo-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --demo-duration-instant: var(--varo-motion-state);
+  --demo-duration-fast: var(--varo-motion-state);
+  --demo-duration-enter: var(--varo-motion-enter);
+  --demo-ease-out: var(--varo-ease-out);
   margin: 24px 0;
   padding: 0;
   border: 0;
@@ -1170,193 +1038,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 10px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
-.platform-demo__code-shell {
-  overflow: hidden;
-  border: 1px solid var(--demo-code-border);
-  border-radius: 14px;
-  background: var(--demo-code-bg);
-  color: var(--demo-code-text);
-}
-
-.platform-demo__code-shell[data-expanded='false'] .platform-demo__code-head-row {
-  border-bottom: 0;
-}
-
-.platform-demo__code-head-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--demo-border);
-}
-
-.platform-demo__code-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.platform-demo__code-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.platform-demo__code-tab {
-  min-height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--demo-code-border);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--demo-code-muted);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    border-color var(--demo-duration-instant) var(--demo-ease-out),
-    background var(--demo-duration-instant) var(--demo-ease-out),
-    color var(--demo-duration-instant) var(--demo-ease-out),
-    transform var(--demo-duration-instant) var(--demo-ease-out);
-}
-
-.platform-demo__code-tab[data-active='true'] {
-  border-color: color-mix(in srgb, var(--demo-brand) 32%, var(--demo-code-border));
-  background: color-mix(in srgb, var(--demo-brand) 10%, var(--demo-code-surface));
-  color: var(--demo-code-text);
-}
-
-.platform-demo__code-tab:hover:not([data-active='true']) {
-  border-color: color-mix(in srgb, var(--demo-brand) 40%, var(--demo-border));
-  background: color-mix(in srgb, var(--demo-brand) 8%, transparent);
-  color: var(--demo-brand);
-}
-
-.platform-demo__code-toggle,
-.platform-demo__code-copy {
-  display: inline-flex;
-  min-height: 36px;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 14px;
-  border: 1px solid var(--demo-code-border);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--demo-code-text);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    border-color var(--demo-duration-fast) var(--demo-ease-out),
-    background var(--demo-duration-fast) var(--demo-ease-out),
-    color var(--demo-duration-fast) var(--demo-ease-out),
-    transform var(--demo-duration-fast) var(--demo-ease-out);
-}
-
-.platform-demo__code-toggle:hover,
-.platform-demo__code-toggle[data-active='true'],
-.platform-demo__code-copy:hover {
-  border-color: color-mix(in srgb, var(--demo-brand) 32%, var(--demo-border));
-  background: color-mix(in srgb, var(--demo-brand) 10%, transparent);
-  color: var(--demo-brand);
-}
-
-.platform-demo__code-copy[data-state='copied'] {
-  border-color: color-mix(in srgb, var(--varo-color-success, #16a34a) 48%, var(--demo-border));
-  background: color-mix(in srgb, var(--varo-color-success, #16a34a) 14%, transparent);
-  color: var(--varo-color-success, #16a34a);
-}
-
-.platform-demo__code-copy[data-state='unsupported'] {
-  border-color: color-mix(in srgb, var(--varo-color-warning, #d97706) 48%, var(--demo-border));
-  background: color-mix(in srgb, var(--varo-color-warning, #d97706) 14%, transparent);
-  color: var(--varo-color-warning, #d97706);
-}
-
-.platform-demo__code-copy-icon {
-  position: relative;
-  flex: 0 0 auto;
-  width: 12px;
-  height: 12px;
-}
-
-.platform-demo__code-copy-icon::before,
-.platform-demo__code-copy-icon::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 10px;
-  border: 1.5px solid currentColor;
-  border-radius: 2px;
-}
-
-.platform-demo__code-copy-icon::before {
-  top: 0;
-  right: 0;
-}
-
-.platform-demo__code-copy-icon::after {
-  bottom: 0;
-  left: 0;
-  background: currentColor;
-  opacity: 0.18;
-}
-
-.platform-demo__code-copy-label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.platform-demo__code-section {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
-
-.platform-demo__code-section .platform-demo__code-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px 0;
-  color: var(--demo-code-muted);
-  font-size: 0.78rem;
-}
-
-.platform-demo__code-section pre {
-  max-height: 280px;
-  margin: 0;
-  overflow: auto;
-  padding: 12px 14px 16px;
-  background: transparent;
-  color: var(--demo-code-text);
-  font-size: 0.8rem;
-  line-height: 1.55;
-}
-
-.platform-demo__code-toast {
-  margin: 0;
-  border-top: 1px solid var(--demo-border);
-  padding: 8px 14px;
-  font-size: 0.76rem;
-  font-weight: 650;
-  line-height: 1.3;
-}
-
-.platform-demo__code-toast[data-state='copied'] {
-  background: color-mix(in srgb, var(--varo-color-success, #16a34a) 12%, transparent);
-  color: var(--varo-color-success, #16a34a);
-}
-
-.platform-demo__code-toast[data-state='unsupported'] {
-  background: color-mix(in srgb, var(--varo-color-warning, #d97706) 12%, transparent);
-  color: var(--varo-color-warning, #d97706);
-}
 
 @media (max-width: 960px) {
   .platform-demo__stage[data-layout='controls-preview'] {
@@ -1448,11 +1129,8 @@ onBeforeUnmount(() => {
   color: var(--demo-brand);
 }
 
-.platform-demo__code-tab:focus-visible,
-.platform-demo__code-toggle:focus-visible,
-.platform-demo__code-copy:focus-visible,
 .platform-demo__chip:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--demo-brand) 70%, transparent);
+  outline: 2px solid var(--varo-ring);
   outline-offset: 2px;
 }
 
@@ -2865,10 +2543,6 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__chip,
-.platform-demo__code-toggle,
-.platform-demo__code-copy,
-.platform-demo__code-tabs,
-.platform-demo__code-tab,
 .platform-demo__fixed-nav-copy,
 .platform-demo__navbar-page,
 .platform-demo__tabbar-page,
@@ -2997,8 +2671,200 @@ onBeforeUnmount(() => {
   background: var(--varo-danger);
 }
 
+/* Perceptual demo shell */
+.platform-demo {
+  margin: 20px 0 28px;
+}
+
+.platform-demo__head {
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.platform-demo__head > div:first-child {
+  display: none;
+}
+
+.platform-demo__platform-switch {
+  background: var(--varo-neutral-2);
+  border-color: var(--varo-border);
+}
+
+.platform-demo__platform-tab {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--varo-muted);
+}
+
+.platform-demo__platform-tab[data-active='true'] {
+  color: var(--varo-accent);
+  background: var(--varo-surface);
+  box-shadow: inset 0 0 0 1px var(--varo-accent-border);
+}
+
+.platform-demo__stage {
+  gap: 16px;
+  padding: 16px;
+  background: var(--varo-demo-surface-strong);
+  border-color: var(--varo-demo-border);
+  border-radius: var(--varo-demo-radius-lg);
+  box-shadow: var(--varo-demo-shadow);
+}
+
+.platform-demo__stage[data-layout='controls-preview'] {
+  grid-template-columns: minmax(190px, 224px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.platform-demo__controls {
+  padding: 12px;
+  background: var(--varo-demo-surface);
+  border-color: var(--varo-demo-border);
+  border-radius: var(--varo-demo-radius);
+}
+
+.platform-demo__control-group {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.platform-demo__control-group + .platform-demo__control-group {
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--varo-demo-border);
+}
+
+.platform-demo__chip {
+  min-height: 44px;
+  color: var(--varo-foreground);
+  border-color: var(--varo-border);
+}
+
+.platform-demo__chip[data-active='true'] {
+  color: var(--varo-accent);
+  background: var(--varo-accent-soft);
+  border-color: var(--varo-accent-border);
+}
+
+.platform-demo :deep(.varo-button) {
+  min-height: 44px;
+}
+
+.platform-demo__panel--preview {
+  gap: 16px;
+}
+
+.platform-demo__phone-bezel {
+  width: min(100%, 440px);
+}
+
+.platform-demo__phone-screen {
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.platform-demo__phone-content {
+  padding: 0;
+}
+
+.platform-demo__preview-content {
+  gap: 12px;
+}
+
+.platform-demo__card,
+.platform-demo__nav-demo,
+.platform-demo__cell-demo,
+.platform-demo__image-demo,
+.platform-demo__divider-demo,
+.platform-demo__grid-demo,
+.platform-demo__layout-demo,
+.platform-demo__space-demo,
+.platform-demo__sticky-demo,
+.platform-demo__overlay-demo,
+.platform-demo__popup-demo {
+  background: var(--varo-demo-phone-card);
+  border-color: var(--varo-demo-border);
+  box-shadow: none;
+}
+
+.platform-demo > :deep(.demo-code-panel),
+.platform-demo__stage > :deep(.demo-code-panel) {
+  grid-column: 1 / -1;
+  overflow: clip;
+  border-radius: var(--varo-demo-radius);
+}
+
+.platform-demo__panel--preview {
+  align-self: center;
+}
+
+
+.platform-demo :deep(.varo-elevator__item),
+.platform-demo :deep(.varo-fixed-nav__item),
+.platform-demo :deep(.varo-pagination button),
+.platform-demo :deep(.varo-tabs__tab),
+.platform-demo :deep(.varo-input__body),
+.platform-demo__trigger,
+.platform-demo__dialog-close {
+  min-height: 44px;
+}
+
+.platform-demo__chip,
+.platform-demo :deep(.varo-elevator__index) {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.platform-demo :deep(.varo-pagination button),
+.platform-demo :deep(.varo-popup__close) {
+  min-width: 44px;
+}
+
+.platform-demo :deep(.varo-popup__close) {
+  min-height: 44px;
+}
+
+.platform-demo :deep(.varo-indicator__item),
+.platform-demo :deep(.varo-indicator__item[data-active='true']),
+.platform-demo :deep(.varo-indicator[data-type='line'] .varo-indicator__item),
+.platform-demo :deep(.varo-indicator[data-type='line'] .varo-indicator__item[data-active='true']) {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+}
+@media (max-width: 960px) {
+  .platform-demo__stage[data-layout='controls-preview'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .platform-demo__panel--preview {
+    order: 1;
+  }
+
+  .platform-demo__panel--controls {
+    order: 2;
+  }
+
+  .platform-demo__stage > :deep(.demo-code-panel) {
+    order: 3;
+  }
+}
+
+@media (max-width: 640px) {
+  .platform-demo__stage {
+    padding: 12px;
+  }
+
+  .platform-demo__phone-bezel {
+    width: 100%;
+  }
+}
+
 .platform-demo button:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {

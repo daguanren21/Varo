@@ -116,3 +116,230 @@
   .agent-ui__pulse,
   .agent-ui__cursor { animation: none; }
 }
+
+/* Semantic theme layer */
+:where(
+  .agent-loading,
+  .agent-message,
+  .agent-thinking,
+  .agent-tool-chip,
+  .agent-task-list,
+  .agent-approval,
+  .agent-recommendation,
+  .agent-prompt-suggestions,
+  .agent-composer,
+  .agent-stream,
+  .agent-response-actions,
+  .agent-artifact,
+  .agent-source-list,
+  .agent-attachment-list,
+  .agent-markdown
+) {
+  --agent-surface: var(--varo-ui-surface, var(--varo-surface, #fff));
+  --agent-surface-muted: var(--varo-ui-surface-muted, var(--varo-surface-strong, #f2f4f7));
+  --agent-text: var(--varo-ui-text, var(--varo-foreground, #1b2430));
+  --agent-muted: var(--varo-ui-text-muted, var(--varo-muted, #526173));
+  --agent-border: var(--varo-ui-border, var(--varo-border, #dde3ea));
+  --agent-border-strong: var(--varo-ui-border-strong, var(--varo-border-strong, #8494a5));
+  --agent-primary: var(--varo-ui-primary, var(--varo-accent, #0f766e));
+  --agent-on-primary: var(--varo-ui-primary-foreground, var(--varo-primary-foreground, #fff));
+  --agent-success: var(--varo-ui-success, var(--varo-color-success, #16824c));
+  --agent-warning: var(--varo-ui-warning, var(--varo-color-warning, #a85d00));
+  --agent-danger: var(--varo-ui-danger, var(--varo-danger, #bd3f38));
+}
+
+.agent-loading {
+  color: var(--agent-text);
+}
+
+.agent-loading .agent-ui__loading i {
+  background: var(--agent-primary);
+}
+
+.agent-loading > span:last-child,
+.agent-message header {
+  color: var(--agent-muted);
+}
+
+.agent-message[data-role='assistant'] > div > div,
+.agent-message[data-role='system'] > div > div {
+  color: var(--agent-text);
+  background: var(--agent-surface);
+  border-color: var(--agent-border);
+}
+
+.agent-message[data-role='user'] > div > div {
+  color: var(--agent-on-primary);
+  background: var(--agent-primary);
+  border-color: var(--agent-primary);
+}
+
+.agent-thinking.agent-thinking {
+  --agent-thinking-surface: var(--agent-surface);
+  --agent-thinking-surface-strong: var(--agent-surface-muted);
+  --agent-thinking-border: var(--agent-border);
+  --agent-thinking-text: var(--agent-text);
+  --agent-thinking-muted: var(--agent-muted);
+}
+
+.agent-thinking__icon {
+  color: var(--agent-primary);
+  background: color-mix(in srgb, var(--agent-primary) 12%, var(--agent-surface));
+  border-color: color-mix(in srgb, var(--agent-primary) 36%, var(--agent-border));
+  box-shadow: none;
+}
+
+.agent-thinking__chevron {
+  transition: transform var(--varo-ui-motion-move, 200ms) var(--varo-ui-ease-move, ease-in-out);
+}
+
+.agent-thinking__step {
+  border-left-color: var(--agent-border);
+}
+
+.agent-thinking__dot {
+  background: var(--agent-border-strong);
+}
+
+.agent-thinking__step[data-status='completed'] .agent-thinking__dot {
+  background: var(--agent-success);
+}
+
+.agent-thinking__step[data-status='running'] .agent-thinking__dot {
+  background: var(--agent-primary);
+}
+
+.agent-thinking__step[data-status='failed'] .agent-thinking__dot {
+  background: var(--agent-danger);
+}
+
+.agent-tool-chip.agent-tool-chip,
+.agent-task-list.agent-task-list {
+  color: var(--agent-text);
+  background: var(--agent-surface);
+  border-color: var(--agent-border);
+  background-image: none;
+}
+
+.agent-tool-chip strong,
+.agent-task-list strong {
+  color: var(--agent-text);
+}
+
+.agent-tool-chip small,
+.agent-task-list small {
+  color: var(--agent-muted);
+}
+
+.agent-task-list header {
+  border-color: var(--agent-border);
+}
+
+.agent-source-list.agent-source-list,
+.agent-attachment-list.agent-attachment-list {
+  color: var(--agent-text);
+  background: var(--agent-surface-muted);
+  background-image: none;
+  border-color: var(--agent-border);
+}
+
+.agent-source-list :is(header strong, a strong),
+.agent-attachment-list :is(header strong, article strong) {
+  color: var(--agent-text);
+}
+
+.agent-source-list :is(header small, a small),
+.agent-attachment-list :is(header small, article small) {
+  color: var(--agent-muted);
+}
+
+.agent-source-list a,
+.agent-attachment-list article {
+  color: var(--agent-text);
+  background: var(--agent-surface);
+  border-color: var(--agent-border);
+}
+
+.agent-attachment-list button {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--agent-muted);
+}
+
+.agent-approval.agent-approval {
+  color: var(--agent-text);
+  background: color-mix(in srgb, var(--agent-warning) 8%, var(--agent-surface));
+  border-color: color-mix(in srgb, var(--agent-warning) 46%, var(--agent-border));
+  background-image: none;
+}
+
+.agent-approval :is(h3, strong) {
+  color: var(--agent-text);
+}
+
+.agent-approval :is(p, small) {
+  color: var(--agent-muted);
+}
+
+.agent-recommendation.agent-recommendation {
+  color: var(--agent-text);
+  background: color-mix(in srgb, var(--agent-primary) 7%, var(--agent-surface));
+  border-color: color-mix(in srgb, var(--agent-primary) 34%, var(--agent-border));
+  background-image: none;
+}
+
+.agent-recommendation :is(strong, p) {
+  color: var(--agent-text);
+}
+
+.agent-recommendation header {
+  color: var(--agent-primary);
+}
+
+
+.agent-recommendation__track {
+  background: color-mix(in srgb, var(--agent-primary) 16%, var(--agent-surface));
+}
+
+.agent-recommendation__bar {
+  background: var(--agent-primary);
+}
+.agent-prompt-suggestions button,
+.agent-response-actions button,
+.agent-composer button {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--agent-text);
+  background: var(--agent-surface);
+  border-color: var(--agent-border);
+}
+
+.agent-prompt-suggestions button:hover,
+.agent-response-actions button:hover {
+  color: var(--agent-primary);
+  background: color-mix(in srgb, var(--agent-primary) 8%, var(--agent-surface));
+  border-color: var(--agent-border-strong);
+}
+
+.agent-composer > div:last-child {
+  background: var(--agent-surface);
+  border-color: var(--agent-border);
+  box-shadow: var(--varo-ui-shadow-sm, 0 1px 2px rgb(0 0 0 / 8%));
+}
+
+.agent-composer textarea {
+  color: var(--agent-text);
+}
+
+.agent-stream {
+  color: var(--agent-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-thinking__chevron,
+  .agent-prompt-suggestions button,
+  .agent-response-actions button,
+  .agent-composer button {
+    transition-duration: 0ms;
+  }
+}

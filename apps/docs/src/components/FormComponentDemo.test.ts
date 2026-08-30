@@ -35,24 +35,21 @@ describe('FormComponentDemo', () => {
       },
     })
 
-    expect(wrapper.find('.form-demo__code').exists()).toBe(false)
-    const toggle = wrapper.get('.form-demo__code-toggle')
-    expect(toggle.attributes('aria-label')).toBe('展开代码')
+    expect(wrapper.find('.demo-code-panel__body').exists()).toBe(false)
+    const toggle = wrapper.get('.demo-code-panel__toggle')
+    expect(toggle.attributes('aria-expanded')).toBe('false')
     expect(toggle.text()).toContain('展开代码')
 
     await toggle.trigger('click')
-    const code = wrapper.get('.form-demo__code')
-    const tabs = code.findAll('.form-demo__tab')
+    const code = wrapper.get('.demo-code-panel__body')
+    const tabs = wrapper.findAll('.demo-code-panel__tab')
 
-    expect(toggle.attributes('aria-label')).toBe('收起代码')
+    expect(toggle.attributes('aria-expanded')).toBe('true')
     expect(toggle.text()).toContain('收起代码')
     expect(tabs).toHaveLength(2)
     expect(tabs[0]!.attributes('data-active')).toBe('true')
     expect(code.get('code').text()).toContain('from \'@varo-ui/h5\'')
     expect(code.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
-
-    const copyButton = code.get('.form-demo__code-copy')
-    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
 
     await tabs[1]!.trigger('click')
 
@@ -60,19 +57,20 @@ describe('FormComponentDemo', () => {
     expect(tabs[1]!.attributes('data-active')).toBe('true')
     expect(code.get('code').text()).toContain('from \'@varo-ui/weapp\'')
     expect(code.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
-    expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
 
+    const copyButton = wrapper.get('.demo-code-panel__copy')
+    expect(copyButton.attributes('aria-label')).toBe('复制代码')
     await copyButton.trigger('click')
     await flushPromises()
 
     expect(writeText).toHaveBeenCalledTimes(1)
     expect(writeText.mock.calls[0]![0]).toContain('from \'@varo-ui/weapp\'')
     expect(copyButton.attributes('aria-label')).toBe('已复制')
-    expect(code.get('.form-demo__code-toast').text()).toContain('已复制到剪贴板')
+    expect(code.get('p').text()).toContain('已复制')
 
     await tabs[0]!.trigger('click')
-    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
-    expect(code.find('.form-demo__code-toast').exists()).toBe(false)
+    expect(copyButton.attributes('aria-label')).toBe('复制代码')
+    expect(code.find('p').exists()).toBe(false)
   })
 
   it('uses controlled visible state for popup-like form demos', async () => {

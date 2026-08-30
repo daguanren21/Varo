@@ -577,7 +577,7 @@ export const AgentImageGeneration = defineComponent({
                 h('strong', { class: 'text-[10px] tabular-nums text-teal-700' }, `${progress.value}%`)
               ]),
               h('span', { class: 'agent-image-generation__track block h-[5px] overflow-hidden rounded-full bg-white/80' }, [
-                h('i', { class: 'block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300', style: { width: `${progress.value}%` } })
+                h('i', { class: 'block h-full w-full origin-left rounded-full bg-gradient-to-r from-teal-700 to-teal-300', style: { '--agent-progress-scale': String(progress.value / 100), transform: 'scaleX(var(--agent-progress-scale))' } })
               ])
             ])
           : null

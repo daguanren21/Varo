@@ -160,7 +160,8 @@ const popoverOpen = ref(false)
 .pe-switch,
 .pe-item {
   display: inline-flex;
-  min-height: 36px;
+  min-width: 44px;
+  min-height: 44px;
   align-items: center;
   gap: 8px;
   border: 1px solid var(--varo-demo-border, var(--varo-border));
@@ -174,30 +175,30 @@ const popoverOpen = ref(false)
 }
 
 .pe-switch {
-  width: 52px;
-  min-height: 30px;
+  width: 58px;
+  min-height: 44px;
   justify-content: flex-start;
   padding: 3px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--varo-foreground) 18%, transparent);
-  transition: background 0.18s ease;
+  background: var(--varo-neutral-7);
+  transition: background var(--varo-motion-state) var(--varo-ease-out);
 }
 
 .pe-switch[data-state='checked'] {
-  background: color-mix(in srgb, var(--varo-primary) 88%, #fff);
+  background: var(--varo-primary);
 }
 
 .pe-switch-thumb {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--varo-primary-foreground);
   box-shadow: 0 1px 3px color-mix(in srgb, var(--varo-foreground) 24%, transparent);
-  transition: transform 0.18s ease;
+  transition: transform var(--varo-motion-move) var(--varo-ease-move);
 }
 
 .pe-switch[data-state='checked'] .pe-switch-thumb {
-  transform: translateX(22px);
+  transform: translateX(26px);
 }
 
 .pe-mark,
@@ -236,7 +237,7 @@ const popoverOpen = ref(false)
 .pe-chip--trigger {
   display: inline-flex;
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   justify-content: space-between;
   gap: 12px;
   padding: 0 14px;
@@ -260,7 +261,7 @@ const popoverOpen = ref(false)
   border-bottom: 1.6px solid currentColor;
   opacity: 0.8;
   transform: translateY(-1px) rotate(45deg);
-  transition: transform 0.18s ease;
+  transition: transform var(--varo-motion-move) var(--varo-ease-move);
 }
 
 .pe-chip--trigger[data-state='open'] .pe-caret,
@@ -276,15 +277,26 @@ const popoverOpen = ref(false)
   z-index: 40;
   display: grid;
   gap: 8px;
-  min-width: 0;
   width: 100%;
+  min-width: 0;
   padding: 14px 12px 12px;
+  background: var(--varo-card-solid, #fff);
   border: 1px solid var(--varo-demo-border, var(--varo-border));
   border-radius: 14px;
-  background: var(--varo-card-solid, #fff);
-  box-shadow:
-    0 18px 40px color-mix(in srgb, var(--varo-foreground) 16%, transparent),
-    0 2px 8px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
+  box-shadow: var(--varo-shadow-popover);
+  opacity: 1;
+  scale: 1;
+  transform-origin: top right;
+  transition:
+    opacity var(--varo-motion-enter) var(--varo-ease-out),
+    scale var(--varo-motion-enter) var(--varo-ease-out);
+}
+
+@starting-style {
+  .pe-menu--floating {
+    opacity: 0;
+    scale: 0.98;
+  }
 }
 
 .pe-menu-arrow {
@@ -308,4 +320,20 @@ const popoverOpen = ref(false)
   line-height: 1.5;
 }
 
+
+.pe-chip:focus-visible,
+.pe-switch:focus-visible,
+.pe-item:focus-visible {
+  outline: 2px solid var(--varo-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pe-switch,
+  .pe-switch-thumb,
+  .pe-caret,
+  .pe-menu--floating {
+    transition-duration: 0ms;
+  }
+}
 </style>

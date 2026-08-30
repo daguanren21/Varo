@@ -2,6 +2,8 @@
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
 import { computed, shallowRef } from 'vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
+import { DemoCodePanel, DemoShell } from './demo-system'
+import type { DemoCodeItem } from './demo-system'
 import {
   AgentActivity,
   AgentApproval,
@@ -45,8 +47,17 @@ import AgentChat from './blocks/agent-chat.vue'
 type Locale = 'en' | 'zh'
 
 const props = withDefaults(defineProps<{ component: string, locale?: Locale }>(), { locale: 'zh' })
-const demoTab = shallowRef<'code' | 'preview'>('preview')
+const codeExpanded = shallowRef(false)
+const activeCodeId = shallowRef('source')
 const demoDefinition = computed(() => agentDemoCatalog[props.component])
+const codeItems = computed<DemoCodeItem[]>(() => demoDefinition.value
+  ? [{
+      code: demoDefinition.value.code,
+      id: 'source',
+      label: demoDefinition.value.name,
+      meta: demoDefinition.value.importPath,
+    }]
+  : [])
 const diffLabels = computed(() => props.locale === 'zh'
   ? {
       accept: '接受变更',
@@ -203,21 +214,21 @@ function done(message: string) {
 </script>
 
 <template>
-  <section class="agent-component-demo" :data-demo="component">
-    <header>
-      <span>LIVE COMPONENT</span>
-      <div><b>H5</b><b>WEAPP</b></div>
-    </header>
-    <nav class="agent-component-demo__tabs" aria-label="Demo views">
-      <button type="button" :data-active="String(demoTab === 'preview')" @click="demoTab = 'preview'">
-        Preview
-      </button>
-      <button type="button" :data-active="String(demoTab === 'code')" @click="demoTab = 'code'">
-        Code
-      </button>
-    </nav>
+  <DemoShell
+    class="agent-component-demo"
+    :data-demo="component"
+    :eyebrow="locale === 'zh' ? 'Agent 组件' : 'Agent component'"
+    :title="demoDefinition.name"
+    tone="agent"
+  >
+    <template #toolbar>
+      <div class="agent-component-demo__badges" aria-label="H5 and Weapp">
+        <span>H5</span>
+        <span>WEAPP</span>
+      </div>
+    </template>
 
-    <div v-show="demoTab === 'preview'" class="agent-component-demo__stage">
+    <div class="agent-component-demo__stage">
       <AgentLoading v-if="component === 'loading'" label="Agent 正在分析组件" variant="grid" />
       <AgentThinking v-else-if="component === 'thinking'" label="Agent 执行轨迹" default-open :steps="reasoningSteps" />
       <AgentMarkdown v-else-if="component === 'markdown'" :content="markdownContent" final />
@@ -267,107 +278,39 @@ function done(message: string) {
       <AgentChat v-else-if="component === 'agent-chat'" v-model="prompt" title="Varo Agent" :messages="messages" :snapshot="eventSnapshot" :suggestions="['分析需求', '生成计划']" @submit="done($event)" />
     </div>
 
-    <section v-if="demoTab === 'code'" class="agent-component-demo__source">
-      <header><span>{{ demoDefinition.name }}</span><b>{{ demoDefinition.importPath }}</b></header>
-      <pre><code>{{ demoDefinition.code }}</code></pre>
-    </section>
+    <template #footer>
+      <DemoCodePanel
+        v-model:active-id="activeCodeId"
+        v-model:expanded="codeExpanded"
+        :items="codeItems"
+        :locale="locale"
+      />
+    </template>
 
-    <output v-if="feedback" aria-live="polite">{{ feedback }}</output>
-  </section>
+    <template v-if="feedback" #feedback>
+      <output class="agent-component-demo__feedback">{{ feedback }}</output>
+    </template>
+  </DemoShell>
 </template>
 
 <style scoped>
-.agent-component-demo {
-  position: relative;
-  display: grid;
-  gap: 0;
-  margin: 18px 0 28px;
-  overflow: hidden;
-  color: var(--vp-c-text-1);
-  background: var(--varo-demo-surface);
-  border: 1px solid var(--varo-demo-border);
-  border-radius: 18px;
-  box-shadow: var(--varo-demo-shadow);
-}
-
-.agent-component-demo::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 2;
-  height: 2px;
-  content: '';
-  background: linear-gradient(90deg, transparent, var(--vp-c-brand-1), transparent);
-  opacity: 0.72;
-}
-
-.agent-component-demo > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 46px;
-  padding: 0 14px;
-  background: var(--varo-demo-surface-strong);
-  border-bottom: 1px solid var(--varo-demo-border);
-}
-
-.agent-component-demo > header > span {
-  font-size: 9px;
-  font-weight: 900;
-  color: var(--vp-c-brand-1);
-  letter-spacing: 0.16em;
-}
-
-.agent-component-demo > header div {
+.agent-component-demo__badges {
   display: flex;
   gap: 6px;
 }
 
-.agent-component-demo > header b {
-  padding: 4px 8px;
-  font-size: 8px;
-  color: var(--vp-c-brand-1);
+.agent-component-demo__badges span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 8px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--varo-accent);
   letter-spacing: 0.06em;
-  background: var(--vp-c-brand-soft);
-  border: 1px solid color-mix(in srgb, var(--vp-c-brand-1) 20%, transparent);
+  background: var(--varo-accent-soft);
+  border: 1px solid var(--varo-accent-border);
   border-radius: 999px;
-}
-
-.agent-component-demo__tabs {
-  display: flex;
-  gap: 4px;
-  padding: 9px 14px 0;
-  background: var(--varo-demo-surface);
-}
-
-.agent-component-demo__tabs button {
-  min-height: 34px;
-  padding: 0 13px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--vp-c-text-2);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  border-radius: 999px;
-  transition:
-    color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease;
-}
-
-.agent-component-demo__tabs button:hover {
-  color: var(--vp-c-text-1);
-}
-
-.agent-component-demo__tabs button:active {
-  transform: scale(0.96);
-}
-
-.agent-component-demo__tabs button[data-active='true'] {
-  color: var(--vp-c-bg);
-  background: var(--vp-c-text-1);
 }
 
 .agent-component-demo__stage {
@@ -375,18 +318,9 @@ function done(message: string) {
   display: grid;
   align-content: center;
   width: 100%;
-  min-height: 330px;
-  padding: 28px;
+  min-height: 220px;
+  padding: 12px;
   overflow-x: auto;
-  background:
-    radial-gradient(circle at 78% 16%, color-mix(in srgb, var(--vp-c-brand-1) 10%, transparent), transparent 32%),
-    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
-    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px), var(--varo-demo-surface);
-  background-size:
-    auto,
-    24px 24px,
-    24px 24px,
-    auto;
 }
 
 .agent-component-demo[data-demo='flowchart'] .agent-component-demo__stage,
@@ -400,27 +334,35 @@ function done(message: string) {
   max-width: 100%;
 }
 
-.agent-component-demo__stage > :deep(:first-child) {
-  animation: varo-agent-demo-enter 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
 .agent-component-demo__stage :deep(button) {
+  min-width: 44px;
+  min-height: 44px;
   cursor: pointer;
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+    transform var(--varo-motion-press) var(--varo-ease-out),
+    border-color var(--varo-motion-state) var(--varo-ease-out),
+    background var(--varo-motion-state) var(--varo-ease-out),
+    color var(--varo-motion-state) var(--varo-ease-out),
+    box-shadow var(--varo-motion-state) var(--varo-ease-out);
+}
+
+.agent-component-demo__stage :deep(input),
+.agent-component-demo__stage :deep(textarea),
+.agent-component-demo__stage :deep(select) {
+  min-height: 44px;
 }
 
 .agent-component-demo__stage :deep(button:hover:not(:disabled)) {
-  border-color: color-mix(in srgb, var(--vp-c-brand-1) 42%, var(--varo-border));
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--vp-c-brand-1) 10%, transparent);
+  border-color: var(--varo-border-strong);
 }
 
 .agent-component-demo__stage :deep(button:active:not(:disabled)) {
-  transform: scale(0.97);
+  transform: scale(0.98);
+}
+
+.agent-component-demo__stage :deep(button:focus-visible) {
+  outline: 2px solid var(--varo-ring);
+  outline-offset: 2px;
 }
 
 .agent-component-demo__stack {
@@ -434,142 +376,22 @@ function done(message: string) {
   gap: 8px;
 }
 
-.agent-component-demo__source {
-  min-height: 330px;
-  color: #dbeafe;
-  background: #0d1117;
-}
-
-.agent-component-demo__source > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding: 0 14px;
-  background: #111827;
-  border-bottom: 1px solid #26334a;
-}
-
-.agent-component-demo__source > header span {
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.agent-component-demo__source > header b {
-  font-size: 9px;
-  font-weight: 600;
-  color: #64748b;
-}
-
-.agent-component-demo__source pre {
-  padding: 22px;
-  margin: 0;
-  overflow-x: auto;
-  background: transparent;
-}
-
-.agent-component-demo__source code {
-  font-size: 11px;
-  line-height: 1.75;
-  color: #cbd5e1;
-  white-space: pre;
-}
-
-.agent-component-demo > output {
-  min-height: 36px;
-  padding: 9px 14px;
-  font-size: 10px;
-  font-weight: 750;
-  color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-soft);
-  border-top: 1px solid color-mix(in srgb, var(--vp-c-brand-1) 22%, transparent);
-}
-
-@keyframes varo-agent-demo-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.985);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-:global(.dark) .agent-component-demo__stage :deep(.bg-white),
-:global(.dark) .agent-component-demo__stage :deep(.bg-slate-50),
-:global(.dark) .agent-component-demo__stage :deep([class~='bg-slate-50/90']),
-:global(.dark) .agent-component-demo__stage :deep(.bg-slate-100) {
-  background-color: var(--varo-surface) !important;
-}
-
-:global(.dark) .agent-component-demo__stage :deep(.text-slate-950),
-:global(.dark) .agent-component-demo__stage :deep(.text-slate-900),
-:global(.dark) .agent-component-demo__stage :deep(.text-slate-800),
-:global(.dark) .agent-component-demo__stage :deep(.text-slate-700),
-:global(.dark) .agent-component-demo__stage :deep(.text-slate-600) {
-  color: var(--varo-foreground) !important;
-}
-
-:global(.dark) .agent-component-demo__stage :deep(.border-slate-200),
-:global(.dark) .agent-component-demo__stage :deep(.border-slate-100) {
-  border-color: var(--varo-border) !important;
-}
-
-:global(.dark)
-  .agent-component-demo__stage
-  :deep(
-    .agent-message-scroller,
-    .agent-file-diff,
-    .agent-tool-result,
-    .agent-citations,
-    .agent-activity,
-    .agent-context-card,
-    .agent-insight-card,
-    .agent-tool-approval,
-    .agent-fine-tune,
-    .agent-sidebar,
-    .agent-table,
-    .agent-command-search,
-    .agent-flowchart,
-    .agent-image-generation
-  ) {
-  color: var(--varo-foreground);
-  background: var(--varo-surface);
-  border-color: var(--varo-border);
-}
-
-:global(.dark)
-  .agent-component-demo__stage
-  :deep(
-    .agent-file-diff__header,
-    .agent-tool-result__header,
-    .agent-citations__trigger,
-    .agent-sidebar > header,
-    .agent-command-search > label,
-    .agent-table th,
-    .agent-context-card article
-  ) {
-  color: var(--varo-foreground);
-  background: var(--varo-surface-strong);
-  border-color: var(--varo-border);
-}
-
-:global(.dark) .agent-component-demo__stage :deep(button:not(.agent-code-block button)) {
-  color: inherit;
+.agent-component-demo__feedback {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--varo-accent);
 }
 
 @media (max-width: 640px) {
   .agent-component-demo__stage {
-    min-height: 280px;
-    padding: 14px;
+    min-height: 180px;
+    padding: 4px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agent-component-demo__stage > :deep(:first-child) {
-    animation: none;
+  .agent-component-demo__stage :deep(button) {
+    transition-duration: 0ms;
   }
 }
 </style>

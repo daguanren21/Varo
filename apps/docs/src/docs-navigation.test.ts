@@ -23,6 +23,25 @@ const baseKitPhase1Components = [
   'tag',
 ]
 
+const extendedPublicComponents = [
+  'action-sheet',
+  'avatar',
+  'badge',
+  'card',
+  'collapse',
+  'empty',
+  'icon',
+  'list',
+  'notice-bar',
+  'popover',
+  'progress',
+  'safe-area',
+  'skeleton',
+  'steps',
+  'swipe-cell',
+  'tag',
+]
+
 describe('docs navigation', () => {
   it('groups display layout components separately from navigation components', () => {
     const config = readFileSync(configPath, 'utf8')
@@ -33,6 +52,28 @@ describe('docs navigation', () => {
     expect(config).toContain('{ text: \'Grid 宫格\', link: \'/components/grid\' }')
     expect(config).toContain('{ text: \'Tabs 选项卡切换\', link: \'/components/tabs\' }')
     expect(config).toContain('{ text: \'Menu 菜单\', link: \'/components/menu\' }')
+  })
+
+  it('documents every formerly missing public UI export in both locales', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const theme = readFileSync(resolve(docsRoot, '.vitepress/theme/index.ts'), 'utf8')
+
+    expect(theme).toContain('ExtendedComponentDemo')
+    extendedPublicComponents.forEach((component) => {
+      const zhPath = resolve(docsRoot, `components/${component}.md`)
+      const enPath = resolve(docsRoot, `en/components/${component}.md`)
+
+      expect(existsSync(zhPath), component).toBe(true)
+      expect(existsSync(enPath), component).toBe(true)
+      expect(readFileSync(zhPath, 'utf8')).toContain(
+        `<ExtendedComponentDemo example=\"${component}\" locale=\"zh\" />`,
+      )
+      expect(readFileSync(enPath, 'utf8')).toContain(
+        `<ExtendedComponentDemo example=\"${component}\" locale=\"en\" />`,
+      )
+      expect(config).toContain(`/components/${component}`)
+      expect(config).toContain(`/en/components/${component}`)
+    })
   })
 
   it('adds a primitives catalog and dedicated pages for interactive behavior primitives', () => {
@@ -157,12 +198,13 @@ describe('docs navigation', () => {
 
     expect(config).toContain('{ text: \'色彩系统\', link: \'/guide/colors\' }')
     expect(config).toContain('{ text: \'Color System\', link: \'/en/guide/colors\' }')
-    expect(zhColors).toContain('Varo Jade')
-    expect(zhColors).toContain('Ink Neutral')
+    expect(zhColors).toContain('Perceptual Neutral')
+    expect(zhColors).toContain('Varo Teal')
+    expect(zhColors).toContain('Light neutral')
+    expect(zhColors).toContain('Dark neutral')
     expect(zhColors).toContain('Success')
     expect(zhColors).toContain('Warning')
     expect(zhColors).toContain('Danger')
-    expect(zhColors).toContain('Violet')
     expect(zhColors).toContain('<div class="varo-color-system">')
     expect(zhColors).toContain('<section class="varo-color-matrix">')
     expect(zhColors).toContain('class="varo-color-state-strip"')
@@ -171,12 +213,13 @@ describe('docs navigation', () => {
     expect(zhColors).not.toContain('```')
     expect(zhColors).not.toContain('&lt;div')
     expect(zhColors).not.toContain('Primary token')
-    expect(enColors).toContain('Varo Jade')
-    expect(enColors).toContain('Ink Neutral')
+    expect(enColors).toContain('Perceptual Neutral')
+    expect(enColors).toContain('Varo Teal')
+    expect(enColors).toContain('Light neutral')
+    expect(enColors).toContain('Dark neutral')
     expect(enColors).toContain('Success')
     expect(enColors).toContain('Warning')
     expect(enColors).toContain('Danger')
-    expect(enColors).toContain('Violet')
     expect(enColors).toContain('<div class="varo-color-system">')
     expect(enColors).toContain('<section class="varo-color-matrix">')
     expect(enColors).toContain('class="varo-color-state-strip"')
@@ -202,17 +245,21 @@ describe('docs navigation', () => {
   it('uses a product-grade docs palette and fixes dark demo contrast for form labels', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-bg: #f7f8fa')
-    expect(css).toContain('--varo-surface: #ffffff')
-    expect(css).toContain('--varo-surface-strong: #eef2f5')
-    expect(css).toContain('--varo-primary: #0f766e')
+    expect(css).toContain('--varo-neutral-1: #f7f8fa')
+    expect(css).toContain('--varo-neutral-12: #1b2430')
+    expect(css).toContain('--varo-bg: var(--varo-neutral-1)')
+    expect(css).toContain('--varo-surface: var(--varo-neutral-3)')
+    expect(css).toContain('--varo-primary: var(--varo-accent)')
     expect(css).toContain('--varo-primary-foreground: #ffffff')
-    expect(css).toContain('--varo-radius: 8px')
-    expect(css).toContain('--varo-radius-lg: 12px')
-    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
-    expect(css).toContain('font-family: Inter, \"SF Pro Text\", \"PingFang SC\",')
-    expect(css).toContain('.dark .vp-doc :is(.varo-form-item__label, .varo-checkbox, .varo-radio, .varo-input__label)')
-    expect(css).toContain('.dark .vp-doc :is(.varo-input__body, .varo-input-number, .varo-checkbox__icon, .varo-radio__icon, .varo-textarea__control)')
+    expect(css).toContain('--varo-ui-bg: var(--varo-neutral-2)')
+    expect(css).toContain('--varo-ui-text: var(--varo-neutral-12)')
+    expect(css).toContain('--varo-ui-border-strong: var(--varo-neutral-8)')
+    expect(css).toContain('--varo-motion-press: 80ms')
+    expect(css).toContain('--varo-ease-out: cubic-bezier(0.16, 1, 0.3, 1)')
+    expect(css).toContain('.dark {')
+    expect(css).toContain('--varo-neutral-1: #0c1117')
+    expect(css).toContain('--varo-neutral-12: #e4eaf0')
+    expect(css).not.toContain('.dark .vp-doc :is(.varo-form-item__label')
   })
 
   it('keeps code copy controls icon-only until hover or focus', () => {
@@ -230,7 +277,7 @@ describe('docs navigation', () => {
   it('keeps docs chrome quieter than the content surface', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
+    expect(css).toContain('--varo-gridline: rgb(27 36 48 / 4%)')
     expect(css).toContain('.VPNavBar {')
     expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important')
     expect(css).toContain('backdrop-filter: blur(12px)')

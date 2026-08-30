@@ -50,6 +50,7 @@ describe('P0 display components', () => {
     const progress = mount(VProgress, { props: { percentage: 140 } })
     expect(progress.attributes('aria-valuenow')).toBe('100')
     expect(progress.text()).toContain('100%')
+    expect(progress.attributes('style')).toContain('--varo-progress-scale: 1')
 
     const empty = mount(VEmpty, { props: { title: 'No orders', description: 'Try another filter.' } })
     expect(empty.get('.varo-empty__title').text()).toBe('No orders')
@@ -71,6 +72,8 @@ describe('P0 interaction components', () => {
       slots: { default: () => 'New' }
     })
 
+    expect(wrapper.attributes('data-checkable')).toBe('true')
+    expect(wrapper.attributes('data-closeable')).toBe('true')
     await wrapper.trigger('click')
     expect(wrapper.emitted('update:checked')?.[0]).toEqual([true])
     await wrapper.get('.varo-tag__close').trigger('click')

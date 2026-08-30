@@ -16,10 +16,18 @@
   --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
   --varo-ui-shadow-md: 0 14px 34px rgb(24 36 51 / 12%);
   --varo-ui-ring: rgb(8 120 111 / 16%);
+  --varo-ui-motion-press: 80ms;
+  --varo-ui-motion-state: 120ms;
+  --varo-ui-motion-enter: 180ms;
+  --varo-ui-motion-move: 200ms;
+  --varo-ui-motion-exit: 140ms;
+  --varo-ui-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --varo-ui-ease-move: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 :where(.varo-button, .varo-checkbox, .varo-radio, .varo-input-number button, .varo-select button, .varo-switch, .varo-toast button, .varo-rate__item, .varo-picker button, .varo-cascader button, .varo-calendar button, .varo-date-picker button, .varo-number-keyboard button, .varo-uploader button, .varo-indicator button, .varo-elevator button, .varo-menu button, .varo-pagination button) {
   font: inherit;
+  touch-action: manipulation;
 }
 
 .varo-button {
@@ -27,7 +35,8 @@
   gap: 8px;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0 16px;
   font-weight: 650;
   line-height: 1;
@@ -38,20 +47,20 @@
   border-radius: var(--varo-ui-radius);
   box-shadow: var(--varo-ui-shadow-sm);
   transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    opacity 0.18s ease,
-    box-shadow 0.18s ease,
-    transform 0.18s ease;
+    background var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    border-color var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    color var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    opacity var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    box-shadow var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    transform var(--varo-ui-motion-press) var(--varo-ui-ease-out);
 }
 
 .varo-button:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .varo-button[data-size='sm'] {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 12px;
   font-size: 14px;
   border-radius: var(--varo-ui-radius-sm);
@@ -532,7 +541,7 @@ textarea.varo-input__control {
 .varo-switch__thumb {
   width: 24px;
   height: 24px;
-  background: #fff;
+  background: var(--varo-ui-primary-foreground);
   border-radius: 999px;
   box-shadow: 0 1px 3px rgb(15 23 42 / 18%);
   transition: transform 0.18s ease;
@@ -546,7 +555,7 @@ textarea.varo-input__control {
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  color: #64748b;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-loading__spinner {
@@ -559,7 +568,7 @@ textarea.varo-input__control {
 }
 
 .varo-loading[data-tone='primary'] {
-  color: #0f766e;
+  color: var(--varo-ui-primary);
 }
 
 .varo-loading[data-size='sm'] {
@@ -619,7 +628,7 @@ textarea.varo-input__control {
 .varo-rate__item {
   font-size: 26px;
   line-height: 1;
-  color: #f59e0b;
+  color: var(--varo-ui-warning);
   cursor: pointer;
   background: transparent;
   border: 0;
@@ -627,7 +636,7 @@ textarea.varo-input__control {
 }
 
 .varo-rate__item:active {
-  transform: scale(0.9);
+  transform: scale(0.96);
 }
 
 .varo-range {
@@ -753,8 +762,8 @@ textarea.varo-input__control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   font-size: 16px;
   font-weight: 750;
   color: var(--varo-ui-primary);
@@ -1084,10 +1093,12 @@ textarea.varo-input__control {
 
 .varo-uploader__progress-bar {
   display: block;
+  width: 100%;
   height: 100%;
   background: var(--varo-ui-primary);
   border-radius: inherit;
-  transition: width 0.28s ease;
+  transform-origin: left center;
+  transition: transform var(--varo-ui-motion-move) var(--varo-ui-ease-move);
 }
 
 .varo-uploader__delete {
@@ -1215,9 +1226,9 @@ textarea.varo-input__control {
   top: 8px;
   right: 8px;
   color: #fff;
-  background: rgb(15 23 42 / 58%);
-  opacity: 0;
-  transform: scale(0.92);
+  background: rgb(15 23 42 / 72%);
+  opacity: 1;
+  transform: none;
 }
 
 .varo-uploader[data-list-type='card'] .varo-uploader__item:hover .varo-uploader__delete,
@@ -1257,36 +1268,46 @@ textarea.varo-input__control {
 }
 
 .varo-indicator__item {
-  width: 7px;
-  height: 7px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 44px;
   padding: 0;
   cursor: pointer;
-  background: color-mix(in srgb, var(--varo-ui-text-muted) 28%, transparent);
+  background: transparent;
   border: 0;
+}
+
+.varo-indicator__item::before {
+  width: 7px;
+  height: 7px;
+  content: '';
+  background: color-mix(in srgb, var(--varo-ui-text-muted) 36%, transparent);
   border-radius: 999px;
   transition:
-    width 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background-color var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    transform var(--varo-ui-motion-move) var(--varo-ui-ease-out);
 }
 
-.varo-indicator__item:hover {
-  transform: scale(1.15);
+.varo-indicator__item:hover::before {
+  background: color-mix(in srgb, var(--varo-ui-primary) 52%, transparent);
 }
 
-.varo-indicator[data-type='line'] .varo-indicator__item {
+.varo-indicator[data-type='line'] .varo-indicator__item::before {
   width: 18px;
   height: 4px;
 }
 
-.varo-indicator__item[data-active='true'] {
-  width: 18px;
+.varo-indicator__item[data-active='true']::before {
   background: var(--varo-ui-primary);
+  transform: scaleX(2.4);
 }
 
-.varo-indicator[data-type='line'] .varo-indicator__item[data-active='true'] {
-  width: 28px;
+.varo-indicator[data-type='line'] .varo-indicator__item[data-active='true']::before {
+  transform: none;
 }
+
 
 .varo-elevator {
   position: relative;
@@ -1586,11 +1607,14 @@ textarea.varo-input__control {
 
 .varo-card--interactive {
   cursor: pointer;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition:
+    border-color var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    box-shadow var(--varo-ui-motion-state) var(--varo-ui-ease-out),
+    transform var(--varo-ui-motion-press) var(--varo-ui-ease-out);
 }
 
 .varo-card--interactive:active {
-  transform: translateY(1px);
+  transform: scale(0.99);
 }
 
 .varo-card__header,
@@ -1695,7 +1719,7 @@ textarea.varo-input__control {
   font-size: 11px;
   font-weight: 750;
   line-height: 1;
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   white-space: nowrap;
   background: var(--varo-ui-danger);
   border: 1px solid transparent;
@@ -1770,22 +1794,22 @@ textarea.varo-input__control {
 
 .varo-tag[data-tone='primary'][data-variant='solid'],
 .varo-tag[data-checked='true'] {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-primary);
 }
 
 .varo-tag[data-tone='success'][data-variant='solid'] {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-success);
 }
 
 .varo-tag[data-tone='warning'][data-variant='solid'] {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-warning);
 }
 
 .varo-tag[data-tone='danger'][data-variant='solid'] {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-danger);
 }
 
@@ -1943,11 +1967,13 @@ textarea.varo-input__control {
 
 .varo-progress__bar {
   display: block;
-  width: var(--varo-progress-value);
+  width: 100%;
   height: 100%;
   background: var(--varo-ui-primary);
   border-radius: inherit;
-  transition: width 0.28s ease;
+  transform: scaleX(var(--varo-progress-scale, 0));
+  transform-origin: left center;
+  transition: transform var(--varo-ui-motion-move) var(--varo-ui-ease-move);
 }
 
 .varo-progress[data-status='success'] .varo-progress__bar,
@@ -2037,7 +2063,7 @@ textarea.varo-input__control {
 
 .varo-steps__item[data-status='current'] .varo-steps__marker,
 .varo-steps__item[data-status='completed'] .varo-steps__marker {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-primary);
   border-color: var(--varo-ui-primary);
 }
@@ -2202,7 +2228,7 @@ textarea.varo-input__control {
 
 .varo-collapse-item__chevron {
   color: var(--varo-ui-text-muted);
-  transition: transform 0.18s ease;
+  transition: transform var(--varo-ui-motion-move) var(--varo-ui-ease-move);
 }
 
 .varo-collapse-item[data-state='open'] .varo-collapse-item__chevron {
@@ -2232,26 +2258,35 @@ textarea.varo-input__control {
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
   box-shadow: var(--varo-ui-shadow-md);
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity var(--varo-ui-motion-enter) var(--varo-ui-ease-out),
+    scale var(--varo-ui-motion-enter) var(--varo-ui-ease-out);
 }
 
 .varo-popover__content[data-side='bottom'] {
   top: calc(100% + 8px);
+  transform-origin: top center;
 }
 
 .varo-popover__content[data-side='top'] {
   bottom: calc(100% + 8px);
+  transform-origin: bottom center;
 }
 
 .varo-popover__content[data-side='left'] {
   top: 50%;
   right: calc(100% + 8px);
   transform: translateY(-50%);
+  transform-origin: right center;
 }
 
 .varo-popover__content[data-side='right'] {
   top: 50%;
   left: calc(100% + 8px);
   transform: translateY(-50%);
+  transform-origin: left center;
 }
 
 .varo-popover__content[data-align='start'] {
@@ -2266,6 +2301,13 @@ textarea.varo-input__control {
 
 .varo-popover__content[data-align='end'] {
   right: 0;
+}
+
+@starting-style {
+  .varo-popover__content {
+    opacity: 0;
+    scale: 0.98;
+  }
 }
 
 .varo-action-sheet {
@@ -2361,7 +2403,7 @@ textarea.varo-input__control {
   z-index: 1;
   touch-action: pan-y;
   background: var(--varo-ui-surface);
-  transition: transform 0.22s ease;
+  transition: transform var(--varo-ui-motion-move) var(--varo-ui-ease-out);
   will-change: transform;
 }
 
@@ -2389,7 +2431,7 @@ textarea.varo-input__control {
 }
 
 .varo-list__retry {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 12px;
   font: inherit;
   font-weight: 700;
@@ -2424,4 +2466,153 @@ textarea.varo-input__control {
   font-size: 12px;
   color: var(--varo-ui-text-muted);
   background: var(--varo-ui-surface-muted);
+}
+
+.varo-notice-bar:hover .varo-notice-bar__content--scrolling,
+.varo-notice-bar:focus-within .varo-notice-bar__content--scrolling {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where([class^='varo-'], [class*=' varo-']),
+  :where([class^='varo-'], [class*=' varo-'])::before,
+  :where([class^='varo-'], [class*=' varo-'])::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+  }
+
+  .varo-notice-bar__content--scrolling {
+    padding-left: 0;
+    animation: none;
+  }
+}
+
+/* Perceptual interaction targets */
+.varo-input__body,
+.varo-select__trigger,
+.varo-select__search,
+.varo-select__option,
+.varo-select__cancel,
+.varo-select__confirm,
+.varo-calendar__confirm,
+.varo-date-picker__confirm,
+.varo-picker__option,
+.varo-cascader__option,
+.varo-number-keyboard__key,
+.varo-number-keyboard__delete,
+.varo-number-keyboard__close,
+.varo-uploader__trigger,
+.varo-elevator__item,
+.varo-pagination button {
+  min-height: 44px;
+}
+
+.varo-tag[data-checkable='true'],
+.varo-tag[data-closeable='true'] {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.varo-notice-bar__close,
+.varo-tag__close {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+:where(
+  .varo-button,
+  .varo-input__body,
+  .varo-select__trigger,
+  .varo-select__arrow,
+  .varo-switch,
+  .varo-switch__thumb,
+  .varo-rate__item,
+  .varo-picker__option,
+  .varo-cascader__option,
+  .varo-uploader__trigger,
+  .varo-menu__arrow,
+  .varo-card--interactive,
+  .varo-collapse-item__chevron,
+  .varo-swipe-cell__content
+) {
+  transition-timing-function: var(--varo-ui-ease-out);
+}
+
+:where(
+  .varo-button,
+  .varo-input__body,
+  .varo-select__trigger,
+  .varo-switch,
+  .varo-rate__item,
+  .varo-uploader__trigger,
+  .varo-card--interactive
+) {
+  transition-duration: var(--varo-ui-motion-state);
+}
+
+:where(
+  .varo-button,
+  .varo-checkbox,
+  .varo-radio,
+  .varo-input-number button,
+  .varo-select button,
+  .varo-switch,
+  .varo-rate__item,
+  .varo-picker button,
+  .varo-cascader button,
+  .varo-calendar button,
+  .varo-date-picker button,
+  .varo-number-keyboard button,
+  .varo-uploader button,
+  .varo-indicator button,
+  .varo-elevator button,
+  .varo-menu button,
+  .varo-pagination button,
+  .varo-tag[data-checkable='true'],
+  .varo-tag__close,
+  .varo-notice-bar__close
+):focus-visible {
+  outline: 2px solid var(--varo-ui-ring);
+  outline-offset: 2px;
+}
+
+.varo-notice-bar {
+  color: var(--varo-ui-warning);
+  background: color-mix(in srgb, var(--varo-ui-warning) 10%, var(--varo-ui-surface));
+}
+
+.varo-notice-bar[data-tone='info'] {
+  color: var(--varo-ui-primary);
+  background: color-mix(in srgb, var(--varo-ui-primary) 9%, var(--varo-ui-surface));
+}
+
+.varo-notice-bar[data-tone='success'] {
+  color: var(--varo-ui-success);
+  background: color-mix(in srgb, var(--varo-ui-success) 9%, var(--varo-ui-surface));
+}
+
+.varo-notice-bar[data-tone='danger'] {
+  color: var(--varo-ui-danger);
+  background: color-mix(in srgb, var(--varo-ui-danger) 9%, var(--varo-ui-surface));
+}
+
+.varo-input-number__minus,
+.varo-input-number__plus,
+.varo-input__clear,
+.varo-searchbar__action,
+.varo-select__clear,
+.varo-toast__close,
+.varo-uploader__delete,
+.varo-popup__close,
+.varo-rate__item {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.varo-input-number__input,
+.varo-range__input,
+.varo-steps__trigger {
+  min-height: 44px;
 }
