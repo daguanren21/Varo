@@ -53,6 +53,14 @@ describe('ui-h5 style entry', () => {
     expect(style).toMatch(
       /\.varo-badge\s*\{[\s\S]*?color: var\(--varo-ui-primary-foreground\)/,
     )
+    expect(style).toContain('--varo-ui-success-soft: #e4f3e9')
+    expect(style).toContain('--varo-badge-tone: var(--varo-ui-success)')
+    expect(style).toMatch(
+      /\.varo-badge\[data-variant='soft'\]\s*\{[\s\S]*?color: var\(--varo-badge-tone\);[\s\S]*?background: var\(--varo-badge-soft\)/,
+    )
+    expect(style).toMatch(
+      /\.varo-badge\[data-variant='outline'\]\s*\{[\s\S]*?color: var\(--varo-badge-tone\)/,
+    )
   })
 
   it('targets the stylesheet emitted by the package build', () => {

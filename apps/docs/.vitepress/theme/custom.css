@@ -53,13 +53,17 @@
   --varo-ui-border-strong: var(--varo-border-strong);
   --varo-ui-primary: var(--varo-primary);
   --varo-ui-primary-hover: color-mix(in srgb, var(--varo-primary) 84%, #fff);
+  --varo-ui-primary-soft: color-mix(in srgb, var(--varo-primary) 14%, var(--varo-card-solid));
   --varo-ui-primary-foreground: var(--varo-primary-foreground);
   --varo-ui-success: var(--varo-color-success);
   --varo-ui-success-hover: color-mix(in srgb, var(--varo-color-success) 84%, #fff);
+  --varo-ui-success-soft: color-mix(in srgb, var(--varo-color-success) 14%, var(--varo-card-solid));
   --varo-ui-warning: var(--varo-color-warning);
   --varo-ui-warning-hover: color-mix(in srgb, var(--varo-color-warning) 84%, #fff);
+  --varo-ui-warning-soft: color-mix(in srgb, var(--varo-color-warning) 14%, var(--varo-card-solid));
   --varo-ui-danger: var(--varo-color-danger);
   --varo-ui-danger-hover: color-mix(in srgb, var(--varo-color-danger) 84%, #fff);
+  --varo-ui-danger-soft: color-mix(in srgb, var(--varo-color-danger) 14%, var(--varo-card-solid));
   --varo-ui-radius: var(--varo-radius);
   --varo-ui-radius-sm: calc(var(--varo-radius) - 2px);
   --varo-ui-shadow-sm: var(--varo-shadow-sm);

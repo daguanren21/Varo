@@ -8,13 +8,17 @@
   --varo-ui-border-strong: #aeb8c6;
   --varo-ui-primary: #08786f;
   --varo-ui-primary-hover: #308e86;
+  --varo-ui-primary-soft: #e1f1ef;
   --varo-ui-primary-foreground: #fff;
   --varo-ui-success: #15803d;
   --varo-ui-success-hover: #3a945c;
+  --varo-ui-success-soft: #e4f3e9;
   --varo-ui-warning: #b76b00;
   --varo-ui-warning-hover: #c38329;
+  --varo-ui-warning-soft: #f8eddb;
   --varo-ui-danger: #c7372f;
   --varo-ui-danger-hover: #d05750;
+  --varo-ui-danger-soft: #f9e5e3;
   --varo-ui-radius: 8px;
   --varo-ui-radius-sm: 6px;
   --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
@@ -1713,6 +1717,9 @@ textarea.varo-input__control {
 }
 
 .varo-badge {
+  --varo-badge-tone: var(--varo-ui-danger);
+  --varo-badge-soft: var(--varo-ui-danger-soft);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1724,7 +1731,7 @@ textarea.varo-input__control {
   line-height: 1;
   color: var(--varo-ui-primary-foreground);
   white-space: nowrap;
-  background: var(--varo-ui-danger);
+  background: var(--varo-badge-tone);
   border: 1px solid transparent;
   border-radius: 999px;
 }
@@ -1738,28 +1745,32 @@ textarea.varo-input__control {
 }
 
 .varo-badge[data-tone='default'] {
-  background: var(--varo-ui-text-muted);
+  --varo-badge-tone: var(--varo-ui-text-muted);
+  --varo-badge-soft: var(--varo-ui-surface-muted);
 }
 
 .varo-badge[data-tone='primary'] {
-  background: var(--varo-ui-primary);
+  --varo-badge-tone: var(--varo-ui-primary);
+  --varo-badge-soft: var(--varo-ui-primary-soft);
 }
 
 .varo-badge[data-tone='success'] {
-  background: var(--varo-ui-success);
+  --varo-badge-tone: var(--varo-ui-success);
+  --varo-badge-soft: var(--varo-ui-success-soft);
 }
 
 .varo-badge[data-tone='warning'] {
-  background: var(--varo-ui-warning);
+  --varo-badge-tone: var(--varo-ui-warning);
+  --varo-badge-soft: var(--varo-ui-warning-soft);
 }
 
 .varo-badge[data-variant='soft'] {
-  color: var(--varo-ui-text);
-  background: var(--varo-ui-surface-muted);
+  color: var(--varo-badge-tone);
+  background: var(--varo-badge-soft);
 }
 
 .varo-badge[data-variant='outline'] {
-  color: var(--varo-ui-text);
+  color: var(--varo-badge-tone);
   background: transparent;
   border-color: currentcolor;
 }

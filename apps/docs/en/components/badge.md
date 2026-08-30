@@ -19,6 +19,42 @@ import { VBadge } from '@varo-ui/h5'
 </template>
 ```
 
+## Text Top-right Badge
+
+```vue
+<template>
+  <span class="badge-anchor">
+    Messages
+    <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+  </span>
+  <span class="badge-anchor">
+    Notifications
+    <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+  </span>
+</template>
+
+<style scoped>
+.badge-anchor {
+  position: relative;
+  display: inline-flex;
+  min-width: 72px;
+  padding: 10px 14px;
+  justify-content: center;
+}
+
+.badge-anchor + .badge-anchor {
+  margin-left: 12px;
+}
+
+.badge-anchor__mark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(45%, -40%);
+}
+</style>
+```
+
 ## Count And Cap
 
 ```vue

@@ -133,6 +133,11 @@ const buttonSampleCopy = computed(() => props.locale === 'en'
 
 const badgeSampleCopy = computed(() => props.locale === 'en'
   ? {
+      anchors: 'Text anchors',
+      messages: 'Messages',
+      notifications: 'Notifications',
+      messagesLabel: '3 unread messages',
+      notificationsLabel: 'New notification',
       counts: 'Counts',
       inbox: 'Inbox',
       tasks: 'Tasks',
@@ -152,6 +157,11 @@ const badgeSampleCopy = computed(() => props.locale === 'en'
       review: 'Review',
     }
   : {
+      anchors: '文字角标',
+      messages: '消息',
+      notifications: '通知',
+      messagesLabel: '3 条未读消息',
+      notificationsLabel: '新通知',
       counts: '计数',
       inbox: '收件箱',
       tasks: '任务',
@@ -530,6 +540,30 @@ onBeforeUnmount(() => {
                   <template v-else-if="example === 'badge'">
                     <section class="platform-demo__badge-sample">
                       <div class="platform-demo__badge-cases">
+                        <section class="platform-demo__badge-case" data-case="anchors">
+                          <h3>{{ badgeSampleCopy.anchors }}</h3>
+                          <div class="platform-demo__badge-anchors">
+                            <span class="platform-demo__badge-anchor">
+                              <span>{{ badgeSampleCopy.messages }}</span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.messagesLabel"
+                                :content="3"
+                                class="platform-demo__badge-anchor-mark"
+                              />
+                            </span>
+                            <span class="platform-demo__badge-anchor">
+                              <span>{{ badgeSampleCopy.notifications }}</span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.notificationsLabel"
+                                class="platform-demo__badge-anchor-mark"
+                                dot
+                                tone="danger"
+                              />
+                            </span>
+                          </div>
+                        </section>
                         <section class="platform-demo__badge-case" data-case="counts">
                           <h3>{{ badgeSampleCopy.counts }}</h3>
                           <div class="platform-demo__badge-counts">
@@ -3494,6 +3528,36 @@ onBeforeUnmount(() => {
   font-weight: 700;
   line-height: 1.4;
   color: var(--varo-foreground);
+}
+
+.platform-demo__badge-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.platform-demo__badge-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 0.8rem;
+  font-weight: 680;
+  color: var(--varo-foreground);
+  background: var(--varo-card-muted);
+  border-radius: 8px;
+}
+
+.platform-demo__badge-anchor-mark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  transform: translate(45%, -40%);
 }
 
 .platform-demo__badge-counts {

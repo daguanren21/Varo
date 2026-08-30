@@ -99,15 +99,27 @@ import { VBadge } from '@varo-ui/h5'
 
 <template>
   <div class="badge-stack">
-    <VBadge :content="3" />
+    <span class="badge-anchor">
+      消息
+      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+    </span>
+    <span class="badge-anchor">
+      通知
+      <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+    </span>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
-    <VBadge aria-label="在线" dot tone="success" />
     <VBadge tone="primary">新</VBadge>
     <VBadge tone="success" variant="soft">稳定</VBadge>
     <VBadge tone="warning" variant="outline">审核</VBadge>
   </div>
 </template>
+
+<style scoped>
+.badge-stack { display: flex; gap: 12px; align-items: center; }
+.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+</style>
           `.trim(),
         },
         weapp: {
@@ -123,15 +135,27 @@ import { VBadge } from '@varo-ui/weapp'
 
 <template>
   <view class="badge-stack">
-    <VBadge :content="3" />
+    <view class="badge-anchor">
+      <text>消息</text>
+      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+    </view>
+    <view class="badge-anchor">
+      <text>通知</text>
+      <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+    </view>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
-    <VBadge aria-label="在线" dot tone="success" />
     <VBadge tone="primary">新</VBadge>
     <VBadge tone="success" variant="soft">稳定</VBadge>
     <VBadge tone="warning" variant="outline">审核</VBadge>
   </view>
 </template>
+
+<style scoped>
+.badge-stack { display: flex; gap: 12px; align-items: center; }
+.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+</style>
           `.trim(),
         },
       },
@@ -715,15 +739,27 @@ import { VBadge } from '@varo-ui/h5'
 
 <template>
   <div class="badge-stack">
-    <VBadge :content="3" />
+    <span class="badge-anchor">
+      Messages
+      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+    </span>
+    <span class="badge-anchor">
+      Notifications
+      <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+    </span>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
-    <VBadge aria-label="Online" dot tone="success" />
     <VBadge tone="primary">New</VBadge>
     <VBadge tone="success" variant="soft">Stable</VBadge>
     <VBadge tone="warning" variant="outline">Review</VBadge>
   </div>
 </template>
+
+<style scoped>
+.badge-stack { display: flex; gap: 12px; align-items: center; }
+.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+</style>
           `.trim(),
         },
         weapp: {
@@ -739,15 +775,27 @@ import { VBadge } from '@varo-ui/weapp'
 
 <template>
   <view class="badge-stack">
-    <VBadge :content="3" />
+    <view class="badge-anchor">
+      <text>Messages</text>
+      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+    </view>
+    <view class="badge-anchor">
+      <text>Notifications</text>
+      <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+    </view>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
-    <VBadge aria-label="Online" dot tone="success" />
     <VBadge tone="primary">New</VBadge>
     <VBadge tone="success" variant="soft">Stable</VBadge>
     <VBadge tone="warning" variant="outline">Review</VBadge>
   </view>
 </template>
+
+<style scoped>
+.badge-stack { display: flex; gap: 12px; align-items: center; }
+.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+</style>
           `.trim(),
         },
       },

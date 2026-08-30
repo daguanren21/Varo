@@ -233,6 +233,9 @@ describe('docs navigation', () => {
     expect(css).toContain(
       '--varo-ui-success-hover: color-mix(in srgb, var(--varo-color-success) 84%, #fff)',
     )
+    expect(css).toContain(
+      '--varo-ui-success-soft: color-mix(in srgb, var(--varo-color-success) 14%, var(--varo-card-solid))',
+    )
     expect(css).toContain('color: var(--varo-ui-text);')
     expect(css).toContain('background: var(--varo-ui-surface);')
     expect(css).not.toContain('color: color-mix(in srgb, var(--varo-bg) 90%, #e6e4df)')

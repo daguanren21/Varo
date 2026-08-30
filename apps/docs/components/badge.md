@@ -19,6 +19,42 @@ import { VBadge } from '@varo-ui/h5'
 </template>
 ```
 
+## 文字右上角角标
+
+```vue
+<template>
+  <span class="badge-anchor">
+    消息
+    <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+  </span>
+  <span class="badge-anchor">
+    通知
+    <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+  </span>
+</template>
+
+<style scoped>
+.badge-anchor {
+  position: relative;
+  display: inline-flex;
+  min-width: 72px;
+  padding: 10px 14px;
+  justify-content: center;
+}
+
+.badge-anchor + .badge-anchor {
+  margin-left: 12px;
+}
+
+.badge-anchor__mark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(45%, -40%);
+}
+</style>
+```
+
 ## 计数与封顶
 
 ```vue

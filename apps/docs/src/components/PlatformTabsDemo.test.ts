@@ -211,7 +211,7 @@ describe('PlatformTabsDemo', () => {
     expect(layout.get('.varo-button[data-block="true"]').text()).toBe('继续')
   })
 
-  it('presents compact Badge counts, status dots, and visual variants', () => {
+  it('presents Badge text anchors, counts, status dots, and tone-aware variants', () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -225,7 +225,16 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
     expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
     expect(wrapper.findAll('.platform-demo__badge-sample')).toHaveLength(1)
-    expect(wrapper.findAll('.platform-demo__badge-sample .varo-badge')).toHaveLength(10)
+    expect(wrapper.findAll('.platform-demo__badge-sample .varo-badge')).toHaveLength(12)
+
+    const anchors = wrapper.get('[data-case="anchors"]').findAll('.varo-badge')
+    expect(anchors).toHaveLength(2)
+    expect(anchors.map(badge => badge.text())).toEqual(['3', ''])
+    expect(anchors.map(badge => badge.attributes('aria-label'))).toEqual([
+      '3 条未读消息',
+      '新通知',
+    ])
+    expect(anchors.every(badge => badge.classes().includes('platform-demo__badge-anchor-mark'))).toBe(true)
 
     const counts = wrapper.get('[data-case="counts"]').findAll('.varo-badge')
     expect(counts.map(badge => badge.text())).toEqual(['3', '12', '99+', '0'])
