@@ -2773,7 +2773,6 @@ onBeforeUnmount(() => {
   background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
 }
 
-:deep(.varo-button[data-loading='true']),
 :deep(.varo-button[data-disabled='true']) {
   cursor: not-allowed;
   opacity: 0.72;

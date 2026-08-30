@@ -58,7 +58,7 @@
 }
 
 @media (hover: hover) {
-  .varo-button[data-variant='solid']:not([data-disabled='true'], [data-loading='true']):hover {
+  .varo-button[data-variant='solid']:not([data-disabled='true']):hover {
     background: var(--varo-button-hover-fill);
   }
 }
@@ -67,7 +67,7 @@
   background: var(--varo-button-hover-fill);
 }
 
-.varo-button:active {
+.varo-button:not([data-disabled='true'], [data-loading='true']):active {
   transform: translateY(1px);
 }
 
@@ -124,7 +124,10 @@
   width: 100%;
 }
 
-.varo-button[data-loading='true'],
+.varo-button[data-loading='true'] {
+  cursor: progress;
+}
+
 .varo-button[data-disabled='true'] {
   cursor: not-allowed;
   opacity: 0.62;

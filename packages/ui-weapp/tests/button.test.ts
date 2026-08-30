@@ -83,5 +83,7 @@ describe('ui-weapp button', () => {
     expect(style).toContain('border: 0')
     expect(style).toContain('.varo-button[data-variant=\'solid\'].varo-button--pressed')
     expect(style).toContain('background: var(--varo-button-hover-fill)')
+    expect(style).toContain('data-loading=\'true\'')
+    expect(style).toContain('cursor: progress')
   })
 })

@@ -135,7 +135,10 @@ page {
   width: 100%;
 }
 
-.varo-button[data-loading='true'],
+.varo-button[data-loading='true'] {
+  cursor: progress;
+}
+
 .varo-button[data-disabled='true'] {
   cursor: not-allowed;
   opacity: 0.62;
