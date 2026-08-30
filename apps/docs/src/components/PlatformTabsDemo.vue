@@ -19,18 +19,13 @@ const props = withDefaults(
   },
 )
 
-const variants = ['solid', 'outline', 'ghost'] as const
-const sizes = ['sm', 'md', 'lg'] as const
 const platforms = ['h5', 'weapp'] as const
-
-const selectedVariant = ref<(typeof variants)[number]>('solid')
-const selectedSize = ref<(typeof sizes)[number]>('md')
-const buttonLoading = ref(false)
 
 const inputValue = ref(props.locale === 'en' ? 'Avery Lin' : '林默')
 const inputUrl = ref('varo-ui')
 const inputBio = ref(props.locale === 'en' ? 'Registry-first mobile UI.' : 'Registry-first 移动端 UI。')
 const inputInvalid = computed(() => inputValue.value.trim().length === 0)
+const overviewInputInvalid = ref(false)
 const activePlatform = ref<Platform>('h5')
 const codeExpanded = ref(false)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
@@ -92,6 +87,50 @@ const cellDemoCopy = computed(() => {
   }
 })
 
+const buttonSampleCopy = computed(() => props.locale === 'en'
+  ? {
+      hierarchy: 'Hierarchy',
+      primary: 'Save changes',
+      secondary: 'Cancel',
+      tertiary: 'Later',
+      tones: 'Semantic tones',
+      success: 'Complete',
+      warning: 'Review',
+      danger: 'Delete',
+      sizes: 'Sizes',
+      small: 'Small',
+      medium: 'Medium',
+      large: 'Large',
+      states: 'States',
+      loading: 'Saving…',
+      disabled: 'Unavailable',
+      layout: 'Shape and layout',
+      create: 'Create project',
+      continue: 'Continue',
+      square: 'Square corners',
+    }
+  : {
+      hierarchy: '操作层级',
+      primary: '保存更改',
+      secondary: '取消',
+      tertiary: '稍后处理',
+      tones: '语义色',
+      success: '已完成',
+      warning: '需确认',
+      danger: '删除',
+      sizes: '尺寸',
+      small: '小号',
+      medium: '默认',
+      large: '大号',
+      states: '状态',
+      loading: '保存中…',
+      disabled: '不可用',
+      layout: '形状与布局',
+      create: '创建项目',
+      continue: '继续',
+      square: '直角',
+    })
+
 const inputSampleCopy = computed(() => props.locale === 'en'
   ? {
       clearable: 'Required and clearable',
@@ -144,9 +183,7 @@ const codeExamples = computed(() => [
 const activeCodeExample = computed(
   () => codeExamples.value.find(item => item.key === activePlatform.value) ?? codeExamples.value[0]!,
 )
-const hasControls = computed(
-  () => props.example === 'button' || props.example === 'overview',
-)
+const hasControls = computed(() => props.example === 'overview')
 const codeToggleLabel = computed(() =>
   codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand,
 )
@@ -302,62 +339,16 @@ onBeforeUnmount(() => {
       :data-layout="hasControls ? 'controls-preview' : 'preview-only'"
     >
       <section v-if="hasControls" class="platform-demo__panel platform-demo__panel--controls">
-        <div v-if="example === 'button'" class="platform-demo__controls">
-          <div class="platform-demo__control-group">
-            <span>{{ copy.variantLabel }}</span>
-            <div class="platform-demo__chips">
-              <button
-                v-for="variant in variants"
-                :key="variant"
-                class="platform-demo__chip"
-                :data-active="selectedVariant === variant"
-                type="button"
-                @click="selectedVariant = variant"
-              >
-                {{ variant }}
-              </button>
-            </div>
-          </div>
-
-          <div class="platform-demo__control-group">
-            <span>{{ copy.sizeLabel }}</span>
-            <div class="platform-demo__chips">
-              <button
-                v-for="size in sizes"
-                :key="size"
-                class="platform-demo__chip"
-                :data-active="selectedSize === size"
-                type="button"
-                @click="selectedSize = size"
-              >
-                {{ size }}
-              </button>
-            </div>
-          </div>
-
-          <div class="platform-demo__control-group">
-            <span>{{ copy.loadingLabel }}</span>
-            <button
-              class="platform-demo__chip"
-              type="button"
-              :data-active="buttonLoading"
-              @click="buttonLoading = !buttonLoading"
-            >
-              {{ buttonLoading ? copy.loadingOn : copy.loadingOff }}
-            </button>
-          </div>
-        </div>
-
-        <div v-if="example === 'input' || example === 'overview'" class="platform-demo__controls">
+        <div class="platform-demo__controls">
           <div class="platform-demo__control-group">
             <span>{{ copy.invalidLabel }}</span>
             <button
               class="platform-demo__chip"
               type="button"
-              :data-active="inputInvalid"
-              @click="inputInvalid = !inputInvalid"
+              :data-active="overviewInputInvalid"
+              @click="overviewInputInvalid = !overviewInputInvalid"
             >
-              {{ inputInvalid ? copy.invalidOn : copy.invalidOff }}
+              {{ overviewInputInvalid ? copy.invalidOn : copy.invalidOff }}
             </button>
           </div>
         </div>
@@ -370,23 +361,128 @@ onBeforeUnmount(() => {
               <div class="platform-demo__phone-content">
                 <div class="platform-demo__preview-content" :data-example="example">
                   <template v-if="example === 'button'">
-                    <section class="platform-demo__card">
-                      <div class="platform-demo__stack">
-                        <component
-                          :is="runtime.Button"
-                          :loading="buttonLoading"
-                          :size="selectedSize"
-                          :variant="selectedVariant"
-                          type="button"
-                        >
-                          {{ platformDemo.primaryText }}
-                        </component>
-                        <component :is="runtime.Button" size="sm" variant="outline" type="button">
-                          {{ platformDemo.secondaryText }}
-                        </component>
-                        <component :is="runtime.Button" :disabled="true" variant="ghost" type="button">
-                          {{ platformDemo.disabledText }}
-                        </component>
+                    <section class="platform-demo__button-sample">
+                      <div class="platform-demo__button-cases">
+                        <section class="platform-demo__button-case" data-case="hierarchy">
+                          <h3>{{ buttonSampleCopy.hierarchy }}</h3>
+                          <div class="platform-demo__button-row">
+                            <component :is="runtime.Button" native-type="button">
+                              {{ buttonSampleCopy.primary }}
+                            </component>
+                            <component
+                              :is="runtime.Button"
+                              native-type="button"
+                              tone="default"
+                              variant="outline"
+                            >
+                              {{ buttonSampleCopy.secondary }}
+                            </component>
+                            <component
+                              :is="runtime.Button"
+                              native-type="button"
+                              tone="default"
+                              variant="ghost"
+                            >
+                              {{ buttonSampleCopy.tertiary }}
+                            </component>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__button-case" data-case="tones">
+                          <h3>{{ buttonSampleCopy.tones }}</h3>
+                          <div class="platform-demo__button-row">
+                            <component
+                              :is="runtime.Button"
+                              native-type="button"
+                              tone="success"
+                            >
+                              {{ buttonSampleCopy.success }}
+                            </component>
+                            <component
+                              :is="runtime.Button"
+                              native-type="button"
+                              tone="warning"
+                            >
+                              {{ buttonSampleCopy.warning }}
+                            </component>
+                            <component
+                              :is="runtime.Button"
+                              native-type="button"
+                              tone="danger"
+                            >
+                              {{ buttonSampleCopy.danger }}
+                            </component>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__button-case" data-case="sizes">
+                          <h3>{{ buttonSampleCopy.sizes }}</h3>
+                          <div class="platform-demo__button-row platform-demo__button-row--baseline">
+                            <component :is="runtime.Button" native-type="button" size="sm" variant="outline">
+                              {{ buttonSampleCopy.small }}
+                            </component>
+                            <component :is="runtime.Button" native-type="button" size="md" variant="outline">
+                              {{ buttonSampleCopy.medium }}
+                            </component>
+                            <component :is="runtime.Button" native-type="button" size="lg" variant="outline">
+                              {{ buttonSampleCopy.large }}
+                            </component>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__button-case" data-case="states">
+                          <h3>{{ buttonSampleCopy.states }}</h3>
+                          <div class="platform-demo__button-row">
+                            <component
+                              :is="runtime.Button"
+                              loading
+                              :loading-text="buttonSampleCopy.loading"
+                              native-type="button"
+                            />
+                            <component
+                              :is="runtime.Button"
+                              disabled
+                              native-type="button"
+                              tone="default"
+                              variant="outline"
+                            >
+                              {{ buttonSampleCopy.disabled }}
+                            </component>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__button-case" data-case="layout">
+                          <h3>{{ buttonSampleCopy.layout }}</h3>
+                          <div class="platform-demo__button-layout">
+                            <div class="platform-demo__button-row">
+                              <component :is="runtime.Button" native-type="button" shape="round">
+                                <template #icon>
+                                  <svg
+                                    class="platform-demo__button-icon"
+                                    viewBox="0 0 16 16"
+                                    fill="none"
+                                    aria-hidden="true"
+                                  >
+                                    <path d="M8 3v10M3 8h10" />
+                                  </svg>
+                                </template>
+                                {{ buttonSampleCopy.create }}
+                              </component>
+                              <component
+                                :is="runtime.Button"
+                                native-type="button"
+                                shape="square"
+                                tone="default"
+                                variant="outline"
+                              >
+                                {{ buttonSampleCopy.square }}
+                              </component>
+                            </div>
+                            <component :is="runtime.Button" block native-type="button">
+                              {{ buttonSampleCopy.continue }}
+                            </component>
+                          </div>
+                        </section>
                       </div>
                     </section>
                   </template>
@@ -985,7 +1081,7 @@ onBeforeUnmount(() => {
                           :is="runtime.Input"
                           v-model:value="inputValue"
                           clearable
-                          :invalid="inputInvalid"
+                          :invalid="overviewInputInvalid"
                           :max-length="16"
                           :placeholder="platformDemo.placeholder"
                           show-word-limit
@@ -1000,8 +1096,6 @@ onBeforeUnmount(() => {
                       <div class="platform-demo__stack">
                         <component
                           :is="runtime.Button"
-                          :loading="buttonLoading"
-                          :variant="selectedVariant"
                           type="button"
                         >
                           {{ platformDemo.primaryText }}
@@ -3113,6 +3207,129 @@ onBeforeUnmount(() => {
 :deep(.varo-tabbar__badge),
 :deep(.varo-tabbar__dot) {
   background: var(--varo-danger);
+}
+
+/* Button sample — practical states without detached controls or device chrome. */
+.platform-demo__button-sample {
+  box-sizing: border-box;
+  width: min(100%, 680px);
+  padding: 20px;
+  margin-inline: auto;
+  color: var(--varo-foreground);
+  background: var(--demo-phone-card);
+  border: 1px solid var(--demo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__button-cases {
+  display: grid;
+}
+
+.platform-demo__button-case {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  padding-block: 20px;
+  border-top: 1px solid var(--demo-border);
+}
+
+.platform-demo__button-case:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.platform-demo__button-case:last-child {
+  padding-bottom: 0;
+}
+
+.platform-demo__button-case h3 {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--varo-foreground);
+}
+
+.platform-demo__button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.platform-demo__button-row--baseline {
+  align-items: flex-end;
+}
+
+.platform-demo__button-sample :deep(.varo-button:not([data-block='true'])) {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.platform-demo__button-case[data-case='hierarchy'] :deep(.varo-button),
+.platform-demo__button-case[data-case='tones'] :deep(.varo-button) {
+  min-width: 112px;
+}
+
+.platform-demo__button-case[data-case='states'] :deep(.varo-button) {
+  min-width: 120px;
+}
+
+.platform-demo__button-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.platform-demo__button-icon {
+  width: 16px;
+  height: 16px;
+  stroke: currentcolor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.platform-demo__preview-content[data-example='button'] {
+  display: block;
+}
+
+.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='button']) {
+  width: min(100%, 720px);
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='button']) {
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+}
+
+.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='button']) {
+  padding: 0;
+}
+
+.platform-demo__stage:has(.platform-demo__preview-content[data-example='button']) .platform-demo__code-shell {
+  --demo-code-bg: var(--demo-surface-strong);
+  --demo-code-surface: var(--demo-surface);
+  --demo-code-border: var(--demo-border);
+  --demo-code-text: var(--varo-foreground);
+  --demo-code-muted: var(--demo-text-muted);
+}
+
+@media (max-width: 640px) {
+  .platform-demo__button-sample {
+    padding: 16px;
+  }
+
+  .platform-demo__button-row {
+    gap: 8px;
+  }
 }
 
 /* Input sample — multiple practical cases, isolated from every other demo. */

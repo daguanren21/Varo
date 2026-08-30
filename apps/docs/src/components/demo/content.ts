@@ -4,7 +4,7 @@ export const demoContent: Record<Locale, Partial<Record<DemoKind, DemoContent>>>
   zh: {
     button: {
       title: 'Button 跨端示例与演示',
-      description: '同一块区域内切换 H5 与小程序 wrapper，代码和实时效果一起看，不再拆成两段文档。',
+      description: '展示操作层级、语义色、尺寸、加载/禁用、形状和块级布局。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -21,9 +21,25 @@ import { VButton } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VButton variant="solid" size="md">提交</VButton>
-  <VButton variant="outline" size="sm">次要操作</VButton>
-  <VButton variant="ghost" :disabled="true">禁用态</VButton>
+  <div class="button-stack">
+    <VButton>保存更改</VButton>
+    <VButton tone="default" variant="outline">取消</VButton>
+    <VButton tone="default" variant="ghost">稍后处理</VButton>
+
+    <VButton tone="success">已完成</VButton>
+    <VButton tone="warning">需确认</VButton>
+    <VButton tone="danger">删除</VButton>
+
+    <VButton size="sm" variant="outline">小号</VButton>
+    <VButton size="md" variant="outline">默认</VButton>
+    <VButton size="lg" variant="outline">大号</VButton>
+
+    <VButton loading loading-text="保存中…" />
+    <VButton disabled tone="default" variant="outline">不可用</VButton>
+    <VButton shape="round">创建项目</VButton>
+    <VButton shape="square" tone="default" variant="outline">直角</VButton>
+    <VButton block>继续</VButton>
+  </div>
 </template>
           `.trim(),
         },
@@ -42,10 +58,24 @@ import { VButton } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <view class="stack">
-    <VButton size="lg">提交</VButton>
-    <VButton variant="outline">取消</VButton>
-    <VButton variant="ghost" :disabled="true">禁用态</VButton>
+  <view class="button-stack">
+    <VButton>保存更改</VButton>
+    <VButton tone="default" variant="outline">取消</VButton>
+    <VButton tone="default" variant="ghost">稍后处理</VButton>
+
+    <VButton tone="success">已完成</VButton>
+    <VButton tone="warning">需确认</VButton>
+    <VButton tone="danger">删除</VButton>
+
+    <VButton size="sm" variant="outline">小号</VButton>
+    <VButton size="md" variant="outline">默认</VButton>
+    <VButton size="lg" variant="outline">大号</VButton>
+
+    <VButton loading loading-text="保存中…" />
+    <VButton disabled tone="default" variant="outline">不可用</VButton>
+    <VButton shape="round">创建项目</VButton>
+    <VButton shape="square" tone="default" variant="outline">直角</VButton>
+    <VButton block>继续</VButton>
   </view>
 </template>
           `.trim(),
@@ -536,7 +566,7 @@ const mobile = ref('')
   en: {
     button: {
       title: 'Button Cross-platform Example and Preview',
-      description: 'Switch between the H5 and mini-program wrappers in one place so code and rendered output stay aligned.',
+      description: 'Shows action hierarchy, semantic tones, sizes, loading/disabled states, shapes, and block layout.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -553,9 +583,25 @@ import { VButton } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VButton variant="solid" size="md">Submit</VButton>
-  <VButton variant="outline" size="sm">Secondary</VButton>
-  <VButton variant="ghost" :disabled="true">Disabled</VButton>
+  <div class="button-stack">
+    <VButton>Save changes</VButton>
+    <VButton tone="default" variant="outline">Cancel</VButton>
+    <VButton tone="default" variant="ghost">Later</VButton>
+
+    <VButton tone="success">Complete</VButton>
+    <VButton tone="warning">Review</VButton>
+    <VButton tone="danger">Delete</VButton>
+
+    <VButton size="sm" variant="outline">Small</VButton>
+    <VButton size="md" variant="outline">Medium</VButton>
+    <VButton size="lg" variant="outline">Large</VButton>
+
+    <VButton loading loading-text="Saving…" />
+    <VButton disabled tone="default" variant="outline">Unavailable</VButton>
+    <VButton shape="round">Create project</VButton>
+    <VButton shape="square" tone="default" variant="outline">Square corners</VButton>
+    <VButton block>Continue</VButton>
+  </div>
 </template>
           `.trim(),
         },
@@ -574,10 +620,24 @@ import { VButton } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <view class="stack">
-    <VButton size="lg">Submit</VButton>
-    <VButton variant="outline">Cancel</VButton>
-    <VButton variant="ghost" :disabled="true">Disabled</VButton>
+  <view class="button-stack">
+    <VButton>Save changes</VButton>
+    <VButton tone="default" variant="outline">Cancel</VButton>
+    <VButton tone="default" variant="ghost">Later</VButton>
+
+    <VButton tone="success">Complete</VButton>
+    <VButton tone="warning">Review</VButton>
+    <VButton tone="danger">Delete</VButton>
+
+    <VButton size="sm" variant="outline">Small</VButton>
+    <VButton size="md" variant="outline">Medium</VButton>
+    <VButton size="lg" variant="outline">Large</VButton>
+
+    <VButton loading loading-text="Saving…" />
+    <VButton disabled tone="default" variant="outline">Unavailable</VButton>
+    <VButton shape="round">Create project</VButton>
+    <VButton shape="square" tone="default" variant="outline">Square corners</VButton>
+    <VButton block>Continue</VButton>
   </view>
 </template>
           `.trim(),

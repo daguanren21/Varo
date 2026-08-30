@@ -166,6 +166,51 @@ describe('PlatformTabsDemo', () => {
     expect(stateInputs[1]!.attributes('disabled')).toBeDefined()
   })
 
+  it('presents Button hierarchy, tones, sizes, states, and layout without detached controls', () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'button',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
+    expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
+    expect(wrapper.findAll('.platform-demo__button-sample')).toHaveLength(1)
+    expect(wrapper.findAll('.platform-demo__button-sample .varo-button')).toHaveLength(14)
+
+    const hierarchy = wrapper.get('[data-case="hierarchy"]').findAll('.varo-button')
+    expect(hierarchy.map(button => button.attributes('data-variant'))).toEqual([
+      'solid',
+      'outline',
+      'ghost',
+    ])
+    expect(hierarchy[0]!.text()).toBe('保存更改')
+
+    const tones = wrapper.get('[data-case="tones"]').findAll('.varo-button')
+    expect(tones.map(button => button.attributes('data-tone'))).toEqual([
+      'success',
+      'warning',
+      'danger',
+    ])
+
+    const sizes = wrapper.get('[data-case="sizes"]').findAll('.varo-button')
+    expect(sizes.map(button => button.attributes('data-size'))).toEqual(['sm', 'md', 'lg'])
+
+    const loading = wrapper.get('[data-case="states"] .varo-button[data-loading="true"]')
+    expect(loading.text()).toContain('保存中…')
+    expect(loading.attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-case="states"] .varo-button[data-disabled="true"]').text()).toBe('不可用')
+
+    const layout = wrapper.get('[data-case="layout"]')
+    expect(layout.get('.varo-button[data-shape="round"]').text()).toContain('创建项目')
+    expect(layout.get('.varo-button[data-shape="square"]').text()).toBe('直角')
+    expect(layout.get('.varo-button[data-block="true"]').text()).toBe('继续')
+  })
+
   it('supports roving keyboard selection for platform tabs', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
