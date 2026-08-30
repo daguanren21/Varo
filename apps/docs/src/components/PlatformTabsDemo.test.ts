@@ -21,7 +21,7 @@ describe('PlatformTabsDemo', () => {
     vi.useRealTimers()
   })
 
-  it('renders phone-frame preview chrome with compact metadata and collapsed example code', async () => {
+  it('renders a focused preview without runtime metadata or fake device chrome', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -33,6 +33,7 @@ describe('PlatformTabsDemo', () => {
     })
 
     expect(wrapper.find('.platform-demo__note').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__head p').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('说明')
     expect(wrapper.text()).not.toContain('适合浏览器页面里的表单提交')
 
@@ -40,10 +41,10 @@ describe('PlatformTabsDemo', () => {
     expect(stage.attributes('data-layout')).toBe('controls-preview')
     expect(wrapper.find('.platform-demo__platform-switch').exists()).toBe(true)
     expect(wrapper.find('.platform-demo__phone-frame').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__phone-status').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(true)
-    expect(wrapper.get('.platform-demo__meta-card strong').text()).toContain('H5')
+    expect(wrapper.find('.platform-demo__phone-status').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
     expect(wrapper.find('.platform-demo__code-section').exists()).toBe(false)
 
     const toggle = wrapper.get('.platform-demo__code-toggle')
@@ -72,7 +73,7 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('false')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/h5')
+    expect(codeSection.get('.platform-demo__code-head').text()).not.toContain('@varo-ui/h5')
     expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
     expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
 
@@ -80,6 +81,134 @@ describe('PlatformTabsDemo', () => {
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
     expect(copyButton.text()).toContain('复制 H5 代码')
     expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
+  })
+
+  it('presents Image as a theme-aware content component', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'image',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.find('.platform-demo__head p').exists()).toBe(false)
+    expect(wrapper.get('.platform-demo__image-feature img').attributes('src')).toBe('/blocks/retail-home.png')
+    expect(wrapper.findAll('.platform-demo__image-item')).toHaveLength(2)
+    await wrapper.get('.platform-demo__image-item[data-state="error"] img').trigger('error')
+    expect(wrapper.find('.platform-demo__broken-image').exists()).toBe(true)
+    expect(wrapper.text()).toContain('自适应封面')
+    expect(wrapper.text()).toContain('品牌头像')
+    expect(wrapper.text()).toContain('资源不可用')
+    expect(wrapper.text()).not.toContain('Vant')
+    expect(wrapper.text()).not.toContain('NutUI')
+  })
+
+  it('groups Cell examples inside one component-owned container', () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'cell',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.findAll('.platform-demo__cell-demo')).toHaveLength(1)
+    expect(wrapper.findAll('.varo-cell-group')).toHaveLength(6)
+    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
+  })
+
+  it('presents multiple Input cases and derives required errors from the value', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'input',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
+    expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
+    expect(wrapper.findAll('.platform-demo__input-sample')).toHaveLength(1)
+    expect(wrapper.findAll('.varo-input')).toHaveLength(5)
+    expect(wrapper.find('.platform-demo__input-sample-head').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__input-state').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('账户设置')
+    expect(wrapper.text()).not.toContain('显示错误')
+    expect(wrapper.text()).toContain('必填与清空')
+    expect(wrapper.text()).toContain('前后缀')
+    expect(wrapper.text()).toContain('文本域')
+    expect(wrapper.text()).toContain('状态')
+
+    const requiredCase = wrapper.get('[data-case="required"]')
+    const requiredInput = requiredCase.get<HTMLInputElement>('.varo-input__control')
+    expect(requiredCase.find('.varo-input__error').exists()).toBe(false)
+    await requiredInput.trigger('focus')
+    await requiredCase.get('.varo-input__clear').trigger('click')
+    expect(requiredInput.element.value).toBe('')
+    expect(requiredCase.get('.varo-input').attributes('data-invalid')).toBe('true')
+    expect(requiredCase.get('.varo-input__error').text()).toBe('请输入显示名称。')
+
+    const affixCase = wrapper.get('[data-case="affixes"]')
+    expect(affixCase.text()).toContain('https://')
+    expect(affixCase.text()).toContain('.com')
+    expect(wrapper.find('[data-case="textarea"] textarea.varo-input__control').exists()).toBe(true)
+
+    const stateInputs = wrapper.get('[data-case="states"]').findAll('.varo-input__control')
+    expect(stateInputs).toHaveLength(2)
+    expect(stateInputs[0]!.attributes('readonly')).toBeDefined()
+    expect(stateInputs[1]!.attributes('disabled')).toBeDefined()
+  })
+
+  it('presents Button hierarchy, tones, sizes, states, and layout without detached controls', () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'button',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
+    expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
+    expect(wrapper.findAll('.platform-demo__button-sample')).toHaveLength(1)
+    expect(wrapper.findAll('.platform-demo__button-sample .varo-button')).toHaveLength(14)
+
+    const hierarchy = wrapper.get('[data-case="hierarchy"]').findAll('.varo-button')
+    expect(hierarchy.map(button => button.attributes('data-variant'))).toEqual([
+      'solid',
+      'outline',
+      'ghost',
+    ])
+    expect(hierarchy[0]!.text()).toBe('保存更改')
+
+    const tones = wrapper.get('[data-case="tones"]').findAll('.varo-button')
+    expect(tones.map(button => button.attributes('data-tone'))).toEqual([
+      'success',
+      'warning',
+      'danger',
+    ])
+
+    const sizes = wrapper.get('[data-case="sizes"]').findAll('.varo-button')
+    expect(sizes.map(button => button.attributes('data-size'))).toEqual(['sm', 'md', 'lg'])
+
+    const loading = wrapper.get('[data-case="states"] .varo-button[data-loading="true"]')
+    expect(loading.text()).toContain('保存中…')
+    expect(loading.attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-case="states"] .varo-button[data-disabled="true"]').text()).toBe('不可用')
+
+    const layout = wrapper.get('[data-case="layout"]')
+    expect(layout.get('.varo-button[data-shape="round"]').text()).toContain('创建项目')
+    expect(layout.get('.varo-button[data-shape="square"]').text()).toBe('直角')
+    expect(layout.get('.varo-button[data-block="true"]').text()).toBe('继续')
   })
 
   it('supports roving keyboard selection for platform tabs', async () => {
@@ -141,11 +270,11 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('true')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序组件')
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/weapp')
+    expect(codeSection.get('.platform-demo__code-head').text()).not.toContain('@varo-ui/weapp')
     expect(codeSection.get('code').text()).toContain('from \'@varo-ui/weapp\'')
     expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
-    expect(wrapper.get('.platform-demo__runtime-pill').text()).toContain('小程序')
+    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
 
     const copyButton = wrapper.get('.platform-demo__code-copy')
     expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')

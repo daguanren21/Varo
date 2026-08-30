@@ -9,6 +9,7 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     primitives: 'src/primitives.ts',
+    resolver: 'src/resolver.ts',
   },
   format: 'esm',
   outDir: 'dist',

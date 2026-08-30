@@ -33,6 +33,25 @@ export interface RetailAddressSummary {
   phone: string
 }
 
+function finiteNumber(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
+export function normalizeRetailProduct(product: Partial<RetailProduct> | null | undefined): RetailProduct {
+  return {
+    category: String(product?.category ?? ''),
+    description: String(product?.description ?? ''),
+    id: String(product?.id ?? ''),
+    image: String(product?.image ?? ''),
+    linePrice: finiteNumber(product?.linePrice),
+    name: String(product?.name ?? ''),
+    price: finiteNumber(product?.price),
+    sales: finiteNumber(product?.sales),
+    stock: finiteNumber(product?.stock),
+    tags: Array.isArray(product?.tags) ? product.tags.filter(tag => typeof tag === 'string') : [],
+  }
+}
+
 export function formatRetailMoney(value: number) {
   return (value / 100).toFixed(2)
 }

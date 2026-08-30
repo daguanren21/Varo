@@ -4,7 +4,7 @@ export const demoContent: Record<Locale, Partial<Record<DemoKind, DemoContent>>>
   zh: {
     button: {
       title: 'Button 跨端示例与演示',
-      description: '同一块区域内切换 H5 与小程序 wrapper，代码和实时效果一起看，不再拆成两段文档。',
+      description: '展示操作层级、语义色、尺寸、加载/禁用、形状和块级布局。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -21,9 +21,25 @@ import { VButton } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VButton variant="solid" size="md">提交</VButton>
-  <VButton variant="outline" size="sm">次要操作</VButton>
-  <VButton variant="ghost" :disabled="true">禁用态</VButton>
+  <div class="button-stack">
+    <VButton>保存更改</VButton>
+    <VButton tone="default" variant="outline">取消</VButton>
+    <VButton tone="default" variant="ghost">稍后处理</VButton>
+
+    <VButton tone="success">已完成</VButton>
+    <VButton tone="warning">需确认</VButton>
+    <VButton tone="danger">删除</VButton>
+
+    <VButton size="sm" variant="outline">小号</VButton>
+    <VButton size="md" variant="outline">默认</VButton>
+    <VButton size="lg" variant="outline">大号</VButton>
+
+    <VButton loading loading-text="保存中…" />
+    <VButton disabled tone="default" variant="outline">不可用</VButton>
+    <VButton shape="round">创建项目</VButton>
+    <VButton shape="square" tone="default" variant="outline">直角</VButton>
+    <VButton block>继续</VButton>
+  </div>
 </template>
           `.trim(),
         },
@@ -42,10 +58,24 @@ import { VButton } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <view class="stack">
-    <VButton size="lg">提交</VButton>
-    <VButton variant="outline">取消</VButton>
-    <VButton variant="ghost" :disabled="true">禁用态</VButton>
+  <view class="button-stack">
+    <VButton>保存更改</VButton>
+    <VButton tone="default" variant="outline">取消</VButton>
+    <VButton tone="default" variant="ghost">稍后处理</VButton>
+
+    <VButton tone="success">已完成</VButton>
+    <VButton tone="warning">需确认</VButton>
+    <VButton tone="danger">删除</VButton>
+
+    <VButton size="sm" variant="outline">小号</VButton>
+    <VButton size="md" variant="outline">默认</VButton>
+    <VButton size="lg" variant="outline">大号</VButton>
+
+    <VButton loading loading-text="保存中…" />
+    <VButton disabled tone="default" variant="outline">不可用</VButton>
+    <VButton shape="round">创建项目</VButton>
+    <VButton shape="square" tone="default" variant="outline">直角</VButton>
+    <VButton block>继续</VButton>
   </view>
 </template>
           `.trim(),
@@ -54,7 +84,7 @@ import { VButton } from '@varo-ui/weapp'
     },
     input: {
       title: 'Input 跨端示例与演示',
-      description: '统一展示 H5 和小程序输入框的值同步、非法状态与非受控用法。',
+      description: '展示必填清空校验、前后缀、文本域和只读/禁用状态。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -62,21 +92,40 @@ import { VButton } from '@varo-ui/weapp'
           appTitle: 'H5 表单',
           appSubtitle: '浏览器输入体验',
           statusRight: '5G · H5',
-          controlledLabel: '受控输入',
-          uncontrolledLabel: '非受控输入',
-          placeholder: '请输入内容',
-          defaultValue: '默认内容',
+          controlledLabel: '显示名称',
+          uncontrolledLabel: '显示名称',
+          placeholder: '例如：林默',
+          defaultValue: '林默',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VInput } from '@varo-ui/h5'
 
-const value = ref('')
+const name = ref('林默')
+const website = ref('varo-ui')
+const bio = ref('Registry-first 移动端 UI。')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="value" placeholder="请输入内容" />
-  <VInput default-value="默认内容" />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? '请输入显示名称。' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="例如：林默"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="不可编辑" disabled />
 </template>
           `.trim(),
         },
@@ -86,21 +135,40 @@ const value = ref('')
           appTitle: '小程序表单',
           appSubtitle: '跨端输入体验',
           statusRight: '微信 · 小程序',
-          controlledLabel: '手机号输入',
-          uncontrolledLabel: '备注输入',
-          placeholder: '请输入手机号',
-          defaultValue: '留言备注',
+          controlledLabel: '显示名称',
+          uncontrolledLabel: '显示名称',
+          placeholder: '例如：林默',
+          defaultValue: '林默',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'wevu'
 import { VInput } from '@varo-ui/weapp'
 
-const mobile = ref('')
+const name = ref('林默')
+const website = ref('varo-ui')
+const bio = ref('Registry-first 移动端 UI。')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="mobile" placeholder="请输入手机号" />
-  <VInput default-value="留言备注" />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? '请输入显示名称。' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="例如：林默"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="不可编辑" disabled />
 </template>
           `.trim(),
         },
@@ -166,7 +234,7 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
     },
     image: {
       title: 'Image 跨端示例与演示',
-      description: '对齐 Vant / NutUI 图片能力，展示填充模式、圆形图片、加载占位与失败态。',
+      description: '',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -180,9 +248,9 @@ import { VImage } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="资源不可用" />
 </template>
           `.trim(),
         },
@@ -198,9 +266,9 @@ import { VImage } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="资源不可用" />
 </template>
           `.trim(),
         },
@@ -498,7 +566,7 @@ const mobile = ref('')
   en: {
     button: {
       title: 'Button Cross-platform Example and Preview',
-      description: 'Switch between the H5 and mini-program wrappers in one place so code and rendered output stay aligned.',
+      description: 'Shows action hierarchy, semantic tones, sizes, loading/disabled states, shapes, and block layout.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -515,9 +583,25 @@ import { VButton } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VButton variant="solid" size="md">Submit</VButton>
-  <VButton variant="outline" size="sm">Secondary</VButton>
-  <VButton variant="ghost" :disabled="true">Disabled</VButton>
+  <div class="button-stack">
+    <VButton>Save changes</VButton>
+    <VButton tone="default" variant="outline">Cancel</VButton>
+    <VButton tone="default" variant="ghost">Later</VButton>
+
+    <VButton tone="success">Complete</VButton>
+    <VButton tone="warning">Review</VButton>
+    <VButton tone="danger">Delete</VButton>
+
+    <VButton size="sm" variant="outline">Small</VButton>
+    <VButton size="md" variant="outline">Medium</VButton>
+    <VButton size="lg" variant="outline">Large</VButton>
+
+    <VButton loading loading-text="Saving…" />
+    <VButton disabled tone="default" variant="outline">Unavailable</VButton>
+    <VButton shape="round">Create project</VButton>
+    <VButton shape="square" tone="default" variant="outline">Square corners</VButton>
+    <VButton block>Continue</VButton>
+  </div>
 </template>
           `.trim(),
         },
@@ -536,10 +620,24 @@ import { VButton } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <view class="stack">
-    <VButton size="lg">Submit</VButton>
-    <VButton variant="outline">Cancel</VButton>
-    <VButton variant="ghost" :disabled="true">Disabled</VButton>
+  <view class="button-stack">
+    <VButton>Save changes</VButton>
+    <VButton tone="default" variant="outline">Cancel</VButton>
+    <VButton tone="default" variant="ghost">Later</VButton>
+
+    <VButton tone="success">Complete</VButton>
+    <VButton tone="warning">Review</VButton>
+    <VButton tone="danger">Delete</VButton>
+
+    <VButton size="sm" variant="outline">Small</VButton>
+    <VButton size="md" variant="outline">Medium</VButton>
+    <VButton size="lg" variant="outline">Large</VButton>
+
+    <VButton loading loading-text="Saving…" />
+    <VButton disabled tone="default" variant="outline">Unavailable</VButton>
+    <VButton shape="round">Create project</VButton>
+    <VButton shape="square" tone="default" variant="outline">Square corners</VButton>
+    <VButton block>Continue</VButton>
   </view>
 </template>
           `.trim(),
@@ -548,7 +646,7 @@ import { VButton } from '@varo-ui/weapp'
     },
     input: {
       title: 'Input Cross-platform Example and Preview',
-      description: 'The same section now documents controlled input, invalid state, and uncontrolled usage for both runtimes.',
+      description: 'Shows required clearing validation, affixes, textarea, and read-only/disabled states.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -556,21 +654,40 @@ import { VButton } from '@varo-ui/weapp'
           appTitle: 'H5 Form',
           appSubtitle: 'Browser input preview',
           statusRight: '5G · H5',
-          controlledLabel: 'Controlled input',
-          uncontrolledLabel: 'Uncontrolled input',
-          placeholder: 'Type here',
-          defaultValue: 'Default content',
+          controlledLabel: 'Display name',
+          uncontrolledLabel: 'Display name',
+          placeholder: 'e.g. Avery Lin',
+          defaultValue: 'Avery Lin',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VInput } from '@varo-ui/h5'
 
-const value = ref('')
+const name = ref('Avery Lin')
+const website = ref('varo-ui')
+const bio = ref('Registry-first mobile UI.')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="value" placeholder="Type here" />
-  <VInput default-value="Default content" />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? 'Enter a display name.' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="e.g. Avery Lin"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="Unavailable" disabled />
 </template>
           `.trim(),
         },
@@ -580,21 +697,40 @@ const value = ref('')
           appTitle: 'Mini-program Form',
           appSubtitle: 'Cross-platform input preview',
           statusRight: 'WeChat · Mini-program',
-          controlledLabel: 'Phone input',
-          uncontrolledLabel: 'Notes',
-          placeholder: 'Phone number',
-          defaultValue: 'Additional notes',
+          controlledLabel: 'Display name',
+          uncontrolledLabel: 'Display name',
+          placeholder: 'e.g. Avery Lin',
+          defaultValue: 'Avery Lin',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'wevu'
 import { VInput } from '@varo-ui/weapp'
 
-const mobile = ref('')
+const name = ref('Avery Lin')
+const website = ref('varo-ui')
+const bio = ref('Registry-first mobile UI.')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="mobile" placeholder="Phone number" />
-  <VInput default-value="Additional notes" />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? 'Enter a display name.' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="e.g. Avery Lin"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="Unavailable" disabled />
 </template>
           `.trim(),
         },
@@ -660,7 +796,7 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
     },
     image: {
       title: 'Image Cross-platform Example and Preview',
-      description: 'Aligned with Vant and NutUI image capabilities: fit modes, round image, loading placeholder, and error state.',
+      description: '',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -674,9 +810,9 @@ import { VImage } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="Unavailable" />
 </template>
           `.trim(),
         },
@@ -692,9 +828,9 @@ import { VImage } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="Unavailable" />
 </template>
           `.trim(),
         },

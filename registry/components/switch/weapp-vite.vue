@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useSwitchRoot } from '@varo-ui/headless'
+import { computed, toRef } from 'wevu'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
+
 const props = withDefaults(
   defineProps<{
     disabled?: boolean
@@ -8,20 +12,35 @@ const props = withDefaults(
   {
     disabled: false,
     loading: false,
-    modelValue: false
-  }
+    modelValue: false,
+  },
 )
 
 const emit = defineEmits<{
-  change: [value: boolean]
+  'change': [value: boolean]
   'update:modelValue': [value: boolean]
 }>()
+const controlled = computed(() => true)
+const switchRoot = useSwitchRoot({
+  runtime: varoReactiveRuntime,
+  checked: toRef(props, 'modelValue'),
+  checkedControlled: controlled,
+  disabled: toRef(props, 'disabled'),
+  loading: toRef(props, 'loading'),
+  onCheckedChange: update,
+})
+const checked = computed(() => switchRoot.state.checked.value)
+const interactive = computed(() => switchRoot.state.interactive.value)
+const loading = computed(() => switchRoot.state.loading.value)
+const thumbState = computed(() => switchRoot.state.checked.value ? 'checked' : 'unchecked')
 
-function toggle() {
-  if (props.disabled || props.loading) return
-  const value = !props.modelValue
+function update(value: boolean) {
   emit('update:modelValue', value)
   emit('change', value)
+}
+
+function toggle() {
+  switchRoot.events.toggle()
 }
 </script>
 
@@ -30,13 +49,15 @@ function toggle() {
     class="varo-switch"
     type="button"
     role="switch"
-    :disabled="disabled || loading"
-    :aria-checked="modelValue"
-    :data-checked="String(modelValue)"
+    :disabled="!interactive"
+    :aria-checked="checked"
+    :data-checked="String(checked)"
     :data-loading="String(loading)"
     @click="toggle"
   >
-    <text class="varo-switch__track"><text class="varo-switch__thumb" /></text>
+    <view class="varo-switch__track">
+      <view class="varo-switch__thumb" :data-state="thumbState" />
+    </view>
   </button>
 </template>
 

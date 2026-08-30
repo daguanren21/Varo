@@ -1,10 +1,7 @@
 @font-face {
   font-family: 'fa';
   /* Project id 2885707 */
-  src:
-    url('../../static/fonts/fa.woff2') format('woff2'),
-    url('../../static/fonts/fa.woff') format('woff'),
-    url('../../static/fonts/fa.ttf') format('truetype');
+  src: url('../../static/fonts/fa.woff2') format('woff2');
 }
 
 .fa {

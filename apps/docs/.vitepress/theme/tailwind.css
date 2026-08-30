@@ -1,7 +1,6 @@
 @layer theme, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
-
+@import "tailwindcss/utilities.css";
 @source "../../src/components/agent-ui/**/*.{ts,vue}";
 @source "../../src/components/blocks/agent-chat.vue";
 @source "../../src/components/AgentComponentDemo.vue";

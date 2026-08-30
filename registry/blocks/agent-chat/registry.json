@@ -15,7 +15,8 @@
     "weapp-vite": ["wevu"]
   },
   "registryDependencies": [
-    "components/agent-ui"
+    "components/agent-ui",
+    "components/button"
   ],
   "files": [
     {

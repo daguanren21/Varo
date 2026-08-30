@@ -8,13 +8,63 @@ definePageJson({
   navigationBarBackgroundColor: '#FCEFE6',
   backgroundTextStyle: 'light',
   navigationStyle: 'custom',
-  enableShareTimeline: true,
 })
 
 const userFn = useUserInfo()
 const { isVolunteer } = useGolbalData()
 
 const { userInfo, linkTo, auditCerFilter, serviceList, unReadNum } = userFn
+
+const personalCenterItems = [
+  {
+    key: 'editUserInfo',
+    iconInfo: { value: 'person-info' },
+    value: '账号信息修改',
+  },
+  {
+    key: 'addCertificate',
+    iconInfo: { value: 'certification' },
+    value: '资质认证',
+  },
+  {
+    key: 'honorInfo',
+    iconInfo: { value: 'honor-info' },
+    value: '荣誉信息',
+  },
+  {
+    key: 'integralInfo',
+    iconInfo: { value: 'point-center' },
+    value: '积分中心',
+  },
+  {
+    key: 'editAddress',
+    iconInfo: { value: 'act-center' },
+    value: '活动地点',
+  },
+  {
+    key: 'inspectionRecord',
+    iconInfo: { value: 'xunjian' },
+    value: '我的巡检',
+  },
+  {
+    key: 'repairRecord',
+    iconInfo: { value: 'baoxiu' },
+    value: '我的报修',
+  },
+]
+
+const configurationCenterItems = [
+  {
+    key: 'wifiConfig',
+    iconInfo: { value: 'my-wifi' },
+    value: '一键配网',
+  },
+  {
+    key: 'noticeConfig',
+    iconInfo: { value: 'notificationSettings' },
+    value: '通知配置',
+  },
+]
 </script>
 
 <template>
@@ -60,44 +110,7 @@ const { userInfo, linkTo, auditCerFilter, serviceList, unReadNum } = userFn
           个人中心
         </view>
         <AedGrid
-          :has-border="false"
-          :data="[
-            {
-              key: 'editUserInfo',
-              iconInfo: { value: 'person-info' },
-              value: '账号信息修改',
-            },
-            {
-              key: 'addCertificate',
-              iconInfo: { value: 'certification' },
-              value: '资质认证',
-            },
-            {
-              key: 'honorInfo',
-              iconInfo: { value: 'honor-info' },
-              value: '荣誉信息',
-            },
-            {
-              key: 'integralInfo',
-              iconInfo: { value: 'point-center' },
-              value: '积分中心',
-            },
-            {
-              key: 'editAddress',
-              iconInfo: { value: 'act-center' },
-              value: '活动地点',
-            },
-            {
-              key: 'inspectionRecord',
-              iconInfo: { value: 'xunjian' },
-              value: '我的巡检',
-            },
-            {
-              key: 'repairRecord',
-              iconInfo: { value: 'baoxiu' },
-              value: '我的报修',
-            },
-          ]"
+          :data="personalCenterItems"
           @click="linkTo"
         />
       </view>
@@ -168,19 +181,7 @@ const { userInfo, linkTo, auditCerFilter, serviceList, unReadNum } = userFn
           配置中心
         </view>
         <AedGrid
-          :has-border="false"
-          :data="[
-            {
-              key: 'wifiConfig',
-              iconInfo: { value: 'my-wifi' },
-              value: '一键配网',
-            },
-            {
-              key: 'noticeConfig',
-              iconInfo: { value: 'notificationSettings' },
-              value: '通知配置',
-            },
-          ]"
+          :data="configurationCenterItems"
           @click="linkTo"
         />
       </view>

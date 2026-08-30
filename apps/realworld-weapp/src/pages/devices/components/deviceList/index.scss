@@ -2,7 +2,7 @@
   height: 100%;
   box-sizing: border-box;
 
-  & > view {
+  .manage-list {
     height: 100%;
   }
 
@@ -22,7 +22,7 @@
         height: 153px;
         margin-right: 26px;
 
-        image {
+        .device-brand-image {
           width: 100%;
           height: 100%;
         }

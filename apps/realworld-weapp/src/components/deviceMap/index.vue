@@ -63,7 +63,7 @@ const { isShow, mapScale, mapCenterLatitude, mapCenterLongitude, available, resc
 <template>
   <AedToast has-mask :is-opened="globalTip.isOpened" :text="globalTip.message" :status="globalTip.status" :duration="5000" />
   <map
-    v-if="isShow" id="indexMap" :setting="{}" class="device_map" :longitude="mapCenterLongitude" :latitude="mapCenterLatitude" :scale="mapScale"
+    v-if="isShow" id="indexMap" class="device_map" :longitude="mapCenterLongitude" :latitude="mapCenterLatitude" :scale="mapScale"
     :markers="markers" :show-location="true" :showScale="true" @regionchange="regionchange" @markertap="markertap"
     @callouttap="markertap"
   >
@@ -96,8 +96,8 @@ const { isShow, mapScale, mapCenterLatitude, mapCenterLongitude, available, resc
         </view>
         <view class="detail">
           <view class="d-l">
-            <image v-if="detail.brandLogo" :src="detail.brandLogo" />
-            <image v-else src="../../static/images/jx-without-image.svg" />
+            <image v-if="detail.brandLogo" class="device-brand-image" :src="detail.brandLogo" />
+            <image v-else class="device-brand-image" src="../../static/images/jx-without-image.svg" />
           </view>
           <view class="d-r">
             <view class="item-t">
@@ -304,14 +304,14 @@ const { isShow, mapScale, mapCenterLatitude, mapCenterLongitude, available, resc
         <image class="shop-to" src="../../static/images/aed-to.svg" />
       </view>
     </view>
-    <VButton v-if="isLogin" pe="primary" class="call" shape="round" @click="handleOpenFire">
-      <VIcon class="jx_icon" name="jx-heart" />
-      <text>一键呼救</text>
-    </VButton>
-    <VButton v-else class="register" shape="round" @click="toLogin">
-      <VIcon class="jx_icon" name="jx-heart" />
-      <text>注册</text>
-    </VButton>
+    <view class="map-primary-action">
+      <VButton v-if="isLogin" block shape="round" size="lg" @click="handleOpenFire">
+        <text>一键呼救</text>
+      </VButton>
+      <VButton v-else block shape="round" size="lg" @click="toLogin">
+        <text>注册</text>
+      </VButton>
+    </view>
   </view>
   <view v-if="rescueModeOpen" class="volunteer-rescue-info">
     <AedFlex class-name="info">

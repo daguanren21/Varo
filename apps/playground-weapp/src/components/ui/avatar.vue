@@ -1,41 +1,47 @@
 <script setup lang="ts">
+import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 import VImage from './v-image.vue'
 
-const props = withDefaults(
-  defineProps<{
-    alt?: string
-    fallback?: string
-    shape?: 'circle' | 'rounded' | 'square'
-    size?: number | string
-    src?: string
-  }>(),
-  {
-    alt: '',
-    fallback: '',
-    shape: 'circle',
-    size: 40,
-    src: ''
-  }
-)
+const props = defineProps({
+  alt: { type: null as unknown as PropType<string>, default: '' },
+  fallback: { type: null as unknown as PropType<string>, default: '' },
+  shape: { type: String as PropType<'circle' | 'rounded' | 'square'>, default: 'circle' },
+  size: { type: null as unknown as PropType<number | string>, default: 40 },
+  src: { type: null as unknown as PropType<string>, default: '' },
+})
 
-const dimension = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
+const safeAlt = computed(() => props.alt || '')
+const safeFallback = computed(() => props.fallback || '')
+const safeSource = computed(() => props.src || '')
+const dimension = computed(() => {
+  const value = props.size || 40
+  return typeof value === 'number' ? `${value}px` : value
+})
 </script>
 
 <template>
   <view
     class="varo-avatar"
     role="img"
-    :aria-label="alt || undefined"
-    :data-shape="shape"
+    :aria-label="safeAlt || undefined"
+    :data-shape="props.shape"
     :style="{ width: dimension, height: dimension }"
   >
-    <VImage v-if="src" :src="src" :alt="alt" width="100%" height="100%" fit="cover">
+    <VImage v-if="safeSource" :src="safeSource" :alt="safeAlt" width="100%" height="100%" fit="cover">
       <template #error>
-        <text class="varo-avatar__fallback"><slot name="fallback">{{ fallback }}</slot></text>
+        <text class="varo-avatar__fallback">
+          <slot name="fallback">
+            {{ safeFallback }}
+          </slot>
+        </text>
       </template>
     </VImage>
-    <text v-else class="varo-avatar__fallback"><slot name="fallback">{{ fallback }}</slot></text>
+    <text v-else class="varo-avatar__fallback">
+      <slot name="fallback">
+        {{ safeFallback }}
+      </slot>
+    </text>
   </view>
 </template>
 

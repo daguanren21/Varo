@@ -4,31 +4,7 @@ This guide shows how to turn Base Kit components into a maintainable, installabl
 
 ## Installable Blocks
 
-| Registry name           | Purpose                                                            | Targets    |
-| ----------------------- | ------------------------------------------------------------------ | ---------- |
-| `login-form`            | Login, remember, error, and loading states                         | H5 / Weapp |
-| `profile-card`          | Identity, status, and account statistics                           | H5 / Weapp |
-| `profile-edit`          | Profile fields and city selection                                  | H5 / Weapp |
-| `product-list`          | Products, inventory, pricing, and cart actions                     | H5 / Weapp |
-| `order-filter`          | Order status and amount filters                                    | H5 / Weapp |
-| `agent-chat`            | Incremental conversation, reasoning, tools, approval, and composer | H5 / Weapp |
-| `retail-home`           | Retail landing, search, categories, products, and cart entry       | Weapp      |
-| `retail-category`       | Two-column category navigation and product grid                    | Weapp      |
-| `retail-cart`           | Controlled cart selection, quantity, totals, and checkout          | Weapp      |
-| `retail-product-detail` | Product detail, stock, quantity, cart, and buy actions             | Weapp      |
-| `retail-checkout`       | Address, products, coupons, invoice, totals, and submit            | Weapp      |
-| `retail-order-list`     | Order status, product summaries, and fulfillment actions           | Weapp      |
-| `retail-profile`        | Membership, orders, addresses, coupons, and service entry          | Weapp      |
-
-```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
-pnpm dlx @varo-ui/cli add --target h5 blocks/product-list
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
-pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/retail-home blocks/retail-category blocks/retail-cart blocks/retail-product-detail blocks/retail-checkout blocks/retail-order-list blocks/retail-profile
-```
-
-Documentation previews must come from these real registry sources, not fictional exports or non-compiling JSX strings.
+<MiniProgramBlocksGallery locale="en" />
 
 ## 1. Understand the layers
 

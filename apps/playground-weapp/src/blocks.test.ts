@@ -18,7 +18,7 @@ describe('installed weapp registry blocks', () => {
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')?.[0]).toEqual([
-      { phone: '13800138000', password: 'secret', remember: true }
+      { phone: '13800138000', password: 'secret', remember: true },
     ])
   })
 
@@ -26,13 +26,14 @@ describe('installed weapp registry blocks', () => {
     const wrapper = mount(ProfileCard, {
       props: {
         user: { name: 'Varo', fallback: 'VA' },
-        stats: [{ label: 'Components', value: 56 }]
-      }
+        stats: [{ label: 'Components', value: 56 }],
+      },
     })
 
-    await wrapper.get('.varo-button').trigger('click')
+    const actions = wrapper.findAll('.varo-button')
+    await actions[0].trigger('click')
     expect(wrapper.emitted('edit')).toHaveLength(1)
-    await wrapper.get('button.grid').trigger('click')
+    await actions[1].trigger('click')
     expect(wrapper.emitted('selectStat')?.[0]?.[0]).toMatchObject({ index: 0, stat: { value: 56 } })
   })
 
@@ -42,14 +43,14 @@ describe('installed weapp registry blocks', () => {
 
     await wrapper.get('button[aria-label="查看 Starter Kit"]').trigger('click')
     expect(wrapper.emitted('select')?.[0]?.[0]).toMatchObject({ index: 0, item })
-    await wrapper.get('.varo-button').trigger('click')
+    await wrapper.findAll('.varo-button').at(-1)!.trigger('click')
     expect(wrapper.emitted('addToCart')?.[0]?.[0]).toMatchObject({ index: 0, item })
     expect(wrapper.emitted('select')).toHaveLength(1)
   })
 
   it('submits typed profile and order-filter values', async () => {
     const profile = mount(ProfileEdit, {
-      props: { initialProfile: { name: 'Varo', phone: '13800138000' } }
+      props: { initialProfile: { name: 'Varo', phone: '13800138000' } },
     })
     await profile.get('form').trigger('submit')
     expect(profile.emitted('submit')?.[0]?.[0]).toMatchObject({ name: 'Varo', phone: '13800138000' })

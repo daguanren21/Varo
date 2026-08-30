@@ -9,11 +9,19 @@
     "weapp-vite"
   ],
   "dependencies": [
-    "@varo-ui/headless",
-    "vue"
+    "@varo-ui/headless"
   ],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp-vite": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
-    "themes/base"
+    "themes/base",
+    "utils/primitives"
   ],
   "files": [
     {

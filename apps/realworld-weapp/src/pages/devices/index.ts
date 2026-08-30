@@ -176,19 +176,12 @@ export function useManageMap(updateTotal: (total: number) => void) {
   const markers = ref<WechatMiniprogram.IAnyObject[]>([])
   let mapCtx: WechatMiniprogram.MapContext | undefined
   /** 适配微信版本8.0.51 */
-  const deviceInfo = wx.getSystemInfoSync()
-  console.log(deviceInfo)
-  let appVersion = ''
-  if (deviceInfo) {
-    appVersion = deviceInfo.version
-  }
+  const { version: appVersion } = wx.getAppBaseInfo()
   const isExcuteAndriod = computed(() => {
     // return platform === 'android' && compareVersion(appVersion, '8.0.51')
     return compareVersion(appVersion, '8.0.51')
   })
-  console.log('Android', appVersion, isExcuteAndriod.value)
   const isShow = ref(!isExcuteAndriod.value)
-  console.log('Android', appVersion, isExcuteAndriod.value)
   if (!isExcuteAndriod.value) {
     // 获取地图上下文对象
     mapCtx = wx.createMapContext('manageMap')
@@ -477,10 +470,11 @@ export function useManageList(
     aedStore.setManageComponent('deviceList')
   }
   const itemHeight = ref<number>(240)
-  onActivated(async () => {
-    const res: WechatMiniprogram.IAnyObject = await wx.getSystemInfo()
-    if (res.system.includes('iOS')) {
-      itemHeight.value = 240 + 20 * (res.pixelRatio - 2)
+  onActivated(() => {
+    const { system } = wx.getDeviceInfo()
+    const { pixelRatio } = wx.getWindowInfo()
+    if (system.includes('iOS')) {
+      itemHeight.value = 240 + 20 * (pixelRatio - 2)
     }
   })
   const filterFn = useJxFilter()

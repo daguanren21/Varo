@@ -1,7 +1,7 @@
 .register {
   height: 100%;
   overflow: hidden;
-  background-image: url('../../static/images/jx-login.jpg');
+  background-image: url('/static/images/jx-login.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: bottom;
@@ -91,22 +91,16 @@
   }
 
   .btn_wrap {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    padding: 0 40px;
     margin-top: 74px;
-    text-align: center;
+  }
 
-    .btn {
-      width: 443px;
-      margin-bottom: 33px;
-      font-size: 36px;
-      font-weight: bold;
-      color: #ffffff;
-      border: none;
-    }
-
-    .ft {
-      font-size: 36px;
-      font-weight: bold;
-      color: #ff6216;
-    }
+  .register-action {
+    box-sizing: border-box;
+    width: 280px;
+    max-width: calc(50% - 12px);
   }
 }

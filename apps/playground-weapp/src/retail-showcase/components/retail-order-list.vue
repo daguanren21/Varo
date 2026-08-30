@@ -53,9 +53,7 @@ const visibleOrders = computed(() =>
             {{ order.id }} · {{ order.createdAt }}
           </text>
         </view>
-        <VTag :tone="order.tone" variant="soft" size="sm">
-          {{ order.statusLabel }}
-        </VTag>
+        <VTag :label="order.statusLabel" :tone="order.tone" variant="soft" size="sm" />
       </view>
 
       <VButton block variant="ghost" tone="default" class-name="!grid !min-h-0 !grid-cols-[72px_minmax(0,1fr)] !gap-3 !rounded-xl !bg-slate-50 !p-2 !text-left" @click="emit('view', order)">

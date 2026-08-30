@@ -10,13 +10,17 @@
       "@varo/shared": ["packages/shared/src/index.ts"],
       "@varo/utils": ["packages/utils/src/index.ts"],
       "@varo-ui/theme": ["packages/theme/src/index.ts"],
+      "@varo-ui/theme/weapp": ["packages/theme/src/weapp.ts"],
+      "@varo-ui/theme/weapp-vite": ["packages/theme/src/weapp-vite.ts"],
       "@varo/hooks": ["packages/hooks/src/index.ts"],
       "@varo-ui/headless": ["packages/primitives-core/src/index.ts"],
       "@varo/primitives-h5": ["packages/primitives-h5/src/index.ts"],
       "@varo/primitives-weapp": ["packages/primitives-weapp/src/index.ts"],
       "@varo-ui/ai": ["packages/agent-core/src/index.ts"],
       "@varo-ui/h5": ["packages/ui-h5/src/index.ts"],
-      "@varo-ui/weapp": ["packages/ui-weapp/src/index.ts"]
+      "@varo-ui/h5/primitives": ["packages/ui-h5/src/primitives.ts"],
+      "@varo-ui/weapp": ["packages/ui-weapp/src/index.ts"],
+      "@varo-ui/weapp/primitives": ["packages/ui-weapp/src/primitives.ts"]
     },
     "resolveJsonModule": true,
     "types": ["node", "vitest/globals"],

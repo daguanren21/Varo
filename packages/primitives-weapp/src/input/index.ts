@@ -13,6 +13,12 @@ function callHandler(handler: unknown, event: Event) {
   }
 }
 
+function readInputValue(event: Event) {
+  const miniEvent = event as Event & { detail?: { value?: string } }
+  const input = event.target as HTMLInputElement | HTMLTextAreaElement | null
+  return miniEvent.detail?.value ?? input?.value ?? ''
+}
+
 export type InputFormatTrigger = 'onInput' | 'onBlur'
 
 export interface InputAutosizeConfig {
@@ -193,8 +199,7 @@ export const InputRoot = defineComponent({
       'data-invalid': String(props.invalid),
       'data-readonly': String(props.readonly),
       'onInput': (event: Event) => {
-        const input = event.target as HTMLInputElement | null
-        const nextValue = input?.value ?? ''
+        const nextValue = readInputValue(event)
         const allowed = updateValue(nextValue, 'onInput')
 
         if (allowed) {
@@ -207,8 +212,7 @@ export const InputRoot = defineComponent({
       },
       'onBlur': (event: FocusEvent) => {
         if (props.formatTrigger === 'onBlur') {
-          const input = event.target as HTMLInputElement | HTMLTextAreaElement | null
-          updateValue(input?.value ?? field.state.value.value, 'onBlur')
+          updateValue(readInputValue(event), 'onBlur')
         }
 
         emit('blur', event)

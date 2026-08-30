@@ -20,7 +20,6 @@ const { isShow, mapScale, centerLongitude, regionchange, markertap, centerLatitu
   <map
     v-if="isShow"
     id="manageMap"
-    :setting="{}"
     class="device_map"
     style="height: 100%; width: 100%"
     :longitude="centerLongitude"
@@ -63,40 +62,40 @@ const { isShow, mapScale, centerLongitude, regionchange, markertap, centerLatitu
     <view v-if="currentIndex" class="map_chart">
       <view class="item">
         <image
-          class="myLocation"
+          class="map-chart__icon"
           src="../../../../static/images/map_jx.png"
         />
-        <text>已验收</text>
+        <text class="map-chart__label">已验收</text>
       </view>
       <view class="item">
         <image
-          class="myLocation"
+          class="map-chart__icon"
           src="../../../../static/images/jx_normal_uncheck.png"
         />
-        <text>未验收</text>
+        <text class="map-chart__label">未验收</text>
       </view>
     </view>
     <view v-else class="map_chart">
       <view class="item">
         <image
-          class="myLocation"
+          class="map-chart__icon"
           src="../../../../static/images/map_jx.png"
         />
-        <text>正常</text>
+        <text class="map-chart__label">正常</text>
       </view>
       <view class="item">
         <image
-          class="myLocation"
+          class="map-chart__icon"
           src="../../../../static/images/map_jx_warn.png"
         />
-        <text>预警</text>
+        <text class="map-chart__label">预警</text>
       </view>
       <view class="item">
         <image
-          class="myLocation"
+          class="map-chart__icon"
           src="../../../../static/images/map_jx_abnormal.png"
         />
-        <text>异常</text>
+        <text class="map-chart__label">异常</text>
       </view>
     </view>
   </map>

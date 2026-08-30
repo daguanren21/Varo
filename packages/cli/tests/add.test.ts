@@ -113,8 +113,8 @@ describe('varo add targets', () => {
     const h5 = resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
     const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp-vite' })
 
-    expect(h5.items.map(item => item.name)).toEqual(['base', 'selection', 'checkbox'])
-    expect(weapp.items.map(item => item.name)).toEqual(['base', 'checkbox'])
+    expect(h5.items.map(item => item.name)).toEqual(['base', 'primitives', 'selection', 'checkbox'])
+    expect(weapp.items.map(item => item.name)).toEqual(['base', 'primitives', 'checkbox'])
     expect(weapp.files.map(file => file.to)).toContain('src/components/ui/v-checkbox.vue')
     expect(weapp.files.map(file => file.to)).not.toContain('src/components/ui/selection.ts')
   })

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, shallowRef } from 'wevu'
+import type { ClassValue } from '../../lib/cn'
 import type { AgentTraceStep } from './types'
-import { cn, type ClassValue } from '../../lib/cn'
+import { computed, shallowRef } from 'wevu'
+import { cn } from '../../lib/cn'
 import { agentChevronDownIcon as chevronIcon, agentSparklesIcon as thinkingIcon } from './agent-icons'
 
 const props = withDefaults(
@@ -16,8 +17,8 @@ const props = withDefaults(
     defaultOpen: false,
     label: '思考过程',
     open: undefined,
-    steps: () => []
-  }
+    steps: () => [],
+  },
 )
 
 const emit = defineEmits<{
@@ -26,11 +27,14 @@ const emit = defineEmits<{
 
 const internalOpen = shallowRef(props.open ?? props.defaultOpen)
 const currentOpen = computed(() => props.open ?? internalOpen.value)
-const completedCount = computed(() => props.steps.filter((step) => step.status === 'completed').length)
+const completedCount = computed(() => props.steps.filter(step => step.status === 'completed').length)
 const rootClass = computed(() =>
-  cn('agent-thinking overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 shadow-sm', props.className)
+  cn(
+    'agent-thinking overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 shadow-sm',
+    currentOpen.value && 'agent-thinking--open',
+    props.className,
+  ),
 )
-
 
 function toggle() {
   const open = !currentOpen.value
@@ -44,19 +48,18 @@ function dotClass(status: AgentTraceStep['status']) {
     status === 'completed' && 'bg-green-600',
     status === 'running' && 'agent-thinking__running bg-teal-700 shadow-[0_0_0_3px_#ccfbf1]',
     status === 'failed' && 'bg-red-600',
-    status === 'waiting' && 'bg-slate-300'
+    status === 'waiting' && 'bg-slate-300',
   )
 }
 
 function durationLabel(step: AgentTraceStep) {
-  if (step.duration) return step.duration
+  if (step.duration) { return step.duration }
   return step.durationMs === undefined ? '' : `${(step.durationMs / 1000).toFixed(1)}s`
 }
 
 function detailText(step: AgentTraceStep) {
   return step.detail ?? step.content ?? ''
 }
-
 </script>
 
 <template>
@@ -71,8 +74,12 @@ function detailText(step: AgentTraceStep) {
         <image class="h-[19px] w-[19px]" :src="thinkingIcon" mode="aspectFit" />
       </view>
       <view class="grid min-w-0 flex-1 gap-0.5">
-        <text class="truncate text-[13px] font-bold leading-[18px] text-slate-950">{{ label }}</text>
-        <text class="text-[11px] leading-4 text-slate-500">{{ completedCount }}/{{ steps.length }} 已完成</text>
+        <text class="truncate text-[13px] font-bold leading-[18px] text-slate-950">
+          {{ label }}
+        </text>
+        <text class="text-[11px] leading-4 text-slate-500">
+          {{ completedCount }}/{{ steps.length }} 已完成
+        </text>
       </view>
       <image class="agent-thinking__chevron h-[17px] w-[17px] flex-none" :src="chevronIcon" mode="aspectFit" aria-hidden="true" />
     </button>
@@ -82,25 +89,54 @@ function detailText(step: AgentTraceStep) {
         <text :class="dotClass(step.status)" aria-hidden="true" />
         <view class="grid min-w-0 flex-1 gap-[3px]">
           <view class="flex items-center justify-between gap-2.5">
-            <text class="text-xs font-semibold leading-[17px] text-slate-800">{{ step.title }}</text>
-            <text v-if="durationLabel(step)" class="text-[11px] leading-4 text-slate-500">{{ durationLabel(step) }}</text>
+            <text class="text-xs font-semibold leading-[17px] text-slate-800">
+              {{ step.title }}
+            </text>
+            <text v-if="durationLabel(step)" class="text-[11px] leading-4 text-slate-500">
+              {{ durationLabel(step) }}
+            </text>
           </view>
-          <text v-if="detailText(step)" class="text-[11px] leading-4 text-slate-500">{{ detailText(step) }}</text>
+          <text v-if="detailText(step)" class="text-[11px] leading-4 text-slate-500">
+            {{ detailText(step) }}
+          </text>
         </view>
       </view>
     </view>
   </view>
 </template>
 
-<style scoped>
-.agent-thinking__trigger::after { border: 0; }
-.agent-thinking__chevron { transition: transform 200ms ease; }
-.agent-thinking[data-open='true'] .agent-thinking__chevron { transform: rotate(180deg); }
-.agent-thinking__running { animation: agent-thinking-pulse 1.1s ease-in-out infinite; }
-@keyframes agent-thinking-pulse { 50% { transform: scale(.72); opacity: .55; } }
+<style>
+.agent-thinking__trigger::after {
+  border: 0;
+}
+
+.agent-thinking__chevron {
+  transition: transform 200ms ease;
+}
+
+.agent-thinking--open .agent-thinking__chevron {
+  transform: rotate(180deg);
+}
+
+.agent-thinking__running {
+  animation: agent-thinking-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes agent-thinking-pulse {
+  50% {
+    opacity: 0.55;
+    transform: scale(0.72);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .agent-thinking__running { animation: none; }
-  .agent-thinking__chevron { transition: none; }
+  .agent-thinking__running {
+    animation: none;
+  }
+
+  .agent-thinking__chevron {
+    transition: none;
+  }
 }
 </style>
 

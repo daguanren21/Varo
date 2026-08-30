@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Varo Buds Mini">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e6fbf7"/><stop offset="1" stop-color="#8fd4ca"/></linearGradient><filter id="s"><feDropShadow dy="26" stdDeviation="24" flood-color="#245a54" flood-opacity=".22"/></filter></defs>
+  <rect width="800" height="800" rx="72" fill="url(#b)"/><rect x="186" y="300" width="428" height="296" rx="112" fill="#f8ffff" filter="url(#s)"/><path d="M330 170c-49 0-88 40-88 89 0 39 26 73 62 84v104c0 22 18 40 40 40s40-18 40-40V259c0-49-24-89-54-89Zm140 0c49 0 88 40 88 89 0 39-26 73-62 84v104c0 22-18 40-40 40s-40-18-40-40V259c0-49 24-89 54-89Z" fill="#153d3a"/><path d="M238 437h324" stroke="#cde9e5" stroke-width="10"/><circle cx="400" cy="534" r="13" fill="#14a89b"/>
+</svg>

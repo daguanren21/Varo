@@ -54,17 +54,19 @@ export default defineConfig({
     alias: {
       ...(isTest ? { wevu: 'vue' } : {}),
       '@varo-ui/weapp/source/style.css': resolve(root, '../../packages/ui-weapp/src/style.css'),
+      '@varo-ui/weapp/primitives': resolve(root, '../../packages/ui-weapp/src/primitives.ts'),
       '@varo-ui/ai': resolve(import.meta.dirname, '../../packages/agent-core/src/index.ts'),
       '@varo/hooks': resolve(import.meta.dirname, '../../packages/hooks/src/index.ts'),
       '@varo-ui/headless': resolve(import.meta.dirname, '../../packages/primitives-core/src/index.ts'),
       '@varo/primitives-weapp': resolve(import.meta.dirname, '../../packages/primitives-weapp/src/index.ts'),
       '@varo/shared': resolve(import.meta.dirname, '../../packages/shared/src/index.ts'),
-      '@varo-ui/theme': resolve(import.meta.dirname, '../../packages/theme/src/index.ts'),
+      '@varo-ui/theme': resolve(import.meta.dirname, '../../packages/theme/src'),
       '@varo/utils': resolve(import.meta.dirname, '../../packages/utils/src/index.ts'),
       '@varo-ui/weapp': resolve(import.meta.dirname, '../../packages/ui-weapp/src/index.ts'),
     },
   },
   weapp: {
+    autoImportComponents: false,
     srcRoot: 'src',
     platform: 'weapp',
     forwardConsole: {

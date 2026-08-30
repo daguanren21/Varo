@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
-import { computed } from 'wevu'
+import { usePressableRoot } from '@varo-ui/headless'
+import { computed, toRef } from 'wevu'
 import { cn } from '../../lib/cn'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
 type ButtonVariant = 'solid' | 'outline' | 'ghost'
@@ -47,56 +49,85 @@ const emit = defineEmits<{
 }>()
 
 const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
+const pressable = usePressableRoot({
+  runtime: varoReactiveRuntime,
+  disabled: toRef(props, 'disabled'),
+  loading: toRef(props, 'loading'),
+  size: toRef(props, 'size'),
+  variant: visualVariant,
+})
+const disabled = computed(() => pressable.state.disabled.value)
+const interactive = computed(() => pressable.state.interactive.value)
+const loading = computed(() => pressable.state.loading.value)
+const pressed = computed(() => pressable.state.pressed.value)
+const size = computed(() => pressable.state.size.value)
+const variant = computed(() => pressable.state.variant.value)
 const classes = computed(() =>
   cn(
     'varo-button',
-    `varo-button--size-${props.size}`,
-    `varo-button--variant-${visualVariant.value}`,
+    `varo-button--size-${pressable.state.size.value}`,
+    `varo-button--variant-${pressable.state.variant.value}`,
     `varo-button--tone-${props.tone}`,
     `varo-button--shape-${props.shape}`,
     props.className,
   ),
 )
 const formType = computed(() => (props.nativeType === 'submit' || props.nativeType === 'reset' ? props.nativeType : undefined))
-const hoverClass = computed(() => (props.disabled || props.loading ? 'none' : 'varo-button--pressed'))
+const hoverClass = computed(() => (pressable.state.interactive.value ? 'varo-button--pressed' : 'none'))
 
 function click(event: unknown) {
-  if (!props.disabled && !props.loading) { emit('click', event) }
+  if (pressable.events.click(event as Event)) { emit('click', event) }
+}
+
+function pressStart() {
+  pressable.events.pressStart()
+}
+
+function pressEnd() {
+  pressable.events.pressEnd()
+}
+
+function pressCancel() {
+  pressable.events.pressCancel()
 }
 </script>
 
 <template>
   <button
     :class="classes"
-    :disabled="disabled || loading"
+    :disabled="!interactive"
     :form-type="formType"
     :hover-class="hoverClass"
     :hover-start-time="20"
     :hover-stay-time="70"
-    :data-block="String(block)"
+    :data-block="String(props.block)"
     :data-disabled="String(disabled)"
-    :data-hairline="String(hairline)"
+    :data-hairline="String(props.hairline)"
     :data-loading="String(loading)"
-    :data-plain="String(plain)"
-    :data-shape="shape"
+    :data-plain="String(props.plain)"
+    :data-pressed="String(pressed)"
+    :data-shape="props.shape"
     :data-size="size"
-    :data-tone="tone"
-    :data-variant="visualVariant"
+    :data-tone="props.tone"
+    :data-variant="variant"
+    @touchstart="pressStart"
+    @touchend="pressEnd"
+    @touchcancel="pressCancel"
     @click="click"
   >
     <template v-if="loading">
       <text class="varo-button__loading-icon" aria-hidden="true" />
-      <text>{{ loadingText || '加载中...' }}</text>
+      <text>{{ props.loadingText || '加载中...' }}</text>
     </template>
     <template v-else>
-      <text v-if="$slots.icon || (icon && iconPosition === 'left')" class="varo-button__icon" data-position="left">
+      <text v-if="$slots.icon || (props.icon && props.iconPosition === 'left')" class="varo-button__icon" data-position="left">
         <slot name="icon">
-          {{ icon }}
+          {{ props.icon }}
         </slot>
       </text>
       <slot />
-      <text v-if="icon && iconPosition === 'right'" class="varo-button__icon" data-position="right">
-        {{ icon }}
+      <text v-if="props.icon && props.iconPosition === 'right'" class="varo-button__icon" data-position="right">
+        {{ props.icon }}
       </text>
     </template>
   </button>

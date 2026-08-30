@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AgentMarkdownViewNode, StreamingMarkdownParser } from '@varo-ui/ai'
+import type { PropType } from 'wevu'
 import type { ClassValue } from '../../lib/cn'
 import {
 
@@ -11,28 +12,22 @@ import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import AgentMarkdownNode from './AgentMarkdownNode.vue'
 
-const props = withDefaults(
-  defineProps<{
-    className?: ClassValue
-    content?: string
-    customHtmlTags?: string[]
-    final?: boolean
-  }>(),
-  {
-    content: '',
-    customHtmlTags: () => [],
-    final: false,
-  },
-)
+const props = defineProps({
+  className: { type: null as unknown as PropType<ClassValue>, default: undefined },
+  content: { type: null as unknown as PropType<string>, default: '' },
+  customHtmlTags: { type: null as unknown as PropType<string[]>, default: () => [] },
+  final: { type: Boolean, default: false },
+})
 
 const emit = defineEmits<{
   error: [message: string]
   link: [href: string]
 }>()
+const customHtmlTags = Array.isArray(props.customHtmlTags) ? props.customHtmlTags : []
 
 let parser: StreamingMarkdownParser | undefined
 try {
-  parser = createStreamingMarkdownParser({ customHtmlTags: props.customHtmlTags })
+  parser = createStreamingMarkdownParser({ customHtmlTags })
 }
 catch (error) {
   const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error)

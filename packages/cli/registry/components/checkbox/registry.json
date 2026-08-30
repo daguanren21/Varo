@@ -8,13 +8,23 @@
     "h5",
     "weapp-vite"
   ],
-  "dependencies": [],
+  "dependencies": [
+    "@varo-ui/headless"
+  ],
+  "targetDependencies": {
+    "weapp-vite": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
   "targetRegistryDependencies": {
     "h5": [
       "utils/selection"
+    ],
+    "weapp-vite": [
+      "utils/primitives"
     ]
   },
   "files": [

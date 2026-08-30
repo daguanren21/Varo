@@ -203,16 +203,21 @@ describe('docs navigation', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
     expect(css).toContain('--varo-bg: #f7f8fa')
-    expect(css).toContain('--varo-surface: #ffffff')
+    expect(css).toContain('--varo-surface: #fff')
     expect(css).toContain('--varo-surface-strong: #eef2f5')
     expect(css).toContain('--varo-primary: #0f766e')
-    expect(css).toContain('--varo-primary-foreground: #ffffff')
+    expect(css).toContain('--varo-primary-foreground: #fff')
     expect(css).toContain('--varo-radius: 8px')
     expect(css).toContain('--varo-radius-lg: 12px')
-    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
+    expect(css).toContain('--varo-gridline: rgb(24 33 47 / 4.5%)')
     expect(css).toContain('font-family: Inter, \"SF Pro Text\", \"PingFang SC\",')
-    expect(css).toContain('.dark .vp-doc :is(.varo-form-item__label, .varo-checkbox, .varo-radio, .varo-input__label)')
-    expect(css).toContain('.dark .vp-doc :is(.varo-input__body, .varo-input-number, .varo-checkbox__icon, .varo-radio__icon, .varo-textarea__control)')
+    expect(css).toContain('--varo-ui-text: var(--varo-foreground)')
+    expect(css).toContain('--varo-ui-text-muted: var(--varo-muted)')
+    expect(css).toContain('--varo-ui-surface: var(--varo-card-solid)')
+    expect(css).toContain('--varo-ui-border: var(--varo-border)')
+    expect(css).toContain('color: var(--varo-ui-text);')
+    expect(css).toContain('background: var(--varo-ui-surface);')
+    expect(css).not.toContain('color: color-mix(in srgb, var(--varo-bg) 90%, #e6e4df)')
   })
 
   it('keeps code copy controls icon-only until hover or focus', () => {
@@ -230,7 +235,7 @@ describe('docs navigation', () => {
   it('keeps docs chrome quieter than the content surface', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-gridline: rgba(24, 33, 47, 0.045)')
+    expect(css).toContain('--varo-gridline: rgb(24 33 47 / 4.5%)')
     expect(css).toContain('.VPNavBar {')
     expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important')
     expect(css).toContain('backdrop-filter: blur(12px)')
@@ -402,6 +407,7 @@ describe('docs navigation', () => {
   it('publishes interactive AI component docs on VitePress 2 alpha', () => {
     const config = readFileSync(configPath, 'utf8')
     const theme = readFileSync(resolve(docsRoot, '.vitepress/theme/index.ts'), 'utf8')
+    const tailwind = readFileSync(resolve(docsRoot, '.vitepress/theme/tailwind.css'), 'utf8')
     const demo = readFileSync(resolve(docsRoot, 'src/components/AgentComponentsDemo.vue'), 'utf8')
     const aiZh = readFileSync(resolve(docsRoot, 'ai/index.md'), 'utf8')
     const aiEn = readFileSync(resolve(docsRoot, 'en/ai/index.md'), 'utf8')
@@ -413,6 +419,9 @@ describe('docs navigation', () => {
     expect(config).toContain('{ text: \'AI Agent\', link: \'/ai/\' }')
     expect(config).toContain('{ text: \'AI Agent\', link: \'/en/ai/\' }')
     expect(theme).toContain('app.component(\'AgentComponentsDemo\', AgentComponentsDemo)')
+    expect(tailwind).toContain('@import "tailwindcss/utilities.css";')
+    expect(tailwind).not.toContain('@import "tailwindcss/utilities.css" layer(utilities);')
+    expect(tailwind).toContain('@source "../../src/components/agent-ui/**/*.{ts,vue}";')
     expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
     expect(aiZh).toContain('36 个双端 Agent 组件')

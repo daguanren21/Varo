@@ -1,5 +1,5 @@
-/* pages/OpenAEDDevice/OpenAEDDevice.wxss */
-page {
+.open-lock-page {
+  min-height: 100%;
   background-color: #f1ebd9;
 }
 .lock_number {
@@ -29,7 +29,7 @@ page {
   animation: lock-openning 1s infinite ease-in-out;
 }
 
-image.loading-image {
+.loading-image {
   position: absolute;
   left: 0;
   top: 0;
@@ -71,9 +71,6 @@ image.loading-image {
   animation: lock-wait-open-icon 1s infinite ease-in-out;
 }
 
-button[disabled]:not([type]).btn-getPhoneNumber {
-  background-color: rgba(240, 193, 68, 0.6);
-}
 
 .text-wrapper {
   padding: 5vw;
@@ -91,15 +88,15 @@ button[disabled]:not([type]).btn-getPhoneNumber {
   right: 10vw;
 }
 
-.text-wrapper text {
+.lock-message {
   display: block;
-  color: #f3673c;
-  font-size: 0.9em;
   margin-bottom: 10px;
+  font-size: 0.9em;
+  color: #f3673c;
   text-align: center;
 }
 
-.text-wrapper.text-opening text {
+.text-wrapper.text-opening .lock-message {
   font-size: 1.2em;
   color: red;
 }
@@ -108,7 +105,7 @@ button[disabled]:not([type]).btn-getPhoneNumber {
   animation: lock-open-response-wrapper 1s infinite ease-in-out;
 }
 
-.text-wrapper.text-success text {
+.text-wrapper.text-success .lock-message {
   font-size: 1.4em;
 }
 
@@ -117,10 +114,10 @@ button[disabled]:not([type]).btn-getPhoneNumber {
   font-weight: bold;
 }
 
-.text-wrapper.text-failed text {
-  color: #f3673c;
+.text-wrapper.text-failed .lock-message {
   font-size: 1.4em;
-  text-indent: 0em;
+  color: #f3673c;
+  text-indent: 0;
 }
 
 .info-wrapper {

@@ -7,9 +7,12 @@ export {
   DialogContent,
   DialogOverlay,
   DialogRoot,
-  DialogTrigger
+  DialogTrigger,
 } from './dialog'
 export { InputRoot } from './input'
+export { NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput, NumberFieldRoot } from './number-field'
+export { PopoverClose, PopoverContent, PopoverRoot, PopoverTrigger } from './popover'
+export { RadioGroup, RadioIndicator, RadioItem } from './radio'
 export {
   SelectContent,
   SelectGroup,
@@ -17,9 +20,7 @@ export {
   SelectLabel,
   SelectRoot,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from './select'
-export { RadioGroup, RadioIndicator, RadioItem } from './radio'
-export { PopoverClose, PopoverContent, PopoverRoot, PopoverTrigger } from './popover'
 export { SwitchRoot, SwitchThumb } from './switch'
 export { TabsContent, TabsList, TabsRoot, TabsTrigger } from './tabs'

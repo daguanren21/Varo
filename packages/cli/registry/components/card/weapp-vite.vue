@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
+import { usePressableRoot } from '@varo-ui/headless'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 const props = withDefaults(
   defineProps<{
@@ -17,6 +19,15 @@ const props = withDefaults(
   },
 )
 
+const emit = defineEmits<{
+  click: [event: unknown]
+}>()
+const inactive = computed(() => !props.interactive)
+const pressable = usePressableRoot({
+  runtime: varoReactiveRuntime,
+  disabled: inactive,
+})
+const pressed = computed(() => pressable.state.pressed.value)
 const classes = computed(() =>
   cn(
     'varo-card',
@@ -27,6 +38,22 @@ const classes = computed(() =>
   ),
 )
 const hoverClass = computed(() => (props.interactive ? 'varo-card--pressed' : 'none'))
+
+function click(event: unknown) {
+  if (pressable.events.click(event as Event)) { emit('click', event) }
+}
+
+function pressStart() {
+  pressable.events.pressStart()
+}
+
+function pressEnd() {
+  pressable.events.pressEnd()
+}
+
+function pressCancel() {
+  pressable.events.pressCancel()
+}
 </script>
 
 <template>
@@ -35,8 +62,13 @@ const hoverClass = computed(() => (props.interactive ? 'varo-card--pressed' : 'n
     :hover-class="hoverClass"
     :hover-start-time="20"
     :hover-stay-time="70"
-    :data-interactive="String(interactive)"
-    :data-variant="variant"
+    :data-interactive="String(props.interactive)"
+    :data-pressed="String(pressed)"
+    :data-variant="props.variant"
+    @touchstart="pressStart"
+    @touchend="pressEnd"
+    @touchcancel="pressCancel"
+    @click="click"
   >
     <view v-if="$slots.header || $slots.title || $slots.description" class="varo-card__header">
       <slot name="header">

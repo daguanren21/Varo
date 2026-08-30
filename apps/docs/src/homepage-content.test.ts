@@ -57,24 +57,44 @@ describe('homepage content', () => {
     expect(enHome).not.toContain('shadcn-style')
   })
 
-  it('renders a registry-backed block catalog instead of fictional product flows', () => {
+  it('renders a screenshot-first registry Block gallery with executable install commands', () => {
     const zhExamples = readFileSync(resolve(root, 'examples/index.md'), 'utf8')
     const enExamples = readFileSync(resolve(root, 'en/examples/index.md'), 'utf8')
+    const zhGuide = readFileSync(resolve(root, 'blocks/build-your-own.md'), 'utf8')
+    const enGuide = readFileSync(resolve(root, 'en/blocks/build-your-own.md'), 'utf8')
     const gallery = readFileSync(resolve(root, 'src/components/MiniProgramBlocksGallery.vue'), 'utf8')
-    const requiredBlocks = ['login-form', 'profile-card', 'profile-edit', 'product-list', 'order-filter', 'agent-chat']
+    const card = readFileSync(resolve(root, 'src/components/BlockGalleryCard.vue'), 'utf8')
+    const definitions = readFileSync(resolve(root, 'src/components/block-gallery.ts'), 'utf8')
+    const requiredBlocks = [
+      'login-form',
+      'profile-card',
+      'profile-edit',
+      'product-list',
+      'order-filter',
+      'agent-chat',
+      'retail-home',
+      'retail-category',
+      'retail-cart',
+      'retail-product-detail',
+      'retail-checkout',
+      'retail-order-list',
+      'retail-profile',
+    ]
 
     requiredBlocks.forEach((block) => {
-      expect(gallery).toContain(`id: '${block}'`)
+      expect(definitions).toContain(`id: '${block}'`)
     })
 
     expect(zhExamples).toContain('<MiniProgramBlocksGallery locale="zh" />')
     expect(enExamples).toContain('<MiniProgramBlocksGallery locale="en" />')
-    expect(gallery).toContain('class="varo-real-blocks__workspace"')
-    expect(gallery).toContain('class="varo-real-blocks__catalog"')
-    expect(gallery).toContain('class="varo-real-blocks__detail"')
-    expect(gallery).toContain('selectedId')
-    expect(gallery).toContain('add --target ${target.value}')
-    expect(gallery).toContain('@click')
-    expect(gallery).not.toContain('VNavbar')
+    expect(zhGuide).toContain('<MiniProgramBlocksGallery locale="zh" />')
+    expect(enGuide).toContain('<MiniProgramBlocksGallery locale="en" />')
+    expect(gallery).toContain('class="varo-block-gallery__grid"')
+    expect(gallery).toContain('type="search"')
+    expect(card).toContain('<details class="varo-block-card__details">')
+    expect(card).toMatch(/BASE_URL\}blocks\/\$\{props\.block\.id\}\.png/)
+    expect(definitions).toMatch(/pnpm dlx @varo-ui\/cli add --target \$\{target\} blocks\/\$\{block\.id\}/)
+    expect(zhGuide).not.toContain('| Registry 名称')
+    expect(enGuide).not.toContain('| Registry name')
   })
 })

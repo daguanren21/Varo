@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="苔绿色轻量连帽衫">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaf0d8"/><stop offset="1" stop-color="#a5b978"/></linearGradient><filter id="s"><feDropShadow dy="24" stdDeviation="24" flood-color="#40532e" flood-opacity=".22"/></filter></defs>
+  <rect width="800" height="800" rx="72" fill="url(#b)"/><path d="M329 151c-57 42-94 103-109 182l72 44 22-39v300h172V338l22 39 72-44c-15-79-52-140-109-182-16 20-39 31-71 31s-55-11-71-31Z" fill="#687f49" filter="url(#s)"/>
+  <path d="M330 157c4 75 136 75 140 0" fill="none" stroke="#a9bc7f" stroke-width="20"/><path d="M400 208v388" stroke="#91a667" stroke-width="10"/><path d="M334 474h132" stroke="#91a667" stroke-width="16" stroke-linecap="round"/>
+</svg>

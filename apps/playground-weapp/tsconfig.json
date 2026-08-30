@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
-    "types": ["miniprogram-api-typings", "node", "vite/client"]
+    "types": ["miniprogram-api-typings", "node", "vite/client"],
+    "allowImportingTsExtensions": true
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "e2e/**/*.ts", "vite.config.ts"]
 }

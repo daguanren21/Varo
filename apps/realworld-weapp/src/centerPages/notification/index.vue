@@ -13,6 +13,7 @@ const { noticeList, loadingStatus, dateFilter, messageTypeFilter, handleReachBot
 <template>
   <view v-if="noticeList.length" class="center_info_wrap">
     <AedVirtualList
+      class="center-list"
       bench="20"
       :items="noticeList"
       height="100%"
@@ -54,10 +55,8 @@ const { noticeList, loadingStatus, dateFilter, messageTypeFilter, handleReachBot
 </template>
 
 <style lang="scss">
-.center_info_wrap {
-  & > view {
-    height: 100%;
-    background: #fff;
-  }
+.center_info_wrap .center-list {
+  height: 100%;
+  background: #fff;
 }
 </style>

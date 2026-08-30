@@ -2,9 +2,11 @@
 import { onLoad, shallowRef } from 'wevu'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
+import { useWeappChrome } from '../../composables/useWeappChrome'
 import { navigateRetail, switchRetailTab } from '../../features/retail/navigation'
 
 const orderId = shallowRef('')
+const { contentTopStyle } = useWeappChrome()
 
 onLoad((options) => {
   orderId.value = String(options?.id ?? '')
@@ -12,7 +14,7 @@ onLoad((options) => {
 </script>
 
 <template>
-  <view class="grid min-h-screen content-start gap-4 bg-[#f4f6f8] px-4 pb-8 pt-[calc(env(safe-area-inset-top)+52px)] text-slate-950">
+  <view class="retail-page-enter grid min-h-screen content-start gap-4 bg-[#f4f6f8] px-4 pb-8 text-slate-950" :style="contentTopStyle">
     <view class="grid justify-items-center gap-3 text-center">
       <view class="grid h-20 w-20 place-items-center rounded-[28px] bg-emerald-500 text-sm font-black text-white shadow-[0_18px_42px_rgba(16,185,129,.25)]">
         完成

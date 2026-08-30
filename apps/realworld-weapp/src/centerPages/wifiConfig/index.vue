@@ -55,20 +55,18 @@ const data = reactive({
     },
   },
 })
-function getSystemInfo() {
-  const res = wx.getSystemInfoSync()
-  console.log(res)
-  const platform = res.platform
+function checkDeviceCompatibility() {
+  const { platform, system } = wx.getDeviceInfo()
   aedStore.setPlatform(platform)
-  const system = res.system.split(' ')[1]
-  if (platform == 'ios' && system < '11') {
+  const majorVersion = Number.parseInt(system.split(' ')[1] ?? '', 10)
+  if (platform === 'ios' && Number.isFinite(majorVersion) && majorVersion < 11) {
     showModal(
       '当前手机系统版本过低不支持小程序内连接 Wi-Fi.',
       '',
     )
   }
 }
-getSystemInfo()
+checkDeviceCompatibility()
 const btnText = computed(() => (data.selectorValue ? '扫描二维码' : '确定'))
 
 const { selector, selectorValue, isOpened, methods } = toRefs(data)

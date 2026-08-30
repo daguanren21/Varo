@@ -1,7 +1,7 @@
 {
   "name": "@varo-ui/headless",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "Platform-neutral state machines, events, and controlled-state contracts for Varo runtimes.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",

@@ -14,6 +14,14 @@
   dir: packages/cli
   intents:
     - modern-bottles-smile
+"@varo-ui/cli@1.1.0":
+  dir: packages/cli
+  intents:
+    - upset-bees-invite
+"@varo-ui/cli@1.2.0":
+  dir: packages/cli
+  intents:
+    - warm-themes-flow
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -22,6 +30,10 @@
   dir: packages/ui-h5
   intents:
     - modern-bottles-smile
+"@varo-ui/h5@1.1.0":
+  dir: packages/ui-h5
+  intents:
+    - upset-bees-invite
 "@varo-ui/headless@1.0.0":
   dir: packages/primitives-core
   intents:
@@ -30,6 +42,10 @@
   dir: packages/primitives-core
   intents:
     - modern-bottles-smile
+"@varo-ui/headless@1.1.0":
+  dir: packages/primitives-core
+  intents:
+    - upset-bees-invite
 "@varo-ui/theme@1.0.0":
   dir: packages/theme
   intents:
@@ -38,6 +54,14 @@
   dir: packages/theme
   intents:
     - modern-bottles-smile
+"@varo-ui/theme@1.1.0":
+  dir: packages/theme
+  intents:
+    - upset-bees-invite
+"@varo-ui/theme@1.2.0":
+  dir: packages/theme
+  intents:
+    - warm-themes-flow
 "@varo-ui/weapp@1.0.0":
   dir: packages/ui-weapp
   intents:
@@ -46,3 +70,8 @@
   dir: packages/ui-weapp
   intents:
     - modern-bottles-smile
+"@varo-ui/weapp@1.1.0":
+  dir: packages/ui-weapp
+  intents:
+    - calm-trees-resolve
+    - upset-bees-invite

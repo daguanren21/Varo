@@ -1,5 +1,27 @@
 # @varo-ui/weapp
 
+## 1.2.0
+
+### Patch Changes
+
+- Updated dependencies:
+  - @varo-ui/headless@1.2.0
+  - @varo-ui/theme@1.2.0
+
+## 1.1.0
+
+### Minor Changes
+
+- Add the `@varo-ui/weapp/resolver` entry with `VaroResolver` for usage-driven discovery of editable Registry SFCs, including Pascal, camel, and kebab filename normalization without emitting unused component entries.
+
+- Add a complete Varo retail starter, seven installable retail blocks, and screenshot-first Block documentation. Route Block controls through headless-backed Base Kit components, add reusable image-state and number-field primitives, and expose the pure theme factory for build-time mini-program theming.
+
+### Patch Changes
+
+- Updated dependencies:
+  - @varo-ui/headless@1.1.0
+  - @varo-ui/theme@1.1.0
+
 ## 1.0.1
 
 ### Patch Changes

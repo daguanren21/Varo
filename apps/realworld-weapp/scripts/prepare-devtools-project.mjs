@@ -12,8 +12,9 @@ const targetPaths = [
 const projectConfig = JSON.parse(await readFile(sourcePath, 'utf8'))
 const localConfig = JSON.parse(await readFile(localConfigPath, 'utf8').catch(() => '{}'))
 const localAppId = process.env.WEAPP_APP_ID ?? localConfig.appid ?? ''
+const allowSimulationAppId = process.env.GITHUB_ACTIONS !== 'true' && localConfig.allowSimulationAppId === true
 
-if (localAppId && !/^wx[0-9a-f]{16}$/i.test(localAppId)) {
+if (localAppId && !allowSimulationAppId && !/^wx[0-9a-f]{16}$/i.test(localAppId)) {
   throw new Error('WEAPP_APP_ID must be a valid mini-program AppID')
 }
 projectConfig.appid = localAppId

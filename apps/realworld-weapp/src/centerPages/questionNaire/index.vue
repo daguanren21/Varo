@@ -20,6 +20,7 @@ const { pageList, loadingStatus, dateFilter, globalTip, linkTo, handleReachBotto
   />
   <view v-if="pageList.length" class="center_info_wrap">
     <AedVirtualList
+      class="center-list"
       bench="10"
       :items="pageList"
       height="610"
@@ -55,12 +56,11 @@ const { pageList, loadingStatus, dateFilter, globalTip, linkTo, handleReachBotto
 </template>
 
 <style lang="scss">
-.center_info_wrap {
-  & > view {
-    height: 100%;
-    .aed-virtual-list__item {
-      background: #fff;
-    }
-  }
+.center_info_wrap .center-list {
+  height: 100%;
+}
+
+.center_info_wrap .center-list .aed-virtual-list__item {
+  background: #fff;
 }
 </style>

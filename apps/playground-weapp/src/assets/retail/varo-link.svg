@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Varo Link 智能家居中枢">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e4f1ff"/><stop offset="1" stop-color="#9ab7df"/></linearGradient><linearGradient id="d" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18283f"/><stop offset="1" stop-color="#0f766e"/></linearGradient><filter id="s"><feDropShadow dy="28" stdDeviation="26" flood-color="#233852" flood-opacity=".25"/></filter></defs>
+  <rect width="800" height="800" rx="72" fill="url(#b)"/><circle cx="180" cy="160" r="88" fill="#fff" opacity=".35"/><rect x="180" y="212" width="440" height="376" rx="84" fill="url(#d)" filter="url(#s)"/>
+  <rect x="225" y="257" width="350" height="190" rx="42" fill="#f2fbff"/><path d="M318 352l66 66 116-132" fill="none" stroke="#16a394" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/><circle cx="400" cy="521" r="18" fill="#7ee8dc"/>
+</svg>

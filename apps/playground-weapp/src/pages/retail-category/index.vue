@@ -4,6 +4,7 @@ import { computed, shallowRef } from 'wevu'
 import RetailProductCard from '../../components/retail/RetailProductCard.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VInput from '../../components/ui/v-input.vue'
+import { useWeappChrome } from '../../composables/useWeappChrome'
 import { retailCategories } from '../../features/retail/data'
 import { navigateRetail } from '../../features/retail/navigation'
 import { useRetailStore } from '../../features/retail/store'
@@ -11,6 +12,7 @@ import { useRetailStore } from '../../features/retail/store'
 const activeCategory = shallowRef(retailCategories[0].id)
 const keyword = shallowRef('')
 const { addToCart, products } = useRetailStore()
+const { navigationStyle, rootStyle } = useWeappChrome()
 const visibleProducts = computed(() => {
   const categoryProducts = products.value.filter(product => product.category === activeCategory.value)
   const source = categoryProducts.length > 0 ? categoryProducts : products.value
@@ -30,9 +32,9 @@ function addProduct(product: RetailProduct) {
 </script>
 
 <template>
-  <view class="min-h-screen bg-white pb-20 text-slate-950">
-    <view class="sticky top-0 z-20 grid gap-3 border-b border-slate-100 bg-white px-3 pb-3 pt-[calc(env(safe-area-inset-top)+10px)]">
-      <view class="flex items-center justify-between">
+  <view class="retail-page-enter min-h-screen bg-white pb-20 text-slate-950">
+    <view class="sticky top-0 z-20 grid gap-3 border-b border-slate-100 bg-white px-3 pb-3 shadow-sm" :style="rootStyle">
+      <view class="flex items-center justify-between gap-3" :style="navigationStyle">
         <text class="text-xl font-black">
           分类
         </text>
@@ -61,7 +63,7 @@ function addProduct(product: RetailProduct) {
       </scroll-view>
 
       <scroll-view scroll-y class="h-full bg-white">
-        <view class="grid gap-3 p-3">
+        <view class="retail-section-enter grid gap-3 p-3">
           <view class="overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#0f766e,#2dd4bf)] p-4 text-white">
             <text class="text-[10px] font-black tracking-[0.16em] text-white/70">
               {{ activeLabel.toUpperCase() }}

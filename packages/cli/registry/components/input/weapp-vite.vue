@@ -1,43 +1,27 @@
 <script setup lang="ts">
-import { computed, shallowRef, watch } from 'wevu'
+import type { PropType } from 'wevu'
+import { useFieldRoot } from '@varo-ui/headless'
+import { computed, shallowRef, toRef } from 'wevu'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
-const props = withDefaults(
-  defineProps<{
-    align?: 'left' | 'center' | 'right'
-    clearable?: boolean
-    disabled?: boolean
-    errorMessage?: string
-    formatTrigger?: 'onInput' | 'onBlur'
-    formatter?: (value: string) => string
-    invalid?: boolean
-    label?: string
-    maxLength?: number | string
-    placeholder?: string
-    readonly?: boolean
-    rows?: number | string
-    showWordLimit?: boolean
-    size?: 'sm' | 'md' | 'lg'
-    type?: string
-    value?: string
-  }>(),
-  {
-    align: 'left',
-    clearable: false,
-    disabled: false,
-    errorMessage: '',
-    formatTrigger: 'onInput',
-    invalid: false,
-    label: '',
-    maxLength: 140,
-    placeholder: '',
-    readonly: false,
-    rows: 3,
-    showWordLimit: false,
-    size: 'md',
-    type: 'text',
-    value: '',
-  },
-)
+const props = defineProps({
+  align: { type: String as PropType<'left' | 'center' | 'right'>, default: 'left' },
+  clearable: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
+  errorMessage: { type: String, default: '' },
+  formatTrigger: { type: String as PropType<'onInput' | 'onBlur'>, default: 'onInput' },
+  formatter: { type: Function as PropType<(value: string) => string>, default: undefined },
+  invalid: { type: Boolean, default: false },
+  label: { type: String, default: '' },
+  maxLength: { type: [Number, String] as PropType<number | string>, default: 140 },
+  placeholder: { type: String, default: '' },
+  readonly: { type: Boolean, default: false },
+  rows: { type: [Number, String] as PropType<number | string>, default: 3 },
+  showWordLimit: { type: Boolean, default: false },
+  size: { type: String as PropType<'sm' | 'md' | 'lg'>, default: 'md' },
+  type: { type: String, default: 'text' },
+  value: { type: null as unknown as PropType<string>, default: '' },
+})
 
 const emit = defineEmits<{
   'blur': [event: unknown]
@@ -48,52 +32,62 @@ const emit = defineEmits<{
 }>()
 
 const focused = shallowRef(false)
-const localValue = shallowRef(props.value)
+const controlled = computed(() => true)
+const inactive = computed(() => props.disabled || props.readonly)
+const normalizedValue = computed(() => props.value || '')
+const field = useFieldRoot({
+  runtime: varoReactiveRuntime,
+  value: normalizedValue,
+  valueControlled: controlled,
+  disabled: inactive,
+  invalid: toRef(props, 'invalid'),
+  onValueChange: update,
+})
+const fieldDisabled = computed(() => field.state.disabled.value)
+const fieldInteractive = computed(() => field.state.interactive.value)
+const fieldInvalid = computed(() => field.state.invalid.value)
+const fieldValue = computed(() => field.state.value.value)
 const isTextarea = computed(() => props.type === 'textarea')
 const maxLength = computed(() => Number(props.maxLength) || 140)
 const nativeType = computed(() => (props.type === 'tel' ? 'number' : props.type))
-
-watch(
-  () => props.value,
-  (value) => {
-    localValue.value = value
-  },
-)
+const controlStyle = computed(() => ({
+  minHeight: isTextarea.value ? `${Math.max(1, Number(props.rows)) * 22}px` : undefined,
+  height: isTextarea.value ? `${Math.max(1, Number(props.rows)) * 22}px` : undefined,
+  textAlign: props.align,
+}))
 
 function normalize(value: string, trigger: 'onInput' | 'onBlur') {
   return props.formatter && props.formatTrigger === trigger ? props.formatter(value) : value
 }
 
-function update(value: string, trigger: 'onInput' | 'onBlur') {
-  const next = normalize(value, trigger)
-  localValue.value = next
-  emit('update:value', next)
-  emit('valueChange', next)
-}
-
 function eventValue(event: Event) {
   const miniEvent = event as Event & { detail?: { value?: string } }
   const target = event.target as HTMLInputElement | HTMLTextAreaElement | null
-  return miniEvent.detail?.value ?? target?.value
+  return miniEvent.detail?.value ?? target?.value ?? ''
+}
+
+function update(value: string) {
+  emit('update:value', value)
+  emit('valueChange', value)
 }
 
 function input(event: Event) {
-  update(eventValue(event) ?? '', 'onInput')
+  field.events.input(normalize(eventValue(event), 'onInput'))
 }
 
-function focus(event: Event) {
+function focus(event: unknown) {
   focused.value = true
   emit('focus', event)
 }
 
 function blur(event: Event) {
   focused.value = false
-  update(eventValue(event) ?? localValue.value, 'onBlur')
+  if (props.formatTrigger === 'onBlur') { field.events.input(normalize(eventValue(event), 'onBlur')) }
   emit('blur', event)
 }
 
 function clear(event: unknown) {
-  update('', 'onInput')
+  field.api.clear()
   emit('clear', event)
 }
 </script>
@@ -101,16 +95,16 @@ function clear(event: unknown) {
 <template>
   <view
     class="varo-input"
-    :data-align="align"
-    :data-disabled="String(disabled)"
+    :data-align="props.align"
+    :data-disabled="String(fieldDisabled)"
     :data-focused="String(focused)"
-    :data-invalid="String(invalid)"
-    :data-readonly="String(readonly)"
-    :data-size="size"
+    :data-invalid="String(fieldInvalid)"
+    :data-readonly="String(props.readonly)"
+    :data-size="props.size"
   >
-    <text v-if="label || $slots.label" class="varo-input__label">
+    <text v-if="props.label || $slots.label" class="varo-input__label">
       <slot name="label">
-        {{ label }}
+        {{ props.label }}
       </slot>
     </text>
     <view class="varo-input__body">
@@ -118,12 +112,12 @@ function clear(event: unknown) {
       <textarea
         v-if="isTextarea"
         class="varo-input__control varo-input__control--textarea"
-        :value="localValue"
-        :placeholder="placeholder"
-        :disabled="disabled || readonly"
+        :value="fieldValue"
+        :placeholder="props.placeholder"
+        :disabled="fieldDisabled"
         :maxlength="maxLength"
         :auto-height="false"
-        :style="{ minHeight: `${Math.max(1, Number(rows)) * 22}px`, height: `${Math.max(1, Number(rows)) * 22}px`, textAlign: align }"
+        :style="controlStyle"
         @input="input"
         @focus="focus"
         @blur="blur"
@@ -131,19 +125,19 @@ function clear(event: unknown) {
       <input
         v-else
         class="varo-input__control"
-        :value="localValue"
-        :password="type === 'password'"
+        :value="fieldValue"
+        :password="props.type === 'password'"
         :type="nativeType"
-        :placeholder="placeholder"
-        :disabled="disabled || readonly"
+        :placeholder="props.placeholder"
+        :disabled="fieldDisabled"
         :maxlength="maxLength"
-        :style="{ textAlign: align }"
+        :style="controlStyle"
         @input="input"
         @focus="focus"
         @blur="blur"
       >
       <button
-        v-if="clearable && localValue && !disabled && !readonly"
+        v-if="props.clearable && fieldValue && fieldInteractive"
         class="varo-input__clear"
         type="button"
         aria-label="Clear input"
@@ -153,12 +147,12 @@ function clear(event: unknown) {
       </button>
       <slot name="suffix" />
     </view>
-    <view v-if="showWordLimit || errorMessage" class="varo-input__footer">
-      <text v-if="errorMessage" class="varo-input__error">
-        {{ errorMessage }}
+    <view v-if="props.showWordLimit || props.errorMessage" class="varo-input__footer">
+      <text v-if="props.errorMessage" class="varo-input__error">
+        {{ props.errorMessage }}
       </text>
-      <text v-if="showWordLimit" class="varo-input__count">
-        {{ localValue.length }}/{{ maxLength }}
+      <text v-if="props.showWordLimit" class="varo-input__count">
+        {{ fieldValue.length }}/{{ maxLength }}
       </text>
     </view>
   </view>

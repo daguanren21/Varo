@@ -23,11 +23,6 @@ const { globalTip } = useGolbalData()
 const getReg = computed(() => {
   return !check.checkedList.length
 })
-const getRegStyle = computed(() => {
-  return {
-    'background-color': check.checkedList.length ? '#182987' : '#B2B2B2',
-  }
-})
 function onReset(): void {
   back()
 }
@@ -109,17 +104,23 @@ const { checkboxOption, checkedList } = toRefs(check)
       </view>
     </view>
     <view class="btn_wrap">
-      <VButton
-        :style="getRegStyle"
-        :disabled="getReg"
-        class="btn" shape="round"
-        @click="onSubmit"
-      >
-        注册
-      </VButton>
-      <text class="ft" @tap="onReset">
-        返回
-      </text>
+      <view class="register-action">
+        <VButton
+          block
+          :disabled="getReg"
+          shape="round"
+          size="lg"
+          tone="warning"
+          @click="onSubmit"
+        >
+          注册
+        </VButton>
+      </view>
+      <view class="register-action">
+        <VButton block shape="round" size="lg" tone="warning" @click="onReset">
+          返回
+        </VButton>
+      </view>
     </view>
   </view>
 </template>

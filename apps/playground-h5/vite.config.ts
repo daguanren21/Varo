@@ -47,6 +47,10 @@ export default defineConfig({
         replacement: resolve(root, '../../packages/utils/src/index.ts'),
       },
       {
+        find: '@varo-ui/h5/primitives',
+        replacement: resolve(root, '../../packages/ui-h5/src/primitives.ts'),
+      },
+      {
         find: '@varo-ui/h5',
         replacement: resolve(root, '../../packages/ui-h5/src/index.ts'),
       },
