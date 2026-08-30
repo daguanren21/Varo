@@ -21,7 +21,7 @@
     "lodash.isequal": "^4.5.0",
     "mitt": "^3.0.0",
     "moment": "^2.30.1",
-    "wevu": "6.23.0"
+    "wevu": "6.25.1"
   },
   "devDependencies": {
     "@types/lodash.isequal": "^4.5.8",
@@ -33,7 +33,7 @@
     "vite": "8.2.2",
     "vitest": "^4.1.11",
     "vue-tsc": "^3.3.6",
-    "weapp-tailwindcss": "^5.3.6",
-    "weapp-vite": "6.24.0"
+    "weapp-tailwindcss": "^5.4.1",
+    "weapp-vite": "6.25.1"
   }
 }

@@ -11,21 +11,23 @@ allowBuilds:
   esbuild: true
 
 minimumReleaseAgeExclude:
-  - '@weapp-core/api@0.2.0'
+  - '@weapp-core/api@0.3.0'
   - '@weapp-core/init@6.0.16'
   - '@weapp-core/schematics@6.2.1'
-  - '@weapp-vite/ast@6.24.0'
+  - '@weapp-vite/ast@6.25.1'
   - '@weapp-vite/devtools-runtime@0.4.17'
   - '@weapp-vite/eslint@0.2.2'
   - '@weapp-vite/mcp@1.5.0'
   - '@weapp-vite/miniprogram-automator@1.2.16'
   - '@weapp-vite/qr@1.1.2'
   - '@weapp-vite/volar@2.1.5'
-  - '@weapp-vite/web@1.4.14'
-  - '@wevu/api@0.2.18'
-  - '@wevu/compiler@6.24.0'
-  - '@wevu/web-apis@1.2.37'
+  - '@weapp-vite/web@1.4.16'
+  - '@wevu/api@0.3.0'
+  - '@wevu/compiler@6.25.1'
+  - '@wevu/web-apis@1.2.38'
   - rolldown-require@2.0.27
   - weapp-ide-cli@6.1.0
-  - weapp-vite@6.24.0
-  - wevu@6.24.0
+  - weapp-tailwindcss@5.4.1
+  - weapp-vite@6.25.1
+  - wevu@6.25.1
+  - '@weapp-tailwindcss/postcss@3.3.0'

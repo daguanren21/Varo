@@ -2,7 +2,6 @@ import type { Plugin } from 'vite'
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { posix, relative, resolve } from 'node:path'
 import { createVaroWeappThemePlugin } from '@varo-ui/theme/source/weapp-vite'
-import { weappTailwindcss } from 'weapp-tailwindcss/vite'
 import { defineConfig } from 'weapp-vite/config'
 import { realworldTheme } from './src/theme.ts'
 
@@ -161,22 +160,6 @@ export default defineConfig({
       appStyle: appStylePath,
       theme: realworldTheme,
     }),
-    weappTailwindcss({
-      appType: 'weapp-vite',
-      cssEntries: [resolve(root, 'src/styles.css')],
-      cssOptions: {
-        cssPreflight: false,
-        rem2rpx: true,
-        px2rpx: {
-          platform: 'weapp',
-          designWidth: 750,
-          selectorBlackList: [/^page$/, /\.varo-/],
-        },
-        cssRemoveActivePseudoClass: true,
-      },
-      ignoreCallExpressionIdentifiers: ['cn'],
-      logLevel: 'warn',
-    }),
     realworldGlobalStylesPlugin(),
   ],
   build: {
@@ -196,6 +179,21 @@ export default defineConfig({
   weapp: {
     srcRoot: 'src',
     platform: 'weapp',
+    tailwindcss: {
+      cssEntries: [resolve(root, 'src/styles.css')],
+      cssOptions: {
+        cssPreflight: false,
+        rem2rpx: true,
+        px2rpx: {
+          platform: 'weapp',
+          designWidth: 750,
+          selectorBlackList: [/^page$/, /\.varo-/],
+        },
+        cssRemoveActivePseudoClass: true,
+      },
+      ignoreCallExpressionIdentifiers: ['cn'],
+      logLevel: 'warn',
+    },
     copy: {
       include: ['static/fonts/*.woff2'],
     },
