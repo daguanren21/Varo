@@ -5,3 +5,15 @@ allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
   esbuild: true
+
+minimumReleaseAgeExclude:
+  - '@weapp-core/api@0.3.0'
+  - '@weapp-tailwindcss/postcss@3.3.0'
+  - '@weapp-vite/ast@6.25.1'
+  - '@weapp-vite/web@1.4.16'
+  - '@wevu/api@0.3.0'
+  - '@wevu/compiler@6.25.1'
+  - '@wevu/web-apis@1.2.38'
+  - weapp-tailwindcss@5.4.1
+  - weapp-vite@6.25.1
+  - wevu@6.25.1

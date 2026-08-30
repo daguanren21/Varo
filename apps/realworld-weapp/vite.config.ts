@@ -1,22 +1,9 @@
 import { resolve } from 'node:path'
-import { weappTailwindcss } from 'weapp-tailwindcss/vite'
 import { defineConfig } from 'weapp-vite/config'
 
 const root = import.meta.dirname
 
 export default defineConfig({
-  plugins: [
-    weappTailwindcss({
-      appType: 'weapp-vite',
-      cssEntries: [resolve(root, 'src/styles.css')],
-      cssOptions: {
-        rem2rpx: true,
-        cssRemoveActivePseudoClass: true,
-      },
-      ignoreCallExpressionIdentifiers: ['cn'],
-      logLevel: 'warn',
-    }),
-  ],
   build: {
     outDir: process.env.VARO_WEAPP_OUTPUT === 'development' ? 'dist/dev/mp-weixin' : 'devtools/build/mp-weixin',
     minify: 'esbuild',
@@ -34,6 +21,15 @@ export default defineConfig({
   weapp: {
     srcRoot: 'src',
     platform: 'weapp',
+    tailwindcss: {
+      cssEntries: [resolve(root, 'src/styles.css')],
+      cssOptions: {
+        rem2rpx: true,
+        cssRemoveActivePseudoClass: true,
+      },
+      ignoreCallExpressionIdentifiers: ['cn'],
+      logLevel: 'warn',
+    },
     styles: {
       source: 'styles.css',
       include: ['app.vue'],
