@@ -122,7 +122,7 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
   })
 
-  it('presents one restrained Input scenario with validation and clear recovery', async () => {
+  it('presents multiple Input cases and derives required errors from the value', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -136,21 +136,34 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
     expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
     expect(wrapper.findAll('.platform-demo__input-sample')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-input')).toHaveLength(1)
-    expect(wrapper.text()).toContain('个人资料名称')
-    expect(wrapper.text()).toContain('使用团队成员容易识别的名称。')
+    expect(wrapper.findAll('.varo-input')).toHaveLength(5)
+    expect(wrapper.find('.platform-demo__input-sample-head').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__input-state').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('账户设置')
+    expect(wrapper.text()).not.toContain('显示错误')
+    expect(wrapper.text()).toContain('必填与清空')
+    expect(wrapper.text()).toContain('前后缀')
+    expect(wrapper.text()).toContain('文本域')
+    expect(wrapper.text()).toContain('状态')
 
-    const stateButton = wrapper.get('.platform-demo__input-state')
-    expect(stateButton.attributes('aria-pressed')).toBe('false')
-    await stateButton.trigger('click')
-    expect(stateButton.attributes('aria-pressed')).toBe('true')
-    expect(wrapper.get('.varo-input').attributes('data-invalid')).toBe('true')
-    expect(wrapper.get('.platform-demo__input-support').text()).toBe('名称至少需要 2 个字符。')
+    const requiredCase = wrapper.get('[data-case="required"]')
+    const requiredInput = requiredCase.get<HTMLInputElement>('.varo-input__control')
+    expect(requiredCase.find('.varo-input__error').exists()).toBe(false)
+    await requiredInput.trigger('focus')
+    await requiredCase.get('.varo-input__clear').trigger('click')
+    expect(requiredInput.element.value).toBe('')
+    expect(requiredCase.get('.varo-input').attributes('data-invalid')).toBe('true')
+    expect(requiredCase.get('.varo-input__error').text()).toBe('请输入显示名称。')
 
-    const control = wrapper.get<HTMLInputElement>('.varo-input__control')
-    await control.trigger('focus')
-    await wrapper.get('.varo-input__clear').trigger('click')
-    expect(control.element.value).toBe('')
+    const affixCase = wrapper.get('[data-case="affixes"]')
+    expect(affixCase.text()).toContain('https://')
+    expect(affixCase.text()).toContain('.com')
+    expect(wrapper.find('[data-case="textarea"] textarea.varo-input__control').exists()).toBe(true)
+
+    const stateInputs = wrapper.get('[data-case="states"]').findAll('.varo-input__control')
+    expect(stateInputs).toHaveLength(2)
+    expect(stateInputs[0]!.attributes('readonly')).toBeDefined()
+    expect(stateInputs[1]!.attributes('disabled')).toBeDefined()
   })
 
   it('supports roving keyboard selection for platform tabs', async () => {

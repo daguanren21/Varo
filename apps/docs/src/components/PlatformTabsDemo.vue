@@ -28,7 +28,9 @@ const selectedSize = ref<(typeof sizes)[number]>('md')
 const buttonLoading = ref(false)
 
 const inputValue = ref(props.locale === 'en' ? 'Avery Lin' : '林默')
-const inputInvalid = ref(false)
+const inputUrl = ref('varo-ui')
+const inputBio = ref(props.locale === 'en' ? 'Registry-first mobile UI.' : 'Registry-first 移动端 UI。')
+const inputInvalid = computed(() => inputValue.value.trim().length === 0)
 const activePlatform = ref<Platform>('h5')
 const codeExpanded = ref(false)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
@@ -92,26 +94,32 @@ const cellDemoCopy = computed(() => {
 
 const inputSampleCopy = computed(() => props.locale === 'en'
   ? {
-      eyebrow: 'Account settings',
-      title: 'Profile name',
-      description: 'Shown on orders, invoices, and team activity.',
-      fieldLabel: 'Display name',
+      clearable: 'Required and clearable',
       required: 'Required',
-      helper: 'Use the name teammates recognize.',
-      error: 'Enter at least 2 characters.',
-      invalidOn: 'Show error',
-      invalidOff: 'Restore field',
+      error: 'Enter a display name.',
+      affixes: 'Prefix and suffix',
+      urlPlaceholder: 'project-name',
+      textarea: 'Textarea',
+      textareaPlaceholder: 'Add a short description',
+      states: 'States',
+      readonly: 'Read only',
+      readonlyValue: 'INV-2026-042',
+      disabledValue: 'Unavailable',
+      disabled: 'Disabled',
     }
   : {
-      eyebrow: '账户设置',
-      title: '个人资料名称',
-      description: '会显示在订单、发票和团队动态中。',
-      fieldLabel: '显示名称',
+      clearable: '必填与清空',
       required: '必填',
-      helper: '使用团队成员容易识别的名称。',
-      error: '名称至少需要 2 个字符。',
-      invalidOn: '显示错误',
-      invalidOff: '恢复输入',
+      error: '请输入显示名称。',
+      affixes: '前后缀',
+      urlPlaceholder: '项目名称',
+      textarea: '文本域',
+      textareaPlaceholder: '补充简短说明',
+      states: '状态',
+      readonly: '只读',
+      readonlyValue: 'INV-2026-042',
+      disabledValue: '不可编辑',
+      disabled: '禁用',
     })
 
 const copy = computed(() => getDemoCopy(props.locale))
@@ -385,44 +393,88 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'input'">
                     <section class="platform-demo__input-sample" :data-invalid="String(inputInvalid)">
-                      <header class="platform-demo__input-sample-head">
-                        <div>
-                          <span>{{ inputSampleCopy.eyebrow }}</span>
-                          <h3>{{ inputSampleCopy.title }}</h3>
-                          <p>{{ inputSampleCopy.description }}</p>
-                        </div>
-                        <button
-                          type="button"
-                          class="platform-demo__input-state"
-                          :aria-pressed="inputInvalid"
-                          @click="inputInvalid = !inputInvalid"
+                      <div class="platform-demo__input-cases">
+                        <label
+                          class="platform-demo__input-case platform-demo__input-case--wide"
+                          data-case="required"
                         >
-                          {{ inputInvalid ? inputSampleCopy.invalidOff : inputSampleCopy.invalidOn }}
-                        </button>
-                      </header>
+                          <span class="platform-demo__input-label">
+                            <strong>{{ inputSampleCopy.clearable }}</strong>
+                            <small>{{ inputSampleCopy.required }}</small>
+                          </span>
+                          <component
+                            :is="runtime.Input"
+                            v-model:value="inputValue"
+                            clearable
+                            :error-message="inputInvalid ? inputSampleCopy.error : undefined"
+                            :invalid="inputInvalid"
+                            :max-length="16"
+                            :placeholder="platformDemo.placeholder"
+                            show-word-limit
+                          />
+                        </label>
 
-                      <label class="platform-demo__input-field">
-                        <span class="platform-demo__input-label">
-                          <strong>{{ inputSampleCopy.fieldLabel }}</strong>
-                          <small>{{ inputSampleCopy.required }}</small>
-                        </span>
-                        <component
-                          :is="runtime.Input"
-                          v-model:value="inputValue"
-                          clearable
-                          :invalid="inputInvalid"
-                          :max-length="16"
-                          :placeholder="platformDemo.placeholder"
-                          show-word-limit
-                        />
-                        <small
-                          class="platform-demo__input-support"
-                          :data-invalid="String(inputInvalid)"
-                          role="status"
+                        <label class="platform-demo__input-case" data-case="affixes">
+                          <span class="platform-demo__input-label">
+                            <strong>{{ inputSampleCopy.affixes }}</strong>
+                          </span>
+                          <component
+                            :is="runtime.Input"
+                            v-model:value="inputUrl"
+                            clearable
+                            :placeholder="inputSampleCopy.urlPlaceholder"
+                          >
+                            <template #prefix>
+                              <span class="platform-demo__input-affix">https://</span>
+                            </template>
+                            <template #suffix>
+                              <span class="platform-demo__input-affix">.com</span>
+                            </template>
+                          </component>
+                        </label>
+
+                        <section class="platform-demo__input-case" data-case="states">
+                          <span class="platform-demo__input-label">
+                            <strong>{{ inputSampleCopy.states }}</strong>
+                          </span>
+                          <div class="platform-demo__input-state-grid">
+                            <label>
+                              <small>{{ inputSampleCopy.readonly }}</small>
+                              <component
+                                :is="runtime.Input"
+                                :default-value="inputSampleCopy.readonlyValue"
+                                readonly
+                              />
+                            </label>
+                            <label>
+                              <small>{{ inputSampleCopy.disabled }}</small>
+                              <component
+                                :is="runtime.Input"
+                                :default-value="inputSampleCopy.disabledValue"
+                                disabled
+                              />
+                            </label>
+                          </div>
+                        </section>
+
+                        <label
+                          class="platform-demo__input-case platform-demo__input-case--wide"
+                          data-case="textarea"
                         >
-                          {{ inputInvalid ? inputSampleCopy.error : inputSampleCopy.helper }}
-                        </small>
-                      </label>
+                          <span class="platform-demo__input-label">
+                            <strong>{{ inputSampleCopy.textarea }}</strong>
+                          </span>
+                          <component
+                            :is="runtime.Input"
+                            v-model:value="inputBio"
+                            :max-length="60"
+                            :placeholder="inputSampleCopy.textareaPlaceholder"
+                            :rows="3"
+                            show-word-limit
+                            type="textarea"
+                          />
+                        </label>
+                      </div>
                     </section>
                   </template>
 
@@ -3063,7 +3115,7 @@ onBeforeUnmount(() => {
   background: var(--varo-danger);
 }
 
-/* Input approval sample — intentionally isolated from every other demo. */
+/* Input sample — multiple practical cases, isolated from every other demo. */
 .platform-demo__input-sample {
   --input-surface: #fff;
   --input-field: #f7f8fa;
@@ -3078,9 +3130,7 @@ onBeforeUnmount(() => {
   --input-danger-soft: rgb(194 65 58 / 10%);
 
   box-sizing: border-box;
-  display: grid;
-  gap: 20px;
-  width: min(100%, 520px);
+  width: min(100%, 680px);
   padding: 20px;
   margin-inline: auto;
   color: var(--input-text);
@@ -3103,77 +3153,27 @@ onBeforeUnmount(() => {
   --input-danger-soft: rgb(255 130 122 / 13%);
 }
 
-.platform-demo__input-sample-head {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.platform-demo__input-sample-head > div {
-  min-width: 0;
-}
-
-.platform-demo__input-sample-head span {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 0.68rem;
-  font-weight: 760;
-  color: var(--input-accent);
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-}
-
-.platform-demo__input-sample-head h3 {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.35;
-  color: var(--input-text);
-  letter-spacing: -0.02em;
-}
-
-.platform-demo__input-sample-head p {
-  max-width: 42ch;
-  margin: 5px 0 0;
-  font-size: 0.8rem;
-  line-height: 1.55;
-  color: var(--input-muted);
-}
-
-.platform-demo__input-state {
-  flex: none;
-  min-height: 44px;
-  padding: 0 10px;
-  font-size: 0.75rem;
-  font-weight: 680;
-  color: var(--input-muted);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  border-radius: 8px;
-  transition:
-    color 120ms cubic-bezier(0.16, 1, 0.3, 1),
-    background 120ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 80ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.platform-demo__input-state:hover {
-  color: var(--input-accent);
-  background: var(--input-accent-soft);
-}
-
-.platform-demo__input-state:focus-visible {
-  outline: 2px solid var(--input-accent);
-  outline-offset: 2px;
-}
-
-.platform-demo__input-state:active {
-  transform: scale(0.98);
-}
-
-.platform-demo__input-field {
+.platform-demo__input-cases {
   display: grid;
+}
+
+.platform-demo__input-case {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+  align-content: start;
+  min-width: 0;
+  padding-block: 20px;
+  border-top: 1px solid var(--input-border);
+}
+
+.platform-demo__input-case:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.platform-demo__input-case:last-child {
+  padding-bottom: 0;
 }
 
 .platform-demo__input-label {
@@ -3189,13 +3189,34 @@ onBeforeUnmount(() => {
   color: var(--input-text);
 }
 
-.platform-demo__input-label small {
+.platform-demo__input-label small,
+.platform-demo__input-state-grid small {
   font-size: 0.72rem;
   color: var(--input-muted);
 }
 
+.platform-demo__input-state-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.platform-demo__input-state-grid label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+}
+
+.platform-demo__input-affix {
+  font-size: 0.76rem;
+  color: var(--input-muted);
+  white-space: nowrap;
+}
+
 .platform-demo__input-sample :deep(.varo-input) {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   width: 100%;
 }
@@ -3225,7 +3246,9 @@ onBeforeUnmount(() => {
   background: transparent;
 }
 
-:global(.dark .vp-doc .platform-demo__input-sample .varo-input__word-limit) {
+:global(.dark .vp-doc .platform-demo__input-sample .varo-input__word-limit),
+:global(.dark .vp-doc .platform-demo__input-sample .varo-input__prefix),
+:global(.dark .vp-doc .platform-demo__input-sample .varo-input__suffix) {
   color: var(--input-muted);
 }
 
@@ -3234,7 +3257,12 @@ onBeforeUnmount(() => {
   background: transparent;
 }
 
-.platform-demo__input-sample :deep(.varo-input__body:hover) {
+:global(.dark .vp-doc .platform-demo__input-sample .varo-input__error) {
+  color: var(--input-danger);
+}
+
+.platform-demo__input-sample
+  :deep(.varo-input:not([data-disabled='true'], [data-readonly='true']) .varo-input__body:hover) {
   background: var(--input-field-hover);
   border-color: var(--input-border-strong);
 }
@@ -3248,6 +3276,14 @@ onBeforeUnmount(() => {
 .platform-demo__input-sample :deep(.varo-input[data-invalid='true'] .varo-input__body) {
   border-color: var(--input-danger);
   box-shadow: 0 0 0 3px var(--input-danger-soft);
+}
+
+.platform-demo__input-sample :deep(.varo-input[data-readonly='true'] .varo-input__body) {
+  background: color-mix(in srgb, var(--input-field) 72%, var(--input-surface));
+}
+
+.platform-demo__input-sample :deep(.varo-input[data-disabled='true']) {
+  opacity: 0.58;
 }
 
 .platform-demo__input-sample :deep(.varo-input__control) {
@@ -3275,11 +3311,33 @@ onBeforeUnmount(() => {
   color: var(--input-muted);
 }
 
+.platform-demo__input-sample :deep(.varo-input__error) {
+  min-height: 18px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--input-danger);
+}
+
+.platform-demo__input-case[data-case='textarea'] :deep(.varo-input__body) {
+  align-items: flex-start;
+}
+
+.platform-demo__input-case[data-case='textarea'] :deep(textarea.varo-input__control) {
+  min-height: 84px;
+  padding-block: 12px;
+}
+
+.platform-demo__input-case[data-case='textarea'] :deep(.varo-input__word-limit) {
+  align-self: flex-end;
+  margin-bottom: 14px;
+}
+
 .platform-demo__input-sample :deep(.varo-input__clear) {
   position: relative;
-  display: grid;
+  display: inline-flex;
   flex: none;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -3292,8 +3350,9 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__input-sample :deep(.varo-input__clear::before) {
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
   font-size: 1rem;
@@ -3326,24 +3385,12 @@ onBeforeUnmount(() => {
   transform: scale(0.94);
 }
 
-.platform-demo__input-support {
-  min-height: 18px;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  color: var(--input-muted);
-  transition: color 120ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.platform-demo__input-support[data-invalid='true'] {
-  color: var(--input-danger);
-}
-
 .platform-demo__preview-content[data-example='input'] {
   display: block;
 }
 
 .platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='input']) {
-  width: min(100%, 560px);
+  width: min(100%, 720px);
   padding: 0;
   background: transparent;
   border-radius: 0;
@@ -3371,14 +3418,15 @@ onBeforeUnmount(() => {
 
 @media (max-width: 640px) {
   .platform-demo__input-sample {
-    gap: 18px;
     padding: 16px;
+  }
+
+  .platform-demo__input-state-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .platform-demo__input-state,
-  .platform-demo__input-support,
   .platform-demo__input-sample :deep(.varo-input__body),
   .platform-demo__input-sample :deep(.varo-input__clear::before) {
     transition-duration: 0ms;
@@ -3391,10 +3439,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__input-sample :deep(button:active:not(:disabled)) {
   transform: none;
-}
-
-.platform-demo__input-state:active:not(:disabled) {
-  transform: scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {

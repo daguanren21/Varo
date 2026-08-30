@@ -54,7 +54,7 @@ import { VButton } from '@varo-ui/weapp'
     },
     input: {
       title: 'Input 跨端示例与演示',
-      description: '在真实资料编辑场景中展示受控输入、清空、字数提示与错误恢复。',
+      description: '展示必填清空校验、前后缀、文本域和只读/禁用状态。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -68,14 +68,34 @@ import { VButton } from '@varo-ui/weapp'
           defaultValue: '林默',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VInput } from '@varo-ui/h5'
 
 const name = ref('林默')
+const website = ref('varo-ui')
+const bio = ref('Registry-first 移动端 UI。')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="name" clearable :max-length="16" placeholder="例如：林默" show-word-limit />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? '请输入显示名称。' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="例如：林默"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="不可编辑" disabled />
 </template>
           `.trim(),
         },
@@ -91,14 +111,34 @@ const name = ref('林默')
           defaultValue: '林默',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'wevu'
 import { VInput } from '@varo-ui/weapp'
 
 const name = ref('林默')
+const website = ref('varo-ui')
+const bio = ref('Registry-first 移动端 UI。')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="name" clearable :max-length="16" placeholder="例如：林默" show-word-limit />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? '请输入显示名称。' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="例如：林默"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="不可编辑" disabled />
 </template>
           `.trim(),
         },
@@ -546,7 +586,7 @@ import { VButton } from '@varo-ui/weapp'
     },
     input: {
       title: 'Input Cross-platform Example and Preview',
-      description: 'A realistic profile-editing sample covering controlled input, clear, count, validation, and recovery.',
+      description: 'Shows required clearing validation, affixes, textarea, and read-only/disabled states.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -560,14 +600,34 @@ import { VButton } from '@varo-ui/weapp'
           defaultValue: 'Avery Lin',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { VInput } from '@varo-ui/h5'
 
 const name = ref('Avery Lin')
+const website = ref('varo-ui')
+const bio = ref('Registry-first mobile UI.')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="name" clearable :max-length="16" placeholder="e.g. Avery Lin" show-word-limit />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? 'Enter a display name.' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="e.g. Avery Lin"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="Unavailable" disabled />
 </template>
           `.trim(),
         },
@@ -583,14 +643,34 @@ const name = ref('Avery Lin')
           defaultValue: 'Avery Lin',
           code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'wevu'
 import { VInput } from '@varo-ui/weapp'
 
 const name = ref('Avery Lin')
+const website = ref('varo-ui')
+const bio = ref('Registry-first mobile UI.')
+const nameInvalid = computed(() => name.value.trim().length === 0)
 <\/script>
 
 <template>
-  <VInput v-model:value="name" clearable :max-length="16" placeholder="e.g. Avery Lin" show-word-limit />
+  <VInput
+    v-model:value="name"
+    clearable
+    :error-message="nameInvalid ? 'Enter a display name.' : undefined"
+    :invalid="nameInvalid"
+    :max-length="16"
+    placeholder="e.g. Avery Lin"
+    show-word-limit
+  />
+
+  <VInput v-model:value="website" clearable>
+    <template #prefix>https://</template>
+    <template #suffix>.com</template>
+  </VInput>
+
+  <VInput v-model:value="bio" :max-length="60" :rows="3" show-word-limit type="textarea" />
+  <VInput default-value="INV-2026-042" readonly />
+  <VInput default-value="Unavailable" disabled />
 </template>
           `.trim(),
         },
