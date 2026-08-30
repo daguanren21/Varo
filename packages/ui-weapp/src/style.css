@@ -1736,7 +1736,7 @@ textarea.varo-input__control {
   font-size: 11px;
   font-weight: 750;
   line-height: 1;
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   white-space: nowrap;
   background: var(--varo-ui-danger);
   border: 1px solid transparent;

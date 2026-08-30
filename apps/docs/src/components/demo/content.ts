@@ -82,6 +82,60 @@ import { VButton } from '@varo-ui/weapp'
         },
       },
     },
+    badge: {
+      title: 'Badge 跨端示例与演示',
+      description: '展示计数、封顶、零值、状态点和视觉变体。',
+      platforms: {
+        h5: {
+          runtime: 'H5 wrapper',
+          packageName: '@varo-ui/h5',
+          appTitle: 'H5 徽标',
+          appSubtitle: '浏览器徽标预览',
+          statusRight: '5G · H5',
+          code: `
+<script setup lang="ts">
+import { VBadge } from '@varo-ui/h5'
+<\/script>
+
+<template>
+  <div class="badge-stack">
+    <VBadge :content="3" />
+    <VBadge :content="120" :max="99" tone="primary" />
+    <VBadge :content="0" show-zero tone="default" />
+    <VBadge aria-label="在线" dot tone="success" />
+    <VBadge tone="primary">新</VBadge>
+    <VBadge tone="success" variant="soft">稳定</VBadge>
+    <VBadge tone="warning" variant="outline">审核</VBadge>
+  </div>
+</template>
+          `.trim(),
+        },
+        weapp: {
+          runtime: '小程序 wrapper',
+          packageName: '@varo-ui/weapp',
+          appTitle: '小程序徽标',
+          appSubtitle: '跨端徽标预览',
+          statusRight: '微信 · 小程序',
+          code: `
+<script setup lang="ts">
+import { VBadge } from '@varo-ui/weapp'
+<\/script>
+
+<template>
+  <view class="badge-stack">
+    <VBadge :content="3" />
+    <VBadge :content="120" :max="99" tone="primary" />
+    <VBadge :content="0" show-zero tone="default" />
+    <VBadge aria-label="在线" dot tone="success" />
+    <VBadge tone="primary">新</VBadge>
+    <VBadge tone="success" variant="soft">稳定</VBadge>
+    <VBadge tone="warning" variant="outline">审核</VBadge>
+  </view>
+</template>
+          `.trim(),
+        },
+      },
+    },
     input: {
       title: 'Input 跨端示例与演示',
       description: '展示必填清空校验、前后缀、文本域和只读/禁用状态。',
@@ -644,6 +698,60 @@ import { VButton } from '@varo-ui/weapp'
         },
       },
     },
+    badge: {
+      title: 'Badge Cross-platform Example and Preview',
+      description: 'Shows counts, caps, zero values, status dots, and visual variants.',
+      platforms: {
+        h5: {
+          runtime: 'H5 wrapper',
+          packageName: '@varo-ui/h5',
+          appTitle: 'H5 Badges',
+          appSubtitle: 'Browser badge preview',
+          statusRight: '5G · H5',
+          code: `
+<script setup lang="ts">
+import { VBadge } from '@varo-ui/h5'
+<\/script>
+
+<template>
+  <div class="badge-stack">
+    <VBadge :content="3" />
+    <VBadge :content="120" :max="99" tone="primary" />
+    <VBadge :content="0" show-zero tone="default" />
+    <VBadge aria-label="Online" dot tone="success" />
+    <VBadge tone="primary">New</VBadge>
+    <VBadge tone="success" variant="soft">Stable</VBadge>
+    <VBadge tone="warning" variant="outline">Review</VBadge>
+  </div>
+</template>
+          `.trim(),
+        },
+        weapp: {
+          runtime: 'Mini-program wrapper',
+          packageName: '@varo-ui/weapp',
+          appTitle: 'Mini-program Badges',
+          appSubtitle: 'Cross-platform badge preview',
+          statusRight: 'WeChat · Mini-program',
+          code: `
+<script setup lang="ts">
+import { VBadge } from '@varo-ui/weapp'
+<\/script>
+
+<template>
+  <view class="badge-stack">
+    <VBadge :content="3" />
+    <VBadge :content="120" :max="99" tone="primary" />
+    <VBadge :content="0" show-zero tone="default" />
+    <VBadge aria-label="Online" dot tone="success" />
+    <VBadge tone="primary">New</VBadge>
+    <VBadge tone="success" variant="soft">Stable</VBadge>
+    <VBadge tone="warning" variant="outline">Review</VBadge>
+  </view>
+</template>
+          `.trim(),
+        },
+      },
+    },
     input: {
       title: 'Input Cross-platform Example and Preview',
       description: 'Shows required clearing validation, affixes, textarea, and read-only/disabled states.',
@@ -1132,6 +1240,11 @@ export const componentDemoContent: Record<DemoKind, DemoContent> = {
     title: 'Button 跨端示例与演示',
     description: '',
     platforms: demoContent.zh.button!.platforms,
+  },
+  'badge': {
+    title: 'Badge 跨端示例与演示',
+    description: '',
+    platforms: demoContent.zh.badge!.platforms,
   },
   'cell': {
     title: 'Cell 跨端示例与演示',

@@ -50,6 +50,9 @@ describe('ui-h5 style entry', () => {
     expect(style).toContain('cursor: progress')
     expect(style).toContain('border-radius: var(--varo-ui-radius)')
     expect(style).toContain('box-shadow: var(--varo-ui-shadow-sm)')
+    expect(style).toMatch(
+      /\.varo-badge\s*\{[\s\S]*?color: var\(--varo-ui-primary-foreground\)/,
+    )
   })
 
   it('targets the stylesheet emitted by the package build', () => {

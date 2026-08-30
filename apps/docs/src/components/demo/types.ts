@@ -1,31 +1,32 @@
-export type DemoKind =
-  | 'button'
-  | 'cell'
-  | 'divider'
-  | 'elevator'
-  | 'fixed-nav'
-  | 'grid'
-  | 'image'
-  | 'indicator'
-  | 'input'
-  | 'layout'
-  | 'menu'
-  | 'navbar'
-  | 'overlay'
-  | 'pagination'
-  | 'popup'
-  | 'side-navbar'
-  | 'space'
-  | 'sticky'
-  | 'tabbar'
-  | 'tabs'
-  | 'dialog'
-  | 'overview'
+export type DemoKind
+  = | 'button'
+    | 'badge'
+    | 'cell'
+    | 'divider'
+    | 'elevator'
+    | 'fixed-nav'
+    | 'grid'
+    | 'image'
+    | 'indicator'
+    | 'input'
+    | 'layout'
+    | 'menu'
+    | 'navbar'
+    | 'overlay'
+    | 'pagination'
+    | 'popup'
+    | 'side-navbar'
+    | 'space'
+    | 'sticky'
+    | 'tabbar'
+    | 'tabs'
+    | 'dialog'
+    | 'overview'
 
 export type Locale = 'zh' | 'en'
 export type Platform = 'h5' | 'weapp'
 
-export type PlatformContent = {
+export interface PlatformContent {
   runtime: string
   packageName: string
   appTitle: string
@@ -59,7 +60,7 @@ export type PlatformContent = {
   overlayText?: string
 }
 
-export type DemoContent = {
+export interface DemoContent {
   title: string
   description: string
   platforms: Record<Platform, PlatformContent>

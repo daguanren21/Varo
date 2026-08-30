@@ -1,6 +1,7 @@
 import type { Component } from 'vue'
 import type { Platform } from './types'
 import {
+  VBadge as H5Badge,
   VButton as H5Button,
   VCell as H5Cell,
   VCellGroup as H5CellGroup,
@@ -35,6 +36,7 @@ import {
   VTabs as H5Tabs,
 } from '@varo-ui/h5'
 import {
+  VBadge as WeappBadge,
   VButton as WeappButton,
   VCell as WeappCell,
   VCellGroup as WeappCellGroup,
@@ -70,6 +72,7 @@ import {
 } from '@varo-ui/weapp'
 
 export interface DemoRuntime {
+  Badge: Component
   Button: Component
   Cell: Component
   CellGroup: Component
@@ -105,6 +108,7 @@ export interface DemoRuntime {
 }
 
 const h5Runtime: DemoRuntime = {
+  Badge: H5Badge,
   Button: H5Button,
   Cell: H5Cell,
   CellGroup: H5CellGroup,
@@ -140,6 +144,7 @@ const h5Runtime: DemoRuntime = {
 }
 
 const weappRuntime: DemoRuntime = {
+  Badge: WeappBadge,
   Button: WeappButton,
   Cell: WeappCell,
   CellGroup: WeappCellGroup,

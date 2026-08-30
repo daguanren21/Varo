@@ -211,6 +211,45 @@ describe('PlatformTabsDemo', () => {
     expect(layout.get('.varo-button[data-block="true"]').text()).toBe('继续')
   })
 
+  it('presents compact Badge counts, status dots, and visual variants', () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'badge',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
+    expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
+    expect(wrapper.findAll('.platform-demo__badge-sample')).toHaveLength(1)
+    expect(wrapper.findAll('.platform-demo__badge-sample .varo-badge')).toHaveLength(10)
+
+    const counts = wrapper.get('[data-case="counts"]').findAll('.varo-badge')
+    expect(counts.map(badge => badge.text())).toEqual(['3', '12', '99+', '0'])
+    expect(counts.map(badge => badge.attributes('aria-label'))).toEqual([
+      '3 条未读消息',
+      '12 个待办任务',
+      '120 条提及',
+      '0 个草稿',
+    ])
+
+    const statuses = wrapper.get('[data-case="statuses"]').findAll('.varo-badge')
+    expect(statuses).toHaveLength(3)
+    expect(statuses.every(badge => badge.attributes('data-dot') === 'true')).toBe(true)
+    expect(statuses.map(badge => badge.attributes('aria-label'))).toEqual(['在线', '同步中', '离线'])
+
+    const variants = wrapper.get('[data-case="variants"]').findAll('.varo-badge')
+    expect(variants.map(badge => badge.text())).toEqual(['新', '稳定', '审核'])
+    expect(variants.map(badge => badge.attributes('data-variant'))).toEqual([
+      'solid',
+      'soft',
+      'outline',
+    ])
+  })
+
   it('supports roving keyboard selection for platform tabs', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {

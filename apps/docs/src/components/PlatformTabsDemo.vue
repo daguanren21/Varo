@@ -131,6 +131,46 @@ const buttonSampleCopy = computed(() => props.locale === 'en'
       square: '直角',
     })
 
+const badgeSampleCopy = computed(() => props.locale === 'en'
+  ? {
+      counts: 'Counts',
+      inbox: 'Inbox',
+      tasks: 'Tasks',
+      mentions: 'Mentions',
+      drafts: 'Drafts',
+      inboxLabel: '3 unread inbox items',
+      tasksLabel: '12 open tasks',
+      mentionsLabel: '120 mentions',
+      draftsLabel: '0 drafts',
+      statuses: 'Status dots',
+      online: 'Online',
+      syncing: 'Syncing',
+      offline: 'Offline',
+      variants: 'Variants',
+      new: 'New',
+      stable: 'Stable',
+      review: 'Review',
+    }
+  : {
+      counts: '计数',
+      inbox: '收件箱',
+      tasks: '任务',
+      mentions: '提及',
+      drafts: '草稿',
+      inboxLabel: '3 条未读消息',
+      tasksLabel: '12 个待办任务',
+      mentionsLabel: '120 条提及',
+      draftsLabel: '0 个草稿',
+      statuses: '状态点',
+      online: '在线',
+      syncing: '同步中',
+      offline: '离线',
+      variants: '变体',
+      new: '新',
+      stable: '稳定',
+      review: '审核',
+    })
+
 const inputSampleCopy = computed(() => props.locale === 'en'
   ? {
       clearable: 'Required and clearable',
@@ -480,6 +520,103 @@ onBeforeUnmount(() => {
                             </div>
                             <component :is="runtime.Button" block native-type="button">
                               {{ buttonSampleCopy.continue }}
+                            </component>
+                          </div>
+                        </section>
+                      </div>
+                    </section>
+                  </template>
+
+                  <template v-else-if="example === 'badge'">
+                    <section class="platform-demo__badge-sample">
+                      <div class="platform-demo__badge-cases">
+                        <section class="platform-demo__badge-case" data-case="counts">
+                          <h3>{{ badgeSampleCopy.counts }}</h3>
+                          <div class="platform-demo__badge-counts">
+                            <div>
+                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.inbox }}</span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.inboxLabel"
+                                :content="3"
+                              />
+                            </div>
+                            <div>
+                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.tasks }}</span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.tasksLabel"
+                                :content="12"
+                                tone="primary"
+                              />
+                            </div>
+                            <div>
+                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.mentions }}</span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.mentionsLabel"
+                                :content="120"
+                                :max="99"
+                                tone="warning"
+                              />
+                            </div>
+                            <div>
+                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.drafts }}</span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.draftsLabel"
+                                :content="0"
+                                show-zero
+                                tone="default"
+                              />
+                            </div>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__badge-case" data-case="statuses">
+                          <h3>{{ badgeSampleCopy.statuses }}</h3>
+                          <div class="platform-demo__badge-statuses">
+                            <span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.online"
+                                dot
+                                tone="success"
+                              />
+                              {{ badgeSampleCopy.online }}
+                            </span>
+                            <span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.syncing"
+                                dot
+                                tone="warning"
+                              />
+                              {{ badgeSampleCopy.syncing }}
+                            </span>
+                            <span>
+                              <component
+                                :is="runtime.Badge"
+                                :aria-label="badgeSampleCopy.offline"
+                                dot
+                                tone="default"
+                              />
+                              {{ badgeSampleCopy.offline }}
+                            </span>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__badge-case" data-case="variants">
+                          <h3>{{ badgeSampleCopy.variants }}</h3>
+                          <div class="platform-demo__badge-variants">
+                            <component :is="runtime.Badge" tone="primary">
+                              {{ badgeSampleCopy.new }}
+                            </component>
+                            <component :is="runtime.Badge" tone="success" variant="soft">
+                              {{ badgeSampleCopy.stable }}
+                            </component>
+                            <component :is="runtime.Badge" tone="warning" variant="outline">
+                              {{ badgeSampleCopy.review }}
                             </component>
                           </div>
                         </section>
@@ -3314,6 +3451,143 @@ onBeforeUnmount(() => {
 
   .platform-demo__button-row {
     gap: 8px;
+  }
+}
+
+/* Badge sample — compact counts and statuses without oversized pill treatments. */
+.platform-demo__badge-sample {
+  box-sizing: border-box;
+  width: min(100%, 680px);
+  padding: 20px;
+  margin-inline: auto;
+  color: var(--varo-foreground);
+  background: var(--demo-phone-card);
+  border: 1px solid var(--demo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__badge-cases {
+  display: grid;
+}
+
+.platform-demo__badge-case {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  padding-block: 20px;
+  border-top: 1px solid var(--demo-border);
+}
+
+.platform-demo__badge-case:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.platform-demo__badge-case:last-child {
+  padding-bottom: 0;
+}
+
+.platform-demo__badge-case h3 {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--varo-foreground);
+}
+
+.platform-demo__badge-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.platform-demo__badge-counts > div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 12px;
+  background: var(--varo-card-muted);
+  border-radius: 8px;
+}
+
+.platform-demo__badge-count-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  font-weight: 620;
+  color: var(--varo-muted);
+  white-space: nowrap;
+}
+
+.platform-demo__badge-statuses,
+.platform-demo__badge-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.platform-demo__badge-statuses > span {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 620;
+  color: var(--varo-foreground);
+}
+
+.platform-demo__badge-sample :deep(.varo-badge) {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.platform-demo__preview-content[data-example='badge'] {
+  display: block;
+}
+
+.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='badge']) {
+  width: min(100%, 720px);
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='badge']) {
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+}
+
+.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='badge']) {
+  padding: 0;
+}
+
+.platform-demo__stage:has(.platform-demo__preview-content[data-example='badge']) .platform-demo__code-shell {
+  --demo-code-bg: var(--demo-surface-strong);
+  --demo-code-surface: var(--demo-surface);
+  --demo-code-border: var(--demo-border);
+  --demo-code-text: var(--varo-foreground);
+  --demo-code-muted: var(--demo-text-muted);
+}
+
+@media (max-width: 640px) {
+  .platform-demo__badge-sample {
+    padding: 16px;
+  }
+
+  .platform-demo__badge-counts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .platform-demo__badge-statuses,
+  .platform-demo__badge-variants {
+    gap: 12px;
   }
 }
 

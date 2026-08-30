@@ -145,6 +145,7 @@ export default defineConfig({
                 collapsed: true,
                 items: [
                   { text: 'Button 按钮', link: '/components/button' },
+                  { text: 'Badge 徽标', link: '/components/badge' },
                   { text: 'Cell 单元格', link: '/components/cell' },
                   { text: 'Image 图片', link: '/components/image' },
                   { text: 'Input 输入框', link: '/components/input' },
@@ -392,6 +393,7 @@ export default defineConfig({
                 collapsed: true,
                 items: [
                   { text: 'Button', link: '/en/components/button' },
+                  { text: 'Badge', link: '/en/components/badge' },
                   { text: 'Cell', link: '/en/components/cell' },
                   { text: 'Image', link: '/en/components/image' },
                   { text: 'Input', link: '/en/components/input' },

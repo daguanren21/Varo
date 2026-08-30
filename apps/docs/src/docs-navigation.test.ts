@@ -149,6 +149,20 @@ describe('docs navigation', () => {
     })
   })
 
+  it('links Badge documentation in both locales and from the Registry manifest', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const badgeManifest = readFileSync(
+      resolve(workspaceRoot, 'registry/components/badge/registry.json'),
+      'utf8',
+    )
+
+    expect(config).toContain('{ text: \'Badge 徽标\', link: \'/components/badge\' }')
+    expect(config).toContain('{ text: \'Badge\', link: \'/en/components/badge\' }')
+    expect(existsSync(resolve(docsRoot, 'components/badge.md'))).toBe(true)
+    expect(existsSync(resolve(docsRoot, 'en/components/badge.md'))).toBe(true)
+    expect(badgeManifest).toContain('\"docs\": \"/components/badge\"')
+  })
+
   it('links the Varo color system in both locales', () => {
     const config = readFileSync(configPath, 'utf8')
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
