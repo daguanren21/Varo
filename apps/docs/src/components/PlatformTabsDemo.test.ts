@@ -21,7 +21,7 @@ describe('PlatformTabsDemo', () => {
     vi.useRealTimers()
   })
 
-  it('renders phone-frame preview chrome with compact metadata and collapsed example code', async () => {
+  it('renders a focused preview without runtime metadata or fake device chrome', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -33,6 +33,7 @@ describe('PlatformTabsDemo', () => {
     })
 
     expect(wrapper.find('.platform-demo__note').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__head p').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('说明')
     expect(wrapper.text()).not.toContain('适合浏览器页面里的表单提交')
 
@@ -40,10 +41,10 @@ describe('PlatformTabsDemo', () => {
     expect(stage.attributes('data-layout')).toBe('controls-preview')
     expect(wrapper.find('.platform-demo__platform-switch').exists()).toBe(true)
     expect(wrapper.find('.platform-demo__phone-frame').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__phone-status').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(true)
-    expect(wrapper.get('.platform-demo__meta-card strong').text()).toContain('H5')
+    expect(wrapper.find('.platform-demo__phone-status').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
+    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
     expect(wrapper.find('.platform-demo__code-section').exists()).toBe(false)
 
     const toggle = wrapper.get('.platform-demo__code-toggle')
@@ -72,7 +73,7 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('false')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/h5')
+    expect(codeSection.get('.platform-demo__code-head').text()).not.toContain('@varo-ui/h5')
     expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
     expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
 
@@ -80,6 +81,45 @@ describe('PlatformTabsDemo', () => {
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
     expect(copyButton.text()).toContain('复制 H5 代码')
     expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
+  })
+
+  it('presents Image as a theme-aware content component', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'image',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.find('.platform-demo__head p').exists()).toBe(false)
+    expect(wrapper.get('.platform-demo__image-feature img').attributes('src')).toBe('/blocks/retail-home.png')
+    expect(wrapper.findAll('.platform-demo__image-item')).toHaveLength(2)
+    await wrapper.get('.platform-demo__image-item[data-state="error"] img').trigger('error')
+    expect(wrapper.find('.platform-demo__broken-image').exists()).toBe(true)
+    expect(wrapper.text()).toContain('自适应封面')
+    expect(wrapper.text()).toContain('品牌头像')
+    expect(wrapper.text()).toContain('资源不可用')
+    expect(wrapper.text()).not.toContain('Vant')
+    expect(wrapper.text()).not.toContain('NutUI')
+  })
+
+  it('groups Cell examples inside one component-owned container', () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'cell',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.findAll('.platform-demo__cell-demo')).toHaveLength(1)
+    expect(wrapper.findAll('.varo-cell-group')).toHaveLength(6)
+    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
   })
 
   it('supports roving keyboard selection for platform tabs', async () => {
@@ -141,11 +181,11 @@ describe('PlatformTabsDemo', () => {
     expect(codeTabs[1]!.attributes('aria-selected')).toBe('true')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序组件')
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/weapp')
+    expect(codeSection.get('.platform-demo__code-head').text()).not.toContain('@varo-ui/weapp')
     expect(codeSection.get('code').text()).toContain('from \'@varo-ui/weapp\'')
     expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
-    expect(wrapper.get('.platform-demo__runtime-pill').text()).toContain('小程序')
+    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
 
     const copyButton = wrapper.get('.platform-demo__code-copy')
     expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')

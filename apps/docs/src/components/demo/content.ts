@@ -166,7 +166,7 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
     },
     image: {
       title: 'Image 跨端示例与演示',
-      description: '对齐 Vant / NutUI 图片能力，展示填充模式、圆形图片、加载占位与失败态。',
+      description: '',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -180,9 +180,9 @@ import { VImage } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="资源不可用" />
 </template>
           `.trim(),
         },
@@ -198,9 +198,9 @@ import { VImage } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="加载失败" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="资源不可用" />
 </template>
           `.trim(),
         },
@@ -660,7 +660,7 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
     },
     image: {
       title: 'Image Cross-platform Example and Preview',
-      description: 'Aligned with Vant and NutUI image capabilities: fit modes, round image, loading placeholder, and error state.',
+      description: '',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -674,9 +674,9 @@ import { VImage } from '@varo-ui/h5'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="Unavailable" />
 </template>
           `.trim(),
         },
@@ -692,9 +692,9 @@ import { VImage } from '@varo-ui/weapp'
 <\/script>
 
 <template>
-  <VImage src="/logo.png" width="96" height="96" fit="cover" radius="12px" />
-  <VImage src="/logo.png" width="64" height="64" round />
-  <VImage src="/not-found.png" width="96" height="96" error-text="Load failed" />
+  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
+  <VImage src="/not-found.png" :width="72" :height="72" error-text="Unavailable" />
 </template>
           `.trim(),
         },

@@ -101,13 +101,11 @@ const codeExamples = computed(() => [
   {
     key: 'h5' as Platform,
     title: copy.value.h5CodeTitle,
-    packageName: demo.value.platforms.h5.packageName,
     code: demo.value.platforms.h5.code
   },
   {
     key: 'weapp' as Platform,
     title: copy.value.weappCodeTitle,
-    packageName: demo.value.platforms.weapp.packageName,
     code: demo.value.platforms.weapp.code
   }
 ])
@@ -117,7 +115,6 @@ const activeCodeExample = computed(
 const hasControls = computed(
   () => props.example === 'button' || props.example === 'input' || props.example === 'overview'
 )
-const statusTime = computed(() => (props.locale === 'en' ? '9:41' : '09:41'))
 const codeToggleLabel = computed(() =>
   codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand
 )
@@ -226,7 +223,6 @@ onBeforeUnmount(() => {
     <header class="platform-demo__head">
       <div>
         <h2>{{ demo.title }}</h2>
-        <p>{{ demo.description }}</p>
       </div>
       <div class="platform-demo__platform-switch" role="tablist" :aria-label="copy.runtimeLabel">
         <button
@@ -330,38 +326,13 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div class="platform-demo__meta-grid">
-          <div class="platform-demo__meta-card">
-            <span>{{ copy.runtimeLabel }}</span>
-            <strong>{{ platformDemo.runtime }}</strong>
-          </div>
-          <div class="platform-demo__meta-card">
-            <span>{{ copy.packageLabel }}</span>
-            <strong>{{ platformDemo.packageName }}</strong>
-          </div>
-        </div>
       </section>
 
       <section class="platform-demo__panel platform-demo__panel--preview">
-        <div class="platform-demo__preview-toolbar">
-          <span class="platform-demo__preview-label">{{ copy.previewTitle }}</span>
-          <span class="platform-demo__runtime-pill" :data-platform="activePlatform">
-            {{ platformDemo.runtime }}
-          </span>
-        </div>
 
         <div class="platform-demo__phone-frame" :data-platform="activePlatform">
           <div class="platform-demo__phone-bezel">
-            <div class="platform-demo__phone-notch" aria-hidden="true" />
             <div class="platform-demo__phone-screen">
-              <div class="platform-demo__phone-status">
-                <span>{{ statusTime }}</span>
-                <span>{{ platformDemo.statusRight }}</span>
-              </div>
-              <div class="platform-demo__phone-appbar">
-                <h4>{{ platformDemo.appTitle }}</h4>
-                <p>{{ platformDemo.appSubtitle }}</p>
-              </div>
               <div class="platform-demo__phone-content">
                 <div class="platform-demo__preview-content" :data-example="example">
                 <template v-if="example === 'button'">
@@ -489,41 +460,61 @@ onBeforeUnmount(() => {
 
                 <template v-else-if="example === 'image'">
                   <section class="platform-demo__image-demo">
-                    <div class="platform-demo__image-item">
+                    <div class="platform-demo__image-feature">
                       <component
                         :is="runtime.Image"
-                        src="/logo.png"
-                        alt="Varo"
-                        width="96"
-                        height="96"
+                        src="/blocks/retail-home.png"
+                        alt="Varo retail storefront"
+                        width="100%"
+                        :height="176"
                         fit="cover"
-                        radius="14px"
+                        radius="18px"
                       />
-                      <span>{{ copy.imageBasic }}</span>
+                      <div class="platform-demo__image-caption">
+                        <strong>{{ copy.imageBasic }}</strong>
+                        <span>cover · 16:9</span>
+                      </div>
                     </div>
-                    <div class="platform-demo__image-item">
-                      <component
-                        :is="runtime.Image"
-                        src="/logo.png"
-                        alt="Varo"
-                        width="72"
-                        height="72"
-                        fit="cover"
-                        round
-                      />
-                      <span>{{ copy.imageRound }}</span>
-                    </div>
-                    <div class="platform-demo__image-item">
-                      <component
-                        :is="runtime.Image"
-                        src="/not-found.png"
-                        alt=""
-                        width="96"
-                        height="96"
-                        fit="cover"
-                        error-text="!"
-                      />
-                      <span>{{ copy.imageError }}</span>
+
+                    <div class="platform-demo__image-state-grid">
+                      <article class="platform-demo__image-item" data-state="brand">
+                        <component
+                          :is="runtime.Image"
+                          src="/brand-assets/varo-app-icon.png"
+                          alt="Varo"
+                          :width="72"
+                          :height="72"
+                          fit="cover"
+                          round
+                        />
+                        <span>{{ copy.imageRound }}</span>
+                      </article>
+
+                      <article class="platform-demo__image-item" data-state="error">
+                        <component
+                          :is="runtime.Image"
+                          src="/not-found.png"
+                          alt=""
+                          :width="72"
+                          :height="72"
+                          fit="cover"
+                        >
+                          <template #error>
+                            <svg
+                              class="platform-demo__broken-image"
+                              viewBox="0 0 48 48"
+                              fill="none"
+                              aria-hidden="true"
+                            >
+                              <path d="M7 7h34v34H7z" />
+                              <path d="m7 34 9-9 7 7 5-5 13 12" />
+                              <circle cx="34" cy="16" r="4" />
+                              <path d="m25 7-4 9 6 5-5 8" />
+                            </svg>
+                          </template>
+                        </component>
+                        <span>{{ copy.imageError }}</span>
+                      </article>
                     </div>
                   </section>
                 </template>
@@ -982,7 +973,6 @@ onBeforeUnmount(() => {
           >
             <div class="platform-demo__code-head">
               <strong>{{ activeCodeExample.title }}</strong>
-              <span>{{ activeCodeExample.packageName }}</span>
             </div>
             <pre><code>{{ activeCodeExample.code }}</code></pre>
             <p
@@ -1019,11 +1009,19 @@ onBeforeUnmount(() => {
   --demo-code-border: #304056;
   --demo-code-text: #e8eef5;
   --demo-code-muted: #9eacc0;
+  --demo-duration-instant: 100ms;
+  --demo-duration-fast: 160ms;
+  --demo-duration-enter: 180ms;
+  --demo-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   margin: 24px 0;
   padding: 0;
   border: 0;
   background: transparent;
   box-shadow: none;
+}
+
+:where(.platform-demo button) {
+  transition: transform var(--demo-duration-fast) var(--demo-ease-out);
 }
 
 .platform-demo__head {
@@ -1039,12 +1037,6 @@ onBeforeUnmount(() => {
   letter-spacing: -0.03em;
 }
 
-.platform-demo__head p {
-  margin: 8px 0 0;
-  color: var(--demo-text-muted);
-  max-width: 52ch;
-  line-height: 1.55;
-}
 
 .platform-demo__platform-switch {
   display: inline-flex;
@@ -1067,8 +1059,9 @@ onBeforeUnmount(() => {
   font-weight: 700;
   cursor: pointer;
   transition:
-    background 160ms ease,
-    color 160ms ease;
+    background var(--demo-duration-instant) var(--demo-ease-out),
+    color var(--demo-duration-instant) var(--demo-ease-out),
+    transform var(--demo-duration-instant) var(--demo-ease-out);
 }
 
 .platform-demo__platform-tab:focus-visible {
@@ -1122,61 +1115,12 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--demo-surface-strong) 88%, transparent);
 }
 
-.platform-demo__meta-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.platform-demo__meta-card {
-  padding: 12px 14px;
-  border: 1px solid var(--demo-border);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--demo-surface-strong) 92%, transparent);
-}
-
-.platform-demo__meta-card span {
-  display: block;
-  color: var(--demo-text-muted);
-  font-size: 0.78rem;
-}
-
-.platform-demo__meta-card strong {
-  display: block;
-  margin-top: 6px;
-  font-size: 0.92rem;
-  word-break: break-all;
-}
 
 .platform-demo__panel--preview {
   display: grid;
   gap: 14px;
 }
 
-.platform-demo__preview-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.platform-demo__runtime-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid var(--demo-border);
-  background: var(--demo-surface-strong);
-  color: var(--demo-text-muted);
-  font-size: 0.76rem;
-  font-weight: 700;
-}
-
-.platform-demo__runtime-pill[data-platform='weapp'] {
-  color: var(--varo-color-success);
-  border-color: color-mix(in srgb, var(--varo-color-success) 35%, var(--demo-border));
-  background: color-mix(in srgb, var(--varo-color-success) 12%, var(--demo-surface-strong));
-}
 
 .platform-demo__phone-frame {
   display: flex;
@@ -1185,71 +1129,23 @@ onBeforeUnmount(() => {
 
 .platform-demo__phone-bezel {
   position: relative;
-  width: min(100%, 390px);
-  padding: 12px;
-  border-radius: 40px;
-  background: var(--demo-phone-shell);
-  box-shadow:
-    0 28px 80px color-mix(in srgb, var(--varo-foreground) 28%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--varo-card-solid) 14%, transparent);
+  width: min(100%, 420px);
 }
 
-.platform-demo__phone-notch {
-  position: absolute;
-  top: 16px;
-  left: 50%;
-  z-index: 3;
-  width: 118px;
-  height: 22px;
-  border-radius: 0 0 14px 14px;
-  transform: translateX(-50%);
-  background: color-mix(in srgb, var(--varo-foreground) 98%, var(--varo-bg));
-}
 
 .platform-demo__phone-screen {
   position: relative;
-  overflow: hidden;
   min-height: 560px;
-  border-radius: 30px;
-  background: var(--demo-phone-screen);
+  overflow: hidden;
   color: var(--vp-c-text-1);
+  background: var(--demo-phone-screen);
 }
 
-.platform-demo__phone-status,
-.platform-demo__phone-appbar,
+
 .platform-demo__phone-content {
   position: relative;
   z-index: 1;
-}
-
-.platform-demo__phone-status {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 18px 8px;
-  color: var(--demo-text-muted);
-  font-size: 0.74rem;
-  font-weight: 700;
-}
-
-.platform-demo__phone-appbar {
-  padding: 4px 18px 10px;
-}
-
-.platform-demo__phone-appbar h4 {
-  margin: 0;
-  font-size: 1.08rem;
-  letter-spacing: -0.03em;
-}
-
-.platform-demo__phone-appbar p {
-  margin: 4px 0 0;
-  color: var(--demo-text-muted);
-  font-size: 0.82rem;
-}
-
-.platform-demo__phone-content {
-  padding: 0 14px 18px;
+  padding: 20px;
 }
 
 .platform-demo__preview-content {
@@ -1320,9 +1216,10 @@ onBeforeUnmount(() => {
   font-weight: 600;
   cursor: pointer;
   transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    color 160ms ease;
+    border-color var(--demo-duration-instant) var(--demo-ease-out),
+    background var(--demo-duration-instant) var(--demo-ease-out),
+    color var(--demo-duration-instant) var(--demo-ease-out),
+    transform var(--demo-duration-instant) var(--demo-ease-out);
 }
 
 .platform-demo__code-tab[data-active='true'] {
@@ -1354,9 +1251,10 @@ onBeforeUnmount(() => {
   cursor: pointer;
   white-space: nowrap;
   transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    color 160ms ease;
+    border-color var(--demo-duration-fast) var(--demo-ease-out),
+    background var(--demo-duration-fast) var(--demo-ease-out),
+    color var(--demo-duration-fast) var(--demo-ease-out),
+    transform var(--demo-duration-fast) var(--demo-ease-out);
 }
 
 .platform-demo__code-toggle:hover,
@@ -1473,12 +1371,10 @@ onBeforeUnmount(() => {
 @media (max-width: 640px) {
   .platform-demo__phone-bezel {
     width: 100%;
-    border-radius: 28px;
   }
 
   .platform-demo__phone-screen {
     min-height: 480px;
-    border-radius: 22px;
   }
 }
 
@@ -1492,7 +1388,6 @@ onBeforeUnmount(() => {
 .platform-demo__head > div,
 .platform-demo__stage > *,
 .platform-demo__panel,
-.platform-demo__meta-grid,
 .platform-demo__control-group,
 .platform-demo__preview-content,
 .platform-demo__field,
@@ -1500,7 +1395,6 @@ onBeforeUnmount(() => {
   min-width: 0;
 }
 
-.platform-demo__meta-card,
 .platform-demo__control-group {
   padding: 14px;
   border: 1px solid var(--demo-border);
@@ -1508,9 +1402,7 @@ onBeforeUnmount(() => {
   background: var(--demo-surface-strong);
 }
 
-.platform-demo__meta-card span,
-.platform-demo__control-group span,
-.platform-demo__preview-label {
+.platform-demo__control-group span {
   display: block;
   color: var(--varo-muted, var(--vp-c-text-2));
   font-size: 0.78rem;
@@ -1537,10 +1429,11 @@ onBeforeUnmount(() => {
   font-weight: 600;
   cursor: pointer;
   transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    color 160ms ease,
-    box-shadow 160ms ease;
+    border-color var(--demo-duration-instant) var(--demo-ease-out),
+    background var(--demo-duration-instant) var(--demo-ease-out),
+    color var(--demo-duration-instant) var(--demo-ease-out),
+    box-shadow var(--demo-duration-instant) var(--demo-ease-out),
+    transform var(--demo-duration-instant) var(--demo-ease-out);
 }
 
 .platform-demo__chip[data-active='true'] {
@@ -1563,24 +1456,6 @@ onBeforeUnmount(() => {
   outline-offset: 2px;
 }
 
-@keyframes platform-demo-code-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.platform-demo__preview-content[data-example='cell'] {
-  max-height: 680px;
-  overflow-y: auto;
-  align-content: start;
-  gap: 12px;
-}
 
 .platform-demo__card {
   padding: 14px;
@@ -1630,8 +1505,8 @@ onBeforeUnmount(() => {
 
 .platform-demo__image-demo {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
+  padding: 16px;
 }
 
 .platform-demo__divider-demo,
@@ -1848,8 +1723,8 @@ onBeforeUnmount(() => {
     radial-gradient(circle at 22% 22%, color-mix(in srgb, var(--demo-brand) 18%, transparent), transparent 28%),
     linear-gradient(135deg, color-mix(in srgb, var(--demo-brand) 14%, transparent), color-mix(in srgb, var(--vp-c-brand-3) 14%, transparent));
   transition:
-    background 0.24s ease,
-    transform 0.24s ease;
+    background var(--demo-duration-enter) var(--demo-ease-out),
+    transform var(--demo-duration-enter) var(--demo-ease-out);
 }
 
 .platform-demo__indicator-slide span {
@@ -1878,9 +1753,9 @@ onBeforeUnmount(() => {
   background: color-mix(in srgb, var(--varo-muted) 28%, transparent);
   cursor: pointer;
   transition:
-    width 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    width var(--demo-duration-fast) var(--demo-ease-out),
+    background-color var(--demo-duration-fast) var(--demo-ease-out),
+    transform var(--demo-duration-fast) var(--demo-ease-out);
 }
 
 :deep(.varo-indicator__item:hover) {
@@ -1951,7 +1826,7 @@ onBeforeUnmount(() => {
   border-bottom: 1.5px solid currentColor;
   opacity: 0.68;
   transform: translateY(-2px) rotate(45deg);
-  transition: transform 0.2s ease;
+  transition: transform var(--demo-duration-fast) var(--demo-ease-out);
 }
 
 :deep(.varo-menu__item[data-open='true'] .varo-menu__arrow) {
@@ -2409,29 +2284,76 @@ onBeforeUnmount(() => {
   font-size: 0.82rem;
 }
 
-.platform-demo__image-item {
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  padding: 16px;
-  color: var(--vp-c-text-2);
-  font-size: 0.82rem;
+.platform-demo__image-feature {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--demo-phone-card) 94%, transparent);
+  border: 1px solid var(--demo-border);
+  border-radius: 18px;
 }
 
-.platform-demo__image-item:first-child {
-  grid-row: span 2;
+.platform-demo__image-feature :deep(.varo-image) {
+  display: flex;
+  width: 100%;
+}
+
+.platform-demo__image-caption {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  color: #fff;
+  background: color-mix(in srgb, #10151d 72%, transparent);
+  border: 1px solid color-mix(in srgb, #fff 10%, transparent);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.platform-demo__image-caption strong {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.platform-demo__image-caption span {
+  font-size: 0.72rem;
+  color: color-mix(in srgb, #fff 68%, transparent);
+}
+
+.platform-demo__image-state-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.platform-demo__image-item {
+  display: grid;
+  gap: 10px;
   align-content: center;
+  justify-items: center;
+  min-height: 136px;
+  padding: 16px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--demo-text-muted);
+  background: color-mix(in srgb, var(--demo-phone-card) 92%, transparent);
+  border: 1px solid var(--demo-border);
+  border-radius: 16px;
 }
 
 :deep(.varo-image) {
   position: relative;
   display: inline-flex;
   flex: none;
-  overflow: hidden;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--varo-muted) 12%, transparent);
-  color: var(--vp-c-text-2);
+  overflow: hidden;
+  color: var(--demo-text-muted);
+  background: color-mix(in srgb, var(--demo-phone-card) 88%, transparent);
 }
 
 :deep(.varo-image__img) {
@@ -2447,10 +2369,35 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--varo-surface-strong) 94%, transparent);
-  color: var(--vp-c-text-2);
-  font-size: 0.82rem;
-  font-weight: 700;
+  color: var(--demo-text-muted);
+  background: color-mix(in srgb, var(--demo-phone-card) 92%, transparent);
+}
+
+.platform-demo__image-item[data-state='error'] :deep(.varo-image) {
+  background: color-mix(in srgb, var(--demo-phone-card) 84%, transparent);
+  border: 1px dashed var(--demo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__image-item[data-state='error'] :deep(.varo-image__error) {
+  background: transparent;
+}
+
+.platform-demo__image-item[data-state='error'] :deep(.varo-image[data-error='true'] .varo-image__img) {
+  visibility: hidden;
+}
+
+.platform-demo__broken-image {
+  width: 34px;
+  height: 34px;
+  color: var(--demo-text-muted);
+}
+
+.platform-demo__broken-image :is(path, circle) {
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .platform-demo__overlay-demo,
@@ -2745,6 +2692,7 @@ onBeforeUnmount(() => {
   display: grid;
   gap: 14px;
   width: 100%;
+  padding: 16px;
 }
 
 :deep(.varo-cell-group__header) {
@@ -2904,7 +2852,6 @@ onBeforeUnmount(() => {
 .platform-demo__card,
 .platform-demo__divider-demo,
 .platform-demo__grid-demo,
-.platform-demo__image-item,
 .platform-demo__layout-demo,
 .platform-demo__nav-demo,
 .platform-demo__overlay-demo,
@@ -3048,5 +2995,15 @@ onBeforeUnmount(() => {
 :deep(.varo-tabbar__badge),
 :deep(.varo-tabbar__dot) {
   background: var(--varo-danger);
+}
+
+.platform-demo button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .platform-demo button {
+    transition: none;
+  }
 }
 </style>
