@@ -54,7 +54,7 @@ import { VButton } from '@varo-ui/weapp'
     },
     input: {
       title: 'Input 跨端示例与演示',
-      description: '统一展示 H5 和小程序输入框的值同步、非法状态与非受控用法。',
+      description: '在真实资料编辑场景中展示受控输入、清空、字数提示与错误恢复。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -62,21 +62,20 @@ import { VButton } from '@varo-ui/weapp'
           appTitle: 'H5 表单',
           appSubtitle: '浏览器输入体验',
           statusRight: '5G · H5',
-          controlledLabel: '受控输入',
-          uncontrolledLabel: '非受控输入',
-          placeholder: '请输入内容',
-          defaultValue: '默认内容',
+          controlledLabel: '显示名称',
+          uncontrolledLabel: '显示名称',
+          placeholder: '例如：林默',
+          defaultValue: '林默',
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
 import { VInput } from '@varo-ui/h5'
 
-const value = ref('')
+const name = ref('林默')
 <\/script>
 
 <template>
-  <VInput v-model:value="value" placeholder="请输入内容" />
-  <VInput default-value="默认内容" />
+  <VInput v-model:value="name" clearable :max-length="16" placeholder="例如：林默" show-word-limit />
 </template>
           `.trim(),
         },
@@ -86,21 +85,20 @@ const value = ref('')
           appTitle: '小程序表单',
           appSubtitle: '跨端输入体验',
           statusRight: '微信 · 小程序',
-          controlledLabel: '手机号输入',
-          uncontrolledLabel: '备注输入',
-          placeholder: '请输入手机号',
-          defaultValue: '留言备注',
+          controlledLabel: '显示名称',
+          uncontrolledLabel: '显示名称',
+          placeholder: '例如：林默',
+          defaultValue: '林默',
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
 import { VInput } from '@varo-ui/weapp'
 
-const mobile = ref('')
+const name = ref('林默')
 <\/script>
 
 <template>
-  <VInput v-model:value="mobile" placeholder="请输入手机号" />
-  <VInput default-value="留言备注" />
+  <VInput v-model:value="name" clearable :max-length="16" placeholder="例如：林默" show-word-limit />
 </template>
           `.trim(),
         },
@@ -548,7 +546,7 @@ import { VButton } from '@varo-ui/weapp'
     },
     input: {
       title: 'Input Cross-platform Example and Preview',
-      description: 'The same section now documents controlled input, invalid state, and uncontrolled usage for both runtimes.',
+      description: 'A realistic profile-editing sample covering controlled input, clear, count, validation, and recovery.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -556,21 +554,20 @@ import { VButton } from '@varo-ui/weapp'
           appTitle: 'H5 Form',
           appSubtitle: 'Browser input preview',
           statusRight: '5G · H5',
-          controlledLabel: 'Controlled input',
-          uncontrolledLabel: 'Uncontrolled input',
-          placeholder: 'Type here',
-          defaultValue: 'Default content',
+          controlledLabel: 'Display name',
+          uncontrolledLabel: 'Display name',
+          placeholder: 'e.g. Avery Lin',
+          defaultValue: 'Avery Lin',
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
 import { VInput } from '@varo-ui/h5'
 
-const value = ref('')
+const name = ref('Avery Lin')
 <\/script>
 
 <template>
-  <VInput v-model:value="value" placeholder="Type here" />
-  <VInput default-value="Default content" />
+  <VInput v-model:value="name" clearable :max-length="16" placeholder="e.g. Avery Lin" show-word-limit />
 </template>
           `.trim(),
         },
@@ -580,21 +577,20 @@ const value = ref('')
           appTitle: 'Mini-program Form',
           appSubtitle: 'Cross-platform input preview',
           statusRight: 'WeChat · Mini-program',
-          controlledLabel: 'Phone input',
-          uncontrolledLabel: 'Notes',
-          placeholder: 'Phone number',
-          defaultValue: 'Additional notes',
+          controlledLabel: 'Display name',
+          uncontrolledLabel: 'Display name',
+          placeholder: 'e.g. Avery Lin',
+          defaultValue: 'Avery Lin',
           code: `
 <script setup lang="ts">
 import { ref } from 'vue'
 import { VInput } from '@varo-ui/weapp'
 
-const mobile = ref('')
+const name = ref('Avery Lin')
 <\/script>
 
 <template>
-  <VInput v-model:value="mobile" placeholder="Phone number" />
-  <VInput default-value="Additional notes" />
+  <VInput v-model:value="name" clearable :max-length="16" placeholder="e.g. Avery Lin" show-word-limit />
 </template>
           `.trim(),
         },
