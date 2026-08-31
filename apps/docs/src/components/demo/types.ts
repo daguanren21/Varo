@@ -41,13 +41,6 @@ export interface PlatformContent {
   uncontrolledLabel?: string
   placeholder?: string
   defaultValue?: string
-  cellGroupTitle?: string
-  cellGroupDesc?: string
-  cellTitle?: string
-  cellSubTitle?: string
-  cellDesc?: string
-  cellLinkTitle?: string
-  cellLinkDesc?: string
   dialogHint?: string
   dialogOpenText?: string
   dialogCloseText?: string

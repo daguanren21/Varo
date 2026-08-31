@@ -34,6 +34,7 @@ import {
   VSideNavbarItem as H5SideNavbarItem,
   VSpace as H5Space,
   VSticky as H5Sticky,
+  VSwitch as H5Switch,
   VTab as H5Tab,
   VTabbar as H5Tabbar,
   VTabbarItem as H5TabbarItem,
@@ -73,6 +74,7 @@ import {
   VSideNavbarItem as WeappSideNavbarItem,
   VSpace as WeappSpace,
   VSticky as WeappSticky,
+  VSwitch as WeappSwitch,
   VTab as WeappTab,
   VTabbar as WeappTabbar,
   VTabbarItem as WeappTabbarItem,
@@ -113,6 +115,7 @@ export interface DemoRuntime {
   SideNavbarItem: Component
   Space: Component
   Sticky: Component
+  Switch: Component
   Tabbar: Component
   TabbarItem: Component
   Tab: Component
@@ -153,6 +156,7 @@ const h5Runtime: DemoRuntime = {
   SideNavbarItem: H5SideNavbarItem,
   Space: H5Space,
   Sticky: H5Sticky,
+  Switch: H5Switch,
   Tabbar: H5Tabbar,
   TabbarItem: H5TabbarItem,
   Tab: H5Tab,
@@ -193,6 +197,7 @@ const weappRuntime: DemoRuntime = {
   SideNavbarItem: WeappSideNavbarItem,
   Space: WeappSpace,
   Sticky: WeappSticky,
+  Switch: WeappSwitch,
   Tabbar: WeappTabbar,
   TabbarItem: WeappTabbarItem,
   Tab: WeappTab,

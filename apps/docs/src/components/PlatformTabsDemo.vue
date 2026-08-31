@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DemoKind, Locale, Platform } from './demo'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import {
 
   getDemoCopy,
@@ -44,48 +44,68 @@ const paginationPage = ref(2)
 const sideNavActive = ref<string | number>('orders')
 const tabbarActive = ref<string | number>('home')
 const tabsActive = ref<string | number>('overview')
+const cellNotificationsEnabled = shallowRef(true)
+const cellLastAction = shallowRef<string>()
+const imageFit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
 
-const cellDemoCopy = computed(() => {
-  if (props.locale === 'en') {
-    return {
-      basicGroup: 'Basic Usage',
-      title: 'Title',
-      desc: 'Description',
-      subTitle: 'Subtitle description',
-      clickable: 'Click feedback',
-      zeroRadius: 'Radius 0',
-      largeGroup: 'Large Size',
-      linkGroup: 'Link / Group',
-      linkStyle: 'Link style',
-      routeLink: 'Route link "/"',
-      customGroup: 'Custom Areas',
-      iconTitle: 'Icon prop',
-      person: 'Alex',
-      switchTitle: 'Switch',
-      descOnlyGroup: 'Description Only',
-      centerGroup: 'Vertical Center',
+const cellDemoCopy = computed(() => props.locale === 'en'
+  ? {
+      accountGroup: 'Account & security',
+      accountGroupDesc: 'Protected',
+      profile: 'Profile',
+      profileSubtitle: 'Avatar, name, and bio',
+      edit: 'Edit',
+      security: 'Login & security',
+      securitySubtitle: 'Two-step verification enabled',
+      secure: 'Secure',
+      notifications: 'Notifications',
+      notificationsSubtitle: 'Activity and system updates',
+      preferencesGroup: 'Preferences',
+      preferencesGroupDesc: 'Personalized',
+      appearance: 'Appearance',
+      system: 'Follow system',
+      language: 'Language',
+      english: 'English',
+      privacy: 'Privacy',
+      standard: 'Standard',
+      opened: 'Opened',
     }
-  }
+  : {
+      accountGroup: '账户与安全',
+      accountGroupDesc: '已保护',
+      profile: '个人资料',
+      profileSubtitle: '头像、昵称与简介',
+      edit: '编辑',
+      security: '登录与安全',
+      securitySubtitle: '两步验证已开启',
+      secure: '安全',
+      notifications: '消息通知',
+      notificationsSubtitle: '活动和系统提醒',
+      preferencesGroup: '偏好设置',
+      preferencesGroupDesc: '个性化',
+      appearance: '外观',
+      system: '跟随系统',
+      language: '语言',
+      english: '简体中文',
+      privacy: '隐私',
+      standard: '标准',
+      opened: '已打开',
+    })
 
-  return {
-    basicGroup: '基础用法',
-    title: '我是标题',
-    desc: '描述文字',
-    subTitle: '副标题描述',
-    clickable: '点击测试',
-    zeroRadius: '圆角设置 0',
-    largeGroup: 'large 尺寸',
-    linkGroup: '链接 / 分组用法',
-    linkStyle: '链接样式',
-    routeLink: '路由跳转 “/”',
-    customGroup: '自定义区域',
-    iconTitle: 'icon 属性',
-    person: '张三',
-    switchTitle: 'Switch',
-    descOnlyGroup: '只展示描述',
-    centerGroup: '垂直居中',
-  }
-})
+const cellActionMessage = computed(() =>
+  cellLastAction.value ? `${cellDemoCopy.value.opened}：${cellLastAction.value}` : '',
+)
+const imageFitOptions = computed(() => props.locale === 'en'
+  ? [
+      { value: 'cover' as const, label: 'Crop' },
+      { value: 'contain' as const, label: 'Fit' },
+      { value: 'scale-down' as const, label: 'Original' },
+    ]
+  : [
+      { value: 'cover' as const, label: '裁剪填充' },
+      { value: 'contain' as const, label: '完整展示' },
+      { value: 'scale-down' as const, label: '原始尺寸' },
+    ])
 
 const buttonSampleCopy = computed(() => props.locale === 'en'
   ? {
@@ -883,75 +903,106 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'cell'">
                     <div class="platform-demo__cell-demo">
-                      <component :is="runtime.CellGroup" :title="cellDemoCopy.basicGroup">
+                      <component
+                        :is="runtime.CellGroup"
+                        :desc="cellDemoCopy.accountGroupDesc"
+                        :title="cellDemoCopy.accountGroup"
+                      >
                         <component
                           :is="runtime.Cell"
-                          :desc="cellDemoCopy.desc"
-                          :title="cellDemoCopy.title"
-                        />
-                        <component
-                          :is="runtime.Cell"
-                          :desc="cellDemoCopy.desc"
-                          :sub-title="cellDemoCopy.subTitle"
-                          :title="cellDemoCopy.title"
-                        />
-                        <component :is="runtime.Cell" clickable :title="cellDemoCopy.clickable" />
-                        <component
-                          :is="runtime.Cell"
-                          :desc="cellDemoCopy.desc"
-                          round-radius="0"
-                          :title="cellDemoCopy.zeroRadius"
-                        />
-                      </component>
-
-                      <component :is="runtime.CellGroup" :title="cellDemoCopy.largeGroup">
-                        <component
-                          :is="runtime.Cell"
-                          :desc="cellDemoCopy.desc"
+                          center
+                          :desc="cellDemoCopy.edit"
+                          is-link
                           size="large"
-                          :sub-title="cellDemoCopy.subTitle"
-                          :title="cellDemoCopy.title"
-                        />
-                      </component>
-
-                      <component :is="runtime.CellGroup" :title="cellDemoCopy.linkGroup">
+                          :sub-title="cellDemoCopy.profileSubtitle"
+                          :title="cellDemoCopy.profile"
+                          @click="cellLastAction = cellDemoCopy.profile"
+                        >
+                          <template #icon>
+                            <span class="platform-demo__cell-avatar" aria-hidden="true">
+                              {{ locale === 'en' ? 'A' : '林' }}
+                            </span>
+                          </template>
+                        </component>
                         <component
                           :is="runtime.Cell"
-                          :desc="cellDemoCopy.desc"
+                          center
                           is-link
-                          :title="cellDemoCopy.linkStyle"
-                        />
+                          :sub-title="cellDemoCopy.securitySubtitle"
+                          :title="cellDemoCopy.security"
+                          @click="cellLastAction = cellDemoCopy.security"
+                        >
+                          <template #icon>
+                            <span class="platform-demo__cell-icon" aria-hidden="true">
+                              <svg viewBox="0 0 24 24">
+                                <path d="M12 3 5.5 5.7v5.1c0 4.2 2.7 8.1 6.5 9.2 3.8-1.1 6.5-5 6.5-9.2V5.7L12 3Z" />
+                                <path d="m9.2 11.7 1.8 1.8 3.8-4" />
+                              </svg>
+                            </span>
+                          </template>
+                          <template #desc>
+                            <span class="platform-demo__cell-status">{{ cellDemoCopy.secure }}</span>
+                          </template>
+                        </component>
                         <component
                           :is="runtime.Cell"
-                          :desc="cellDemoCopy.desc"
-                          is-link
-                          :title="cellDemoCopy.routeLink"
-                          to="/"
-                        />
-                      </component>
-
-                      <component :is="runtime.CellGroup" :title="cellDemoCopy.customGroup">
-                        <component :is="runtime.Cell" icon="◎" :desc="cellDemoCopy.person" :title="cellDemoCopy.iconTitle" />
-                        <component :is="runtime.Cell" :title="cellDemoCopy.switchTitle">
+                          center
+                          :sub-title="cellDemoCopy.notificationsSubtitle"
+                          :title="cellDemoCopy.notifications"
+                        >
+                          <template #icon>
+                            <span class="platform-demo__cell-icon" aria-hidden="true">
+                              <svg viewBox="0 0 24 24">
+                                <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8Z" />
+                                <path d="M10 21h4" />
+                              </svg>
+                            </span>
+                          </template>
                           <template #link>
-                            <span class="platform-demo__switch" aria-hidden="true" />
+                            <component
+                              :is="runtime.Switch"
+                              v-model="cellNotificationsEnabled"
+                              :aria-label="cellDemoCopy.notifications"
+                            />
                           </template>
                         </component>
                       </component>
 
-                      <component :is="runtime.CellGroup" :title="cellDemoCopy.descOnlyGroup">
-                        <component :is="runtime.Cell" :desc="cellDemoCopy.person" desc-text-align="left" />
-                      </component>
-
-                      <component :is="runtime.CellGroup" :title="cellDemoCopy.centerGroup">
+                      <component
+                        :is="runtime.CellGroup"
+                        :desc="cellDemoCopy.preferencesGroupDesc"
+                        :title="cellDemoCopy.preferencesGroup"
+                      >
                         <component
                           :is="runtime.Cell"
-                          center
-                          :desc="cellDemoCopy.desc"
-                          :sub-title="cellDemoCopy.subTitle"
-                          :title="cellDemoCopy.title"
+                          :desc="cellDemoCopy.system"
+                          is-link
+                          :title="cellDemoCopy.appearance"
+                          @click="cellLastAction = cellDemoCopy.appearance"
+                        />
+                        <component
+                          :is="runtime.Cell"
+                          :desc="cellDemoCopy.english"
+                          is-link
+                          :title="cellDemoCopy.language"
+                          @click="cellLastAction = cellDemoCopy.language"
+                        />
+                        <component
+                          :is="runtime.Cell"
+                          :desc="cellDemoCopy.standard"
+                          is-link
+                          :title="cellDemoCopy.privacy"
+                          @click="cellLastAction = cellDemoCopy.privacy"
                         />
                       </component>
+
+                      <p
+                        v-if="cellActionMessage"
+                        class="platform-demo__cell-feedback"
+                        role="status"
+                      >
+                        {{ cellActionMessage }}
+                      </p>
                     </div>
                   </template>
 
@@ -964,12 +1015,35 @@ onBeforeUnmount(() => {
                           alt="Varo retail storefront"
                           width="100%"
                           :height="176"
-                          fit="cover"
+                          :fit="imageFit"
+                          lazy-load
                           radius="18px"
                         />
                         <div class="platform-demo__image-caption">
                           <strong>{{ copy.imageBasic }}</strong>
-                          <span>cover · 16:9</span>
+                          <span>{{ imageFit }} · 16:9</span>
+                        </div>
+                      </div>
+
+                      <div
+                        class="platform-demo__image-toolbar"
+                        role="group"
+                        :aria-label="locale === 'en' ? 'Image fit' : '图片填充模式'"
+                      >
+                        <span>{{ locale === 'en' ? 'Fit' : '填充模式' }}</span>
+                        <div class="platform-demo__image-fit-options">
+                          <component
+                            :is="runtime.Button"
+                            v-for="option in imageFitOptions"
+                            :key="option.value"
+                            :aria-pressed="imageFit === option.value"
+                            size="sm"
+                            :tone="imageFit === option.value ? 'primary' : 'default'"
+                            :variant="imageFit === option.value ? 'soft' : 'ghost'"
+                            @click="imageFit = option.value"
+                          >
+                            {{ option.label }}
+                          </component>
                         </div>
                       </div>
 
@@ -994,6 +1068,7 @@ onBeforeUnmount(() => {
                             alt=""
                             :width="72"
                             :height="72"
+                            error-text=""
                             fit="cover"
                           >
                             <template #error>
@@ -2809,14 +2884,15 @@ onBeforeUnmount(() => {
 .platform-demo__image-feature {
   position: relative;
   overflow: hidden;
-  background: color-mix(in srgb, var(--demo-phone-card) 94%, transparent);
-  border: 1px solid var(--demo-border);
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
   border-radius: 18px;
 }
 
 .platform-demo__image-feature :deep(.varo-image) {
   display: flex;
   width: 100%;
+  background: var(--varo-fill-light);
 }
 
 .platform-demo__image-caption {
@@ -2828,22 +2904,52 @@ onBeforeUnmount(() => {
   gap: 12px;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 9px 11px;
   color: #fff;
-  background: color-mix(in srgb, #10151d 72%, transparent);
-  border: 1px solid color-mix(in srgb, #fff 10%, transparent);
-  border-radius: 12px;
+  background: rgb(16 21 29 / 76%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 11px;
   backdrop-filter: blur(10px);
 }
 
 .platform-demo__image-caption strong {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
 .platform-demo__image-caption span {
-  font-size: 0.72rem;
-  color: color-mix(in srgb, #fff 68%, transparent);
+  font-size: 0.7rem;
+  color: rgb(255 255 255 / 72%);
+}
+
+.platform-demo__image-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 6px 12px;
+  color: var(--varo-text-secondary);
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 14px;
+}
+
+.platform-demo__image-toolbar > span {
+  flex: none;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.platform-demo__image-fit-options {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+.platform-demo__image-fit-options :deep(.varo-button) {
+  min-width: 0;
+  padding-inline: 9px;
+  white-space: nowrap;
 }
 
 .platform-demo__image-state-grid {
@@ -2857,13 +2963,13 @@ onBeforeUnmount(() => {
   gap: 10px;
   align-content: center;
   justify-items: center;
-  min-height: 136px;
+  min-height: 132px;
   padding: 16px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 650;
-  color: var(--demo-text-muted);
-  background: color-mix(in srgb, var(--demo-phone-card) 92%, transparent);
-  border: 1px solid var(--demo-border);
+  color: var(--varo-text-secondary);
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
   border-radius: 16px;
 }
 
@@ -2874,8 +2980,8 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: var(--demo-text-muted);
-  background: color-mix(in srgb, var(--demo-phone-card) 88%, transparent);
+  color: var(--varo-text-tertiary);
+  background: var(--varo-fill-light);
 }
 
 :deep(.varo-image__img) {
@@ -2891,13 +2997,13 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--demo-text-muted);
-  background: color-mix(in srgb, var(--demo-phone-card) 92%, transparent);
+  color: var(--varo-text-tertiary);
+  background: var(--varo-fill-light);
 }
 
 .platform-demo__image-item[data-state='error'] :deep(.varo-image) {
-  background: color-mix(in srgb, var(--demo-phone-card) 84%, transparent);
-  border: 1px dashed var(--demo-border);
+  background: var(--varo-fill-light);
+  border: 1px dashed var(--varo-border);
   border-radius: 16px;
 }
 
@@ -2910,14 +3016,14 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__broken-image {
-  width: 34px;
-  height: 34px;
-  color: var(--demo-text-muted);
+  width: 32px;
+  height: 32px;
+  color: var(--varo-text-tertiary);
 }
 
 .platform-demo__broken-image :is(path, circle) {
   stroke: currentcolor;
-  stroke-width: 2.2;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -3195,9 +3301,9 @@ onBeforeUnmount(() => {
 
 .platform-demo__cell-demo {
   display: grid;
-  gap: 14px;
+  gap: 18px;
   width: 100%;
-  padding: 16px;
+  padding: 18px;
 }
 
 :deep(.varo-cell-group__header) {
@@ -3209,18 +3315,21 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-cell-group__title) {
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 700;
+  color: var(--varo-text-primary);
+  letter-spacing: 0.01em;
 }
 
 :deep(.varo-cell-group__desc) {
-  font-size: 0.78rem;
-  color: var(--vp-c-text-2);
+  font-size: 0.76rem;
+  color: var(--varo-text-tertiary);
 }
 
 :deep(.varo-cell-group__body) {
   overflow: hidden;
-  background: color-mix(in srgb, var(--varo-card-solid) 82%, transparent);
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
   border-radius: var(--varo-cell-round-radius, 16px);
   box-shadow: var(--varo-shadow-sm);
 }
@@ -3228,16 +3337,20 @@ onBeforeUnmount(() => {
 :deep(.varo-cell) {
   box-sizing: border-box;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
-  min-height: 52px;
-  padding: 12px;
-  color: var(--vp-c-text-1);
+  min-height: 54px;
+  padding: 12px 14px;
+  color: var(--varo-text-primary);
   text-decoration: none;
+  outline: none;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease;
 }
 
 :deep(.varo-cell + .varo-cell) {
-  border-top: 1px solid var(--varo-border);
+  border-top: 1px solid var(--varo-border-light);
 }
 
 :deep(.varo-cell[data-center='true']) {
@@ -3248,15 +3361,25 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
+:deep(.varo-cell[data-clickable='true']:hover) {
+  background: var(--varo-fill-light);
+}
+
+:deep(.varo-cell[data-clickable='true']:focus-visible) {
+  box-shadow: inset 0 0 0 2px var(--varo-primary);
+}
+
 :deep(.varo-cell[data-size='large']) {
-  min-height: 64px;
-  padding-block: 14px;
+  min-height: 68px;
+  padding-block: 13px;
 }
 
 :deep(.varo-cell__icon),
 :deep(.varo-cell__link) {
+  display: inline-flex;
   flex: none;
-  color: var(--vp-c-brand-1);
+  align-items: center;
+  color: var(--varo-primary);
 }
 
 :deep(.varo-cell__main) {
@@ -3267,19 +3390,21 @@ onBeforeUnmount(() => {
 :deep(.varo-cell__title) {
   font-size: 0.9rem;
   font-weight: 650;
+  color: var(--varo-text-primary);
 }
 
 :deep(.varo-cell__subtitle) {
   margin-top: 3px;
-  font-size: 0.78rem;
-  color: var(--vp-c-text-2);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--varo-text-secondary);
 }
 
 :deep(.varo-cell__desc) {
   flex: none;
   max-width: 42%;
-  font-size: 0.84rem;
-  color: var(--vp-c-text-2);
+  font-size: 0.82rem;
+  color: var(--varo-text-secondary);
   text-align: right;
 }
 
@@ -3287,24 +3412,46 @@ onBeforeUnmount(() => {
   text-align: left;
 }
 
-.platform-demo__switch {
-  position: relative;
-  display: inline-block;
-  width: 38px;
-  height: 22px;
-  background: var(--vp-c-brand-1);
-  border-radius: 999px;
+.platform-demo__cell-avatar,
+.platform-demo__cell-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 10px;
 }
 
-.platform-demo__switch::after {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 16px;
-  height: 16px;
-  content: '';
-  background: var(--varo-card-solid);
-  border-radius: 999px;
+.platform-demo__cell-avatar {
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--varo-primary-foreground);
+  background: var(--varo-primary);
+}
+
+.platform-demo__cell-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.platform-demo__cell-status {
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--varo-success);
+}
+
+.platform-demo__cell-feedback {
+  min-height: 18px;
+  margin: -4px 4px 0;
+  font-size: 0.76rem;
+  color: var(--varo-text-tertiary);
 }
 
 .platform-demo__overlay {

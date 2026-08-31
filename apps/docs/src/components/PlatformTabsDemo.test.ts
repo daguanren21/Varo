@@ -95,7 +95,20 @@ describe('PlatformTabsDemo', () => {
     })
 
     expect(wrapper.find('.platform-demo__head p').exists()).toBe(false)
-    expect(wrapper.get('.platform-demo__image-feature img').attributes('src')).toBe('/blocks/retail-home.png')
+    const feature = wrapper.get('.platform-demo__image-feature')
+    const featureImage = feature.get('.varo-image')
+    expect(feature.get('img').attributes('src')).toBe('/blocks/retail-home.png')
+    expect(feature.get('img').attributes('loading')).toBe('lazy')
+    expect(featureImage.attributes('data-fit')).toBe('cover')
+
+    const fitButtons = wrapper.findAll('.platform-demo__image-fit-options .varo-button')
+    expect(fitButtons).toHaveLength(3)
+    expect(fitButtons.map(button => button.text())).toEqual(['裁剪填充', '完整展示', '原始尺寸'])
+    expect(fitButtons[0]!.attributes('aria-pressed')).toBe('true')
+    await fitButtons[1]!.trigger('click')
+    expect(featureImage.attributes('data-fit')).toBe('contain')
+    expect(fitButtons[1]!.attributes('aria-pressed')).toBe('true')
+
     expect(wrapper.findAll('.platform-demo__image-item')).toHaveLength(2)
     await wrapper.get('.platform-demo__image-item[data-state="error"] img').trigger('error')
     expect(wrapper.find('.platform-demo__broken-image').exists()).toBe(true)
@@ -106,7 +119,7 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.text()).not.toContain('NutUI')
   })
 
-  it('groups Cell examples inside one component-owned container', () => {
+  it('presents Cell as a compact, interactive settings list', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -118,8 +131,24 @@ describe('PlatformTabsDemo', () => {
     })
 
     expect(wrapper.findAll('.platform-demo__cell-demo')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-cell-group')).toHaveLength(6)
+    expect(wrapper.findAll('.varo-cell-group')).toHaveLength(2)
+    expect(wrapper.findAll('.varo-cell')).toHaveLength(6)
+    expect(wrapper.text()).toContain('账户与安全')
+    expect(wrapper.text()).toContain('两步验证已开启')
+    expect(wrapper.text()).toContain('偏好设置')
     expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
+
+    const profile = wrapper.findAll('.varo-cell')[0]!
+    expect(profile.attributes('data-size')).toBe('large')
+    expect(profile.attributes('data-clickable')).toBe('true')
+    await profile.trigger('click')
+    expect(wrapper.get('[role="status"]').text()).toBe('已打开：个人资料')
+
+    const notificationSwitch = wrapper.get('.varo-switch')
+    expect(notificationSwitch.attributes('aria-label')).toBe('消息通知')
+    expect(notificationSwitch.attributes('data-state')).toBe('checked')
+    await notificationSwitch.trigger('click')
+    expect(notificationSwitch.attributes('data-state')).toBe('unchecked')
   })
 
   it('presents multiple Input cases and derives required errors from the value', async () => {
@@ -394,7 +423,7 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
     expect(wrapper.find('.platform-demo__controls').exists()).toBe(false)
     expect(wrapper.findAll('.platform-demo__panel')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-cell-group').length).toBeGreaterThanOrEqual(6)
+    expect(wrapper.findAll('.varo-cell-group')).toHaveLength(2)
     expect(wrapper.find('.platform-demo__cell-demo').exists()).toBe(true)
     expect(wrapper.find('.platform-demo__card .varo-cell-group').exists()).toBe(false)
   })

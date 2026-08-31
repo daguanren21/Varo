@@ -264,7 +264,7 @@ const nameInvalid = computed(() => name.value.trim().length === 0)
     },
     cell: {
       title: 'Cell 跨端示例与演示',
-      description: '按 NutUI Cell 的信息项结构展示标题、描述、右侧内容、箭头和分组。',
+      description: '以账户设置场景展示分组、信息层级、状态、链接反馈和自定义操作区。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -272,22 +272,31 @@ const nameInvalid = computed(() => name.value.trim().length === 0)
           appTitle: 'H5 列表',
           appSubtitle: '浏览器信息项预览',
           statusRight: '5G · H5',
-          cellGroupTitle: '账户信息',
-          cellGroupDesc: '基础资料',
-          cellTitle: '昵称',
-          cellSubTitle: '公开展示',
-          cellDesc: 'Varo',
-          cellLinkTitle: '收货地址',
-          cellLinkDesc: '去设置',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo-ui/h5'
+import { shallowRef } from 'vue'
+import { VCell, VCellGroup, VSwitch } from '@varo-ui/h5'
+
+const notificationsEnabled = shallowRef(true)
 <\/script>
 
 <template>
-  <VCellGroup title="账户信息" desc="基础资料">
-    <VCell title="昵称" sub-title="公开展示" desc="Varo" />
-    <VCell title="收货地址" desc="去设置" is-link />
+  <VCellGroup title="账户与安全" desc="已保护">
+    <VCell title="个人资料" sub-title="头像、昵称与简介" desc="编辑" size="large" center is-link />
+    <VCell title="登录与安全" sub-title="两步验证已开启" is-link>
+      <template #desc><span class="secure">安全</span></template>
+    </VCell>
+    <VCell title="消息通知" sub-title="活动和系统提醒" center>
+      <template #link>
+        <VSwitch v-model="notificationsEnabled" aria-label="消息通知" />
+      </template>
+    </VCell>
+  </VCellGroup>
+
+  <VCellGroup title="偏好设置" desc="个性化">
+    <VCell title="外观" desc="跟随系统" is-link />
+    <VCell title="语言" desc="简体中文" is-link />
+    <VCell title="隐私" desc="标准" is-link />
   </VCellGroup>
 </template>
           `.trim(),
@@ -298,22 +307,31 @@ import { VCell, VCellGroup } from '@varo-ui/h5'
           appTitle: '小程序列表',
           appSubtitle: '跨端信息项预览',
           statusRight: '微信 · 小程序',
-          cellGroupTitle: '订单信息',
-          cellGroupDesc: '常用入口',
-          cellTitle: '订单状态',
-          cellSubTitle: '最近更新',
-          cellDesc: '已完成',
-          cellLinkTitle: '物流详情',
-          cellLinkDesc: '查看',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo-ui/weapp'
+import { shallowRef } from 'wevu'
+import { VCell, VCellGroup, VSwitch } from '@varo-ui/weapp'
+
+const notificationsEnabled = shallowRef(true)
 <\/script>
 
 <template>
-  <VCellGroup title="订单信息" desc="常用入口">
-    <VCell title="订单状态" sub-title="最近更新" desc="已完成" />
-    <VCell title="物流详情" desc="查看" is-link />
+  <VCellGroup title="账户与安全" desc="已保护">
+    <VCell title="个人资料" sub-title="头像、昵称与简介" desc="编辑" size="large" center is-link />
+    <VCell title="登录与安全" sub-title="两步验证已开启" is-link>
+      <template #desc><text class="secure">安全</text></template>
+    </VCell>
+    <VCell title="消息通知" sub-title="活动和系统提醒" center>
+      <template #link>
+        <VSwitch v-model="notificationsEnabled" aria-label="消息通知" />
+      </template>
+    </VCell>
+  </VCellGroup>
+
+  <VCellGroup title="偏好设置" desc="个性化">
+    <VCell title="外观" desc="跟随系统" is-link />
+    <VCell title="语言" desc="简体中文" is-link />
+    <VCell title="隐私" desc="标准" is-link />
   </VCellGroup>
 </template>
           `.trim(),
@@ -322,7 +340,7 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
     },
     image: {
       title: 'Image 跨端示例与演示',
-      description: '',
+      description: '展示可交互填充模式、懒加载、圆形资源和自定义失败占位。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -332,11 +350,24 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
           statusRight: '5G · H5',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo-ui/h5'
+import { shallowRef } from 'vue'
+import { VButton, VImage } from '@varo-ui/h5'
+
+const fit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
 <\/script>
 
 <template>
-  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage
+    src="/blocks/retail-home.png"
+    width="100%"
+    :height="176"
+    :fit="fit"
+    lazy-load
+    radius="18px"
+  />
+  <VButton size="sm" variant="soft" @click="fit = 'cover'">裁剪填充</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'contain'">完整展示</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'scale-down'">原始尺寸</VButton>
   <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
   <VImage src="/not-found.png" :width="72" :height="72" error-text="资源不可用" />
 </template>
@@ -350,11 +381,24 @@ import { VImage } from '@varo-ui/h5'
           statusRight: '微信 · 小程序',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo-ui/weapp'
+import { shallowRef } from 'wevu'
+import { VButton, VImage } from '@varo-ui/weapp'
+
+const fit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
 <\/script>
 
 <template>
-  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage
+    src="/blocks/retail-home.png"
+    width="100%"
+    :height="176"
+    :fit="fit"
+    lazy-load
+    radius="18px"
+  />
+  <VButton size="sm" variant="soft" @click="fit = 'cover'">裁剪填充</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'contain'">完整展示</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'scale-down'">原始尺寸</VButton>
   <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
   <VImage src="/not-found.png" :width="72" :height="72" error-text="资源不可用" />
 </template>
@@ -974,7 +1018,7 @@ const nameInvalid = computed(() => name.value.trim().length === 0)
     },
     cell: {
       title: 'Cell Cross-platform Example and Preview',
-      description: 'Preview title, subtitle, desc, right content, link affordance, and groups with a NutUI-style cell structure.',
+      description: 'Uses account settings to demonstrate grouping, information hierarchy, status, link feedback, and custom actions.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -982,22 +1026,31 @@ const nameInvalid = computed(() => name.value.trim().length === 0)
           appTitle: 'H5 List',
           appSubtitle: 'Browser cell preview',
           statusRight: '5G · H5',
-          cellGroupTitle: 'Account',
-          cellGroupDesc: 'Profile',
-          cellTitle: 'Nickname',
-          cellSubTitle: 'Public display',
-          cellDesc: 'Varo',
-          cellLinkTitle: 'Address',
-          cellLinkDesc: 'Configure',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo-ui/h5'
+import { shallowRef } from 'vue'
+import { VCell, VCellGroup, VSwitch } from '@varo-ui/h5'
+
+const notificationsEnabled = shallowRef(true)
 <\/script>
 
 <template>
-  <VCellGroup title="Account" desc="Profile">
-    <VCell title="Nickname" sub-title="Public display" desc="Varo" />
-    <VCell title="Address" desc="Configure" is-link />
+  <VCellGroup title="Account & security" desc="Protected">
+    <VCell title="Profile" sub-title="Avatar, name, and bio" desc="Edit" size="large" center is-link />
+    <VCell title="Login & security" sub-title="Two-step verification enabled" is-link>
+      <template #desc><span class="secure">Secure</span></template>
+    </VCell>
+    <VCell title="Notifications" sub-title="Activity and system updates" center>
+      <template #link>
+        <VSwitch v-model="notificationsEnabled" aria-label="Notifications" />
+      </template>
+    </VCell>
+  </VCellGroup>
+
+  <VCellGroup title="Preferences" desc="Personalized">
+    <VCell title="Appearance" desc="Follow system" is-link />
+    <VCell title="Language" desc="English" is-link />
+    <VCell title="Privacy" desc="Standard" is-link />
   </VCellGroup>
 </template>
           `.trim(),
@@ -1008,22 +1061,31 @@ import { VCell, VCellGroup } from '@varo-ui/h5'
           appTitle: 'Mini-program List',
           appSubtitle: 'Cross-platform cell preview',
           statusRight: 'WeChat · Mini-program',
-          cellGroupTitle: 'Order',
-          cellGroupDesc: 'Common entry',
-          cellTitle: 'Order status',
-          cellSubTitle: 'Updated recently',
-          cellDesc: 'Completed',
-          cellLinkTitle: 'Logistics',
-          cellLinkDesc: 'View',
           code: `
 <script setup lang="ts">
-import { VCell, VCellGroup } from '@varo-ui/weapp'
+import { shallowRef } from 'wevu'
+import { VCell, VCellGroup, VSwitch } from '@varo-ui/weapp'
+
+const notificationsEnabled = shallowRef(true)
 <\/script>
 
 <template>
-  <VCellGroup title="Order" desc="Common entry">
-    <VCell title="Order status" sub-title="Updated recently" desc="Completed" />
-    <VCell title="Logistics" desc="View" is-link />
+  <VCellGroup title="Account & security" desc="Protected">
+    <VCell title="Profile" sub-title="Avatar, name, and bio" desc="Edit" size="large" center is-link />
+    <VCell title="Login & security" sub-title="Two-step verification enabled" is-link>
+      <template #desc><text class="secure">Secure</text></template>
+    </VCell>
+    <VCell title="Notifications" sub-title="Activity and system updates" center>
+      <template #link>
+        <VSwitch v-model="notificationsEnabled" aria-label="Notifications" />
+      </template>
+    </VCell>
+  </VCellGroup>
+
+  <VCellGroup title="Preferences" desc="Personalized">
+    <VCell title="Appearance" desc="Follow system" is-link />
+    <VCell title="Language" desc="English" is-link />
+    <VCell title="Privacy" desc="Standard" is-link />
   </VCellGroup>
 </template>
           `.trim(),
@@ -1032,7 +1094,7 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
     },
     image: {
       title: 'Image Cross-platform Example and Preview',
-      description: '',
+      description: 'Demonstrates interactive fit modes, lazy loading, round assets, and a custom error fallback.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -1042,11 +1104,24 @@ import { VCell, VCellGroup } from '@varo-ui/weapp'
           statusRight: '5G · H5',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo-ui/h5'
+import { shallowRef } from 'vue'
+import { VButton, VImage } from '@varo-ui/h5'
+
+const fit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
 <\/script>
 
 <template>
-  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage
+    src="/blocks/retail-home.png"
+    width="100%"
+    :height="176"
+    :fit="fit"
+    lazy-load
+    radius="18px"
+  />
+  <VButton size="sm" variant="soft" @click="fit = 'cover'">Crop</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'contain'">Fit</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'scale-down'">Original</VButton>
   <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
   <VImage src="/not-found.png" :width="72" :height="72" error-text="Unavailable" />
 </template>
@@ -1060,11 +1135,24 @@ import { VImage } from '@varo-ui/h5'
           statusRight: 'WeChat · Mini-program',
           code: `
 <script setup lang="ts">
-import { VImage } from '@varo-ui/weapp'
+import { shallowRef } from 'wevu'
+import { VButton, VImage } from '@varo-ui/weapp'
+
+const fit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
 <\/script>
 
 <template>
-  <VImage src="/blocks/retail-home.png" width="100%" :height="176" fit="cover" radius="18px" />
+  <VImage
+    src="/blocks/retail-home.png"
+    width="100%"
+    :height="176"
+    :fit="fit"
+    lazy-load
+    radius="18px"
+  />
+  <VButton size="sm" variant="soft" @click="fit = 'cover'">Crop</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'contain'">Fit</VButton>
+  <VButton size="sm" variant="ghost" @click="fit = 'scale-down'">Original</VButton>
   <VImage src="/brand-assets/varo-app-icon.png" :width="72" :height="72" round />
   <VImage src="/not-found.png" :width="72" :height="72" error-text="Unavailable" />
 </template>
