@@ -24,6 +24,10 @@ import {
   VNavbar as H5Navbar,
   VOverlay as H5Overlay,
   VPagination as H5Pagination,
+  VPopoverClose as H5PopoverClose,
+  VPopoverContent as H5PopoverContent,
+  VPopoverRoot as H5PopoverRoot,
+  VPopoverTrigger as H5PopoverTrigger,
   VPopup as H5Popup,
   VRow as H5Row,
   VSideNavbar as H5SideNavbar,
@@ -59,6 +63,10 @@ import {
   VNavbar as WeappNavbar,
   VOverlay as WeappOverlay,
   VPagination as WeappPagination,
+  VPopoverClose as WeappPopoverClose,
+  VPopoverContent as WeappPopoverContent,
+  VPopoverRoot as WeappPopoverRoot,
+  VPopoverTrigger as WeappPopoverTrigger,
   VPopup as WeappPopup,
   VRow as WeappRow,
   VSideNavbar as WeappSideNavbar,
@@ -96,6 +104,10 @@ export interface DemoRuntime {
   Overlay: Component
   Pagination: Component
   Popup: Component
+  PopoverClose: Component
+  PopoverContent: Component
+  PopoverRoot: Component
+  PopoverTrigger: Component
   Row: Component
   SideNavbar: Component
   SideNavbarItem: Component
@@ -132,6 +144,10 @@ const h5Runtime: DemoRuntime = {
   Overlay: H5Overlay,
   Pagination: H5Pagination,
   Popup: H5Popup,
+  PopoverClose: H5PopoverClose,
+  PopoverContent: H5PopoverContent,
+  PopoverRoot: H5PopoverRoot,
+  PopoverTrigger: H5PopoverTrigger,
   Row: H5Row,
   SideNavbar: H5SideNavbar,
   SideNavbarItem: H5SideNavbarItem,
@@ -168,6 +184,10 @@ const weappRuntime: DemoRuntime = {
   Overlay: WeappOverlay,
   Pagination: WeappPagination,
   Popup: WeappPopup,
+  PopoverClose: WeappPopoverClose,
+  PopoverContent: WeappPopoverContent,
+  PopoverRoot: WeappPopoverRoot,
+  PopoverTrigger: WeappPopoverTrigger,
   Row: WeappRow,
   SideNavbar: WeappSideNavbar,
   SideNavbarItem: WeappSideNavbarItem,

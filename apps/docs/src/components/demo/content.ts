@@ -470,6 +470,66 @@ const visible = ref(false)
         },
       },
     },
+    popover: {
+      title: 'Popover 跨端示例与演示',
+      description: '展示上下定位、对齐、上下文操作和显式关闭。',
+      platforms: {
+        h5: {
+          runtime: 'H5 parts',
+          packageName: '@varo-ui/h5',
+          appTitle: 'H5 气泡浮层',
+          appSubtitle: '上下文操作预览',
+          statusRight: '5G · H5',
+          code: `
+<script setup lang="ts">
+import {
+  VPopoverClose,
+  VPopoverContent,
+  VPopoverRoot,
+  VPopoverTrigger
+} from '@varo-ui/h5'
+<\/script>
+
+<template>
+  <VPopoverRoot>
+    <VPopoverTrigger>订单操作</VPopoverTrigger>
+    <VPopoverContent align="start" side="bottom">
+      <strong>订单 #1042</strong>
+      <VPopoverClose>完成</VPopoverClose>
+    </VPopoverContent>
+  </VPopoverRoot>
+</template>
+          `.trim(),
+        },
+        weapp: {
+          runtime: '小程序 parts',
+          packageName: '@varo-ui/weapp',
+          appTitle: '小程序气泡浮层',
+          appSubtitle: '跨端上下文操作预览',
+          statusRight: '微信 · 小程序',
+          code: `
+<script setup lang="ts">
+import {
+  VPopoverClose,
+  VPopoverContent,
+  VPopoverRoot,
+  VPopoverTrigger
+} from '@varo-ui/weapp'
+<\/script>
+
+<template>
+  <VPopoverRoot>
+    <VPopoverTrigger>订单操作</VPopoverTrigger>
+    <VPopoverContent align="start" side="bottom">
+      <text>订单 #1042</text>
+      <VPopoverClose>完成</VPopoverClose>
+    </VPopoverContent>
+  </VPopoverRoot>
+</template>
+          `.trim(),
+        },
+      },
+    },
     dialog: {
       title: 'Dialog 跨端示例与演示',
       description: '在同一页里切换 H5 和小程序的 parts 组合方式，直接比较触发器、遮罩和内容区的组织方式。',
@@ -1120,6 +1180,66 @@ const visible = ref(false)
         },
       },
     },
+    popover: {
+      title: 'Popover Cross-platform Example and Preview',
+      description: 'Shows top and bottom placement, alignment, contextual actions, and explicit close behavior.',
+      platforms: {
+        h5: {
+          runtime: 'H5 parts',
+          packageName: '@varo-ui/h5',
+          appTitle: 'H5 Popover',
+          appSubtitle: 'Contextual action preview',
+          statusRight: '5G · H5',
+          code: `
+<script setup lang="ts">
+import {
+  VPopoverClose,
+  VPopoverContent,
+  VPopoverRoot,
+  VPopoverTrigger
+} from '@varo-ui/h5'
+<\/script>
+
+<template>
+  <VPopoverRoot>
+    <VPopoverTrigger>Order actions</VPopoverTrigger>
+    <VPopoverContent align="start" side="bottom">
+      <strong>Order #1042</strong>
+      <VPopoverClose>Done</VPopoverClose>
+    </VPopoverContent>
+  </VPopoverRoot>
+</template>
+          `.trim(),
+        },
+        weapp: {
+          runtime: 'Mini-program parts',
+          packageName: '@varo-ui/weapp',
+          appTitle: 'Mini-program Popover',
+          appSubtitle: 'Cross-platform contextual action preview',
+          statusRight: 'WeChat · Mini-program',
+          code: `
+<script setup lang="ts">
+import {
+  VPopoverClose,
+  VPopoverContent,
+  VPopoverRoot,
+  VPopoverTrigger
+} from '@varo-ui/weapp'
+<\/script>
+
+<template>
+  <VPopoverRoot>
+    <VPopoverTrigger>Order actions</VPopoverTrigger>
+    <VPopoverContent align="start" side="bottom">
+      <text>Order #1042</text>
+      <VPopoverClose>Done</VPopoverClose>
+    </VPopoverContent>
+  </VPopoverRoot>
+</template>
+          `.trim(),
+        },
+      },
+    },
     dialog: {
       title: 'Dialog Cross-platform Example and Preview',
       description: 'H5 and mini-program parts composition now live under one tab switcher instead of being described separately.',
@@ -1748,6 +1868,11 @@ const page = ref(2)
     title: 'Popup 跨端示例与演示',
     description: '',
     platforms: demoContent.zh.popup!.platforms,
+  },
+  'popover': {
+    title: 'Popover 跨端示例与演示',
+    description: '',
+    platforms: demoContent.zh.popover!.platforms,
   },
   'side-navbar': {
     title: 'SideNavbar 跨端示例与演示',

@@ -163,6 +163,20 @@ describe('docs navigation', () => {
     expect(badgeManifest).toContain('\"docs\": \"/components/badge\"')
   })
 
+  it('links Popover documentation in both locales and from the Registry manifest', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const popoverManifest = readFileSync(
+      resolve(workspaceRoot, 'registry/components/popover/registry.json'),
+      'utf8',
+    )
+
+    expect(config).toContain('{ text: \'Popover 气泡浮层\', link: \'/components/popover\' }')
+    expect(config).toContain('{ text: \'Popover\', link: \'/en/components/popover\' }')
+    expect(existsSync(resolve(docsRoot, 'components/popover.md'))).toBe(true)
+    expect(existsSync(resolve(docsRoot, 'en/components/popover.md'))).toBe(true)
+    expect(popoverManifest).toContain('\"docs\": \"/components/popover\"')
+  })
+
   it('links the Varo color system in both locales', () => {
     const config = readFileSync(configPath, 'utf8')
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')

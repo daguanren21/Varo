@@ -214,7 +214,10 @@ export default defineConfig({
               {
                 text: '高级组件',
                 collapsed: true,
-                items: [{ text: 'Dialog 对话框', link: '/components/dialog' }],
+                items: [
+                  { text: 'Popover 气泡浮层', link: '/components/popover' },
+                  { text: 'Dialog 对话框', link: '/components/dialog' },
+                ],
               },
             ],
           },
@@ -462,7 +465,10 @@ export default defineConfig({
               {
                 text: 'Advanced',
                 collapsed: true,
-                items: [{ text: 'Dialog', link: '/en/components/dialog' }],
+                items: [
+                  { text: 'Popover', link: '/en/components/popover' },
+                  { text: 'Dialog', link: '/en/components/dialog' },
+                ],
               },
             ],
           },

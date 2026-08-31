@@ -263,6 +263,41 @@ describe('PlatformTabsDemo', () => {
     ])
   })
 
+  it('presents contextual Popover actions and placement examples', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      attachTo: document.body,
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'popover',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
+    expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
+    expect(wrapper.findAll('.platform-demo__popover-sample')).toHaveLength(1)
+    expect(wrapper.findAll('.platform-demo__popover-root')).toHaveLength(1)
+    expect(wrapper.findAll('.varo-popover')).toHaveLength(3)
+
+    const context = wrapper.get('[data-case="context"]')
+    expect(context.get('.platform-demo__popover-card').attributes('data-side')).toBe('bottom')
+    expect(context.get('.platform-demo__popover-card').text()).toContain('订单 #1042')
+    expect(context.get('.platform-demo__popover-card').text()).toContain('取消订单')
+
+    await context.get('.platform-demo__popover-done').trigger('click')
+    expect(context.find('.platform-demo__popover-card').exists()).toBe(false)
+    await context.get('.platform-demo__popover-trigger').trigger('click')
+    expect(context.find('.platform-demo__popover-card').exists()).toBe(true)
+
+    const placement = wrapper.get('[data-case="placement"]')
+    const placementTriggers = placement.findAll('.platform-demo__popover-trigger')
+    expect(placementTriggers).toHaveLength(2)
+    await placementTriggers[0]!.trigger('click')
+    expect(placement.get('.platform-demo__popover-tip').attributes('data-side')).toBe('top')
+  })
+
   it('supports roving keyboard selection for platform tabs', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {

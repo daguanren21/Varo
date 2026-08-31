@@ -298,27 +298,56 @@ export const AgentApproval = defineComponent({
     'update:value': (_value: string) => true,
   },
   setup(props, { emit, slots }) {
-    return () => h('section', { 'class': 'grid gap-3.5 rounded-2xl border border-amber-200 bg-gradient-to-br from-white to-amber-50 p-4 shadow-sm', 'role': 'group', 'aria-label': props.title }, [
-      h('header', { class: 'flex items-start gap-3' }, [
-        h('span', { class: 'grid h-9 w-9 flex-none place-items-center rounded-xl bg-amber-100 font-black text-amber-700' }, '!'),
-        h('span', { class: 'grid min-w-0 gap-0.5' }, [
-          h('small', { class: 'font-extrabold tracking-widest text-amber-700' }, '需要你的确认'),
-          h('strong', { class: 'text-[15px] leading-snug text-amber-950' }, props.title),
-          props.description ? h('span', { class: 'text-xs leading-5 text-amber-800' }, props.description) : null,
+    return () => h('section', { 'class': 'agent-approval', 'role': 'group', 'aria-label': props.title }, [
+      h('header', { class: 'agent-approval__header' }, [
+        h('span', { 'class': 'agent-approval__icon', 'aria-hidden': 'true' }, '!'),
+        h('span', { class: 'agent-approval__heading' }, [
+          h('small', { class: 'agent-approval__eyebrow' }, '需要你的确认'),
+          h('strong', { class: 'agent-approval__title' }, props.title),
+          props.description
+            ? h('span', { class: 'agent-approval__description' }, props.description)
+            : null,
         ]),
       ]),
       props.choices.length > 0
-        ? h('div', { class: 'grid gap-2' }, props.choices.map(choice =>
-            h('label', { class: ['flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-3 text-xs', choice.value === props.value ? 'border-teal-600 bg-teal-50 text-teal-900' : 'border-slate-200 bg-white text-slate-700', choice.disabled && 'cursor-not-allowed opacity-45'], key: choice.value }, [
-              h('input', { checked: choice.value === props.value, disabled: choice.disabled, name: `agent-approval-${props.title}`, type: 'radio', value: choice.value, onChange: () => emit('update:value', choice.value) }),
-              h('span', { class: 'grid' }, [h('strong', choice.label), choice.description ? h('small', { class: 'text-slate-500' }, choice.description) : null]),
+        ? h('div', { class: 'agent-approval__choices' }, props.choices.map(choice =>
+            h('label', {
+              'class': 'agent-approval__choice',
+              'data-disabled': String(Boolean(choice.disabled)),
+              'data-selected': String(choice.value === props.value),
+              'key': choice.value,
+            }, [
+              h('input', {
+                class: 'agent-approval__radio',
+                checked: choice.value === props.value,
+                disabled: choice.disabled,
+                name: `agent-approval-${props.title}`,
+                type: 'radio',
+                value: choice.value,
+                onChange: () => emit('update:value', choice.value),
+              }),
+              h('span', { class: 'agent-approval__choice-copy' }, [
+                h('strong', choice.label),
+                choice.description
+                  ? h('small', choice.description)
+                  : null,
+              ]),
             ]),
           ))
         : null,
       slots.default?.(),
-      h('footer', { class: 'flex justify-end gap-2' }, [
-        h('button', { class: quietButton, type: 'button', onClick: () => emit('reject') }, props.rejectText),
-        h('button', { class: primaryButton, disabled: props.choices.length > 0 && !props.value, type: 'button', onClick: () => emit('approve', props.value) }, props.approveText),
+      h('footer', { class: 'agent-approval__footer' }, [
+        h('button', {
+          class: 'agent-approval__reject',
+          type: 'button',
+          onClick: () => emit('reject'),
+        }, props.rejectText),
+        h('button', {
+          class: 'agent-approval__approve',
+          disabled: props.choices.length > 0 && !props.value,
+          type: 'button',
+          onClick: () => emit('approve', props.value),
+        }, props.approveText),
       ]),
     ])
   },

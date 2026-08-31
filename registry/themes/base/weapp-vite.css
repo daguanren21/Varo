@@ -574,23 +574,27 @@ textarea.varo-input__control {
 .varo-switch {
   display: inline-flex;
   align-items: center;
-  width: 50px;
-  height: 28px;
+  width: 44px;
+  height: 24px;
   padding: 2px;
   cursor: pointer;
-  background: #cbd5e1;
+  background: var(--varo-ui-fill-darker);
   border: 0;
   border-radius: 999px;
-  transition: background 0.18s ease;
+  box-shadow: inset 0 0 0 1px var(--varo-ui-border);
+  transition:
+    background 0.14s ease,
+    box-shadow 0.14s ease;
 }
 
-.varo-switch[data-checked='true'] {
-  background: #0f766e;
+.varo-switch[data-state='checked'] {
+  background: var(--varo-ui-primary);
+  box-shadow: none;
 }
 
 .varo-switch:disabled {
   cursor: not-allowed;
-  opacity: 0.58;
+  opacity: 0.5;
 }
 
 .varo-switch__track {
@@ -599,16 +603,16 @@ textarea.varo-input__control {
 }
 
 .varo-switch__thumb {
-  width: 24px;
-  height: 24px;
-  background: #fff;
+  width: 20px;
+  height: 20px;
+  background: var(--varo-ui-white);
   border-radius: 999px;
-  box-shadow: 0 1px 3px rgb(15 23 42 / 18%);
-  transition: transform 0.18s ease;
+  box-shadow: 0 1px 2px rgb(48 49 51 / 18%);
+  transition: transform 0.14s ease;
 }
 
-.varo-switch[data-checked='true'] .varo-switch__thumb {
-  transform: translateX(22px);
+.varo-switch[data-state='checked'] .varo-switch__thumb {
+  transform: translateX(20px);
 }
 
 .varo-loading {

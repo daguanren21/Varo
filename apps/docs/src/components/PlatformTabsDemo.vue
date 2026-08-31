@@ -181,6 +181,40 @@ const badgeSampleCopy = computed(() => props.locale === 'en'
       review: '审核',
     })
 
+const popoverSampleCopy = computed(() => props.locale === 'en'
+  ? {
+      context: 'Context actions',
+      trigger: 'Order actions',
+      order: 'Order #1042',
+      meta: 'Ready to ship · ¥329',
+      details: 'View details',
+      duplicate: 'Duplicate order',
+      cancel: 'Cancel order',
+      done: 'Done',
+      placement: 'Placement',
+      top: 'Top',
+      right: 'Right',
+      topHint: 'Shown above the trigger',
+      rightHint: 'Shown beside the trigger',
+      close: 'Close',
+    }
+  : {
+      context: '上下文操作',
+      trigger: '订单操作',
+      order: '订单 #1042',
+      meta: '等待发货 · ¥329',
+      details: '查看详情',
+      duplicate: '复制订单',
+      cancel: '取消订单',
+      done: '完成',
+      placement: '定位',
+      top: '顶部',
+      right: '右侧',
+      topHint: '显示在触发器上方',
+      rightHint: '显示在触发器右侧',
+      close: '关闭',
+    })
+
 const inputSampleCopy = computed(() => props.locale === 'en'
   ? {
       clearable: 'Required and clearable',
@@ -655,6 +689,104 @@ onBeforeUnmount(() => {
                             </component>
                             <component :is="runtime.Badge" tone="warning" variant="outline">
                               {{ badgeSampleCopy.review }}
+                            </component>
+                          </div>
+                        </section>
+                      </div>
+                    </section>
+                  </template>
+
+                  <template v-else-if="example === 'popover'">
+                    <section class="platform-demo__popover-sample">
+                      <div class="platform-demo__popover-cases">
+                        <section class="platform-demo__popover-case" data-case="context">
+                          <h3>{{ popoverSampleCopy.context }}</h3>
+                          <div class="platform-demo__popover-canvas">
+                            <component :is="runtime.PopoverRoot" class="platform-demo__popover-root" default-open>
+                              <component
+                                :is="runtime.PopoverTrigger"
+                                class="platform-demo__popover-trigger"
+                                type="button"
+                              >
+                                {{ popoverSampleCopy.trigger }}
+                              </component>
+                              <component
+                                :is="runtime.PopoverContent"
+                                align="center"
+                                class="platform-demo__popover-card"
+                                side="bottom"
+                              >
+                                <header>
+                                  <strong>{{ popoverSampleCopy.order }}</strong>
+                                  <small>{{ popoverSampleCopy.meta }}</small>
+                                </header>
+                                <div class="platform-demo__popover-actions">
+                                  <button type="button">
+                                    {{ popoverSampleCopy.details }}
+                                  </button>
+                                  <button type="button">
+                                    {{ popoverSampleCopy.duplicate }}
+                                  </button>
+                                  <component
+                                    :is="runtime.PopoverClose"
+                                    class="platform-demo__popover-danger"
+                                    type="button"
+                                  >
+                                    {{ popoverSampleCopy.cancel }}
+                                  </component>
+                                </div>
+                                <component
+                                  :is="runtime.PopoverClose"
+                                  class="platform-demo__popover-done"
+                                  type="button"
+                                >
+                                  {{ popoverSampleCopy.done }}
+                                </component>
+                              </component>
+                            </component>
+                          </div>
+                        </section>
+
+                        <section class="platform-demo__popover-case" data-case="placement">
+                          <h3>{{ popoverSampleCopy.placement }}</h3>
+                          <div class="platform-demo__popover-placements">
+                            <component :is="runtime.PopoverRoot">
+                              <component
+                                :is="runtime.PopoverTrigger"
+                                class="platform-demo__popover-trigger"
+                                type="button"
+                              >
+                                {{ popoverSampleCopy.top }}
+                              </component>
+                              <component
+                                :is="runtime.PopoverContent"
+                                class="platform-demo__popover-tip"
+                                side="top"
+                              >
+                                <span>{{ popoverSampleCopy.topHint }}</span>
+                                <component :is="runtime.PopoverClose" type="button">
+                                  {{ popoverSampleCopy.close }}
+                                </component>
+                              </component>
+                            </component>
+                            <component :is="runtime.PopoverRoot">
+                              <component
+                                :is="runtime.PopoverTrigger"
+                                class="platform-demo__popover-trigger"
+                                type="button"
+                              >
+                                {{ popoverSampleCopy.right }}
+                              </component>
+                              <component
+                                :is="runtime.PopoverContent"
+                                class="platform-demo__popover-tip"
+                                side="right"
+                              >
+                                <span>{{ popoverSampleCopy.rightHint }}</span>
+                                <component :is="runtime.PopoverClose" type="button">
+                                  {{ popoverSampleCopy.close }}
+                                </component>
+                              </component>
                             </component>
                           </div>
                         </section>
@@ -3662,6 +3794,245 @@ onBeforeUnmount(() => {
   .platform-demo__badge-statuses,
   .platform-demo__badge-variants {
     gap: 12px;
+  }
+}
+
+/* Popover sample — contextual actions, placement, and explicit dismiss behavior. */
+.platform-demo__popover-sample {
+  box-sizing: border-box;
+  width: min(100%, 680px);
+  padding: 20px;
+  margin-inline: auto;
+  color: var(--varo-foreground);
+  background: var(--demo-phone-card);
+  border: 1px solid var(--demo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__popover-cases {
+  display: grid;
+}
+
+.platform-demo__popover-case {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  padding-block: 20px;
+  border-top: 1px solid var(--demo-border);
+}
+
+.platform-demo__popover-case:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.platform-demo__popover-case:last-child {
+  padding-bottom: 0;
+}
+
+.platform-demo__popover-case h3 {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--varo-foreground);
+}
+
+.platform-demo__popover-canvas,
+.platform-demo__popover-placements {
+  background: var(--varo-card-muted);
+  border-radius: 10px;
+}
+
+.platform-demo__popover-canvas {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 260px;
+  padding: 24px;
+}
+
+.platform-demo__popover-trigger {
+  min-height: 38px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--varo-foreground);
+  cursor: pointer;
+  background: var(--varo-surface);
+  border: 1px solid var(--varo-border);
+  border-radius: 8px;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.platform-demo__popover-trigger:hover {
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-color: var(--varo-primary);
+}
+
+.platform-demo__popover-trigger:focus-visible,
+.platform-demo__popover-sample button:focus-visible {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
+}
+
+.platform-demo__popover-card {
+  box-sizing: border-box;
+  display: grid;
+  width: 248px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--varo-surface);
+  border-color: var(--varo-border);
+  border-radius: 10px;
+}
+
+.platform-demo__popover-card header {
+  display: grid;
+  gap: 3px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--varo-border-light);
+}
+
+.platform-demo__popover-card header strong {
+  font-size: 0.85rem;
+  color: var(--varo-foreground);
+}
+
+.platform-demo__popover-card header small {
+  font-size: 0.72rem;
+  color: var(--varo-muted);
+}
+
+.platform-demo__popover-actions {
+  display: grid;
+  padding: 6px;
+}
+
+.platform-demo__popover-actions button,
+.platform-demo__popover-danger,
+.platform-demo__popover-done,
+.platform-demo__popover-tip button {
+  min-height: 34px;
+  padding: 0 9px;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--varo-foreground);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+}
+
+.platform-demo__popover-actions button:hover {
+  background: var(--varo-fill-light);
+}
+
+.platform-demo__popover-actions .platform-demo__popover-danger {
+  color: var(--varo-danger);
+}
+
+.platform-demo__popover-actions .platform-demo__popover-danger:hover {
+  background: var(--varo-danger-soft);
+}
+
+.platform-demo__popover-done {
+  margin: 0 6px 6px;
+  color: var(--varo-primary);
+  text-align: center;
+  background: var(--varo-primary-soft);
+}
+
+.platform-demo__popover-placements {
+  display: flex;
+  gap: 72px;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  padding: 28px 72px;
+}
+
+.platform-demo__popover-tip {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 156px;
+  padding: 8px 10px;
+  color: var(--varo-foreground);
+  background: var(--varo-surface);
+  border-color: var(--varo-border);
+}
+
+.platform-demo__popover-tip span {
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.platform-demo__popover-tip button {
+  min-height: 28px;
+  color: var(--varo-primary);
+}
+
+.platform-demo__preview-content[data-example='popover'] {
+  display: block;
+}
+
+.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='popover']) {
+  width: min(100%, 720px);
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='popover']) {
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+}
+
+.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='popover']) {
+  padding: 0;
+}
+
+.platform-demo__stage:has(.platform-demo__preview-content[data-example='popover']) .platform-demo__code-shell {
+  --demo-code-bg: var(--demo-surface-strong);
+  --demo-code-surface: var(--demo-surface);
+  --demo-code-border: var(--demo-border);
+  --demo-code-text: var(--varo-foreground);
+  --demo-code-muted: var(--demo-text-muted);
+}
+
+@media (max-width: 640px) {
+  .platform-demo__popover-sample {
+    padding: 16px;
+  }
+
+  .platform-demo__popover-canvas {
+    min-height: 250px;
+    padding: 18px;
+  }
+
+  .platform-demo__popover-placements {
+    gap: 28px;
+    min-height: 132px;
+    padding: 26px 40px;
+  }
+
+  .platform-demo__popover-tip[data-side='right'] {
+    top: calc(100% + 8px);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 

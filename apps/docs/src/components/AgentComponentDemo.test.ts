@@ -1,17 +1,46 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import AgentComponentDemo from './AgentComponentDemo.vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
+import AgentComponentDemo from './AgentComponentDemo.vue'
 
 const components = [
-  'loading', 'thinking', 'markdown', 'stream', 'message', 'conversation',
-  'tool-chip', 'task-list', 'radio-group', 'approval', 'recommendation',
-  'prompt-suggestions', 'composer', 'response-actions', 'artifact', 'sources',
-  'attachments', 'event-renderer', 'message-scroller', 'code-block', 'file-diff',
-  'tool-result', 'image-generation', 'tool-approval', 'citations', 'activity',
-  'sidebar', 'context-card', 'insight-card', 'selection-actions', 'diff-table',
-  'records-table', 'filter-table', 'command-search', 'flowchart', 'fine-tune',
-  'agent-chat'
+  'loading',
+  'thinking',
+  'markdown',
+  'stream',
+  'message',
+  'conversation',
+  'tool-chip',
+  'task-list',
+  'radio-group',
+  'approval',
+  'recommendation',
+  'prompt-suggestions',
+  'composer',
+  'response-actions',
+  'artifact',
+  'sources',
+  'attachments',
+  'event-renderer',
+  'message-scroller',
+  'code-block',
+  'file-diff',
+  'tool-result',
+  'image-generation',
+  'tool-approval',
+  'citations',
+  'activity',
+  'sidebar',
+  'context-card',
+  'insight-card',
+  'selection-actions',
+  'diff-table',
+  'records-table',
+  'filter-table',
+  'command-search',
+  'flowchart',
+  'fine-tune',
+  'agent-chat',
 ]
 
 describe('AgentComponentDemo', () => {
@@ -20,7 +49,7 @@ describe('AgentComponentDemo', () => {
       const wrapper = mount(AgentComponentDemo, { props: { component } })
       expect(wrapper.attributes('data-demo')).toBe(component)
       expect(wrapper.get('.agent-component-demo__stage').text().trim().length, component).toBeGreaterThan(0)
-      await wrapper.findAll('button').find((button) => button.text() === 'Code')!.trigger('click')
+      await wrapper.findAll('button').find(button => button.text() === 'Code')!.trigger('click')
       expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].name)
       expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].importPath)
       wrapper.unmount()
@@ -29,13 +58,28 @@ describe('AgentComponentDemo', () => {
 
   it('forwards interactive demo output', async () => {
     const wrapper = mount(AgentComponentDemo, { props: { component: 'prompt-suggestions' } })
-    await wrapper.findAll('button').find((button) => button.text() === '分析双端能力')!.trigger('click')
+    await wrapper.findAll('button').find(button => button.text() === '分析双端能力')!.trigger('click')
     expect(wrapper.get('output').text()).toBe('分析双端能力')
 
-
-    await wrapper.findAll('button').find((button) => button.text() === 'Code')!.trigger('click')
+    await wrapper.findAll('button').find(button => button.text() === 'Code')!.trigger('click')
     expect(wrapper.get('.agent-component-demo__source').text()).toContain('AgentPromptSuggestions')
     expect(wrapper.get('.agent-component-demo__source').text()).toContain(':suggestions=\"suggestions\"')
+  })
+
+  it('renders a neutral approval surface with explicit selected and decision states', async () => {
+    const wrapper = mount(AgentComponentDemo, { props: { component: 'approval' } })
+
+    expect(wrapper.findAll('.agent-approval')).toHaveLength(1)
+    expect(wrapper.get('.agent-approval__title').text()).toBe('确认发布动作')
+    expect(wrapper.findAll('.agent-approval__choice')).toHaveLength(2)
+    expect(wrapper.get('.agent-approval__choice[data-selected="true"]').text()).toContain('仅验证')
+
+    const choices = wrapper.findAll('.agent-approval__choice')
+    await choices[1]!.get('input').setValue(true)
+    expect(wrapper.get('.agent-approval__choice[data-selected="true"]').text()).toContain('验证并发布')
+
+    await wrapper.get('.agent-approval__approve').trigger('click')
+    expect(wrapper.get('output').text()).toBe('已批准')
   })
 
   it('renders multiline Agent content as structure instead of escaped text', () => {

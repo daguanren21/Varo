@@ -15,6 +15,7 @@ export type DemoKind
     | 'overlay'
     | 'pagination'
     | 'popup'
+    | 'popover'
     | 'side-navbar'
     | 'space'
     | 'sticky'
