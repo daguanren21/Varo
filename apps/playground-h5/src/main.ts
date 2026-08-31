@@ -5,11 +5,12 @@ import '@varo-ui/h5/source/style.css'
 import './styles.css'
 
 const theme = createTheme({
-  primary: '#0f766e',
-  success: '#15803d',
-  warning: '#c2410c',
-  error: '#b91c1c',
-  neutral: '#172033',
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a',
 })
 
 createApp(App).use(VaroConfigProvider, { theme }).mount('#app')

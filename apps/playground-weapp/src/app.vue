@@ -13,8 +13,8 @@
 
 page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #172033;
-  background: #f4f7fb;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-bg);
 }
 
 .app-root {

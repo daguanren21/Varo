@@ -44,11 +44,12 @@ import './custom.css'
 import './agent-docs.css'
 
 const docsTheme = createTheme({
-  primary: '#0f766e',
-  success: '#15803d',
-  warning: '#c2410c',
-  error: '#b91c1c',
-  neutral: '#172033',
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a',
 })
 
 const theme: Theme = {

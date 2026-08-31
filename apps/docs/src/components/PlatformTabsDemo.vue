@@ -544,23 +544,27 @@ onBeforeUnmount(() => {
                           <h3>{{ badgeSampleCopy.anchors }}</h3>
                           <div class="platform-demo__badge-anchors">
                             <span class="platform-demo__badge-anchor">
-                              <span>{{ badgeSampleCopy.messages }}</span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.messagesLabel"
-                                :content="3"
-                                class="platform-demo__badge-anchor-mark"
-                              />
+                              <span class="platform-demo__badge-anchor-label">
+                                {{ badgeSampleCopy.messages }}
+                                <component
+                                  :is="runtime.Badge"
+                                  :aria-label="badgeSampleCopy.messagesLabel"
+                                  :content="3"
+                                  class="platform-demo__badge-anchor-mark"
+                                />
+                              </span>
                             </span>
                             <span class="platform-demo__badge-anchor">
-                              <span>{{ badgeSampleCopy.notifications }}</span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.notificationsLabel"
-                                class="platform-demo__badge-anchor-mark"
-                                dot
-                                tone="danger"
-                              />
+                              <span class="platform-demo__badge-anchor-label">
+                                {{ badgeSampleCopy.notifications }}
+                                <component
+                                  :is="runtime.Badge"
+                                  :aria-label="badgeSampleCopy.notificationsLabel"
+                                  class="platform-demo__badge-anchor-mark"
+                                  dot
+                                  tone="danger"
+                                />
+                              </span>
                             </span>
                           </div>
                         </section>
@@ -3552,12 +3556,18 @@ onBeforeUnmount(() => {
   border-radius: 8px;
 }
 
+.platform-demo__badge-anchor-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .platform-demo__badge-anchor-mark {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 1;
-  transform: translate(45%, -40%);
+  transform: translate(70%, -55%);
 }
 
 .platform-demo__badge-counts {
@@ -3657,17 +3667,17 @@ onBeforeUnmount(() => {
 
 /* Input sample — multiple practical cases, isolated from every other demo. */
 .platform-demo__input-sample {
-  --input-surface: #fff;
-  --input-field: #f7f8fa;
-  --input-field-hover: #f2f4f7;
-  --input-border: #d7dee7;
-  --input-border-strong: #9ba9ba;
-  --input-text: #1b2533;
-  --input-muted: #667487;
-  --input-accent: #0f766e;
-  --input-accent-soft: rgb(15 118 110 / 9%);
-  --input-danger: #c2413a;
-  --input-danger-soft: rgb(194 65 58 / 10%);
+  --input-surface: var(--varo-ui-surface);
+  --input-field: var(--varo-ui-fill-light);
+  --input-field-hover: var(--varo-ui-fill);
+  --input-border: var(--varo-ui-border);
+  --input-border-strong: var(--varo-ui-border-strong);
+  --input-text: var(--varo-ui-text);
+  --input-muted: var(--varo-ui-text-muted);
+  --input-accent: var(--varo-ui-primary);
+  --input-accent-soft: var(--varo-ui-primary-soft);
+  --input-danger: var(--varo-ui-danger);
+  --input-danger-soft: var(--varo-ui-danger-soft);
 
   box-sizing: border-box;
   width: min(100%, 680px);
@@ -3677,20 +3687,6 @@ onBeforeUnmount(() => {
   background: var(--input-surface);
   border: 1px solid var(--input-border);
   border-radius: 16px;
-}
-
-:global(.dark .platform-demo__input-sample) {
-  --input-surface: #111821;
-  --input-field: #171f29;
-  --input-field-hover: #1b2531;
-  --input-border: #2b3746;
-  --input-border-strong: #56677c;
-  --input-text: #e7edf3;
-  --input-muted: #98a6b7;
-  --input-accent: #61cfc5;
-  --input-accent-soft: rgb(97 207 197 / 12%);
-  --input-danger: #ff827a;
-  --input-danger-soft: rgb(255 130 122 / 13%);
 }
 
 .platform-demo__input-cases {

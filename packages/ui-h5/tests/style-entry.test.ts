@@ -33,11 +33,17 @@ describe('ui-h5 style entry', () => {
     expect(style).toContain('background-color 0.2s ease')
     expect(style).toContain('appearance: textfield')
     expect(style).toContain('::-webkit-inner-spin-button')
-    expect(style).toContain('--varo-ui-bg: #f6f7f9')
+    expect(style).toContain('--varo-ui-bg: #f2f3f5')
     expect(style).toContain('--varo-ui-surface: #fff')
-    expect(style).toContain('--varo-ui-primary: #08786f')
+    expect(style).toContain('--varo-ui-text: #303133')
+    expect(style).toContain('--varo-ui-text-regular: #606266')
+    expect(style).toContain('--varo-ui-text-muted: #909399')
+    expect(style).toContain('--varo-ui-border: #dcdfe6')
+    expect(style).toContain('--varo-ui-fill: #f0f2f5')
+    expect(style).toContain('--varo-ui-primary: #07c160')
+    expect(style).toContain('--varo-ui-primary-hover: #38cd80')
+    expect(style).toContain('--varo-ui-info: #73767a')
     expect(style).toContain('--varo-ui-radius: 8px')
-    expect(style).toContain('--varo-ui-primary-hover: #308e86')
     expect(style).toContain('--varo-button-fill: var(--varo-ui-primary)')
     expect(style).toContain('--varo-button-hover-fill: var(--varo-ui-primary-hover)')
     expect(style).toContain('background: var(--varo-button-fill)')
@@ -53,7 +59,7 @@ describe('ui-h5 style entry', () => {
     expect(style).toMatch(
       /\.varo-badge\s*\{[\s\S]*?color: var\(--varo-ui-primary-foreground\)/,
     )
-    expect(style).toContain('--varo-ui-success-soft: #e4f3e9')
+    expect(style).toContain('--varo-ui-success-soft: #e7f7ec')
     expect(style).toContain('--varo-badge-tone: var(--varo-ui-success)')
     expect(style).toMatch(
       /\.varo-badge\[data-variant='soft'\]\s*\{[\s\S]*?color: var\(--varo-badge-tone\);[\s\S]*?background: var\(--varo-badge-soft\)/,

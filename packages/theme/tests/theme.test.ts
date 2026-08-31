@@ -15,6 +15,87 @@ describe('theme', () => {
 
     expect(theme.semantic.primaryBase).toBe('#2563eb')
     expect(theme.components.input.heightMd).toBe('40px')
+    expect(theme.palette.primary.dark).toBe('#1f54c8')
+    expect(theme.palette.primary.light).toBe('#5182ef')
+    expect(theme.palette.primary.soft).toBe('#e9effd')
+    expect(theme.semantic.textRegular).toBe('#606266')
+    expect(theme.semantic.infoBase).toBe('#73767a')
+  })
+
+  it('preserves the WeChat primary and reference semantic scales', () => {
+    const theme = createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+      info: '#73767a',
+    })
+
+    expect(theme.palette.primary).toMatchObject({
+      dark: '#06ad56',
+      base: '#07c160',
+      light: '#38cd80',
+      soft: '#e6f9ef',
+    })
+    expect(theme.palette.success).toMatchObject({
+      dark: '#10973d',
+      base: '#13b248',
+      light: '#42c16d',
+      soft: '#e7f7ec',
+    })
+    expect(theme.palette.warning.soft).toBe('#fef4e5')
+    expect(theme.palette.error.soft).toBe('#fdeaeb')
+    expect(theme.palette.info.soft).toBe('#f1f1f2')
+    expect(theme.semantic).toMatchObject({
+      textBase: '#303133',
+      textRegular: '#606266',
+      textMuted: '#909399',
+      textPlaceholder: '#a8abb2',
+      textDisabled: '#c0c4cc',
+      surfaceElevated: '#f2f3f5',
+      borderBase: '#dcdfe6',
+      fillBase: '#f0f2f5',
+    })
+  })
+
+  it('creates the dark neutral and semantic surface palette', () => {
+    const theme = createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+      info: '#73767a',
+      mode: 'dark',
+    })
+    const variables = createThemeCssVariables(theme)
+
+    expect(theme.semantic).toMatchObject({
+      textBase: '#e5eaf3',
+      textRegular: '#cfd3dc',
+      textMuted: '#a3a6ad',
+      textPlaceholder: '#8d9095',
+      textDisabled: '#6c6e72',
+      surfaceBase: '#141414',
+      surfaceElevated: '#0a0a0a',
+      surfaceOverlay: '#1d1e1f',
+      fillBase: '#303030',
+      borderBase: '#4c4d4f',
+      borderStrong: '#636466',
+      primarySoft: '#122c1f',
+      successSoft: '#142a1b',
+      warningSoft: '#342611',
+      dangerSoft: '#321819',
+    })
+    expect(variables).toMatchObject({
+      '--varo-ui-bg': '#0a0a0a',
+      '--varo-ui-surface': '#141414',
+      '--varo-ui-text': '#e5eaf3',
+      '--varo-ui-border': '#4c4d4f',
+      '--varo-ui-fill': '#303030',
+      '--varo-ui-shadow-sm': '0 1px 2px rgb(0 0 0 / 46%)',
+    })
   })
 
   it('merges semantic and input overrides', () => {
@@ -57,9 +138,14 @@ describe('theme', () => {
     expect(variables).toMatchObject({
       '--varo-ui-primary': '#2563eb',
       '--varo-ui-primary-foreground': '#ffffff',
+      '--varo-ui-text-regular': '#606266',
+      '--varo-ui-text-muted': '#909399',
+      '--varo-ui-border': '#dcdfe6',
+      '--varo-ui-fill': '#f0f2f5',
+      '--varo-ui-info': '#73767a',
       '--varo-ui-radius': '20px',
       '--varo-ui-ring': 'rgb(37 99 235 / 16%)',
-      '--varo-ui-shadow-sm': '0 1px 2px rgb(24 36 51 / 6%)',
+      '--varo-ui-shadow-sm': '0 1px 2px rgb(48 49 51 / 6%)',
     })
   })
 

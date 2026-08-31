@@ -77,7 +77,7 @@ describe('ui-weapp button', () => {
   it('uses borderless solid buttons and the lighter pressed-state token', () => {
     const style = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8')
 
-    expect(style).toContain('--varo-ui-primary-hover: #308e86')
+    expect(style).toContain('--varo-ui-primary-hover: #38cd80')
     expect(style).toContain('--varo-button-hover-fill: var(--varo-ui-primary-hover)')
     expect(style).toContain('.varo-button[data-variant=\'solid\']')
     expect(style).toContain('border: 0')

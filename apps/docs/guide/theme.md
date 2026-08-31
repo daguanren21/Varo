@@ -10,11 +10,12 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 const theme = createTheme({
-  primary: '#0f766e',
-  success: '#15803d',
-  warning: '#c2410c',
-  error: '#b91c1c',
-  neutral: '#172033'
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a'
 })
 
 createApp(App).use(VaroConfigProvider, { theme }).mount('#app')
@@ -59,11 +60,12 @@ import { shallowRef } from 'wevu'
 import VThemeProvider from '@/components/ui/v-theme-provider.vue'
 
 const activeTheme = shallowRef(createTheme({
-  primary: '#0f766e',
-  success: '#15803d',
-  warning: '#c2410c',
-  error: '#b91c1c',
-  neutral: '#172033'
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a'
 }))
 </script>
 
@@ -76,11 +78,27 @@ const activeTheme = shallowRef(createTheme({
 
 用新的 `ThemeDefinition` 替换 `activeTheme.value` 后，Provider 会重新计算内联 CSS Variables；子树中的 Varo 组件通过变量继承立即更新。多页面应用应把 Provider 放进共享页面壳，而不是在 App 生命周期中操作样式。
 
+## 暗色模式
+
+`mode: 'dark'` 会生成暗色文字、边框、填充和背景层级，同时保留微信绿主色与语义色：
+
+```ts
+const darkTheme = createTheme({
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a',
+  mode: 'dark'
+})
+```
+
 ## 设计原则
 
 - palette、semantic、component token 分层
 - wrapper 组件只消费 token，不硬编码业务品牌色
-- 后续可以继续接入颜色引擎、多品牌主题与暗黑模式
+- light / dark 由同一颜色引擎生成，品牌色和语义不漂移
 
 ## 推荐实践
 

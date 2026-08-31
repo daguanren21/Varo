@@ -100,12 +100,16 @@ import { VBadge } from '@varo-ui/h5'
 <template>
   <div class="badge-stack">
     <span class="badge-anchor">
-      消息
-      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+      <span class="badge-anchor__label">
+        消息
+        <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+      </span>
     </span>
     <span class="badge-anchor">
-      通知
-      <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+      <span class="badge-anchor__label">
+        通知
+        <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+      </span>
     </span>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
@@ -117,8 +121,9 @@ import { VBadge } from '@varo-ui/h5'
 
 <style scoped>
 .badge-stack { display: flex; gap: 12px; align-items: center; }
-.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
-.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+.badge-anchor { min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__label { position: relative; display: inline-flex; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(70%, -55%); }
 </style>
           `.trim(),
         },
@@ -136,12 +141,16 @@ import { VBadge } from '@varo-ui/weapp'
 <template>
   <view class="badge-stack">
     <view class="badge-anchor">
-      <text>消息</text>
-      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+      <view class="badge-anchor__label">
+        <text>消息</text>
+        <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+      </view>
     </view>
     <view class="badge-anchor">
-      <text>通知</text>
-      <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+      <view class="badge-anchor__label">
+        <text>通知</text>
+        <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+      </view>
     </view>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
@@ -153,8 +162,9 @@ import { VBadge } from '@varo-ui/weapp'
 
 <style scoped>
 .badge-stack { display: flex; gap: 12px; align-items: center; }
-.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
-.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+.badge-anchor { min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__label { position: relative; display: inline-flex; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(70%, -55%); }
 </style>
           `.trim(),
         },
@@ -740,12 +750,16 @@ import { VBadge } from '@varo-ui/h5'
 <template>
   <div class="badge-stack">
     <span class="badge-anchor">
-      Messages
-      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+      <span class="badge-anchor__label">
+        Messages
+        <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+      </span>
     </span>
     <span class="badge-anchor">
-      Notifications
-      <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+      <span class="badge-anchor__label">
+        Notifications
+        <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+      </span>
     </span>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
@@ -757,8 +771,9 @@ import { VBadge } from '@varo-ui/h5'
 
 <style scoped>
 .badge-stack { display: flex; gap: 12px; align-items: center; }
-.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
-.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+.badge-anchor { min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__label { position: relative; display: inline-flex; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(70%, -55%); }
 </style>
           `.trim(),
         },
@@ -776,12 +791,16 @@ import { VBadge } from '@varo-ui/weapp'
 <template>
   <view class="badge-stack">
     <view class="badge-anchor">
-      <text>Messages</text>
-      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+      <view class="badge-anchor__label">
+        <text>Messages</text>
+        <VBadge class="badge-anchor__mark" :content="3" aria-label="3 unread messages" />
+      </view>
     </view>
     <view class="badge-anchor">
-      <text>Notifications</text>
-      <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+      <view class="badge-anchor__label">
+        <text>Notifications</text>
+        <VBadge class="badge-anchor__mark" aria-label="New notification" dot />
+      </view>
     </view>
     <VBadge :content="120" :max="99" tone="primary" />
     <VBadge :content="0" show-zero tone="default" />
@@ -793,8 +812,9 @@ import { VBadge } from '@varo-ui/weapp'
 
 <style scoped>
 .badge-stack { display: flex; gap: 12px; align-items: center; }
-.badge-anchor { position: relative; min-width: 72px; padding: 10px 14px; text-align: center; }
-.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(45%, -40%); }
+.badge-anchor { min-width: 72px; padding: 10px 14px; text-align: center; }
+.badge-anchor__label { position: relative; display: inline-flex; }
+.badge-anchor__mark { position: absolute; top: 0; right: 0; transform: translate(70%, -55%); }
 </style>
           `.trim(),
         },

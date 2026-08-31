@@ -1,21 +1,53 @@
 page {
-  --varo-ui-bg: #f6f7f9;
+  --varo-ui-white: #fff;
+  --varo-ui-black: #000;
+  --varo-ui-bg: #f2f3f5;
   --varo-ui-surface: #fff;
-  --varo-ui-surface-muted: #eef2f6;
-  --varo-ui-text: #182433;
-  --varo-ui-text-muted: #667085;
-  --varo-ui-border: #d8dee7;
-  --varo-ui-border-strong: #aeb8c6;
-  --varo-ui-primary: #08786f;
+  --varo-ui-surface-muted: #f5f7fa;
+  --varo-ui-surface-overlay: #fff;
+  --varo-ui-text: #303133;
+  --varo-ui-text-regular: #606266;
+  --varo-ui-text-muted: #909399;
+  --varo-ui-text-placeholder: #a8abb2;
+  --varo-ui-text-disabled: #c0c4cc;
+  --varo-ui-border: #dcdfe6;
+  --varo-ui-border-strong: #cdd0d6;
+  --varo-ui-border-dark: #d4d7de;
+  --varo-ui-border-light: #e4e7ed;
+  --varo-ui-border-lighter: #ebeef5;
+  --varo-ui-border-extra-light: #f2f6fc;
+  --varo-ui-fill: #f0f2f5;
+  --varo-ui-fill-darker: #e6e8eb;
+  --varo-ui-fill-dark: #ebedf0;
+  --varo-ui-fill-light: #f5f7fa;
+  --varo-ui-fill-lighter: #fafafa;
+  --varo-ui-fill-extra-light: #fafcff;
+  --varo-ui-primary: #07c160;
+  --varo-ui-primary-dark: #06ad56;
+  --varo-ui-primary-hover: #38cd80;
+  --varo-ui-primary-soft: #e6f9ef;
   --varo-ui-primary-foreground: #fff;
-  --varo-ui-success: #15803d;
-  --varo-ui-warning: #b76b00;
-  --varo-ui-danger: #c7372f;
+  --varo-ui-success: #13b248;
+  --varo-ui-success-dark: #10973d;
+  --varo-ui-success-hover: #42c16d;
+  --varo-ui-success-soft: #e7f7ec;
+  --varo-ui-warning: #fa9200;
+  --varo-ui-warning-dark: #d57c00;
+  --varo-ui-warning-hover: #fba833;
+  --varo-ui-warning-soft: #fef4e5;
+  --varo-ui-danger: #eb3437;
+  --varo-ui-danger-dark: #c82c2f;
+  --varo-ui-danger-hover: #ef5d5f;
+  --varo-ui-danger-soft: #fdeaeb;
+  --varo-ui-info: #73767a;
+  --varo-ui-info-dark: #5c5e62;
+  --varo-ui-info-hover: #8f9195;
+  --varo-ui-info-soft: #f1f1f2;
   --varo-ui-radius: 8px;
   --varo-ui-radius-sm: 6px;
-  --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
-  --varo-ui-shadow-md: 0 14px 34px rgb(24 36 51 / 12%);
-  --varo-ui-ring: rgb(8 120 111 / 16%);
+  --varo-ui-shadow-sm: 0 1px 2px rgb(48 49 51 / 6%);
+  --varo-ui-shadow-md: 0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%);
+  --varo-ui-ring: rgb(0 125 255 / 16%);
 }
 
 .varo-button,
@@ -40,6 +72,9 @@ page {
 }
 
 .varo-button {
+  --varo-button-fill: var(--varo-ui-primary);
+  --varo-button-hover-fill: var(--varo-ui-primary-hover);
+
   display: inline-flex;
   gap: 8px;
   align-items: center;
@@ -50,7 +85,7 @@ page {
   line-height: 1;
   color: var(--varo-ui-primary-foreground);
   cursor: pointer;
-  background: var(--varo-ui-primary);
+  background: var(--varo-button-fill);
   border: 1px solid transparent;
   border-radius: var(--varo-ui-radius);
   box-shadow: var(--varo-ui-shadow-sm);
@@ -63,8 +98,16 @@ page {
     transform 0.18s ease;
 }
 
+.varo-button[data-variant='solid'] {
+  border: 0;
+}
+
 .varo-button--pressed {
   transform: translateY(1px);
+}
+
+.varo-button[data-variant='solid'].varo-button--pressed {
+  background: var(--varo-button-hover-fill);
 }
 
 .varo-button[data-size='sm'] {
@@ -94,15 +137,18 @@ page {
 }
 
 .varo-button[data-tone='success'][data-variant='solid'] {
-  background: var(--varo-ui-success);
+  --varo-button-fill: var(--varo-ui-success);
+  --varo-button-hover-fill: var(--varo-ui-success-hover);
 }
 
 .varo-button[data-tone='warning'][data-variant='solid'] {
-  background: var(--varo-ui-warning);
+  --varo-button-fill: var(--varo-ui-warning);
+  --varo-button-hover-fill: var(--varo-ui-warning-hover);
 }
 
 .varo-button[data-tone='danger'][data-variant='solid'] {
-  background: var(--varo-ui-danger);
+  --varo-button-fill: var(--varo-ui-danger);
+  --varo-button-hover-fill: var(--varo-ui-danger-hover);
 }
 
 .varo-button[data-shape='square'] {
@@ -117,7 +163,10 @@ page {
   width: 100%;
 }
 
-.varo-button[data-loading='true'],
+.varo-button[data-loading='true'] {
+  cursor: progress;
+}
+
 .varo-button[data-disabled='true'] {
   cursor: not-allowed;
   opacity: 0.62;
@@ -1706,6 +1755,9 @@ textarea.varo-input__control {
 }
 
 .varo-badge {
+  --varo-badge-tone: var(--varo-ui-danger);
+  --varo-badge-soft: var(--varo-ui-danger-soft);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1715,9 +1767,9 @@ textarea.varo-input__control {
   font-size: 11px;
   font-weight: 750;
   line-height: 1;
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   white-space: nowrap;
-  background: var(--varo-ui-danger);
+  background: var(--varo-badge-tone);
   border: 1px solid transparent;
   border-radius: 999px;
 }
@@ -1731,28 +1783,32 @@ textarea.varo-input__control {
 }
 
 .varo-badge[data-tone='default'] {
-  background: var(--varo-ui-text-muted);
+  --varo-badge-tone: var(--varo-ui-text-muted);
+  --varo-badge-soft: var(--varo-ui-surface-muted);
 }
 
 .varo-badge[data-tone='primary'] {
-  background: var(--varo-ui-primary);
+  --varo-badge-tone: var(--varo-ui-primary);
+  --varo-badge-soft: var(--varo-ui-primary-soft);
 }
 
 .varo-badge[data-tone='success'] {
-  background: var(--varo-ui-success);
+  --varo-badge-tone: var(--varo-ui-success);
+  --varo-badge-soft: var(--varo-ui-success-soft);
 }
 
 .varo-badge[data-tone='warning'] {
-  background: var(--varo-ui-warning);
+  --varo-badge-tone: var(--varo-ui-warning);
+  --varo-badge-soft: var(--varo-ui-warning-soft);
 }
 
 .varo-badge[data-variant='soft'] {
-  color: var(--varo-ui-text);
-  background: var(--varo-ui-surface-muted);
+  color: var(--varo-badge-tone);
+  background: var(--varo-badge-soft);
 }
 
 .varo-badge[data-variant='outline'] {
-  color: var(--varo-ui-text);
+  color: var(--varo-badge-tone);
   background: transparent;
   border-color: currentcolor;
 }
@@ -2120,23 +2176,23 @@ textarea.varo-input__control {
   min-height: 42px;
   padding: 0 12px;
   font-size: 13px;
-  color: #8a5200;
-  background: #fff7e6;
+  color: var(--varo-ui-warning-dark);
+  background: var(--varo-ui-warning-soft);
 }
 
 .varo-notice-bar[data-tone='info'] {
-  color: #155b9d;
-  background: #eaf4ff;
+  color: var(--varo-ui-info-dark);
+  background: var(--varo-ui-info-soft);
 }
 
 .varo-notice-bar[data-tone='success'] {
-  color: #146c32;
-  background: #eaf8ef;
+  color: var(--varo-ui-success-dark);
+  background: var(--varo-ui-success-soft);
 }
 
 .varo-notice-bar[data-tone='danger'] {
-  color: #a82f28;
-  background: #fff0ef;
+  color: var(--varo-ui-danger-dark);
+  background: var(--varo-ui-danger-soft);
 }
 
 .varo-notice-bar__viewport {

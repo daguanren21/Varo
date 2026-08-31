@@ -6,11 +6,12 @@ import { describe, expect, it } from 'vitest'
 import VThemeProvider from './components/ui/v-theme-provider.vue'
 
 const tealTheme = createTheme({
-  primary: '#08786f',
-  success: '#15803d',
-  warning: '#b76b00',
-  error: '#c7372f',
-  neutral: '#182433',
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a',
 })
 const violetTheme = createTheme({
   primary: '#7c3aed',
@@ -27,7 +28,7 @@ describe('VThemeProvider', () => {
       slots: { default: '<text>themed content</text>' },
     })
 
-    expect(wrapper.attributes('style')).toContain('--varo-ui-primary: #08786f')
+    expect(wrapper.attributes('style')).toContain('--varo-ui-primary: #07c160')
     expect(wrapper.text()).toContain('themed content')
 
     await wrapper.setProps({ theme: violetTheme })

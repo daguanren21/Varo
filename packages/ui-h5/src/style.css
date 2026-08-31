@@ -1,29 +1,53 @@
 :root {
-  --varo-ui-bg: #f6f7f9;
+  --varo-ui-white: #fff;
+  --varo-ui-black: #000;
+  --varo-ui-bg: #f2f3f5;
   --varo-ui-surface: #fff;
-  --varo-ui-surface-muted: #eef2f6;
-  --varo-ui-text: #182433;
-  --varo-ui-text-muted: #667085;
-  --varo-ui-border: #d8dee7;
-  --varo-ui-border-strong: #aeb8c6;
-  --varo-ui-primary: #08786f;
-  --varo-ui-primary-hover: #308e86;
-  --varo-ui-primary-soft: #e1f1ef;
+  --varo-ui-surface-muted: #f5f7fa;
+  --varo-ui-surface-overlay: #fff;
+  --varo-ui-text: #303133;
+  --varo-ui-text-regular: #606266;
+  --varo-ui-text-muted: #909399;
+  --varo-ui-text-placeholder: #a8abb2;
+  --varo-ui-text-disabled: #c0c4cc;
+  --varo-ui-border: #dcdfe6;
+  --varo-ui-border-strong: #cdd0d6;
+  --varo-ui-border-dark: #d4d7de;
+  --varo-ui-border-light: #e4e7ed;
+  --varo-ui-border-lighter: #ebeef5;
+  --varo-ui-border-extra-light: #f2f6fc;
+  --varo-ui-fill: #f0f2f5;
+  --varo-ui-fill-darker: #e6e8eb;
+  --varo-ui-fill-dark: #ebedf0;
+  --varo-ui-fill-light: #f5f7fa;
+  --varo-ui-fill-lighter: #fafafa;
+  --varo-ui-fill-extra-light: #fafcff;
+  --varo-ui-primary: #07c160;
+  --varo-ui-primary-dark: #06ad56;
+  --varo-ui-primary-hover: #38cd80;
+  --varo-ui-primary-soft: #e6f9ef;
   --varo-ui-primary-foreground: #fff;
-  --varo-ui-success: #15803d;
-  --varo-ui-success-hover: #3a945c;
-  --varo-ui-success-soft: #e4f3e9;
-  --varo-ui-warning: #b76b00;
-  --varo-ui-warning-hover: #c38329;
-  --varo-ui-warning-soft: #f8eddb;
-  --varo-ui-danger: #c7372f;
-  --varo-ui-danger-hover: #d05750;
-  --varo-ui-danger-soft: #f9e5e3;
+  --varo-ui-success: #13b248;
+  --varo-ui-success-dark: #10973d;
+  --varo-ui-success-hover: #42c16d;
+  --varo-ui-success-soft: #e7f7ec;
+  --varo-ui-warning: #fa9200;
+  --varo-ui-warning-dark: #d57c00;
+  --varo-ui-warning-hover: #fba833;
+  --varo-ui-warning-soft: #fef4e5;
+  --varo-ui-danger: #eb3437;
+  --varo-ui-danger-dark: #c82c2f;
+  --varo-ui-danger-hover: #ef5d5f;
+  --varo-ui-danger-soft: #fdeaeb;
+  --varo-ui-info: #73767a;
+  --varo-ui-info-dark: #5c5e62;
+  --varo-ui-info-hover: #8f9195;
+  --varo-ui-info-soft: #f1f1f2;
   --varo-ui-radius: 8px;
   --varo-ui-radius-sm: 6px;
-  --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
-  --varo-ui-shadow-md: 0 14px 34px rgb(24 36 51 / 12%);
-  --varo-ui-ring: rgb(8 120 111 / 16%);
+  --varo-ui-shadow-sm: 0 1px 2px rgb(48 49 51 / 6%);
+  --varo-ui-shadow-md: 0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%);
+  --varo-ui-ring: rgb(0 125 255 / 16%);
 }
 
 :where(.varo-button, .varo-checkbox, .varo-radio, .varo-input-number button, .varo-select button, .varo-switch, .varo-toast button, .varo-rate__item, .varo-picker button, .varo-cascader button, .varo-calendar button, .varo-date-picker button, .varo-number-keyboard button, .varo-uploader button, .varo-indicator button, .varo-elevator button, .varo-menu button, .varo-pagination button) {
@@ -2135,23 +2159,23 @@ textarea.varo-input__control {
   min-height: 42px;
   padding: 0 12px;
   font-size: 13px;
-  color: #8a5200;
-  background: #fff7e6;
+  color: var(--varo-ui-warning-dark);
+  background: var(--varo-ui-warning-soft);
 }
 
 .varo-notice-bar[data-tone='info'] {
-  color: #155b9d;
-  background: #eaf4ff;
+  color: var(--varo-ui-info-dark);
+  background: var(--varo-ui-info-soft);
 }
 
 .varo-notice-bar[data-tone='success'] {
-  color: #146c32;
-  background: #eaf8ef;
+  color: var(--varo-ui-success-dark);
+  background: var(--varo-ui-success-soft);
 }
 
 .varo-notice-bar[data-tone='danger'] {
-  color: #a82f28;
-  background: #fff0ef;
+  color: var(--varo-ui-danger-dark);
+  background: var(--varo-ui-danger-soft);
 }
 
 .varo-notice-bar__viewport {

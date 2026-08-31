@@ -24,18 +24,21 @@ import { VBadge } from '@varo-ui/h5'
 ```vue
 <template>
   <span class="badge-anchor">
-    消息
-    <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+    <span class="badge-anchor__label">
+      消息
+      <VBadge class="badge-anchor__mark" :content="3" aria-label="3 条未读消息" />
+    </span>
   </span>
   <span class="badge-anchor">
-    通知
-    <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+    <span class="badge-anchor__label">
+      通知
+      <VBadge class="badge-anchor__mark" aria-label="新通知" dot />
+    </span>
   </span>
 </template>
 
 <style scoped>
 .badge-anchor {
-  position: relative;
   display: inline-flex;
   min-width: 72px;
   padding: 10px 14px;
@@ -46,11 +49,15 @@ import { VBadge } from '@varo-ui/h5'
   margin-left: 12px;
 }
 
+.badge-anchor__label {
+  position: relative;
+}
+
 .badge-anchor__mark {
   position: absolute;
   top: 0;
   right: 0;
-  transform: translate(45%, -40%);
+  transform: translate(70%, -55%);
 }
 </style>
 ```

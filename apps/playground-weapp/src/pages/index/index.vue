@@ -57,11 +57,12 @@ defineOptions({
 })
 
 const tealTheme = createTheme({
-  primary: '#08786f',
-  success: '#15803d',
-  warning: '#b76b00',
-  error: '#c7372f',
-  neutral: '#182433',
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a',
 })
 const violetTheme = createTheme({
   primary: '#7c3aed',

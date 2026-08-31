@@ -1,18 +1,50 @@
 import type { ThemeDefinition } from './types'
 
 export interface ThemeCssVariables {
+  '--varo-ui-white': string
+  '--varo-ui-black': string
   '--varo-ui-bg': string
   '--varo-ui-surface': string
   '--varo-ui-surface-muted': string
+  '--varo-ui-surface-overlay': string
   '--varo-ui-text': string
+  '--varo-ui-text-regular': string
   '--varo-ui-text-muted': string
+  '--varo-ui-text-placeholder': string
+  '--varo-ui-text-disabled': string
   '--varo-ui-border': string
   '--varo-ui-border-strong': string
+  '--varo-ui-border-dark': string
+  '--varo-ui-border-light': string
+  '--varo-ui-border-lighter': string
+  '--varo-ui-border-extra-light': string
+  '--varo-ui-fill': string
+  '--varo-ui-fill-darker': string
+  '--varo-ui-fill-dark': string
+  '--varo-ui-fill-light': string
+  '--varo-ui-fill-lighter': string
+  '--varo-ui-fill-extra-light': string
   '--varo-ui-primary': string
+  '--varo-ui-primary-dark': string
+  '--varo-ui-primary-hover': string
+  '--varo-ui-primary-soft': string
   '--varo-ui-primary-foreground': string
   '--varo-ui-success': string
+  '--varo-ui-success-dark': string
+  '--varo-ui-success-hover': string
+  '--varo-ui-success-soft': string
   '--varo-ui-warning': string
+  '--varo-ui-warning-dark': string
+  '--varo-ui-warning-hover': string
+  '--varo-ui-warning-soft': string
   '--varo-ui-danger': string
+  '--varo-ui-danger-dark': string
+  '--varo-ui-danger-hover': string
+  '--varo-ui-danger-soft': string
+  '--varo-ui-info': string
+  '--varo-ui-info-dark': string
+  '--varo-ui-info-hover': string
+  '--varo-ui-info-soft': string
   '--varo-ui-radius': string
   '--varo-ui-radius-sm': string
   '--varo-ui-shadow-sm': string
@@ -44,22 +76,58 @@ export function createThemeCssVariables(
   overrides: ThemeCssVariableOverrides = {},
 ): ThemeCssVariables {
   return {
+    '--varo-ui-white': theme.palette.neutral.white,
+    '--varo-ui-black': theme.palette.neutral.black,
     '--varo-ui-bg': theme.semantic.surfaceElevated,
     '--varo-ui-surface': theme.semantic.surfaceBase,
-    '--varo-ui-surface-muted': theme.palette.neutral['50'],
+    '--varo-ui-surface-muted': theme.semantic.fillLight,
+    '--varo-ui-surface-overlay': theme.semantic.surfaceOverlay,
     '--varo-ui-text': theme.semantic.textBase,
+    '--varo-ui-text-regular': theme.semantic.textRegular,
     '--varo-ui-text-muted': theme.semantic.textMuted,
+    '--varo-ui-text-placeholder': theme.semantic.textPlaceholder,
+    '--varo-ui-text-disabled': theme.semantic.textDisabled,
     '--varo-ui-border': theme.semantic.borderBase,
     '--varo-ui-border-strong': theme.semantic.borderStrong,
+    '--varo-ui-border-dark': theme.palette.neutral['border-dark'],
+    '--varo-ui-border-light': theme.semantic.borderLight,
+    '--varo-ui-border-lighter': theme.semantic.borderLighter,
+    '--varo-ui-border-extra-light': theme.palette.neutral['border-extra-light'],
+    '--varo-ui-fill': theme.semantic.fillBase,
+    '--varo-ui-fill-darker': theme.palette.neutral['fill-darker'],
+    '--varo-ui-fill-dark': theme.palette.neutral['fill-dark'],
+    '--varo-ui-fill-light': theme.semantic.fillLight,
+    '--varo-ui-fill-lighter': theme.semantic.fillLighter,
+    '--varo-ui-fill-extra-light': theme.palette.neutral['fill-extra-light'],
     '--varo-ui-primary': theme.semantic.primaryBase,
-    '--varo-ui-primary-foreground': theme.palette.neutral['0'],
-    '--varo-ui-success': theme.seed.success,
-    '--varo-ui-warning': theme.seed.warning,
+    '--varo-ui-primary-dark': theme.semantic.primaryDark,
+    '--varo-ui-primary-hover': theme.semantic.primaryHover,
+    '--varo-ui-primary-soft': theme.semantic.primarySoft,
+    '--varo-ui-primary-foreground': theme.palette.neutral.white,
+    '--varo-ui-success': theme.semantic.successBase,
+    '--varo-ui-success-dark': theme.semantic.successDark,
+    '--varo-ui-success-hover': theme.semantic.successHover,
+    '--varo-ui-success-soft': theme.semantic.successSoft,
+    '--varo-ui-warning': theme.semantic.warningBase,
+    '--varo-ui-warning-dark': theme.semantic.warningDark,
+    '--varo-ui-warning-hover': theme.semantic.warningHover,
+    '--varo-ui-warning-soft': theme.semantic.warningSoft,
     '--varo-ui-danger': theme.semantic.dangerBase,
+    '--varo-ui-danger-dark': theme.semantic.dangerDark,
+    '--varo-ui-danger-hover': theme.semantic.dangerHover,
+    '--varo-ui-danger-soft': theme.semantic.dangerSoft,
+    '--varo-ui-info': theme.semantic.infoBase,
+    '--varo-ui-info-dark': theme.semantic.infoDark,
+    '--varo-ui-info-hover': theme.semantic.infoHover,
+    '--varo-ui-info-soft': theme.semantic.infoSoft,
     '--varo-ui-radius': theme.components.button.borderRadius,
     '--varo-ui-radius-sm': theme.components.input.borderRadius,
-    '--varo-ui-shadow-sm': '0 1px 2px rgb(24 36 51 / 6%)',
-    '--varo-ui-shadow-md': '0 14px 34px rgb(24 36 51 / 12%)',
+    '--varo-ui-shadow-sm': theme.seed.mode === 'dark'
+      ? '0 1px 2px rgb(0 0 0 / 46%)'
+      : '0 1px 2px rgb(48 49 51 / 6%)',
+    '--varo-ui-shadow-md': theme.seed.mode === 'dark'
+      ? '0 12px 32px 4px rgb(0 0 0 / 36%), 0 8px 20px rgb(0 0 0 / 72%)'
+      : '0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%)',
     '--varo-ui-ring': colorWithAlpha(theme.semantic.primaryBase, 16),
     ...overrides,
   }

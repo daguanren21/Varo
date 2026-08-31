@@ -16,11 +16,12 @@ export function useVaroTheme() {
   if (!config) {
     return computed<ThemeDefinition>(() =>
       createTheme({
-        primary: '#2563eb',
-        success: '#16a34a',
-        warning: '#d97706',
-        error: '#dc2626',
-        neutral: '#0f172a',
+        primary: '#07c160',
+        success: '#13b248',
+        warning: '#fa9200',
+        error: '#eb3437',
+        neutral: '#303133',
+        info: '#73767a',
       }),
     )
   }

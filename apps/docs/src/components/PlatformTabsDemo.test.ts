@@ -235,6 +235,10 @@ describe('PlatformTabsDemo', () => {
       '新通知',
     ])
     expect(anchors.every(badge => badge.classes().includes('platform-demo__badge-anchor-mark'))).toBe(true)
+    expect(
+      anchors.every(badge =>
+        badge.element.parentElement?.classList.contains('platform-demo__badge-anchor-label')),
+    ).toBe(true)
 
     const counts = wrapper.get('[data-case="counts"]').findAll('.varo-badge')
     expect(counts.map(badge => badge.text())).toEqual(['3', '12', '99+', '0'])

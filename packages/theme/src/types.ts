@@ -4,6 +4,8 @@ export interface ThemeSeed {
   warning: string
   error: string
   neutral: string
+  info?: string
+  mode?: 'light' | 'dark'
 }
 
 export interface ThemePalette {
@@ -12,18 +14,45 @@ export interface ThemePalette {
   success: Record<string, string>
   warning: Record<string, string>
   error: Record<string, string>
+  info: Record<string, string>
 }
 
 export interface SemanticTokens {
   textBase: string
+  textRegular: string
   textMuted: string
+  textPlaceholder: string
+  textDisabled: string
   surfaceBase: string
   surfaceElevated: string
+  surfaceOverlay: string
+  fillBase: string
+  fillLight: string
+  fillLighter: string
   borderBase: string
   borderStrong: string
+  borderLight: string
+  borderLighter: string
   primaryBase: string
+  primaryDark: string
   primaryHover: string
+  primarySoft: string
+  successBase: string
+  successDark: string
+  successHover: string
+  successSoft: string
+  warningBase: string
+  warningDark: string
+  warningHover: string
+  warningSoft: string
   dangerBase: string
+  dangerDark: string
+  dangerHover: string
+  dangerSoft: string
+  infoBase: string
+  infoDark: string
+  infoHover: string
+  infoSoft: string
 }
 
 export interface ComponentTokens {

@@ -45,11 +45,12 @@ import { shallowRef } from 'wevu'
 import VThemeProvider from '@/components/ui/v-theme-provider.vue'
 
 const activeTheme = shallowRef(createTheme({
-  primary: '#0f766e',
-  success: '#15803d',
-  warning: '#c2410c',
-  error: '#b91c1c',
-  neutral: '#172033'
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a'
 }))
 </script>
 
@@ -61,6 +62,22 @@ const activeTheme = shallowRef(createTheme({
 ```
 
 Replacing `activeTheme.value` recomputes the provider's inline CSS Variables, updating every Varo component in its subtree through CSS inheritance.
+
+## Dark mode
+
+`mode: 'dark'` generates the dark text, border, fill, and background scales while preserving WeChat Green and semantic colors:
+
+```ts
+const darkTheme = createTheme({
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a',
+  mode: 'dark'
+})
+```
 
 ## Principles
 
