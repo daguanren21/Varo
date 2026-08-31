@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { VCalendar, VCalendarCard } from '../src/calendar'
+import { VCalendarCard } from '../src/calendar'
 import { VCascader } from '../src/cascader'
 import { VDatePicker } from '../src/date-picker'
 import { VNumberKeyboard } from '../src/number-keyboard'
@@ -17,25 +17,25 @@ describe('ui-weapp advanced form controls', () => {
       props: {
         columns: [
           { label: 'Apple', value: 'apple' },
-          { label: 'Pear', value: 'pear' }
+          { label: 'Pear', value: 'pear' },
         ],
         visible: true,
-        onConfirm: pickerConfirm
-      }
+        onConfirm: pickerConfirm,
+      },
     })
     const cascader = mount(VCascader, {
       props: {
         options: [{ label: 'Zhejiang', value: 'zhejiang', children: [{ label: 'Hangzhou', value: 'hangzhou' }] }],
         visible: true,
-        onConfirm: cascaderConfirm
-      }
+        onConfirm: cascaderConfirm,
+      },
     })
     const date = mount(VDatePicker, {
       props: {
         month: '2026-05',
         visible: true,
-        onConfirm: dateConfirm
-      }
+        onConfirm: dateConfirm,
+      },
     })
 
     await picker.findAll('.varo-picker__option')[1].trigger('click')
@@ -58,20 +58,20 @@ describe('ui-weapp advanced form controls', () => {
           {
             label: 'Zhejiang',
             value: 'zhejiang',
-            children: [{ label: 'Hangzhou', value: 'hangzhou' }]
-          }
+            children: [{ label: 'Hangzhou', value: 'hangzhou' }],
+          },
         ],
         value: ['zhejiang', 'hangzhou'],
-        visible: true
-      }
+        visible: true,
+      },
     })
 
-    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Zhejiang', 'Hangzhou'])
+    expect(wrapper.findAll('.varo-cascader__tab').map(item => item.text())).toEqual(['Zhejiang', 'Hangzhou'])
 
     await wrapper.setProps({ value: ['zhejiang'] })
 
-    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Zhejiang'])
-    expect(wrapper.findAll('.varo-cascader__option').map((item) => item.text())).toEqual(['Hangzhou'])
+    expect(wrapper.findAll('.varo-cascader__tab').map(item => item.text())).toEqual(['Zhejiang'])
+    expect(wrapper.findAll('.varo-cascader__option').map(item => item.text())).toEqual(['Hangzhou'])
   })
 
   it('updates calendar card, number keyboard, password, and uploader', async () => {
@@ -81,37 +81,40 @@ describe('ui-weapp advanced form controls', () => {
     const uploadUpdate = vi.fn()
     const card = mount(VCalendarCard, {
       props: {
-        month: '2026-05',
-        'onUpdate:value': calendarUpdate
-      }
+        'month': '2026-05',
+        'onUpdate:value': calendarUpdate,
+      },
     })
     const keyboard = mount(VNumberKeyboard, {
       props: {
         visible: true,
-        onInput: keyboardInput
-      }
+        onInput: keyboardInput,
+      },
     })
     const password = mount(VShortPassword, {
       props: {
-        value: '',
-        'onUpdate:value': passwordUpdate
-      }
+        'inputAriaLabel': 'Payment PIN',
+        'value': '',
+        'onUpdate:value': passwordUpdate,
+      },
     })
     const uploader = mount(VUploader, {
       props: {
-        'onUpdate:value': uploadUpdate
-      }
+        'onUpdate:value': uploadUpdate,
+      },
     })
 
     const fileInput = uploader.get('input').element as HTMLInputElement
     Object.defineProperty(fileInput, 'files', {
       configurable: true,
-      value: [new File(['file'], 'demo.txt')]
+      value: [new File(['file'], 'demo.txt')],
     })
 
     await card.find('[data-date="2026-05-14"]').trigger('click')
     await keyboard.find('[data-key="8"]').trigger('click')
     await password.get('input').setValue('1234567')
+    expect(password.get('input').attributes('aria-label')).toBe('Payment PIN')
+    expect(password.get('.varo-short-password__cells').attributes('aria-hidden')).toBe('true')
     await uploader.get('input').trigger('change')
 
     expect(calendarUpdate).toHaveBeenCalledWith('2026-05-14')

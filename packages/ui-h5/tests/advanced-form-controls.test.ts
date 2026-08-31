@@ -15,14 +15,14 @@ const cityOptions = [
     value: 'zhejiang',
     children: [
       { label: 'Hangzhou', value: 'hangzhou' },
-      { label: 'Ningbo', value: 'ningbo' }
-    ]
+      { label: 'Ningbo', value: 'ningbo' },
+    ],
   },
   {
     label: 'Jiangsu',
     value: 'jiangsu',
-    children: [{ label: 'Nanjing', value: 'nanjing' }]
-  }
+    children: [{ label: 'Nanjing', value: 'nanjing' }],
+  },
 ]
 
 describe('ui-h5 advanced form controls', () => {
@@ -32,12 +32,12 @@ describe('ui-h5 advanced form controls', () => {
       props: {
         columns: [
           { label: 'Apple', value: 'apple' },
-          { label: 'Pear', value: 'pear' }
+          { label: 'Pear', value: 'pear' },
         ],
         value: 'apple',
         visible: true,
-        onConfirm
-      }
+        onConfirm,
+      },
     })
 
     await wrapper.findAll('.varo-picker__option')[1].trigger('click')
@@ -45,7 +45,7 @@ describe('ui-h5 advanced form controls', () => {
 
     expect(onConfirm).toHaveBeenCalledWith({
       option: { label: 'Pear', value: 'pear' },
-      value: 'pear'
+      value: 'pear',
     })
   })
 
@@ -55,8 +55,8 @@ describe('ui-h5 advanced form controls', () => {
       props: {
         options: cityOptions,
         visible: true,
-        onConfirm
-      }
+        onConfirm,
+      },
     })
 
     await wrapper.findAll('.varo-cascader__option')[0].trigger('click')
@@ -66,7 +66,7 @@ describe('ui-h5 advanced form controls', () => {
     expect(onConfirm).toHaveBeenCalledWith({
       labels: ['Zhejiang', 'Ningbo'],
       options: [cityOptions[0], cityOptions[0].children?.[1]],
-      value: ['zhejiang', 'ningbo']
+      value: ['zhejiang', 'ningbo'],
     })
   })
 
@@ -75,16 +75,16 @@ describe('ui-h5 advanced form controls', () => {
       props: {
         options: cityOptions,
         value: ['zhejiang', 'hangzhou'],
-        visible: true
-      }
+        visible: true,
+      },
     })
 
-    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Zhejiang', 'Hangzhou'])
+    expect(wrapper.findAll('.varo-cascader__tab').map(item => item.text())).toEqual(['Zhejiang', 'Hangzhou'])
 
     await wrapper.setProps({ value: ['jiangsu'] })
 
-    expect(wrapper.findAll('.varo-cascader__tab').map((item) => item.text())).toEqual(['Jiangsu'])
-    expect(wrapper.findAll('.varo-cascader__option').map((item) => item.text())).toEqual(['Nanjing'])
+    expect(wrapper.findAll('.varo-cascader__tab').map(item => item.text())).toEqual(['Jiangsu'])
+    expect(wrapper.findAll('.varo-cascader__option').map(item => item.text())).toEqual(['Nanjing'])
   })
 
   it('selects calendar card day and popup calendar confirm', async () => {
@@ -92,18 +92,18 @@ describe('ui-h5 advanced form controls', () => {
     const onConfirm = vi.fn()
     const card = mount(VCalendarCard, {
       props: {
-        month: '2026-05',
-        value: '2026-05-14',
-        'onUpdate:value': onCardUpdate
-      }
+        'month': '2026-05',
+        'value': '2026-05-14',
+        'onUpdate:value': onCardUpdate,
+      },
     })
     const calendar = mount(VCalendar, {
       props: {
         month: '2026-05',
         value: '2026-05-14',
         visible: true,
-        onConfirm
-      }
+        onConfirm,
+      },
     })
 
     await card.find('[data-date="2026-05-20"]').trigger('click')
@@ -118,9 +118,9 @@ describe('ui-h5 advanced form controls', () => {
     const onMonthUpdate = vi.fn()
     const wrapper = mount(VCalendarCard, {
       props: {
-        month: '2026-05',
-        'onUpdate:month': onMonthUpdate
-      }
+        'month': '2026-05',
+        'onUpdate:month': onMonthUpdate,
+      },
     })
 
     await wrapper.get('[data-action="next-month"]').trigger('click')
@@ -142,8 +142,8 @@ describe('ui-h5 advanced form controls', () => {
       props: {
         value: '2026-05-14',
         visible: true,
-        onConfirm
-      }
+        onConfirm,
+      },
     })
 
     await wrapper.find('[data-date="2026-05-20"]').trigger('click')
@@ -161,8 +161,8 @@ describe('ui-h5 advanced form controls', () => {
         visible: true,
         onClose,
         onDelete,
-        onInput
-      }
+        onInput,
+      },
     })
 
     await wrapper.find('[data-key="1"]').trigger('click')
@@ -179,30 +179,33 @@ describe('ui-h5 advanced form controls', () => {
     const uploadUpdate = vi.fn()
     const password = mount(VShortPassword, {
       props: {
-        length: 4,
-        value: '12',
-        'onUpdate:value': passwordUpdate
-      }
+        'inputAriaLabel': 'Payment PIN',
+        'length': 4,
+        'value': '12',
+        'onUpdate:value': passwordUpdate,
+      },
     })
     const uploader = mount(VUploader, {
       props: {
-        value: [],
-        'onUpdate:value': uploadUpdate
-      }
+        'value': [],
+        'onUpdate:value': uploadUpdate,
+      },
     })
 
     const fileInput = uploader.get('input').element as HTMLInputElement
     Object.defineProperty(fileInput, 'files', {
       configurable: true,
-      value: [new File(['hello'], 'hello.txt', { type: 'text/plain' })]
+      value: [new File(['hello'], 'hello.txt', { type: 'text/plain' })],
     })
 
     await password.get('input').setValue('12345')
+    expect(password.get('input').attributes('aria-label')).toBe('Payment PIN')
+    expect(password.get('.varo-short-password__cells').attributes('aria-hidden')).toBe('true')
     await uploader.get('input').trigger('change')
 
     expect(passwordUpdate).toHaveBeenCalledWith('1234')
     expect(uploadUpdate).toHaveBeenCalledWith([
-      expect.objectContaining({ name: 'hello.txt', status: 'done' })
+      expect.objectContaining({ name: 'hello.txt', status: 'done' }),
     ])
   })
 
@@ -214,9 +217,9 @@ describe('ui-h5 advanced form controls', () => {
         uploadText: '上传',
         value: [
           { name: 'avatar.png', progress: 68, status: 'uploading', url: 'https://example.com/avatar.png' },
-          { name: 'contract.pdf', progress: 100, status: 'done' }
-        ]
-      }
+          { name: 'contract.pdf', progress: 100, status: 'done' },
+        ],
+      },
     })
 
     expect(wrapper.attributes('data-list-type')).toBe('card')
@@ -232,13 +235,13 @@ describe('ui-h5 advanced form controls', () => {
     const wrapper = mount(VUploader, {
       props: {
         deletable: true,
-        value: [{ name: 'avatar.png', progress: 36, status: 'uploading' }]
+        value: [{ name: 'avatar.png', progress: 36, status: 'uploading' }],
       },
       slots: {
         item: ({ file, index, remove }) =>
           h('button', { class: 'custom-upload-item', type: 'button', onClick: () => remove(index) }, `${index}:${file.name}`),
-        trigger: ({ uploadText }) => h('span', { class: 'custom-upload-trigger' }, uploadText)
-      }
+        trigger: ({ uploadText }) => h('span', { class: 'custom-upload-trigger' }, uploadText),
+      },
     })
 
     expect(wrapper.get('.custom-upload-item').text()).toBe('0:avatar.png')
@@ -251,8 +254,8 @@ describe('ui-h5 advanced form controls', () => {
       props: {
         deletable: false,
         listType: 'card',
-        value: [{ name: 'avatar.png', status: 'done' }]
-      }
+        value: [{ name: 'avatar.png', status: 'done' }],
+      },
     })
 
     expect(wrapper.find('.varo-uploader__delete').exists()).toBe(false)

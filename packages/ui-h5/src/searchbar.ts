@@ -15,6 +15,7 @@ export const VSearchbar = defineComponent({
       default: true,
     },
     disabled: Boolean,
+    inputAriaLabel: String,
     placeholder: {
       type: String,
       default: 'Search',
@@ -54,6 +55,7 @@ export const VSearchbar = defineComponent({
         [
           h('div', { class: 'varo-searchbar__body' }, [
             h(VInput, {
+              'aria-label': props.inputAriaLabel,
               'clearable': props.clearable,
               'clearTrigger': 'always',
               'disabled': props.disabled,

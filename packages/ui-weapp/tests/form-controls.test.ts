@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { h } from 'vue'
 import { VCheckbox, VCheckboxGroup } from '../src/checkbox'
 import { VInputNumber } from '../src/input-number'
 import { VRadio, VRadioGroup } from '../src/radio'
@@ -15,27 +15,27 @@ describe('ui-weapp form controls', () => {
     const radioUpdate = vi.fn()
     const checkbox = mount(VCheckboxGroup, {
       props: {
-        value: ['apple'],
-        'onUpdate:value': checkboxUpdate
+        'value': ['apple'],
+        'onUpdate:value': checkboxUpdate,
       },
       slots: {
         default: () => [
           h(VCheckbox, { label: 'Apple', value: 'apple' }),
-          h(VCheckbox, { label: 'Pear', value: 'pear' })
-        ]
-      }
+          h(VCheckbox, { label: 'Pear', value: 'pear' }),
+        ],
+      },
     })
     const radio = mount(VRadioGroup, {
       props: {
-        value: 'wechat',
-        'onUpdate:value': radioUpdate
+        'value': 'wechat',
+        'onUpdate:value': radioUpdate,
       },
       slots: {
         default: () => [
           h(VRadio, { label: 'WeChat', value: 'wechat' }),
-          h(VRadio, { label: 'Alipay', value: 'alipay' })
-        ]
-      }
+          h(VRadio, { label: 'Alipay', value: 'alipay' }),
+        ],
+      },
     })
 
     await checkbox.findAll('.varo-checkbox')[1].trigger('click')
@@ -51,28 +51,30 @@ describe('ui-weapp form controls', () => {
     const rangeUpdate = vi.fn()
     const number = mount(VInputNumber, {
       props: {
-        max: 5,
-        min: 1,
-        value: 4,
-        'onUpdate:value': numberUpdate
-      }
+        'max': 5,
+        'min': 1,
+        'value': 4,
+        'onUpdate:value': numberUpdate,
+      },
     })
     const rate = mount(VRate, {
       props: {
-        value: 1,
-        'onUpdate:value': rateUpdate
-      }
+        'value': 1,
+        'onUpdate:value': rateUpdate,
+      },
     })
     const range = mount(VRange, {
       props: {
-        value: 2,
-        'onUpdate:value': rangeUpdate
-      }
+        'ariaLabel': 'Budget allocation',
+        'value': 2,
+        'onUpdate:value': rangeUpdate,
+      },
     })
 
     await number.get('.varo-input-number__plus').trigger('click')
     await rate.findAll('.varo-rate__item')[2].trigger('click')
     await range.get('input').setValue('6')
+    expect(range.get('input').attributes('aria-label')).toBe('Budget allocation')
 
     expect(numberUpdate).toHaveBeenCalledWith(5)
     expect(rateUpdate).toHaveBeenCalledWith(3)
@@ -83,17 +85,19 @@ describe('ui-weapp form controls', () => {
     const onSearch = vi.fn()
     const wrapper = mount(VSearchbar, {
       props: {
+        inputAriaLabel: 'Search components',
         value: 'varo',
-        onSearch
-      }
+        onSearch,
+      },
     })
     const textarea = mount(VTextarea, {
       props: {
-        value: 'hello'
-      }
+        value: 'hello',
+      },
     })
 
     await wrapper.get('form').trigger('submit')
+    expect(wrapper.get('.varo-input__control').attributes('aria-label')).toBe('Search components')
 
     expect(onSearch).toHaveBeenCalledWith('varo')
     expect(textarea.find('textarea').exists()).toBe(true)

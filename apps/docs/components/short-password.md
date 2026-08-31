@@ -10,16 +10,17 @@
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `string` | `''` | 当前输入值 |
-| `length` | `number` | `6` | 密码位数 |
+| Prop             | 类型     | 默认值      | 描述                   |
+| ---------------- | -------- | ----------- | ---------------------- |
+| `value`          | `string` | `''`        | 当前输入值             |
+| `length`         | `number` | `6`         | 密码位数               |
+| `inputAriaLabel` | `string` | `undefined` | 密码输入框的无障碍名称 |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
-| `update:value` | `string` | 输入值变化 |
-| `complete` | `string` | 输入完成 |
-| `focus` | `FocusEvent` | 聚焦 |
-| `blur` | `FocusEvent` | 失焦 |
+| Event          | Payload      | 描述       |
+| -------------- | ------------ | ---------- |
+| `update:value` | `string`     | 输入值变化 |
+| `complete`     | `string`     | 输入完成   |
+| `focus`        | `FocusEvent` | 聚焦       |
+| `blur`         | `FocusEvent` | 失焦       |

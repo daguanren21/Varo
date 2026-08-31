@@ -1,32 +1,59 @@
 <script setup lang="ts">
 import {
-  VButton,
-  VCalendar,
-  VCalendarCard,
-  VCascader,
-  VCheckbox,
-  VCheckboxGroup,
-  VDatePicker,
-  VForm,
-  VFormItem,
-  VInput,
-  VInputNumber,
-  VLoading,
-  VNumberKeyboard,
-  VPicker,
-  VRadio,
-  VRadioGroup,
-  VRange,
-  VRate,
-  VSearchbar,
-  VSelect,
-  VShortPassword,
-  VSwitch,
-  VTextarea,
-  VToast,
-  VUploader,
+  VButton as H5Button,
+  VCalendar as H5Calendar,
+  VCalendarCard as H5CalendarCard,
+  VCascader as H5Cascader,
+  VCheckbox as H5Checkbox,
+  VCheckboxGroup as H5CheckboxGroup,
+  VDatePicker as H5DatePicker,
+  VForm as H5Form,
+  VFormItem as H5FormItem,
+  VInput as H5Input,
+  VInputNumber as H5InputNumber,
+  VLoading as H5Loading,
+  VNumberKeyboard as H5NumberKeyboard,
+  VPicker as H5Picker,
+  VRadio as H5Radio,
+  VRadioGroup as H5RadioGroup,
+  VRange as H5Range,
+  VRate as H5Rate,
+  VSearchbar as H5Searchbar,
+  VSelect as H5Select,
+  VShortPassword as H5ShortPassword,
+  VSwitch as H5Switch,
+  VTextarea as H5Textarea,
+  VToast as H5Toast,
+  VUploader as H5Uploader,
 } from '@varo-ui/h5'
-import { computed, onBeforeUnmount, reactive, ref, useId } from 'vue'
+import {
+  VButton as WeappButton,
+  VCalendar as WeappCalendar,
+  VCalendarCard as WeappCalendarCard,
+  VCascader as WeappCascader,
+  VCheckbox as WeappCheckbox,
+  VCheckboxGroup as WeappCheckboxGroup,
+  VDatePicker as WeappDatePicker,
+  VForm as WeappForm,
+  VFormItem as WeappFormItem,
+  VInput as WeappInput,
+  VInputNumber as WeappInputNumber,
+  VLoading as WeappLoading,
+  VNumberKeyboard as WeappNumberKeyboard,
+  VPicker as WeappPicker,
+  VRadio as WeappRadio,
+  VRadioGroup as WeappRadioGroup,
+  VRange as WeappRange,
+  VRate as WeappRate,
+  VSearchbar as WeappSearchbar,
+  VSelect as WeappSelect,
+  VShortPassword as WeappShortPassword,
+  VSwitch as WeappSwitch,
+  VTextarea as WeappTextarea,
+  VToast as WeappToast,
+  VUploader as WeappUploader,
+} from '@varo-ui/weapp'
+import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
 
 type FormDemoKind
   = | 'calendar'
@@ -65,18 +92,50 @@ const props = withDefaults(
 
 const codeExpanded = ref(false)
 const activePlatform = ref<Platform>('h5')
+const VButton = computed(() => activePlatform.value === 'h5' ? H5Button : WeappButton)
+const VCalendar = computed(() => activePlatform.value === 'h5' ? H5Calendar : WeappCalendar)
+const VCalendarCard = computed(() => activePlatform.value === 'h5' ? H5CalendarCard : WeappCalendarCard)
+const VCascader = computed(() => activePlatform.value === 'h5' ? H5Cascader : WeappCascader)
+const VCheckbox = computed(() => activePlatform.value === 'h5' ? H5Checkbox : WeappCheckbox)
+const VCheckboxGroup = computed(() => activePlatform.value === 'h5' ? H5CheckboxGroup : WeappCheckboxGroup)
+const VDatePicker = computed(() => activePlatform.value === 'h5' ? H5DatePicker : WeappDatePicker)
+const VForm = computed(() => activePlatform.value === 'h5' ? H5Form : WeappForm)
+const VFormItem = computed(() => activePlatform.value === 'h5' ? H5FormItem : WeappFormItem)
+const VInput = computed(() => activePlatform.value === 'h5' ? H5Input : WeappInput)
+const VInputNumber = computed(() => activePlatform.value === 'h5' ? H5InputNumber : WeappInputNumber)
+const VLoading = computed(() => activePlatform.value === 'h5' ? H5Loading : WeappLoading)
+const VNumberKeyboard = computed(() => activePlatform.value === 'h5' ? H5NumberKeyboard : WeappNumberKeyboard)
+const VPicker = computed(() => activePlatform.value === 'h5' ? H5Picker : WeappPicker)
+const VRadio = computed(() => activePlatform.value === 'h5' ? H5Radio : WeappRadio)
+const VRadioGroup = computed(() => activePlatform.value === 'h5' ? H5RadioGroup : WeappRadioGroup)
+const VRange = computed(() => activePlatform.value === 'h5' ? H5Range : WeappRange)
+const VRate = computed(() => activePlatform.value === 'h5' ? H5Rate : WeappRate)
+const VSearchbar = computed(() => activePlatform.value === 'h5' ? H5Searchbar : WeappSearchbar)
+const VSelect = computed(() => activePlatform.value === 'h5' ? H5Select : WeappSelect)
+const VShortPassword = computed(() => activePlatform.value === 'h5' ? H5ShortPassword : WeappShortPassword)
+const VSwitch = computed(() => activePlatform.value === 'h5' ? H5Switch : WeappSwitch)
+const VTextarea = computed(() => activePlatform.value === 'h5' ? H5Textarea : WeappTextarea)
+const VToast = computed(() => activePlatform.value === 'h5' ? H5Toast : WeappToast)
+const VUploader = computed(() => activePlatform.value === 'h5' ? H5Uploader : WeappUploader)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 let copyFeedbackTimer: number | undefined
-const checkboxValue = ref(['apple'])
-const radioValue = ref('wechat')
-const selectValue = ref<string | number>('hangzhou')
-const switchValue = ref(true)
+const checkboxValue = shallowRef(['wechat'])
+const radioValue = shallowRef('wechat')
+const selectValue = shallowRef<string | number>('hangzhou')
+const switchValue = shallowRef(true)
 const toastVisible = ref(true)
-const inputNumberValue = ref(2)
-const rateValue = ref(3)
-const rangeValue = ref(40)
-const searchValue = ref('Varo')
-const textareaValue = ref('Textarea content')
+const inputNumberValue = shallowRef(2)
+const rateValue = shallowRef(3)
+const rangeValue = shallowRef(40)
+const searchValue = shallowRef('Form')
+const componentSearchResults = computed(() => {
+  const query = searchValue.value.trim().toLocaleLowerCase()
+  if (!query) { return [] }
+  return ['Form', 'FormItem', 'Input', 'Searchbar'].filter(name =>
+    name.toLocaleLowerCase().includes(query),
+  )
+})
+const textareaValue = shallowRef(props.locale === 'en' ? 'The confirmation button does not respond after selecting a date.' : '选择日期后点击确认按钮没有响应。')
 const formModel = reactive({
   account: '',
   budget: 40,
@@ -96,16 +155,23 @@ const formArrayModel = reactive({
 const primaryCompanyIndex = ref(0)
 const calendarValue = ref('2026-05-14')
 const cascaderValue = ref<Array<string | number>>(['zhejiang'])
-const pickerValue = ref<string | number>('apple')
-const shortPasswordValue = ref('123')
-const uploaderFiles = ref([
-  { name: 'avatar.png', progress: 100, status: 'done' as const, url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80' },
-  { name: 'contract.pdf', progress: 64, status: 'uploading' as const },
+const cascaderConfirmed = shallowRef<string[]>([])
+const pickerValue = shallowRef<string | number>('morning')
+const pickerConfirmed = shallowRef('')
+const shortPasswordValue = shallowRef('123')
+const passwordComplete = computed(() => shortPasswordValue.value.length === 6)
+const uploaderFiles = shallowRef([
+  { name: 'business-license.jpg', progress: 100, status: 'done' as const },
+  { name: 'brand-guide.pdf', progress: 64, status: 'uploading' as const },
 ])
 const calendarVisible = ref(true)
+const calendarConfirmed = shallowRef('')
 const cascaderVisible = ref(true)
 const datePickerVisible = ref(true)
+const datePickerConfirmed = shallowRef('')
 const numberKeyboardVisible = ref(true)
+const keyboardAmount = shallowRef('128')
+const keyboardConfirmed = shallowRef('')
 const pickerVisible = ref(true)
 const formStatus = ref('')
 const formArrayStatus = ref('')
@@ -205,18 +271,18 @@ const copy = computed(() =>
         save: 'Save',
         saveFailed: 'Save failed',
         saveSuccess: 'Saved',
-        account: 'Username',
-        contact: 'Phone',
-        email: 'Email',
-        gender: 'Gender',
-        male: 'Male',
-        female: 'Female',
-        interests: 'Interests',
-        design: 'Design',
+        account: 'Business name',
+        contact: 'Contact phone',
+        email: 'Contact email',
+        gender: 'Business type',
+        male: 'Company',
+        female: 'Individual',
+        interests: 'Service needs',
+        design: 'Product design',
         develop: 'Development',
-        quantity: 'Quantity',
-        score: 'Rate',
-        budget: 'Budget',
+        quantity: 'Team size',
+        score: 'Collaboration interest',
+        budget: 'Budget ratio',
         company: 'Company',
         companyName: 'Company Name',
         companyContact: 'Contact',
@@ -232,8 +298,88 @@ const copy = computed(() =>
         addCompany: 'Add Company',
         removeCompany: 'Remove',
         companyCountSuffix: 'items',
-        password: 'Password',
-        remark: 'Remark',
+        password: 'Confirm PIN',
+        remark: 'Project notes',
+        bookingTitle: 'Book a service',
+        bookingHint: 'Available May 10–20',
+        selectedDate: 'Selected date',
+        bookingConfirmed: 'Appointment confirmed',
+        changeDate: 'Change date',
+        deliveryTitle: 'Choose delivery date',
+        deliveryHint: 'Standard delivery · May 10–20',
+        deliverySelected: 'Delivery scheduled',
+        addressTitle: 'Delivery region',
+        addressHint: 'Choose province and city',
+        addressSelected: 'Selected region',
+        changeAddress: 'Change region',
+        notifyTitle: 'Notification channels',
+        notifyHint: 'Choose up to two',
+        notifyWeChat: 'WeChat',
+        notifySms: 'SMS',
+        notifyEmail: 'Email',
+        selectedCount: 'Selected',
+        invoiceDateTitle: 'Invoice date',
+        invoiceDateHint: 'Used for billing and reconciliation',
+        invoiceDateSelected: 'Invoice date selected',
+        changeInvoiceDate: 'Change date',
+        formTitle: 'Submit a project brief',
+        formHint: 'Tell us how your team works and what you need.',
+        formSectionIdentity: 'Business contact',
+        formSectionNeeds: 'Project needs',
+        formSectionConfirm: 'Confirmation',
+        qualification: 'Supporting files',
+        quantityTitle: 'Purchase seats',
+        quantityHint: 'Up to 5 seats per order',
+        quantityProduct: 'Varo Pro seat',
+        perSeat: '$39 / seat',
+        subtotal: 'Subtotal',
+        amountTitle: 'Payment amount',
+        amountHint: 'Single payment limit $50,000',
+        amountEntered: 'Amount entered',
+        changeAmount: 'Edit amount',
+        deliveryTimeTitle: 'Delivery window',
+        deliveryTimeHint: 'Choose a convenient time',
+        timeSelected: 'Delivery window selected',
+        changeTime: 'Change time',
+        paymentTitle: 'Payment method',
+        paymentHint: 'Order #1042 · Secure checkout',
+        wechatPay: 'WeChat Pay',
+        alipay: 'Alipay',
+        cardPay: 'Bank card',
+        selectedMethod: 'Selected',
+        orderAmount: 'Pay now · ¥299',
+        warehouseTitle: 'Default fulfillment center',
+        warehouseHint: 'Affects inventory and shipping fees',
+        warehouseSelected: 'Current center',
+        notificationTitle: 'Notification settings',
+        notificationHint: 'Choose which updates can interrupt you',
+        marketingNotice: 'Product announcements',
+        marketingNoticeDesc: 'Occasional feature and campaign updates',
+        orderNotice: 'Order status',
+        orderNoticeDesc: 'Required for fulfillment updates',
+        switchOn: 'On',
+        switchOff: 'Off',
+        budgetTitle: 'Monthly campaign budget',
+        budgetHint: 'Adjust between ¥0 and ¥10,000',
+        budgetAllocated: 'Allocated',
+        reviewTitle: 'Service rating',
+        reviewHint: 'Order #1042 · Delivered today',
+        reviewScore: 'Your rating',
+        componentSearchTitle: 'Find a component',
+        componentSearchHint: 'Search 48 cross-platform components',
+        searchResults: 'Results',
+        formCategory: 'Form component',
+        pinTitle: 'Payment PIN',
+        pinHint: 'Enter the 6-digit PIN',
+        pinComplete: 'Complete',
+        pinIncomplete: 'In progress',
+        pinSecurity: 'Encrypted locally and never displayed in plain text.',
+        textareaTitle: 'Issue details',
+        textareaHint: 'Describe the steps and expected result',
+        textareaCount: 'Characters',
+        uploaderTitle: 'Business documents',
+        uploaderHint: 'JPG, PNG, or PDF · Up to 3 files',
+        uploaderProgress: 'Uploading',
       }
     : {
         preview: '演示效果',
@@ -268,18 +414,18 @@ const copy = computed(() =>
         save: '保存',
         saveFailed: '保存失败',
         saveSuccess: '保存成功',
-        account: '用户名',
-        contact: '手机号',
-        email: '邮箱',
-        gender: '性别',
-        male: '男',
-        female: '女',
-        interests: '兴趣',
-        design: '设计',
-        develop: '研发',
-        quantity: '数量',
-        score: '评分',
-        budget: '预算',
+        account: '商户名称',
+        contact: '联系人手机',
+        email: '联系邮箱',
+        gender: '主体类型',
+        male: '企业',
+        female: '个人',
+        interests: '服务需求',
+        design: '产品设计',
+        develop: '研发交付',
+        quantity: '团队规模',
+        score: '合作意愿',
+        budget: '预算比例',
         company: '公司',
         companyName: '公司名称',
         companyContact: '联系人',
@@ -295,10 +441,105 @@ const copy = computed(() =>
         addCompany: '新增公司',
         removeCompany: '删除',
         companyCountSuffix: '项',
-        password: '短密码',
-        remark: '备注',
+        password: '确认密码',
+        remark: '项目备注',
+        bookingTitle: '预约服务',
+        bookingHint: '5 月 10–20 日可预约',
+        selectedDate: '已选日期',
+        bookingConfirmed: '预约日期已确认',
+        changeDate: '修改日期',
+        deliveryTitle: '选择配送日期',
+        deliveryHint: '普通配送 · 5 月 10–20 日',
+        deliverySelected: '预计送达',
+        addressTitle: '配送地区',
+        addressHint: '请选择省份和城市',
+        addressSelected: '已选地区',
+        changeAddress: '修改地区',
+        notifyTitle: '通知方式',
+        notifyHint: '最多选择两种',
+        notifyWeChat: '微信通知',
+        notifySms: '短信',
+        notifyEmail: '邮件',
+        selectedCount: '已选择',
+        invoiceDateTitle: '发票日期',
+        invoiceDateHint: '用于开票与账单对账',
+        invoiceDateSelected: '已选择开票日期',
+        changeInvoiceDate: '修改日期',
+        formTitle: '提交合作需求',
+        formHint: '完善联系人、项目方向和预算信息。',
+        formSectionIdentity: '商户联系信息',
+        formSectionNeeds: '项目需求',
+        formSectionConfirm: '确认与附件',
+        qualification: '资质文件',
+        quantityTitle: '购买席位',
+        quantityHint: '每单最多购买 5 个',
+        quantityProduct: 'Varo Pro 专业版',
+        perSeat: '¥39 / 席位',
+        subtotal: '小计',
+        amountTitle: '付款金额',
+        amountHint: '单笔限额 ¥50,000',
+        amountEntered: '金额已填写',
+        changeAmount: '修改金额',
+        deliveryTimeTitle: '配送时段',
+        deliveryTimeHint: '选择方便收货的时间',
+        timeSelected: '已选择配送时段',
+        changeTime: '修改时段',
+        paymentTitle: '支付方式',
+        paymentHint: '订单 #1042 · 安全收银台',
+        wechatPay: '微信支付',
+        alipay: '支付宝',
+        cardPay: '银行卡',
+        selectedMethod: '已选择',
+        orderAmount: '应付 · ¥299',
+        warehouseTitle: '默认发货仓',
+        warehouseHint: '影响库存分配与配送费用',
+
+        warehouseSelected: '当前仓库',
+        notificationTitle: '通知设置',
+        notificationHint: '选择允许打扰你的消息类型',
+        marketingNotice: '产品与活动通知',
+        marketingNoticeDesc: '偶尔推送功能更新与优惠活动',
+        orderNotice: '订单状态通知',
+        orderNoticeDesc: '履约进度必需，无法关闭',
+        switchOn: '已开启',
+        switchOff: '已关闭',
+        budgetTitle: '月度推广预算',
+        budgetHint: '可在 ¥0–¥10,000 之间调整',
+        budgetAllocated: '当前预算',
+        reviewTitle: '服务评分',
+        reviewHint: '订单 #1042 · 今日已送达',
+        reviewScore: '你的评分',
+        componentSearchTitle: '搜索组件',
+        componentSearchHint: '在 48 个跨端组件中查找',
+        searchResults: '搜索结果',
+        formCategory: '表单组件',
+        pinTitle: '支付密码',
+        pinHint: '请输入 6 位数字密码',
+        pinComplete: '输入完成',
+        pinIncomplete: '输入中',
+        pinSecurity: '本地加密处理，不会显示明文。',
+        textareaTitle: '问题描述',
+        textareaHint: '说明复现步骤与预期结果',
+        textareaCount: '已输入',
+        uploaderTitle: '资质材料',
+        uploaderHint: '支持 JPG、PNG、PDF · 最多 3 份',
+        uploaderProgress: '正在上传',
       },
 )
+const paymentMethodLabel = computed(() => {
+  const labels: Record<string, string> = {
+    wechat: copy.value.wechatPay,
+    alipay: copy.value.alipay,
+    card: copy.value.cardPay,
+  }
+  return labels[radioValue.value] ?? ''
+})
+const rateFeedback = computed(() => {
+  const labels = props.locale === 'en'
+    ? ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent']
+    : ['', '很差', '一般', '不错', '满意', '超出预期']
+  return labels[rateValue.value] ?? ''
+})
 
 const cascaderOptions = computed(() =>
   props.locale === 'en'
@@ -343,29 +584,33 @@ const cascaderOptions = computed(() =>
 const pickerColumns = computed(() =>
   props.locale === 'en'
     ? [
-        { label: 'Apple', value: 'apple' },
-        { label: 'Pear', value: 'pear' },
-        { label: 'Orange', value: 'orange' },
+        { label: 'Morning · 09:00–12:00', value: 'morning' },
+        { label: 'Afternoon · 13:00–17:00', value: 'afternoon' },
+        { label: 'Evening · 18:00–21:00', value: 'evening' },
       ]
     : [
-        { label: '苹果', value: 'apple' },
-        { label: '梨', value: 'pear' },
-        { label: '橙子', value: 'orange' },
+        { label: '上午 · 09:00–12:00', value: 'morning' },
+        { label: '下午 · 13:00–17:00', value: 'afternoon' },
+        { label: '晚间 · 18:00–21:00', value: 'evening' },
       ],
 )
 
 const selectOptions = computed(() =>
   props.locale === 'en'
     ? [
-        { label: 'Shanghai', value: 'shanghai' },
-        { label: 'Hangzhou', value: 'hangzhou' },
-        { label: 'Shenzhen', value: 'shenzhen' },
+        { label: 'Shanghai center', value: 'shanghai' },
+        { label: 'Hangzhou center', value: 'hangzhou' },
+        { label: 'Shenzhen center', value: 'shenzhen' },
       ]
     : [
-        { label: '上海', value: 'shanghai' },
-        { label: '杭州', value: 'hangzhou' },
-        { label: '深圳', value: 'shenzhen' },
+        { label: '上海仓', value: 'shanghai' },
+        { label: '杭州仓', value: 'hangzhou' },
+        { label: '深圳仓', value: 'shenzhen' },
       ],
+)
+
+const selectOptionLabel = computed(() =>
+  selectOptions.value.find(option => option.value === selectValue.value)?.label ?? '',
 )
 
 const platformPackage = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
@@ -373,91 +618,151 @@ const packageTag = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5'
 
 function codeFor(packageName: string) {
   const isEn = props.locale === 'en'
+  const runtimePackage = packageName === '@varo-ui/weapp' ? 'wevu' : 'vue'
 
   switch (props.example) {
     case 'calendar':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VCalendar } from '${packageName}'
 
-const visible = ref(true)
-const date = ref('2026-05-14')
+const visible = shallowRef(true)
+const date = shallowRef('2026-05-14')
+const confirmedDate = shallowRef('')
+
+function confirmDate(value?: string) {
+  confirmedDate.value = value ?? date.value
+  visible.value = false
+}
 <\/script>
 
 <template>
-  <VCalendar
-    v-model:visible="visible"
-    v-model:value="date"
-    month="2026-05"
-    confirm-text="${copy.value.confirm}"
-    @confirm="onConfirm"
-  />
+  <section class="booking-calendar">
+    <header>
+      <span>${copy.value.bookingTitle}</span>
+      <strong>{{ date }}</strong>
+    </header>
+    <VCalendar
+      v-model:visible="visible"
+      v-model:value="date"
+      month="2026-05"
+      min-date="2026-05-10"
+      max-date="2026-05-20"
+      confirm-text="${copy.value.confirm}"
+      @confirm="confirmDate"
+    />
+    <p v-if="confirmedDate" role="status">${copy.value.bookingConfirmed}：{{ confirmedDate }}</p>
+  </section>
 </template>
       `.trim()
     case 'calendar-card':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VCalendarCard } from '${packageName}'
 
-const date = ref('2026-05-14')
+const date = shallowRef('2026-05-14')
 <\/script>
 
 <template>
-  <VCalendarCard v-model:value="date" month="2026-05" />
+  <section class="delivery-calendar">
+    <header>
+      <div>
+        <strong>${copy.value.deliveryTitle}</strong>
+        <span>${copy.value.deliveryHint}</span>
+      </div>
+      <output>{{ date }}</output>
+    </header>
+    <VCalendarCard
+      v-model:value="date"
+      month="2026-05"
+      min-date="2026-05-10"
+      max-date="2026-05-20"
+    />
+  </section>
 </template>
       `.trim()
     case 'cascader':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VCascader } from '${packageName}'
 
-const visible = ref(true)
-const value = ref(['zhejiang'])
+const visible = shallowRef(true)
+const value = shallowRef<Array<string | number>>(['zhejiang'])
+const result = shallowRef('')
 const options = ${isEn ? '[{ label: \'Zhejiang\', value: \'zhejiang\', children: [{ label: \'Hangzhou\', value: \'hangzhou\' }] }]' : '[{ label: \'浙江\', value: \'zhejiang\', children: [{ label: \'杭州\', value: \'hangzhou\' }] }]'}
+
+function confirmRegion(payload: { labels: string[] }) {
+  result.value = payload.labels.join(' / ')
+}
 <\/script>
 
 <template>
-  <VCascader v-model:visible="visible" v-model:value="value" title="${copy.value.cityTitle}" :options="options" />
+  <VCascader
+    v-model:visible="visible"
+    v-model:value="value"
+    title="${copy.value.cityTitle}"
+    :options="options"
+    @confirm="confirmRegion"
+  />
+  <p v-if="result" role="status">${copy.value.addressSelected}：{{ result }}</p>
 </template>
       `.trim()
     case 'checkbox':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VCheckbox, VCheckboxGroup } from '${packageName}'
 
-const fruits = ref(['apple'])
+const channels = shallowRef(['wechat'])
 <\/script>
 
 <template>
-  <VCheckboxGroup v-model:value="fruits" :max="2">
-    <VCheckbox label="${isEn ? 'Apple' : '苹果'}" value="apple" />
-    <VCheckbox label="${isEn ? 'Pear' : '梨'}" value="pear" />
-    <VCheckbox label="${isEn ? 'Orange' : '橙子'}" value="orange" />
-  </VCheckboxGroup>
+  <section class="notification-options">
+    <header>
+      <strong>${copy.value.notifyTitle}</strong>
+      <span>{{ channels.length }}/2</span>
+    </header>
+    <VCheckboxGroup v-model:value="channels" direction="horizontal" :max="2">
+      <VCheckbox label="${copy.value.notifyWeChat}" value="wechat" />
+      <VCheckbox label="${copy.value.notifySms}" value="sms" />
+      <VCheckbox label="${copy.value.notifyEmail}" value="email" />
+    </VCheckboxGroup>
+  </section>
 </template>
       `.trim()
     case 'date-picker':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VDatePicker } from '${packageName}'
 
-const visible = ref(true)
-const date = ref('2026-05-14')
+const visible = shallowRef(true)
+const date = shallowRef('2026-05-14')
+const result = shallowRef('')
+
+function confirmDate(value?: string) {
+  result.value = value ?? date.value
+}
 <\/script>
 
 <template>
-  <VDatePicker v-model:visible="visible" v-model:value="date" month="2026-05" />
+  <VDatePicker
+    v-model:visible="visible"
+    v-model:value="date"
+    month="2026-05"
+    confirm-text="${copy.value.confirm}"
+    @confirm="confirmDate"
+  />
+  <p v-if="result" role="status">${copy.value.invoiceDateSelected}：{{ result }}</p>
 </template>
       `.trim()
     case 'form':
       return `
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive } from '${runtimePackage}'
 import {
   VButton,
   VCheckbox,
@@ -564,7 +869,7 @@ const rules = {
     case 'form-array':
       return `
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive } from '${runtimePackage}'
 import { VButton, VForm, VFormItem, VInput, VRadio, VRadioGroup } from '${packageName}'
 
 const model = reactive({
@@ -649,31 +954,48 @@ function removeCompany(index: number) {
     case 'input-number':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VInputNumber } from '${packageName}'
 
-const count = ref(2)
+const count = shallowRef(2)
 <\/script>
 
 <template>
-  <VInputNumber v-model:value="count" :min="1" :max="5" />
+  <section class="seat-quantity">
+    <header>
+      <strong>${copy.value.quantityTitle}</strong>
+      <output>${copy.value.subtotal}：¥{{ count * 39 }}</output>
+    </header>
+    <VInputNumber v-model:value="count" :min="1" :max="5" />
+  </section>
 </template>
       `.trim()
     case 'number-keyboard':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VNumberKeyboard } from '${packageName}'
 
-const visible = ref(true)
+const visible = shallowRef(true)
+const amount = shallowRef('128')
+
+function input(key: string) {
+  if (key === '.' && amount.value.includes('.')) return
+  amount.value += key
+}
+
+function remove() {
+  amount.value = amount.value.slice(0, -1)
+}
 <\/script>
 
 <template>
+  <output>¥{{ amount || '0' }}</output>
   <VNumberKeyboard
     :visible="visible"
     extra-key="."
-    @input="onInput"
-    @delete="onDelete"
+    @input="input"
+    @delete="remove"
     @close="visible = false"
   />
 </template>
@@ -681,147 +1003,214 @@ const visible = ref(true)
     case 'picker':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VPicker } from '${packageName}'
 
-const visible = ref(true)
-const value = ref('apple')
-const columns = ${isEn ? '[{ label: \'Apple\', value: \'apple\' }, { label: \'Pear\', value: \'pear\' }]' : '[{ label: \'苹果\', value: \'apple\' }, { label: \'梨\', value: \'pear\' }]'}
+const visible = shallowRef(true)
+const value = shallowRef('morning')
+const result = shallowRef('')
+const columns = ${isEn ? '[{ label: \'Morning · 09:00–12:00\', value: \'morning\' }, { label: \'Afternoon · 13:00–17:00\', value: \'afternoon\' }]' : '[{ label: \'上午 · 09:00–12:00\', value: \'morning\' }, { label: \'下午 · 13:00–17:00\', value: \'afternoon\' }]'}
+
+function confirm(payload: { option?: { label: string } }) {
+  result.value = payload.option?.label ?? ''
+}
 <\/script>
 
 <template>
-  <VPicker v-model:visible="visible" v-model:value="value" title="${copy.value.fruitTitle}" :columns="columns" />
+  <VPicker
+    v-model:visible="visible"
+    v-model:value="value"
+    title="${copy.value.deliveryTimeTitle}"
+    :columns="columns"
+    @confirm="confirm"
+  />
+  <p v-if="result" role="status">${copy.value.timeSelected}：{{ result }}</p>
 </template>
       `.trim()
     case 'radio':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VRadio, VRadioGroup } from '${packageName}'
 
-const payType = ref('wechat')
+const payType = shallowRef('wechat')
 <\/script>
 
 <template>
-  <VRadioGroup v-model:value="payType">
-    <VRadio label="${isEn ? 'WeChat Pay' : '微信'}" value="wechat" />
-    <VRadio label="${isEn ? 'Alipay' : '支付宝'}" value="alipay" />
-  </VRadioGroup>
+  <section class="payment-methods">
+    <header>
+      <strong>${copy.value.paymentTitle}</strong>
+      <output>${copy.value.orderAmount}</output>
+    </header>
+    <VRadioGroup v-model:value="payType" direction="horizontal">
+      <VRadio label="${copy.value.wechatPay}" value="wechat" />
+      <VRadio label="${copy.value.alipay}" value="alipay" />
+      <VRadio label="${copy.value.cardPay}" value="card" />
+    </VRadioGroup>
+  </section>
 </template>
       `.trim()
     case 'range':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VRange } from '${packageName}'
 
-const value = ref(40)
+const value = shallowRef(40)
 <\/script>
 
 <template>
-  <VRange v-model:value="value" :step="10" />
+  <section class="campaign-budget">
+    <output>${copy.value.budgetAllocated}：¥{{ value * 100 }}</output>
+    <VRange
+      v-model:value="value"
+      aria-label="${copy.value.budgetTitle}"
+      :step="10"
+    />
+  </section>
 </template>
       `.trim()
     case 'rate':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VRate } from '${packageName}'
 
-const value = ref(3)
+const value = shallowRef(3)
 <\/script>
 
 <template>
-  <VRate v-model:value="value" />
+  <VRate
+    v-model:value="value"
+    aria-label="${copy.value.reviewTitle}"
+  />
+  <output>${copy.value.reviewScore}：{{ value }}/5</output>
 </template>
       `.trim()
     case 'searchbar':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VSearchbar } from '${packageName}'
 
-const keyword = ref('Varo')
+const keyword = shallowRef('Form')
 <\/script>
 
 <template>
-  <VSearchbar v-model:value="keyword" placeholder="${copy.value.searchPlaceholder}" @search="onSearch" />
+  <VSearchbar
+    v-model:value="keyword"
+    input-aria-label="${copy.value.componentSearchTitle}"
+    placeholder="${copy.value.searchPlaceholder}"
+    @search="onSearch"
+  />
 </template>
       `.trim()
     case 'short-password':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VShortPassword } from '${packageName}'
 
-const password = ref('123')
+const password = shallowRef('123')
 <\/script>
 
 <template>
-  <VShortPassword v-model:value="password" @complete="onComplete" />
+  <VShortPassword
+    v-model:value="password"
+    input-aria-label="${copy.value.pinTitle}"
+    @complete="onComplete"
+  />
 </template>
       `.trim()
     case 'textarea':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VTextarea } from '${packageName}'
 
-const value = ref('')
+const value = shallowRef('')
 <\/script>
 
 <template>
-  <VTextarea v-model:value="value" placeholder="${copy.value.textareaPlaceholder}" />
+  <VTextarea
+    v-model:value="value"
+    aria-label="${copy.value.textareaTitle}"
+    :max-length="120"
+    :rows="4"
+    show-word-limit
+    placeholder="${copy.value.textareaPlaceholder}"
+  />
 </template>
       `.trim()
     case 'uploader':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VUploader } from '${packageName}'
 
-const files = ref([
-  { name: 'avatar.png', progress: 100, status: 'done', url: 'https://example.com/avatar.png' },
-  { name: 'contract.pdf', progress: 64, status: 'uploading' }
+const files = shallowRef([
+  { name: 'business-license.jpg', progress: 100, status: 'done' },
+  { name: 'brand-guide.pdf', progress: 64, status: 'uploading' },
 ])
 <\/script>
 
 <template>
-  <VUploader v-model:value="files" accept="image/*" list-type="card" upload-text="${copy.value.upload}" />
+  <VUploader
+    v-model:value="files"
+    accept=".jpg,.jpeg,.png,.pdf"
+    list-type="card"
+    :max-count="3"
+    multiple
+    upload-text="${copy.value.upload}"
+  />
 </template>
       `.trim()
     case 'select':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VSelect } from '${packageName}'
 
-const city = ref<string | number>('hangzhou')
-const options = ${isEn ? '[{ label: \'Shanghai\', value: \'shanghai\' }, { label: \'Hangzhou\', value: \'hangzhou\' }, { label: \'Shenzhen\', value: \'shenzhen\' }]' : '[{ label: \'上海\', value: \'shanghai\' }, { label: \'杭州\', value: \'hangzhou\' }, { label: \'深圳\', value: \'shenzhen\' }]'}
+const warehouse = shallowRef<string | number>('hangzhou')
+const options = ${isEn ? '[{ label: \'Shanghai center\', value: \'shanghai\' }, { label: \'Hangzhou center\', value: \'hangzhou\' }, { label: \'Shenzhen center\', value: \'shenzhen\' }]' : '[{ label: \'上海仓\', value: \'shanghai\' }, { label: \'杭州仓\', value: \'hangzhou\' }, { label: \'深圳仓\', value: \'shenzhen\' }]'}
 <\/script>
 
 <template>
-  <VSelect v-model:value="city" mode="dropdown" :options="options" placeholder="${copy.value.selectPlaceholder}" clearable />
+  <VSelect
+    v-model:value="warehouse"
+    mode="dropdown"
+    :options="options"
+    placeholder="${copy.value.selectPlaceholder}"
+    clearable
+  />
 </template>
       `.trim()
     case 'switch':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from '${runtimePackage}'
 import { VSwitch } from '${packageName}'
 
-const enabled = ref(true)
+const marketingEnabled = shallowRef(true)
 <\/script>
 
 <template>
-  <VSwitch v-model="enabled" />
-  <VSwitch v-model="enabled" disabled />
+  <section class="notification-settings">
+    <label>
+      <span>${copy.value.marketingNotice}</span>
+      <VSwitch v-model="marketingEnabled" aria-label="${copy.value.marketingNotice}" />
+    </label>
+    <label>
+      <span>${copy.value.orderNotice}</span>
+      <VSwitch :model-value="true" aria-label="${copy.value.orderNotice}" disabled />
+    </label>
+  </section>
 </template>
       `.trim()
     case 'toast':
       return `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from '${runtimePackage}'
 import { VToast } from '${packageName}'
 
 const visible = ref(true)
@@ -915,8 +1304,41 @@ function removeFormArrayCompany(index: number) {
   }
 }
 
+function onDatePickerConfirm(value?: string) {
+  datePickerConfirmed.value = value ?? calendarValue.value
+  datePickerVisible.value = false
+}
+
 function setPrimaryCompany(index: number) {
   primaryCompanyIndex.value = index
+}
+
+function onCalendarConfirm(value?: string) {
+  calendarConfirmed.value = value ?? calendarValue.value
+  calendarVisible.value = false
+}
+function onCascaderConfirm(payload: { labels: string[] }) {
+  cascaderConfirmed.value = payload.labels
+  cascaderVisible.value = false
+}
+function onKeyboardInput(key: string) {
+  if (keyboardAmount.value.length >= 8) { return }
+  if (key === '.' && keyboardAmount.value.includes('.')) { return }
+  keyboardAmount.value += key
+}
+
+function onKeyboardDelete() {
+  keyboardAmount.value = keyboardAmount.value.slice(0, -1)
+}
+
+function onKeyboardClose() {
+  keyboardConfirmed.value = keyboardAmount.value
+  numberKeyboardVisible.value = false
+}
+
+function onPickerConfirm(payload: { option?: { label: string } }) {
+  pickerConfirmed.value = payload.option?.label ?? ''
+  pickerVisible.value = false
 }
 
 function onFormSubmit() {
@@ -938,44 +1360,279 @@ function onFormArrayFailed() {
 
 <template>
   <section class="form-demo">
-    <div class="form-demo__stage">
-      <span class="form-demo__label">{{ copy.preview }}</span>
+    <div class="form-demo__stage" :data-platform="activePlatform">
+      <div class="form-demo__platform-switch" role="tablist" :aria-label="copy.preview">
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="activePlatform === 'h5'"
+          :data-active="activePlatform === 'h5'"
+          @click="setPlatform('h5')"
+        >
+          H5
+        </button>
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="activePlatform === 'weapp'"
+          :data-active="activePlatform === 'weapp'"
+          @click="setPlatform('weapp')"
+        >
+          {{ locale === 'en' ? 'Mini Program' : '小程序' }}
+        </button>
+      </div>
 
       <div class="form-demo__preview" :data-example="example">
-        <VCheckboxGroup v-if="example === 'checkbox'" v-model:value="checkboxValue" :max="2">
-          <VCheckbox :label="locale === 'en' ? 'Apple' : '苹果'" value="apple" />
-          <VCheckbox :label="locale === 'en' ? 'Pear' : '梨'" value="pear" />
-          <VCheckbox :label="locale === 'en' ? 'Orange' : '橙子'" value="orange" />
-        </VCheckboxGroup>
+        <section
+          v-if="example === 'checkbox'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.notifyTitle }}</strong>
+              <span>{{ copy.notifyHint }}</span>
+            </div>
+            <output>
+              {{ copy.selectedCount }} {{ checkboxValue.length }}/2
+            </output>
+          </header>
+          <VCheckboxGroup
+            v-model:value="checkboxValue"
+            class="form-demo__choice-grid"
+            direction="horizontal"
+            :max="2"
+          >
+            <VCheckbox :label="copy.notifyWeChat" value="wechat" />
+            <VCheckbox :label="copy.notifySms" value="sms" />
+            <VCheckbox :label="copy.notifyEmail" value="email" />
+          </VCheckboxGroup>
+        </section>
 
-        <VRadioGroup v-else-if="example === 'radio'" v-model:value="radioValue">
-          <VRadio :label="locale === 'en' ? 'WeChat Pay' : '微信'" value="wechat" />
-          <VRadio :label="locale === 'en' ? 'Alipay' : '支付宝'" value="alipay" />
-        </VRadioGroup>
+        <section
+          v-else-if="example === 'radio'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.paymentTitle }}</strong>
+              <span>{{ copy.paymentHint }}</span>
+            </div>
+            <output>{{ copy.orderAmount }}</output>
+          </header>
+          <VRadioGroup
+            v-model:value="radioValue"
+            class="form-demo__radio-grid"
+            direction="horizontal"
+          >
+            <VRadio value="wechat">
+              <span>
+                <strong>{{ copy.wechatPay }}</strong>
+                <small>{{ locale === 'en' ? 'Recommended' : '推荐' }}</small>
+              </span>
+            </VRadio>
+            <VRadio :label="copy.alipay" value="alipay" />
+            <VRadio :label="copy.cardPay" value="card" />
+          </VRadioGroup>
+          <p class="form-demo__inline-result" role="status">
+            {{ copy.selectedMethod }}：{{ paymentMethodLabel }}
+          </p>
+        </section>
 
-        <VInputNumber v-else-if="example === 'input-number'" v-model:value="inputNumberValue" :min="1" :max="5" />
-        <VRate v-else-if="example === 'rate'" v-model:value="rateValue" />
-        <VRange v-else-if="example === 'range'" v-model:value="rangeValue" :step="10" />
-        <VSearchbar
+        <section
+          v-else-if="example === 'input-number'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.quantityTitle }}</strong>
+              <span>{{ copy.quantityHint }}</span>
+            </div>
+            <output>{{ copy.subtotal }} ¥{{ inputNumberValue * 39 }}</output>
+          </header>
+          <div class="form-demo__quantity-row">
+            <div>
+              <strong>{{ copy.quantityProduct }}</strong>
+              <span>{{ copy.perSeat }}</span>
+            </div>
+            <VInputNumber v-model:value="inputNumberValue" :min="1" :max="5" />
+          </div>
+        </section>
+        <section
+          v-else-if="example === 'rate'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.reviewTitle }}</strong>
+              <span>{{ copy.reviewHint }}</span>
+            </div>
+            <output>{{ rateValue }}/5</output>
+          </header>
+          <div class="form-demo__rate-field">
+            <VRate
+              v-model:value="rateValue"
+              :aria-label="copy.reviewTitle"
+            />
+            <p role="status">
+              {{ rateFeedback }}
+            </p>
+          </div>
+        </section>
+        <section
+          v-else-if="example === 'range'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.budgetTitle }}</strong>
+              <span>{{ copy.budgetHint }}</span>
+            </div>
+            <output>{{ copy.budgetAllocated }} ¥{{ rangeValue * 100 }}</output>
+          </header>
+          <div class="form-demo__range-field">
+            <VRange
+              v-model:value="rangeValue"
+              :aria-label="copy.budgetTitle"
+              :step="10"
+            />
+            <div aria-hidden="true">
+              <span>¥0</span>
+              <span>¥10,000</span>
+            </div>
+          </div>
+        </section>
+        <section
           v-else-if="example === 'searchbar'"
-          v-model:value="searchValue"
-          :placeholder="copy.searchPlaceholder"
-          :action-text="copy.cancel"
-        />
-        <VTextarea v-else-if="example === 'textarea'" v-model:value="textareaValue" :placeholder="copy.textareaPlaceholder" />
-        <VShortPassword v-else-if="example === 'short-password'" v-model:value="shortPasswordValue" />
-        <VSelect
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.componentSearchTitle }}</strong>
+              <span>{{ copy.componentSearchHint }}</span>
+            </div>
+            <output>{{ componentSearchResults.length }} {{ copy.searchResults }}</output>
+          </header>
+          <VSearchbar
+            v-model:value="searchValue"
+            :action-text="copy.cancel"
+            :input-aria-label="copy.componentSearchTitle"
+            :placeholder="copy.searchPlaceholder"
+            @cancel="searchValue = ''"
+          />
+          <div
+            v-if="componentSearchResults.length > 0"
+            class="form-demo__search-results"
+            aria-live="polite"
+          >
+            <span
+              v-for="name in componentSearchResults"
+              :key="name"
+            >
+              <strong>{{ name }}</strong>
+              <small>{{ copy.formCategory }}</small>
+            </span>
+          </div>
+        </section>
+        <section
+          v-else-if="example === 'textarea'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.textareaTitle }}</strong>
+              <span>{{ copy.textareaHint }}</span>
+            </div>
+            <output>{{ textareaValue.length }}/120</output>
+          </header>
+          <VTextarea
+            v-model:value="textareaValue"
+            :aria-label="copy.textareaTitle"
+            :max-length="120"
+            :placeholder="copy.textareaPlaceholder"
+            :rows="4"
+            show-word-limit
+          />
+        </section>
+        <section
+          v-else-if="example === 'short-password'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.pinTitle }}</strong>
+              <span>{{ copy.pinHint }}</span>
+            </div>
+            <output>{{ passwordComplete ? copy.pinComplete : `${shortPasswordValue.length}/6` }}</output>
+          </header>
+          <VShortPassword
+            v-model:value="shortPasswordValue"
+            :input-aria-label="copy.pinTitle"
+          />
+          <p class="form-demo__security-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 5.5 5.7v5.1c0 4.2 2.7 8.1 6.5 9.2 3.8-1.1 6.5-5 6.5-9.2V5.7L12 3Z" />
+              <path d="m9.2 11.7 1.8 1.8 3.8-4" />
+            </svg>
+            {{ copy.pinSecurity }}
+          </p>
+        </section>
+        <section
           v-else-if="example === 'select'"
-          v-model:value="selectValue"
-          mode="dropdown"
-          :options="selectOptions"
-          :placeholder="copy.selectPlaceholder"
-          clearable
-        />
-        <div v-else-if="example === 'switch'" class="form-demo__switch-row">
-          <VSwitch v-model="switchValue" />
-          <VSwitch v-model="switchValue" disabled />
-        </div>
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.warehouseTitle }}</strong>
+              <span>{{ copy.warehouseHint }}</span>
+            </div>
+            <output>{{ copy.warehouseSelected }}</output>
+          </header>
+          <div class="form-demo__select-row">
+            <VSelect
+              v-model:value="selectValue"
+              mode="dropdown"
+              :options="selectOptions"
+              :placeholder="copy.selectPlaceholder"
+              clearable
+            />
+            <span role="status">{{ selectOptionLabel }}</span>
+          </div>
+        </section>
+        <section
+          v-else-if="example === 'switch'"
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.notificationTitle }}</strong>
+              <span>{{ copy.notificationHint }}</span>
+            </div>
+            <output>{{ switchValue ? copy.switchOn : copy.switchOff }}</output>
+          </header>
+          <div class="form-demo__settings-list">
+            <label>
+              <span>
+                <strong>{{ copy.marketingNotice }}</strong>
+                <small>{{ copy.marketingNoticeDesc }}</small>
+              </span>
+              <VSwitch
+                v-model="switchValue"
+                :aria-label="copy.marketingNotice"
+              />
+            </label>
+            <label>
+              <span>
+                <strong>{{ copy.orderNotice }}</strong>
+                <small>{{ copy.orderNoticeDesc }}</small>
+              </span>
+              <VSwitch
+                :model-value="true"
+                :aria-label="copy.orderNotice"
+                disabled
+              />
+            </label>
+          </div>
+        </section>
         <div v-else-if="example === 'loading'" class="form-demo__loading-row">
           <VLoading :text="copy.loadingText" />
           <VLoading size="sm" tone="primary" />
@@ -987,23 +1644,49 @@ function onFormArrayFailed() {
           type="success"
           :message="copy.toastMessage"
         />
-        <VUploader
+        <section
           v-else-if="example === 'uploader'"
-          v-model:value="uploaderFiles"
-          accept="image/*"
-          list-type="card"
-          :upload-text="copy.upload"
-        />
+          class="form-demo__control-scenario"
+        >
+          <header class="form-demo__control-head">
+            <div>
+              <strong>{{ copy.uploaderTitle }}</strong>
+              <span>{{ copy.uploaderHint }}</span>
+            </div>
+            <output>{{ uploaderFiles.length }}/3</output>
+          </header>
+          <VUploader
+            v-model:value="uploaderFiles"
+            accept=".jpg,.jpeg,.png,.pdf"
+            list-type="card"
+            :max-count="3"
+            multiple
+            :upload-text="copy.upload"
+          />
+          <p class="form-demo__inline-result" role="status">
+            {{ copy.uploaderProgress }}：brand-guide.pdf · 64%
+          </p>
+        </section>
 
         <VForm
           v-else-if="example === 'form'"
           :id="formId"
-          class="form-demo__save"
+          class="form-demo__save form-demo__save--request"
           :model="formModel"
           :rules="formRules"
           @failed="onFormFailed"
           @submit="onFormSubmit"
         >
+          <header class="form-demo__form-intro">
+            <div>
+              <strong>{{ copy.formTitle }}</strong>
+              <span>{{ copy.formHint }}</span>
+            </div>
+            <span class="form-demo__required-note">{{ locale === 'en' ? '* Required' : '* 必填' }}</span>
+          </header>
+          <h3 class="form-demo__form-section-title">
+            {{ copy.formSectionIdentity }}
+          </h3>
           <VFormItem name="account" :label="copy.account" required>
             <template #default="slotProps">
               <VInput
@@ -1043,6 +1726,9 @@ function onFormArrayFailed() {
             </template>
           </VFormItem>
 
+          <h3 class="form-demo__form-section-title">
+            {{ copy.formSectionNeeds }}
+          </h3>
           <VFormItem name="gender" :label="copy.gender" required>
             <template #default="{ setValue, value }">
               <VRadioGroup :value="value.value as string" direction="horizontal" @update:value="setValue">
@@ -1052,7 +1738,7 @@ function onFormArrayFailed() {
             </template>
           </VFormItem>
 
-          <VFormItem name="interests" :label="copy.interests" required>
+          <VFormItem class="form-demo__form-field--wide" name="interests" :label="copy.interests" required>
             <template #default="{ setValue, value }">
               <VCheckboxGroup :value="value.value as string[]" direction="horizontal" @update:value="setValue">
                 <VCheckbox :label="copy.design" value="design" />
@@ -1073,19 +1759,22 @@ function onFormArrayFailed() {
             </template>
           </VFormItem>
 
-          <VFormItem name="budget" :label="copy.budget" required>
+          <VFormItem class="form-demo__form-field--wide" name="budget" :label="copy.budget" required>
             <template #default="{ setValue, value }">
               <VRange :value="value.value as number" :step="10" @update:value="setValue" />
             </template>
           </VFormItem>
 
-          <VFormItem name="password" :label="copy.password" required>
+          <h3 class="form-demo__form-section-title">
+            {{ copy.formSectionConfirm }}
+          </h3>
+          <VFormItem class="form-demo__form-field--wide" name="password" :label="copy.password" required>
             <template #default="{ setValue, value }">
               <VShortPassword :value="value.value as string" @update:value="setValue" />
             </template>
           </VFormItem>
 
-          <VFormItem name="remark" :label="copy.remark" required>
+          <VFormItem class="form-demo__form-field--wide" name="remark" :label="copy.remark" required>
             <template #default="{ setValue, value }">
               <VTextarea
                 :max-length="80"
@@ -1097,7 +1786,7 @@ function onFormArrayFailed() {
             </template>
           </VFormItem>
 
-          <VFormItem name="files" :label="copy.upload" required>
+          <VFormItem class="form-demo__form-field--wide" name="files" :label="copy.qualification" required>
             <template #default="{ setValue, value }">
               <VUploader :value="value.value as []" :upload-text="copy.upload" @update:value="setValue" />
             </template>
@@ -1240,96 +1929,263 @@ function onFormArrayFailed() {
           </div>
         </template>
 
-        <VCalendarCard
+        <section
           v-else-if="example === 'calendar-card'"
-          v-model:value="calendarValue"
-          month="2026-05"
-          min-date="2026-05-10"
-          max-date="2026-05-20"
-        />
-        <VCalendar
+          class="form-demo__calendar-card-scenario"
+        >
+          <header class="form-demo__context-head">
+            <div>
+              <strong>{{ copy.deliveryTitle }}</strong>
+              <span>{{ copy.deliveryHint }}</span>
+            </div>
+            <output>
+              <span>{{ copy.deliverySelected }}</span>
+              <strong>{{ calendarValue }}</strong>
+            </output>
+          </header>
+          <VCalendarCard
+            v-model:value="calendarValue"
+            month="2026-05"
+            min-date="2026-05-10"
+            max-date="2026-05-20"
+          />
+        </section>
+        <section
           v-else-if="example === 'calendar'"
-          v-model:visible="calendarVisible"
-          v-model:value="calendarValue"
-          month="2026-05"
-          :confirm-text="copy.confirm"
-        />
-        <VDatePicker
+          class="form-demo__calendar-scenario"
+        >
+          <header class="form-demo__context-head">
+            <div>
+              <strong>{{ copy.bookingTitle }}</strong>
+              <span>{{ copy.bookingHint }}</span>
+            </div>
+            <output>
+              <span>{{ copy.selectedDate }}</span>
+              <strong>{{ calendarValue }}</strong>
+            </output>
+          </header>
+          <VCalendar
+            v-model:visible="calendarVisible"
+            v-model:value="calendarValue"
+            month="2026-05"
+            min-date="2026-05-10"
+            max-date="2026-05-20"
+            :confirm-text="copy.confirm"
+            @confirm="onCalendarConfirm"
+          />
+          <div
+            v-if="!calendarVisible"
+            class="form-demo__selection-result"
+            role="status"
+          >
+            <span class="form-demo__result-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="m7 12 3.2 3.2L17.5 8" />
+              </svg>
+            </span>
+            <div>
+              <strong>{{ copy.bookingConfirmed }}</strong>
+              <span>{{ calendarConfirmed || calendarValue }}</span>
+            </div>
+            <VButton
+              size="sm"
+              tone="default"
+              variant="outline"
+              @click="calendarVisible = true"
+            >
+              {{ copy.changeDate }}
+            </VButton>
+          </div>
+        </section>
+        <section
           v-else-if="example === 'date-picker'"
-          v-model:visible="datePickerVisible"
-          v-model:value="calendarValue"
-          month="2026-05"
-          :confirm-text="copy.confirm"
-        />
-        <VCascader
+          class="form-demo__popup-scenario"
+        >
+          <header class="form-demo__context-head">
+            <div>
+              <strong>{{ copy.invoiceDateTitle }}</strong>
+              <span>{{ copy.invoiceDateHint }}</span>
+            </div>
+            <output>
+              <span>{{ copy.selectedDate }}</span>
+              <strong>{{ calendarValue }}</strong>
+            </output>
+          </header>
+          <VDatePicker
+            v-model:visible="datePickerVisible"
+            v-model:value="calendarValue"
+            month="2026-05"
+            :confirm-text="copy.confirm"
+            @confirm="onDatePickerConfirm"
+          />
+          <div
+            v-if="!datePickerVisible"
+            class="form-demo__selection-result"
+            role="status"
+          >
+            <span class="form-demo__result-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="m7 12 3.2 3.2L17.5 8" />
+              </svg>
+            </span>
+            <div>
+              <strong>{{ copy.invoiceDateSelected }}</strong>
+              <span>{{ datePickerConfirmed || calendarValue }}</span>
+            </div>
+            <VButton
+              size="sm"
+              tone="default"
+              variant="outline"
+              @click="datePickerVisible = true"
+            >
+              {{ copy.changeInvoiceDate }}
+            </VButton>
+          </div>
+        </section>
+        <section
           v-else-if="example === 'cascader'"
-          v-model:visible="cascaderVisible"
-          v-model:value="cascaderValue"
-          :title="copy.cityTitle"
-          :confirm-text="copy.confirm"
-          :cancel-text="copy.cancel"
-          :options="cascaderOptions"
-          @cancel="cascaderVisible = false"
-        />
-        <VPicker
+          class="form-demo__popup-scenario"
+        >
+          <header class="form-demo__context-head">
+            <div>
+              <strong>{{ copy.addressTitle }}</strong>
+              <span>{{ copy.addressHint }}</span>
+            </div>
+            <output v-if="cascaderConfirmed.length > 0">
+              <span>{{ copy.addressSelected }}</span>
+              <strong>{{ cascaderConfirmed.join(' / ') }}</strong>
+            </output>
+          </header>
+          <VCascader
+            v-model:visible="cascaderVisible"
+            v-model:value="cascaderValue"
+            :title="copy.cityTitle"
+            :confirm-text="copy.confirm"
+            :cancel-text="copy.cancel"
+            :options="cascaderOptions"
+            @cancel="cascaderVisible = false"
+            @confirm="onCascaderConfirm"
+          />
+          <div
+            v-if="!cascaderVisible"
+            class="form-demo__selection-result"
+            role="status"
+          >
+            <span class="form-demo__result-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="m7 12 3.2 3.2L17.5 8" />
+              </svg>
+            </span>
+            <div>
+              <strong>{{ copy.addressSelected }}</strong>
+              <span>{{ cascaderConfirmed.join(' / ') }}</span>
+            </div>
+            <VButton
+              size="sm"
+              tone="default"
+              variant="outline"
+              @click="cascaderVisible = true"
+            >
+              {{ copy.changeAddress }}
+            </VButton>
+          </div>
+        </section>
+        <section
           v-else-if="example === 'picker'"
-          v-model:visible="pickerVisible"
-          v-model:value="pickerValue"
-          :title="copy.fruitTitle"
-          :confirm-text="copy.confirm"
-          :cancel-text="copy.cancel"
-          :columns="pickerColumns"
-          @cancel="pickerVisible = false"
-        />
-        <VNumberKeyboard
+          class="form-demo__popup-scenario"
+        >
+          <header class="form-demo__context-head">
+            <div>
+              <strong>{{ copy.deliveryTimeTitle }}</strong>
+              <span>{{ copy.deliveryTimeHint }}</span>
+            </div>
+            <output v-if="pickerConfirmed">
+              <span>{{ copy.timeSelected }}</span>
+              <strong>{{ pickerConfirmed }}</strong>
+            </output>
+          </header>
+          <VPicker
+            v-model:visible="pickerVisible"
+            v-model:value="pickerValue"
+            :title="copy.deliveryTimeTitle"
+            :confirm-text="copy.confirm"
+            :cancel-text="copy.cancel"
+            :columns="pickerColumns"
+            @cancel="pickerVisible = false"
+            @confirm="onPickerConfirm"
+          />
+          <div
+            v-if="!pickerVisible"
+            class="form-demo__selection-result"
+            role="status"
+          >
+            <span class="form-demo__result-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="m7 12 3.2 3.2L17.5 8" />
+              </svg>
+            </span>
+            <div>
+              <strong>{{ copy.timeSelected }}</strong>
+              <span>{{ pickerConfirmed }}</span>
+            </div>
+            <VButton
+              size="sm"
+              tone="default"
+              variant="outline"
+              @click="pickerVisible = true"
+            >
+              {{ copy.changeTime }}
+            </VButton>
+          </div>
+        </section>
+        <section
           v-else-if="example === 'number-keyboard'"
-          :visible="numberKeyboardVisible"
-          extra-key="."
-          :close-text="copy.keyboardDone"
-          :delete-text="copy.keyboardDelete"
-          @close="numberKeyboardVisible = false"
-        />
+          class="form-demo__popup-scenario"
+        >
+          <header class="form-demo__context-head">
+            <div>
+              <strong>{{ copy.amountTitle }}</strong>
+              <span>{{ copy.amountHint }}</span>
+            </div>
+            <output class="form-demo__amount-display">
+              <span>CNY</span>
+              <strong>¥{{ keyboardAmount || '0' }}</strong>
+            </output>
+          </header>
+          <VNumberKeyboard
+            :visible="numberKeyboardVisible"
+            extra-key="."
+            :close-text="copy.keyboardDone"
+            :delete-text="copy.keyboardDelete"
+            @close="onKeyboardClose"
+            @delete="onKeyboardDelete"
+            @input="onKeyboardInput"
+          />
+          <div
+            v-if="!numberKeyboardVisible"
+            class="form-demo__selection-result"
+            role="status"
+          >
+            <span class="form-demo__result-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="m7 12 3.2 3.2L17.5 8" />
+              </svg>
+            </span>
+            <div>
+              <strong>{{ copy.amountEntered }}</strong>
+              <span>¥{{ keyboardConfirmed || keyboardAmount }}</span>
+            </div>
+            <VButton
+              size="sm"
+              tone="default"
+              variant="outline"
+              @click="numberKeyboardVisible = true"
+            >
+              {{ copy.changeAmount }}
+            </VButton>
+          </div>
+        </section>
 
-        <button
-          v-if="example === 'calendar' && !calendarVisible"
-          class="form-demo__reopen"
-          type="button"
-          @click="calendarVisible = true"
-        >
-          {{ copy.reopen }}
-        </button>
-        <button
-          v-if="example === 'date-picker' && !datePickerVisible"
-          class="form-demo__reopen"
-          type="button"
-          @click="datePickerVisible = true"
-        >
-          {{ copy.reopen }}
-        </button>
-        <button
-          v-if="example === 'cascader' && !cascaderVisible"
-          class="form-demo__reopen"
-          type="button"
-          @click="cascaderVisible = true"
-        >
-          {{ copy.reopen }}
-        </button>
-        <button
-          v-if="example === 'picker' && !pickerVisible"
-          class="form-demo__reopen"
-          type="button"
-          @click="pickerVisible = true"
-        >
-          {{ copy.reopen }}
-        </button>
-        <button
-          v-if="example === 'number-keyboard' && !numberKeyboardVisible"
-          class="form-demo__reopen"
-          type="button"
-          @click="numberKeyboardVisible = true"
-        >
-          {{ copy.reopen }}
-        </button>
         <button
           v-if="example === 'toast' && !toastVisible"
           class="form-demo__reopen"
@@ -1461,10 +2317,37 @@ function onFormArrayFailed() {
   box-shadow: var(--form-demo-shadow);
 }
 
-.form-demo__label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--vp-c-text-2);
+.form-demo__platform-switch {
+  display: inline-flex;
+  gap: 4px;
+  justify-self: end;
+  padding: 3px;
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
+  border-radius: 12px;
+}
+
+.form-demo__platform-switch button {
+  min-height: 34px;
+  padding: 0 13px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--varo-text-secondary);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+}
+
+.form-demo__platform-switch button[data-active='true'] {
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--varo-primary) 26%, transparent);
+}
+
+.form-demo__platform-switch button:focus-visible {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
 }
 
 .form-demo__preview {
@@ -1472,6 +2355,428 @@ function onFormArrayFailed() {
   gap: 12px;
   align-items: start;
   min-height: 88px;
+}
+
+.form-demo__calendar-scenario,
+.form-demo__popup-scenario {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.form-demo__control-scenario {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 560px);
+  padding: 18px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 20px;
+  box-shadow: var(--varo-shadow-sm);
+}
+
+.form-demo__save--request {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+  width: min(100%, 720px);
+}
+
+.form-demo__form-intro,
+.form-demo__form-section-title,
+.form-demo__form-field--wide {
+  grid-column: 1 / -1;
+}
+
+.form-demo__form-intro {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 2px 2px 12px;
+  border-bottom: 1px solid var(--varo-border-light);
+}
+
+.form-demo__form-intro > div {
+  display: grid;
+  gap: 4px;
+}
+
+.form-demo__form-intro strong {
+  font-size: 1rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__form-intro span {
+  font-size: 0.76rem;
+  color: var(--varo-text-secondary);
+}
+
+.form-demo__required-note {
+  flex: none;
+  color: var(--varo-danger) !important;
+}
+
+.form-demo__form-section-title {
+  margin: 2px 0 -2px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--varo-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 720px) {
+  .form-demo__save--request {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.form-demo__control-head {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-demo__control-head > div {
+  display: grid;
+  gap: 3px;
+}
+
+.form-demo__control-head strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__control-head span {
+  font-size: 0.74rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__control-head output {
+  flex: none;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 999px;
+}
+
+.form-demo__choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.form-demo__choice-grid :deep(.varo-checkbox) {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 12px;
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
+  border-radius: 12px;
+}
+
+.form-demo__choice-grid :deep(.varo-checkbox[data-state='checked']) {
+  background: var(--varo-primary-soft);
+  border-color: var(--varo-primary);
+}
+
+.form-demo__radio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.form-demo__radio-grid :deep(.varo-radio) {
+  min-width: 0;
+  min-height: 52px;
+  padding: 10px 12px;
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
+  border-radius: 12px;
+}
+
+.form-demo__radio-grid :deep(.varo-radio[aria-checked='true']) {
+  background: var(--varo-primary-soft);
+  border-color: var(--varo-primary);
+}
+
+.form-demo__radio-grid :deep(.varo-radio__label > span) {
+  display: grid;
+  gap: 2px;
+}
+
+.form-demo__radio-grid :deep(.varo-radio__label small) {
+  font-size: 0.66rem;
+  color: var(--varo-primary);
+}
+
+.form-demo__inline-result {
+  margin: -4px 0 0;
+  font-size: 0.74rem;
+  color: var(--varo-text-secondary);
+}
+
+.form-demo__select-row {
+  display: grid;
+  gap: 8px;
+}
+
+.form-demo__select-row :deep(.varo-select) {
+  width: 100%;
+}
+
+.form-demo__select-row > span {
+  font-size: 0.74rem;
+  color: var(--varo-text-secondary);
+}
+
+.form-demo__settings-list {
+  display: grid;
+  overflow: hidden;
+  background: var(--varo-fill-light);
+  border-radius: 14px;
+}
+
+.form-demo__settings-list > label {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  padding: 12px 14px;
+}
+
+.form-demo__settings-list > label + label {
+  border-top: 1px solid var(--varo-border-light);
+}
+
+.form-demo__settings-list label > span {
+  display: grid;
+  gap: 3px;
+}
+
+.form-demo__settings-list strong {
+  font-size: 0.82rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__settings-list small {
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__range-field {
+  display: grid;
+  gap: 8px;
+  padding: 16px 14px 10px;
+  background: var(--varo-fill-light);
+  border-radius: 14px;
+}
+
+.form-demo__range-field > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__rate-field {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: var(--varo-fill-light);
+  border-radius: 14px;
+}
+
+.form-demo__rate-field :deep(.varo-rate__item) {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.form-demo__rate-field p {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--varo-primary);
+}
+
+.form-demo__search-results {
+  display: grid;
+  overflow: hidden;
+  background: var(--varo-fill-light);
+  border-radius: 14px;
+}
+
+.form-demo__search-results > span {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.form-demo__search-results > span + span {
+  border-top: 1px solid var(--varo-border-light);
+}
+
+.form-demo__search-results strong {
+  font-size: 0.8rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__search-results small {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__security-note {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin: -4px 0 0;
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__security-note svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--varo-success);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.form-demo__quantity-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: var(--varo-fill-light);
+  border-radius: 14px;
+}
+
+.form-demo__quantity-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.form-demo__quantity-row strong {
+  font-size: 0.82rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__quantity-row span {
+  font-size: 0.72rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__amount-display strong {
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-demo__context-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 2px 4px 0;
+}
+
+.form-demo__context-head > div,
+.form-demo__context-head output {
+  display: grid;
+  gap: 3px;
+}
+
+.form-demo__context-head output {
+  justify-items: end;
+}
+
+.form-demo__calendar-card-scenario {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 420px);
+  padding: 16px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 20px;
+  box-shadow: var(--varo-shadow-sm);
+}
+
+.form-demo__calendar-card-scenario :deep(.varo-calendar-card) {
+  width: 100%;
+  box-shadow: none;
+}
+
+.form-demo__context-head strong {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__context-head span {
+  font-size: 0.72rem;
+  color: var(--varo-text-tertiary);
+}
+
+.form-demo__selection-result {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.form-demo__selection-result > div {
+  display: grid;
+  gap: 2px;
+}
+
+.form-demo__selection-result strong {
+  font-size: 0.82rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__selection-result span {
+  font-size: 0.74rem;
+  color: var(--varo-text-secondary);
+}
+
+.form-demo__result-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--varo-success);
+  background: var(--varo-success-soft);
+  border-radius: 10px;
+}
+
+.form-demo__result-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .form-demo__preview[data-example='select'] {

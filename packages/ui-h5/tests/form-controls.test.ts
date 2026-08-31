@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { h } from 'vue'
 import { VCheckbox, VCheckboxGroup } from '../src/checkbox'
 import { VInputNumber } from '../src/input-number'
 import { VRadio, VRadioGroup } from '../src/radio'
@@ -14,17 +14,17 @@ describe('ui-h5 form controls', () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VCheckboxGroup, {
       props: {
-        max: 2,
-        value: ['apple'],
-        'onUpdate:value': onUpdate
+        'max': 2,
+        'value': ['apple'],
+        'onUpdate:value': onUpdate,
       },
       slots: {
         default: () => [
           h(VCheckbox, { label: 'Apple', value: 'apple' }),
           h(VCheckbox, { label: 'Pear', value: 'pear' }),
-          h(VCheckbox, { label: 'Orange', value: 'orange' })
-        ]
-      }
+          h(VCheckbox, { label: 'Orange', value: 'orange' }),
+        ],
+      },
     })
 
     await wrapper.findAll('.varo-checkbox')[1].trigger('click')
@@ -39,15 +39,15 @@ describe('ui-h5 form controls', () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VRadioGroup, {
       props: {
-        value: 'wechat',
-        'onUpdate:value': onUpdate
+        'value': 'wechat',
+        'onUpdate:value': onUpdate,
       },
       slots: {
         default: () => [
           h(VRadio, { label: 'WeChat', value: 'wechat' }),
-          h(VRadio, { label: 'Alipay', value: 'alipay' })
-        ]
-      }
+          h(VRadio, { label: 'Alipay', value: 'alipay' }),
+        ],
+      },
     })
 
     await wrapper.findAll('.varo-radio')[1].trigger('click')
@@ -59,12 +59,12 @@ describe('ui-h5 form controls', () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VInputNumber, {
       props: {
-        max: 3,
-        min: 1,
-        step: 2,
-        value: 2,
-        'onUpdate:value': onUpdate
-      }
+        'max': 3,
+        'min': 1,
+        'step': 2,
+        'value': 2,
+        'onUpdate:value': onUpdate,
+      },
     })
 
     await wrapper.get('.varo-input-number__plus').trigger('click')
@@ -80,22 +80,24 @@ describe('ui-h5 form controls', () => {
     const rangeUpdate = vi.fn()
     const rate = mount(VRate, {
       props: {
-        count: 5,
-        value: 2,
-        'onUpdate:value': rateUpdate
-      }
+        'count': 5,
+        'value': 2,
+        'onUpdate:value': rateUpdate,
+      },
     })
     const range = mount(VRange, {
       props: {
-        max: 10,
-        min: 0,
-        value: 3,
-        'onUpdate:value': rangeUpdate
-      }
+        'ariaLabel': 'Budget allocation',
+        'max': 10,
+        'min': 0,
+        'value': 3,
+        'onUpdate:value': rangeUpdate,
+      },
     })
 
     await rate.findAll('.varo-rate__item')[3].trigger('click')
     await range.get('input').setValue('8')
+    expect(range.get('input').attributes('aria-label')).toBe('Budget allocation')
 
     expect(rateUpdate).toHaveBeenCalledWith(4)
     expect(rangeUpdate).toHaveBeenCalledWith(8)
@@ -108,14 +110,16 @@ describe('ui-h5 form controls', () => {
     const wrapper = mount(VSearchbar, {
       props: {
         actionText: 'Cancel',
+        inputAriaLabel: 'Search components',
         value: 'varo',
         onClear,
         onCancel,
-        onSearch
-      }
+        onSearch,
+      },
     })
 
     await wrapper.get('form').trigger('submit')
+    expect(wrapper.get('.varo-input__control').attributes('aria-label')).toBe('Search components')
     expect(wrapper.find('.varo-searchbar__clear').exists()).toBe(false)
 
     await wrapper.get('.varo-input__clear').trigger('click')
@@ -132,8 +136,8 @@ describe('ui-h5 form controls', () => {
         autosize: true,
         maxLength: 20,
         showWordLimit: true,
-        value: 'hello'
-      }
+        value: 'hello',
+      },
     })
 
     expect(wrapper.find('textarea').exists()).toBe(true)
