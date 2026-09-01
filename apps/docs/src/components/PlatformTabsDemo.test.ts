@@ -19,6 +19,7 @@ const themePlugin: [Plugin, ThemeConfig] = [VaroConfigProvider, themeConfig]
 describe('PlatformTabsDemo', () => {
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('renders a focused preview without runtime metadata or fake device chrome', async () => {
@@ -215,6 +216,45 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__space-filter [role="status"]').text()).toBe('当前筛选：待发货')
     await buttons[5]!.trigger('click')
     expect(wrapper.get('.platform-demo__space-filter [role="status"]').text()).toBe('当前筛选：全部')
+  })
+  it('presents Sticky as a measured page-scroll month summary', async () => {
+    let top = 100
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(() => ({
+      bottom: top + 20,
+      height: 20,
+      left: 0,
+      right: 100,
+      top,
+      width: 100,
+      x: 0,
+      y: top,
+      toJSON: () => ({}),
+    }))
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 })
+
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'sticky',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.findAll('.platform-demo__sticky-list > article')).toHaveLength(8)
+    expect(wrapper.get('.platform-demo__sticky-bar').attributes('data-fixed')).toBe('false')
+    expect(wrapper.get('.platform-demo__sticky-result').text()).toContain('跟随页面')
+
+    top = 8
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 320 })
+    window.dispatchEvent(new Event('scroll'))
+    await flushPromises()
+
+    expect(wrapper.get('.platform-demo__sticky-bar').attributes('data-fixed')).toBe('true')
+    expect(wrapper.get('.platform-demo__sticky-result').text()).toContain('已吸顶')
+    expect(wrapper.get('.platform-demo__sticky-result').text()).toContain('320px')
+    vi.restoreAllMocks()
   })
 
   it('presents Cell as a compact, interactive settings list', async () => {

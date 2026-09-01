@@ -72,6 +72,25 @@ describe('ui-h5 style entry', () => {
     )
   })
 
+  it('ships mirrored structural styles for every layout primitive', () => {
+    const h5 = readFileSync(resolve(packageRoot, 'src/style.css'), 'utf8')
+    const weapp = readFileSync(resolve(packageRoot, '../ui-weapp/src/style.css'), 'utf8')
+    const registryH5 = readFileSync(resolve(packageRoot, '../../registry/themes/base/h5.css'), 'utf8')
+    const registryWeapp = readFileSync(resolve(packageRoot, '../../registry/themes/base/weapp-vite.css'), 'utf8')
+    const marker = '/* Layout primitives */'
+    const h5Layout = h5.slice(h5.indexOf(marker))
+
+    expect(h5Layout).toContain('.varo-divider')
+    expect(h5Layout).toContain('.varo-grid')
+    expect(h5Layout).toContain('.varo-row')
+    expect(h5Layout).toContain('.varo-col')
+    expect(h5Layout).toContain('.varo-space')
+    expect(h5Layout).toContain('.varo-sticky')
+    expect(weapp.slice(weapp.indexOf(marker))).toBe(h5Layout)
+    expect(registryH5.slice(registryH5.indexOf(marker))).toBe(h5Layout)
+    expect(registryWeapp.slice(registryWeapp.indexOf(marker))).toBe(h5Layout)
+  })
+
   it('targets the stylesheet emitted by the package build', () => {
     expect(packageJson.exports?.['./style.css']).toBe('./dist/style.css')
   })

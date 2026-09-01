@@ -1,5 +1,6 @@
-import { computed, defineComponent, h, onBeforeUnmount, onMounted, shallowRef, type PropType, type StyleValue } from 'vue'
+import type { PropType, StyleValue } from 'vue'
 import type { StickyDimension, StickyScrollEvent } from './types'
+import { computed, defineComponent, h, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 
 export type * from './types'
 
@@ -24,17 +25,18 @@ export const StickyRoot = defineComponent({
   props: {
     offsetTop: {
       type: [Number, String] as PropType<StickyDimension>,
-      default: 0
+      default: 0,
     },
     zIndex: {
       type: [Number, String] as PropType<StickyDimension | undefined>,
-      default: undefined
+      default: undefined,
     },
-    disabled: Boolean
+    disabled: Boolean,
   },
   emits: ['change', 'scroll'],
   setup(props, { attrs, emit, slots }) {
     const isFixed = shallowRef(false)
+    const root = shallowRef<HTMLElement>()
     const numericOffsetTop = computed(() => {
       const value = Number(props.offsetTop)
       return Number.isFinite(value) ? value : 0
@@ -42,15 +44,16 @@ export const StickyRoot = defineComponent({
     const style = computed(() => ({
       top: normalizeSize(props.offsetTop),
       zIndex: props.zIndex,
-      position: props.disabled ? undefined : 'sticky'
+      position: props.disabled ? undefined : 'sticky',
     }))
 
     function updateFixedState() {
       const scrollTop = getScrollTop()
-      const nextFixed = !props.disabled && scrollTop > numericOffsetTop.value
+      const top = root.value?.getBoundingClientRect().top
+      const nextFixed = !props.disabled && top !== undefined && top <= numericOffsetTop.value
       const event: StickyScrollEvent = {
         isFixed: nextFixed,
-        scrollTop
+        scrollTop,
       }
 
       emit('scroll', event)
@@ -75,13 +78,14 @@ export const StickyRoot = defineComponent({
         'div',
         {
           ...attrs,
-          class: attrs.class,
-          style: [attrs.style as StyleValue, style.value],
+          'ref': root,
+          'class': attrs.class,
+          'style': [attrs.style as StyleValue, style.value],
           'data-disabled': String(props.disabled),
           'data-fixed': String(isFixed.value),
-          'data-offset-top': String(props.offsetTop)
+          'data-offset-top': String(props.offsetTop),
         },
-        slots.default?.({ fixed: isFixed.value })
+        slots.default?.({ fixed: isFixed.value }),
       )
-  }
+  },
 })

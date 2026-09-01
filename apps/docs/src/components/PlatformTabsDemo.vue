@@ -50,6 +50,8 @@ const imageFit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
 const gridLastAction = shallowRef<string>()
 const spaceDraft = shallowRef('all')
 const spaceApplied = shallowRef('all')
+const stickyFixed = shallowRef(false)
+const stickyScrollTop = shallowRef(0)
 
 const cellDemoCopy = computed(() => props.locale === 'en'
   ? {
@@ -232,6 +234,35 @@ const spaceSampleCopy = computed(() => {
 const spaceAppliedLabel = computed(() =>
   spaceSampleCopy.value.filters.find(item => item.value === spaceApplied.value)?.label ?? '',
 )
+const stickySampleCopy = computed(() => ({
+  title: props.locale === 'en' ? 'May 2026' : '2026 年 5 月',
+  count: props.locale === 'en' ? '8 orders' : '8 笔订单',
+  hint: props.locale === 'en' ? 'Scroll the page to pin the month summary' : '滚动页面查看月份摘要吸顶',
+  normal: props.locale === 'en' ? 'Following page' : '跟随页面',
+  fixed: props.locale === 'en' ? 'Pinned' : '已吸顶',
+  scroll: props.locale === 'en' ? 'Page scroll' : '页面滚动',
+  items: props.locale === 'en'
+    ? [
+        { id: '#1042', status: 'Shipped', amount: '¥279' },
+        { id: '#1041', status: 'Completed', amount: '¥168' },
+        { id: '#1040', status: 'Pending payment', amount: '¥99' },
+        { id: '#1039', status: 'Completed', amount: '¥428' },
+        { id: '#1038', status: 'Refunded', amount: '−¥68' },
+        { id: '#1037', status: 'Completed', amount: '¥319' },
+        { id: '#1036', status: 'Completed', amount: '¥86' },
+        { id: '#1035', status: 'Completed', amount: '¥206' },
+      ]
+    : [
+        { id: '#1042', status: '已发货', amount: '¥279' },
+        { id: '#1041', status: '已完成', amount: '¥168' },
+        { id: '#1040', status: '待付款', amount: '¥99' },
+        { id: '#1039', status: '已完成', amount: '¥428' },
+        { id: '#1038', status: '已退款', amount: '−¥68' },
+        { id: '#1037', status: '已完成', amount: '¥319' },
+        { id: '#1036', status: '已完成', amount: '¥86' },
+        { id: '#1035', status: '已完成', amount: '¥206' },
+      ],
+}))
 
 const buttonSampleCopy = computed(() => props.locale === 'en'
   ? {
@@ -1425,14 +1456,47 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'sticky'">
                     <section class="platform-demo__sticky-demo">
-                      <component :is="runtime.Sticky" :offset-top="10" :z-index="4">
-                        <div class="platform-demo__sticky-bar">
-                          {{ copy.stickyText }}
+                      <article class="platform-demo__sticky-feed">
+                        <p class="platform-demo__sticky-hint">
+                          {{ stickySampleCopy.hint }}
+                        </p>
+                        <component
+                          :is="runtime.Sticky"
+                          :offset-top="72"
+                          :z-index="4"
+                          @change="stickyFixed = $event"
+                          @scroll="stickyScrollTop = $event.scrollTop"
+                        >
+                          <template #default="{ fixed }">
+                            <header
+                              class="platform-demo__sticky-bar"
+                              :data-fixed="String(fixed)"
+                            >
+                              <div>
+                                <strong>{{ stickySampleCopy.title }}</strong>
+                                <span>{{ stickySampleCopy.count }}</span>
+                              </div>
+                              <span>{{ fixed ? stickySampleCopy.fixed : stickySampleCopy.normal }}</span>
+                            </header>
+                          </template>
+                        </component>
+                        <div class="platform-demo__sticky-list">
+                          <article
+                            v-for="item in stickySampleCopy.items"
+                            :key="item.id"
+                          >
+                            <div>
+                              <strong>{{ item.id }}</strong>
+                              <span>{{ item.status }}</span>
+                            </div>
+                            <strong>{{ item.amount }}</strong>
+                          </article>
                         </div>
-                      </component>
-                      <div class="platform-demo__sticky-list">
-                        <span v-for="item in 8" :key="item">List item {{ item }}</span>
-                      </div>
+                        <p class="platform-demo__sticky-result" role="status">
+                          {{ stickyFixed ? stickySampleCopy.fixed : stickySampleCopy.normal }}
+                          · {{ stickySampleCopy.scroll }} {{ stickyScrollTop }}px
+                        </p>
+                      </article>
                     </section>
                   </template>
 
@@ -3416,31 +3480,106 @@ onBeforeUnmount(() => {
   color: var(--varo-text-secondary);
 }
 
+.platform-demo__phone-frame:has(.platform-demo__sticky-demo) .platform-demo__phone-screen {
+  overflow: visible;
+}
+
 .platform-demo__sticky-demo {
-  max-height: 260px;
-  overflow-y: auto;
+  overflow: visible;
+}
+
+.platform-demo__sticky-feed {
+  display: grid;
+  width: 100%;
+  padding: 16px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__sticky-hint {
+  margin: 0 0 12px;
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
 }
 
 .platform-demo__sticky-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 12px;
-  font-weight: 700;
-  color: var(--varo-primary-foreground);
-  background: var(--vp-c-brand-1);
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
   border-radius: 12px;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.platform-demo__sticky-bar > div {
+  display: grid;
+  gap: 2px;
+}
+
+.platform-demo__sticky-bar strong {
+  font-size: 0.82rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__sticky-bar span {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__sticky-bar > span {
+  padding: 4px 7px;
+  font-weight: 650;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 999px;
+}
+
+.platform-demo__sticky-bar[data-fixed='true'] {
+  border-color: var(--varo-primary);
+  box-shadow: var(--varo-shadow-popover);
 }
 
 .platform-demo__sticky-list {
   display: grid;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
+}
+
+.platform-demo__sticky-list > article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 10px 12px;
+  background: var(--varo-fill-light);
+  border-radius: 12px;
+}
+
+.platform-demo__sticky-list > article > div {
+  display: grid;
+  gap: 2px;
+}
+
+.platform-demo__sticky-list strong {
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-text-primary);
 }
 
 .platform-demo__sticky-list span {
-  padding: 10px 12px;
-  font-size: 0.82rem;
-  color: var(--vp-c-text-2);
-  background: color-mix(in srgb, var(--varo-muted) 12%, transparent);
-  border-radius: 12px;
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__sticky-result {
+  margin: 10px 0 0;
+  font-size: 0.7rem;
+  color: var(--varo-text-secondary);
 }
 
 .platform-demo__image-feature {
@@ -4127,7 +4266,6 @@ onBeforeUnmount(() => {
 /* Solid fills only for true primary actions / selected component parts */
 .platform-demo__trigger,
 .platform-demo__dialog-close,
-.platform-demo__sticky-bar,
 :deep(.varo-fixed-nav__trigger),
 :deep(.varo-elevator__index[data-active='true']),
 :deep(.varo-pagination button[data-active='true']),

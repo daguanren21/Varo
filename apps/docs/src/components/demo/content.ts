@@ -2136,19 +2136,31 @@ import { VButton, VSpace } from '@varo-ui/weapp'
   },
   'sticky': {
     title: 'Sticky 跨端示例与演示',
-    description: '展示吸顶容器、顶部偏移和固定态标记。',
+    description: '以月份订单摘要展示真实页面滚动、顶部偏移、固定状态和滚动事件。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 粘性布局',
-        appSubtitle: '滚动吸顶预览',
+        appSubtitle: '订单月份吸顶预览',
         statusRight: '5G · H5',
         code: `
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { VSticky } from '@varo-ui/h5'
+
+const fixed = shallowRef(false)
+const orders = [{ id: '#1042' }, { id: '#1041' }, { id: '#1040' }]
+<\/script>
+
 <template>
-  <VSticky :offset-top="12">
-    <div class="sticky-bar">吸顶区域</div>
+  <VSticky :offset-top="8" :z-index="4" @change="fixed = $event">
+    <div class="month-summary">
+      <strong>2026 年 5 月</strong>
+      <span>{{ fixed ? '已吸顶' : '跟随页面' }}</span>
+    </div>
   </VSticky>
+  <article v-for="order in orders" :key="order.id">{{ order.id }}</article>
 </template>
         `.trim(),
       },
@@ -2156,13 +2168,25 @@ import { VButton, VSpace } from '@varo-ui/weapp'
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序粘性布局',
-        appSubtitle: '跨端吸顶预览',
+        appSubtitle: '跨端订单月份吸顶',
         statusRight: '微信 · 小程序',
         code: `
+<script setup lang="ts">
+import { shallowRef } from 'wevu'
+import { VSticky } from '@varo-ui/weapp'
+
+const fixed = shallowRef(false)
+const orders = [{ id: '#1042' }, { id: '#1041' }, { id: '#1040' }]
+<\/script>
+
 <template>
-  <VSticky :offset-top="12">
-    <view class="sticky-bar">吸顶区域</view>
+  <VSticky :offset-top="8" :z-index="4" @change="fixed = $event">
+    <view class="month-summary">
+      <text>2026 年 5 月</text>
+      <text>{{ fixed ? '已吸顶' : '跟随页面' }}</text>
+    </view>
   </VSticky>
+  <view v-for="order in orders" :key="order.id">{{ order.id }}</view>
 </template>
         `.trim(),
       },
