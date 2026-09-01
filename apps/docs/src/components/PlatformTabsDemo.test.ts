@@ -645,7 +645,7 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__indicator-slide span').text()).toBe('04')
   })
 
-  it('renders enough elevator floors for the demo effect', () => {
+  it('presents Elevator as an accessible service-city directory', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -656,7 +656,18 @@ describe('PlatformTabsDemo', () => {
       },
     })
 
+    expect(wrapper.get('.platform-demo__elevator-directory').text()).toContain('服务城市')
+    expect(wrapper.get('.platform-demo__elevator-directory output').text()).toContain('杭州')
     expect(wrapper.findAll('.varo-elevator__group').length).toBeGreaterThanOrEqual(8)
     expect(wrapper.findAll('.varo-elevator__item').length).toBeGreaterThanOrEqual(24)
+
+    const indexes = wrapper.findAll('.varo-elevator__index')
+    expect(indexes[0]!.attributes('aria-pressed')).toBe('true')
+    await indexes[1]!.trigger('click')
+    expect(indexes[1]!.attributes('aria-pressed')).toBe('true')
+    expect(wrapper.get('.varo-elevator').attributes('data-active-index')).toBe('B')
+
+    await wrapper.findAll('.varo-elevator__group')[1]!.findAll('.varo-elevator__item')[0]!.trigger('click')
+    expect(wrapper.get('.platform-demo__elevator-directory output').text()).toContain('北京')
   })
 })

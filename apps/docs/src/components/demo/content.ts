@@ -1599,10 +1599,10 @@ import { VDivider } from '@varo-ui/weapp'
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VElevator } from '@varo-ui/h5'
 
-const activeIndex = ref('A')
+const activeIndex = shallowRef('A')
 const indexes = [
   { title: 'A', items: ['安徽', '澳门', '安庆'] },
   { title: 'B', items: ['北京', '保定', '包头'] },
@@ -1624,10 +1624,10 @@ const indexes = [
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VElevator } from '@varo-ui/weapp'
 
-const activeIndex = ref('A')
+const activeIndex = shallowRef('A')
 const indexes = [
   { title: 'A', items: ['安徽', '澳门', '安庆'] },
   { title: 'B', items: ['北京', '保定', '包头'] },

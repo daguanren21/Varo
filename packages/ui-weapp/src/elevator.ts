@@ -1,8 +1,9 @@
-import { computed, defineComponent, h, shallowRef, type PropType, type StyleValue } from 'vue'
+import type { PropType, StyleValue } from 'vue'
+import { computed, defineComponent, h, shallowRef } from 'vue'
 
 export interface ElevatorGroup {
   title: string
-  items?: Array<string | { text?: string; title?: string; value?: string | number }>
+  items?: Array<string | { text?: string, title?: string, value?: string | number }>
 }
 
 export const VElevator = defineComponent({
@@ -10,13 +11,13 @@ export const VElevator = defineComponent({
   props: {
     activeIndex: {
       type: String as PropType<string | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultActiveIndex: String,
     indexes: {
       type: Array as PropType<ElevatorGroup[]>,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   emits: ['update:activeIndex', 'change', 'clickItem'],
   setup(props, { attrs, emit }) {
@@ -39,29 +40,30 @@ export const VElevator = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-elevator', attrs.class],
-          style: attrs.style as StyleValue,
-          'data-active-index': current.value
+          'class': ['varo-elevator', attrs.class],
+          'style': attrs.style as StyleValue,
+          'data-active-index': current.value,
         },
         [
           h(
             'div',
             { class: 'varo-elevator__content' },
-            props.indexes.map((group) =>
+            props.indexes.map(group =>
               h(
                 'section',
                 {
-                  key: group.title,
-                  ref: (element) => {
+                  'key': group.title,
+                  'ref': (element) => {
                     if (element instanceof HTMLElement) {
                       groupRefs.set(group.title, element)
-                    } else {
+                    }
+                    else {
                       groupRefs.delete(group.title)
                     }
                   },
-                  class: 'varo-elevator__group',
+                  'class': 'varo-elevator__group',
                   'data-active': String(current.value === group.title),
-                  'data-index': group.title
+                  'data-index': group.title,
                 },
                 [
                   h('div', { class: 'varo-elevator__title' }, group.title),
@@ -73,33 +75,34 @@ export const VElevator = defineComponent({
                         key: `${group.title}-${index}`,
                         type: 'button',
                         class: 'varo-elevator__item',
-                        onClick: () => emit('clickItem', item, group.title)
+                        onClick: () => emit('clickItem', item, group.title),
                       },
-                      text
+                      text,
                     )
-                  })
-                ]
-              )
-            )
+                  }),
+                ],
+              ),
+            ),
           ),
           h(
             'div',
             { class: 'varo-elevator__indexes' },
-            props.indexes.map((group) =>
+            props.indexes.map(group =>
               h(
                 'button',
                 {
-                  key: group.title,
-                  type: 'button',
-                  class: 'varo-elevator__index',
+                  'key': group.title,
+                  'type': 'button',
+                  'class': 'varo-elevator__index',
                   'data-active': String(current.value === group.title),
-                  onClick: () => setActive(group.title)
+                  'aria-pressed': String(current.value === group.title),
+                  'onClick': () => setActive(group.title),
                 },
-                group.title
-              )
-            )
-          )
-        ]
+                group.title,
+              ),
+            ),
+          ),
+        ],
       )
-  }
+  },
 })

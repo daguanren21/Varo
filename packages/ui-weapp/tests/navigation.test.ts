@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { h } from 'vue'
 import { VElevator } from '../src/elevator'
 import { VFixedNav } from '../src/fixed-nav'
 import { VIndicator } from '../src/indicator'
@@ -8,8 +8,8 @@ import { VMenu, VMenuItem } from '../src/menu'
 import { VNavbar } from '../src/navbar'
 import { VPagination } from '../src/pagination'
 import { VSideNavbar, VSideNavbarItem } from '../src/side-navbar'
-import { VTab, VTabs } from '../src/tabs'
 import { VTabbar, VTabbarItem } from '../src/tabbar'
+import { VTab, VTabs } from '../src/tabs'
 
 describe('ui-weapp navigation components', () => {
   it('renders elevator and changes active index', async () => {
@@ -18,30 +18,34 @@ describe('ui-weapp navigation components', () => {
     const originalScrollIntoView = Element.prototype.scrollIntoView
     Object.defineProperty(Element.prototype, 'scrollIntoView', {
       configurable: true,
-      value: scrollIntoView
+      value: scrollIntoView,
     })
     const wrapper = mount(VElevator, {
       props: {
-        activeIndex: 'A',
-        indexes: [
+        'activeIndex': 'A',
+        'indexes': [
           { title: 'A', items: ['Apple'] },
-          { title: 'B', items: ['Banana'] }
+          { title: 'B', items: ['Banana'] },
         ],
-        'onUpdate:activeIndex': onUpdate
-      }
+        'onUpdate:activeIndex': onUpdate,
+      },
     })
 
     try {
+      expect(wrapper.findAll('.varo-elevator__index')[0].attributes('aria-pressed')).toBe('true')
+      expect(wrapper.findAll('.varo-elevator__index')[1].attributes('aria-pressed')).toBe('false')
       await wrapper.findAll('.varo-elevator__index')[1].trigger('click')
       expect(onUpdate).toHaveBeenCalledWith('B')
       expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start', behavior: 'smooth' })
-    } finally {
+    }
+    finally {
       if (originalScrollIntoView) {
         Object.defineProperty(Element.prototype, 'scrollIntoView', {
           configurable: true,
-          value: originalScrollIntoView
+          value: originalScrollIntoView,
         })
-      } else {
+      }
+      else {
         delete (Element.prototype as { scrollIntoView?: Element['scrollIntoView'] }).scrollIntoView
       }
     }
@@ -51,10 +55,10 @@ describe('ui-weapp navigation components', () => {
     const onVisible = vi.fn()
     const fixed = mount(VFixedNav, {
       props: {
-        visible: false,
-        navList: [{ id: 1, text: '首页' }],
-        'onUpdate:visible': onVisible
-      }
+        'visible': false,
+        'navList': [{ id: 1, text: '首页' }],
+        'onUpdate:visible': onVisible,
+      },
     })
     await fixed.get('.varo-fixed-nav__trigger').trigger('click')
     expect(onVisible).toHaveBeenCalledWith(true)
@@ -64,7 +68,7 @@ describe('ui-weapp navigation components', () => {
 
     const indicatorUpdate = vi.fn()
     const clickableIndicator = mount(VIndicator, {
-      props: { total: 3, current: 0, 'onUpdate:current': indicatorUpdate }
+      props: { 'total': 3, 'current': 0, 'onUpdate:current': indicatorUpdate },
     })
     await clickableIndicator.findAll('.varo-indicator__item')[2].trigger('click')
     expect(indicatorUpdate).toHaveBeenCalledWith(2)
@@ -75,7 +79,7 @@ describe('ui-weapp navigation components', () => {
     expect(left).toHaveBeenCalledTimes(1)
 
     const page = vi.fn()
-    const pagination = mount(VPagination, { props: { modelValue: 1, pageCount: 2, 'onUpdate:modelValue': page } })
+    const pagination = mount(VPagination, { props: { 'modelValue': 1, 'pageCount': 2, 'onUpdate:modelValue': page } })
     await pagination.get('.varo-pagination__next').trigger('click')
     expect(page).toHaveBeenCalledWith(2)
   })
@@ -85,8 +89,8 @@ describe('ui-weapp navigation components', () => {
     const menu = mount(VMenu, {
       slots: {
         default: () =>
-          h(VMenuItem, { name: 'sort', title: '排序', options: [{ text: '默认', value: 'default' }], onSelect: menuSelect })
-      }
+          h(VMenuItem, { name: 'sort', title: '排序', options: [{ text: '默认', value: 'default' }], onSelect: menuSelect }),
+      },
     })
     await menu.get('.varo-menu__title').trigger('click')
     await menu.get('.varo-menu__option').trigger('click')
@@ -94,24 +98,24 @@ describe('ui-weapp navigation components', () => {
 
     const sideUpdate = vi.fn()
     const side = mount(VSideNavbar, {
-      props: { modelValue: 'a', 'onUpdate:modelValue': sideUpdate },
-      slots: { default: () => [h(VSideNavbarItem, { name: 'a', title: 'A' }), h(VSideNavbarItem, { name: 'b', title: 'B' })] }
+      props: { 'modelValue': 'a', 'onUpdate:modelValue': sideUpdate },
+      slots: { default: () => [h(VSideNavbarItem, { name: 'a', title: 'A' }), h(VSideNavbarItem, { name: 'b', title: 'B' })] },
     })
     await side.findAll('.varo-side-navbar__item')[1].trigger('click')
     expect(sideUpdate).toHaveBeenCalledWith('b')
 
     const tabbarUpdate = vi.fn()
     const tabbar = mount(VTabbar, {
-      props: { modelValue: 'home', 'onUpdate:modelValue': tabbarUpdate },
-      slots: { default: () => [h(VTabbarItem, { name: 'home' }, { default: () => '首页' }), h(VTabbarItem, { name: 'mine' }, { default: () => '我的' })] }
+      props: { 'modelValue': 'home', 'onUpdate:modelValue': tabbarUpdate },
+      slots: { default: () => [h(VTabbarItem, { name: 'home' }, { default: () => '首页' }), h(VTabbarItem, { name: 'mine' }, { default: () => '我的' })] },
     })
     await tabbar.findAll('.varo-tabbar__item')[1].trigger('click')
     expect(tabbarUpdate).toHaveBeenCalledWith('mine')
 
     const tabsUpdate = vi.fn()
     const tabs = mount(VTabs, {
-      props: { active: 'a', 'onUpdate:active': tabsUpdate },
-      slots: { default: () => [h(VTab, { name: 'a', title: 'A' }, { default: () => 'A' }), h(VTab, { name: 'b', title: 'B' }, { default: () => 'B' })] }
+      props: { 'active': 'a', 'onUpdate:active': tabsUpdate },
+      slots: { default: () => [h(VTab, { name: 'a', title: 'A' }, { default: () => 'A' }), h(VTab, { name: 'b', title: 'B' }, { default: () => 'B' })] },
     })
     await tabs.vm.$nextTick()
     await tabs.findAll('.varo-tabs__tab')[1].trigger('click')
@@ -125,9 +129,9 @@ describe('ui-weapp navigation components', () => {
           h(VMenuItem, {
             name: 'sort',
             title: '排序',
-            options: [{ text: '默认', value: 'default' }]
-          })
-      }
+            options: [{ text: '默认', value: 'default' }],
+          }),
+      },
     })
 
     await wrapper.get('.varo-menu__title').trigger('click')

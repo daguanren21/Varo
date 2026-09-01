@@ -35,6 +35,7 @@ let copyFeedbackTimer: number | undefined
 const overlayVisible = ref(true)
 const popupVisible = ref(true)
 const elevatorActive = ref('A')
+const elevatorSelected = shallowRef(props.locale === 'en' ? 'Hangzhou' : '杭州')
 const indicatorCurrent = ref(0)
 const fixedNavVisible = ref(true)
 const menuActiveName = ref<string | number | undefined>()
@@ -52,6 +53,17 @@ const spaceDraft = shallowRef('all')
 const spaceApplied = shallowRef('all')
 const stickyFixed = shallowRef(false)
 const stickyScrollTop = shallowRef(0)
+const elevatorSampleCopy = computed(() => ({
+  title: props.locale === 'en' ? 'Service city' : '服务城市',
+  hint: props.locale === 'en' ? 'Choose where the service is available' : '选择可提供服务的城市',
+  selected: props.locale === 'en' ? 'Selected' : '已选择',
+}))
+
+function selectElevatorItem(item: string | { text?: string, title?: string, value?: string | number }) {
+  elevatorSelected.value = typeof item === 'string'
+    ? item
+    : item.text ?? item.title ?? String(item.value ?? '')
+}
 
 const cellDemoCopy = computed(() => props.locale === 'en'
   ? {
@@ -1502,12 +1514,22 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'elevator'">
                     <section class="platform-demo__nav-demo platform-demo__elevator-demo">
-                      <component
-                        :is="runtime.Elevator"
-                        :active-index="elevatorActive"
-                        :indexes="copy.elevatorGroups"
-                        @update:active-index="elevatorActive = $event"
-                      />
+                      <article class="platform-demo__elevator-directory">
+                        <header>
+                          <div>
+                            <strong>{{ elevatorSampleCopy.title }}</strong>
+                            <span>{{ elevatorSampleCopy.hint }}</span>
+                          </div>
+                          <output>{{ elevatorSampleCopy.selected }}：{{ elevatorSelected }}</output>
+                        </header>
+                        <component
+                          :is="runtime.Elevator"
+                          :active-index="elevatorActive"
+                          :indexes="copy.elevatorGroups"
+                          @click-item="selectElevatorItem"
+                          @update:active-index="elevatorActive = $event"
+                        />
+                      </article>
                     </section>
                   </template>
 
@@ -2444,13 +2466,53 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__elevator-demo {
-  min-height: 360px;
+  min-height: 420px;
+}
+
+.platform-demo__elevator-directory {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__elevator-directory > header {
+  display: grid;
+  gap: 8px;
+}
+
+.platform-demo__elevator-directory > header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.platform-demo__elevator-directory > header strong {
+  font-size: 0.88rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__elevator-directory > header span {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__elevator-directory output {
+  width: fit-content;
+  padding: 5px 8px;
+  font-size: 0.7rem;
+  font-weight: 650;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 999px;
 }
 
 :deep(.varo-elevator) {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 32px;
+  grid-template-columns: minmax(0, 1fr) 30px;
   gap: 8px;
   width: 100%;
 }
@@ -2458,18 +2520,18 @@ onBeforeUnmount(() => {
 :deep(.varo-elevator__content) {
   display: grid;
   grid-auto-rows: max-content;
-  gap: 10px;
+  gap: 8px;
   align-content: start;
-  max-height: 336px;
-  padding-right: 4px;
+  max-height: 310px;
+  padding-right: 3px;
   overflow-y: auto;
   scroll-behavior: smooth;
 }
 
 :deep(.varo-elevator__group) {
   overflow: hidden;
-  background: color-mix(in srgb, var(--varo-surface-strong) 92%, transparent);
-  border: 1px solid var(--varo-border);
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border-light);
   border-radius: 12px;
 }
 
@@ -2477,50 +2539,67 @@ onBeforeUnmount(() => {
   position: sticky;
   top: 0;
   z-index: 1;
-  padding: 8px 12px;
+  padding: 7px 11px;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: var(--demo-brand);
-  background: color-mix(in srgb, var(--demo-brand) 12%, transparent);
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
 }
 
 :deep(.varo-elevator__item) {
   display: block;
   width: 100%;
   min-height: 38px;
-  padding: 0 12px;
-  color: var(--vp-c-text-1);
+  padding: 0 11px;
+  color: var(--varo-text-primary);
   text-align: left;
+  cursor: pointer;
   background: transparent;
   border: 0;
-  border-top: 1px solid var(--varo-border);
+  border-top: 1px solid var(--varo-border-light);
+}
+
+:deep(.varo-elevator__item:hover) {
+  color: var(--varo-primary);
+  background: var(--varo-card-solid);
+}
+
+:deep(.varo-elevator__item:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: -2px;
 }
 
 :deep(.varo-elevator__indexes) {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   place-self: center end;
-  padding: 8px 4px;
-  background: color-mix(in srgb, var(--varo-card-solid) 92%, transparent);
+  padding: 6px 3px;
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: 999px;
   box-shadow: var(--varo-shadow-sm);
-  backdrop-filter: blur(12px);
 }
 
 :deep(.varo-elevator__index) {
-  width: 24px;
-  height: 24px;
-  font-size: 0.72rem;
+  width: 23px;
+  height: 23px;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--vp-c-text-2);
-  background: color-mix(in srgb, var(--varo-muted) 12%, transparent);
+  color: var(--varo-text-secondary);
+  cursor: pointer;
+  background: var(--varo-fill-light);
   border: 0;
   border-radius: 999px;
 }
 
 :deep(.varo-elevator__index[data-active='true']) {
   color: var(--varo-primary-foreground);
-  background: var(--vp-c-brand-1);
+  background: var(--varo-primary);
+}
+
+:deep(.varo-elevator__index:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
 }
 
 .platform-demo__fixed-nav-demo {
