@@ -10,12 +10,24 @@
   ],
   "dependencies": [
     "@varo-ui/headless",
-    "@varo-ui/theme",
-    "vue"
+    "@varo-ui/theme"
   ],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp-vite": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp-vite": [
+      "utils/primitives"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +36,23 @@
     },
     {
       "target": "weapp-vite",
-      "from": "registry/components/form/form.ts",
+      "from": "registry/components/form/form.weapp.ts",
       "to": "src/components/ui/form.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/form/form-context.weapp.ts",
+      "to": "src/components/ui/form-context.ts"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/form/v-form.weapp-vite.vue",
+      "to": "src/components/ui/v-form.vue"
+    },
+    {
+      "target": "weapp-vite",
+      "from": "registry/components/form/v-form-item.weapp-vite.vue",
+      "to": "src/components/ui/v-form-item.vue"
     }
   ],
   "docs": "/components/form"

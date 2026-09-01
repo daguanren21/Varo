@@ -171,6 +171,33 @@ describe('registry catalog', () => {
       })
     })
   })
+  it('keeps one shadcn Form API behind target-owned renderers', () => {
+    const form = readJson<RegistryItem>('registry/components/form/registry.json')
+    const h5Files = form.files.filter(file => file.target === 'h5')
+    const weappFiles = form.files.filter(file => file.target === 'weapp-vite')
+
+    expect(form.targetDependencies).toEqual({
+      'h5': ['vue'],
+      'weapp-vite': ['wevu'],
+    })
+    expect(form.targetRegistryDependencies?.['weapp-vite']).toContain('utils/primitives')
+    expect(h5Files.map(file => file.to)).toEqual(['src/components/ui/form.ts'])
+    expect(weappFiles.map(file => file.to)).toEqual([
+      'src/components/ui/form.ts',
+      'src/components/ui/form-context.ts',
+      'src/components/ui/v-form.vue',
+      'src/components/ui/v-form-item.vue',
+    ])
+
+    expect(readText('registry/components/form/form.ts')).toContain('export const VForm')
+    expect(readText('registry/components/form/form.ts')).toContain('export const VFormItem')
+    expect(readText('registry/components/form/form.weapp.ts')).toContain('default as VForm')
+    expect(readText('registry/components/form/form.weapp.ts')).toContain('default as VFormItem')
+    weappFiles.filter(file => file.from.endsWith('.vue')).forEach((file) => {
+      expect(readText(file.from), file.from).toContain('from \'wevu\'')
+      expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
+    })
+  })
 
   it('composes Block controls through headless-backed Base Kit components', () => {
     const headlessComponents = new Map([

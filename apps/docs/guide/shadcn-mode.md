@@ -2,6 +2,35 @@
 
 Varo 的 registry 目标不是只发布 npm 包，而是让业务项目拿到可维护的源码基座。CLI 按目标复制平台正确的文件：H5 使用 TypeScript runtime source；小程序 Base Kit 使用可被 `weapp-vite` 编译成 WXML/WXSS/JSON 的 Vue SFC，扩展高共识组件使用目标中立 TypeScript runtime source 与小程序 primitives。
 
+## 一个模式，两套运行桥接
+
+Varo 只有一套 shadcn 模式。`--target` 选择的是安装时的运行桥接，不是另一套组件库或另一种开发方式。
+
+以下契约在 H5 与小程序之间保持一致：
+
+- 相同的 Registry 条目名、CLI 安装流程和源码所有权；
+- 相同的 `V*` 组件名、Props、Events、Slots 与表单 Hook API；
+- 相同的业务导入路径和二次封装边界；
+- 相同的主题语义变量、校验结果与受控/非受控状态约定。
+
+渲染实现可以不同：H5 使用 Vue 和 DOM 语义，小程序使用 Wevu、WXML/WXSS 与原生组件。业务代码仍从相同的入口导入：
+
+```text
+src/components/ui/form.ts
+```
+
+H5 安装项将组件实现直接写入 `form.ts`；小程序安装项在相同路径写入 barrel，并把原生实现放在 `v-form.vue` 与 `v-form-item.vue`。两端拥有相同的 `VForm`、`VFormItem`、Props、Events、Slots 和表单 Hook API，只在 renderer 所属文件中区分 Vue 与 Wevu。这个模式与 shadcn/vue 的“开放代码、业务持有源码”一致，但不会把 Web-only runtime 强加给小程序。
+
+### Reka UI 与 shadcn-vue
+
+Reka UI 是 Radix Vue 的后续版本，适合作为 H5 端可访问性、键盘导航和焦点管理的实现参考或内部 primitive。它不属于 Varo shadcn 模式的公共契约：即使某个 H5 组件内部采用 Reka UI，小程序仍由 `primitives-core` 状态契约和 Wevu renderer 实现同一 `V*` API。
+
+### 表单与 vee-validate
+
+`vee-validate` 直接依赖并导入 Vue，不能作为 Wevu 小程序的跨端基础依赖。Varo 使用 `@varo-ui/headless` 导出的 `useForm`、`useField` 和 `defineRule` 作为统一表单核心；它们通过注入的 Reactive Runtime 在 Vue 与 Wevu 上运行，提供字段注册、嵌套路径、同步/异步规则、dirty、touched、errors、reset、字段校验与 `handleSubmit`。
+
+H5 可以在业务层自行接入 vee-validate，但 Base Kit 与 Registry 组件必须继续暴露同一套 Varo 表单契约，避免两端 API 分叉。
+
 ## 安装组件
 
 ```bash

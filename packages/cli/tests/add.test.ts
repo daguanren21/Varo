@@ -118,6 +118,29 @@ describe('varo add targets', () => {
     expect(weapp.files.map(file => file.to)).toContain('src/components/ui/v-checkbox.vue')
     expect(weapp.files.map(file => file.to)).not.toContain('src/components/ui/selection.ts')
   })
+  it('installs one shadcn Form entry with target-owned renderers', () => {
+    const h5 = resolveRegistryItems(['form'], { registryRoot, target: 'h5' })
+    const weapp = resolveRegistryItems(['form'], { registryRoot, target: 'weapp-vite' })
+
+    expect(h5.files.map(file => file.to)).toEqual([
+      'src/styles/varo.css',
+      'src/components/ui/form.ts',
+    ])
+    expect(weapp.files.map(file => file.to)).toEqual([
+      'src/styles/varo.css',
+      'src/lib/varo-primitives.ts',
+      'src/components/ui/form.ts',
+      'src/components/ui/form-context.ts',
+      'src/components/ui/v-form.vue',
+      'src/components/ui/v-form-item.vue',
+    ])
+    expect(h5.dependencies).toContain('vue')
+    expect(h5.dependencies).not.toContain('wevu')
+    expect(weapp.dependencies).toContain('wevu')
+    expect(weapp.dependencies).not.toContain('vue')
+    expect(h5.files.some(file => file.to === 'src/components/ui/form.ts')).toBe(true)
+    expect(weapp.files.some(file => file.to === 'src/components/ui/form.ts')).toBe(true)
+  })
 
   it('installs retail blocks with Varo controls and shared retail contracts', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-retail-'))
