@@ -1529,19 +1529,32 @@ export const componentDemoContent: Record<DemoKind, DemoContent> = {
   },
   'divider': {
     title: 'Divider 跨端示例与演示',
-    description: '展示基础分割线、带文字分割线、虚线和纵向分割线。',
+    description: '在订单摘要中展示内容分组、带标题虚线和纵向操作分隔。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 分割线',
-        appSubtitle: '内容分隔预览',
+        appSubtitle: '订单内容分组预览',
         statusRight: '5G · H5',
         code: `
+<script setup lang="ts">
+import { VDivider } from '@varo-ui/h5'
+<\/script>
+
 <template>
-  <VDivider />
-  <VDivider>文本分割线</VDivider>
-  <VDivider dashed content-position="left">虚线</VDivider>
+  <article class="order-summary">
+    <div><span>商品金额</span><strong>¥299</strong></div>
+    <div><span>优惠</span><strong>−¥20</strong></div>
+    <VDivider :spacing="12" />
+    <div><strong>实付款</strong><strong>¥279</strong></div>
+    <VDivider dashed content-position="left">物流进度</VDivider>
+    <footer>
+      <button>联系商家</button>
+      <VDivider vertical />
+      <button>查看物流</button>
+    </footer>
+  </article>
 </template>
         `.trim(),
       },
@@ -1549,13 +1562,26 @@ export const componentDemoContent: Record<DemoKind, DemoContent> = {
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序分割线',
-        appSubtitle: '跨端分隔预览',
+        appSubtitle: '跨端订单分组预览',
         statusRight: '微信 · 小程序',
         code: `
+<script setup lang="ts">
+import { VDivider } from '@varo-ui/weapp'
+<\/script>
+
 <template>
-  <VDivider />
-  <VDivider>文本分割线</VDivider>
-  <VDivider dashed content-position="left">虚线</VDivider>
+  <view class="order-summary">
+    <view><text>商品金额</text><text>¥299</text></view>
+    <view><text>优惠</text><text>−¥20</text></view>
+    <VDivider :spacing="12" />
+    <view><text>实付款</text><text>¥279</text></view>
+    <VDivider dashed content-position="left">物流进度</VDivider>
+    <view class="order-actions">
+      <button>联系商家</button>
+      <VDivider vertical />
+      <button>查看物流</button>
+    </view>
+  </view>
 </template>
         `.trim(),
       },
@@ -1671,19 +1697,33 @@ const navList = [
   },
   'grid': {
     title: 'Grid 跨端示例与演示',
-    description: '按常见宫格入口展示列数、徽标、图标、点击态和间距。',
+    description: '以账户快捷入口展示四列布局、真实图标、徽标、点击反馈和两行内容。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 宫格',
-        appSubtitle: '功能入口预览',
+        appSubtitle: '账户快捷入口预览',
         statusRight: '5G · H5',
         code: `
+<script setup lang="ts">
+import { VGrid, VGridItem } from '@varo-ui/h5'
+<\/script>
+
 <template>
-  <VGrid :column-num="4" :gutter="8" clickable>
-    <VGridItem icon="◎" text="文字" />
-    <VGridItem icon="◎" text="物流" badge="3" />
+  <VGrid :border="false" :column-num="4" :gutter="8" clickable>
+    <VGridItem text="我的订单" badge="2">
+      <template #icon><img src="/icons/orders.svg" alt="" /></template>
+    </VGridItem>
+    <VGridItem text="物流" dot>
+      <template #icon><img src="/icons/delivery.svg" alt="" /></template>
+    </VGridItem>
+    <VGridItem text="优惠券" badge="3">
+      <template #icon><img src="/icons/coupon.svg" alt="" /></template>
+    </VGridItem>
+    <VGridItem text="收藏">
+      <template #icon><img src="/icons/favorite.svg" alt="" /></template>
+    </VGridItem>
   </VGrid>
 </template>
         `.trim(),
@@ -1692,13 +1732,27 @@ const navList = [
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序宫格',
-        appSubtitle: '跨端入口预览',
+        appSubtitle: '跨端账户入口预览',
         statusRight: '微信 · 小程序',
         code: `
+<script setup lang="ts">
+import { VGrid, VGridItem } from '@varo-ui/weapp'
+<\/script>
+
 <template>
-  <VGrid :column-num="4" :gutter="8" clickable>
-    <VGridItem icon="◎" text="文字" />
-    <VGridItem icon="◎" text="物流" badge="3" />
+  <VGrid :border="false" :column-num="4" :gutter="8" clickable>
+    <VGridItem text="我的订单" badge="2">
+      <template #icon><image src="/icons/orders.svg" /></template>
+    </VGridItem>
+    <VGridItem text="物流" dot>
+      <template #icon><image src="/icons/delivery.svg" /></template>
+    </VGridItem>
+    <VGridItem text="优惠券" badge="3">
+      <template #icon><image src="/icons/coupon.svg" /></template>
+    </VGridItem>
+    <VGridItem text="收藏">
+      <template #icon><image src="/icons/favorite.svg" /></template>
+    </VGridItem>
   </VGrid>
 </template>
         `.trim(),
@@ -1763,20 +1817,26 @@ const current = ref(0)
   },
   'layout': {
     title: 'Layout 跨端示例与演示',
-    description: '展示 24 栅格、列偏移、行间距和主轴对齐。',
+    description: '在经营概览中展示 24 栅格、16/8 主次分栏、三等分指标与双向 gutter。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 布局',
-        appSubtitle: '24 栅格预览',
+        appSubtitle: '经营概览栅格预览',
         statusRight: '5G · H5',
         code: `
+<script setup lang="ts">
+import { VCol, VRow } from '@varo-ui/h5'
+<\/script>
+
 <template>
-  <VRow :gutter="[8, 8]">
-    <VCol :span="8">8</VCol>
-    <VCol :span="8">8</VCol>
-    <VCol :span="8">8</VCol>
+  <VRow :gutter="[8, 8]" align="stretch">
+    <VCol :span="16"><article>成交金额 ¥86,420</article></VCol>
+    <VCol :span="8"><article>订单 128</article></VCol>
+    <VCol :span="8"><article>访客 2,846</article></VCol>
+    <VCol :span="8"><article>转化率 4.5%</article></VCol>
+    <VCol :span="8"><article>退款 6</article></VCol>
   </VRow>
 </template>
         `.trim(),
@@ -1785,14 +1845,20 @@ const current = ref(0)
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序布局',
-        appSubtitle: '跨端栅格预览',
+        appSubtitle: '跨端经营栅格预览',
         statusRight: '微信 · 小程序',
         code: `
+<script setup lang="ts">
+import { VCol, VRow } from '@varo-ui/weapp'
+<\/script>
+
 <template>
-  <VRow :gutter="[8, 8]">
-    <VCol :span="8">8</VCol>
-    <VCol :span="8">8</VCol>
-    <VCol :span="8">8</VCol>
+  <VRow :gutter="[8, 8]" align="stretch">
+    <VCol :span="16"><view>成交金额 ¥86,420</view></VCol>
+    <VCol :span="8"><view>订单 128</view></VCol>
+    <VCol :span="8"><view>访客 2,846</view></VCol>
+    <VCol :span="8"><view>转化率 4.5%</view></VCol>
+    <VCol :span="8"><view>退款 6</view></VCol>
   </VRow>
 </template>
         `.trim(),
@@ -2014,19 +2080,29 @@ const active = ref('orders')
   },
   'space': {
     title: 'Space 跨端示例与演示',
-    description: '展示横向间距、纵向间距、换行和填充宽度。',
+    description: '在订单筛选中展示横向间距、标签换行、纵向排列和填充宽度。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 间距',
-        appSubtitle: '元素间距预览',
+        appSubtitle: '订单筛选间距预览',
         statusRight: '5G · H5',
         code: `
+<script setup lang="ts">
+import { VButton, VSpace } from '@varo-ui/h5'
+<\/script>
+
 <template>
-  <VSpace :size="8" wrap>
-    <VButton size="sm">按钮</VButton>
-    <VButton size="sm">按钮</VButton>
+  <VSpace :size="[8, 8]" wrap>
+    <VButton size="sm">全部</VButton>
+    <VButton size="sm" variant="outline">待付款</VButton>
+    <VButton size="sm" variant="outline">待发货</VButton>
+    <VButton size="sm" variant="outline">退款/售后</VButton>
+  </VSpace>
+  <VSpace direction="vertical" fill :size="8">
+    <VButton size="sm">应用筛选</VButton>
+    <VButton size="sm" variant="outline">重置</VButton>
   </VSpace>
 </template>
         `.trim(),
@@ -2035,13 +2111,23 @@ const active = ref('orders')
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序间距',
-        appSubtitle: '跨端间距预览',
+        appSubtitle: '跨端订单筛选预览',
         statusRight: '微信 · 小程序',
         code: `
+<script setup lang="ts">
+import { VButton, VSpace } from '@varo-ui/weapp'
+<\/script>
+
 <template>
-  <VSpace :size="8" wrap>
-    <VButton size="sm">按钮</VButton>
-    <VButton size="sm">按钮</VButton>
+  <VSpace :size="[8, 8]" wrap>
+    <VButton size="sm">全部</VButton>
+    <VButton size="sm" variant="outline">待付款</VButton>
+    <VButton size="sm" variant="outline">待发货</VButton>
+    <VButton size="sm" variant="outline">退款/售后</VButton>
+  </VSpace>
+  <VSpace direction="vertical" fill :size="8">
+    <VButton size="sm">应用筛选</VButton>
+    <VButton size="sm" variant="outline">重置</VButton>
   </VSpace>
 </template>
         `.trim(),

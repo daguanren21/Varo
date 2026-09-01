@@ -1,10 +1,12 @@
-import { computed, defineComponent, h, inject, provide, type InjectionKey, type PropType, type StyleValue } from 'vue'
+import type { InjectionKey, PropType, StyleValue } from 'vue'
+import type { SizeValue } from './layout-utils'
 import { createVariantClass } from '@varo/shared'
-import { normalizeSize, type SizeValue } from './layout-utils'
+import { computed, defineComponent, h, inject, provide } from 'vue'
+import { normalizeSize } from './layout-utils'
 
 export type GridDirection = 'vertical' | 'horizontal'
 
-type GridContext = {
+interface GridContext {
   clickable: boolean
   direction: GridDirection
   square: boolean
@@ -17,26 +19,26 @@ export const VGrid = defineComponent({
   props: {
     columnNum: {
       type: [Number, String] as PropType<number | string>,
-      default: 4
+      default: 4,
     },
     gutter: {
       type: [Number, String] as PropType<SizeValue | undefined>,
-      default: undefined
+      default: undefined,
     },
     border: {
       type: Boolean,
-      default: true
+      default: true,
     },
     square: Boolean,
     center: {
       type: Boolean,
-      default: true
+      default: true,
     },
     clickable: Boolean,
     direction: {
       type: String as PropType<GridDirection>,
-      default: 'vertical'
-    }
+      default: 'vertical',
+    },
   },
   setup(props, { attrs, slots }) {
     provide(gridContextKey, {
@@ -48,19 +50,19 @@ export const VGrid = defineComponent({
       },
       get square() {
         return props.square
-      }
+      },
     })
 
     const classes = computed(() =>
       createVariantClass('varo-grid', {
         direction: props.direction,
         square: props.square,
-        border: props.border
-      })
+        border: props.border,
+      }),
     )
     const style = computed(() => ({
       '--varo-grid-columns': props.columnNum,
-      '--varo-grid-gutter': normalizeSize(props.gutter)
+      '--varo-grid-gutter': normalizeSize(props.gutter),
     }))
 
     return () =>
@@ -68,18 +70,18 @@ export const VGrid = defineComponent({
         'div',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          style: [attrs.style as StyleValue, style.value],
+          'class': [classes.value, attrs.class],
+          'style': [attrs.style as StyleValue, style.value],
           'data-border': String(props.border),
           'data-center': String(props.center),
           'data-clickable': String(props.clickable),
           'data-columns': String(props.columnNum),
           'data-direction': props.direction,
-          'data-square': String(props.square)
+          'data-square': String(props.square),
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const VGridItem = defineComponent({
@@ -93,12 +95,12 @@ export const VGridItem = defineComponent({
     to: String,
     span: {
       type: [Number, String] as PropType<number | string>,
-      default: 1
+      default: 1,
     },
     clickable: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['click'],
   setup(props, { attrs, emit, slots }) {
@@ -107,36 +109,43 @@ export const VGridItem = defineComponent({
     const direction = computed(() => grid?.direction ?? 'vertical')
     const tag = computed(() => (props.url || props.to ? 'a' : 'div'))
     const style = computed(() => ({
-      '--varo-grid-item-span': props.span
+      '--varo-grid-item-span': props.span,
     }))
+
+    function keydown(event: KeyboardEvent) {
+      if (!clickable.value || tag.value !== 'div' || (event.key !== 'Enter' && event.key !== ' ')) { return }
+      event.preventDefault()
+      emit('click', event)
+    }
 
     return () =>
       h(
         tag.value,
         {
           ...attrs,
-          class: ['varo-grid__item', attrs.class],
-          href: props.url ?? props.to,
-          role: clickable.value && tag.value === 'div' ? 'button' : undefined,
-          style: [attrs.style as StyleValue, style.value],
-          tabindex: clickable.value && tag.value === 'div' ? 0 : undefined,
+          'class': ['varo-grid__item', attrs.class],
+          'href': props.url ?? props.to,
+          'role': clickable.value && tag.value === 'div' ? 'button' : undefined,
+          'style': [attrs.style as StyleValue, style.value],
+          'tabindex': clickable.value && tag.value === 'div' ? 0 : undefined,
           'data-clickable': String(clickable.value),
           'data-direction': direction.value,
           'data-dot': String(props.dot),
           'data-span': String(props.span),
-          onClick: (event: MouseEvent) => emit('click', event)
+          'onClick': (event: MouseEvent) => emit('click', event),
+          'onKeydown': keydown,
         },
         [
           props.icon || slots.icon || props.badge || props.dot
             ? h('span', { class: 'varo-grid__icon-wrap' }, [
                 slots.icon?.() ?? (props.icon ? h('span', { class: 'varo-grid__icon' }, props.icon) : null),
                 props.badge != null ? h('sup', { class: 'varo-grid__badge' }, String(props.badge)) : null,
-                props.dot ? h('sup', { class: 'varo-grid__dot' }) : null
+                props.dot ? h('sup', { class: 'varo-grid__dot' }) : null,
               ])
             : null,
           slots.text?.() ?? (props.text ? h('span', { class: 'varo-grid__text' }, props.text) : null),
-          slots.default?.()
-        ]
+          slots.default?.(),
+        ],
       )
-  }
+  },
 })

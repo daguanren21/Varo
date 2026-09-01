@@ -47,6 +47,9 @@ const tabsActive = ref<string | number>('overview')
 const cellNotificationsEnabled = shallowRef(true)
 const cellLastAction = shallowRef<string>()
 const imageFit = shallowRef<'cover' | 'contain' | 'scale-down'>('cover')
+const gridLastAction = shallowRef<string>()
+const spaceDraft = shallowRef('all')
+const spaceApplied = shallowRef('all')
 
 const cellDemoCopy = computed(() => props.locale === 'en'
   ? {
@@ -106,6 +109,129 @@ const imageFitOptions = computed(() => props.locale === 'en'
       { value: 'contain' as const, label: '完整展示' },
       { value: 'scale-down' as const, label: '原始尺寸' },
     ])
+const dividerSampleCopy = computed(() => props.locale === 'en'
+  ? {
+      order: 'Order #1042',
+      paid: 'Paid',
+      goods: 'Items',
+      goodsAmount: '¥299',
+      discount: 'Discount',
+      discountAmount: '−¥20',
+      total: 'Total',
+      totalAmount: '¥279',
+      logistics: 'Delivery progress',
+      shipped: 'Shipped',
+      shippedHint: 'Departed Hangzhou center at 16:20',
+      arrival: 'Estimated delivery',
+      arrivalHint: 'Tomorrow before 18:00',
+      contact: 'Contact seller',
+      track: 'Track package',
+    }
+  : {
+      order: '订单 #1042',
+      paid: '已支付',
+      goods: '商品金额',
+      goodsAmount: '¥299',
+      discount: '优惠',
+      discountAmount: '−¥20',
+      total: '实付款',
+      totalAmount: '¥279',
+      logistics: '物流进度',
+      shipped: '已发货',
+      shippedHint: '16:20 已从杭州仓发出',
+      arrival: '预计送达',
+      arrivalHint: '明日 18:00 前',
+      contact: '联系商家',
+      track: '查看物流',
+    })
+const gridSampleCopy = computed(() => {
+  const labels = props.locale === 'en'
+    ? ['Orders', 'Delivery', 'Coupons', 'Favorites', 'Addresses', 'Support', 'Invoices', 'Settings']
+    : ['我的订单', '物流', '优惠券', '收藏', '收货地址', '客服', '发票', '设置']
+  const paths = [
+    'M5 7h14v12H5z M8 4h8v3 M8 11h8 M8 15h5',
+    'M3 7h11v9H3z M14 10h4l3 3v3h-7z M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4 M18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4',
+    'M4 7h16v10H4z M8 7a2 2 0 0 0 0 4 M16 13a2 2 0 0 0 0 4 M12 7v10',
+    'M12 20S4 15.5 4 9.5A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8 3.5C20 15.5 12 20 12 20Z',
+    'M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4',
+    'M4 13v-2a8 8 0 0 1 16 0v2 M4 13h3v6H4z M17 13h3v6h-3z M17 19c0 1-2 2-5 2',
+    'M6 3h9l3 3v15H6z M14 3v4h4 M9 12h6 M9 16h6',
+    'M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M19 12l2-1-2-4-2 .5L15 5l-.5-2h-5L9 5 7 7.5 5 7l-2 4 2 1 .5 2L4 16l3 3 2-.5 1 2.5h4l1-2.5 2 .5 3-3-1.5-2Z',
+  ]
+  return {
+    title: props.locale === 'en' ? 'Quick services' : '常用服务',
+    hint: props.locale === 'en' ? 'Account shortcuts' : '账户快捷入口',
+    opened: props.locale === 'en' ? 'Opened' : '已打开',
+    items: labels.map((label, index) => ({
+      label,
+      path: paths[index]!,
+      badge: index === 0 ? '2' : index === 2 ? '3' : undefined,
+      dot: index === 1,
+    })),
+  }
+})
+
+const gridActionMessage = computed(() =>
+  gridLastAction.value ? `${gridSampleCopy.value.opened}：${gridLastAction.value}` : '',
+)
+const layoutSampleCopy = computed(() => props.locale === 'en'
+  ? {
+      title: 'Business overview',
+      period: 'This week',
+      revenue: 'Revenue',
+      revenueValue: '¥86,420',
+      revenueTrend: '+12.8%',
+      orders: 'Orders',
+      ordersValue: '128',
+      visitors: 'Visitors',
+      visitorsValue: '2,846',
+      conversion: 'Conversion',
+      conversionValue: '4.5%',
+      refunds: 'Refunds',
+      refundsValue: '6',
+    }
+  : {
+      title: '经营概览',
+      period: '本周',
+      revenue: '成交金额',
+      revenueValue: '¥86,420',
+      revenueTrend: '+12.8%',
+      orders: '订单',
+      ordersValue: '128',
+      visitors: '访客',
+      visitorsValue: '2,846',
+      conversion: '转化率',
+      conversionValue: '4.5%',
+      refunds: '退款',
+      refundsValue: '6',
+    })
+const spaceSampleCopy = computed(() => {
+  const filters = props.locale === 'en'
+    ? [
+        { value: 'all', label: 'All' },
+        { value: 'pending', label: 'Pending payment' },
+        { value: 'shipping', label: 'To ship' },
+        { value: 'refund', label: 'Refunds' },
+      ]
+    : [
+        { value: 'all', label: '全部' },
+        { value: 'pending', label: '待付款' },
+        { value: 'shipping', label: '待发货' },
+        { value: 'refund', label: '退款/售后' },
+      ]
+  return {
+    title: props.locale === 'en' ? 'Order filters' : '订单筛选',
+    hint: props.locale === 'en' ? 'Wrap tags and stack full-width actions' : '标签自动换行，操作纵向填充',
+    apply: props.locale === 'en' ? 'Apply filters' : '应用筛选',
+    reset: props.locale === 'en' ? 'Reset' : '重置',
+    current: props.locale === 'en' ? 'Current' : '当前筛选',
+    filters,
+  }
+})
+
+const spaceAppliedLabel = computed(() =>
+  spaceSampleCopy.value.filters.find(item => item.value === spaceApplied.value)?.label ?? '',
+)
 
 const buttonSampleCopy = computed(() => props.locale === 'en'
   ? {
@@ -1093,90 +1219,207 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'divider'">
                     <section class="platform-demo__divider-demo">
-                      <component :is="runtime.Divider" />
-                      <component :is="runtime.Divider">
-                        {{ copy.dividerText }}
-                      </component>
-                      <component :is="runtime.Divider" dashed content-position="left">
-                        Dashed
-                      </component>
-                      <div class="platform-demo__divider-inline">
-                        <span>Text</span>
-                        <component :is="runtime.Divider" vertical />
-                        <span>Link</span>
-                      </div>
+                      <article class="platform-demo__divider-order">
+                        <header>
+                          <strong>{{ dividerSampleCopy.order }}</strong>
+                          <span>{{ dividerSampleCopy.paid }}</span>
+                        </header>
+                        <div class="platform-demo__divider-prices">
+                          <span>{{ dividerSampleCopy.goods }}</span>
+                          <strong>{{ dividerSampleCopy.goodsAmount }}</strong>
+                          <span>{{ dividerSampleCopy.discount }}</span>
+                          <strong class="platform-demo__divider-discount">
+                            {{ dividerSampleCopy.discountAmount }}
+                          </strong>
+                        </div>
+                        <component :is="runtime.Divider" :spacing="12" />
+                        <div class="platform-demo__divider-total">
+                          <strong>{{ dividerSampleCopy.total }}</strong>
+                          <strong>{{ dividerSampleCopy.totalAmount }}</strong>
+                        </div>
+
+                        <component
+                          :is="runtime.Divider"
+                          content-position="left"
+                          dashed
+                          :spacing="16"
+                        >
+                          {{ dividerSampleCopy.logistics }}
+                        </component>
+
+                        <div class="platform-demo__divider-timeline">
+                          <div>
+                            <span aria-hidden="true" />
+                            <p>
+                              <strong>{{ dividerSampleCopy.shipped }}</strong>
+                              <small>{{ dividerSampleCopy.shippedHint }}</small>
+                            </p>
+                          </div>
+                          <component :is="runtime.Divider" :spacing="8" />
+                          <div>
+                            <span aria-hidden="true" />
+                            <p>
+                              <strong>{{ dividerSampleCopy.arrival }}</strong>
+                              <small>{{ dividerSampleCopy.arrivalHint }}</small>
+                            </p>
+                          </div>
+                        </div>
+
+                        <footer>
+                          <button type="button">
+                            {{ dividerSampleCopy.contact }}
+                          </button>
+                          <component :is="runtime.Divider" vertical />
+                          <button type="button">
+                            {{ dividerSampleCopy.track }}
+                          </button>
+                        </footer>
+                      </article>
                     </section>
                   </template>
 
                   <template v-else-if="example === 'grid'">
                     <section class="platform-demo__grid-demo">
-                      <component :is="runtime.Grid" :column-num="4" :gutter="8" clickable>
+                      <article class="platform-demo__grid-service">
+                        <header>
+                          <div>
+                            <strong>{{ gridSampleCopy.title }}</strong>
+                            <span>{{ gridSampleCopy.hint }}</span>
+                          </div>
+                          <span>8</span>
+                        </header>
                         <component
-                          :is="runtime.GridItem"
-                          v-for="(item, index) in copy.gridItems"
-                          :key="item"
-                          icon="◎"
-                          :text="item"
-                          :badge="index === 1 ? '3' : undefined"
-                          :dot="index === 2"
-                        />
-                      </component>
+                          :is="runtime.Grid"
+                          :border="false"
+                          :column-num="4"
+                          :gutter="8"
+                          clickable
+                        >
+                          <component
+                            :is="runtime.GridItem"
+                            v-for="item in gridSampleCopy.items"
+                            :key="item.label"
+                            :aria-label="item.label"
+                            :badge="item.badge"
+                            :dot="item.dot"
+                            :text="item.label"
+                            @click="gridLastAction = item.label"
+                          >
+                            <template #icon>
+                              <svg
+                                class="platform-demo__grid-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                              >
+                                <path :d="item.path" />
+                              </svg>
+                            </template>
+                          </component>
+                        </component>
+                        <p
+                          v-if="gridActionMessage"
+                          class="platform-demo__grid-result"
+                          role="status"
+                        >
+                          {{ gridActionMessage }}
+                        </p>
+                      </article>
                     </section>
                   </template>
 
                   <template v-else-if="example === 'layout'">
                     <section class="platform-demo__layout-demo">
-                      <component :is="runtime.Row" :gutter="[8, 8]">
-                        <component :is="runtime.Col" :span="8">
-                          <span>span 8</span>
+                      <article class="platform-demo__layout-overview">
+                        <header>
+                          <strong>{{ layoutSampleCopy.title }}</strong>
+                          <span>{{ layoutSampleCopy.period }}</span>
+                        </header>
+                        <component :is="runtime.Row" :gutter="[8, 8]" align="stretch">
+                          <component :is="runtime.Col" :span="16">
+                            <article class="platform-demo__layout-card platform-demo__layout-card--primary">
+                              <span>{{ layoutSampleCopy.revenue }}</span>
+                              <strong>{{ layoutSampleCopy.revenueValue }}</strong>
+                              <small>{{ layoutSampleCopy.revenueTrend }}</small>
+                            </article>
+                          </component>
+                          <component :is="runtime.Col" :span="8">
+                            <article class="platform-demo__layout-card">
+                              <span>{{ layoutSampleCopy.orders }}</span>
+                              <strong>{{ layoutSampleCopy.ordersValue }}</strong>
+                            </article>
+                          </component>
+                          <component :is="runtime.Col" :span="8">
+                            <article class="platform-demo__layout-card">
+                              <span>{{ layoutSampleCopy.visitors }}</span>
+                              <strong>{{ layoutSampleCopy.visitorsValue }}</strong>
+                            </article>
+                          </component>
+                          <component :is="runtime.Col" :span="8">
+                            <article class="platform-demo__layout-card">
+                              <span>{{ layoutSampleCopy.conversion }}</span>
+                              <strong>{{ layoutSampleCopy.conversionValue }}</strong>
+                            </article>
+                          </component>
+                          <component :is="runtime.Col" :span="8">
+                            <article class="platform-demo__layout-card">
+                              <span>{{ layoutSampleCopy.refunds }}</span>
+                              <strong>{{ layoutSampleCopy.refundsValue }}</strong>
+                            </article>
+                          </component>
                         </component>
-                        <component :is="runtime.Col" :span="8">
-                          <span>span 8</span>
-                        </component>
-                        <component :is="runtime.Col" :span="8">
-                          <span>span 8</span>
-                        </component>
-                      </component>
-                      <component :is="runtime.Row" :gutter="[8, 8]">
-                        <component :is="runtime.Col" :span="6">
-                          <span>6</span>
-                        </component>
-                        <component :is="runtime.Col" :span="10" :offset="2">
-                          <span>offset 2</span>
-                        </component>
-                      </component>
-                      <component :is="runtime.Row" :gutter="[8, 8]" justify="space-between">
-                        <component :is="runtime.Col" :span="6">
-                          <span>left</span>
-                        </component>
-                        <component :is="runtime.Col" :span="6">
-                          <span>right</span>
-                        </component>
-                      </component>
+                      </article>
                     </section>
                   </template>
 
                   <template v-else-if="example === 'space'">
                     <section class="platform-demo__space-demo">
-                      <component :is="runtime.Space" :size="8" wrap>
-                        <component :is="runtime.Button" size="sm" type="button">
-                          A
+                      <article class="platform-demo__space-filter">
+                        <header>
+                          <strong>{{ spaceSampleCopy.title }}</strong>
+                          <span>{{ spaceSampleCopy.hint }}</span>
+                        </header>
+                        <component :is="runtime.Space" class="platform-demo__space-tags" :size="[8, 8]" wrap>
+                          <component
+                            :is="runtime.Button"
+                            v-for="filter in spaceSampleCopy.filters"
+                            :key="filter.value"
+                            :aria-pressed="spaceDraft === filter.value"
+                            size="sm"
+                            :tone="spaceDraft === filter.value ? 'primary' : 'default'"
+                            :variant="spaceDraft === filter.value ? 'soft' : 'outline'"
+                            @click="spaceDraft = filter.value"
+                          >
+                            {{ filter.label }}
+                          </component>
                         </component>
-                        <component :is="runtime.Button" size="sm" variant="outline" type="button">
-                          B
+                        <component
+                          :is="runtime.Space"
+                          class="platform-demo__space-actions"
+                          direction="vertical"
+                          fill
+                          :size="[8, 8]"
+                        >
+                          <component
+                            :is="runtime.Button"
+                            size="sm"
+                            @click="spaceApplied = spaceDraft"
+                          >
+                            {{ spaceSampleCopy.apply }}
+                          </component>
+                          <component
+                            :is="runtime.Button"
+                            size="sm"
+                            tone="default"
+                            variant="outline"
+                            @click="spaceDraft = 'all'; spaceApplied = 'all'"
+                          >
+                            {{ spaceSampleCopy.reset }}
+                          </component>
                         </component>
-                        <component :is="runtime.Button" size="sm" variant="ghost" type="button">
-                          C
-                        </component>
-                      </component>
-                      <component :is="runtime.Space" direction="vertical" :size="[8, 10]" fill>
-                        <component :is="runtime.Button" size="sm" type="button">
-                          Vertical
-                        </component>
-                        <component :is="runtime.Button" size="sm" variant="outline" type="button">
-                          Fill
-                        </component>
-                      </component>
+                        <p role="status">
+                          {{ spaceSampleCopy.current }}：{{ spaceAppliedLabel }}
+                        </p>
+                      </article>
                     </section>
                   </template>
 
@@ -2704,15 +2947,15 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   margin: var(--varo-divider-spacing, 8px) 0;
-  font-size: 0.82rem;
-  color: var(--varo-divider-text-color, var(--vp-c-text-2));
+  font-size: 0.76rem;
+  color: var(--varo-text-tertiary);
 }
 
 :deep(.varo-divider::before),
 :deep(.varo-divider::after) {
   flex: 1;
   content: '';
-  border-top: 1px solid var(--varo-divider-line-color, rgb(148 163 184 / 34%));
+  border-top: 1px solid var(--varo-divider-line-color, var(--varo-border-light));
 }
 
 :deep(.varo-divider[data-dashed='true']::before),
@@ -2721,20 +2964,20 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-divider[data-content-position='left']::before) {
-  max-width: 10%;
+  max-width: 8%;
 }
 
 :deep(.varo-divider[data-content-position='right']::after) {
-  max-width: 10%;
+  max-width: 8%;
 }
 
 :deep(.varo-divider[data-vertical='true']) {
   display: inline-block;
   width: 1px;
-  height: 1em;
-  margin: 0 4px;
+  height: 16px;
+  margin: 0 14px;
   vertical-align: middle;
-  background: var(--varo-divider-line-color, rgb(148 163 184 / 44%));
+  background: var(--varo-divider-line-color, var(--varo-border));
 }
 
 :deep(.varo-divider[data-vertical='true']::before),
@@ -2743,7 +2986,172 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-divider__text) {
-  padding: 0 12px;
+  padding: 0 10px;
+}
+
+.platform-demo__divider-order {
+  display: grid;
+  width: 100%;
+  padding: 16px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__divider-order > header,
+.platform-demo__divider-total,
+.platform-demo__divider-prices {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  align-items: center;
+}
+
+.platform-demo__divider-order > header {
+  margin-bottom: 12px;
+}
+
+.platform-demo__divider-order > header > strong,
+.platform-demo__divider-total strong {
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__divider-order > header > span {
+  padding: 4px 7px;
+  font-size: 0.68rem;
+  font-weight: 650;
+  color: var(--varo-success);
+  background: var(--varo-success-soft);
+  border-radius: 999px;
+}
+
+.platform-demo__divider-prices {
+  font-size: 0.78rem;
+  color: var(--varo-text-secondary);
+}
+
+.platform-demo__divider-prices strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-text-primary);
+  text-align: right;
+}
+
+.platform-demo__divider-prices .platform-demo__divider-discount {
+  color: var(--varo-success);
+}
+
+.platform-demo__divider-total {
+  font-size: 0.86rem;
+}
+
+.platform-demo__divider-total strong:last-child {
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-danger);
+}
+
+.platform-demo__divider-timeline {
+  display: grid;
+}
+
+.platform-demo__divider-timeline > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.platform-demo__divider-timeline > div > span {
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  background: var(--varo-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px var(--varo-primary-soft);
+}
+
+.platform-demo__divider-timeline p {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.platform-demo__divider-timeline strong {
+  font-size: 0.78rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__divider-timeline small {
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__divider-order > footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 12px;
+  margin-top: 16px;
+  border-top: 1px solid var(--varo-border-light);
+}
+
+.platform-demo__divider-order > footer button {
+  min-height: 36px;
+  padding: 0 8px;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--varo-primary);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.platform-demo__divider-order > footer button:focus-visible {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
+}
+
+.platform-demo__grid-service {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__grid-service > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.platform-demo__grid-service > header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.platform-demo__grid-service > header strong {
+  font-size: 0.9rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__grid-service > header span {
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__grid-service > header > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-weight: 700;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 8px;
 }
 
 :deep(.varo-grid) {
@@ -2756,15 +3164,36 @@ onBeforeUnmount(() => {
   position: relative;
   box-sizing: border-box;
   display: grid;
-  gap: 8px;
+  gap: 7px;
   justify-items: center;
-  min-height: 72px;
-  padding: 12px 6px;
-  color: var(--vp-c-text-1);
+  min-width: 0;
+  min-height: 76px;
+  padding: 11px 4px;
+  color: var(--varo-text-primary);
   text-align: center;
   text-decoration: none;
-  background: color-mix(in srgb, var(--varo-surface-strong) 88%, transparent);
-  border-radius: 14px;
+  outline: none;
+  background: var(--varo-fill-light);
+  border: 1px solid transparent;
+  border-radius: 13px;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+:deep(.varo-grid__item[data-clickable='true']:hover) {
+  background: var(--varo-primary-soft);
+  border-color: color-mix(in srgb, var(--varo-primary) 24%, transparent);
+}
+
+:deep(.varo-grid__item[data-clickable='true']:active) {
+  transform: scale(0.97);
+}
+
+:deep(.varo-grid__item[data-clickable='true']:focus-visible) {
+  border-color: var(--varo-primary);
+  box-shadow: 0 0 0 2px var(--varo-ring);
 }
 
 :deep(.varo-grid__icon-wrap) {
@@ -2772,27 +3201,37 @@ onBeforeUnmount(() => {
   display: inline-flex;
 }
 
-:deep(.varo-grid__icon) {
-  font-size: 1.1rem;
-  color: var(--vp-c-brand-1);
+.platform-demo__grid-icon {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: var(--varo-primary);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 :deep(.varo-grid__text) {
-  font-size: 0.75rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.7rem;
+  white-space: nowrap;
 }
 
 :deep(.varo-grid__badge),
 :deep(.varo-grid__dot) {
   position: absolute;
-  top: -8px;
-  right: -12px;
+  top: -7px;
+  right: -10px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   line-height: 16px;
   color: var(--varo-primary-foreground);
   background: var(--varo-danger);
+  border: 2px solid var(--varo-card-solid);
   border-radius: 999px;
 }
 
@@ -2803,10 +3242,18 @@ onBeforeUnmount(() => {
   padding: 0;
 }
 
+.platform-demo__grid-result {
+  min-height: 18px;
+  margin: -4px 0 0;
+  font-size: 0.7rem;
+  color: var(--varo-text-secondary);
+}
+
 :deep(.varo-row) {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--varo-row-gutter-y, 0) var(--varo-row-gutter-x, 0);
+  row-gap: var(--varo-row-gutter-y, 0);
+  margin-inline: calc(var(--varo-row-gutter-x, 0px) / -2);
 }
 
 :deep(.varo-row[data-justify='center']) {
@@ -2817,22 +3264,93 @@ onBeforeUnmount(() => {
   justify-content: space-between;
 }
 
+:deep(.varo-row[data-align='middle']) {
+  align-items: center;
+}
+
+:deep(.varo-row[data-align='bottom']) {
+  align-items: flex-end;
+}
+
+:deep(.varo-row[data-align='stretch']) {
+  align-items: stretch;
+}
+
 :deep(.varo-col) {
   box-sizing: border-box;
   flex: 0 0 calc(var(--varo-col-span, 24) / 24 * 100%);
   max-width: calc(var(--varo-col-span, 24) / 24 * 100%);
+  padding-inline: calc(var(--varo-row-gutter-x, 0px) / 2);
   margin-left: calc(var(--varo-col-offset, 0) / 24 * 100%);
 }
 
-:deep(.varo-col > span) {
-  display: block;
-  padding: 10px 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--demo-brand);
-  text-align: center;
-  background: color-mix(in srgb, var(--demo-brand) 12%, transparent);
-  border-radius: 12px;
+.platform-demo__layout-overview {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__layout-overview > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.platform-demo__layout-overview > header strong {
+  font-size: 0.9rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__layout-overview > header span {
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__layout-card {
+  display: grid;
+  gap: 4px;
+  align-content: center;
+  min-height: 78px;
+  padding: 11px;
+  background: var(--varo-fill-light);
+  border: 1px solid transparent;
+  border-radius: 13px;
+}
+
+.platform-demo__layout-card > span {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__layout-card > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.96rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-text-primary);
+  white-space: nowrap;
+}
+
+.platform-demo__layout-card > small {
+  font-size: 0.66rem;
+  font-weight: 650;
+  color: var(--varo-success);
+}
+
+.platform-demo__layout-card--primary {
+  background: var(--varo-primary-soft);
+  border-color: color-mix(in srgb, var(--varo-primary) 26%, transparent);
+}
+
+.platform-demo__layout-card--primary > strong {
+  font-size: 1.1rem;
+  color: var(--varo-primary);
 }
 
 :deep(.varo-space) {
@@ -2852,6 +3370,50 @@ onBeforeUnmount(() => {
 
 :deep(.varo-space[data-fill='true'] > *) {
   width: 100%;
+}
+
+.platform-demo__space-filter {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__space-filter > header {
+  display: grid;
+  gap: 3px;
+}
+
+.platform-demo__space-filter > header strong {
+  font-size: 0.9rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__space-filter > header span {
+  font-size: 0.7rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__space-filter :deep(.varo-space[data-direction='vertical']) {
+  padding-top: 14px;
+  border-top: 1px solid var(--varo-border-light);
+}
+
+.platform-demo__space-tags :deep(.varo-button) {
+  width: auto;
+}
+
+.platform-demo__space-actions :deep(.varo-button) {
+  width: 100%;
+}
+
+.platform-demo__space-filter > p {
+  margin: -4px 0 0;
+  font-size: 0.7rem;
+  color: var(--varo-text-secondary);
 }
 
 .platform-demo__sticky-demo {

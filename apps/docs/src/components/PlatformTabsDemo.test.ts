@@ -118,6 +118,104 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.text()).not.toContain('Vant')
     expect(wrapper.text()).not.toContain('NutUI')
   })
+  it('presents Divider through a realistic order summary', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'divider',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__divider-order').text()).toContain('订单 #1042')
+    expect(wrapper.get('.platform-demo__divider-order').text()).toContain('实付款')
+    expect(wrapper.get('.platform-demo__divider-order').text()).toContain('物流进度')
+
+    const dividers = wrapper.findAll('.varo-divider')
+    expect(dividers).toHaveLength(4)
+    expect(dividers.filter(node => node.attributes('aria-orientation') === 'horizontal')).toHaveLength(3)
+    expect(dividers.filter(node => node.attributes('aria-orientation') === 'vertical')).toHaveLength(1)
+    expect(dividers.find(node => node.attributes('data-dashed') === 'true')?.text()).toBe('物流进度')
+    expect(wrapper.findAll('.platform-demo__divider-order footer button')).toHaveLength(2)
+
+    await wrapper.findAll('.platform-demo__platform-tab')[1]!.trigger('click')
+    expect(wrapper.get('.platform-demo__platform-tab[data-active="true"]').text()).toBe('小程序')
+    expect(wrapper.findAll('.varo-divider')).toHaveLength(4)
+  })
+  it('presents Grid as keyboard-accessible account shortcuts', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'grid',
+        locale: 'zh',
+      },
+    })
+
+    const items = wrapper.findAll('.varo-grid__item')
+    expect(items).toHaveLength(8)
+    expect(wrapper.findAll('.platform-demo__grid-icon')).toHaveLength(8)
+    expect(wrapper.findAll('.varo-grid__badge')).toHaveLength(2)
+    expect(wrapper.findAll('.varo-grid__dot')).toHaveLength(1)
+    expect(items.every(item => item.attributes('role') === 'button')).toBe(true)
+    expect(items.every(item => item.attributes('tabindex') === '0')).toBe(true)
+
+    await items[0]!.trigger('keydown', { key: 'Enter' })
+    expect(wrapper.get('.platform-demo__grid-result').text()).toBe('已打开：我的订单')
+    await items[1]!.trigger('keydown', { key: ' ' })
+    expect(wrapper.get('.platform-demo__grid-result').text()).toBe('已打开：物流')
+  })
+  it('presents Layout as a 24-column business overview', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'layout',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__layout-overview').text()).toContain('经营概览')
+    expect(wrapper.findAll('.varo-row')).toHaveLength(1)
+    expect(wrapper.findAll('.varo-col').map(col => col.attributes('data-span'))).toEqual(['16', '8', '8', '8', '8'])
+    expect(wrapper.findAll('.platform-demo__layout-card')).toHaveLength(5)
+    expect(wrapper.findAll('.platform-demo__layout-card--primary')).toHaveLength(1)
+
+    await wrapper.findAll('.platform-demo__platform-tab')[1]!.trigger('click')
+    expect(wrapper.get('.platform-demo__platform-tab[data-active="true"]').text()).toBe('小程序')
+    expect(wrapper.findAll('.varo-col')).toHaveLength(5)
+  })
+  it('presents Space as wrapped filters and stacked full-width actions', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'space',
+        locale: 'zh',
+      },
+    })
+
+    const spaces = wrapper.findAll('.varo-space')
+    const buttons = wrapper.findAll('.platform-demo__space-filter .varo-button')
+    expect(spaces).toHaveLength(2)
+    expect(spaces[0]!.attributes('data-wrap')).toBe('true')
+    expect(spaces[1]!.attributes('data-direction')).toBe('vertical')
+    expect(spaces[1]!.attributes('data-fill')).toBe('true')
+    expect(buttons).toHaveLength(6)
+    expect(wrapper.get('.platform-demo__space-filter [role="status"]').text()).toBe('当前筛选：全部')
+
+    await buttons[2]!.trigger('click')
+    expect(buttons[2]!.attributes('aria-pressed')).toBe('true')
+    await buttons[4]!.trigger('click')
+    expect(wrapper.get('.platform-demo__space-filter [role="status"]').text()).toBe('当前筛选：待发货')
+    await buttons[5]!.trigger('click')
+    expect(wrapper.get('.platform-demo__space-filter [role="status"]').text()).toBe('当前筛选：全部')
+  })
 
   it('presents Cell as a compact, interactive settings list', async () => {
     const wrapper = mount(PlatformTabsDemo, {
