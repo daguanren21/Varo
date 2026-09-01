@@ -6,12 +6,12 @@
   "exportName": "VProgress",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "themes/base"
@@ -23,7 +23,7 @@
       "to": "src/components/ui/progress.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/progress/weapp-vite.vue",
       "to": "src/components/ui/v-progress.vue"
     }

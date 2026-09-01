@@ -12,7 +12,7 @@ import {
 
 const root = resolve(__dirname, '../../..')
 const registryGroups = ['blocks', 'components', 'themes', 'utils'] as const
-const targets: RegistryTarget[] = ['h5', 'weapp-vite']
+const targets: RegistryTarget[] = ['h5', 'weapp']
 const readText = (path: string): string => readFileSync(resolve(root, path), 'utf8')
 const readJson = <T>(path: string): T => JSON.parse(readText(path)) as T
 const fileExists = (path: string): boolean => existsSync(resolve(root, path))
@@ -57,14 +57,14 @@ function createValidRegistryItem(): RegistryItem {
         to: 'src/components/ui/select.ts',
       },
       {
-        target: 'weapp-vite',
+        target: 'weapp',
         from: 'registry/components/select/select.ts',
         to: 'src/components/ui/select.ts',
       },
     ],
     name: 'select',
     registryDependencies: ['themes/base'],
-    targets: ['h5', 'weapp-vite'],
+    targets: ['h5', 'weapp'],
     title: 'Select',
     type: 'component',
   }
@@ -118,7 +118,7 @@ describe('registry catalog', () => {
       targetDependencies?: Partial<Record<RegistryTarget, string[]>>
       targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
     }>('registry/components/agent-ui/registry.json')
-    const weappFiles = manifest.files.filter(file => file.target === 'weapp-vite')
+    const weappFiles = manifest.files.filter(file => file.target === 'weapp')
     const advancedComponents = [
       'AgentMessageScroller',
       'AgentCodeBlock',
@@ -140,9 +140,9 @@ describe('registry catalog', () => {
       'AgentFineTune',
     ]
 
-    expect(manifest.targetRegistryDependencies?.['weapp-vite']).toContain('utils/cn')
+    expect(manifest.targetRegistryDependencies?.['weapp']).toContain('utils/cn')
     expect(manifest.targetDependencies?.h5).toContain('vue')
-    expect(manifest.targetDependencies?.['weapp-vite']).toContain('wevu')
+    expect(manifest.targetDependencies?.['weapp']).toContain('wevu')
     expect(weappFiles.some(file => file.to.endsWith('/advanced.ts'))).toBe(false)
     expect(weappFiles.some(file => file.to.endsWith('/agent-advanced.css'))).toBe(false)
     advancedComponents.forEach((name) => {
@@ -162,10 +162,10 @@ describe('registry catalog', () => {
       const manifest = readJson<RegistryItem & {
         targetDependencies?: Partial<Record<RegistryTarget, string[]>>
       }>(`registry/blocks/${name}/registry.json`)
-      const weappFiles = manifest.files.filter(file => file.target === 'weapp-vite' && file.from.endsWith('.vue'))
+      const weappFiles = manifest.files.filter(file => file.target === 'weapp' && file.from.endsWith('.vue'))
 
       expect(manifest.targetDependencies?.h5, name).toContain('vue')
-      expect(manifest.targetDependencies?.['weapp-vite'], name).toContain('wevu')
+      expect(manifest.targetDependencies?.['weapp'], name).toContain('wevu')
       weappFiles.forEach((file) => {
         expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
       })
@@ -174,13 +174,13 @@ describe('registry catalog', () => {
   it('keeps one shadcn Form API behind target-owned renderers', () => {
     const form = readJson<RegistryItem>('registry/components/form/registry.json')
     const h5Files = form.files.filter(file => file.target === 'h5')
-    const weappFiles = form.files.filter(file => file.target === 'weapp-vite')
+    const weappFiles = form.files.filter(file => file.target === 'weapp')
 
     expect(form.targetDependencies).toEqual({
-      'h5': ['vue'],
-      'weapp-vite': ['wevu'],
+      h5: ['vue'],
+      weapp: ['wevu'],
     })
-    expect(form.targetRegistryDependencies?.['weapp-vite']).toContain('utils/primitives')
+    expect(form.targetRegistryDependencies?.['weapp']).toContain('utils/primitives')
     expect(h5Files.map(file => file.to)).toEqual(['src/components/ui/form.ts'])
     expect(weappFiles.map(file => file.to)).toEqual([
       'src/components/ui/form.ts',
@@ -202,11 +202,11 @@ describe('registry catalog', () => {
   it('keeps one shadcn Tabs API behind target-owned renderers', () => {
     const tabs = readJson<RegistryItem>('registry/components/tabs/registry.json')
     const h5Files = tabs.files.filter(file => file.target === 'h5')
-    const weappFiles = tabs.files.filter(file => file.target === 'weapp-vite')
+    const weappFiles = tabs.files.filter(file => file.target === 'weapp')
 
     expect(tabs.targetDependencies).toEqual({
-      'h5': ['vue'],
-      'weapp-vite': ['wevu'],
+      h5: ['vue'],
+      weapp: ['wevu'],
     })
     expect(h5Files.map(file => file.to)).toEqual(['src/components/ui/tabs.ts'])
     expect(weappFiles.map(file => file.to)).toEqual([
@@ -253,10 +253,10 @@ describe('registry catalog', () => {
       const manifest = readJson<RegistryItem & {
         targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
       }>(`registry/components/${name}/registry.json`)
-      const weappSource = manifest.files.find(file => file.target === 'weapp-vite' && file.from.endsWith('.vue'))
+      const weappSource = manifest.files.find(file => file.target === 'weapp' && file.from.endsWith('.vue'))
       const registryDependencies = [
         ...manifest.registryDependencies,
-        ...(manifest.targetRegistryDependencies?.['weapp-vite'] ?? []),
+        ...(manifest.targetRegistryDependencies?.['weapp'] ?? []),
       ]
 
       expect(manifest.dependencies, name).toContain('@varo-ui/headless')
@@ -307,14 +307,14 @@ describe('registry catalog', () => {
       }
 
       if (isBaseKitComponent) {
-        const weappFile = item.files.find(file => file.target === 'weapp-vite' && file.to.endsWith('.vue'))
+        const weappFile = item.files.find(file => file.target === 'weapp' && file.to.endsWith('.vue'))
         expect(item.targets).toEqual(targets)
         expect(weappFile?.from.endsWith('.vue')).toBe(true)
         expect(readText(weappFile!.from)).toContain('"styleIsolation": "apply-shared"')
       }
       else if (supportsWeapp) {
         const weappFile = item.files.find(
-          file => file.target === 'weapp-vite' && file.to === `src/components/ui/${name}.ts`,
+          file => file.target === 'weapp' && file.to === `src/components/ui/${name}.ts`,
         )
         expect(item.targets).toEqual(targets)
         expect(weappFile, `${name} must expose its weapp source`).toBeDefined()
@@ -370,13 +370,13 @@ describe('registry catalog', () => {
 
     expect(primitives.dependencies).toEqual(['@varo-ui/headless'])
     expect(primitives.targetDependencies).toEqual({
-      'h5': ['@varo-ui/h5', 'vue'],
-      'weapp-vite': ['@varo-ui/weapp', 'wevu'],
+      h5: ['@varo-ui/h5', 'vue'],
+      weapp: ['@varo-ui/weapp', 'wevu'],
     })
     expect(cn.dependencies).toEqual(['clsx'])
     expect(cn.targetDependencies).toEqual({
-      'h5': ['tailwind-merge'],
-      'weapp-vite': ['@weapp-tailwindcss/merge'],
+      h5: ['tailwind-merge'],
+      weapp: ['@weapp-tailwindcss/merge'],
     })
     expect(readText('registry/utils/cn/weapp-vite.ts')).toContain('from \'@weapp-tailwindcss/merge\'')
   })
@@ -387,18 +387,26 @@ describe('registry validation', () => {
     ['missing docs', omitRegistryField('docs'), ['docs must be an absolute docs route']],
     ['non-string docs', { ...createValidRegistryItem(), docs: 42 }, ['docs must be an absolute docs route']],
     ['missing targets', omitRegistryField('targets'), ['targets must be an array']],
-    ['non-array targets', { ...createValidRegistryItem(), targets: 'weapp-vite' }, ['targets must be an array']],
+    ['non-array targets', { ...createValidRegistryItem(), targets: 'weapp' }, ['targets must be an array']],
+    [
+      'legacy target',
+      {
+        ...createValidRegistryItem(),
+        targets: ['h5', 'weapp', 'weapp-vite'] as unknown as RegistryTarget[],
+      },
+      ['unsupported target: weapp-vite'],
+    ],
     ['missing files', omitRegistryField('files'), ['files must be an array']],
     ['non-array files', { ...createValidRegistryItem(), files: 'select.ts' }, ['files must be an array']],
     [
       'missing target file',
       { ...createValidRegistryItem(), files: createValidRegistryItem().files.slice(0, 1) },
-      ['target has no files: weapp-vite'],
+      ['target has no files: weapp'],
     ],
     [
       'undeclared file target',
       { ...createValidRegistryItem(), targets: ['h5'] },
-      ['file target is not declared by item: weapp-vite'],
+      ['file target is not declared by item: weapp'],
     ],
     [
       'invalid target dependencies',
@@ -407,7 +415,7 @@ describe('registry validation', () => {
     ],
     [
       'malformed file entry',
-      { ...createValidRegistryItem(), files: [{ target: 'weapp-vite' }] },
+      { ...createValidRegistryItem(), files: [{ target: 'weapp' }] },
       ['file.from must start with registry/: undefined', 'file.to must start with src/: undefined'],
     ],
     [

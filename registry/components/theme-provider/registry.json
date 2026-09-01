@@ -5,10 +5,10 @@
   "description": "Reactive Weapp page provider that binds Varo theme tokens as inherited CSS variables.",
   "exportName": "VThemeProvider",
   "targets": [
-    "weapp-vite"
+    "weapp"
   ],
   "targetDependencies": {
-    "weapp-vite": [
+    "weapp": [
       "@varo-ui/theme",
       "wevu"
     ]
@@ -18,7 +18,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/theme-provider/weapp-vite.vue",
       "to": "src/components/ui/v-theme-provider.vue"
     }

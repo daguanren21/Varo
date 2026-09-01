@@ -10,7 +10,7 @@
 
 ```bash
 pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 ```
 
 该组件属于 `components/agent-ui` 套件，CLI 会复制真实源码，不是运行时黑盒。
@@ -52,9 +52,9 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 
 ## 平台差异
 
-| Target     | Import                               |
-| ---------- | ------------------------------------ |
-| H5         | `@/components/blocks/agent-chat.vue` |
-| weapp-vite | `@/components/blocks/agent-chat.vue` |
+| Target | Import                               |
+| ------ | ------------------------------------ |
+| H5     | `@/components/blocks/agent-chat.vue` |
+| weapp  | `@/components/blocks/agent-chat.vue` |
 
 组件 API 在两个目标保持一致；DOM/WXML、调度和原生事件由目标实现负责。

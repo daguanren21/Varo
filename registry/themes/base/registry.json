@@ -3,7 +3,7 @@
   "type": "theme",
   "title": "Varo Base Theme",
   "description": "Cross-platform component styles and design tokens for copied Varo components.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [],
   "registryDependencies": [],
   "files": [
@@ -13,7 +13,7 @@
       "to": "src/styles/varo.css"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/themes/base/weapp-vite.css",
       "to": "src/styles/varo.css"
     }

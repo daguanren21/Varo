@@ -6,7 +6,7 @@
   "exportName": "VButton",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -16,7 +16,7 @@
     "h5": [
       "vue"
     ],
-    "weapp-vite": [
+    "weapp": [
       "wevu"
     ]
   },
@@ -32,7 +32,7 @@
       "to": "src/components/ui/button.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/button/weapp-vite.vue",
       "to": "src/components/ui/v-button.vue"
     }

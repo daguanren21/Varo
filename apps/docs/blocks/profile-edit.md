@@ -4,12 +4,12 @@
 
 ## Registry
 
-- Targets: `h5`、`weapp-vite`
+- Targets: `h5`、`weapp`
 - Dependencies: `components/button`、`components/input`、`components/select`、`utils/cn`
 - File: `src/components/blocks/profile-edit.vue`
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
 pnpm dlx @varo-ui/cli add --target h5 blocks/profile-edit
 ```
 

@@ -3,10 +3,10 @@
   "type": "block",
   "title": "Retail Checkout",
   "description": "Controlled checkout block with delivery address, cart lines, coupons, invoice entry, totals, discount, and submit action.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/retail",
@@ -17,7 +17,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/retail-checkout/weapp-vite.vue",
       "to": "src/components/blocks/retail-checkout.vue"
     }

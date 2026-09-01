@@ -49,7 +49,7 @@ The plugin appends `page { --varo-ui-* }` declarations to the app stylesheet.
 Install the editable provider:
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite components/theme-provider
+pnpm dlx @varo-ui/cli add --target weapp components/theme-provider
 ```
 
 Bind a reactive theme at each page root:

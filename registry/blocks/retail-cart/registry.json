@@ -3,10 +3,10 @@
   "type": "block",
   "title": "Retail Cart",
   "description": "Controlled retail cart block with selection, product previews, quantity updates, totals, empty state, and checkout action.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/retail",
@@ -19,7 +19,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/retail-cart/weapp-vite.vue",
       "to": "src/components/blocks/retail-cart.vue"
     }

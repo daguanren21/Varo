@@ -3,10 +3,10 @@
   "type": "block",
   "title": "Retail Product Detail",
   "description": "Controlled product detail block with image, tags, pricing, stock quantity, cart indicator, add-to-cart, and buy actions.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/retail",
@@ -18,7 +18,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/retail-product-detail/weapp-vite.vue",
       "to": "src/components/blocks/retail-product-detail.vue"
     }

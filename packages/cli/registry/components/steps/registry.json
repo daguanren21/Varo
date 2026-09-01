@@ -6,7 +6,7 @@
   "exportName": "VSteps",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -21,7 +21,7 @@
       "to": "src/components/ui/steps.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/steps/steps.ts",
       "to": "src/components/ui/steps.ts"
     }

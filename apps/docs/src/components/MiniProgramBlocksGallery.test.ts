@@ -41,7 +41,7 @@ describe('MiniProgramBlocksGallery', () => {
     const card = wrapper.get('[data-block=\"login-form\"]')
 
     expect(card.get('.varo-block-card__command code').text()).toContain(
-      'add --target weapp-vite blocks/login-form',
+      'add --target weapp blocks/login-form',
     )
     expect(card.get('summary').text()).toContain('查看代码与使用方法')
     expect(card.get('pre code').text()).toContain('from \'@/components/blocks/login-form.vue\'')

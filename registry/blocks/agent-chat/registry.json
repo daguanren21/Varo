@@ -5,14 +5,14 @@
   "description": "Production Agent conversation shell with history, incremental event rendering, approvals, response actions, and prompt composition.",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/ai"
   ],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "components/agent-ui",
@@ -25,7 +25,7 @@
       "to": "src/components/blocks/agent-chat.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/agent-chat/weapp-vite.vue",
       "to": "src/components/blocks/agent-chat.vue"
     }

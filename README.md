@@ -23,7 +23,7 @@ Varo is a registry-first component system for Vue 3 mobile H5 applications and `
 - **Agent UI:** 36 dual-target components plus the Agent Chat Block for conversations, streaming, tools, approvals, code, diffs, citations, image generation, tables, workflows, and workspaces
 - **Dual-target Blocks:** Login Form, Profile Card, Profile Edit, Product List, Order Filter, and Agent Chat
 - **AI commerce demo:** real incremental events, reasoning and tool states, human approval for purchases and returns, order history, and address configuration
-- **Registry targets:** `h5` and `weapp-vite`
+- **Registry targets:** `h5` and `weapp`
 - **Mini-program styling:** Tailwind CSS v4, [`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss), and `@weapp-tailwindcss/merge`
 - **Mini-program debugging:** built-in MCP, DevTools console bridge, Automator screenshots, and runtime smoke checks
 
@@ -39,24 +39,24 @@ Varo is a registry-first component system for Vue 3 mobile H5 applications and `
 
 ```bash
 # Native mini-program SFCs
-pnpm dlx @varo-ui/cli add --target weapp-vite button input card
+pnpm dlx @varo-ui/cli add --target weapp button input card
 
 # H5 source
 pnpm dlx @varo-ui/cli add --target h5 button input card
 
 # Dual-target business Block
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo-ui/cli add --target weapp blocks/product-list
 
 # Dual-target Agent Chat Block
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 
 # Agent UI suite
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 
 # High-consensus mini-program components
-pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp action-sheet collapse dialog list notice-bar popover skeleton steps
 ```
 
 The CLI does not overwrite existing files by default. Use `--force` only after confirming that local customizations may be replaced.

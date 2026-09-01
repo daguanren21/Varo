@@ -1,4 +1,4 @@
-export type RegistryTarget = 'h5' | 'weapp-vite'
+export type RegistryTarget = 'h5' | 'weapp'
 export type RegistryItemType = 'component' | 'block' | 'hook' | 'util' | 'theme' | 'template'
 
 export interface RegistryFile {
@@ -39,7 +39,7 @@ export const baseKitPhase1 = [
   'progress',
   'select',
   'switch',
-  'tag'
+  'tag',
 ] as const
 
 export const componentCatalogV01 = [
@@ -98,7 +98,7 @@ export const componentCatalogV01 = [
   'tag',
   'textarea',
   'toast',
-  'uploader'
+  'uploader',
 ] as const
 
 export const weappComponentCatalogV01 = [
@@ -146,20 +146,20 @@ export const weappComponentCatalogV01 = [
   'tabs',
   'tag',
   'textarea',
-  'toast'
+  'toast',
 ] as const
 
-const allowedTargets: RegistryTarget[] = ['h5', 'weapp-vite']
+const allowedTargets: RegistryTarget[] = ['h5', 'weapp']
 const allowedTypes: RegistryItemType[] = ['component', 'block', 'hook', 'util', 'theme', 'template']
 
 export function validateRegistryItem(item: RegistryItem): string[] {
   const errors: string[] = []
   const registryItem = item as Partial<Record<keyof RegistryItem, unknown>>
 
-  if (!item.name) errors.push('name is required')
-  if (!item.title) errors.push('title is required')
-  if (!item.description) errors.push('description is required')
-  if (!allowedTypes.includes(item.type)) errors.push(`unsupported type: ${item.type}`)
+  if (!item.name) { errors.push('name is required') }
+  if (!item.title) { errors.push('title is required') }
+  if (!item.description) { errors.push('description is required') }
+  if (!allowedTypes.includes(item.type)) { errors.push(`unsupported type: ${item.type}`) }
 
   if (typeof registryItem.docs !== 'string' || !registryItem.docs.startsWith('/')) {
     errors.push('docs must be an absolute docs route')
@@ -168,23 +168,25 @@ export function validateRegistryItem(item: RegistryItem): string[] {
   const targets = registryItem.targets
   if (!Array.isArray(targets)) {
     errors.push('targets must be an array')
-  } else {
-    if (targets.length === 0) errors.push('targets must not be empty')
+  }
+  else {
+    if (targets.length === 0) { errors.push('targets must not be empty') }
 
     targets.forEach((target) => {
-      if (!allowedTargets.includes(target as RegistryTarget)) errors.push(`unsupported target: ${target}`)
+      if (!allowedTargets.includes(target as RegistryTarget)) { errors.push(`unsupported target: ${target}`) }
     })
   }
 
   const files = registryItem.files
   if (!Array.isArray(files)) {
     errors.push('files must be an array')
-  } else {
-    if (files.length === 0) errors.push('files must not be empty')
+  }
+  else {
+    if (files.length === 0) { errors.push('files must not be empty') }
 
     files.forEach((file) => {
-      const registryFile =
-        file !== null && typeof file === 'object' ? (file as Partial<Record<keyof RegistryFile, unknown>>) : {}
+      const registryFile
+        = file !== null && typeof file === 'object' ? (file as Partial<Record<keyof RegistryFile, unknown>>) : {}
 
       if (!allowedTargets.includes(registryFile.target as RegistryTarget)) {
         errors.push(`unsupported file target: ${registryFile.target}`)
@@ -202,7 +204,7 @@ export function validateRegistryItem(item: RegistryItem): string[] {
 
     if (Array.isArray(targets)) {
       targets.forEach((target) => {
-        if (!files.some((file) => file?.target === target)) {
+        if (!files.some(file => file?.target === target)) {
           errors.push(`target has no files: ${target}`)
         }
       })
@@ -211,7 +213,7 @@ export function validateRegistryItem(item: RegistryItem): string[] {
 
   for (const field of ['targetDependencies', 'targetDevDependencies', 'targetRegistryDependencies'] as const) {
     const targetDependencies = registryItem[field]
-    if (targetDependencies === undefined) continue
+    if (targetDependencies === undefined) { continue }
     if (targetDependencies === null || typeof targetDependencies !== 'object' || Array.isArray(targetDependencies)) {
       errors.push(`${field} must be an object`)
       continue
@@ -221,7 +223,7 @@ export function validateRegistryItem(item: RegistryItem): string[] {
       if (!allowedTargets.includes(target as RegistryTarget)) {
         errors.push(`unsupported ${field} target: ${target}`)
       }
-      if (!Array.isArray(dependencies) || dependencies.some((dependency) => typeof dependency !== 'string')) {
+      if (!Array.isArray(dependencies) || dependencies.some(dependency => typeof dependency !== 'string')) {
         errors.push(`${field}.${target} must be an array of package names`)
       }
     })

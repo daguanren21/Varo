@@ -65,7 +65,7 @@ src/components/ui/*
 安装底座组件：
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite components/select
+pnpm dlx @varo-ui/cli add --target weapp components/select
 ```
 
 ## 4. 创建本地 block
@@ -211,12 +211,12 @@ registry/blocks/status-filter/status-filter.vue
   "type": "block",
   "title": "Status Filter",
   "description": "A local filter bar for selecting multiple anonymized statuses with VSelect.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": ["vue"],
   "registryDependencies": ["components/select"],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/status-filter/status-filter.vue",
       "to": "src/components/blocks/status-filter.vue"
     }
@@ -228,7 +228,7 @@ registry/blocks/status-filter/status-filter.vue
 字段要点：
 
 - `type`：`block`
-- `targets`：如 `weapp-vite`
+- `targets`：如 `weapp`
 - `registryDependencies`：递归安装的底座组件
 - `files`：from/to 映射
 - `docs`：文档路由
@@ -259,7 +259,7 @@ pnpm test
 
 # 打包 CLI 后在临时目录验证安装
 pnpm --filter @varo-ui/cli build
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/status-filter
+pnpm dlx @varo-ui/cli add --target weapp blocks/status-filter
 ```
 
 确认：
@@ -295,8 +295,8 @@ pnpm dlx @varo-ui/cli add --target weapp-vite blocks/status-filter
 ## 安装现有 block
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/order-filter
+pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp blocks/order-filter
 ```
 
 安装后：

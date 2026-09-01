@@ -5,20 +5,20 @@ CLI 把适用于 Wevu 小程序的组件源码复制到项目中。安装后直�
 ## 安装
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite button form toast
+pnpm dlx @varo-ui/cli add --target weapp button form toast
 ```
 
 把命令末尾的名称替换为需要的组件。安装 Block 或 Agent UI：
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 ```
 
 CLI 默认不覆盖已有文件。确认要替换本地版本时使用 `--force`：
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite --force button
+pnpm dlx @varo-ui/cli add --target weapp --force button
 ```
 
 ## 使用

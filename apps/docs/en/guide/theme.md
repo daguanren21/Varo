@@ -33,7 +33,7 @@ export default defineConfig({
 Install the editable target component:
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite components/theme-provider
+pnpm dlx @varo-ui/cli add --target weapp components/theme-provider
 ```
 
 A mini program App has no rendered DOM root. Bind runtime variables at each page root, normally through a shared page shell:

@@ -3,10 +3,10 @@
   "type": "block",
   "title": "Retail Order List",
   "description": "Controlled order list block with status filtering, product preview, totals, empty state, detail, payment, receipt, rebuy, and service actions.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/retail",
@@ -18,7 +18,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/retail-order-list/weapp-vite.vue",
       "to": "src/components/blocks/retail-order-list.vue"
     }

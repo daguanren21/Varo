@@ -6,7 +6,7 @@
   "exportName": "VCell",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -23,7 +23,7 @@
       "to": "src/components/ui/cell.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/cell/cell.ts",
       "to": "src/components/ui/cell.ts"
     }

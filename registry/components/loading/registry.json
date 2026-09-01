@@ -6,12 +6,12 @@
   "exportName": "VLoading",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu", "vue"]
+    "weapp": ["wevu", "vue"]
   },
   "registryDependencies": [
     "themes/base"
@@ -23,12 +23,12 @@
       "to": "src/components/ui/loading.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/loading/weapp-vite.vue",
       "to": "src/components/ui/v-loading.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/loading/loading.ts",
       "to": "src/components/ui/loading.ts"
     }

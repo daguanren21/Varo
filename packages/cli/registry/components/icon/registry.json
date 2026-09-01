@@ -6,7 +6,7 @@
   "exportName": "VIcon",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -21,12 +21,12 @@
       "to": "src/components/ui/icon.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/icon/weapp-vite.vue",
       "to": "src/components/ui/v-icon.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/icon/icon.ts",
       "to": "src/components/ui/icon.ts"
     }

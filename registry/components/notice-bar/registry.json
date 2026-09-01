@@ -6,7 +6,7 @@
   "exportName": "VNoticeBar",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -22,7 +22,7 @@
       "to": "src/components/ui/notice-bar.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/notice-bar/notice-bar.ts",
       "to": "src/components/ui/notice-bar.ts"
     }

@@ -3,11 +3,11 @@
   "type": "block",
   "title": "Profile Edit",
   "description": "Editable profile form with typed initial data, validation boundary, city search, loading, cancel, and submit states.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/cn",
@@ -22,7 +22,7 @@
       "to": "src/components/blocks/profile-edit.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/profile-edit/weapp-vite.vue",
       "to": "src/components/blocks/profile-edit.vue"
     }

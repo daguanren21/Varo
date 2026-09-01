@@ -3,7 +3,7 @@
   "type": "util",
   "title": "Platform Primitives Adapter",
   "description": "Target-specific adapter that gives copied components one stable primitives import path.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [
     "@varo-ui/headless"
   ],
@@ -12,7 +12,7 @@
       "@varo-ui/h5",
       "vue"
     ],
-    "weapp-vite": [
+    "weapp": [
       "@varo-ui/weapp",
       "wevu"
     ]
@@ -25,7 +25,7 @@
       "to": "src/lib/varo-primitives.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/utils/primitives/weapp-vite.ts",
       "to": "src/lib/varo-primitives.ts"
     }

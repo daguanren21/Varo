@@ -6,7 +6,7 @@
   "exportName": "VRate",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -23,7 +23,7 @@
       "to": "src/components/ui/rate.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/rate/rate.ts",
       "to": "src/components/ui/rate.ts"
     }

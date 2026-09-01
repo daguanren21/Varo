@@ -83,8 +83,8 @@ Varo does not copy React or Framer Motion source. It rewrites the interaction co
 
 ```bash
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 ```
 
 ## Event Protocol

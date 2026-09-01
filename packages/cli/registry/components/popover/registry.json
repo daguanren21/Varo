@@ -6,7 +6,7 @@
   "exportName": "VPopoverRoot",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -22,7 +22,7 @@
       "to": "src/components/ui/popover.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/popover/popover.ts",
       "to": "src/components/ui/popover.ts"
     }

@@ -65,7 +65,7 @@ Do not import registry source paths directly from the block. Keep remote data an
 Install the base component:
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite components/select
+pnpm dlx @varo-ui/cli add --target weapp components/select
 ```
 
 ## 4. Create the local block
@@ -211,12 +211,12 @@ Example `registry.json`:
   "type": "block",
   "title": "Status Filter",
   "description": "A local filter bar for selecting multiple anonymized statuses with VSelect.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": ["vue"],
   "registryDependencies": ["components/select"],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/status-filter/status-filter.vue",
       "to": "src/components/blocks/status-filter.vue"
     }
@@ -228,7 +228,7 @@ Example `registry.json`:
 Key fields:
 
 - `type`: `block`
-- `targets`: for example `weapp-vite`
+- `targets`: for example `weapp`
 - `registryDependencies`: recursive base components
 - `files`: from/to mappings
 - `docs`: documentation route
@@ -259,7 +259,7 @@ pnpm test
 
 # pack the CLI and install into a temporary fixture
 pnpm --filter @varo-ui/cli build
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/status-filter
+pnpm dlx @varo-ui/cli add --target weapp blocks/status-filter
 ```
 
 Confirm:
@@ -295,8 +295,8 @@ A contribution usually includes source, `registry.json`, tests, and bilingual do
 ## Install existing blocks
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/order-filter
+pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp blocks/order-filter
 ```
 
 After install:

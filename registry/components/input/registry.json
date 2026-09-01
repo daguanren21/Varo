@@ -6,7 +6,7 @@
   "exportName": "VInput",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -16,7 +16,7 @@
     "h5": [
       "vue"
     ],
-    "weapp-vite": [
+    "weapp": [
       "wevu"
     ]
   },
@@ -31,12 +31,12 @@
       "to": "src/components/ui/input.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/input/weapp-vite.vue",
       "to": "src/components/ui/v-input.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/input/input.ts",
       "to": "src/components/ui/input.ts"
     }

@@ -6,14 +6,14 @@
   "exportName": "VTabs",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [],
   "targetDependencies": {
     "h5": [
       "vue"
     ],
-    "weapp-vite": [
+    "weapp": [
       "wevu"
     ]
   },
@@ -27,22 +27,22 @@
       "to": "src/components/ui/tabs.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/tabs/tabs.weapp.ts",
       "to": "src/components/ui/tabs.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/tabs/tabs-context.weapp.ts",
       "to": "src/components/ui/tabs-context.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/tabs/v-tabs.weapp-vite.vue",
       "to": "src/components/ui/v-tabs.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/tabs/v-tab.weapp-vite.vue",
       "to": "src/components/ui/v-tab.vue"
     }

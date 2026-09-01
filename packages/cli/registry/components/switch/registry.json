@@ -6,7 +6,7 @@
   "exportName": "VSwitch",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless"
@@ -15,7 +15,7 @@
     "h5": [
       "vue"
     ],
-    "weapp-vite": [
+    "weapp": [
       "wevu"
     ]
   },
@@ -30,7 +30,7 @@
       "to": "src/components/ui/switch.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/switch/weapp-vite.vue",
       "to": "src/components/ui/v-switch.vue"
     }

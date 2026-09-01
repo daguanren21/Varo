@@ -4,12 +4,12 @@
 
 ## Registry
 
-- Targets: `h5`, `weapp-vite`
+- Targets: `h5`, `weapp`
 - Dependencies: `components/button`, `components/checkbox`, `components/input-number`, `components/tag`, `utils/cn`
 - File: `src/components/blocks/order-filter.vue`
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/order-filter
+pnpm dlx @varo-ui/cli add --target weapp blocks/order-filter
 pnpm dlx @varo-ui/cli add --target h5 blocks/order-filter
 ```
 

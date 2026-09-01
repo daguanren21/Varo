@@ -3,10 +3,10 @@
   "type": "block",
   "title": "Retail Category",
   "description": "Two-column retail category block with active navigation, product grid, tags, prices, selection, and cart actions.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/retail",
@@ -17,7 +17,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/retail-category/weapp-vite.vue",
       "to": "src/components/blocks/retail-category.vue"
     }

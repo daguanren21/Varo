@@ -3,10 +3,10 @@
   "type": "block",
   "title": "Retail Home",
   "description": "Varo retail landing block with search, cart badge, banner, categories, product cards, pricing, and cart actions.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/retail",
@@ -19,7 +19,7 @@
   ],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/retail-home/weapp-vite.vue",
       "to": "src/components/blocks/retail-home.vue"
     }

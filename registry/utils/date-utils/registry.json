@@ -3,7 +3,7 @@
   "type": "util",
   "title": "Date Utilities",
   "description": "Portable calendar parsing, month navigation, and day generation helpers.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [],
   "registryDependencies": [],
   "files": [
@@ -13,7 +13,7 @@
       "to": "src/components/ui/date-utils.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/utils/date-utils/date-utils.ts",
       "to": "src/components/ui/date-utils.ts"
     }

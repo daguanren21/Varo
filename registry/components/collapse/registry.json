@@ -6,7 +6,7 @@
   "exportName": "VCollapse",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -23,7 +23,7 @@
       "to": "src/components/ui/collapse.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/collapse/collapse.ts",
       "to": "src/components/ui/collapse.ts"
     }

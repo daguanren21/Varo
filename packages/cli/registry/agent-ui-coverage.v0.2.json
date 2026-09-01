@@ -1,6 +1,6 @@
 {
   "version": "0.2",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "summary": {
     "components": 36,
     "blocks": 1,

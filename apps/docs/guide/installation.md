@@ -33,10 +33,10 @@ pnpm add @varo-ui/headless
 如果你想像 shadcn/ui 一样把源码安装进业务项目，再做二次封装，使用 CLI 的 registry add 流程：
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite button select card
-pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp button select card
+pnpm dlx @varo-ui/cli add --target weapp action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
 pnpm dlx @varo-ui/cli add --target h5 button select card components/agent-ui
 ```
 

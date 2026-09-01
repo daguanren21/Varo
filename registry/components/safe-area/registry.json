@@ -6,7 +6,7 @@
   "exportName": "VSafeArea",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -21,7 +21,7 @@
       "to": "src/components/ui/safe-area.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/safe-area/safe-area.ts",
       "to": "src/components/ui/safe-area.ts"
     }

@@ -3,15 +3,15 @@
   "type": "util",
   "title": "Retail Contracts",
   "description": "Typed product, cart, order, address, and money contracts shared by Varo retail blocks.",
-  "targets": ["weapp-vite"],
+  "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
-    "weapp-vite": []
+    "weapp": []
   },
   "registryDependencies": [],
   "files": [
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/utils/retail/retail.ts",
       "to": "src/lib/retail.ts"
     }

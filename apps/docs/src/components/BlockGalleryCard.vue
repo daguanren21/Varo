@@ -18,7 +18,7 @@ const copied = shallowRef(false)
 const command = computed(() => blockInstallCommand(props.block, selectedTarget.value))
 const usage = computed(() => blockUsageSource(props.block, selectedTarget.value))
 const previewSource = computed(() => `${import.meta.env.BASE_URL}blocks/${props.block.id}.png`)
-const targetLabel = computed(() => selectedTarget.value === 'weapp-vite' ? 'Weapp' : 'H5')
+const targetLabel = computed(() => selectedTarget.value === 'weapp' ? 'Weapp' : 'H5')
 
 async function copyCommand() {
   await navigator.clipboard?.writeText(command.value)
@@ -41,7 +41,7 @@ async function copyCommand() {
       >
       <div class="varo-block-card__targets" aria-label="Supported targets">
         <span v-for="target in block.targets" :key="target">
-          {{ target === 'weapp-vite' ? 'Weapp' : 'H5' }}
+          {{ target === 'weapp' ? 'Weapp' : 'H5' }}
         </span>
       </div>
     </div>
@@ -79,7 +79,7 @@ async function copyCommand() {
               :aria-selected="selectedTarget === target"
               @click="selectedTarget = target"
             >
-              {{ target === 'weapp-vite' ? 'Weapp' : 'H5' }}
+              {{ target === 'weapp' ? 'Weapp' : 'H5' }}
             </button>
           </div>
 

@@ -6,13 +6,13 @@
   "exportName": "VCheckbox",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless"
   ],
   "targetDependencies": {
-    "weapp-vite": [
+    "weapp": [
       "wevu"
     ]
   },
@@ -23,7 +23,7 @@
     "h5": [
       "utils/selection"
     ],
-    "weapp-vite": [
+    "weapp": [
       "utils/primitives"
     ]
   },
@@ -34,17 +34,17 @@
       "to": "src/components/ui/checkbox.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/checkbox/weapp-vite.vue",
       "to": "src/components/ui/v-checkbox.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/checkbox/checkbox-group.weapp-vite.vue",
       "to": "src/components/ui/v-checkbox-group.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/checkbox/selection-context.ts",
       "to": "src/components/ui/selection-context.ts"
     }

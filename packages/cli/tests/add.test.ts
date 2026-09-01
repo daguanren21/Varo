@@ -44,7 +44,7 @@ function writeRegistryItem(
   const itemName = itemPath.split('/').at(-1)!
   const itemRoot = join(registryRoot, itemPath)
   const source = options.from ?? `registry/${itemPath}/${itemName}.ts`
-  const targets = options.targets ?? ['h5', 'weapp-vite']
+  const targets = options.targets ?? ['h5', 'weapp']
 
   mkdirSync(itemRoot, { recursive: true })
   writeFileSync(
@@ -94,7 +94,7 @@ describe('varo add targets', () => {
   it('resolves mini-program-specific runtime and merge packages by default', () => {
     const plan = resolveRegistryItems(['button'], { registryRoot })
 
-    expect(plan.target).toBe('weapp-vite')
+    expect(plan.target).toBe('weapp')
     expect(plan.dependencies).toEqual(
       expect.arrayContaining([
         '@varo-ui/weapp',
@@ -111,7 +111,7 @@ describe('varo add targets', () => {
 
   it('resolves target-specific registry dependencies without copying H5 helpers into weapp', () => {
     const h5 = resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
-    const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp-vite' })
+    const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp' })
 
     expect(h5.items.map(item => item.name)).toEqual(['base', 'primitives', 'selection', 'checkbox'])
     expect(weapp.items.map(item => item.name)).toEqual(['base', 'primitives', 'checkbox'])
@@ -120,7 +120,7 @@ describe('varo add targets', () => {
   })
   it('installs one shadcn Form entry with target-owned renderers', () => {
     const h5 = resolveRegistryItems(['form'], { registryRoot, target: 'h5' })
-    const weapp = resolveRegistryItems(['form'], { registryRoot, target: 'weapp-vite' })
+    const weapp = resolveRegistryItems(['form'], { registryRoot, target: 'weapp' })
 
     expect(h5.files.map(file => file.to)).toEqual([
       'src/styles/varo.css',
@@ -148,7 +148,7 @@ describe('varo add targets', () => {
     const plan = await installRegistryItems(['blocks/retail-home'], {
       projectRoot,
       registryRoot,
-      target: 'weapp-vite',
+      target: 'weapp',
     })
 
     expect(plan.items.map(item => item.name)).toEqual(
@@ -206,7 +206,15 @@ describe('varo add targets', () => {
       }),
     ).toThrow(/Unsupported registry target: native/)
 
-    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/weapp-only', { targets: ['weapp-vite'] })
+    expect(() =>
+      execFileSync(process.execPath, [binPath, 'add', '--target', 'weapp-vite', 'button'], {
+        cwd: projectRoot,
+        encoding: 'utf8',
+        stdio: 'pipe',
+      }),
+    ).toThrow(/Unsupported registry target: weapp-vite/)
+
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/weapp-only', { targets: ['weapp'] })
     expect(() => resolveRegistryItems(['weapp-only'], { registryRoot: fixtureRegistry, target: 'h5' })).toThrow(
       'Registry item components/weapp-only does not support target h5',
     )
@@ -231,7 +239,7 @@ describe('varo add safety', () => {
       encoding: 'utf8',
     })
 
-    expect(output).toContain('Installed base, cn, primitives, button for weapp-vite')
+    expect(output).toContain('Installed base, cn, primitives, button for weapp')
     const installedPath = join(projectRoot, 'src/components/ui/v-button.vue')
     expect(existsSync(installedPath)).toBe(true)
 
@@ -241,7 +249,7 @@ describe('varo add safety', () => {
       encoding: 'utf8',
     })
 
-    expect(forcedOutput).toContain('Installed base, cn, primitives, button for weapp-vite')
+    expect(forcedOutput).toContain('Installed base, cn, primitives, button for weapp')
     expect(readFileSync(installedPath, 'utf8')).toContain('<script setup lang="ts">')
   })
 

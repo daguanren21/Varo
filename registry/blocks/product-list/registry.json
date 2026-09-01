@@ -3,11 +3,11 @@
   "type": "block",
   "title": "Product List",
   "description": "Responsive product list with reusable item rows, empty state, inventory, pricing, selection, and cart actions.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/cn",
@@ -33,17 +33,17 @@
       "to": "src/components/blocks/product-list.types.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/product-list/weapp-vite.vue",
       "to": "src/components/blocks/product-list.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/product-list/product-list-item.weapp-vite.vue",
       "to": "src/components/blocks/product-list-item.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/product-list/product-list.types.ts",
       "to": "src/components/blocks/product-list.types.ts"
     }

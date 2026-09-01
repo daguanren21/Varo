@@ -3,7 +3,7 @@
   "type": "util",
   "title": "Layout Utilities",
   "description": "Portable size normalization helpers shared by layout components.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [],
   "registryDependencies": [],
   "files": [
@@ -13,7 +13,7 @@
       "to": "src/components/ui/layout-utils.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/utils/layout-utils/layout-utils.ts",
       "to": "src/components/ui/layout-utils.ts"
     }

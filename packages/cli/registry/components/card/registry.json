@@ -6,14 +6,14 @@
   "exportName": "VCard",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless"
   ],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "themes/base",
@@ -26,7 +26,7 @@
       "to": "src/components/ui/card.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/card/weapp-vite.vue",
       "to": "src/components/ui/v-card.vue"
     }

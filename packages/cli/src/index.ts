@@ -5,7 +5,7 @@ import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-export type RegistryTarget = 'h5' | 'weapp-vite'
+export type RegistryTarget = 'h5' | 'weapp'
 
 export interface RegistryFile {
   target: RegistryTarget
@@ -56,14 +56,14 @@ export interface InstallRegistryOptions extends ResolveRegistryOptions {
 
 const packageDir = dirname(fileURLToPath(import.meta.url))
 const defaultRegistryCandidates = [resolve(packageDir, '../registry'), resolve(packageDir, '../../../registry')]
-const defaultRegistryRoot =
-  defaultRegistryCandidates.find((candidate) => existsSync(resolve(candidate, 'components/button/registry.json'))) ??
-  defaultRegistryCandidates[0]
+const defaultRegistryRoot
+  = defaultRegistryCandidates.find(candidate => existsSync(resolve(candidate, 'components/button/registry.json')))
+    ?? defaultRegistryCandidates[0]
 
 const registryGroups = ['blocks', 'components', 'hooks', 'templates', 'themes', 'utils'] as const
 
 function normalizeRegistryName(name: string): string {
-  const hasGroup = registryGroups.some((group) => name.startsWith(`${group}/`))
+  const hasGroup = registryGroups.some(group => name.startsWith(`${group}/`))
   const normalized = hasGroup ? name : `components/${name}`
 
   if (!/^(?:blocks|components|hooks|templates|themes|utils)\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalized)) {
@@ -125,7 +125,7 @@ function resolveProjectTarget(projectRoot: string, to: string): string {
   let existingAncestor = dirname(targetPath)
   while (!existsSync(existingAncestor)) {
     const parent = dirname(existingAncestor)
-    if (parent === existingAncestor) break
+    if (parent === existingAncestor) { break }
     existingAncestor = parent
   }
 
@@ -142,7 +142,7 @@ function resolveProjectTarget(projectRoot: string, to: string): string {
 
 export function resolveRegistryItems(names: string[], options: ResolveRegistryOptions = {}): RegistryInstallPlan {
   const registryRoot = options.registryRoot ?? defaultRegistryRoot
-  const target = options.target ?? 'weapp-vite'
+  const target = options.target ?? 'weapp'
   const items: RegistryItem[] = []
   const seen = new Set<string>()
   const visiting = new Set<string>()
@@ -150,7 +150,7 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
 
   function visit(requestName: string) {
     const itemPathName = normalizeRegistryName(requestName)
-    if (seen.has(itemPathName)) return
+    if (seen.has(itemPathName)) { return }
     if (visiting.has(itemPathName)) {
       const cycleStart = dependencyStack.indexOf(itemPathName)
       const cycle = [...dependencyStack.slice(cycleStart), itemPathName]
@@ -165,7 +165,8 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
         throw new Error(`Registry item ${itemPathName} does not support target ${target}`)
       }
       [...item.registryDependencies, ...(item.targetRegistryDependencies?.[target] ?? [])].forEach(visit)
-    } finally {
+    }
+    finally {
       dependencyStack.pop()
       visiting.delete(itemPathName)
     }
@@ -177,20 +178,20 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
   names.forEach(visit)
 
   const dependencies = Array.from(
-    new Set(items.flatMap((item) => [...(item.dependencies ?? []), ...(item.targetDependencies?.[target] ?? [])]))
+    new Set(items.flatMap(item => [...(item.dependencies ?? []), ...(item.targetDependencies?.[target] ?? [])])),
   ).sort()
   const devDependencies = Array.from(
-    new Set(items.flatMap((item) => [...(item.devDependencies ?? []), ...(item.targetDevDependencies?.[target] ?? [])]))
+    new Set(items.flatMap(item => [...(item.devDependencies ?? []), ...(item.targetDevDependencies?.[target] ?? [])])),
   ).sort()
-  const files = items.flatMap((item) =>
+  const files = items.flatMap(item =>
     item.files
-      .filter((file) => file.target === target)
-      .map((file) => ({
+      .filter(file => file.target === target)
+      .map(file => ({
         ...file,
         item: item.name,
         sourcePath: resolveRegistrySource(registryRoot, file.from),
-        targetPath: file.to
-      }))
+        targetPath: file.to,
+      })),
   )
 
   return { dependencies, devDependencies, files, items, target }
@@ -198,9 +199,9 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
 
 export async function installRegistryItems(names: string[], options: InstallRegistryOptions): Promise<RegistryInstallPlan> {
   const plan = resolveRegistryItems(names, options)
-  const plannedTargets = plan.files.map((file) => ({
+  const plannedTargets = plan.files.map(file => ({
     file,
-    targetPath: resolveProjectTarget(options.projectRoot, file.to)
+    targetPath: resolveProjectTarget(options.projectRoot, file.to),
   }))
   const seenTargets = new Set<string>()
 
@@ -219,7 +220,7 @@ export async function installRegistryItems(names: string[], options: InstallRegi
     plannedTargets.map(async ({ file, targetPath }) => {
       await mkdir(dirname(targetPath), { recursive: true })
       await writeFile(targetPath, await readFile(file.sourcePath, 'utf8'), options.force ? undefined : { flag: 'wx' })
-    })
+    }),
   )
 
   return plan
@@ -228,7 +229,7 @@ export async function installRegistryItems(names: string[], options: InstallRegi
 async function runCli(argv: string[]) {
   const [command, ...args] = argv
   let force = false
-  let target: RegistryTarget = 'weapp-vite'
+  let target: RegistryTarget = 'weapp'
   const items: string[] = []
 
   for (let index = 0; index < args.length; index += 1) {
@@ -240,7 +241,7 @@ async function runCli(argv: string[]) {
 
     if (arg === '--target') {
       const value = args[index + 1]
-      if (value !== 'h5' && value !== 'weapp-vite') {
+      if (value !== 'h5' && value !== 'weapp') {
         throw new Error(`Unsupported registry target: ${value ?? '(missing)'}`)
       }
       target = value
@@ -250,7 +251,7 @@ async function runCli(argv: string[]) {
 
     if (arg.startsWith('--target=')) {
       const value = arg.slice('--target='.length)
-      if (value !== 'h5' && value !== 'weapp-vite') {
+      if (value !== 'h5' && value !== 'weapp') {
         throw new Error(`Unsupported registry target: ${value || '(missing)'}`)
       }
       target = value
@@ -266,7 +267,7 @@ async function runCli(argv: string[]) {
 
   if (command !== 'add' || items.length === 0) {
     process.stderr.write(
-      'Usage: varo add [--target h5|weapp-vite] [--force] <component|blocks/name> [...items]\n'
+      'Usage: varo add [--target h5|weapp] [--force] <component|blocks/name> [...items]\n',
     )
     process.exitCode = 1
     return
@@ -275,9 +276,9 @@ async function runCli(argv: string[]) {
   const plan = await installRegistryItems(items, {
     force,
     projectRoot: process.cwd(),
-    target
+    target,
   })
-  const output = [`Installed ${plan.items.map((item) => item.name).join(', ')} for ${plan.target}`]
+  const output = [`Installed ${plan.items.map(item => item.name).join(', ')} for ${plan.target}`]
 
   if (plan.dependencies.length > 0) {
     output.push(`Dependencies: ${plan.dependencies.join(' ')}`)

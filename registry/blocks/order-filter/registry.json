@@ -3,11 +3,11 @@
   "type": "block",
   "title": "Order Filter",
   "description": "Order filtering panel with multi-status selection, amount range validation, active count, reset, and result feedback.",
-  "targets": ["h5", "weapp-vite"],
+  "targets": ["h5", "weapp"],
   "dependencies": [],
   "targetDependencies": {
     "h5": ["vue"],
-    "weapp-vite": ["wevu"]
+    "weapp": ["wevu"]
   },
   "registryDependencies": [
     "utils/cn",
@@ -23,7 +23,7 @@
       "to": "src/components/blocks/order-filter.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/blocks/order-filter/weapp-vite.vue",
       "to": "src/components/blocks/order-filter.vue"
     }

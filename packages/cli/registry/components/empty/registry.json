@@ -6,7 +6,7 @@
   "exportName": "VEmpty",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -23,7 +23,7 @@
       "to": "src/components/ui/empty.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/empty/weapp-vite.vue",
       "to": "src/components/ui/empty.vue"
     }

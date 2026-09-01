@@ -10,7 +10,7 @@ A dual-target review surface for Agent changes: unified/split layouts, inline ch
 
 ```bash
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -96,9 +96,9 @@ Varo is not a port. `@pierre/diffs` uses Shadow DOM, Shiki, worker pools, and la
 
 ## Target Notes
 
-| Target     | Import                                                                                                      |
-| ---------- | ----------------------------------------------------------------------------------------------------------- |
-| H5         | Named export from `@/components/agent-ui`                                                                   |
-| weapp-vite | Default export from `@/components/agent-ui/AgentFileDiff.vue`; types from `@/components/agent-ui/file-diff` |
+| Target | Import                                                                                                      |
+| ------ | ----------------------------------------------------------------------------------------------------------- |
+| H5     | Named export from `@/components/agent-ui`                                                                   |
+| weapp  | Default export from `@/components/agent-ui/AgentFileDiff.vue`; types from `@/components/agent-ui/file-diff` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

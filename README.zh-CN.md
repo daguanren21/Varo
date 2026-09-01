@@ -23,7 +23,7 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 - **Agent UI：**36 个双端组件 + Agent Chat Block，覆盖对话、流式、工具、审批、代码、Diff、引用、图片生成、数据表格、工作流与工作区
 - **双端 Blocks：**Login Form、Profile Card、Profile Edit、Product List、Order Filter、Agent Chat
 - **AI 商城 Demo：**真实增量事件、推理与工具状态、人工确认购买和退货、历史记录与地址配置
-- **双端 Registry target：**`h5`、`weapp-vite`
+- **双端 Registry target：**`h5`、`weapp`
 - **小程序样式：**Tailwind CSS v4、[`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss)、`@weapp-tailwindcss/merge`
 - **小程序调试：**内置 MCP、DevTools console bridge、Automator 截图与 runtime smoke
 
@@ -39,24 +39,24 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 
 ```bash
 # 小程序原生 SFC
-pnpm dlx @varo-ui/cli add --target weapp-vite button input card
+pnpm dlx @varo-ui/cli add --target weapp button input card
 
 # H5 源码
 pnpm dlx @varo-ui/cli add --target h5 button input card
 
 # 双端业务 Block
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/product-list
+pnpm dlx @varo-ui/cli add --target weapp blocks/product-list
 
 # 双端 Agent Chat Block
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 
 # Agent UI 套件
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 
 # 高共识小程序组件
-pnpm dlx @varo-ui/cli add --target weapp-vite action-sheet collapse dialog list notice-bar popover skeleton steps
+pnpm dlx @varo-ui/cli add --target weapp action-sheet collapse dialog list notice-bar popover skeleton steps
 ```
 
 CLI 默认不覆盖已有文件。确认本地定制可以被替换后，再显式使用 `--force`。

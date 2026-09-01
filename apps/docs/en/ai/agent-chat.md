@@ -10,7 +10,7 @@ Complete block composing header, history, events, approval, and prompt input.
 
 ```bash
 pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/agent-chat
+pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -52,9 +52,9 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 
 ## Target Notes
 
-| Target     | Import                               |
-| ---------- | ------------------------------------ |
-| H5         | `@/components/blocks/agent-chat.vue` |
-| weapp-vite | `@/components/blocks/agent-chat.vue` |
+| Target | Import                               |
+| ------ | ------------------------------------ |
+| H5     | `@/components/blocks/agent-chat.vue` |
+| weapp  | `@/components/blocks/agent-chat.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

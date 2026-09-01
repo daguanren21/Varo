@@ -10,7 +10,7 @@ Stable image surface from queued work through refinement to completion.
 
 ```bash
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -47,9 +47,9 @@ import { AgentImageGeneration } from '@/components/agent-ui'
 
 ## Target Notes
 
-| Target     | Import                                                               |
-| ---------- | -------------------------------------------------------------------- |
-| H5         | Named export from `@/components/agent-ui`                            |
-| weapp-vite | Default export from `@/components/agent-ui/AgentImageGeneration.vue` |
+| Target | Import                                                               |
+| ------ | -------------------------------------------------------------------- |
+| H5     | Named export from `@/components/agent-ui`                            |
+| weapp  | Default export from `@/components/agent-ui/AgentImageGeneration.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

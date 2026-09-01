@@ -6,7 +6,7 @@
   "exportName": "VTabbar",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -21,7 +21,7 @@
       "to": "src/components/ui/tabbar.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/tabbar/tabbar.ts",
       "to": "src/components/ui/tabbar.ts"
     }

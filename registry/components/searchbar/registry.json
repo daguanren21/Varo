@@ -6,7 +6,7 @@
   "exportName": "VSearchbar",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -24,7 +24,7 @@
       "to": "src/components/ui/searchbar.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/searchbar/searchbar.ts",
       "to": "src/components/ui/searchbar.ts"
     }

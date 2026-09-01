@@ -6,7 +6,7 @@
   "exportName": "VDialogRoot",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [],
   "registryDependencies": [
@@ -20,7 +20,7 @@
       "to": "src/components/ui/dialog.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/dialog/dialog.ts",
       "to": "src/components/ui/dialog.ts"
     }

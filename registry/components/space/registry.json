@@ -6,7 +6,7 @@
   "exportName": "VSpace",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -23,7 +23,7 @@
       "to": "src/components/ui/space.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/space/space.ts",
       "to": "src/components/ui/space.ts"
     }

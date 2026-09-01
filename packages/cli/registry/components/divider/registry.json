@@ -6,7 +6,7 @@
   "exportName": "VDivider",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -23,7 +23,7 @@
       "to": "src/components/ui/divider.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/divider/divider.ts",
       "to": "src/components/ui/divider.ts"
     }

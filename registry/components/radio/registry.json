@@ -6,7 +6,7 @@
   "exportName": "VRadio",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [],
   "registryDependencies": [
@@ -20,7 +20,7 @@
       "to": "src/components/ui/radio.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/radio/radio.ts",
       "to": "src/components/ui/radio.ts"
     }

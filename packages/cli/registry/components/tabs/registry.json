@@ -6,7 +6,7 @@
   "exportName": "VTabs",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -21,7 +21,7 @@
       "to": "src/components/ui/tabs.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/tabs/tabs.ts",
       "to": "src/components/ui/tabs.ts"
     }

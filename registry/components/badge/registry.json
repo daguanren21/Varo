@@ -6,7 +6,7 @@
   "exportName": "VBadge",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -21,7 +21,7 @@
       "to": "src/components/ui/badge.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/badge/weapp-vite.vue",
       "to": "src/components/ui/badge.vue"
     }

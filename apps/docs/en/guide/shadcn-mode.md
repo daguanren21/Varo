@@ -5,20 +5,20 @@ The CLI copies Wevu mini-program component source into your project. Import it f
 ## Install
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite button form toast
+pnpm dlx @varo-ui/cli add --target weapp button form toast
 ```
 
 Replace the names at the end with the components you need. To install a Block or Agent UI:
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite blocks/profile-edit
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 ```
 
 Existing files are preserved by default. Use `--force` only after reviewing local changes:
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite --force button
+pnpm dlx @varo-ui/cli add --target weapp --force button
 ```
 
 ## Use

@@ -5,7 +5,7 @@
   "description": "Shared checkbox and radio implementations used by their public registry entries.",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -22,7 +22,7 @@
       "to": "src/components/ui/selection.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/utils/selection/selection.ts",
       "to": "src/components/ui/selection.ts"
     }

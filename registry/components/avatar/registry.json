@@ -6,7 +6,7 @@
   "exportName": "VAvatar",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "vue"
@@ -22,7 +22,7 @@
       "to": "src/components/ui/avatar.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/avatar/weapp-vite.vue",
       "to": "src/components/ui/avatar.vue"
     }

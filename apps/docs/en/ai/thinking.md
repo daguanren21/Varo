@@ -10,7 +10,7 @@ Collapsible reasoning, search, coding, and execution traces.
 
 ```bash
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp-vite components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 ```
 
 This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
@@ -45,9 +45,9 @@ import { AgentThinking } from '@/components/agent-ui'
 
 ## Target Notes
 
-| Target     | Import                                    |
-| ---------- | ----------------------------------------- |
-| H5         | Named export from `@/components/agent-ui` |
-| weapp-vite | `@/components/agent-ui/AgentThinking.vue` |
+| Target | Import                                    |
+| ------ | ----------------------------------------- |
+| H5     | Named export from `@/components/agent-ui` |
+| weapp  | `@/components/agent-ui/AgentThinking.vue` |
 
 The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.

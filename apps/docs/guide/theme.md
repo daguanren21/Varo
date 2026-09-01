@@ -48,7 +48,7 @@ export default defineConfig({
 安装目标专用的可编辑 Provider：
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp-vite components/theme-provider
+pnpm dlx @varo-ui/cli add --target weapp components/theme-provider
 ```
 
 小程序的 App 没有可承载样式的 DOM 根节点，因此运行时变量需要绑定到页面根组件：

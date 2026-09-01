@@ -15,7 +15,7 @@ import { VButton } from '@varo-ui/weapp'
 import '@varo-ui/weapp/style.css'
 ```
 
-Target render primitives are available from `@varo-ui/weapp/primitives`. For editable native SFC source, use `@varo-ui/cli` with `--target weapp-vite`.
+Target render primitives are available from `@varo-ui/weapp/primitives`. For editable native SFC source, use `@varo-ui/cli` with `--target weapp`.
 
 ## Editable Registry source resolver
 
@@ -39,7 +39,7 @@ export default defineConfig({
 
 The default source directory is `src/components/ui`. Both `<VButton>` and `<v-button>` resolve
 to copied files named `VButton.vue`, `vButton.vue`, or `v-button.vue`. The resolver does not
-install components; continue using `@varo-ui/cli --target weapp-vite` to copy editable source.
+install components; continue using `@varo-ui/cli --target weapp` to copy editable source.
 
 `root` defaults to `process.cwd()`. Pass `VaroResolver({ root: import.meta.dirname })` only when
 the Vite process runs from a different directory than the consumer application.

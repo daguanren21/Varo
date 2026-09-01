@@ -6,7 +6,7 @@
   "exportName": "VRow",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -23,7 +23,7 @@
       "to": "src/components/ui/layout.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/layout/layout.ts",
       "to": "src/components/ui/layout.ts"
     }

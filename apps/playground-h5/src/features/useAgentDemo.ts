@@ -85,7 +85,7 @@ export function useAgentDemo() {
       channel.push({ durationMs: 180, id: 'intent', type: 'reasoning.end' })
       channel.push({ id: 'docs', name: 'varo.registry.inspect', summary: '读取双端 Registry 能力', type: 'tool.start' })
       await sleep(220)
-      channel.push({ id: 'docs', output: { targets: ['h5', 'weapp-vite'] }, summary: '确认双端源码与运行时', type: 'tool.result' })
+      channel.push({ id: 'docs', output: { targets: ['h5', 'weapp'] }, summary: '确认双端源码与运行时', type: 'tool.result' })
       channel.push({ id: 'plan', title: '生成回答', type: 'reasoning.start' })
       channel.push({ delta: '组织组件、流式协议与发布边界', id: 'plan', type: 'reasoning.delta' })
       channel.push({ durationMs: 120, id: 'plan', type: 'reasoning.end' })

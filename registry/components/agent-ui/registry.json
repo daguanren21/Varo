@@ -5,7 +5,7 @@
   "description": "Dual-target Agent UI suite covering streaming, reasoning, tools, approvals, messages, prompt input, citations, code, diffs, generated media, activity, context, tables, workflows, sidebars, insights, and complete chat applications.",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/ai"
@@ -14,7 +14,7 @@
     "h5": [
       "vue"
     ],
-    "weapp-vite": [
+    "weapp": [
       "wevu"
     ]
   },
@@ -23,7 +23,7 @@
     "h5": [
       "utils/cn"
     ],
-    "weapp-vite": [
+    "weapp": [
       "utils/cn",
       "components/button",
       "components/card",
@@ -78,217 +78,217 @@
       "to": "src/components/agent-ui/agent-markdown.css"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/types.ts",
       "to": "src/components/agent-ui/types.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/advanced-types.ts",
       "to": "src/components/agent-ui/advanced-types.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/agent-icons.ts",
       "to": "src/components/agent-ui/agent-icons.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/file-diff.ts",
       "to": "src/components/agent-ui/file-diff.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/agent-file-diff.css",
       "to": "src/components/agent-ui/agent-file-diff.css"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/agent-table.ts",
       "to": "src/components/agent-ui/agent-table.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentFileDiff.vue",
       "to": "src/components/agent-ui/AgentFileDiff.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentImageGeneration.vue",
       "to": "src/components/agent-ui/AgentImageGeneration.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentFilterTable.vue",
       "to": "src/components/agent-ui/AgentFilterTable.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentMessageScroller.vue",
       "to": "src/components/agent-ui/AgentMessageScroller.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentCodeBlock.vue",
       "to": "src/components/agent-ui/AgentCodeBlock.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentToolResult.vue",
       "to": "src/components/agent-ui/AgentToolResult.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentToolApproval.vue",
       "to": "src/components/agent-ui/AgentToolApproval.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentCitations.vue",
       "to": "src/components/agent-ui/AgentCitations.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentActivity.vue",
       "to": "src/components/agent-ui/AgentActivity.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentSidebar.vue",
       "to": "src/components/agent-ui/AgentSidebar.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentContextCard.vue",
       "to": "src/components/agent-ui/AgentContextCard.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentInsightCard.vue",
       "to": "src/components/agent-ui/AgentInsightCard.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentSelectionActions.vue",
       "to": "src/components/agent-ui/AgentSelectionActions.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentDiffTable.vue",
       "to": "src/components/agent-ui/AgentDiffTable.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentRecordsTable.vue",
       "to": "src/components/agent-ui/AgentRecordsTable.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentCommandSearch.vue",
       "to": "src/components/agent-ui/AgentCommandSearch.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentFlowchart.vue",
       "to": "src/components/agent-ui/AgentFlowchart.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentFineTune.vue",
       "to": "src/components/agent-ui/AgentFineTune.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentLoading.vue",
       "to": "src/components/agent-ui/AgentLoading.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentMarkdownNode.vue",
       "to": "src/components/agent-ui/AgentMarkdownNode.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentMarkdown.vue",
       "to": "src/components/agent-ui/AgentMarkdown.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentStream.vue",
       "to": "src/components/agent-ui/AgentStream.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentThinking.vue",
       "to": "src/components/agent-ui/AgentThinking.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentToolChip.vue",
       "to": "src/components/agent-ui/AgentToolChip.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentTaskList.vue",
       "to": "src/components/agent-ui/AgentTaskList.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentRadioGroup.vue",
       "to": "src/components/agent-ui/AgentRadioGroup.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentApproval.vue",
       "to": "src/components/agent-ui/AgentApproval.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentComposer.vue",
       "to": "src/components/agent-ui/AgentComposer.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentPromptSuggestions.vue",
       "to": "src/components/agent-ui/AgentPromptSuggestions.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentRecommendation.vue",
       "to": "src/components/agent-ui/AgentRecommendation.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentMessage.vue",
       "to": "src/components/agent-ui/AgentMessage.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentConversation.vue",
       "to": "src/components/agent-ui/AgentConversation.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentEventRenderer.vue",
       "to": "src/components/agent-ui/AgentEventRenderer.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentResponseActions.vue",
       "to": "src/components/agent-ui/AgentResponseActions.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentArtifact.vue",
       "to": "src/components/agent-ui/AgentArtifact.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentSourceList.vue",
       "to": "src/components/agent-ui/AgentSourceList.vue"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/agent-ui/AgentAttachmentList.vue",
       "to": "src/components/agent-ui/AgentAttachmentList.vue"
     }

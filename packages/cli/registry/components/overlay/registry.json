@@ -6,7 +6,7 @@
   "exportName": "VOverlay",
   "targets": [
     "h5",
-    "weapp-vite"
+    "weapp"
   ],
   "dependencies": [
     "@varo-ui/headless",
@@ -23,7 +23,7 @@
       "to": "src/components/ui/overlay.ts"
     },
     {
-      "target": "weapp-vite",
+      "target": "weapp",
       "from": "registry/components/overlay/overlay.ts",
       "to": "src/components/ui/overlay.ts"
     }
