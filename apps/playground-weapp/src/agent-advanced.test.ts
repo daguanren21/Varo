@@ -88,7 +88,8 @@ describe('advanced mini-program Agent UI', () => {
         ],
       },
     })
-    expect(diff.get('.agent-file-diff__counts').text()).toBe('+1−1')
+    expect(diff.get('[data-kind="addition"]').text()).toBe('+1')
+    expect(diff.get('[data-kind="deletion"]').text()).toBe('−1')
     await diff.findAll('.agent-file-diff__segmented .agent-file-diff__control')[1].trigger('click')
     expect(diff.attributes('data-view')).toBe('split')
     expect(diff.emitted('update:view')?.[0]).toEqual(['split'])
