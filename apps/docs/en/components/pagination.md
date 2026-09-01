@@ -9,9 +9,9 @@
 ```vue
 <script setup lang="ts">
 import { VPagination } from '@varo-ui/h5'
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 
-const page = ref(2)
+const page = shallowRef(2)
 </script>
 
 <template>
@@ -22,13 +22,15 @@ const page = ref(2)
 
 ## Props
 
-| Prop         | Type                  | Default    | Description          |
-| ------------ | --------------------- | ---------- | -------------------- |
-| `modelValue` | `number`              | `1`        | Current page         |
-| `pageCount`  | `number`              | `1`        | Total page count     |
-| `mode`       | `'multi' \| 'simple'` | `'multi'`  | Pagination mode      |
-| `prevText`   | `string`              | `'上一页'` | Previous button text |
-| `nextText`   | `string`              | `'下一页'` | Next button text     |
+| Prop            | Type                  | Default                         | Description                                     |
+| --------------- | --------------------- | ------------------------------- | ----------------------------------------------- |
+| `modelValue`    | `number`              | `1`                             | Current page                                    |
+| `pageCount`     | `number`              | `1`                             | Total page count                                |
+| `mode`          | `'multi' \| 'simple'` | `'multi'`                       | Pagination mode                                 |
+| `prevText`      | `string`              | `'上一页'`                      | Previous button text                            |
+| `nextText`      | `string`              | `'下一页'`                      | Next button text                                |
+| `ariaLabel`     | `string`              | `'分页'`                        | Accessible name for pagination navigation       |
+| `itemAriaLabel` | `string`              | `'第 {page} 页，共 {total} 页'` | Page label template with `{page}` and `{total}` |
 
 ## Events
 

@@ -1,20 +1,29 @@
-import { defineComponent, h, type PropType, type StyleValue } from 'vue'
+import type { PropType, StyleValue } from 'vue'
+import { defineComponent, h } from 'vue'
 
 export const VIndicator = defineComponent({
   name: 'VIndicator',
   props: {
+    ariaLabel: {
+      type: String,
+      default: '轮播进度',
+    },
+    itemAriaLabel: {
+      type: String,
+      default: '第 {index} 项，共 {total} 项',
+    },
     total: {
       type: Number,
-      default: 0
+      default: 0,
     },
     current: {
       type: Number,
-      default: 0
+      default: 0,
     },
     type: {
       type: String as PropType<'dot' | 'line'>,
-      default: 'dot'
-    }
+      default: 'dot',
+    },
   },
   emits: ['update:current', 'change'],
   setup(props, { attrs, emit }) {
@@ -27,28 +36,36 @@ export const VIndicator = defineComponent({
       emit('change', index)
     }
 
+    function itemLabel(index: number) {
+      return props.itemAriaLabel
+        .replaceAll('{index}', String(index + 1))
+        .replaceAll('{total}', String(props.total))
+    }
+
     return () =>
       h(
         'div',
         {
           ...attrs,
-          class: ['varo-indicator', attrs.class],
-          style: attrs.style as StyleValue,
+          'class': ['varo-indicator', attrs.class],
+          'style': attrs.style as StyleValue,
+          'role': 'navigation',
+          'aria-label': props.ariaLabel,
           'data-current': String(props.current),
           'data-total': String(props.total),
-          'data-type': props.type
+          'data-type': props.type,
         },
         Array.from({ length: props.total }).map((_, index) =>
           h('button', {
-            key: index,
-            type: 'button',
-            class: 'varo-indicator__item',
+            'key': index,
+            'type': 'button',
+            'class': 'varo-indicator__item',
             'data-active': String(index === props.current),
             'aria-current': index === props.current ? 'true' : undefined,
-            'aria-label': `切换到第 ${index + 1} 项`,
-            onClick: () => setCurrent(index)
-          })
-        )
+            'aria-label': itemLabel(index),
+            'onClick': () => setCurrent(index),
+          }),
+        ),
       )
-  }
+  },
 })

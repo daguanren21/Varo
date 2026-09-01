@@ -1645,28 +1645,39 @@ const indexes = [
   },
   'fixed-nav': {
     title: 'FixedNav 跨端示例与演示',
-    description: '展示悬浮入口、展开菜单、徽标和点击选择。',
+    description: '在订阅详情中展示悬浮操作入口、展开状态、徽标、选择反馈和无障碍关联。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 悬浮导航',
-        appSubtitle: '快捷入口预览',
+        appSubtitle: '订阅快捷操作预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VFixedNav } from '@varo-ui/h5'
 
-const visible = ref(true)
+const visible = shallowRef(true)
 const navList = [
-  { text: '首页', icon: '⌂' },
-  { text: '消息', icon: '✉', num: 2 }
+  { id: 'share', text: '分享' },
+  { id: 'favorite', text: '收藏', num: 3 },
+  { id: 'support', text: '客服' }
 ]
+const selected = shallowRef('')
+function handleSelect(item: { text: string }) {
+  selected.value = item.text
+}
 <\/script>
 
 <template>
-  <VFixedNav v-model:visible="visible" :nav-list="navList" active-text="导航" />
+  <VFixedNav
+    v-model:visible="visible"
+    :nav-list="navList"
+    active-text="操作"
+    @select="handleSelect"
+  />
+  <p v-if="selected">已选择：{{ selected }}</p>
 </template>
         `.trim(),
       },
@@ -1674,22 +1685,33 @@ const navList = [
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序悬浮导航',
-        appSubtitle: '跨端快捷入口',
+        appSubtitle: '跨端订阅快捷操作',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VFixedNav } from '@varo-ui/weapp'
 
-const visible = ref(true)
+const visible = shallowRef(true)
 const navList = [
-  { text: '首页', icon: '⌂' },
-  { text: '消息', icon: '✉', num: 2 }
+  { id: 'share', text: '分享' },
+  { id: 'favorite', text: '收藏', num: 3 },
+  { id: 'support', text: '客服' }
 ]
+const selected = shallowRef('')
+function handleSelect(item: { text: string }) {
+  selected.value = item.text
+}
 <\/script>
 
 <template>
-  <VFixedNav v-model:visible="visible" :nav-list="navList" active-text="导航" />
+  <VFixedNav
+    v-model:visible="visible"
+    :nav-list="navList"
+    active-text="操作"
+    @select="handleSelect"
+  />
+  <text v-if="selected">已选择：{{ selected }}</text>
 </template>
         `.trim(),
       },
@@ -1766,25 +1788,36 @@ import { VGrid, VGridItem } from '@varo-ui/weapp'
   },
   'indicator': {
     title: 'Indicator 跨端示例与演示',
-    description: '展示点状和线状进度指示能力。',
+    description: '在功能轮播中展示圆点与线条进度、自动切换、直接导航和可本地化无障碍标签。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 指示器',
-        appSubtitle: '轮播进度预览',
+        appSubtitle: '功能轮播分页预览',
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VIndicator } from '@varo-ui/h5'
 
-const current = ref(0)
+const current = shallowRef(0)
 <\/script>
 
 <template>
-  <VIndicator v-model:current="current" :total="4" />
-  <VIndicator v-model:current="current" :total="4" type="line" />
+  <VIndicator
+    v-model:current="current"
+    aria-label="功能轮播分页"
+    item-aria-label="第 {index} 个功能，共 {total} 个"
+    :total="4"
+  />
+  <VIndicator
+    v-model:current="current"
+    aria-label="功能轮播分页"
+    item-aria-label="第 {index} 个功能，共 {total} 个"
+    :total="4"
+    type="line"
+  />
 </template>
         `.trim(),
       },
@@ -1792,19 +1825,30 @@ const current = ref(0)
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序指示器',
-        appSubtitle: '跨端进度预览',
+        appSubtitle: '跨端功能轮播分页',
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VIndicator } from '@varo-ui/weapp'
 
-const current = ref(0)
+const current = shallowRef(0)
 <\/script>
 
 <template>
-  <VIndicator v-model:current="current" :total="4" />
-  <VIndicator v-model:current="current" :total="4" type="line" />
+  <VIndicator
+    v-model:current="current"
+    aria-label="功能轮播分页"
+    item-aria-label="第 {index} 个功能，共 {total} 个"
+    :total="4"
+  />
+  <VIndicator
+    v-model:current="current"
+    aria-label="功能轮播分页"
+    item-aria-label="第 {index} 个功能，共 {total} 个"
+    :total="4"
+    type="line"
+  />
 </template>
         `.trim(),
       },
@@ -1867,7 +1911,7 @@ import { VCol, VRow } from '@varo-ui/weapp'
   },
   'menu': {
     title: 'Menu 跨端示例与演示',
-    description: '展示下拉菜单、选项选择和受控展开状态。',
+    description: '在商品列表中展示排序、库存筛选、受控展开、选中状态和无障碍弹层关联。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
@@ -1877,16 +1921,16 @@ import { VCol, VRow } from '@varo-ui/weapp'
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VMenu, VMenuItem } from '@varo-ui/h5'
 
-const activeName = ref()
-const value = ref('all')
-const stock = ref('all')
+const activeName = shallowRef<string | number>()
+const value = shallowRef('recommended')
+const stock = shallowRef('all')
 const options = [
-  { text: '全部商品', value: 'all' },
-  { text: '新品优先', value: 'new' },
-  { text: '价格排序', value: 'price' }
+  { text: '推荐排序', value: 'recommended' },
+  { text: '最新上架', value: 'newest' },
+  { text: '价格从低到高', value: 'price-asc' }
 ]
 const stockOptions = [
   { text: '全部库存', value: 'all' },
@@ -1911,16 +1955,16 @@ const stockOptions = [
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VMenu, VMenuItem } from '@varo-ui/weapp'
 
-const activeName = ref()
-const value = ref('all')
-const stock = ref('all')
+const activeName = shallowRef<string | number>()
+const value = shallowRef('recommended')
+const stock = shallowRef('all')
 const options = [
-  { text: '全部商品', value: 'all' },
-  { text: '新品优先', value: 'new' },
-  { text: '价格排序', value: 'price' }
+  { text: '推荐排序', value: 'recommended' },
+  { text: '最新上架', value: 'newest' },
+  { text: '价格从低到高', value: 'price-asc' }
 ]
 const stockOptions = [
   { text: '全部库存', value: 'all' },
@@ -1941,17 +1985,36 @@ const stockOptions = [
   },
   'navbar': {
     title: 'Navbar 跨端示例与演示',
-    description: '展示标题、左右区域、返回箭头和点击事件。',
+    description: '在订单详情中展示页面标题、返回与帮助操作、显式无障碍名称和点击反馈。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
         packageName: '@varo-ui/h5',
         appTitle: 'H5 头部导航',
-        appSubtitle: '页面导航预览',
+        appSubtitle: '订单详情导航预览',
         statusRight: '5G · H5',
         code: `
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { VNavbar } from '@varo-ui/h5'
+
+const action = shallowRef('')
+function goBack() { action.value = '返回' }
+function openHelp() { action.value = '帮助' }
+<\/script>
+
 <template>
-  <VNavbar title="订单详情" left-text="返回" right-text="更多" left-arrow />
+  <VNavbar
+    title="订单详情"
+    left-text="返回"
+    left-aria-label="返回"
+    right-text="帮助"
+    right-aria-label="帮助"
+    left-arrow
+    @click-left="goBack"
+    @click-right="openHelp"
+  />
+  <p v-if="action" role="status">操作：{{ action }}</p>
 </template>
         `.trim(),
       },
@@ -1959,11 +2022,30 @@ const stockOptions = [
         runtime: '小程序 wrapper',
         packageName: '@varo-ui/weapp',
         appTitle: '小程序头部导航',
-        appSubtitle: '跨端导航预览',
+        appSubtitle: '跨端订单详情导航',
         statusRight: '微信 · 小程序',
         code: `
+<script setup lang="ts">
+import { shallowRef } from 'wevu'
+import { VNavbar } from '@varo-ui/weapp'
+
+const action = shallowRef('')
+function goBack() { action.value = '返回' }
+function openHelp() { action.value = '帮助' }
+<\/script>
+
 <template>
-  <VNavbar title="订单详情" left-text="返回" right-text="更多" left-arrow />
+  <VNavbar
+    title="订单详情"
+    left-text="返回"
+    left-aria-label="返回"
+    right-text="帮助"
+    right-aria-label="帮助"
+    left-arrow
+    @click-left="goBack"
+    @click-right="openHelp"
+  />
+  <text v-if="action">操作：{{ action }}</text>
 </template>
         `.trim(),
       },
@@ -1976,7 +2058,7 @@ const stockOptions = [
   },
   'pagination': {
     title: 'Pagination 跨端示例与演示',
-    description: '展示上一页、下一页、多页码和简单模式。',
+    description: '在订单列表中展示页码导航、上一页/下一页、当前页反馈和可本地化无障碍标签。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
@@ -1986,14 +2068,19 @@ const stockOptions = [
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VPagination } from '@varo-ui/h5'
 
-const page = ref(2)
+const page = shallowRef(2)
 <\/script>
 
 <template>
-  <VPagination v-model="page" :page-count="5" />
+  <VPagination
+    v-model="page"
+    aria-label="订单分页"
+    item-aria-label="第 {page} 页，共 {total} 页"
+    :page-count="5"
+  />
 </template>
         `.trim(),
       },
@@ -2005,14 +2092,19 @@ const page = ref(2)
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VPagination } from '@varo-ui/weapp'
 
-const page = ref(2)
+const page = shallowRef(2)
 <\/script>
 
 <template>
-  <VPagination v-model="page" :page-count="5" />
+  <VPagination
+    v-model="page"
+    aria-label="订单分页"
+    item-aria-label="第 {page} 页，共 {total} 页"
+    :page-count="5"
+  />
 </template>
         `.trim(),
       },

@@ -9,9 +9,9 @@
 ```vue
 <script setup lang="ts">
 import { VPagination } from '@varo-ui/h5'
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 
-const page = ref(2)
+const page = shallowRef(2)
 </script>
 
 <template>
@@ -22,13 +22,15 @@ const page = ref(2)
 
 ## Props
 
-| Prop         | 类型                  | 默认值     | 描述       |
-| ------------ | --------------------- | ---------- | ---------- |
-| `modelValue` | `number`              | `1`        | 当前页码   |
-| `pageCount`  | `number`              | `1`        | 总页数     |
-| `mode`       | `'multi' \| 'simple'` | `'multi'`  | 分页模式   |
-| `prevText`   | `string`              | `'上一页'` | 上一页文本 |
-| `nextText`   | `string`              | `'下一页'` | 下一页文本 |
+| Prop            | 类型                  | 默认值                          | 描述                                     |
+| --------------- | --------------------- | ------------------------------- | ---------------------------------------- |
+| `modelValue`    | `number`              | `1`                             | 当前页码                                 |
+| `pageCount`     | `number`              | `1`                             | 总页数                                   |
+| `mode`          | `'multi' \| 'simple'` | `'multi'`                       | 分页模式                                 |
+| `prevText`      | `string`              | `'上一页'`                      | 上一页文本                               |
+| `nextText`      | `string`              | `'下一页'`                      | 下一页文本                               |
+| `ariaLabel`     | `string`              | `'分页'`                        | 分页导航的无障碍名称                     |
+| `itemAriaLabel` | `string`              | `'第 {page} 页，共 {total} 页'` | 页码标签模板，支持 `{page}` 和 `{total}` |
 
 ## Events
 

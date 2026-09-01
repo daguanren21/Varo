@@ -60,11 +60,20 @@ describe('ui-weapp navigation components', () => {
         'onUpdate:visible': onVisible,
       },
     })
+    const fixedTrigger = fixed.get('.varo-fixed-nav__trigger')
+    expect(fixedTrigger.attributes('aria-expanded')).toBe('false')
+    expect(fixedTrigger.attributes('aria-controls')).toBeTruthy()
     await fixed.get('.varo-fixed-nav__trigger').trigger('click')
     expect(onVisible).toHaveBeenCalledWith(true)
+    await fixed.setProps({ visible: true })
+    expect(fixedTrigger.attributes('aria-expanded')).toBe('true')
+    expect(fixed.get('.varo-fixed-nav__list').attributes('id')).toBe(fixedTrigger.attributes('aria-controls'))
 
     const indicator = mount(VIndicator, { props: { total: 3, current: 1 } })
     expect(indicator.findAll('.varo-indicator__item')).toHaveLength(3)
+    expect(indicator.attributes('role')).toBe('navigation')
+    expect(indicator.attributes('aria-label')).toBe('轮播进度')
+    expect(indicator.findAll('.varo-indicator__item')[1].attributes('aria-label')).toBe('第 2 项，共 3 项')
 
     const indicatorUpdate = vi.fn()
     const clickableIndicator = mount(VIndicator, {
@@ -75,11 +84,17 @@ describe('ui-weapp navigation components', () => {
 
     const left = vi.fn()
     const nav = mount(VNavbar, { props: { title: '标题', leftText: '返回', onClickLeft: left } })
+    expect(nav.get('.varo-navbar__left').attributes('aria-label')).toBe('返回')
+    expect(nav.get('.varo-navbar__right').attributes('aria-hidden')).toBe('true')
+    expect(nav.get('.varo-navbar__right').attributes('tabindex')).toBe('-1')
     await nav.get('.varo-navbar__left').trigger('click')
     expect(left).toHaveBeenCalledTimes(1)
 
     const page = vi.fn()
     const pagination = mount(VPagination, { props: { 'modelValue': 1, 'pageCount': 2, 'onUpdate:modelValue': page } })
+    expect(pagination.attributes('aria-label')).toBe('分页')
+    expect(pagination.findAll('.varo-pagination__page')[0].attributes('aria-current')).toBe('page')
+    expect(pagination.findAll('.varo-pagination__page')[0].attributes('aria-label')).toBe('第 1 页，共 2 页')
     await pagination.get('.varo-pagination__next').trigger('click')
     expect(page).toHaveBeenCalledWith(2)
   })
@@ -93,6 +108,10 @@ describe('ui-weapp navigation components', () => {
       },
     })
     await menu.get('.varo-menu__title').trigger('click')
+    expect(menu.get('.varo-menu__title').attributes('aria-controls')).toBe(menu.get('.varo-menu__popup').attributes('id'))
+    expect(menu.get('.varo-menu__title').attributes('aria-haspopup')).toBe('listbox')
+    expect(menu.get('.varo-menu__popup').attributes('role')).toBe('listbox')
+    expect(menu.get('.varo-menu__option').attributes('role')).toBe('option')
     await menu.get('.varo-menu__option').trigger('click')
     expect(menuSelect).toHaveBeenCalledWith('default', { text: '默认', value: 'default' })
 

@@ -1,5 +1,6 @@
+import type { InjectionKey, PropType, StyleValue } from 'vue'
+import { computed, defineComponent, h, inject, provide, shallowRef, useId } from 'vue'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, inject, provide, shallowRef, type InjectionKey, type PropType, type StyleValue } from 'vue'
 
 export interface MenuOption {
   text: string
@@ -8,7 +9,7 @@ export interface MenuOption {
   icon?: string
 }
 
-type MenuContext = {
+interface MenuContext {
   activeName: { value: string | number | undefined }
   toggle: (name: string | number) => void
   close: () => void
@@ -21,12 +22,12 @@ export const VMenu = defineComponent({
   props: {
     activeName: {
       type: [String, Number] as PropType<string | number | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultActiveName: {
       type: [String, Number] as PropType<string | number | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:activeName', 'open', 'close'],
   setup(props, { attrs, emit, slots }) {
@@ -51,7 +52,7 @@ export const VMenu = defineComponent({
       close() {
         setActive(undefined)
         emit('close')
-      }
+      },
     })
 
     return () =>
@@ -59,13 +60,13 @@ export const VMenu = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-menu', attrs.class],
-          style: attrs.style as StyleValue,
-          'data-active-name': current.value
+          'class': ['varo-menu', attrs.class],
+          'style': attrs.style as StyleValue,
+          'data-active-name': current.value,
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const VMenuItem = defineComponent({
@@ -73,22 +74,23 @@ export const VMenuItem = defineComponent({
   props: {
     name: {
       type: [String, Number] as PropType<string | number>,
-      required: true
+      required: true,
     },
     title: String,
     options: {
       type: Array as PropType<MenuOption[]>,
-      default: () => []
+      default: () => [],
     },
     modelValue: {
       type: [String, Number] as PropType<string | number | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:modelValue', 'select'],
   setup(props, { attrs, emit, slots }) {
     const menu = inject(menuContextKey)
     const open = computed(() => menu?.activeName.value === props.name)
+    const popupId = useId()
 
     function select(option: MenuOption) {
       if (option.disabled) {
@@ -100,56 +102,67 @@ export const VMenuItem = defineComponent({
       menu?.close()
     }
 
+    function keydown(event: KeyboardEvent) {
+      if (!open.value || event.key !== 'Escape') { return }
+      event.preventDefault()
+      menu?.close()
+    }
+
     return () =>
       h(
         'div',
         {
           ...attrs,
-          class: ['varo-menu__item', attrs.class],
-          'data-open': String(open.value)
+          'class': ['varo-menu__item', attrs.class],
+          'data-open': String(open.value),
+          'onKeydown': keydown,
         },
         [
           h(
             'button',
             {
-              type: 'button',
-              class: 'varo-menu__title',
+              'type': 'button',
+              'class': 'varo-menu__title',
               'aria-expanded': String(open.value),
-              onClick: () => menu?.toggle(props.name)
+              'aria-controls': popupId,
+              'aria-haspopup': 'listbox',
+              'onClick': () => menu?.toggle(props.name),
             },
             [
               h('span', { class: 'varo-menu__title-text' }, slots.title?.() ?? props.title),
-              h('span', { class: 'varo-menu__arrow', 'aria-hidden': 'true' })
-            ]
+              h('span', { 'class': 'varo-menu__arrow', 'aria-hidden': 'true' }),
+            ],
           ),
           open.value
             ? h(
                 'div',
-                { class: 'varo-menu__popup' },
-                slots.default?.() ??
-                  props.options.map((option) =>
-                    h(
-                      'button',
-                      {
-                        key: option.value,
-                        type: 'button',
-                        class: 'varo-menu__option',
-                        disabled: option.disabled,
-                        'data-active': String(props.modelValue === option.value),
-                        onClick: () => select(option)
-                      },
-                      [
-                        option.icon ? h('span', { class: 'varo-menu__option-icon' }, option.icon) : null,
-                        h('span', { class: 'varo-menu__option-text' }, option.text),
-                        props.modelValue === option.value
-                          ? h('span', { class: 'varo-menu__check', 'aria-hidden': 'true' }, '✓')
-                          : null
-                      ]
-                    )
-                  )
+                { id: popupId, class: 'varo-menu__popup', role: 'listbox' },
+                slots.default?.()
+                ?? props.options.map(option =>
+                  h(
+                    'button',
+                    {
+                      'key': option.value,
+                      'type': 'button',
+                      'class': 'varo-menu__option',
+                      'disabled': option.disabled,
+                      'data-active': String(props.modelValue === option.value),
+                      'aria-selected': String(props.modelValue === option.value),
+                      'role': 'option',
+                      'onClick': () => select(option),
+                    },
+                    [
+                      option.icon ? h('span', { 'aria-hidden': 'true', 'class': 'varo-menu__option-icon' }, option.icon) : null,
+                      h('span', { class: 'varo-menu__option-text' }, option.text),
+                      props.modelValue === option.value
+                        ? h('span', { 'class': 'varo-menu__check', 'aria-hidden': 'true' }, '✓')
+                        : null,
+                    ],
+                  ),
+                ),
               )
-            : null
-        ]
+            : null,
+        ],
       )
-  }
+  },
 })

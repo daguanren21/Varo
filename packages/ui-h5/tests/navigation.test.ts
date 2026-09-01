@@ -64,11 +64,17 @@ describe('ui-h5 navigation components', () => {
         onSelect,
       },
     })
+    const trigger = wrapper.get('.varo-fixed-nav__trigger')
+    expect(trigger.attributes('aria-expanded')).toBe('false')
+    expect(trigger.attributes('aria-controls')).toBeTruthy()
 
     await wrapper.get('.varo-fixed-nav__trigger').trigger('click')
     expect(onUpdate).toHaveBeenCalledWith(true)
 
     await wrapper.setProps({ visible: true })
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+    expect(wrapper.get('.varo-fixed-nav__list').attributes('id')).toBe(trigger.attributes('aria-controls'))
+    expect(wrapper.get('.varo-fixed-nav__icon').attributes('aria-hidden')).toBe('true')
     await wrapper.get('.varo-fixed-nav__item').trigger('click')
 
     expect(onSelect).toHaveBeenCalledWith({ id: 1, text: '首页', icon: '⌂', num: 2 }, 0)
@@ -82,10 +88,14 @@ describe('ui-h5 navigation components', () => {
         type: 'line',
       },
     })
+    const items = wrapper.findAll('.varo-indicator__item')
 
-    expect(wrapper.findAll('.varo-indicator__item')).toHaveLength(4)
-    expect(wrapper.findAll('.varo-indicator__item')[2].attributes('data-active')).toBe('true')
+    expect(items).toHaveLength(4)
+    expect(items[2].attributes('data-active')).toBe('true')
+    expect(items[2].attributes('aria-label')).toBe('第 3 项，共 4 项')
     expect(wrapper.attributes('data-type')).toBe('line')
+    expect(wrapper.attributes('role')).toBe('navigation')
+    expect(wrapper.attributes('aria-label')).toBe('轮播进度')
   })
 
   it('emits indicator changes when clicking a target item', async () => {
@@ -122,6 +132,14 @@ describe('ui-h5 navigation components', () => {
 
     await wrapper.get('.varo-menu__title').trigger('click')
     expect(wrapper.find('.varo-menu__popup').exists()).toBe(true)
+    const title = wrapper.get('.varo-menu__title')
+    const popup = wrapper.get('.varo-menu__popup')
+    const option = wrapper.get('.varo-menu__option')
+    expect(title.attributes('aria-controls')).toBe(popup.attributes('id'))
+    expect(title.attributes('aria-haspopup')).toBe('listbox')
+    expect(popup.attributes('role')).toBe('listbox')
+    expect(option.attributes('role')).toBe('option')
+    expect(option.attributes('aria-selected')).toBe('false')
 
     await wrapper.get('.varo-menu__option').trigger('click')
     expect(onSelect).toHaveBeenCalledWith('default', { text: '默认', value: 'default' })
@@ -161,6 +179,9 @@ describe('ui-h5 navigation components', () => {
         onClickRight,
       },
     })
+    expect(wrapper.get('.varo-navbar__left').attributes('aria-label')).toBe('返回')
+    expect(wrapper.get('.varo-navbar__right').attributes('aria-label')).toBe('更多')
+    expect(wrapper.get('.varo-navbar__arrow').attributes('aria-hidden')).toBe('true')
 
     await wrapper.get('.varo-navbar__left').trigger('click')
     await wrapper.get('.varo-navbar__right').trigger('click')
@@ -178,6 +199,9 @@ describe('ui-h5 navigation components', () => {
         'onUpdate:modelValue': onUpdate,
       },
     })
+    expect(wrapper.attributes('aria-label')).toBe('分页')
+    expect(wrapper.findAll('.varo-pagination__page')[0].attributes('aria-current')).toBe('page')
+    expect(wrapper.findAll('.varo-pagination__page')[0].attributes('aria-label')).toBe('第 1 页，共 3 页')
 
     await wrapper.get('.varo-pagination__next').trigger('click')
     expect(onUpdate).toHaveBeenCalledWith(2)

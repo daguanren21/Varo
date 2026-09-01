@@ -38,9 +38,11 @@ const elevatorActive = ref('A')
 const elevatorSelected = shallowRef(props.locale === 'en' ? 'Hangzhou' : '杭州')
 const indicatorCurrent = ref(0)
 const fixedNavVisible = ref(true)
+const fixedNavSelected = shallowRef('')
 const menuActiveName = ref<string | number | undefined>()
-const menuValue = ref<string | number>('all')
+const menuValue = ref<string | number>('recommended')
 const menuStockValue = ref<string | number>('all')
+const navbarAction = shallowRef('')
 const paginationPage = ref(2)
 const sideNavActive = ref<string | number>('orders')
 const tabbarActive = ref<string | number>('home')
@@ -63,6 +65,130 @@ function selectElevatorItem(item: string | { text?: string, title?: string, valu
   elevatorSelected.value = typeof item === 'string'
     ? item
     : item.text ?? item.title ?? String(item.value ?? '')
+}
+const fixedNavSampleCopy = computed(() => ({
+  eyebrow: props.locale === 'en' ? 'Subscription' : '年度订阅',
+  title: 'Varo Pro',
+  description: props.locale === 'en' ? 'All components, Registry Blocks, and Agent UI.' : '全部组件、Registry Blocks 与 Agent UI。',
+  price: '¥299',
+  priceSuffix: props.locale === 'en' ? '/ year' : '/ 年',
+  features: props.locale === 'en' ? ['Dual runtime', 'Owned source', 'Priority updates'] : ['双端运行时', '源码归属业务', '优先更新'],
+  action: props.locale === 'en' ? 'Actions' : '操作',
+  selected: props.locale === 'en' ? 'Selected' : '已选择',
+  items: props.locale === 'en'
+    ? [
+        { id: 'share', text: 'Share' },
+        { id: 'favorite', text: 'Favorite', num: 3 },
+        { id: 'support', text: 'Support' },
+      ]
+    : [
+        { id: 'share', text: '分享' },
+        { id: 'favorite', text: '收藏', num: 3 },
+        { id: 'support', text: '客服' },
+      ],
+}))
+const indicatorSampleCopy = computed(() => ({
+  dots: props.locale === 'en' ? 'Dots' : '圆点',
+  lines: props.locale === 'en' ? 'Lines' : '线条',
+  navigationLabel: props.locale === 'en' ? 'Feature carousel pagination' : '功能轮播分页',
+  itemLabel: props.locale === 'en' ? 'Feature {index} of {total}' : '第 {index} 个功能，共 {total} 个',
+  items: props.locale === 'en'
+    ? [
+        { tag: 'Registry', title: 'Own the source', body: 'Install editable target-correct components into your project.' },
+        { tag: 'Dual runtime', title: 'One public API', body: 'Use the same contracts on H5 and Wevu mini-programs.' },
+        { tag: 'Agent UI', title: 'Model-neutral', body: 'Render streaming, tools, reasoning, and approvals.' },
+        { tag: 'Release', title: 'Production ready', body: 'Validate types, tests, builds, Registry paths, and docs.' },
+      ]
+    : [
+        { tag: 'Registry', title: '源码归属业务', body: '把可编辑、目标正确的组件源码安装进项目。' },
+        { tag: '双端运行', title: '一套公共 API', body: 'H5 与 Wevu 小程序共享组件契约。' },
+        { tag: 'Agent UI', title: '模型无关', body: '覆盖流式文本、工具、推理与审批。' },
+        { tag: '发布保障', title: '生产可用', body: '验证类型、测试、构建、Registry 路径与文档。' },
+      ],
+}))
+const menuSampleCopy = computed(() => ({
+  title: props.locale === 'en' ? 'Product catalog' : '商品列表',
+  count: props.locale === 'en' ? '128 products' : '128 件商品',
+  sort: props.locale === 'en' ? 'Sort' : '排序',
+  stock: props.locale === 'en' ? 'Availability' : '库存',
+  result: props.locale === 'en' ? 'Filters' : '当前筛选',
+  sortOptions: props.locale === 'en'
+    ? [
+        { text: 'Recommended', value: 'recommended' },
+        { text: 'Newest', value: 'newest' },
+        { text: 'Price low to high', value: 'price-asc' },
+      ]
+    : [
+        { text: '推荐排序', value: 'recommended' },
+        { text: '最新上架', value: 'newest' },
+        { text: '价格从低到高', value: 'price-asc' },
+      ],
+  stockOptions: props.locale === 'en'
+    ? [
+        { text: 'All stock', value: 'all' },
+        { text: 'In stock', value: 'in-stock' },
+        { text: 'Pre-order', value: 'preorder' },
+      ]
+    : [
+        { text: '全部库存', value: 'all' },
+        { text: '仅看有货', value: 'in-stock' },
+        { text: '预售商品', value: 'preorder' },
+      ],
+  products: props.locale === 'en'
+    ? [
+        { name: 'Varo Pro annual plan', meta: 'In stock', price: '¥299' },
+        { name: 'Registry Block pack', meta: 'In stock', price: '¥129' },
+        { name: 'Agent UI template', meta: 'Pre-order', price: '¥89' },
+      ]
+    : [
+        { name: 'Varo Pro 年度订阅', meta: '有货', price: '¥299' },
+        { name: 'Registry Block 套装', meta: '有货', price: '¥129' },
+        { name: 'Agent UI 模板', meta: '预售', price: '¥89' },
+      ],
+}))
+
+const menuSortLabel = computed(() =>
+  menuSampleCopy.value.sortOptions.find(option => option.value === menuValue.value)?.text ?? '',
+)
+const menuStockLabel = computed(() =>
+  menuSampleCopy.value.stockOptions.find(option => option.value === menuStockValue.value)?.text ?? '',
+)
+const navbarSampleCopy = computed(() => ({
+  title: props.locale === 'en' ? 'Order details' : '订单详情',
+  back: props.locale === 'en' ? 'Back' : '返回',
+  help: props.locale === 'en' ? 'Help' : '帮助',
+  status: props.locale === 'en' ? 'Shipped' : '已发货',
+  statusHint: props.locale === 'en' ? 'Expected tomorrow before 18:00' : '预计明日 18:00 前送达',
+  order: props.locale === 'en' ? 'Order number' : '订单编号',
+  orderValue: '1042',
+  recipient: props.locale === 'en' ? 'Recipient' : '收货人',
+  recipientValue: props.locale === 'en' ? 'Lin · 138****2042' : '林默 · 138****2042',
+  total: props.locale === 'en' ? 'Paid' : '实付款',
+  totalValue: '¥279',
+  action: props.locale === 'en' ? 'Action' : '操作',
+}))
+const paginationSampleCopy = computed(() => ({
+  title: props.locale === 'en' ? 'All orders' : '全部订单',
+  total: props.locale === 'en' ? '15 orders' : '共 15 笔',
+  page: props.locale === 'en' ? 'Page' : '第',
+  pageSuffix: props.locale === 'en' ? 'of 5' : '页 / 共 5 页',
+  navigationLabel: props.locale === 'en' ? 'Order pages' : '订单分页',
+  itemLabel: props.locale === 'en' ? 'Page {page} of {total}' : '第 {page} 页，共 {total} 页',
+  statuses: props.locale === 'en' ? ['Shipped', 'Completed', 'Pending payment'] : ['已发货', '已完成', '待付款'],
+}))
+
+const paginationOrders = computed(() => {
+  const base = 1048 - paginationPage.value * 3
+  return Array.from({ length: 3 }, (_, index) => ({
+    id: `#${base - index}`,
+    status: paginationSampleCopy.value.statuses[index]!,
+    amount: [`¥${279 - paginationPage.value * 10}`, `¥${168 + paginationPage.value * 5}`, `¥${99 + paginationPage.value}`][index]!,
+  }))
+})
+
+function selectFixedNavItem(item: { text: string }) {
+  fixedNavSelected.value = item.text
+  fixedNavVisible.value = false
 }
 
 const cellDemoCopy = computed(() => props.locale === 'en'
@@ -438,8 +564,8 @@ const copy = computed(() => getDemoCopy(props.locale))
 const demo = computed(() => resolveDemoContent(props.locale, props.example))
 const platformDemo = computed(() => demo.value.platforms[activePlatform.value])
 const runtime = computed(() => getDemoRuntime(activePlatform.value))
-const currentIndicatorLabel = computed(
-  () => copy.value.indicatorSlides[indicatorCurrent.value] ?? copy.value.indicatorSlides[0],
+const currentIndicatorItem = computed(
+  () => indicatorSampleCopy.value.items[indicatorCurrent.value] ?? indicatorSampleCopy.value.items[0]!,
 )
 const codeExamples = computed(() => [
   {
@@ -552,7 +678,7 @@ onMounted(() => {
   }
 
   indicatorTimer = setInterval(() => {
-    indicatorCurrent.value = (indicatorCurrent.value + 1) % copy.value.indicatorSlides.length
+    indicatorCurrent.value = (indicatorCurrent.value + 1) % indicatorSampleCopy.value.items.length
   }, 1800)
 })
 
@@ -1535,15 +1661,33 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'fixed-nav'">
                     <section class="platform-demo__nav-demo platform-demo__fixed-nav-demo">
-                      <div class="platform-demo__fixed-nav-copy">
-                        <span>{{ platformDemo.appTitle }}</span>
-                        <small>{{ platformDemo.appSubtitle }}</small>
-                      </div>
+                      <article class="platform-demo__fixed-nav-product">
+                        <span>{{ fixedNavSampleCopy.eyebrow }}</span>
+                        <h3>{{ fixedNavSampleCopy.title }}</h3>
+                        <p>{{ fixedNavSampleCopy.description }}</p>
+                        <div>
+                          <strong>{{ fixedNavSampleCopy.price }}</strong>
+                          <span>{{ fixedNavSampleCopy.priceSuffix }}</span>
+                        </div>
+                        <ul>
+                          <li v-for="feature in fixedNavSampleCopy.features" :key="feature">
+                            {{ feature }}
+                          </li>
+                        </ul>
+                        <p
+                          v-if="fixedNavSelected"
+                          class="platform-demo__fixed-nav-result"
+                          role="status"
+                        >
+                          {{ fixedNavSampleCopy.selected }}：{{ fixedNavSelected }}
+                        </p>
+                      </article>
                       <component
                         :is="runtime.FixedNav"
                         :visible="fixedNavVisible"
-                        :nav-list="copy.fixedNavItems"
-                        active-text="导航"
+                        :nav-list="fixedNavSampleCopy.items"
+                        :active-text="fixedNavSampleCopy.action"
+                        @select="selectFixedNavItem"
                         @update:visible="fixedNavVisible = $event"
                       />
                     </section>
@@ -1551,55 +1695,85 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'indicator'">
                     <section class="platform-demo__nav-demo platform-demo__indicator-demo">
-                      <div class="platform-demo__indicator-slide">
-                        <span>{{ String(indicatorCurrent + 1).padStart(2, '0') }}</span>
-                        <strong>{{ currentIndicatorLabel }}</strong>
-                        <small>{{ platformDemo.appTitle }}</small>
+                      <article class="platform-demo__indicator-slide">
+                        <header>
+                          <span>{{ currentIndicatorItem.tag }}</span>
+                          <span>{{ String(indicatorCurrent + 1).padStart(2, '0') }} / 04</span>
+                        </header>
+                        <strong>{{ currentIndicatorItem.title }}</strong>
+                        <p>{{ currentIndicatorItem.body }}</p>
+                      </article>
+                      <div class="platform-demo__indicator-controls">
+                        <div>
+                          <span>{{ indicatorSampleCopy.dots }}</span>
+                          <component
+                            :is="runtime.Indicator"
+                            :aria-label="indicatorSampleCopy.navigationLabel"
+                            :item-aria-label="indicatorSampleCopy.itemLabel"
+                            :total="indicatorSampleCopy.items.length"
+                            :current="indicatorCurrent"
+                            @update:current="indicatorCurrent = $event"
+                          />
+                        </div>
+                        <div>
+                          <span>{{ indicatorSampleCopy.lines }}</span>
+                          <component
+                            :is="runtime.Indicator"
+                            :aria-label="indicatorSampleCopy.navigationLabel"
+                            :item-aria-label="indicatorSampleCopy.itemLabel"
+                            :total="indicatorSampleCopy.items.length"
+                            :current="indicatorCurrent"
+                            type="line"
+                            @update:current="indicatorCurrent = $event"
+                          />
+                        </div>
                       </div>
-                      <component
-                        :is="runtime.Indicator"
-                        :total="copy.indicatorSlides.length"
-                        :current="indicatorCurrent"
-                        @update:current="indicatorCurrent = $event"
-                      />
-                      <component
-                        :is="runtime.Indicator"
-                        :total="copy.indicatorSlides.length"
-                        :current="indicatorCurrent"
-                        type="line"
-                        @update:current="indicatorCurrent = $event"
-                      />
                     </section>
                   </template>
 
                   <template v-else-if="example === 'menu'">
                     <section class="platform-demo__nav-demo platform-demo__menu-demo">
-                      <component
-                        :is="runtime.Menu"
-                        :active-name="menuActiveName"
-                        @update:active-name="menuActiveName = $event"
-                      >
+                      <article class="platform-demo__menu-catalog">
+                        <header>
+                          <strong>{{ menuSampleCopy.title }}</strong>
+                          <span>{{ menuSampleCopy.count }}</span>
+                        </header>
                         <component
-                          :is="runtime.MenuItem"
-                          :model-value="menuValue"
-                          name="sort"
-                          title="排序"
-                          :options="copy.menuOptions"
-                          @update:model-value="menuValue = $event"
-                        />
-                        <component
-                          :is="runtime.MenuItem"
-                          :model-value="menuStockValue"
-                          name="stock"
-                          title="库存"
-                          :options="copy.menuStockOptions"
-                          @update:model-value="menuStockValue = $event"
-                        />
-                      </component>
-                      <div class="platform-demo__menu-result">
-                        <span>{{ menuValue }}</span>
-                        <span>{{ menuStockValue }}</span>
-                      </div>
+                          :is="runtime.Menu"
+                          :active-name="menuActiveName"
+                          @update:active-name="menuActiveName = $event"
+                        >
+                          <component
+                            :is="runtime.MenuItem"
+                            :model-value="menuValue"
+                            name="sort"
+                            :title="menuSampleCopy.sort"
+                            :options="menuSampleCopy.sortOptions"
+                            @update:model-value="menuValue = $event"
+                          />
+                          <component
+                            :is="runtime.MenuItem"
+                            :model-value="menuStockValue"
+                            name="stock"
+                            :title="menuSampleCopy.stock"
+                            :options="menuSampleCopy.stockOptions"
+                            @update:model-value="menuStockValue = $event"
+                          />
+                        </component>
+                        <p class="platform-demo__menu-result" role="status">
+                          <span>{{ menuSampleCopy.result }}</span>
+                          <strong>{{ menuSortLabel }} · {{ menuStockLabel }}</strong>
+                        </p>
+                        <div class="platform-demo__menu-products">
+                          <article v-for="product in menuSampleCopy.products" :key="product.name">
+                            <div>
+                              <strong>{{ product.name }}</strong>
+                              <span>{{ product.meta }}</span>
+                            </div>
+                            <strong>{{ product.price }}</strong>
+                          </article>
+                        </div>
+                      </article>
                     </section>
                   </template>
 
@@ -1607,33 +1781,70 @@ onBeforeUnmount(() => {
                     <section class="platform-demo__nav-demo platform-demo__navbar-demo">
                       <component
                         :is="runtime.Navbar"
-                        :title="copy.navTitle"
-                        :left-text="copy.navLeft"
-                        :right-text="copy.navRight"
+                        :title="navbarSampleCopy.title"
+                        :left-text="navbarSampleCopy.back"
+                        :left-aria-label="navbarSampleCopy.back"
+                        :right-text="navbarSampleCopy.help"
+                        :right-aria-label="navbarSampleCopy.help"
                         left-arrow
+                        @click-left="navbarAction = navbarSampleCopy.back"
+                        @click-right="navbarAction = navbarSampleCopy.help"
                       />
-                      <div class="platform-demo__navbar-page">
-                        <strong>{{ platformDemo.appTitle }}</strong>
-                        <span>{{ platformDemo.appSubtitle }}</span>
-                      </div>
+                      <article class="platform-demo__navbar-order">
+                        <header>
+                          <span>{{ navbarSampleCopy.status }}</span>
+                          <small>{{ navbarSampleCopy.statusHint }}</small>
+                        </header>
+                        <dl>
+                          <div>
+                            <dt>{{ navbarSampleCopy.order }}</dt>
+                            <dd>{{ navbarSampleCopy.orderValue }}</dd>
+                          </div>
+                          <div>
+                            <dt>{{ navbarSampleCopy.recipient }}</dt>
+                            <dd>{{ navbarSampleCopy.recipientValue }}</dd>
+                          </div>
+                          <div>
+                            <dt>{{ navbarSampleCopy.total }}</dt>
+                            <dd>{{ navbarSampleCopy.totalValue }}</dd>
+                          </div>
+                        </dl>
+                        <p v-if="navbarAction" role="status">
+                          {{ navbarSampleCopy.action }}：{{ navbarAction }}
+                        </p>
+                      </article>
                     </section>
                   </template>
 
                   <template v-else-if="example === 'pagination'">
                     <section class="platform-demo__nav-demo platform-demo__pagination-demo">
-                      <component
-                        :is="runtime.Pagination"
-                        :model-value="paginationPage"
-                        :page-count="5"
-                        @update:model-value="paginationPage = $event"
-                      />
-                      <component
-                        :is="runtime.Pagination"
-                        mode="simple"
-                        :model-value="paginationPage"
-                        :page-count="5"
-                        @update:model-value="paginationPage = $event"
-                      />
+                      <article class="platform-demo__pagination-orders">
+                        <header>
+                          <strong>{{ paginationSampleCopy.title }}</strong>
+                          <span>{{ paginationSampleCopy.total }}</span>
+                        </header>
+                        <div>
+                          <article v-for="order in paginationOrders" :key="order.id">
+                            <div>
+                              <strong>{{ order.id }}</strong>
+                              <span>{{ order.status }}</span>
+                            </div>
+                            <strong>{{ order.amount }}</strong>
+                          </article>
+                        </div>
+                        <p role="status">
+                          {{ paginationSampleCopy.page }} {{ paginationPage }}
+                          {{ paginationSampleCopy.pageSuffix }}
+                        </p>
+                        <component
+                          :is="runtime.Pagination"
+                          :aria-label="paginationSampleCopy.navigationLabel"
+                          :item-aria-label="paginationSampleCopy.itemLabel"
+                          :model-value="paginationPage"
+                          :page-count="5"
+                          @update:model-value="paginationPage = $event"
+                        />
+                      </article>
                     </section>
                   </template>
 
@@ -2603,28 +2814,80 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__fixed-nav-demo {
-  min-height: 300px;
+  min-height: 340px;
 }
 
-.platform-demo__fixed-nav-copy,
-.platform-demo__navbar-page,
-.platform-demo__tabbar-page,
-.platform-demo__side-navbar-panel,
-.platform-demo__tabs-panel {
+.platform-demo__fixed-nav-product {
   display: grid;
-  gap: 6px;
-  padding: 14px;
-  background: color-mix(in srgb, var(--varo-muted) 10%, transparent);
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 16%, transparent), transparent 40%),
+    var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
   border-radius: 16px;
 }
 
-.platform-demo__fixed-nav-copy small,
-.platform-demo__navbar-page span,
-.platform-demo__tabbar-page span,
-.platform-demo__side-navbar-panel span,
-.platform-demo__tabs-panel span {
-  font-size: 0.8rem;
-  color: var(--vp-c-text-2);
+.platform-demo__fixed-nav-product > span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--varo-primary);
+}
+
+.platform-demo__fixed-nav-product h3,
+.platform-demo__fixed-nav-product p {
+  margin: 0;
+}
+
+.platform-demo__fixed-nav-product h3 {
+  font-size: 1.15rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__fixed-nav-product > p {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--varo-text-secondary);
+}
+
+.platform-demo__fixed-nav-product > div {
+  display: flex;
+  gap: 4px;
+  align-items: baseline;
+}
+
+.platform-demo__fixed-nav-product > div strong {
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-primary);
+}
+
+.platform-demo__fixed-nav-product > div span {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__fixed-nav-product ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  margin: 4px 0 0;
+  list-style: none;
+}
+
+.platform-demo__fixed-nav-product li {
+  padding: 5px 7px;
+  font-size: 0.66rem;
+  color: var(--varo-text-secondary);
+  background: var(--varo-fill-light);
+  border-radius: 8px;
+}
+
+.platform-demo__fixed-nav-product .platform-demo__fixed-nav-result {
+  font-weight: 650;
+  color: var(--varo-success);
 }
 
 :deep(.varo-fixed-nav) {
@@ -2633,24 +2896,32 @@ onBeforeUnmount(() => {
   bottom: 16px;
   display: flex;
   flex-direction: row-reverse;
-  gap: 10px;
+  gap: 8px;
   align-items: flex-end;
 }
 
 :deep(.varo-fixed-nav__trigger) {
-  width: 48px;
-  height: 48px;
+  min-width: 52px;
+  height: 44px;
+  padding: 0 12px;
   font-weight: 700;
   color: var(--varo-primary-foreground);
-  background: var(--vp-c-brand-1);
+  cursor: pointer;
+  background: var(--varo-primary);
   border: 0;
   border-radius: 999px;
-  box-shadow: 0 14px 36px color-mix(in srgb, var(--demo-brand) 26%, transparent);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--varo-primary) 28%, transparent);
+}
+
+:deep(.varo-fixed-nav__trigger:focus-visible),
+:deep(.varo-fixed-nav__item:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
 }
 
 :deep(.varo-fixed-nav__list) {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 :deep(.varo-fixed-nav__item) {
@@ -2658,13 +2929,20 @@ onBeforeUnmount(() => {
   display: inline-flex;
   gap: 8px;
   align-items: center;
+  justify-content: center;
   min-height: 38px;
   padding: 0 12px;
-  color: var(--vp-c-text-1);
-  background: color-mix(in srgb, var(--varo-card-solid) 96%, transparent);
+  color: var(--varo-text-primary);
+  cursor: pointer;
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: 999px;
   box-shadow: var(--varo-shadow-sm);
+}
+
+:deep(.varo-fixed-nav__item:hover) {
+  color: var(--varo-primary);
+  border-color: var(--varo-primary);
 }
 
 :deep(.varo-fixed-nav__badge),
@@ -2688,37 +2966,66 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__indicator-demo {
-  justify-items: center;
+  gap: 14px;
 }
 
 .platform-demo__indicator-slide {
   display: grid;
-  gap: 8px;
-  place-items: center;
+  gap: 10px;
   width: 100%;
-  min-height: 148px;
+  min-height: 158px;
+  padding: 16px;
   background:
-    radial-gradient(circle at 22% 22%, color-mix(in srgb, var(--demo-brand) 18%, transparent), transparent 28%),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--demo-brand) 14%, transparent),
-      color-mix(in srgb, var(--vp-c-brand-3) 14%, transparent)
-    );
-  border-radius: 18px;
-  transition:
-    background var(--demo-duration-enter) var(--demo-ease-out),
-    transform var(--demo-duration-enter) var(--demo-ease-out);
+    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 18%, transparent), transparent 42%),
+    var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+  transition: background var(--demo-duration-enter) var(--demo-ease-out);
 }
 
-.platform-demo__indicator-slide span {
-  font-size: 0.8rem;
+.platform-demo__indicator-slide > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.platform-demo__indicator-slide > header span {
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--vp-c-brand-1);
+  color: var(--varo-primary);
 }
 
-.platform-demo__indicator-slide small {
-  font-size: 0.76rem;
-  color: var(--vp-c-text-2);
+.platform-demo__indicator-slide > strong {
+  font-size: 1rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__indicator-slide > p {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--varo-text-secondary);
+}
+
+.platform-demo__indicator-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.platform-demo__indicator-controls > div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 7px 10px;
+  background: var(--varo-fill-light);
+  border-radius: 10px;
+}
+
+.platform-demo__indicator-controls > div > span {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
 }
 
 :deep(.varo-indicator) {
@@ -2728,21 +3035,26 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-indicator__item) {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   padding: 0;
   cursor: pointer;
-  background: color-mix(in srgb, var(--varo-muted) 28%, transparent);
+  background: var(--varo-fill-darker);
   border: 0;
   border-radius: 999px;
   transition:
-    width var(--demo-duration-fast) var(--demo-ease-out),
-    background-color var(--demo-duration-fast) var(--demo-ease-out),
-    transform var(--demo-duration-fast) var(--demo-ease-out);
+    width 140ms ease,
+    background-color 140ms ease,
+    transform 140ms ease;
 }
 
 :deep(.varo-indicator__item:hover) {
-  transform: scale(1.12);
+  transform: scale(1.14);
+}
+
+:deep(.varo-indicator__item:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
 }
 
 :deep(.varo-indicator[data-type='line'] .varo-indicator__item) {
@@ -2751,13 +3063,39 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-indicator__item[data-active='true']) {
-  width: 18px;
-  background: var(--vp-c-brand-1);
+  width: 20px;
+  background: var(--varo-primary);
 }
 
 .platform-demo__menu-demo {
-  min-height: 260px;
+  min-height: 360px;
   overflow: visible;
+}
+
+.platform-demo__menu-catalog {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__menu-catalog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.platform-demo__menu-catalog > header strong {
+  font-size: 0.88rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__menu-catalog > header span {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
 }
 
 :deep(.varo-menu) {
@@ -2765,11 +3103,10 @@ onBeforeUnmount(() => {
   z-index: 2;
   display: flex;
   width: 100%;
-  min-height: 46px;
-  background: color-mix(in srgb, var(--varo-card-solid) 96%, transparent);
+  min-height: 44px;
+  background: var(--varo-fill-light);
   border: 1px solid var(--varo-border);
-  border-radius: 14px;
-  box-shadow: var(--varo-shadow-sm);
+  border-radius: 12px;
 }
 
 :deep(.varo-menu__item) {
@@ -2788,12 +3125,19 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 46px;
-  padding: 0 12px;
+  min-height: 44px;
+  padding: 0 10px;
   font-weight: 700;
-  color: var(--vp-c-text-1);
+  color: var(--varo-text-primary);
+  cursor: pointer;
   background: transparent;
   border: 0;
+}
+
+:deep(.varo-menu__title:focus-visible),
+:deep(.varo-menu__option:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: -2px;
 }
 
 :deep(.varo-menu__title-text) {
@@ -2809,24 +3153,25 @@ onBeforeUnmount(() => {
   border-bottom: 1.5px solid currentcolor;
   opacity: 0.68;
   transform: translateY(-2px) rotate(45deg);
-  transition: transform var(--demo-duration-fast) var(--demo-ease-out);
+  transition: transform 140ms ease;
 }
 
 :deep(.varo-menu__item[data-open='true'] .varo-menu__arrow) {
+  color: var(--varo-primary);
   transform: translateY(2px) rotate(225deg);
 }
 
 :deep(.varo-menu__popup) {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 7px);
   right: 0;
   left: 0;
   display: grid;
   min-width: 160px;
   overflow: hidden;
-  background: color-mix(in srgb, var(--varo-card-solid) 98%, transparent);
+  background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: var(--varo-shadow-popover);
 }
 
@@ -2835,13 +3180,14 @@ onBeforeUnmount(() => {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  color: var(--vp-c-text-1);
+  min-height: 42px;
+  padding: 0 12px;
+  color: var(--varo-text-primary);
   text-align: left;
+  cursor: pointer;
   background: transparent;
   border: 0;
-  border-top: 1px solid var(--varo-border);
+  border-top: 1px solid var(--varo-border-light);
 }
 
 :deep(.varo-menu__option:first-child) {
@@ -2849,36 +3195,66 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-menu__option:not(:disabled):hover) {
-  background: color-mix(in srgb, var(--demo-brand) 8%, transparent);
+  background: var(--varo-primary-soft);
 }
 
 :deep(.varo-menu__option[data-active='true']) {
   font-weight: 700;
-  color: var(--vp-c-brand-1);
+  color: var(--varo-primary);
 }
 
 .platform-demo__menu-result {
-  display: inline-flex;
+  display: flex;
   gap: 8px;
-  justify-content: center;
-  font-size: 0.82rem;
-  color: var(--vp-c-text-2);
-  text-align: center;
+  align-items: center;
+  margin: -2px 0 0;
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
 }
 
-.platform-demo__menu-result span {
-  padding: 4px 9px;
-  background: color-mix(in srgb, var(--varo-muted) 10%, transparent);
-  border-radius: 999px;
+.platform-demo__menu-result strong {
+  font-size: 0.7rem;
+  color: var(--varo-primary);
+}
+
+.platform-demo__menu-products {
+  display: grid;
+  gap: 7px;
+}
+
+.platform-demo__menu-products > article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 10px 11px;
+  background: var(--varo-fill-light);
+  border-radius: 11px;
+}
+
+.platform-demo__menu-products > article > div {
+  display: grid;
+  gap: 2px;
+}
+
+.platform-demo__menu-products strong {
+  font-size: 0.74rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__menu-products span {
+  font-size: 0.66rem;
+  color: var(--varo-text-tertiary);
 }
 
 :deep(.varo-navbar) {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) 92px;
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
   align-items: center;
   min-height: 48px;
-  background: color-mix(in srgb, var(--varo-card-solid) 96%, transparent);
-  border-radius: 16px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 14px;
   box-shadow: var(--varo-shadow-sm);
 }
 
@@ -2888,64 +3264,202 @@ onBeforeUnmount(() => {
   gap: 3px;
   align-items: center;
   justify-content: center;
-  min-height: 48px;
+  min-height: 46px;
+  padding: 0 8px;
+  font-size: 0.74rem;
   font-weight: 700;
-  color: var(--vp-c-brand-1);
+  color: var(--varo-primary);
+  cursor: pointer;
   background: transparent;
   border: 0;
+}
+
+:deep(.varo-navbar__left:focus-visible),
+:deep(.varo-navbar__right:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: -2px;
+}
+
+:deep(.varo-navbar__arrow) {
+  font-size: 1.2rem;
 }
 
 :deep(.varo-navbar__title) {
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.86rem;
   font-weight: 750;
+  color: var(--varo-text-primary);
   text-align: center;
   white-space: nowrap;
 }
 
+.platform-demo__navbar-order {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 14px;
+}
+
+.platform-demo__navbar-order > header {
+  display: grid;
+  gap: 3px;
+  padding: 11px;
+  background: var(--varo-primary-soft);
+  border-radius: 11px;
+}
+
+.platform-demo__navbar-order > header span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--varo-primary);
+}
+
+.platform-demo__navbar-order > header small {
+  font-size: 0.68rem;
+  color: var(--varo-text-secondary);
+}
+
+.platform-demo__navbar-order dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.platform-demo__navbar-order dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.platform-demo__navbar-order dt,
+.platform-demo__navbar-order dd {
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.platform-demo__navbar-order dt {
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__navbar-order dd {
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__navbar-order > p {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 650;
+  color: var(--varo-success);
+}
+
 .platform-demo__pagination-demo {
-  align-content: center;
+  min-height: 390px;
+}
+
+.platform-demo__pagination-orders {
+  display: grid;
+  gap: 11px;
+  width: 100%;
+  padding: 14px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__pagination-orders > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.platform-demo__pagination-orders > header strong {
+  font-size: 0.88rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__pagination-orders > header span,
+.platform-demo__pagination-orders > p {
+  font-size: 0.68rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__pagination-orders > div {
+  display: grid;
+  gap: 7px;
+}
+
+.platform-demo__pagination-orders > div > article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 10px 11px;
+  background: var(--varo-fill-light);
+  border-radius: 11px;
+}
+
+.platform-demo__pagination-orders > div > article > div {
+  display: grid;
+  gap: 2px;
+}
+
+.platform-demo__pagination-orders > div strong {
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__pagination-orders > div span {
+  font-size: 0.66rem;
+  color: var(--varo-text-tertiary);
+}
+
+.platform-demo__pagination-orders > p {
+  margin: -2px 0 0;
 }
 
 :deep(.varo-pagination) {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
 }
 
 :deep(.varo-pagination button) {
-  min-width: 36px;
-  min-height: 36px;
-  padding: 0 10px;
-  color: var(--vp-c-text-1);
-  background: color-mix(in srgb, var(--varo-card-solid) 86%, transparent);
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0 8px;
+  color: var(--varo-text-primary);
+  cursor: pointer;
+  background: var(--varo-fill-light);
   border: 1px solid var(--varo-border);
-  border-radius: 10px;
+  border-radius: 9px;
 }
 
 :deep(.varo-pagination__prev),
 :deep(.varo-pagination__next) {
-  min-width: 72px;
-  padding-right: 16px;
-  padding-left: 16px;
+  min-width: 64px;
 }
 
 :deep(.varo-pagination button[data-active='true']) {
   color: var(--varo-primary-foreground);
-  background: var(--vp-c-brand-1);
-  border-color: var(--vp-c-brand-1);
+  background: var(--varo-primary);
+  border-color: var(--varo-primary);
+}
+
+:deep(.varo-pagination button:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
 }
 
 :deep(.varo-pagination button:disabled) {
+  cursor: not-allowed;
   opacity: 0.45;
-}
-
-:deep(.varo-pagination__simple) {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  color: var(--vp-c-text-2);
 }
 
 .platform-demo__side-navbar-demo {

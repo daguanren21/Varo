@@ -600,7 +600,7 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.findAll('.varo-tabs__tab').length).toBeGreaterThanOrEqual(3)
   })
 
-  it('opens menu options in the navigation demo', async () => {
+  it('presents Menu as accessible product sorting and stock filters', async () => {
     const wrapper = mount(PlatformTabsDemo, {
       global: {
         plugins: [themePlugin],
@@ -611,15 +611,30 @@ describe('PlatformTabsDemo', () => {
       },
     })
 
+    expect(wrapper.get('.platform-demo__menu-catalog').text()).toContain('128 件商品')
+    const title = wrapper.findAll('.varo-menu__title')[0]!
+    expect(title.attributes('aria-expanded')).toBe('false')
+    expect(title.attributes('aria-haspopup')).toBe('listbox')
+
+    await title.trigger('click')
+    const popup = wrapper.get('.varo-menu__popup')
+    const options = wrapper.findAll('.varo-menu__option')
+    expect(title.attributes('aria-controls')).toBe(popup.attributes('id'))
+    expect(popup.attributes('role')).toBe('listbox')
+    expect(options).toHaveLength(3)
+    expect(options[0]!.attributes('role')).toBe('option')
+    expect(options[0]!.attributes('aria-selected')).toBe('true')
+
+    await options[1]!.trigger('click')
     expect(wrapper.find('.varo-menu__popup').exists()).toBe(false)
+    expect(wrapper.get('.platform-demo__menu-result').text()).toContain('最新上架 · 全部库存')
 
-    await wrapper.get('.varo-menu__title').trigger('click')
-
-    expect(wrapper.find('.varo-menu__popup').exists()).toBe(true)
-    expect(wrapper.findAll('.varo-menu__option').length).toBe(3)
+    await title.trigger('click')
+    await wrapper.findAll('.varo-menu__item')[0]!.trigger('keydown', { key: 'Escape' })
+    expect(wrapper.find('.varo-menu__popup').exists()).toBe(false)
   })
 
-  it('auto-advances and supports clicking indicator items', async () => {
+  it('auto-advances an accessible feature carousel and supports direct navigation', async () => {
     vi.useFakeTimers()
     const wrapper = mount(PlatformTabsDemo, {
       global: {
@@ -631,18 +646,23 @@ describe('PlatformTabsDemo', () => {
       },
     })
 
-    const indicator = wrapper.findAll('.varo-indicator')[0]!
-
+    const indicators = wrapper.findAll('.varo-indicator')
+    const indicator = indicators[0]!
+    expect(indicators).toHaveLength(2)
+    expect(indicator.attributes('role')).toBe('navigation')
+    expect(indicator.attributes('aria-label')).toBe('功能轮播分页')
+    expect(indicator.findAll('.varo-indicator__item')[0]!.attributes('aria-label')).toBe('第 1 个功能，共 4 个')
     expect(indicator.attributes('data-current')).toBe('0')
-    expect(wrapper.get('.platform-demo__indicator-slide span').text()).toBe('01')
+    expect(wrapper.get('.platform-demo__indicator-slide > strong').text()).toBe('源码归属业务')
+    expect(wrapper.findAll('.platform-demo__indicator-slide > header span')[1]!.text()).toBe('01 / 04')
 
     await vi.advanceTimersByTimeAsync(1800)
     expect(indicator.attributes('data-current')).toBe('1')
-    expect(wrapper.get('.platform-demo__indicator-slide span').text()).toBe('02')
+    expect(wrapper.get('.platform-demo__indicator-slide > strong').text()).toBe('一套公共 API')
 
     await indicator.findAll('.varo-indicator__item')[3]!.trigger('click')
     expect(indicator.attributes('data-current')).toBe('3')
-    expect(wrapper.get('.platform-demo__indicator-slide span').text()).toBe('04')
+    expect(wrapper.get('.platform-demo__indicator-slide > strong').text()).toBe('生产可用')
   })
 
   it('presents Elevator as an accessible service-city directory', async () => {
@@ -669,5 +689,79 @@ describe('PlatformTabsDemo', () => {
 
     await wrapper.findAll('.varo-elevator__group')[1]!.findAll('.varo-elevator__item')[0]!.trigger('click')
     expect(wrapper.get('.platform-demo__elevator-directory output').text()).toContain('北京')
+  })
+
+  it('presents FixedNav as accessible product actions with selection feedback', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'fixed-nav',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__fixed-nav-product').text()).toContain('Varo Pro')
+    const trigger = wrapper.get('.varo-fixed-nav__trigger')
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+    expect(trigger.attributes('aria-controls')).toBe(wrapper.get('.varo-fixed-nav__list').attributes('id'))
+    expect(wrapper.findAll('.varo-fixed-nav__item')).toHaveLength(3)
+    expect(wrapper.findAll('.varo-fixed-nav__icon')).toHaveLength(0)
+
+    await wrapper.findAll('.varo-fixed-nav__item')[1]!.trigger('click')
+    expect(wrapper.get('.platform-demo__fixed-nav-result').text()).toBe('已选择：收藏')
+    expect(trigger.attributes('aria-expanded')).toBe('false')
+    expect(wrapper.find('.varo-fixed-nav__list').exists()).toBe(false)
+
+    await trigger.trigger('click')
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+  })
+
+  it('presents Navbar as accessible order-detail navigation', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'navbar',
+        locale: 'zh',
+      },
+    })
+
+    expect(wrapper.get('.platform-demo__navbar-order').text()).toContain('预计明日 18:00 前送达')
+    const left = wrapper.get('.varo-navbar__left')
+    const right = wrapper.get('.varo-navbar__right')
+    expect(left.attributes('aria-label')).toBe('返回')
+    expect(right.attributes('aria-label')).toBe('帮助')
+    expect(wrapper.get('.varo-navbar__arrow').attributes('aria-hidden')).toBe('true')
+
+    await right.trigger('click')
+    expect(wrapper.get('.platform-demo__navbar-order [role="status"]').text()).toBe('操作：帮助')
+    await left.trigger('click')
+    expect(wrapper.get('.platform-demo__navbar-order [role="status"]').text()).toBe('操作：返回')
+  })
+
+  it('presents Pagination as accessible order-list navigation', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'pagination',
+        locale: 'zh',
+      },
+    })
+
+    const pagination = wrapper.get('.varo-pagination')
+    expect(wrapper.findAll('.platform-demo__pagination-orders > div > article')).toHaveLength(3)
+    expect(pagination.attributes('aria-label')).toBe('订单分页')
+    expect(pagination.findAll('.varo-pagination__page')[1]!.attributes('aria-current')).toBe('page')
+    expect(pagination.findAll('.varo-pagination__page')[1]!.attributes('aria-label')).toBe('第 2 页，共 5 页')
+    const firstOrder = wrapper.findAll('.platform-demo__pagination-orders > div > article')[0]!.text()
+
+    await pagination.findAll('.varo-pagination__page')[3]!.trigger('click')
+    expect(wrapper.get('.platform-demo__pagination-orders > p').text()).toContain('第 4 页 / 共 5 页')
+    expect(wrapper.findAll('.platform-demo__pagination-orders > div > article')[0]!.text()).not.toBe(firstOrder)
   })
 })
