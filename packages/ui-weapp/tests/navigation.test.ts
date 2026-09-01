@@ -120,6 +120,8 @@ describe('ui-weapp navigation components', () => {
       props: { 'modelValue': 'a', 'onUpdate:modelValue': sideUpdate },
       slots: { default: () => [h(VSideNavbarItem, { name: 'a', title: 'A' }), h(VSideNavbarItem, { name: 'b', title: 'B' })] },
     })
+    expect(side.findAll('.varo-side-navbar__item')[0].attributes('aria-current')).toBe('page')
+    expect(side.findAll('.varo-side-navbar__item')[1].attributes('aria-current')).toBeUndefined()
     await side.findAll('.varo-side-navbar__item')[1].trigger('click')
     expect(sideUpdate).toHaveBeenCalledWith('b')
 
@@ -128,6 +130,8 @@ describe('ui-weapp navigation components', () => {
       props: { 'modelValue': 'home', 'onUpdate:modelValue': tabbarUpdate },
       slots: { default: () => [h(VTabbarItem, { name: 'home' }, { default: () => '首页' }), h(VTabbarItem, { name: 'mine' }, { default: () => '我的' })] },
     })
+    expect(tabbar.findAll('.varo-tabbar__item')[0].attributes('aria-current')).toBe('page')
+    expect(tabbar.findAll('.varo-tabbar__item')[1].attributes('aria-current')).toBeUndefined()
     await tabbar.findAll('.varo-tabbar__item')[1].trigger('click')
     expect(tabbarUpdate).toHaveBeenCalledWith('mine')
 
@@ -141,6 +145,44 @@ describe('ui-weapp navigation components', () => {
     expect(tabsUpdate).toHaveBeenCalledWith('b')
   })
 
+  it('exposes accessible tabs and skips disabled items during keyboard navigation', async () => {
+    const onUpdate = vi.fn()
+    const wrapper = mount(VTabs, {
+      props: {
+        'id': 'weapp-tabs',
+        'active': 'a',
+        'ariaLabel': 'Order sections',
+        'onUpdate:active': onUpdate,
+      },
+      attachTo: document.body,
+      slots: {
+        default: () => [
+          h(VTab, { name: 'a', title: 'A' }, { default: () => 'A panel' }),
+          h(VTab, { name: 'b', title: 'B', disabled: true }, { default: () => 'B panel' }),
+          h(VTab, { name: 'c', title: 'C' }, { default: () => 'C panel' }),
+        ],
+      },
+    })
+
+    await wrapper.vm.$nextTick()
+    const tabs = wrapper.findAll<HTMLButtonElement>('[role="tab"]')
+    const panel = wrapper.get('[role="tabpanel"]')
+
+    expect(wrapper.get('[role="tablist"]').attributes('aria-label')).toBe('Order sections')
+    expect(tabs[0].attributes('aria-controls')).toBe(panel.attributes('id'))
+    expect(panel.attributes('aria-labelledby')).toBe(tabs[0].attributes('id'))
+    expect(tabs[1].attributes('aria-disabled')).toBe('true')
+
+    await tabs[1].trigger('click')
+    expect(onUpdate).not.toHaveBeenCalled()
+
+    tabs[0].element.focus()
+    await tabs[0].trigger('keydown', { key: 'ArrowRight' })
+    expect(onUpdate).toHaveBeenCalledWith('c')
+    expect(document.activeElement).toBe(tabs[2].element)
+
+    wrapper.unmount()
+  })
   it('closes menu after option selection', async () => {
     const wrapper = mount(VMenu, {
       slots: {

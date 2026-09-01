@@ -9,20 +9,29 @@
 ```vue
 <script setup lang="ts">
 import { VTabbar, VTabbarItem } from '@varo-ui/h5'
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 
-const active = ref('home')
+const active = shallowRef('home')
 </script>
 
 <template>
-  <VTabbar v-model="active">
-    <VTabbarItem name="home" icon="⌂">
+  <VTabbar v-model="active" aria-label="主要导航">
+    <VTabbarItem name="home">
+      <template #icon>
+        <img src="/icons/home.svg" alt="">
+      </template>
       首页
     </VTabbarItem>
-    <VTabbarItem name="category" icon="◇" badge="2">
-      分类
+    <VTabbarItem name="messages" badge="2">
+      <template #icon>
+        <img src="/icons/message.svg" alt="">
+      </template>
+      消息
     </VTabbarItem>
-    <VTabbarItem name="profile" icon="○" dot>
+    <VTabbarItem name="profile" dot>
+      <template #icon>
+        <img src="/icons/profile.svg" alt="">
+      </template>
       我的
     </VTabbarItem>
   </VTabbar>
@@ -53,3 +62,10 @@ const active = ref('home')
 | `icon`  | `string`           | `undefined` | 图标文本或图标名 |
 | `badge` | `string \| number` | `undefined` | 徽标             |
 | `dot`   | `boolean`          | `false`     | 是否显示小红点   |
+
+## VTabbarItem Slots
+
+| Slot      | 描述                                   |
+| --------- | -------------------------------------- |
+| `default` | 标签文本                               |
+| `icon`    | 自定义图标，作为装饰内容隐藏于无障碍树 |

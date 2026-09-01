@@ -86,9 +86,30 @@ describe('ui-h5 style entry', () => {
     expect(h5Layout).toContain('.varo-col')
     expect(h5Layout).toContain('.varo-space')
     expect(h5Layout).toContain('.varo-sticky')
+    expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: static/)
+    expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: 8px;[\s\S]*?right: 4px/)
     expect(weapp.slice(weapp.indexOf(marker))).toBe(h5Layout)
     expect(registryH5.slice(registryH5.indexOf(marker))).toBe(h5Layout)
     expect(registryWeapp.slice(registryWeapp.indexOf(marker))).toBe(h5Layout)
+  })
+
+  it('ships mirrored structural styles for tabs navigation', () => {
+    const h5 = readFileSync(resolve(packageRoot, 'src/style.css'), 'utf8')
+    const weapp = readFileSync(resolve(packageRoot, '../ui-weapp/src/style.css'), 'utf8')
+    const registryH5 = readFileSync(resolve(packageRoot, '../../registry/themes/base/h5.css'), 'utf8')
+    const registryWeapp = readFileSync(resolve(packageRoot, '../../registry/themes/base/weapp-vite.css'), 'utf8')
+    const tabsStyles = (source: string) =>
+      source.slice(source.indexOf('.varo-tabs {'), source.indexOf('.varo-icon {'))
+    const h5Tabs = tabsStyles(h5)
+
+    expect(h5Tabs).toContain('.varo-tabs__nav')
+    expect(h5Tabs).toContain('.varo-tabs__tab:focus-visible')
+    expect(h5Tabs).toContain('.varo-tabs__tab[data-disabled=\'true\']')
+    expect(h5Tabs).toContain('.varo-tabs[data-type=\'line\']')
+    expect(h5Tabs).toContain('.varo-tabs[data-type=\'card\']')
+    expect(tabsStyles(weapp)).toBe(h5Tabs)
+    expect(tabsStyles(registryH5)).toBe(h5Tabs)
+    expect(tabsStyles(registryWeapp)).toBe(h5Tabs)
   })
 
   it('targets the stylesheet emitted by the package build', () => {

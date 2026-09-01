@@ -185,6 +185,55 @@ const paginationOrders = computed(() => {
     amount: [`¥${279 - paginationPage.value * 10}`, `¥${168 + paginationPage.value * 5}`, `¥${99 + paginationPage.value}`][index]!,
   }))
 })
+const sideNavbarSampleCopy = computed(() => ({
+  navigationLabel: props.locale === 'en' ? 'Account center sections' : '账户中心分区',
+  items: props.locale === 'en'
+    ? [
+        { name: 'orders', title: 'Orders', badge: 2, heading: 'Order management', body: 'Track fulfillment, delivery, and after-sales.', metric: '2 pending', details: ['To ship · 2', 'In transit · 1', 'After-sales · 0'] },
+        { name: 'assets', title: 'Assets', badge: 3, heading: 'Account assets', body: 'Coupons, points, and stored value.', metric: '3 coupons', details: ['Coupons · 3', 'Points · 2,480', 'Balance · ¥68'] },
+        { name: 'address', title: 'Addresses', heading: 'Delivery addresses', body: 'Manage default and alternate recipients.', metric: '3 saved', details: ['Hangzhou · Default', 'Shanghai · Company', 'Shenzhen · Family'] },
+        { name: 'security', title: 'Security', heading: 'Account security', body: 'Password, devices, and verification.', metric: 'Protected', details: ['Two-step verification · On', 'Trusted devices · 2', 'Last login · Today'] },
+      ]
+    : [
+        { name: 'orders', title: '订单', badge: 2, heading: '订单管理', body: '集中查看履约、物流与售后进度。', metric: '2 笔待处理', details: ['待发货 · 2', '运输中 · 1', '售后中 · 0'] },
+        { name: 'assets', title: '资产', badge: 3, heading: '账户资产', body: '优惠券、积分与储值余额。', metric: '3 张优惠券', details: ['优惠券 · 3', '积分 · 2,480', '余额 · ¥68'] },
+        { name: 'address', title: '地址', heading: '收货地址', body: '管理默认和备用收货信息。', metric: '已保存 3 个', details: ['杭州 · 默认', '上海 · 公司', '深圳 · 家庭'] },
+        { name: 'security', title: '安全', heading: '账号安全', body: '密码、设备与验证方式。', metric: '已保护', details: ['两步验证 · 已开启', '可信设备 · 2', '最近登录 · 今天'] },
+      ],
+}))
+
+const currentSideNavbarItem = computed(() =>
+  sideNavbarSampleCopy.value.items.find(item => item.name === sideNavActive.value)
+  ?? sideNavbarSampleCopy.value.items[0]!,
+)
+
+const tabbarSampleCopy = computed(() => {
+  const items = props.locale === 'en'
+    ? [
+        { name: 'home', title: 'Home', body: 'Overview, recommendations, and recent activity.', path: 'M3 11 12 3l9 8 M5 10v10h14V10 M9 20v-6h6v6' },
+        { name: 'category', title: 'Catalog', body: 'Browse components, Blocks, and templates.', path: 'M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z' },
+        { name: 'messages', title: 'Messages', body: 'Two unread release and support updates.', path: 'M4 5h16v12H8l-4 4z M8 9h8 M8 13h5', badge: 2 },
+        { name: 'profile', title: 'Profile', body: 'Subscription, settings, and account security.', path: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M5 21a7 7 0 0 1 14 0', dot: true },
+      ]
+    : [
+        { name: 'home', title: '首页', body: '概览、推荐内容和最近动态。', path: 'M3 11 12 3l9 8 M5 10v10h14V10 M9 20v-6h6v6' },
+        { name: 'category', title: '分类', body: '浏览组件、Blocks 与模板。', path: 'M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z' },
+        { name: 'messages', title: '消息', body: '有 2 条发布和支持消息未读。', path: 'M4 5h16v12H8l-4 4z M8 9h8 M8 13h5', badge: 2 },
+        { name: 'profile', title: '我的', body: '订阅、设置与账号安全。', path: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M5 21a7 7 0 0 1 14 0', dot: true },
+      ]
+  return {
+    navigationLabel: props.locale === 'en' ? 'Primary navigation' : '主要导航',
+    items,
+  }
+})
+
+const currentTabbarItem = computed(() =>
+  tabbarSampleCopy.value.items.find(item => item.name === tabbarActive.value)
+  ?? tabbarSampleCopy.value.items[0]!,
+)
+const tabsNavigationLabel = computed(() =>
+  props.locale === 'en' ? 'Product detail sections' : '产品详情分区',
+)
 
 function selectFixedNavItem(item: { text: string }) {
   fixedNavSelected.value = item.text
@@ -1852,45 +1901,66 @@ onBeforeUnmount(() => {
                     <section class="platform-demo__nav-demo platform-demo__side-navbar-demo">
                       <component
                         :is="runtime.SideNavbar"
+                        :aria-label="sideNavbarSampleCopy.navigationLabel"
                         :model-value="sideNavActive"
                         @update:model-value="sideNavActive = $event"
                       >
                         <component
                           :is="runtime.SideNavbarItem"
-                          v-for="item in copy.sideNavItems"
+                          v-for="item in sideNavbarSampleCopy.items"
                           :key="item.name"
                           :name="item.name"
                           :title="item.title"
                           :badge="item.badge"
                         />
                       </component>
-                      <div class="platform-demo__side-navbar-panel">
-                        <strong>{{ sideNavActive }}</strong>
-                        <span>{{ platformDemo.appSubtitle }}</span>
-                      </div>
+                      <article class="platform-demo__side-navbar-panel">
+                        <header>
+                          <div>
+                            <strong>{{ currentSideNavbarItem.heading }}</strong>
+                            <span>{{ currentSideNavbarItem.body }}</span>
+                          </div>
+                          <strong>{{ currentSideNavbarItem.metric }}</strong>
+                        </header>
+                        <ul>
+                          <li v-for="detail in currentSideNavbarItem.details" :key="detail">
+                            {{ detail }}
+                          </li>
+                        </ul>
+                      </article>
                     </section>
                   </template>
 
                   <template v-else-if="example === 'tabbar'">
                     <section class="platform-demo__nav-demo platform-demo__tabbar-demo">
-                      <div class="platform-demo__tabbar-page">
-                        <strong>{{ tabbarActive }}</strong>
-                        <span>{{ platformDemo.appSubtitle }}</span>
-                      </div>
+                      <article class="platform-demo__tabbar-page">
+                        <span>{{ currentTabbarItem.title }}</span>
+                        <strong>{{ currentTabbarItem.title }}</strong>
+                        <p>{{ currentTabbarItem.body }}</p>
+                      </article>
                       <component
                         :is="runtime.Tabbar"
+                        :aria-label="tabbarSampleCopy.navigationLabel"
                         :model-value="tabbarActive"
                         @update:model-value="tabbarActive = $event"
                       >
                         <component
                           :is="runtime.TabbarItem"
-                          v-for="(item, index) in copy.tabbarItems"
+                          v-for="item in tabbarSampleCopy.items"
                           :key="item.name"
                           :name="item.name"
-                          :icon="item.icon"
-                          :badge="index === 1 ? '2' : undefined"
-                          :dot="index === 2"
+                          :badge="item.badge"
+                          :dot="item.dot"
                         >
+                          <template #icon>
+                            <svg
+                              class="platform-demo__tabbar-icon"
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path :d="item.path" />
+                            </svg>
+                          </template>
                           {{ item.title }}
                         </component>
                       </component>
@@ -1901,6 +1971,7 @@ onBeforeUnmount(() => {
                     <section class="platform-demo__nav-demo platform-demo__tabs-demo">
                       <component
                         :is="runtime.Tabs"
+                        :aria-label="tabsNavigationLabel"
                         :active="tabsActive"
                         @update:active="tabsActive = $event"
                       >
@@ -3464,51 +3535,140 @@ onBeforeUnmount(() => {
 
 .platform-demo__side-navbar-demo {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  min-height: 280px;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+  min-height: 300px;
 }
 
 :deep(.varo-side-navbar) {
   display: grid;
   align-content: start;
   overflow: hidden;
-  background: color-mix(in srgb, var(--varo-muted) 10%, transparent);
-  border-radius: 16px;
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
+  border-radius: 14px;
 }
 
 :deep(.varo-side-navbar__item) {
   position: relative;
-  min-height: 48px;
+  min-height: 52px;
+  padding: 0 8px 0 11px;
+  font-size: 0.74rem;
   font-weight: 650;
-  color: var(--vp-c-text-2);
+  color: var(--varo-text-secondary);
+  text-align: left;
+  cursor: pointer;
   background: transparent;
   border: 0;
   border-left: 3px solid transparent;
 }
 
 :deep(.varo-side-navbar__item[data-active='true']) {
-  color: var(--varo-accent, var(--vp-c-brand-1));
-  background: var(--varo-card-solid, rgb(255 255 255 / 78%));
-  border-left-color: var(--varo-accent, var(--vp-c-brand-1));
+  color: var(--varo-primary);
+  background: var(--varo-card-solid);
+  border-left-color: var(--varo-primary);
+}
+
+:deep(.varo-side-navbar__item:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: -2px;
 }
 
 :deep(.varo-side-navbar__badge) {
-  top: 8px;
-  right: 10px;
+  top: 7px;
+  right: 7px;
 }
 
 .platform-demo__side-navbar-panel {
-  align-content: center;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 14px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 14px;
+}
+
+.platform-demo__side-navbar-panel > header {
+  display: grid;
+  gap: 8px;
+}
+
+.platform-demo__side-navbar-panel > header > div {
+  display: grid;
+  gap: 3px;
+}
+
+.platform-demo__side-navbar-panel > header strong {
+  font-size: 0.82rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__side-navbar-panel > header span {
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--varo-text-secondary);
+}
+
+.platform-demo__side-navbar-panel > header > strong {
+  width: fit-content;
+  padding: 5px 7px;
+  font-size: 0.68rem;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 8px;
+}
+
+.platform-demo__side-navbar-panel ul {
+  display: grid;
+  gap: 7px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.platform-demo__side-navbar-panel li {
+  padding: 8px 9px;
+  font-size: 0.68rem;
+  color: var(--varo-text-secondary);
+  background: var(--varo-fill-light);
+  border-radius: 9px;
 }
 
 .platform-demo__tabbar-demo {
   align-content: stretch;
-  min-height: 300px;
+  min-height: 320px;
 }
 
 .platform-demo__tabbar-page {
+  display: grid;
+  gap: 8px;
   align-content: center;
-  min-height: 180px;
+  min-height: 205px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 16%, transparent), transparent 44%),
+    var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 16px;
+}
+
+.platform-demo__tabbar-page > span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--varo-primary);
+}
+
+.platform-demo__tabbar-page > strong {
+  font-size: 1.1rem;
+  color: var(--varo-text-primary);
+}
+
+.platform-demo__tabbar-page > p {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--varo-text-secondary);
 }
 
 :deep(.varo-tabbar) {
@@ -3517,11 +3677,11 @@ onBeforeUnmount(() => {
   bottom: 16px;
   left: 16px;
   display: flex;
-  min-height: 58px;
+  min-height: 62px;
   overflow: hidden;
-  background: color-mix(in srgb, var(--varo-card-solid) 96%, transparent);
-  border: 1px solid var(--varo-border, transparent);
-  border-radius: 18px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 17px;
   box-shadow: var(--varo-shadow-sm);
 }
 
@@ -3529,22 +3689,39 @@ onBeforeUnmount(() => {
   position: relative;
   display: grid;
   flex: 1;
-  gap: 2px;
+  gap: 3px;
   place-items: center;
-  font-size: 0.76rem;
-  color: var(--vp-c-text-2);
+  min-width: 0;
+  font-size: 0.7rem;
+  color: var(--varo-text-secondary);
+  cursor: pointer;
   background: transparent;
   border: 0;
 }
 
 :deep(.varo-tabbar__item[data-active='true']) {
   font-weight: 700;
-  color: var(--vp-c-brand-1);
+  color: var(--varo-primary);
+}
+
+:deep(.varo-tabbar__item:focus-visible) {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: -2px;
+}
+
+.platform-demo__tabbar-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 :deep(.varo-tabbar__badge),
 :deep(.varo-tabbar__dot) {
-  top: 7px;
+  top: 6px;
   right: calc(50% - 22px);
 }
 
@@ -3854,7 +4031,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-grid__icon-wrap) {
-  position: relative;
+  position: static;
   display: inline-flex;
 }
 
@@ -3879,8 +4056,8 @@ onBeforeUnmount(() => {
 :deep(.varo-grid__badge),
 :deep(.varo-grid__dot) {
   position: absolute;
-  top: -7px;
-  right: -10px;
+  top: 7px;
+  right: 3px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -3888,7 +4065,7 @@ onBeforeUnmount(() => {
   line-height: 16px;
   color: var(--varo-primary-foreground);
   background: var(--varo-danger);
-  border: 2px solid var(--varo-card-solid);
+  border: 2px solid var(--varo-fill-light);
   border-radius: 999px;
 }
 
@@ -4867,6 +5044,11 @@ onBeforeUnmount(() => {
   background: var(--varo-primary);
   border-color: var(--varo-primary);
   box-shadow: var(--varo-shadow-sm);
+}
+
+:deep(.varo-tabs[data-type='line'] .varo-tabs__tab[data-active='true']),
+:deep(.varo-tabs[data-type='card'] .varo-tabs__tab[data-active='true']) {
+  color: var(--varo-primary-foreground);
 }
 
 /* Quiet surfaces for outline/menu chrome — never force-fill chips/tabs */

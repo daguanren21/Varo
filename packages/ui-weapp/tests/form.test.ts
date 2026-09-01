@@ -1,3 +1,4 @@
+import { configureForm, resetFormPreset } from '@varo-ui/headless'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, reactive, ref } from 'vue'
@@ -9,7 +10,7 @@ describe('ui-weapp form', () => {
     const onSubmit = vi.fn()
     const onFailed = vi.fn()
     const model = reactive({
-      mobile: ''
+      mobile: '',
     })
     const wrapper = mount(
       defineComponent({
@@ -20,10 +21,10 @@ describe('ui-weapp form', () => {
               {
                 model,
                 rules: {
-                  mobile: 'required|length:11'
+                  mobile: 'required|length:11',
                 },
                 onFailed,
-                onSubmit
+                onSubmit,
               },
               {
                 default: () => [
@@ -31,24 +32,24 @@ describe('ui-weapp form', () => {
                     VFormItem,
                     {
                       label: 'Mobile',
-                      name: 'mobile'
+                      name: 'mobile',
                     },
                     {
                       default: () =>
                         h(VInput, {
-                          value: model.mobile,
+                          'value': model.mobile,
                           'onUpdate:value': (value: string) => {
                             model.mobile = value
-                          }
-                        })
-                    }
+                          },
+                        }),
+                    },
                   ),
-                  h('button', { type: 'submit' }, 'Submit')
-                ]
-              }
+                  h('button', { type: 'submit' }, 'Submit'),
+                ],
+              },
             )
-        }
-      })
+        },
+      }),
     )
 
     await wrapper.get('form').trigger('submit')
@@ -58,8 +59,8 @@ describe('ui-weapp form', () => {
     expect(onFailed).toHaveBeenCalledWith(
       expect.objectContaining({
         errors: expect.objectContaining({ mobile: expect.any(String) }),
-        values: expect.objectContaining({ mobile: '' })
-      })
+        values: expect.objectContaining({ mobile: '' }),
+      }),
     )
     expect(wrapper.get('.varo-form-item__error').text()).toContain('Mobile')
 
@@ -69,14 +70,14 @@ describe('ui-weapp form', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
-        values: expect.objectContaining({ mobile: '13800138000' })
-      })
+        values: expect.objectContaining({ mobile: '13800138000' }),
+      }),
     )
   })
 
   it('validates change and blur according to rule trigger config', async () => {
     const model = reactive({
-      email: ''
+      email: '',
     })
     const wrapper = mount(VForm, {
       props: {
@@ -84,9 +85,9 @@ describe('ui-weapp form', () => {
         rules: {
           email: [
             { required: true, trigger: 'change' },
-            { email: true, trigger: 'blur' }
-          ]
-        }
+            { email: true, trigger: 'blur' },
+          ],
+        },
       },
       slots: {
         default: () =>
@@ -94,18 +95,18 @@ describe('ui-weapp form', () => {
             VFormItem,
             {
               label: 'Email',
-              name: 'email'
+              name: 'email',
             },
             {
-              default: ({ onBlur, setValue, value }: { onBlur: (event?: FocusEvent) => void; setValue: (value: string) => void; value: { value: string } }) =>
+              default: ({ onBlur, setValue, value }: { onBlur: (event?: FocusEvent) => void, setValue: (value: string) => void, value: { value: string } }) =>
                 h(VInput, {
-                  value: value.value,
+                  'value': value.value,
                   onBlur,
-                  'onUpdate:value': setValue
-                })
-            }
-          )
-      }
+                  'onUpdate:value': setValue,
+                }),
+            },
+          ),
+      },
     })
 
     await wrapper.get('input').setValue('team')
@@ -123,8 +124,8 @@ describe('ui-weapp form', () => {
     const model = reactive({
       companies: [
         { name: '', contact: '', phone: '' },
-        { name: '', contact: '', phone: '' }
-      ]
+        { name: '', contact: '', phone: '' },
+      ],
     })
     const showSecond = ref(true)
     const wrapper = mount(
@@ -134,7 +135,7 @@ describe('ui-weapp form', () => {
             h(
               VForm,
               {
-                model
+                model,
               },
               {
                 default: () => [
@@ -143,30 +144,30 @@ describe('ui-weapp form', () => {
                     {
                       label: '公司 1',
                       name: 'companies.0.name',
-                      rules: { required: true }
+                      rules: { required: true },
                     },
                     {
-                      default: ({ setValue, value }: { setValue: (value: string) => void; value: { value: string } }) =>
+                      default: ({ setValue, value }: { setValue: (value: string) => void, value: { value: string } }) =>
                         h(VInput, {
-                          value: value.value,
-                          'onUpdate:value': setValue
-                        })
-                    }
+                          'value': value.value,
+                          'onUpdate:value': setValue,
+                        }),
+                    },
                   ),
                   h(
                     VFormItem,
                     {
                       label: '公司 1 联系人',
                       name: 'companies.0.contact',
-                      rules: { required: true }
+                      rules: { required: true },
                     },
                     {
-                      default: ({ setValue, value }: { setValue: (value: string) => void; value: { value: string } }) =>
+                      default: ({ setValue, value }: { setValue: (value: string) => void, value: { value: string } }) =>
                         h(VInput, {
-                          value: value.value,
-                          'onUpdate:value': setValue
-                        })
-                    }
+                          'value': value.value,
+                          'onUpdate:value': setValue,
+                        }),
+                    },
                   ),
                   showSecond.value
                     ? h(
@@ -177,32 +178,32 @@ describe('ui-weapp form', () => {
                             {
                               label: '公司 2 名称',
                               name: 'companies.1.name',
-                              rules: { required: true }
+                              rules: { required: true },
                             },
                             {
-                              default: ({ setValue, value }: { setValue: (value: string) => void; value: { value: string } }) =>
+                              default: ({ setValue, value }: { setValue: (value: string) => void, value: { value: string } }) =>
                                 h(VInput, {
-                                  value: value.value,
-                                  'onUpdate:value': setValue
-                                })
-                            }
+                                  'value': value.value,
+                                  'onUpdate:value': setValue,
+                                }),
+                            },
                           ),
                           h(
                             VFormItem,
                             {
                               label: '公司 2 电话',
                               name: 'companies.1.phone',
-                              rules: { required: true, length: 11 }
+                              rules: { required: true, length: 11 },
                             },
                             {
-                              default: ({ setValue, value }: { setValue: (value: string) => void; value: { value: string } }) =>
+                              default: ({ setValue, value }: { setValue: (value: string) => void, value: { value: string } }) =>
                                 h(VInput, {
-                                  value: value.value,
-                                  'onUpdate:value': setValue
-                                })
-                            }
-                          )
-                        ]
+                                  'value': value.value,
+                                  'onUpdate:value': setValue,
+                                }),
+                            },
+                          ),
+                        ],
                       )
                     : null,
                   h(
@@ -213,16 +214,16 @@ describe('ui-weapp form', () => {
                       onClick: () => {
                         model.companies.splice(1, 1)
                         showSecond.value = false
-                      }
+                      },
                     },
-                    'Remove'
+                    'Remove',
                   ),
-                  h('button', { class: 'submit-form', type: 'submit' }, 'Submit')
-                ]
-              }
+                  h('button', { class: 'submit-form', type: 'submit' }, 'Submit'),
+                ],
+              },
             )
-        }
-      })
+        },
+      }),
     )
 
     const inputs = wrapper.findAll('input')
@@ -246,5 +247,114 @@ describe('ui-weapp form', () => {
     expect(model.companies).toHaveLength(1)
     expect(wrapper.findAll('.varo-form-item')).toHaveLength(2)
     expect(wrapper.findAll('.varo-form-item__error')).toHaveLength(0)
+  })
+  it('validates nested fields through the Standard Schema prop', async () => {
+    const model = reactive({
+      companies: [{ name: '' }],
+    })
+    const onFailed = vi.fn()
+    const onSubmit = vi.fn()
+    const validationSchema = {
+      '~standard': {
+        validate(value: unknown) {
+          const name = (value as typeof model).companies[0]?.name ?? ''
+          return name.length >= 2
+            ? { value: value as typeof model }
+            : {
+                issues: [{
+                  message: 'Company name needs 2 characters',
+                  path: ['companies', 0, 'name'],
+                }],
+              }
+        },
+        vendor: 'test',
+        version: 1 as const,
+      },
+    }
+    const wrapper = mount(VForm, {
+      props: {
+        model,
+        onFailed,
+        onSubmit,
+        validationSchema,
+      },
+      slots: {
+        default: () =>
+          h(
+            VFormItem,
+            {
+              label: 'Company name',
+              name: 'companies.0.name',
+            },
+            {
+              default: ({ setValue, value }: { setValue: (value: string) => void, value: { value: string } }) =>
+                h(VInput, {
+                  'value': value.value,
+                  'onUpdate:value': setValue,
+                }),
+            },
+          ),
+      },
+    })
+
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(onFailed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        errors: {
+          'companies.0.name': 'Company name needs 2 characters',
+        },
+      }),
+    )
+    expect(wrapper.get('.varo-form-item__error').text()).toBe('Company name needs 2 characters')
+
+    await wrapper.get('input').setValue('Varo')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        values: {
+          companies: [{ name: 'Varo' }],
+        },
+      }),
+    )
+  })
+  it('inherits global form presets when local props are absent', async () => {
+    configureForm({
+      rules: {
+        email: 'required',
+      },
+      validateOnChange: true,
+    })
+
+    try {
+      const model = reactive({ email: '' })
+      const wrapper = mount(VForm, {
+        props: { model },
+        slots: {
+          default: () =>
+            h(
+              VFormItem,
+              {
+                label: 'Email',
+                name: 'email',
+              },
+              {
+                default: () => h('input', { value: model.email }),
+              },
+            ),
+        },
+      })
+
+      await wrapper.get('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.get('.varo-form-item__error').text()).toContain('Email')
+    }
+    finally {
+      resetFormPreset()
+    }
   })
 })

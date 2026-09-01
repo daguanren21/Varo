@@ -1596,6 +1596,102 @@ textarea.varo-input__control {
   color: var(--varo-ui-text-muted);
 }
 
+.varo-tabs {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.varo-tabs__nav {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.varo-tabs__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.varo-tabs__tab {
+  position: relative;
+  flex: 1 0 auto;
+  min-width: 72px;
+  min-height: 40px;
+  padding: 8px 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font: inherit;
+  font-weight: 650;
+  line-height: 1.2;
+  color: var(--varo-ui-text-regular);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.varo-tabs__tab:focus-visible,
+.varo-tabs__panel:focus-visible {
+  outline: 2px solid var(--varo-ui-primary);
+  outline-offset: 2px;
+}
+
+.varo-tabs__tab:disabled,
+.varo-tabs__tab[data-disabled='true'] {
+  color: var(--varo-ui-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.varo-tabs__content,
+.varo-tabs__panel {
+  min-width: 0;
+}
+
+.varo-tabs__panel {
+  color: var(--varo-ui-text);
+  border-radius: var(--varo-ui-radius-sm);
+}
+
+.varo-tabs[data-type='line'] .varo-tabs__nav {
+  border-bottom: 1px solid var(--varo-ui-border);
+}
+
+.varo-tabs[data-type='line'] .varo-tabs__tab {
+  margin-bottom: -1px;
+  border-bottom-color: transparent;
+}
+
+.varo-tabs[data-type='line'] .varo-tabs__tab[data-active='true'] {
+  color: var(--varo-ui-primary);
+  border-bottom-color: var(--varo-ui-primary);
+}
+
+.varo-tabs[data-type='card'] .varo-tabs__nav {
+  gap: 4px;
+  padding: 4px;
+  background: var(--varo-ui-fill-light);
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-tabs[data-type='card'] .varo-tabs__tab {
+  border-radius: var(--varo-ui-radius-sm);
+}
+
+.varo-tabs[data-type='card'] .varo-tabs__tab[data-active='true'] {
+  color: var(--varo-ui-primary);
+  background: var(--varo-ui-surface);
+  border-color: var(--varo-ui-border-light);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
 .varo-icon {
   display: inline-flex;
   flex: none;
@@ -2612,15 +2708,15 @@ textarea.varo-input__control {
 }
 
 .varo-grid__icon-wrap {
-  position: relative;
+  position: static;
   display: inline-flex;
 }
 
 .varo-grid__badge,
 .varo-grid__dot {
   position: absolute;
-  top: -8px;
-  right: -12px;
+  top: 8px;
+  right: 4px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -2628,6 +2724,7 @@ textarea.varo-input__control {
   line-height: 16px;
   color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-danger);
+  border: 2px solid var(--varo-ui-surface);
   border-radius: 999px;
 }
 

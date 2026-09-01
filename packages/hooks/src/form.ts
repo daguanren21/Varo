@@ -17,6 +17,31 @@ interface ReactiveRuntime {
 }
 
 export type FormValues = Record<string, unknown>
+export type StandardSchemaPathSegment = PropertyKey | { key: PropertyKey }
+
+export interface StandardSchemaIssue {
+  message: string
+  path?: ReadonlyArray<StandardSchemaPathSegment>
+}
+
+export interface StandardSchemaResult<TOutput = unknown> {
+  issues?: ReadonlyArray<StandardSchemaIssue>
+  value?: TOutput
+}
+
+export interface StandardSchemaV1<TInput = unknown, TOutput = TInput> {
+  readonly '~standard': {
+    readonly validate: (value: unknown) => StandardSchemaResult<TOutput> | Promise<StandardSchemaResult<TOutput>>
+    readonly vendor: string
+    readonly version: 1
+  }
+}
+
+export interface FormPreset {
+  rules?: FormRules
+  validateOnChange?: boolean
+  validationSchema?: StandardSchemaV1
+}
 export type FormErrors = Record<string, string>
 export type FormMeta = Record<string, boolean>
 export type RuleResult = boolean | string | null | undefined
@@ -65,6 +90,7 @@ export interface FormValidationResult<TValues extends FormValues = FormValues> {
 export interface UseFormOptions<TValues extends FormValues = FormValues> {
   initialValues?: TValues
   rules?: FormRules<TValues>
+  validationSchema?: StandardSchemaV1<TValues>
   runtime?: ReactiveRuntime
   validateOnChange?: boolean
   values?: WritableRef<TValues>
@@ -114,12 +140,14 @@ export interface UseFormReturn<TValues extends FormValues = FormValues> {
   setFieldTouched: (name: string, touched: boolean) => void
   setFieldValue: <TValue = unknown>(name: string, value: TValue) => void
   setRules: (rules?: FormRules<TValues>) => void
+  setValidationSchema: (schema?: StandardSchemaV1<TValues>) => void
   shouldValidateField: (name: string, trigger: Exclude<FieldValidateTrigger, 'submit'>) => boolean
   submitCount: WritableRef<number>
   touched: WritableRef<FormMeta>
   validate: () => Promise<FormValidationResult<TValues>>
   validateField: (name: string, trigger?: FieldValidateTrigger) => Promise<ValidationResult>
   validateOnChange: boolean
+  validationSchema: WritableRef<StandardSchemaV1<TValues> | undefined>
   values: WritableRef<TValues>
 }
 
@@ -137,6 +165,26 @@ interface NormalizedRule<TValues extends FormValues = FormValues> {
 }
 
 const customRuleRegistry = new Map<string, RuleValidator>()
+let globalFormPreset: FormPreset = {}
+
+export function configureForm(preset: FormPreset) {
+  globalFormPreset = {
+    ...globalFormPreset,
+    ...preset,
+    rules: {
+      ...(globalFormPreset.rules ?? {}),
+      ...(preset.rules ?? {}),
+    },
+  }
+}
+
+export function resetFormPreset() {
+  globalFormPreset = {}
+}
+
+export function getFormPreset(): Readonly<FormPreset> {
+  return globalFormPreset
+}
 
 function ref<T>(value: T): WritableRef<T> {
   return { value }
@@ -320,20 +368,52 @@ function mergeErrors(source: FormErrors, name: string, error?: string): FormErro
 
   return next
 }
+function issuePath(issue: StandardSchemaIssue): string {
+  const segments = issue.path?.map(segment =>
+    typeof segment === 'object' && segment !== null && 'key' in segment ? segment.key : segment,
+  )
+  return segments?.map(String).join('.') || '$form'
+}
+
+async function validateStandardSchema<TValues extends FormValues>(
+  schema: StandardSchemaV1<TValues> | undefined,
+  values: TValues,
+): Promise<{ errors: FormErrors, values: TValues }> {
+  if (!schema) { return { errors: {}, values } }
+
+  const result = await schema['~standard'].validate(values)
+  const schemaErrors: FormErrors = {}
+  for (const issue of result.issues ?? []) {
+    const path = issuePath(issue)
+    if (!schemaErrors[path]) { schemaErrors[path] = issue.message }
+  }
+  return {
+    errors: schemaErrors,
+    values: result.issues?.length ? values : (result.value as TValues | undefined) ?? values,
+  }
+}
 
 export function useForm<TValues extends FormValues = FormValues>(
   options: UseFormOptions<TValues> = {},
 ): UseFormReturn<TValues> {
   const runtime = resolveRuntime(options.runtime)
+  const preset = getFormPreset()
   const initialValues = { ...(options.initialValues ?? {}) } as TValues
   const values = options.values ?? runtime.ref(initialValues)
-  const rules = runtime.ref(options.rules ?? {})
+  const rules = runtime.ref<FormRules<TValues>>({
+    ...(preset.rules ?? {}),
+    ...(options.rules ?? {}),
+  } as FormRules<TValues>)
+  const validationSchema: WritableRef<StandardSchemaV1<TValues> | undefined> = {
+    value: options.validationSchema ?? (preset.validationSchema as StandardSchemaV1<TValues> | undefined),
+  }
   const errors = runtime.ref<FormErrors>({})
   const touched = runtime.ref<FormMeta>({})
   const dirty = runtime.ref<FormMeta>({})
   const submitCount = runtime.ref(0)
   const fields = new Map<string, FieldRegistration<TValues>>()
-  const validateOnChange = options.validateOnChange ?? false
+  const validateOnChange = options.validateOnChange ?? preset.validateOnChange ?? false
+  let validatingAll = false
 
   const form: UseFormReturn<TValues> = {
     dirty,
@@ -426,11 +506,14 @@ export function useForm<TValues extends FormValues = FormValues>(
     setRules(nextRules?: FormRules<TValues>) {
       rules.value = nextRules ?? {}
     },
+    setValidationSchema(nextSchema?: StandardSchemaV1<TValues>) {
+      validationSchema.value = nextSchema
+    },
     shouldValidateField(name: string, trigger: Exclude<FieldValidateTrigger, 'submit'>) {
       const field = fields.get(name)
       const fieldRules = field?.rules ?? (rules.value as FormRules<TValues>)[name]
 
-      return normalizeRule(fieldRules).some(rule => matchesTrigger(rule, trigger))
+      return Boolean(validationSchema.value) || normalizeRule(fieldRules).some(rule => matchesTrigger(rule, trigger))
     },
     submitCount,
     touched,
@@ -438,15 +521,28 @@ export function useForm<TValues extends FormValues = FormValues>(
       const names = new Set([...Object.keys(rules.value), ...fields.keys()])
       const nextErrors: FormErrors = {}
 
-      await Promise.all(
-        Array.from(names).map(async (name) => {
-          const result = await form.validateField(name)
-          if (!result.valid) {
-            nextErrors[name] = result.errors[0] ?? `${name} is invalid`
-          }
-        }),
-      )
+      validatingAll = true
+      try {
+        await Promise.all(
+          Array.from(names).map(async (name) => {
+            const result = await form.validateField(name)
+            if (!result.valid) {
+              nextErrors[name] = result.errors[0] ?? `${name} is invalid`
+            }
+          }),
+        )
+      }
+      finally {
+        validatingAll = false
+      }
 
+      const schemaResult = await validateStandardSchema(validationSchema.value, values.value)
+      Object.entries(schemaResult.errors).forEach(([name, error]) => {
+        if (!nextErrors[name]) { nextErrors[name] = error }
+      })
+      if (Object.keys(schemaResult.errors).length === 0) {
+        values.value = schemaResult.values
+      }
       errors.value = nextErrors
 
       return {
@@ -479,6 +575,11 @@ export function useForm<TValues extends FormValues = FormValues>(
 
         if (error) { fieldErrors.push(error) }
       }
+      if (!validatingAll && validationSchema.value) {
+        const schemaResult = await validateStandardSchema(validationSchema.value, values.value)
+        const schemaError = schemaResult.errors[name]
+        if (schemaError && !fieldErrors.includes(schemaError)) { fieldErrors.push(schemaError) }
+      }
 
       form.setFieldError(name, fieldErrors[0])
 
@@ -488,6 +589,7 @@ export function useForm<TValues extends FormValues = FormValues>(
       }
     },
     validateOnChange,
+    validationSchema,
     values,
   }
 

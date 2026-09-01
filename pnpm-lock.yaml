@@ -119,6 +119,9 @@ importers:
       vue:
         specifier: ^3.5.41
         version: 3.5.41(typescript@6.0.3)
+      zod:
+        specifier: ^4.5.4
+        version: 4.5.4
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -298,6 +301,10 @@ importers:
       '@varo/utils':
         specifier: workspace:*
         version: link:../utils
+    devDependencies:
+      zod:
+        specifier: ^4.5.4
+        version: 4.5.4
 
   packages/primitives-core:
     devDependencies:
@@ -9635,8 +9642,8 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
-  zod@4.4.3:
-    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+  zod@4.5.4:
+    resolution: {integrity: sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -11153,7 +11160,7 @@ snapshots:
       eslint: 10.9.1(jiti@2.7.0)(supports-color@10.2.2)
       ts-pattern: 5.9.0
       typescript: 6.0.3
-      zod: 4.4.3
+      zod: 4.5.4
     transitivePeerDependencies:
       - supports-color
 
@@ -11730,7 +11737,7 @@ snapshots:
 
   '@modelcontextprotocol/core@2.0.0':
     dependencies:
-      zod: 4.4.3
+      zod: 4.5.4
 
   '@modelcontextprotocol/node@2.0.0(@modelcontextprotocol/server@2.0.0)(hono@4.12.18)':
     dependencies:
@@ -11756,15 +11763,15 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.4.3
-      zod-to-json-schema: 3.25.2(zod@4.4.3)
+      zod: 4.5.4
+      zod-to-json-schema: 3.25.2(zod@4.5.4)
     transitivePeerDependencies:
       - supports-color
 
   '@modelcontextprotocol/server@2.0.0':
     dependencies:
       '@modelcontextprotocol/core': 2.0.0
-      zod: 4.4.3
+      zod: 4.5.4
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4':
     optional: true
@@ -14062,11 +14069,11 @@ snapshots:
 
   '@weapp-core/schematics@6.2.0':
     dependencies:
-      zod: 4.4.3
+      zod: 4.5.4
 
   '@weapp-core/schematics@6.2.1':
     dependencies:
-      zod: 4.4.3
+      zod: 4.5.4
 
   '@weapp-core/shared@3.2.0': {}
 
@@ -14254,7 +14261,7 @@ snapshots:
     dependencies:
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@10.2.2)
       '@weapp-vite/devtools-runtime': 0.4.16(@types/node@26.1.0)
-      zod: 4.4.3
+      zod: 4.5.4
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - '@types/node'
@@ -14267,7 +14274,7 @@ snapshots:
       '@modelcontextprotocol/node': 2.0.0(@modelcontextprotocol/server@2.0.0)(hono@4.12.18)
       '@modelcontextprotocol/server': 2.0.0
       '@weapp-vite/devtools-runtime': 0.4.17(@types/node@26.1.0)
-      zod: 4.4.3
+      zod: 4.5.4
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -15498,8 +15505,8 @@ snapshots:
       '@babel/parser': 7.29.8
       eslint: 10.9.1(jiti@2.7.0)(supports-color@10.2.2)
       hermes-parser: 0.25.1
-      zod: 4.4.3
-      zod-validation-error: 4.0.2(zod@4.4.3)
+      zod: 4.5.4
+      zod-validation-error: 4.0.2(zod@4.5.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -19354,7 +19361,7 @@ snapshots:
       lightningcss: 1.33.0
       picomatch: 4.0.7
       postcss: 8.5.26
-      rolldown: 1.2.5
+      rolldown: 1.2.6
       tinyglobby: 0.2.17
     optionalDependencies:
       '@types/node': 26.1.0
@@ -19510,7 +19517,7 @@ snapshots:
       pathe: 2.0.3
       pixelmatch: 7.2.0
       pngjs: 7.0.0
-      zod: 4.4.3
+      zod: 4.5.4
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - '@types/node'
@@ -19530,7 +19537,7 @@ snapshots:
       pathe: 2.0.3
       pixelmatch: 7.2.0
       pngjs: 7.0.0
-      zod: 4.4.3
+      zod: 4.5.4
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -20057,14 +20064,14 @@ snapshots:
       '@yuku-parser/binding-win32-arm64': 0.8.7
       '@yuku-parser/binding-win32-x64': 0.8.7
 
-  zod-to-json-schema@3.25.2(zod@4.4.3):
+  zod-to-json-schema@3.25.2(zod@4.5.4):
     dependencies:
-      zod: 4.4.3
+      zod: 4.5.4
 
-  zod-validation-error@4.0.2(zod@4.4.3):
+  zod-validation-error@4.0.2(zod@4.5.4):
     dependencies:
-      zod: 4.4.3
+      zod: 4.5.4
 
-  zod@4.4.3: {}
+  zod@4.5.4: {}
 
   zwitch@2.0.4: {}

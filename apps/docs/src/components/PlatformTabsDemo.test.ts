@@ -764,4 +764,57 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__pagination-orders > p').text()).toContain('第 4 页 / 共 5 页')
     expect(wrapper.findAll('.platform-demo__pagination-orders > div > article')[0]!.text()).not.toBe(firstOrder)
   })
+
+  it('presents SideNavbar as account-center section navigation', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'side-navbar',
+        locale: 'zh',
+      },
+    })
+
+    const nav = wrapper.get('.varo-side-navbar')
+    const items = wrapper.findAll('.varo-side-navbar__item')
+    expect(nav.attributes('aria-label')).toBe('账户中心分区')
+    expect(items).toHaveLength(4)
+    expect(items[0]!.attributes('aria-current')).toBe('page')
+    expect(wrapper.findAll('.varo-side-navbar__badge')).toHaveLength(2)
+    expect(wrapper.get('.platform-demo__side-navbar-panel').text()).toContain('2 笔待处理')
+
+    await items[1]!.trigger('click')
+    expect(items[0]!.attributes('aria-current')).toBeUndefined()
+    expect(items[1]!.attributes('aria-current')).toBe('page')
+    expect(wrapper.get('.platform-demo__side-navbar-panel').text()).toContain('3 张优惠券')
+  })
+
+  it('presents Tabbar as accessible primary app navigation', async () => {
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'tabbar',
+        locale: 'zh',
+      },
+    })
+
+    const tabbar = wrapper.get('.varo-tabbar')
+    const items = wrapper.findAll('.varo-tabbar__item')
+    expect(tabbar.attributes('aria-label')).toBe('主要导航')
+    expect(items).toHaveLength(4)
+    expect(wrapper.findAll('.platform-demo__tabbar-icon')).toHaveLength(4)
+    expect(items[0]!.attributes('aria-current')).toBe('page')
+    expect(wrapper.get('.varo-tabbar__icon').attributes('aria-hidden')).toBe('true')
+    expect(wrapper.findAll('.varo-tabbar__badge')).toHaveLength(1)
+    expect(wrapper.findAll('.varo-tabbar__dot')).toHaveLength(1)
+
+    await items[2]!.trigger('click')
+    expect(items[0]!.attributes('aria-current')).toBeUndefined()
+    expect(items[2]!.attributes('aria-current')).toBe('page')
+    expect(wrapper.get('.platform-demo__tabbar-page > strong').text()).toBe('消息')
+    expect(wrapper.get('.platform-demo__tabbar-page > p').text()).toContain('2 条')
+  })
 })

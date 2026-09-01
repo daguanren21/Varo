@@ -1,5 +1,5 @@
 import type { ReactiveRuntime } from '@varo-ui/headless'
-import type { FieldRule, FormRules, FormValues, UseFormReturn } from '@varo/hooks'
+import type { FieldRule, FormRules, FormValues, StandardSchemaV1, UseFormReturn } from '@varo/hooks'
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import { useVaroTheme } from '@varo-ui/theme'
 import { useForm } from '@varo/hooks'
@@ -52,7 +52,11 @@ export const VForm = defineComponent({
     },
     rules: {
       type: Object as PropType<FormRules>,
-      default: () => ({}),
+      default: undefined,
+    },
+    validationSchema: {
+      type: Object as PropType<StandardSchemaV1<FormValues>>,
+      default: undefined,
     },
     labelAlign: {
       type: String as PropType<FormLabelAlign>,
@@ -66,7 +70,10 @@ export const VForm = defineComponent({
       type: Boolean,
       default: true,
     },
-    validateOnChange: Boolean,
+    validateOnChange: {
+      type: Boolean,
+      default: undefined,
+    },
   },
   emits: ['submit', 'failed', 'reset'],
   setup(props, { attrs, emit, expose, slots }) {
@@ -91,6 +98,7 @@ export const VForm = defineComponent({
       rules: props.rules,
       runtime: vueRuntime,
       validateOnChange: props.validateOnChange,
+      validationSchema: props.validationSchema,
       values,
     })
     const classes = computed(() =>
@@ -98,6 +106,10 @@ export const VForm = defineComponent({
         radius: theme.value.components.input.borderRadius,
         disabled: props.disabled,
       }),
+    )
+    watch(
+      () => props.validationSchema,
+      schema => form.setValidationSchema(schema),
     )
     const labelBasis = computed(() => normalizeLabelWidth(props.labelWidth))
 

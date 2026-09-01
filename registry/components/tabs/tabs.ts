@@ -1,20 +1,27 @@
-import '../../styles/varo.css'
+import type { InjectionKey, PropType, StyleValue, VNode } from 'vue'
 import {
-  Fragment,
   computed,
   defineComponent,
+  Fragment,
   h,
   inject,
+
   provide,
-  type InjectionKey,
-  type PropType,
-  type StyleValue,
-  type VNode
+
+  useId,
+
 } from 'vue'
+import '../../styles/varo.css'
 
 type TabName = string | number
-type TabsContext = {
+interface TabsContext {
   active: { value: TabName | undefined }
+  rootId: string
+}
+interface TabEntry {
+  disabled: boolean
+  name: TabName
+  title: string
 }
 
 const tabsContextKey: InjectionKey<TabsContext> = Symbol('varo-tabs')
@@ -24,15 +31,45 @@ function getTabName(vnode: VNode, index: number): TabName {
   return (props?.name as TabName | undefined) ?? index
 }
 
-function getTabTitle(vnode: VNode, index: number) {
+function getTabEntry(vnode: VNode, index: number): TabEntry {
   const props = vnode.props as Record<string, unknown> | null
-  return (props?.title as string | undefined) ?? String(getTabName(vnode, index))
+  const name = getTabName(vnode, index)
+  return {
+    disabled: Boolean(props?.disabled),
+    name,
+    title: (props?.title as string | undefined) ?? String(name),
+  }
 }
 
 function flattenTabs(children: VNode[]): VNode[] {
-  return children.flatMap((child) =>
-    child.type === Fragment && Array.isArray(child.children) ? flattenTabs(child.children as VNode[]) : child
+  return children.flatMap(child =>
+    child.type === Fragment && Array.isArray(child.children) ? flattenTabs(child.children as VNode[]) : child,
   )
+}
+
+function encodeTabName(name: TabName) {
+  return `${typeof name === 'number' ? 'n' : 's'}-${encodeURIComponent(String(name))}`
+}
+
+function getTriggerId(rootId: string, name: TabName) {
+  return `${rootId}-trigger-${encodeTabName(name)}`
+}
+
+function getPanelId(rootId: string, name: TabName) {
+  return `${rootId}-panel-${encodeTabName(name)}`
+}
+
+function getKeyboardTarget(key: string, currentIndex: number, entries: TabEntry[]) {
+  const enabledIndices = entries.flatMap((entry, index) => entry.disabled ? [] : [index])
+  if (enabledIndices.length === 0) { return undefined }
+  if (key === 'Home') { return enabledIndices[0] }
+  if (key === 'End') { return enabledIndices.at(-1) }
+  if (key !== 'ArrowLeft' && key !== 'ArrowRight') { return undefined }
+
+  const currentEnabledIndex = enabledIndices.indexOf(currentIndex)
+  const offset = key === 'ArrowRight' ? 1 : -1
+  const nextEnabledIndex = (currentEnabledIndex + offset + enabledIndices.length) % enabledIndices.length
+  return enabledIndices[nextEnabledIndex]
 }
 
 export const VTabs = defineComponent({
@@ -40,61 +77,97 @@ export const VTabs = defineComponent({
   props: {
     active: {
       type: [String, Number] as PropType<TabName | undefined>,
-      default: undefined
+      default: undefined,
+    },
+    ariaLabel: {
+      type: String,
+      default: undefined,
     },
     type: {
       type: String as PropType<'line' | 'card'>,
-      default: 'line'
-    }
+      default: 'line',
+    },
   },
   emits: ['update:active', 'change', 'clickTab'],
   setup(props, { attrs, emit, slots }) {
     const current = computed(() => props.active)
-    provide(tabsContextKey, { active: current })
+    const rootId = String(attrs.id ?? `varo-tabs-${useId().replaceAll(':', '')}`)
+    provide(tabsContextKey, { active: current, rootId })
 
-    function select(name: TabName, title: string) {
-      emit('update:active', name)
-      emit('change', name)
-      emit('clickTab', { name, title })
+    function select(entry: TabEntry) {
+      if (entry.disabled) { return }
+      emit('update:active', entry.name)
+      emit('change', entry.name)
+      emit('clickTab', { name: entry.name, title: entry.title })
+    }
+
+    function handleKeydown(event: KeyboardEvent, index: number, entries: TabEntry[]) {
+      const targetIndex = getKeyboardTarget(event.key, index, entries)
+      if (targetIndex === undefined) { return }
+
+      event.preventDefault()
+      const target = entries[targetIndex]
+      const buttons = (event.currentTarget as HTMLElement).parentElement?.querySelectorAll<HTMLButtonElement>(
+        '.varo-tabs__tab',
+      )
+      buttons?.[targetIndex]?.focus()
+      if (target) { select(target) }
     }
 
     return () => {
       const children = flattenTabs(slots.default?.() ?? [])
+      const entries = children.map(getTabEntry)
+      const activeIndex = entries.findIndex(entry => entry.name === current.value && !entry.disabled)
+      const focusIndex = activeIndex >= 0 ? activeIndex : entries.findIndex(entry => !entry.disabled)
 
       return h(
         'div',
         {
           ...attrs,
-          class: ['varo-tabs', attrs.class],
-          style: attrs.style as StyleValue,
+          'id': rootId,
+          'class': ['varo-tabs', attrs.class],
+          'style': attrs.style as StyleValue,
           'data-active': current.value,
-          'data-type': props.type
+          'data-type': props.type,
+          'data-orientation': 'horizontal',
         },
         [
           h(
             'div',
-            { class: 'varo-tabs__nav' },
-            children.map((vnode, index) => {
-              const name = getTabName(vnode, index)
-              const title = getTabTitle(vnode, index)
-              return h(
+            {
+              'class': 'varo-tabs__nav',
+              'role': 'tablist',
+              'aria-label': props.ariaLabel,
+              'aria-orientation': 'horizontal',
+            },
+            entries.map((entry, index) =>
+              h(
                 'button',
                 {
-                  key: name,
-                  type: 'button',
-                  class: 'varo-tabs__tab',
-                  'data-active': String(current.value === name),
-                  onClick: () => select(name, title)
+                  'id': getTriggerId(rootId, entry.name),
+                  'key': entry.name,
+                  'type': 'button',
+                  'class': 'varo-tabs__tab',
+                  'disabled': entry.disabled || undefined,
+                  'role': 'tab',
+                  'tabindex': focusIndex === index ? 0 : -1,
+                  'aria-controls': getPanelId(rootId, entry.name),
+                  'aria-disabled': entry.disabled || undefined,
+                  'aria-selected': current.value === entry.name,
+                  'data-active': String(current.value === entry.name),
+                  'data-disabled': String(entry.disabled),
+                  'onClick': () => select(entry),
+                  'onKeydown': (event: KeyboardEvent) => handleKeydown(event, index, entries),
                 },
-                title
-              )
-            })
+                entry.title,
+              ),
+            ),
           ),
-          h('div', { class: 'varo-tabs__content' }, children)
-        ]
+          h('div', { class: 'varo-tabs__content' }, children),
+        ],
       )
     }
-  }
+  },
 })
 
 export const VTab = defineComponent({
@@ -102,14 +175,15 @@ export const VTab = defineComponent({
   props: {
     name: {
       type: [String, Number] as PropType<TabName>,
-      required: true
+      required: true,
     },
     title: String,
-    disabled: Boolean
+    disabled: Boolean,
   },
   setup(props, { attrs, slots }) {
     const tabs = inject(tabsContextKey)
-    const active = computed(() => tabs?.active.value === props.name)
+    if (!tabs) { throw new Error('VTab must be used inside VTabs') }
+    const active = computed(() => tabs.active.value === props.name)
 
     return () =>
       active.value
@@ -117,11 +191,15 @@ export const VTab = defineComponent({
             'div',
             {
               ...attrs,
-              class: ['varo-tabs__panel', attrs.class],
-              'data-active': String(active.value)
+              'id': getPanelId(tabs.rootId, props.name),
+              'class': ['varo-tabs__panel', attrs.class],
+              'role': 'tabpanel',
+              'tabindex': 0,
+              'aria-labelledby': getTriggerId(tabs.rootId, props.name),
+              'data-active': String(active.value),
             },
-            slots.default?.()
+            slots.default?.(),
           )
         : null
-  }
+  },
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormRules, FormValues, UseFormReturn } from '@varo-ui/headless'
+import type { FormRules, FormValues, StandardSchemaV1, UseFormReturn } from '@varo-ui/headless'
 import { useForm } from '@varo-ui/headless'
 import { computed, provide, shallowRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
@@ -17,6 +17,7 @@ const props = withDefaults(
     labelWidth?: number | string
     model?: FormValues
     rules?: FormRules
+    validationSchema?: StandardSchemaV1<FormValues>
     showError?: boolean
     validateOnChange?: boolean
   }>(),
@@ -27,9 +28,9 @@ const props = withDefaults(
     labelAlign: 'left',
     labelWidth: undefined,
     model: undefined,
-    rules: () => ({}),
+    rules: undefined,
     showError: true,
-    validateOnChange: false,
+    validateOnChange: undefined,
   },
 )
 
@@ -62,6 +63,7 @@ const form = useForm({
   rules: props.rules,
   runtime: varoReactiveRuntime,
   validateOnChange: props.validateOnChange,
+  validationSchema: props.validationSchema,
   values,
 })
 const labelWidth = computed(() => {
@@ -74,6 +76,10 @@ watch(
   () => props.rules,
   rules => form.setRules(rules),
   { deep: true },
+)
+watch(
+  () => props.validationSchema,
+  schema => form.setValidationSchema(schema),
 )
 
 provide(formContextKey, {

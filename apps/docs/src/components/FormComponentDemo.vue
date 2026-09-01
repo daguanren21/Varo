@@ -54,6 +54,7 @@ import {
   VUploader as WeappUploader,
 } from '@varo-ui/weapp'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
+import { z } from 'zod'
 
 type FormDemoKind
   = | 'calendar'
@@ -207,34 +208,19 @@ const formRules = {
   ],
   score: { min: 1, trigger: changeTrigger },
 }
-const formArrayRules = computed(() =>
-  Object.fromEntries(
-    formArrayModel.companies.flatMap((_, index) => [
-      [
-        `companies.${index}.name`,
-        [
-          { required: true, trigger: changeTrigger },
-          { min: 2, trigger: changeTrigger },
-        ],
-      ],
-      [
-        `companies.${index}.contact`,
-        [{ required: true, trigger: changeTrigger }],
-      ],
-      [
-        `companies.${index}.phone`,
-        [
-          { required: true, trigger: [changeTrigger, blurTrigger] },
-          { length: 11, trigger: blurTrigger },
-        ],
-      ],
-      [
-        `companies.${index}.type`,
-        [{ required: true, trigger: changeTrigger }],
-      ],
-    ]),
-  ),
-)
+const formArraySchema = computed(() => {
+  const isEnglish = props.locale === 'en'
+  return z.object({
+    companies: z.array(
+      z.object({
+        contact: z.string().min(1, isEnglish ? 'Enter a contact name' : '请输入联系人'),
+        name: z.string().min(2, isEnglish ? 'Use at least 2 characters' : '公司名称至少 2 个字符'),
+        phone: z.string().regex(/^\d{11}$/, isEnglish ? 'Enter an 11-digit phone number' : '请输入 11 位手机号'),
+        type: z.string().min(1, isEnglish ? 'Select a company type' : '请选择公司类型'),
+      }),
+    ).min(1, isEnglish ? 'Add at least one company' : '请至少添加一家公司'),
+  })
+})
 
 const copy = computed(() =>
   props.locale === 'en'
@@ -869,40 +855,23 @@ const rules = {
     case 'form-array':
       return `
 <script setup lang="ts">
-import { computed, reactive } from '${runtimePackage}'
+import { reactive } from '${runtimePackage}'
+import { z } from 'zod'
 import { VButton, VForm, VFormItem, VInput, VRadio, VRadioGroup } from '${packageName}'
 
 const model = reactive({
   companies: [{ name: '', contact: '', phone: '', type: '' }]
 })
-const rules = computed(() =>
-  Object.fromEntries(
-    model.companies.flatMap((_, index) => [
-      [
-        \`companies.\${index}.name\`,
-        [
-          { required: true, trigger: 'change' },
-          { min: 2, trigger: 'change' }
-        ]
-      ],
-      [
-        \`companies.\${index}.contact\`,
-        [{ required: true, trigger: 'change' }]
-      ],
-      [
-        \`companies.\${index}.phone\`,
-        [
-          { required: true, trigger: ['change', 'blur'] },
-          { length: 11, trigger: 'blur' }
-        ]
-      ],
-      [
-        \`companies.\${index}.type\`,
-        [{ required: true, trigger: 'change' }]
-      ]
-    ])
-  )
-)
+const validationSchema = z.object({
+  companies: z.array(
+    z.object({
+      name: z.string().min(2, '${isEn ? 'Use at least 2 characters' : '公司名称至少 2 个字符'}'),
+      contact: z.string().min(1, '${isEn ? 'Enter a contact name' : '请输入联系人'}'),
+      phone: z.string().regex(/^\\d{11}$/, '${isEn ? 'Enter an 11-digit phone number' : '请输入 11 位手机号'}'),
+      type: z.string().min(1, '${isEn ? 'Select a company type' : '请选择公司类型'}')
+    })
+  ).min(1, '${isEn ? 'Add at least one company' : '请至少添加一家公司'}')
+})
 
 function addCompany() {
   model.companies.push({ name: '', contact: '', phone: '', type: '' })
@@ -914,7 +883,7 @@ function removeCompany(index: number) {
 <\/script>
 
 <template>
-  <VForm id="company-form" :model="model" :rules="rules">
+  <VForm id="company-form" :model="model" :validation-schema="validationSchema">
     <div v-for="(company, index) in model.companies" :key="index">
       <VFormItem :name="\`companies.\${index}.name\`" :label="\`${copy.value.company} \${index + 1} ${isEn ? 'Name' : '名称'}\`" required>
         <template #default="{ setValue, value }">
@@ -1450,7 +1419,7 @@ function onFormArrayFailed() {
             <output>{{ copy.subtotal }} ¥{{ inputNumberValue * 39 }}</output>
           </header>
           <div class="form-demo__quantity-row">
-            <div>
+            <div class="form-demo__quantity-copy">
               <strong>{{ copy.quantityProduct }}</strong>
               <span>{{ copy.perSeat }}</span>
             </div>
@@ -1814,7 +1783,7 @@ function onFormArrayFailed() {
             :id="formArrayId"
             class="form-demo__save"
             :model="formArrayModel"
-            :rules="formArrayRules"
+            :validation-schema="formArraySchema"
             @failed="onFormArrayFailed"
             @submit="onFormArraySubmit"
           >
@@ -2667,9 +2636,14 @@ function onFormArrayFailed() {
   border-radius: 14px;
 }
 
-.form-demo__quantity-row > div {
+.form-demo__quantity-copy {
   display: grid;
   gap: 3px;
+  min-width: 0;
+}
+
+.form-demo__quantity-row :deep(.varo-input-number) {
+  flex: none;
 }
 
 .form-demo__quantity-row strong {

@@ -221,6 +221,8 @@ describe('ui-h5 navigation components', () => {
         ],
       },
     })
+    expect(wrapper.findAll('.varo-side-navbar__item')[0].attributes('aria-current')).toBe('page')
+    expect(wrapper.findAll('.varo-side-navbar__item')[1].attributes('aria-current')).toBeUndefined()
 
     await wrapper.findAll('.varo-side-navbar__item')[1].trigger('click')
     expect(onUpdate).toHaveBeenCalledWith('mine')
@@ -240,29 +242,77 @@ describe('ui-h5 navigation components', () => {
         ],
       },
     })
+    expect(wrapper.findAll('.varo-tabbar__item')[0].attributes('aria-current')).toBe('page')
+    expect(wrapper.findAll('.varo-tabbar__item')[1].attributes('aria-current')).toBeUndefined()
+    expect(wrapper.get('.varo-tabbar__icon').attributes('aria-hidden')).toBe('true')
 
     await wrapper.findAll('.varo-tabbar__item')[1].trigger('click')
     expect(onUpdate).toHaveBeenCalledWith('cart')
   })
 
-  it('changes tabs by tab title', async () => {
+  it('provides linked tabs, roving keyboard focus, and disabled-item guards', async () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VTabs, {
       props: {
+        'id': 'account-tabs',
         'active': 'a',
+        'ariaLabel': 'Account sections',
         'onUpdate:active': onUpdate,
       },
+      attachTo: document.body,
       slots: {
         default: () => [
           h(VTab, { name: 'a', title: '标签 A' }, { default: () => '内容 A' }),
-          h(VTab, { name: 'b', title: '标签 B' }, { default: () => '内容 B' }),
+          h(VTab, { name: 'b', title: '标签 B', disabled: true }, { default: () => '内容 B' }),
+          h(VTab, { name: 'c', title: '标签 C' }, { default: () => '内容 C' }),
         ],
       },
     })
 
     await wrapper.vm.$nextTick()
-    await wrapper.findAll('.varo-tabs__tab')[1].trigger('click')
+    const list = wrapper.get('[role="tablist"]')
+    const tabs = wrapper.findAll<HTMLButtonElement>('[role="tab"]')
+    const panel = wrapper.get('[role="tabpanel"]')
 
-    expect(onUpdate).toHaveBeenCalledWith('b')
+    expect(list.attributes('aria-label')).toBe('Account sections')
+    expect(list.attributes('aria-orientation')).toBe('horizontal')
+    expect(tabs[0].attributes()).toMatchObject({
+      'aria-controls': 'account-tabs-panel-s-a',
+      'aria-selected': 'true',
+      'id': 'account-tabs-trigger-s-a',
+      'tabindex': '0',
+    })
+    expect(tabs[1].attributes()).toMatchObject({
+      'aria-disabled': 'true',
+      'aria-selected': 'false',
+      'data-disabled': 'true',
+      'disabled': '',
+      'tabindex': '-1',
+    })
+    expect(panel.attributes()).toMatchObject({
+      'aria-labelledby': 'account-tabs-trigger-s-a',
+      'id': 'account-tabs-panel-s-a',
+      'role': 'tabpanel',
+      'tabindex': '0',
+    })
+
+    await tabs[1].trigger('click')
+    expect(onUpdate).not.toHaveBeenCalled()
+
+    tabs[0].element.focus()
+    await tabs[0].trigger('keydown', { key: 'ArrowRight' })
+    expect(onUpdate).toHaveBeenLastCalledWith('c')
+    expect(document.activeElement).toBe(tabs[2].element)
+
+    await wrapper.setProps({ active: 'c' })
+    expect(wrapper.get('[role="tabpanel"]').text()).toBe('内容 C')
+    expect(tabs[2].attributes('aria-selected')).toBe('true')
+    expect(tabs[2].attributes('tabindex')).toBe('0')
+
+    await tabs[2].trigger('keydown', { key: 'Home' })
+    expect(onUpdate).toHaveBeenLastCalledWith('a')
+    expect(document.activeElement).toBe(tabs[0].element)
+
+    wrapper.unmount()
   })
 })

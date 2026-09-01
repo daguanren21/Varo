@@ -458,14 +458,24 @@ describe('FormComponentDemo', () => {
     await wrapper.get('.form-demo__array-add').trigger('click')
     await flushPromises()
     expect(wrapper.findAll('.form-demo__array-item')).toHaveLength(2)
+    const companyInputs = wrapper.findAll<HTMLInputElement>('.varo-input__control')
+    await companyInputs[0]!.setValue('V')
+    await companyInputs[2]!.setValue('123')
 
     await wrapper.get('.form-demo__save').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 1 名称'))).toBe(true)
     expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 1 联系人'))).toBe(true)
     expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 2 电话'))).toBe(true)
     expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 2 公司类型'))).toBe(true)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司名称至少 2 个字符'))).toBe(true)
+    expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('请输入 11 位手机号'))).toBe(true)
+
+    await wrapper.get('.form-demo__code-toggle').trigger('click')
+    const code = wrapper.get('.form-demo__code code').text()
+    expect(code).toContain('z.object')
+    expect(code).toContain(':validation-schema="validationSchema"')
+    expect(code).not.toContain('Object.fromEntries')
 
     await wrapper.findAll('.form-demo__array-remove')[1]!.trigger('click')
     await flushPromises()

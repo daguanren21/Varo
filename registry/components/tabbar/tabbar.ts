@@ -1,8 +1,9 @@
+import type { InjectionKey, PropType, StyleValue } from 'vue'
+import { computed, defineComponent, h, inject, provide } from 'vue'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, inject, provide, type InjectionKey, type PropType, type StyleValue } from 'vue'
 
 type TabbarName = string | number
-type TabbarContext = {
+interface TabbarContext {
   current: { value: TabbarName | undefined }
   select: (name: TabbarName) => void
 }
@@ -14,14 +15,14 @@ export const VTabbar = defineComponent({
   props: {
     modelValue: {
       type: [String, Number] as PropType<TabbarName | undefined>,
-      default: undefined
+      default: undefined,
     },
     fixed: Boolean,
     border: {
       type: Boolean,
-      default: true
+      default: true,
     },
-    safeAreaInsetBottom: Boolean
+    safeAreaInsetBottom: Boolean,
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { attrs, emit, slots }) {
@@ -31,7 +32,7 @@ export const VTabbar = defineComponent({
       select(name) {
         emit('update:modelValue', name)
         emit('change', name)
-      }
+      },
     })
 
     return () =>
@@ -39,15 +40,15 @@ export const VTabbar = defineComponent({
         'nav',
         {
           ...attrs,
-          class: ['varo-tabbar', attrs.class],
-          style: attrs.style as StyleValue,
+          'class': ['varo-tabbar', attrs.class],
+          'style': attrs.style as StyleValue,
           'data-border': String(props.border),
           'data-fixed': String(props.fixed),
-          'data-safe-area-inset-bottom': String(props.safeAreaInsetBottom)
+          'data-safe-area-inset-bottom': String(props.safeAreaInsetBottom),
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })
 
 export const VTabbarItem = defineComponent({
@@ -55,11 +56,11 @@ export const VTabbarItem = defineComponent({
   props: {
     name: {
       type: [String, Number] as PropType<TabbarName>,
-      required: true
+      required: true,
     },
     icon: String,
     badge: [String, Number],
-    dot: Boolean
+    dot: Boolean,
   },
   setup(props, { attrs, slots }) {
     const tabbar = inject(tabbarContextKey)
@@ -70,17 +71,20 @@ export const VTabbarItem = defineComponent({
         'button',
         {
           ...attrs,
-          type: 'button',
-          class: ['varo-tabbar__item', attrs.class],
+          'type': 'button',
+          'class': ['varo-tabbar__item', attrs.class],
           'data-active': String(active.value),
-          onClick: () => tabbar?.select(props.name)
+          'aria-current': active.value ? 'page' : undefined,
+          'onClick': () => tabbar?.select(props.name),
         },
         [
-          props.icon ? h('span', { class: 'varo-tabbar__icon' }, props.icon) : null,
+          props.icon || slots.icon
+            ? h('span', { 'aria-hidden': 'true', 'class': 'varo-tabbar__icon' }, slots.icon?.() ?? props.icon)
+            : null,
           h('span', { class: 'varo-tabbar__text' }, slots.default?.()),
           props.badge != null ? h('sup', { class: 'varo-tabbar__badge' }, String(props.badge)) : null,
-          props.dot ? h('sup', { class: 'varo-tabbar__dot' }) : null
-        ]
+          props.dot ? h('sup', { 'aria-hidden': 'true', 'class': 'varo-tabbar__dot' }) : null,
+        ],
       )
-  }
+  },
 })

@@ -199,6 +199,35 @@ describe('registry catalog', () => {
     })
   })
 
+  it('keeps one shadcn Tabs API behind target-owned renderers', () => {
+    const tabs = readJson<RegistryItem>('registry/components/tabs/registry.json')
+    const h5Files = tabs.files.filter(file => file.target === 'h5')
+    const weappFiles = tabs.files.filter(file => file.target === 'weapp-vite')
+
+    expect(tabs.targetDependencies).toEqual({
+      'h5': ['vue'],
+      'weapp-vite': ['wevu'],
+    })
+    expect(h5Files.map(file => file.to)).toEqual(['src/components/ui/tabs.ts'])
+    expect(weappFiles.map(file => file.to)).toEqual([
+      'src/components/ui/tabs.ts',
+      'src/components/ui/tabs-context.ts',
+      'src/components/ui/v-tabs.vue',
+      'src/components/ui/v-tab.vue',
+    ])
+
+    expect(readText('registry/components/tabs/tabs.ts')).toContain('export const VTabs')
+    expect(readText('registry/components/tabs/tabs.ts')).toContain('export const VTab')
+    expect(readText('registry/components/tabs/tabs.weapp.ts')).toContain('default as VTabs')
+    expect(readText('registry/components/tabs/tabs.weapp.ts')).toContain('default as VTab')
+    expect(readText('registry/components/tabs/v-tabs.weapp-vite.vue')).toContain('role="tablist"')
+    expect(readText('registry/components/tabs/v-tab.weapp-vite.vue')).toContain('role="tabpanel"')
+    weappFiles.filter(file => file.from.endsWith('.vue')).forEach((file) => {
+      expect(readText(file.from), file.from).toContain('from \'wevu\'')
+      expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
+    })
+  })
+
   it('composes Block controls through headless-backed Base Kit components', () => {
     const headlessComponents = new Map([
       ['button', 'usePressableRoot'],

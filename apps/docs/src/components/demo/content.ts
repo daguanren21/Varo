@@ -2122,7 +2122,7 @@ const page = shallowRef(2)
   },
   'side-navbar': {
     title: 'SideNavbar 跨端示例与演示',
-    description: '展示侧边栏分组导航、选中态和徽标。',
+    description: '在账户中心展示侧边分区、当前页面语义、徽标和对应内容面板。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
@@ -2132,16 +2132,18 @@ const page = shallowRef(2)
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VSideNavbar, VSideNavbarItem } from '@varo-ui/h5'
 
-const active = ref('orders')
+const active = shallowRef('orders')
 <\/script>
 
 <template>
-  <VSideNavbar v-model="active">
-    <VSideNavbarItem name="orders" title="订单" />
+  <VSideNavbar v-model="active" aria-label="账户中心分区">
+    <VSideNavbarItem name="orders" title="订单" badge="2" />
     <VSideNavbarItem name="assets" title="资产" badge="3" />
+    <VSideNavbarItem name="address" title="地址" />
+    <VSideNavbarItem name="security" title="安全" />
   </VSideNavbar>
 </template>
         `.trim(),
@@ -2154,16 +2156,18 @@ const active = ref('orders')
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VSideNavbar, VSideNavbarItem } from '@varo-ui/weapp'
 
-const active = ref('orders')
+const active = shallowRef('orders')
 <\/script>
 
 <template>
-  <VSideNavbar v-model="active">
-    <VSideNavbarItem name="orders" title="订单" />
+  <VSideNavbar v-model="active" aria-label="账户中心分区">
+    <VSideNavbarItem name="orders" title="订单" badge="2" />
     <VSideNavbarItem name="assets" title="资产" badge="3" />
+    <VSideNavbarItem name="address" title="地址" />
+    <VSideNavbarItem name="security" title="安全" />
   </VSideNavbar>
 </template>
         `.trim(),
@@ -2286,7 +2290,7 @@ const orders = [{ id: '#1042' }, { id: '#1041' }, { id: '#1040' }]
   },
   'tabbar': {
     title: 'Tabbar 跨端示例与演示',
-    description: '展示底部标签栏、图标、徽标和选中态。',
+    description: '在移动应用主导航中展示真实图标、徽标、红点、当前页面语义和内容切换。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',
@@ -2296,16 +2300,26 @@ const orders = [{ id: '#1042' }, { id: '#1041' }, { id: '#1040' }]
         statusRight: '5G · H5',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'vue'
 import { VTabbar, VTabbarItem } from '@varo-ui/h5'
 
-const active = ref('home')
+const active = shallowRef('home')
 <\/script>
 
 <template>
-  <VTabbar v-model="active">
-    <VTabbarItem name="home" icon="⌂">首页</VTabbarItem>
-    <VTabbarItem name="profile" icon="○" dot>我的</VTabbarItem>
+  <VTabbar v-model="active" aria-label="主要导航">
+    <VTabbarItem name="home">
+      <template #icon><img src="/icons/home.svg" alt="" /></template>
+      首页
+    </VTabbarItem>
+    <VTabbarItem name="messages" badge="2">
+      <template #icon><img src="/icons/message.svg" alt="" /></template>
+      消息
+    </VTabbarItem>
+    <VTabbarItem name="profile" dot>
+      <template #icon><img src="/icons/profile.svg" alt="" /></template>
+      我的
+    </VTabbarItem>
   </VTabbar>
 </template>
         `.trim(),
@@ -2318,16 +2332,26 @@ const active = ref('home')
         statusRight: '微信 · 小程序',
         code: `
 <script setup lang="ts">
-import { ref } from 'vue'
+import { shallowRef } from 'wevu'
 import { VTabbar, VTabbarItem } from '@varo-ui/weapp'
 
-const active = ref('home')
+const active = shallowRef('home')
 <\/script>
 
 <template>
-  <VTabbar v-model="active">
-    <VTabbarItem name="home" icon="⌂">首页</VTabbarItem>
-    <VTabbarItem name="profile" icon="○" dot>我的</VTabbarItem>
+  <VTabbar v-model="active" aria-label="主要导航">
+    <VTabbarItem name="home">
+      <template #icon><image src="/icons/home.svg" /></template>
+      首页
+    </VTabbarItem>
+    <VTabbarItem name="messages" badge="2">
+      <template #icon><image src="/icons/message.svg" /></template>
+      消息
+    </VTabbarItem>
+    <VTabbarItem name="profile" dot>
+      <template #icon><image src="/icons/profile.svg" /></template>
+      我的
+    </VTabbarItem>
   </VTabbar>
 </template>
         `.trim(),
