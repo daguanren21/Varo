@@ -86,11 +86,34 @@ describe('ui-h5 style entry', () => {
     expect(h5Layout).toContain('.varo-col')
     expect(h5Layout).toContain('.varo-space')
     expect(h5Layout).toContain('.varo-sticky')
-    expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: static/)
-    expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: 8px;[\s\S]*?right: 4px/)
+    expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: relative;[\s\S]*?width: 36px/)
+    expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: -9px;[\s\S]*?right: -15px/)
     expect(weapp.slice(weapp.indexOf(marker))).toBe(h5Layout)
     expect(registryH5.slice(registryH5.indexOf(marker))).toBe(h5Layout)
     expect(registryWeapp.slice(registryWeapp.indexOf(marker))).toBe(h5Layout)
+  })
+
+  it('ships source-owned pagination and Toast styles across targets', () => {
+    const h5 = readFileSync(resolve(packageRoot, 'src/style.css'), 'utf8')
+    const weapp = readFileSync(resolve(packageRoot, '../ui-weapp/src/style.css'), 'utf8')
+    const registryH5 = readFileSync(resolve(packageRoot, '../../registry/themes/base/h5.css'), 'utf8')
+    const registryWeapp = readFileSync(resolve(packageRoot, '../../registry/themes/base/weapp-vite.css'), 'utf8')
+    const section = (source: string, start: string, end: string) =>
+      source.slice(source.indexOf(start), source.indexOf(end))
+    const h5Toast = section(h5, '.varo-toast {', '.varo-rate {')
+    const h5Pagination = section(h5, '.varo-pagination {', '.varo-icon {')
+
+    expect(h5Pagination).toContain('flex-wrap: nowrap')
+    expect(h5Pagination).toMatch(/\.varo-pagination__prev,[\s\S]*?min-width: 56px/)
+    expect(h5Toast).toContain('.varo-toast__icon')
+    expect(h5Toast).toContain('.varo-toast-enter-active')
+    expect(h5Toast).toContain('@media (prefers-reduced-motion: reduce)')
+    expect(section(weapp, '.varo-toast {', '.varo-rate {')).toBe(h5Toast)
+    expect(section(registryH5, '.varo-toast {', '.varo-rate {')).toBe(h5Toast)
+    expect(section(registryWeapp, '.varo-toast {', '.varo-rate {')).toBe(h5Toast)
+    expect(section(weapp, '.varo-pagination {', '.varo-icon {')).toBe(h5Pagination)
+    expect(section(registryH5, '.varo-pagination {', '.varo-icon {')).toBe(h5Pagination)
+    expect(section(registryWeapp, '.varo-pagination {', '.varo-icon {')).toBe(h5Pagination)
   })
 
   it('ships mirrored structural styles for tabs navigation', () => {

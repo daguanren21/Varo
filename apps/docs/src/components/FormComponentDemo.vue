@@ -248,6 +248,7 @@ const copy = computed(() =>
         searchPlaceholder: 'Search',
         selectPlaceholder: 'Select city',
         toastMessage: 'Saved successfully',
+        toastClose: 'Close notification',
         toastShow: 'Show Toast',
         loadingText: 'Loading',
         textareaPlaceholder: 'Enter content',
@@ -391,6 +392,7 @@ const copy = computed(() =>
         searchPlaceholder: '搜索',
         selectPlaceholder: '请选择城市',
         toastMessage: '保存成功',
+        toastClose: '关闭通知',
         toastShow: '显示 Toast',
         loadingText: '加载中',
         textareaPlaceholder: '请输入内容',
@@ -1186,7 +1188,7 @@ const visible = ref(true)
 <\/script>
 
 <template>
-  <VToast v-model:visible="visible" type="success" message="${copy.value.toastMessage}" />
+  <VToast v-model:visible="visible" type="success" position="top" close-label="${copy.value.toastClose}" message="${copy.value.toastMessage}" />
 </template>
       `.trim()
     case 'loading':
@@ -1611,7 +1613,9 @@ function onFormArrayFailed() {
           v-else-if="example === 'toast'"
           v-model:visible="toastVisible"
           type="success"
+          position="top"
           :message="copy.toastMessage"
+          :close-label="copy.toastClose"
         />
         <section
           v-else-if="example === 'uploader'"

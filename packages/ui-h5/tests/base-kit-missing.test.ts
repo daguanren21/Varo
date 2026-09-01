@@ -9,9 +9,9 @@ describe('ui-h5 missing base kit components', () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VSwitch, {
       props: {
-        modelValue: false,
-        'onUpdate:modelValue': onUpdate
-      }
+        'modelValue': false,
+        'onUpdate:modelValue': onUpdate,
+      },
     })
 
     expect(wrapper.attributes('role')).toBe('switch')
@@ -29,8 +29,8 @@ describe('ui-h5 missing base kit components', () => {
   it('renders VLoading with text', () => {
     const wrapper = mount(VLoading, {
       props: {
-        text: '加载中'
-      }
+        text: '加载中',
+      },
     })
 
     expect(wrapper.classes()).toContain('varo-loading')
@@ -42,18 +42,23 @@ describe('ui-h5 missing base kit components', () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VToast, {
       props: {
-        visible: true,
-        message: '保存成功',
-        type: 'success',
-        position: 'top',
-        'onUpdate:visible': onUpdate
-      }
+        'visible': true,
+        'message': '保存成功',
+        'type': 'success',
+        'position': 'top',
+        'closeLabel': '关闭保存通知',
+        'onUpdate:visible': onUpdate,
+      },
     })
-
-    expect(wrapper.classes()).toContain('varo-toast')
-    expect(wrapper.attributes('data-type')).toBe('success')
-    expect(wrapper.attributes('data-position')).toBe('top')
-    expect(wrapper.text()).toContain('保存成功')
+    const toast = wrapper.get('.varo-toast')
+    expect(toast.classes()).toContain('varo-toast')
+    expect(toast.attributes('data-type')).toBe('success')
+    expect(toast.attributes('data-position')).toBe('top')
+    expect(toast.text()).toContain('保存成功')
+    expect(toast.attributes('role')).toBe('status')
+    expect(toast.attributes('aria-live')).toBe('polite')
+    expect(toast.get('.varo-toast__icon svg').attributes('viewBox')).toBe('0 0 24 24')
+    expect(toast.get('.varo-toast__close').attributes('aria-label')).toBe('关闭保存通知')
 
     await wrapper.get('.varo-toast__close').trigger('click')
 

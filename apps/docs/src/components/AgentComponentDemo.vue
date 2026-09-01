@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
-import { computed, shallowRef } from 'vue'
+import { computed, nextTick, shallowRef } from 'vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
 import {
   AgentActivity,
@@ -47,6 +47,25 @@ type Locale = 'en' | 'zh'
 const props = withDefaults(defineProps<{ component: string, locale?: Locale }>(), { locale: 'zh' })
 const demoTab = shallowRef<'code' | 'preview'>('preview')
 const demoDefinition = computed(() => agentDemoCatalog[props.component])
+const demoCopy = computed(() => props.locale === 'zh'
+  ? {
+      code: '使用代码',
+      live: '实时状态',
+      platform: 'H5 与 Wevu 使用同一公共 API',
+      preview: '交互预览',
+      scenario: '发布检查工作流',
+    }
+  : {
+      code: 'Usage code',
+      live: 'Live state',
+      platform: 'One public API for H5 and Wevu',
+      preview: 'Interactive preview',
+      scenario: 'Release readiness workflow',
+    })
+const previewTabId = computed(() => `agent-${props.component}-preview-tab`)
+const previewPanelId = computed(() => `agent-${props.component}-preview-panel`)
+const codeTabId = computed(() => `agent-${props.component}-code-tab`)
+const codePanelId = computed(() => `agent-${props.component}-code-panel`)
 const diffLabels = computed(() => props.locale === 'zh'
   ? {
       accept: '接受变更',
@@ -200,74 +219,139 @@ const flowNodes = [
 function done(message: string) {
   feedback.value = message
 }
+
+function selectDemoTab(tab: 'code' | 'preview') {
+  demoTab.value = tab
+}
+
+function handleDemoTabKeydown(event: KeyboardEvent) {
+  const target = event.key === 'ArrowRight' || event.key === 'End'
+    ? 'code'
+    : event.key === 'ArrowLeft' || event.key === 'Home'
+      ? 'preview'
+      : undefined
+  if (!target) { return }
+
+  const tablist = (event.currentTarget as HTMLElement).parentElement
+  event.preventDefault()
+  demoTab.value = target
+  void nextTick(() => {
+    tablist
+      ?.querySelector<HTMLButtonElement>(`[data-demo-tab="${target}"]`)
+      ?.focus()
+  })
+}
 </script>
 
 <template>
   <section class="agent-component-demo" :data-demo="component">
     <header>
-      <span>LIVE COMPONENT</span>
-      <div><b>H5</b><b>WEAPP</b></div>
+      <div class="agent-component-demo__meta">
+        <span>{{ demoDefinition.name }}</span>
+        <small>{{ demoCopy.platform }}</small>
+      </div>
+      <span class="agent-component-demo__live"><i aria-hidden="true" />{{ demoCopy.live }}</span>
     </header>
-    <nav class="agent-component-demo__tabs" aria-label="Demo views">
-      <button type="button" :data-active="String(demoTab === 'preview')" @click="demoTab = 'preview'">
-        Preview
+    <nav class="agent-component-demo__tabs" role="tablist" :aria-label="demoCopy.preview">
+      <button
+        :id="previewTabId"
+        type="button"
+        role="tab"
+        data-demo-tab="preview"
+        :aria-controls="previewPanelId"
+        :aria-selected="demoTab === 'preview'"
+        :data-active="String(demoTab === 'preview')"
+        :tabindex="demoTab === 'preview' ? 0 : -1"
+        @click="selectDemoTab('preview')"
+        @keydown="handleDemoTabKeydown"
+      >
+        {{ demoCopy.preview }}
       </button>
-      <button type="button" :data-active="String(demoTab === 'code')" @click="demoTab = 'code'">
-        Code
+      <button
+        :id="codeTabId"
+        type="button"
+        role="tab"
+        data-demo-tab="code"
+        :aria-controls="codePanelId"
+        :aria-selected="demoTab === 'code'"
+        :data-active="String(demoTab === 'code')"
+        :tabindex="demoTab === 'code' ? 0 : -1"
+        @click="selectDemoTab('code')"
+        @keydown="handleDemoTabKeydown"
+      >
+        {{ demoCopy.code }}
       </button>
     </nav>
 
-    <div v-show="demoTab === 'preview'" class="agent-component-demo__stage">
-      <AgentLoading v-if="component === 'loading'" label="Agent 正在分析组件" variant="grid" />
-      <AgentThinking v-else-if="component === 'thinking'" label="Agent 执行轨迹" default-open :steps="reasoningSteps" />
-      <AgentMarkdown v-else-if="component === 'markdown'" :content="markdownContent" final />
-      <AgentStream v-else-if="component === 'stream'" :content="streamContent" status="streaming" />
-      <div v-else-if="component === 'message'" class="agent-component-demo__stack">
-        <AgentMessage role="assistant" label="Varo Agent">
-          已完成组件审计。
-        </AgentMessage><AgentMessage role="user" label="你">
-          继续生成 API 文档。
-        </AgentMessage>
+    <div
+      v-show="demoTab === 'preview'"
+      :id="previewPanelId"
+      class="agent-component-demo__stage"
+      role="tabpanel"
+      :aria-labelledby="previewTabId"
+    >
+      <header class="agent-component-demo__context">
+        <span>{{ demoCopy.scenario }}</span>
+        <strong>{{ demoDefinition.name }}</strong>
+      </header>
+      <div class="agent-component-demo__stage-body">
+        <AgentLoading v-if="component === 'loading'" label="Agent 正在分析组件" variant="grid" />
+        <AgentThinking v-else-if="component === 'thinking'" label="Agent 执行轨迹" default-open :steps="reasoningSteps" />
+        <AgentMarkdown v-else-if="component === 'markdown'" :content="markdownContent" final />
+        <AgentStream v-else-if="component === 'stream'" :content="streamContent" status="streaming" />
+        <div v-else-if="component === 'message'" class="agent-component-demo__stack">
+          <AgentMessage role="assistant" label="Varo Agent">
+            已完成组件审计。
+          </AgentMessage><AgentMessage role="user" label="你">
+            继续生成 API 文档。
+          </AgentMessage>
+        </div>
+        <AgentConversation v-else-if="component === 'conversation'" :messages="messages" />
+        <div v-else-if="component === 'tool-chip'" class="agent-component-demo__row">
+          <AgentToolChip v-for="tool in tools" :key="tool.id" :tool="tool" />
+        </div>
+        <AgentTaskList v-else-if="component === 'task-list'" title="发布计划" :tasks="tasks" />
+        <AgentRadioGroup v-else-if="component === 'radio-group'" v-model:value="radioValue" :choices="[{ label: '平衡', value: 'balanced', description: '推荐设置' }, { label: '快速', value: 'fast' }, { label: '严谨', value: 'strict' }]" />
+        <AgentApproval v-else-if="component === 'approval'" v-model:value="approvalValue" title="确认发布动作" description="确认后 Agent 才能执行外部副作用。" :choices="choices" @approve="done('已批准')" @reject="done('已拒绝')" />
+        <AgentRecommendation v-else-if="component === 'recommendation'" title="推荐统一事件协议" description="业务只提供事件来源，组件负责状态投影。" :confidence="96" @accept="done('已采用建议')" />
+        <AgentPromptSuggestions v-else-if="component === 'prompt-suggestions'" :suggestions="['分析双端能力', '生成发布计划', '检查包体']" @select="done($event)" />
+        <AgentComposer v-else-if="component === 'composer'" v-model="prompt" :suggestions="['分析需求', '生成计划']" @submit="done(`提交：${$event}`)" />
+        <AgentResponseActions v-else-if="component === 'response-actions'" content="双端组件已经通过。" @copy="done('已复制')" @retry="done('重新生成')" @like="done('有帮助')" @dislike="done('需改进')" />
+        <AgentArtifact v-else-if="component === 'artifact'" :artifact="artifact" @open="done('打开产物')" />
+        <AgentSourceList v-else-if="component === 'sources'" :sources="sources" title="参考来源" @open="done($event.title)" />
+        <AgentAttachmentList v-else-if="component === 'attachments'" :attachments="attachments" @remove="done(`移除 ${$event.name}`)" />
+        <AgentEventRenderer v-else-if="component === 'event-renderer'" :snapshot="eventSnapshot" @approve="done(`批准 ${$event}`)" @reject="done('拒绝')" @retry="done('重试')" />
+        <AgentMessageScroller v-else-if="component === 'message-scroller'" :at-live-edge="false" @follow="done('跳到最新消息')">
+          <AgentConversation :messages="messages" />
+        </AgentMessageScroller>
+        <AgentCodeBlock v-else-if="component === 'code-block'" filename="agent.ts" language="TypeScript" :code="code" :focused-lines="[2, 5]" status="streaming" @copy="done('已复制代码')" />
+        <AgentFileDiff v-else-if="component === 'file-diff'" filename="src/runtime/create-agent-stream.ts" :labels="diffLabels" :lines="diffLines" status="running" @accept="done('已接受变更')" @expand="done('展开未修改上下文')" @reject="done('已拒绝变更')" @select="done(`${$event.side}: ${$event.line.content}`)" />
+        <AgentToolResult v-else-if="component === 'tool-result'" name="pnpm test" status="completed" duration="1.8s" summary="38 tests passed" :output="toolResultOutput" default-open />
+        <AgentImageGeneration v-else-if="component === 'image-generation'" status="generating" :progress="68" prompt="A clean mini-program Agent interface" />
+        <AgentToolApproval v-else-if="component === 'tool-approval'" tool="npm.publish" description="允许 Agent 发布 @varo-ui/ai？" :details="[{ label: 'Package', value: '@varo-ui/ai' }, { label: 'Tag', value: 'latest' }]" @allow="done('允许一次')" @deny="done('已拒绝')" />
+        <AgentCitations v-else-if="component === 'citations'" title="引用来源" :items="citations" default-open @open="done($event.title)" />
+        <AgentActivity v-else-if="component === 'activity'" title="Agent 活动" :items="activity" />
+        <AgentSidebar v-else-if="component === 'sidebar'" v-model:active-id="sidebarActive" v-model:collapsed="sidebarCollapsed" :groups="sidebarGroups" @select="done($event.label)" />
+        <AgentContextCard v-else-if="component === 'context-card'" title="检索上下文" :chunks="contextChunks" @open="done($event.source ?? '')" />
+        <AgentInsightCard v-else-if="component === 'insight-card'" v-model:current="insightCurrent" :insights="insights" @action="done($event.action ?? '')" />
+        <AgentSelectionActions v-else-if="component === 'selection-actions'" text="小程序 Agent UI 已通过双端构建。" :actions="[{ id: 'explain', label: '解释' }, { id: 'improve', label: '优化' }, { id: 'shorten', label: '缩短' }]" @select="done($event.action.label)" />
+        <AgentDiffTable v-else-if="component === 'diff-table'" title="组件变更" :columns="columns" :rows="records.map((row, index) => ({ ...row, change: index === 0 ? 'add' : index === 1 ? 'update' : 'remove' }))" @accept="done('已接受表格变更')" />
+        <AgentRecordsTable v-else-if="component === 'records-table'" :columns="columns" :rows="records" sort-by="name" @sort="done(`排序 ${$event.label}`)" @select="done(String($event.name))" />
+        <AgentFilterTable v-else-if="component === 'filter-table'" v-model:filter="tableFilter" :columns="columns" :filters="filters" :rows="records" />
+        <AgentCommandSearch v-else-if="component === 'command-search'" v-model="searchQuery" :items="searchItems" @select="done($event.label)" />
+        <AgentFlowchart v-else-if="component === 'flowchart'" title="发布工作流" :nodes="flowNodes" @select="done($event.label)" @add="done('添加步骤')" />
+        <AgentFineTune v-else-if="component === 'fine-tune'" v-model:controls="fineTuneControls" title="调整 Agent Card" @apply="done('已应用调整')" />
+        <AgentChat v-else-if="component === 'agent-chat'" v-model="prompt" title="Varo Agent" :messages="messages" :snapshot="eventSnapshot" :suggestions="['分析需求', '生成计划']" @submit="done($event)" />
       </div>
-      <AgentConversation v-else-if="component === 'conversation'" :messages="messages" />
-      <div v-else-if="component === 'tool-chip'" class="agent-component-demo__row">
-        <AgentToolChip v-for="tool in tools" :key="tool.id" :tool="tool" />
-      </div>
-      <AgentTaskList v-else-if="component === 'task-list'" title="发布计划" :tasks="tasks" />
-      <AgentRadioGroup v-else-if="component === 'radio-group'" v-model:value="radioValue" :choices="[{ label: '平衡', value: 'balanced', description: '推荐设置' }, { label: '快速', value: 'fast' }, { label: '严谨', value: 'strict' }]" />
-      <AgentApproval v-else-if="component === 'approval'" v-model:value="approvalValue" title="确认发布动作" description="确认后 Agent 才能执行外部副作用。" :choices="choices" @approve="done('已批准')" @reject="done('已拒绝')" />
-      <AgentRecommendation v-else-if="component === 'recommendation'" title="推荐统一事件协议" description="业务只提供事件来源，组件负责状态投影。" :confidence="96" @accept="done('已采用建议')" />
-      <AgentPromptSuggestions v-else-if="component === 'prompt-suggestions'" :suggestions="['分析双端能力', '生成发布计划', '检查包体']" @select="done($event)" />
-      <AgentComposer v-else-if="component === 'composer'" v-model="prompt" :suggestions="['分析需求', '生成计划']" @submit="done(`提交：${$event}`)" />
-      <AgentResponseActions v-else-if="component === 'response-actions'" content="双端组件已经通过。" @copy="done('已复制')" @retry="done('重新生成')" @like="done('有帮助')" @dislike="done('需改进')" />
-      <AgentArtifact v-else-if="component === 'artifact'" :artifact="artifact" @open="done('打开产物')" />
-      <AgentSourceList v-else-if="component === 'sources'" :sources="sources" title="参考来源" @open="done($event.title)" />
-      <AgentAttachmentList v-else-if="component === 'attachments'" :attachments="attachments" @remove="done(`移除 ${$event.name}`)" />
-      <AgentEventRenderer v-else-if="component === 'event-renderer'" :snapshot="eventSnapshot" @approve="done(`批准 ${$event}`)" @reject="done('拒绝')" @retry="done('重试')" />
-      <AgentMessageScroller v-else-if="component === 'message-scroller'" :at-live-edge="false" @follow="done('跳到最新消息')">
-        <AgentConversation :messages="messages" />
-      </AgentMessageScroller>
-      <AgentCodeBlock v-else-if="component === 'code-block'" filename="agent.ts" language="TypeScript" :code="code" :focused-lines="[2, 5]" status="streaming" @copy="done('已复制代码')" />
-      <AgentFileDiff v-else-if="component === 'file-diff'" filename="src/runtime/create-agent-stream.ts" :labels="diffLabels" :lines="diffLines" status="running" @accept="done('已接受变更')" @expand="done('展开未修改上下文')" @reject="done('已拒绝变更')" @select="done(`${$event.side}: ${$event.line.content}`)" />
-      <AgentToolResult v-else-if="component === 'tool-result'" name="pnpm test" status="completed" duration="1.8s" summary="38 tests passed" :output="toolResultOutput" default-open />
-      <AgentImageGeneration v-else-if="component === 'image-generation'" status="generating" :progress="68" prompt="A clean mini-program Agent interface" />
-      <AgentToolApproval v-else-if="component === 'tool-approval'" tool="npm.publish" description="允许 Agent 发布 @varo-ui/ai？" :details="[{ label: 'Package', value: '@varo-ui/ai' }, { label: 'Tag', value: 'latest' }]" @allow="done('允许一次')" @deny="done('已拒绝')" />
-      <AgentCitations v-else-if="component === 'citations'" title="引用来源" :items="citations" default-open @open="done($event.title)" />
-      <AgentActivity v-else-if="component === 'activity'" title="Agent 活动" :items="activity" />
-      <AgentSidebar v-else-if="component === 'sidebar'" v-model:active-id="sidebarActive" v-model:collapsed="sidebarCollapsed" :groups="sidebarGroups" @select="done($event.label)" />
-      <AgentContextCard v-else-if="component === 'context-card'" title="检索上下文" :chunks="contextChunks" @open="done($event.source ?? '')" />
-      <AgentInsightCard v-else-if="component === 'insight-card'" v-model:current="insightCurrent" :insights="insights" @action="done($event.action ?? '')" />
-      <AgentSelectionActions v-else-if="component === 'selection-actions'" text="小程序 Agent UI 已通过双端构建。" :actions="[{ id: 'explain', label: '解释' }, { id: 'improve', label: '优化' }, { id: 'shorten', label: '缩短' }]" @select="done($event.action.label)" />
-      <AgentDiffTable v-else-if="component === 'diff-table'" title="组件变更" :columns="columns" :rows="records.map((row, index) => ({ ...row, change: index === 0 ? 'add' : index === 1 ? 'update' : 'remove' }))" @accept="done('已接受表格变更')" />
-      <AgentRecordsTable v-else-if="component === 'records-table'" :columns="columns" :rows="records" sort-by="name" @sort="done(`排序 ${$event.label}`)" @select="done(String($event.name))" />
-      <AgentFilterTable v-else-if="component === 'filter-table'" v-model:filter="tableFilter" :columns="columns" :filters="filters" :rows="records" />
-      <AgentCommandSearch v-else-if="component === 'command-search'" v-model="searchQuery" :items="searchItems" @select="done($event.label)" />
-      <AgentFlowchart v-else-if="component === 'flowchart'" title="发布工作流" :nodes="flowNodes" @select="done($event.label)" @add="done('添加步骤')" />
-      <AgentFineTune v-else-if="component === 'fine-tune'" v-model:controls="fineTuneControls" title="调整 Agent Card" @apply="done('已应用调整')" />
-      <AgentChat v-else-if="component === 'agent-chat'" v-model="prompt" title="Varo Agent" :messages="messages" :snapshot="eventSnapshot" :suggestions="['分析需求', '生成计划']" @submit="done($event)" />
     </div>
 
-    <section v-if="demoTab === 'code'" class="agent-component-demo__source">
+    <section
+      v-if="demoTab === 'code'"
+      :id="codePanelId"
+      class="agent-component-demo__source"
+      role="tabpanel"
+      :aria-labelledby="codeTabId"
+    >
       <header><span>{{ demoDefinition.name }}</span><b>{{ demoDefinition.importPath }}</b></header>
       <pre><code>{{ demoDefinition.code }}</code></pre>
     </section>
@@ -278,149 +362,180 @@ function done(message: string) {
 
 <style scoped>
 .agent-component-demo {
-  position: relative;
   display: grid;
-  gap: 0;
   margin: 18px 0 28px;
   overflow: hidden;
   color: var(--vp-c-text-1);
   background: var(--varo-demo-surface);
   border: 1px solid var(--varo-demo-border);
-  border-radius: 18px;
+  border-radius: 16px;
   box-shadow: var(--varo-demo-shadow);
-}
-
-.agent-component-demo::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 2;
-  height: 2px;
-  content: '';
-  background: linear-gradient(90deg, transparent, var(--vp-c-brand-1), transparent);
-  opacity: 0.72;
 }
 
 .agent-component-demo > header {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  min-height: 46px;
-  padding: 0 14px;
+  min-height: 62px;
+  padding: 10px 16px;
   background: var(--varo-demo-surface-strong);
   border-bottom: 1px solid var(--varo-demo-border);
 }
 
-.agent-component-demo > header > span {
-  font-size: 9px;
-  font-weight: 900;
-  color: var(--vp-c-brand-1);
-  letter-spacing: 0.16em;
+.agent-component-demo__meta {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
 }
 
-.agent-component-demo > header div {
-  display: flex;
+.agent-component-demo__meta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--vp-c-text-1);
+  white-space: nowrap;
+}
+
+.agent-component-demo__meta small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 10px;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+}
+
+.agent-component-demo__live {
+  display: inline-flex;
+  flex: none;
   gap: 6px;
-}
-
-.agent-component-demo > header b {
-  padding: 4px 8px;
-  font-size: 8px;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 9px;
+  font-weight: 800;
   color: var(--vp-c-brand-1);
-  letter-spacing: 0.06em;
   background: var(--vp-c-brand-soft);
   border: 1px solid color-mix(in srgb, var(--vp-c-brand-1) 20%, transparent);
   border-radius: 999px;
 }
 
+.agent-component-demo__live i {
+  width: 6px;
+  height: 6px;
+  background: currentcolor;
+  border-radius: 999px;
+}
+
 .agent-component-demo__tabs {
   display: flex;
-  gap: 4px;
-  padding: 9px 14px 0;
+  gap: 18px;
+  min-height: 45px;
+  padding: 0 16px;
   background: var(--varo-demo-surface);
+  border-bottom: 1px solid var(--varo-demo-border);
 }
 
 .agent-component-demo__tabs button {
-  min-height: 34px;
-  padding: 0 13px;
+  min-height: 45px;
+  padding: 0;
+  margin-bottom: -1px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 750;
   color: var(--vp-c-text-2);
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: 999px;
+  border-bottom: 2px solid transparent;
   transition:
-    color 180ms ease,
-    background 180ms ease,
-    transform 180ms ease;
+    color 160ms ease,
+    border-color 160ms ease;
 }
 
 .agent-component-demo__tabs button:hover {
   color: var(--vp-c-text-1);
 }
 
-.agent-component-demo__tabs button:active {
-  transform: scale(0.96);
+.agent-component-demo__tabs button:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: -4px;
 }
 
 .agent-component-demo__tabs button[data-active='true'] {
-  color: var(--vp-c-bg);
-  background: var(--vp-c-text-1);
+  color: var(--vp-c-brand-1);
+  border-bottom-color: var(--vp-c-brand-1);
 }
 
 .agent-component-demo__stage {
   box-sizing: border-box;
   display: grid;
-  align-content: center;
   width: 100%;
   min-height: 330px;
-  padding: 28px;
-  overflow-x: auto;
-  background:
-    radial-gradient(circle at 78% 16%, color-mix(in srgb, var(--vp-c-brand-1) 10%, transparent), transparent 32%),
-    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
-    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px), var(--varo-demo-surface);
-  background-size:
-    auto,
-    24px 24px,
-    24px 24px,
-    auto;
+  overflow: hidden;
+  background: var(--varo-demo-surface);
 }
 
-.agent-component-demo[data-demo='flowchart'] .agent-component-demo__stage,
-.agent-component-demo[data-demo='agent-chat'] .agent-component-demo__stage {
+.agent-component-demo__context {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 9px 18px;
+  color: var(--vp-c-text-2);
+  background: var(--varo-demo-surface-strong);
+  border-bottom: 1px solid var(--varo-demo-border);
+}
+
+.agent-component-demo__context span {
+  font-size: 10px;
+}
+
+.agent-component-demo__context strong {
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--vp-c-text-1);
+}
+
+.agent-component-demo__stage-body {
+  display: grid;
+  align-content: center;
+  min-height: 282px;
+  padding: 24px;
+  overflow: auto;
+}
+
+.agent-component-demo[data-demo='flowchart'] .agent-component-demo__stage-body,
+.agent-component-demo[data-demo='agent-chat'] .agent-component-demo__stage-body {
   align-content: start;
-  max-height: 680px;
-  overflow-y: auto;
+  max-height: 632px;
 }
 
-.agent-component-demo__stage > :deep(*) {
+.agent-component-demo__stage-body > :deep(*) {
   max-width: 100%;
 }
 
-.agent-component-demo__stage > :deep(:first-child) {
-  animation: varo-agent-demo-enter 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+.agent-component-demo__stage-body > :deep(:first-child) {
+  animation: varo-agent-demo-enter 180ms ease-out both;
 }
 
 .agent-component-demo__stage :deep(button) {
   cursor: pointer;
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .agent-component-demo__stage :deep(button:hover:not(:disabled)) {
-  border-color: color-mix(in srgb, var(--vp-c-brand-1) 42%, var(--varo-border));
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--vp-c-brand-1) 10%, transparent);
+  border-color: color-mix(in srgb, var(--vp-c-brand-1) 38%, var(--varo-border));
 }
 
 .agent-component-demo__stage :deep(button:active:not(:disabled)) {
-  transform: scale(0.97);
+  transform: translateY(1px);
 }
 
 .agent-component-demo__stack {
@@ -488,12 +603,12 @@ function done(message: string) {
 @keyframes varo-agent-demo-enter {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.985);
+    transform: translateY(6px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -561,14 +676,26 @@ function done(message: string) {
 }
 
 @media (max-width: 640px) {
+  .agent-component-demo > header {
+    align-items: flex-start;
+  }
+
+  .agent-component-demo__meta small {
+    white-space: normal;
+  }
+
   .agent-component-demo__stage {
     min-height: 280px;
+  }
+
+  .agent-component-demo__stage-body {
+    min-height: 232px;
     padding: 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agent-component-demo__stage > :deep(:first-child) {
+  .agent-component-demo__stage-body > :deep(:first-child) {
     animation: none;
   }
 }

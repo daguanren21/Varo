@@ -3494,45 +3494,6 @@ onBeforeUnmount(() => {
   margin: -2px 0 0;
 }
 
-:deep(.varo-pagination) {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-}
-
-:deep(.varo-pagination button) {
-  min-width: 34px;
-  min-height: 34px;
-  padding: 0 8px;
-  color: var(--varo-text-primary);
-  cursor: pointer;
-  background: var(--varo-fill-light);
-  border: 1px solid var(--varo-border);
-  border-radius: 9px;
-}
-
-:deep(.varo-pagination__prev),
-:deep(.varo-pagination__next) {
-  min-width: 64px;
-}
-
-:deep(.varo-pagination button[data-active='true']) {
-  color: var(--varo-primary-foreground);
-  background: var(--varo-primary);
-  border-color: var(--varo-primary);
-}
-
-:deep(.varo-pagination button:focus-visible) {
-  outline: 2px solid var(--varo-primary);
-  outline-offset: 2px;
-}
-
-:deep(.varo-pagination button:disabled) {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
 .platform-demo__side-navbar-demo {
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
@@ -3988,53 +3949,6 @@ onBeforeUnmount(() => {
   border-radius: 8px;
 }
 
-:deep(.varo-grid) {
-  display: grid;
-  grid-template-columns: repeat(var(--varo-grid-columns, 4), minmax(0, 1fr));
-  gap: var(--varo-grid-gutter, 0);
-}
-
-:deep(.varo-grid__item) {
-  position: relative;
-  box-sizing: border-box;
-  display: grid;
-  gap: 7px;
-  justify-items: center;
-  min-width: 0;
-  min-height: 76px;
-  padding: 11px 4px;
-  color: var(--varo-text-primary);
-  text-align: center;
-  text-decoration: none;
-  outline: none;
-  background: var(--varo-fill-light);
-  border: 1px solid transparent;
-  border-radius: 13px;
-  transition:
-    background-color 140ms ease,
-    border-color 140ms ease,
-    transform 140ms ease;
-}
-
-:deep(.varo-grid__item[data-clickable='true']:hover) {
-  background: var(--varo-primary-soft);
-  border-color: color-mix(in srgb, var(--varo-primary) 24%, transparent);
-}
-
-:deep(.varo-grid__item[data-clickable='true']:active) {
-  transform: scale(0.97);
-}
-
-:deep(.varo-grid__item[data-clickable='true']:focus-visible) {
-  border-color: var(--varo-primary);
-  box-shadow: 0 0 0 2px var(--varo-ring);
-}
-
-:deep(.varo-grid__icon-wrap) {
-  position: static;
-  display: inline-flex;
-}
-
 .platform-demo__grid-icon {
   width: 21px;
   height: 21px;
@@ -4043,37 +3957,6 @@ onBeforeUnmount(() => {
   stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-:deep(.varo-grid__text) {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.7rem;
-  white-space: nowrap;
-}
-
-:deep(.varo-grid__badge),
-:deep(.varo-grid__dot) {
-  position: absolute;
-  top: 7px;
-  right: 3px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  font-size: 0.62rem;
-  line-height: 16px;
-  color: var(--varo-primary-foreground);
-  background: var(--varo-danger);
-  border: 2px solid var(--varo-fill-light);
-  border-radius: 999px;
-}
-
-:deep(.varo-grid__dot) {
-  width: 8px;
-  min-width: 8px;
-  height: 8px;
-  padding: 0;
 }
 
 .platform-demo__grid-result {
@@ -5019,12 +4902,10 @@ onBeforeUnmount(() => {
 :deep(.varo-menu),
 :deep(.varo-menu__popup),
 :deep(.varo-navbar),
-:deep(.varo-pagination button),
 :deep(.varo-side-navbar),
 :deep(.varo-tabbar),
 :deep(.varo-tabs__nav),
 :deep(.varo-tabs__tab),
-:deep(.varo-grid__item),
 :deep(.varo-col > span),
 :deep(.varo-divider[data-vertical='true']),
 :deep(.varo-popup__content),
@@ -5038,7 +4919,6 @@ onBeforeUnmount(() => {
 .platform-demo__dialog-close,
 :deep(.varo-fixed-nav__trigger),
 :deep(.varo-elevator__index[data-active='true']),
-:deep(.varo-pagination button[data-active='true']),
 :deep(.varo-tabs__tab[data-active='true']) {
   color: var(--varo-primary-foreground);
   background: var(--varo-primary);
@@ -5056,7 +4936,6 @@ onBeforeUnmount(() => {
 :deep(.varo-menu),
 :deep(.varo-menu__popup),
 :deep(.varo-navbar),
-:deep(.varo-pagination button),
 :deep(.varo-fixed-nav__item),
 :deep(.varo-cell-group__body) {
   color: var(--varo-foreground);
@@ -5065,7 +4944,6 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-menu__option:not(:disabled):hover),
-:deep(.varo-grid__item),
 :deep(.varo-col > span),
 :deep(.varo-tabs__nav),
 :deep(.varo-side-navbar),
@@ -5109,13 +4987,10 @@ onBeforeUnmount(() => {
 :deep(.varo-navbar__right),
 :deep(.varo-side-navbar__item[data-active='true']),
 :deep(.varo-tabbar__item[data-active='true']),
-:deep(.varo-grid__icon),
 .platform-demo__indicator-slide span {
   color: var(--varo-accent);
 }
 
-:deep(.varo-grid__badge),
-:deep(.varo-grid__dot),
 :deep(.varo-fixed-nav__badge),
 :deep(.varo-side-navbar__badge),
 :deep(.varo-tabbar__badge),

@@ -49,11 +49,35 @@ describe('AgentComponentDemo', () => {
       const wrapper = mount(AgentComponentDemo, { props: { component } })
       expect(wrapper.attributes('data-demo')).toBe(component)
       expect(wrapper.get('.agent-component-demo__stage').text().trim().length, component).toBeGreaterThan(0)
-      await wrapper.findAll('button').find(button => button.text() === 'Code')!.trigger('click')
+      await wrapper.get('[data-demo-tab="code"]').trigger('click')
       expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].name)
       expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].importPath)
       wrapper.unmount()
     }
+  })
+
+  it('presents every demo in a keyboard-operable workflow shell', async () => {
+    const wrapper = mount(AgentComponentDemo, {
+      attachTo: document.body,
+      props: { component: 'loading' },
+    })
+    const preview = wrapper.get<HTMLButtonElement>('[data-demo-tab="preview"]')
+    const code = wrapper.get<HTMLButtonElement>('[data-demo-tab="code"]')
+    const previewPanel = wrapper.get('[role="tabpanel"]')
+
+    expect(wrapper.get('[role="tablist"]').attributes('aria-label')).toBe('交互预览')
+    expect(preview.attributes('aria-selected')).toBe('true')
+    expect(preview.attributes('aria-controls')).toBe(previewPanel.attributes('id'))
+    expect(previewPanel.attributes('aria-labelledby')).toBe(preview.attributes('id'))
+    expect(wrapper.get('.agent-component-demo__meta').text()).toContain('H5 与 Wevu 使用同一公共 API')
+
+    preview.element.focus()
+    await preview.trigger('keydown', { key: 'ArrowRight' })
+    expect(code.attributes('aria-selected')).toBe('true')
+    expect(document.activeElement).toBe(code.element)
+    expect(wrapper.get('.agent-component-demo__source').attributes('aria-labelledby')).toBe(code.attributes('id'))
+
+    wrapper.unmount()
   })
 
   it('forwards interactive demo output', async () => {
@@ -61,7 +85,7 @@ describe('AgentComponentDemo', () => {
     await wrapper.findAll('button').find(button => button.text() === '分析双端能力')!.trigger('click')
     expect(wrapper.get('output').text()).toBe('分析双端能力')
 
-    await wrapper.findAll('button').find(button => button.text() === 'Code')!.trigger('click')
+    await wrapper.get('[data-demo-tab="code"]').trigger('click')
     expect(wrapper.get('.agent-component-demo__source').text()).toContain('AgentPromptSuggestions')
     expect(wrapper.get('.agent-component-demo__source').text()).toContain(':suggestions=\"suggestions\"')
   })
