@@ -1,16 +1,8 @@
-# shadcn 模式
+# Wevu Registry 模式
 
-CLI 把组件源码复制到项目中。安装后直接从 `src/components/ui/*` 导入并按业务修改。
+CLI 把适用于 Wevu 小程序的组件源码复制到项目中。安装后直接从 `src/components/ui/*` 导入并按业务修改。
 
 ## 安装
-
-### H5
-
-```bash
-pnpm dlx @varo-ui/cli add --target h5 button form toast
-```
-
-### Wevu 小程序
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp-vite button form toast
@@ -31,25 +23,6 @@ pnpm dlx @varo-ui/cli add --target weapp-vite --force button
 
 ## 使用
 
-### H5
-
-```vue
-<script setup lang="ts">
-import { shallowRef } from 'vue'
-import { VButton } from '@/components/ui/button'
-
-const loading = shallowRef(false)
-</script>
-
-<template>
-  <VButton :loading="loading" @click="loading = true">
-    保存
-  </VButton>
-</template>
-```
-
-### Wevu 小程序
-
 ```vue
 <script setup lang="ts">
 import { shallowRef } from 'wevu'
@@ -65,4 +38,4 @@ const loading = shallowRef(false)
 </template>
 ```
 
-H5 与小程序使用相同的组件 Props、Events 和 Slots；只有导入的目标源码不同。
+组件源码、依赖工具和主题文件都位于业务项目中，可以直接修改。

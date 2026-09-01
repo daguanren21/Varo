@@ -1,16 +1,8 @@
-# shadcn Mode
+# Wevu Registry Mode
 
-The CLI copies component source into your project. Import it from `src/components/ui/*` and edit it as application code.
+The CLI copies Wevu mini-program component source into your project. Import it from `src/components/ui/*` and edit it as application code.
 
 ## Install
-
-### H5
-
-```bash
-pnpm dlx @varo-ui/cli add --target h5 button form toast
-```
-
-### Wevu mini program
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp-vite button form toast
@@ -31,25 +23,6 @@ pnpm dlx @varo-ui/cli add --target weapp-vite --force button
 
 ## Use
 
-### H5
-
-```vue
-<script setup lang="ts">
-import { shallowRef } from 'vue'
-import { VButton } from '@/components/ui/button'
-
-const loading = shallowRef(false)
-</script>
-
-<template>
-  <VButton :loading="loading" @click="loading = true">
-    Save
-  </VButton>
-</template>
-```
-
-### Wevu mini program
-
 ```vue
 <script setup lang="ts">
 import { shallowRef } from 'wevu'
@@ -65,4 +38,4 @@ const loading = shallowRef(false)
 </template>
 ```
 
-H5 and mini-program targets expose the same component props, events, and slots. Only the installed target source and import path differ.
+Component source, dependency utilities, and theme files stay in the application and can be edited directly.
