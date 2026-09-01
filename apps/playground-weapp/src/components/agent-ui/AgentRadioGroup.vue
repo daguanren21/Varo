@@ -29,16 +29,16 @@ const rootStyle = computed(() => ({
   'gridTemplateColumns': props.orientation === 'horizontal' ? `repeat(${Math.max(1, props.choices.length)}, minmax(0, 1fr))` : undefined,
 }))
 const rootClass = computed(() => [
-  'agent-radio relative grid overflow-hidden rounded-[14px] border border-slate-200 bg-white',
-  props.orientation === 'horizontal' && 'agent-radio--horizontal grid-flow-col bg-slate-100 p-1',
+  'agent-radio relative grid overflow-hidden rounded-[14px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]',
+  props.orientation === 'horizontal' && 'agent-radio--horizontal grid-flow-col bg-[var(--varo-agent-fill)] p-1',
   props.reducedMotion && 'agent-radio--reduced-motion',
 ])
 
 function itemClass(choice: AgentChoice) {
   return [
-    'agent-radio__item relative z-10 flex w-full items-center gap-3 border-0 bg-transparent text-left text-slate-600 transition-[transform,color] duration-200',
+    'agent-radio__item relative z-10 flex w-full items-center gap-3 border-0 bg-transparent text-left text-[var(--varo-agent-text)] transition-[transform,color] duration-200',
     props.orientation === 'horizontal' ? 'min-h-11 justify-center px-2.5 py-1.5 text-center' : 'min-h-14 px-3.5 py-2',
-    choice.value === props.value && 'text-slate-950',
+    choice.value === props.value && 'text-[var(--varo-agent-foreground)]',
     choice.disabled && 'agent-radio__item--disabled',
   ]
 }
@@ -46,7 +46,7 @@ function itemClass(choice: AgentChoice) {
 function indicatorClass(choice: AgentChoice) {
   return [
     'h-[18px] w-[18px] flex-none rounded-full border-2 transition-colors',
-    choice.value === props.value ? 'border-teal-700' : 'border-slate-300',
+    choice.value === props.value ? 'border-[var(--varo-agent-primary)]' : 'border-[var(--varo-agent-border-strong)]',
   ]
 }
 
@@ -65,7 +65,7 @@ function select(choice: AgentChoice) {
     :data-reduced-motion="String(reducedMotion)"
     :style="rootStyle"
   >
-    <text v-if="choices.length" class="agent-radio__indicator absolute z-20 rounded-full bg-teal-700 pointer-events-none" aria-hidden="true" />
+    <text v-if="choices.length" class="agent-radio__indicator absolute z-20 rounded-full bg-[var(--varo-agent-primary)] pointer-events-none" aria-hidden="true" />
     <button
       v-for="choice in choices"
       :key="choice.value"
@@ -90,7 +90,7 @@ function select(choice: AgentChoice) {
         <text class="text-[13px] font-bold">
           {{ choice.label }}
         </text>
-        <text v-if="choice.description && orientation === 'vertical'" class="text-[11px] leading-4 text-slate-400">
+        <text v-if="choice.description && orientation === 'vertical'" class="text-[12px] leading-4 text-[var(--varo-agent-muted)]">
           {{ choice.description }}
         </text>
       </view>

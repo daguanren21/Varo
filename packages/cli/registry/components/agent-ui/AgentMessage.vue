@@ -35,11 +35,11 @@ const normalizedTimestamp = computed(() => props.timestamp || '')
 
 <template>
   <view class="agent-message flex w-full min-w-0 items-start gap-2.5 overflow-hidden" :class="[normalizedRole === 'user' && 'justify-end']" :data-role="normalizedRole">
-    <view v-if="normalizedRole !== 'user'" class="grid h-[30px] w-[30px] flex-none place-items-center rounded-[10px] bg-teal-700 text-xs font-extrabold text-white" aria-hidden="true">
+    <view v-if="normalizedRole !== 'user'" class="grid h-[30px] w-[30px] flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-extrabold text-white" aria-hidden="true">
       <text>V</text>
     </view>
     <view class="grid min-w-0 max-w-[82%] gap-1" :class="[normalizedRole === 'user' && 'justify-items-end']">
-      <view v-if="normalizedLabel || normalizedTimestamp" class="flex w-full items-center justify-between gap-3.5 px-[3px] text-[10px] text-slate-400">
+      <view v-if="normalizedLabel || normalizedTimestamp" class="flex w-full items-center justify-between gap-3.5 px-[3px] text-[11px] text-[var(--varo-agent-muted)]">
         <text>{{ normalizedLabel || (normalizedRole === 'assistant' ? 'Varo Agent' : normalizedRole === 'user' ? '你' : '系统') }}</text>
         <text v-if="normalizedTimestamp">
           {{ normalizedTimestamp }}
@@ -48,10 +48,10 @@ const normalizedTimestamp = computed(() => props.timestamp || '')
       <view
         class="min-w-11 max-w-full overflow-hidden break-all border px-[13px] py-[11px] shadow-[0_3px_12px_rgba(15,23,42,.05)]" :class="[
           normalizedRole === 'user'
-            ? 'rounded-[16px_5px_16px_16px] border-teal-700 bg-teal-700 text-white'
+            ? 'rounded-[16px_5px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-white'
             : normalizedRole === 'system'
-              ? 'rounded-[5px_16px_16px_16px] border-dashed border-slate-200 bg-slate-50 text-slate-700'
-              : 'rounded-[5px_16px_16px_16px] border-slate-200 bg-white text-slate-700',
+              ? 'rounded-[5px_16px_16px_16px] border-dashed border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] text-[var(--varo-agent-foreground)]'
+              : 'rounded-[5px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]',
         ]"
       >
         <AgentStream

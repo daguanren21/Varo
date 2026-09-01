@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, shallowRef } from 'wevu'
 
-
 const props = withDefaults(
   defineProps<{
     content?: string
@@ -9,8 +8,8 @@ const props = withDefaults(
   }>(),
   {
     content: '',
-    disabled: false
-  }
+    disabled: false,
+  },
 )
 
 const emit = defineEmits<{
@@ -24,7 +23,7 @@ const copied = shallowRef(false)
 let timer: ReturnType<typeof setTimeout> | undefined
 
 function copy() {
-  if (props.disabled || !props.content) return
+  if (props.disabled || !props.content) { return }
   wx.setClipboardData({
     data: props.content,
     success: () => {
@@ -34,7 +33,7 @@ function copy() {
         copied.value = false
       }, 1200)
       emit('copy')
-    }
+    },
   })
 }
 
@@ -43,10 +42,18 @@ onBeforeUnmount(() => clearTimeout(timer))
 
 <template>
   <view class="agent-actions flex flex-wrap gap-1.5" role="toolbar" aria-label="回答操作">
-    <button class="min-h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[11px] font-semibold text-slate-600 disabled:opacity-45" :disabled="disabled" type="button" @click="copy">{{ copied ? '已复制' : '复制' }}</button>
-    <button class="min-h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[11px] font-semibold text-slate-600 disabled:opacity-45" :disabled="disabled" type="button" @click="emit('retry')">重试</button>
-    <button class="min-h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[11px] font-semibold text-slate-600 disabled:opacity-45" :disabled="disabled" type="button" @click="emit('like')">赞</button>
-    <button class="min-h-9 rounded-lg border border-slate-200 bg-white px-2.5 text-[11px] font-semibold text-slate-600 disabled:opacity-45" :disabled="disabled" type="button" @click="emit('dislike')">踩</button>
+    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="copy">
+      {{ copied ? '已复制' : '复制' }}
+    </button>
+    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('retry')">
+      重试
+    </button>
+    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('like')">
+      赞
+    </button>
+    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('dislike')">
+      踩
+    </button>
   </view>
 </template>
 

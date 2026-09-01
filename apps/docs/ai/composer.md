@@ -29,14 +29,15 @@ import { AgentComposer } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type       | Default | 说明         |
-| ------------- | ---------- | ------- | ------------ |
-| `busy`        | `boolean`  | `false` | 处理中       |
-| `disabled`    | `boolean`  | `false` | 禁用；小程序 |
-| `maxLength`   | `number`   | `4000`  | 最大长度；H5 |
-| `modelValue`  | `string`   | `''`    | 输入内容     |
-| `placeholder` | `string`   | `—`     | 占位文案     |
-| `suggestions` | `string[]` | `[]`    | 提示建议     |
+| Prop          | Type       | Default      | 说明             |
+| ------------- | ---------- | ------------ | ---------------- |
+| `ariaLabel`   | `string`   | `Agent 输入` | 输入区无障碍名称 |
+| `busy`        | `boolean`  | `false`      | 处理中           |
+| `disabled`    | `boolean`  | `false`      | 禁用；小程序     |
+| `maxLength`   | `number`   | `4000`       | 最大长度；H5     |
+| `modelValue`  | `string`   | `''`         | 输入内容         |
+| `placeholder` | `string`   | `—`          | 占位文案         |
+| `suggestions` | `string[]` | `[]`         | 提示建议         |
 
 ## Events
 

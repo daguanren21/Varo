@@ -104,22 +104,22 @@ export interface AgentDoneEvent {
   }
 }
 
-export type AgentStreamEvent =
-  | AgentMessageStartEvent
-  | AgentTextDeltaEvent
-  | AgentMessageEndEvent
-  | AgentReasoningStartEvent
-  | AgentReasoningDeltaEvent
-  | AgentReasoningEndEvent
-  | AgentToolStartEvent
-  | AgentToolUpdateEvent
-  | AgentToolResultEvent
-  | AgentToolErrorEvent
-  | AgentApprovalRequiredEvent
-  | AgentApprovalResolvedEvent
-  | AgentDataEvent
-  | AgentErrorEvent
-  | AgentDoneEvent
+export type AgentStreamEvent
+  = | AgentMessageStartEvent
+    | AgentTextDeltaEvent
+    | AgentMessageEndEvent
+    | AgentReasoningStartEvent
+    | AgentReasoningDeltaEvent
+    | AgentReasoningEndEvent
+    | AgentToolStartEvent
+    | AgentToolUpdateEvent
+    | AgentToolResultEvent
+    | AgentToolErrorEvent
+    | AgentApprovalRequiredEvent
+    | AgentApprovalResolvedEvent
+    | AgentDataEvent
+    | AgentErrorEvent
+    | AgentDoneEvent
 
 export interface AgentStreamMessage {
   final: boolean
@@ -184,22 +184,28 @@ export interface TextStreamSnapshot {
 }
 
 export interface TextStreamOptions {
+  burstInitialContent?: boolean
+  burstRevealThresholdChars?: number
+  catchUpLatencyMs?: number
   catchUpThreshold?: number
+  flushOnFinish?: boolean
   maxCharsPerCommit?: number
   maxCharsPerSecond?: number
   maxCommitFps?: number
   minCharsPerSecond?: number
+  startDelayMs?: number
   targetLatencyMs?: number
 }
 
 export interface TextStreamController {
   destroy: () => void
+  dispose: () => void
   enqueue: (chunk: string) => void
   finish: (options?: { flush?: boolean }) => void
   flush: () => void
   getSnapshot: () => TextStreamSnapshot
   pause: () => void
-  reset: (content?: string) => void
+  reset: (content?: string, options?: { prefixKnown?: boolean }) => void
   resume: () => void
   subscribe: (listener: () => void) => () => void
 }

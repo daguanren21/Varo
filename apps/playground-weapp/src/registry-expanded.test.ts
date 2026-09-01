@@ -1,17 +1,17 @@
 // @vitest-environment jsdom
 
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { h, nextTick } from 'vue'
 import AgentChat from './components/blocks/agent-chat.vue'
-import VButton from './components/ui/v-button.vue'
-import VCard from './components/ui/v-card.vue'
 import { VActionSheet } from './components/ui/action-sheet'
 import { VCollapse, VCollapseItem } from './components/ui/collapse'
 import { VList } from './components/ui/list'
 import { VNoticeBar } from './components/ui/notice-bar'
 import { VSteps } from './components/ui/steps'
 import { VSwipeCell } from './components/ui/swipe-cell'
+import VButton from './components/ui/v-button.vue'
+import VCard from './components/ui/v-card.vue'
 
 describe('expanded weapp registry components', () => {
   it('uses native mini-program hover classes for pressed feedback', () => {
@@ -35,8 +35,8 @@ describe('expanded weapp registry components', () => {
     const wrapper = mount(VActionSheet, {
       props: {
         actions: [{ name: '归档', value: 'archive' }],
-        visible: true
-      }
+        visible: true,
+      },
     })
 
     await wrapper.get('.varo-action-sheet__action').trigger('click')
@@ -48,15 +48,15 @@ describe('expanded weapp registry components', () => {
     const collapse = mount({
       render: () =>
         h(VCollapse, { collapsible: true }, {
-          default: () => h(VCollapseItem, { title: '订单详情', value: 'order' }, { default: () => '已发货' })
-        })
+          default: () => h(VCollapseItem, { title: '订单详情', value: 'order' }, { default: () => '已发货' }),
+        }),
     })
     expect(collapse.text()).not.toContain('已发货')
     await collapse.get('.varo-collapse-item__trigger').trigger('click')
     expect(collapse.text()).toContain('已发货')
 
     const steps = mount(VSteps, {
-      props: { clickable: true, current: 0, items: ['下单', '发货'] }
+      props: { clickable: true, current: 0, items: ['下单', '发货'] },
     })
     await steps.findAll('.varo-steps__trigger')[1].trigger('click')
     expect(steps.emitted('update:current')?.[0]).toEqual([1])
@@ -74,7 +74,7 @@ describe('expanded weapp registry components', () => {
 
     const swipe = mount(VSwipeCell, {
       props: { leftWidth: 80, threshold: 0.25 },
-      slots: { default: () => '订单' }
+      slots: { default: () => '订单' },
     })
     const content = swipe.get('.varo-swipe-cell__content')
     await content.trigger('touchstart', { touches: [{ clientX: 0 }] })
@@ -88,13 +88,13 @@ describe('expanded weapp registry components', () => {
       props: {
         messages: [{ content: '欢迎使用', id: 'welcome', role: 'assistant' }],
         suggestions: ['买一盒牛奶'],
-        title: '购物 Agent'
-      }
+        title: '购物 Agent',
+      },
     })
 
     expect(wrapper.text()).toContain('购物 Agent')
-    expect(wrapper.text()).toContain('欢迎使用')
-    await wrapper.findAll('button').find((button) => button.text() === '买一盒牛奶')!.trigger('click')
+    expect(wrapper.find('rich-text').exists()).toBe(true)
+    await wrapper.findAll('button').find(button => button.text() === '买一盒牛奶')!.trigger('click')
     expect(wrapper.emitted('submit')?.[0]).toEqual(['买一盒牛奶'])
   })
 })

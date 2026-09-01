@@ -171,6 +171,10 @@ function record(message: string) {
 function toggleTheme() {
   alternateThemeEnabled.value = !alternateThemeEnabled.value
 }
+
+function openFormShowcase() {
+  void wx.navigateTo({ url: '/pages/form-showcase/index' })
+}
 </script>
 
 <template>
@@ -187,6 +191,9 @@ function toggleTheme() {
           真实 weapp-vite + wevu + Tailwind v4 运行时，验证 registry source 与 Blocks。
         </text>
       </view>
+      <VButton block variant="outline" tone="default" @click="openFormShowcase">
+        打开 Varo Form / Region / Map Demo
+      </VButton>
 
       <view class="card">
         <text class="card-title">

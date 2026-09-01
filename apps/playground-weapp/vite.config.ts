@@ -24,7 +24,7 @@ export default defineConfig({
         vue({
           template: {
             compilerOptions: {
-              isCustomElement: tag => tag === 'scroll-view',
+              isCustomElement: tag => tag === 'scroll-view' || tag === 'rich-text',
             },
           },
         }),

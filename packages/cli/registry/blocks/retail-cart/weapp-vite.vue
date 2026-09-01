@@ -16,11 +16,11 @@ const props = defineProps({
   total: { type: null as unknown as PropType<number>, default: 0 },
 })
 const emit = defineEmits<{
-  checkout: []
-  continue: []
-  quantityChange: [payload: { productId: string, quantity: number }]
-  select: [payload: { productId: string, selected: boolean }]
-  view: [productId: string]
+  'checkout': []
+  'continue': []
+  'quantity-change': [payload: { productId: string, quantity: number }]
+  'select': [payload: { productId: string, selected: boolean }]
+  'view': [productId: string]
 }>()
 const safeItems = computed(() => (Array.isArray(props.items) ? props.items : []).map(item => ({
   product: normalizeRetailProduct(item?.product),
@@ -39,6 +39,12 @@ const safeTotal = computed(() => {
   }
   return Number(props.total) || 0
 })
+
+function changeQuantity(productId: string, quantity: number) {
+  // Wevu forwards camelCase names unchanged; the native listener is kebab-case.
+  // eslint-disable-next-line vue/custom-event-name-casing
+  emit('quantity-change', { productId, quantity })
+}
 </script>
 
 <template>
@@ -78,7 +84,7 @@ const safeTotal = computed(() => {
                 :value="item.quantity"
                 :min="1"
                 :max="item.product.stock"
-                @update:value="emit('quantityChange', { productId: item.product.id, quantity: $event })"
+                @change="changeQuantity(item.product.id, $event)"
               />
             </view>
           </view>

@@ -80,14 +80,28 @@ export interface AgentAttachmentItem {
 }
 
 const baseButton = 'inline-flex min-h-10 items-center justify-center rounded-xl border px-3 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-45'
-const primaryButton = `${baseButton} border-teal-700 bg-teal-700 text-white hover:bg-teal-800`
-const quietButton = `${baseButton} border-slate-200 bg-white text-slate-700 hover:bg-slate-50`
+const primaryButton = `${baseButton} border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-white hover:opacity-90`
+const quietButton = `${baseButton} border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)] hover:bg-[var(--varo-agent-surface-strong)]`
 
 function partMark(status: AgentPartStatus) {
-  if (status === 'completed') { return 'bg-emerald-500' }
-  if (status === 'failed') { return 'bg-red-500' }
-  if (status === 'running') { return 'agent-ui__pulse bg-teal-600' }
-  return 'bg-slate-300'
+  if (status === 'completed') { return 'bg-[var(--varo-agent-success)]' }
+  if (status === 'failed') { return 'bg-[var(--varo-agent-danger)]' }
+  if (status === 'running') { return 'agent-ui__pulse bg-[var(--varo-agent-primary)]' }
+  return 'bg-[var(--varo-agent-border-strong)]'
+}
+
+function renderCheckIcon() {
+  return h('svg', {
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 2.2,
+    'viewBox': '0 0 24 24',
+    'width': 14,
+    'height': 14,
+    'aria-hidden': 'true',
+  }, [h('path', { d: 'm5 12 4 4L19 6' })])
 }
 
 export const AgentLoading = defineComponent({
@@ -118,11 +132,11 @@ export const AgentLoading = defineComponent({
     onMounted(start)
     onBeforeUnmount(stop)
 
-    return () => h('div', { class: 'flex min-h-12 items-center gap-3 text-slate-700', role: 'status' }, [
+    return () => h('div', { class: 'agent-loading flex min-h-12 items-center gap-3 text-[var(--varo-agent-foreground)]', role: 'status' }, [
       h('span', { 'class': 'agent-ui__loading flex h-6 w-8 items-center justify-center gap-1', 'aria-hidden': 'true' }, Array.from({ length: props.variant === 'grid' ? 6 : 3 }, (_, index) =>
-        h('i', { class: 'h-1.5 w-1.5 rounded-full bg-teal-700', style: { animationDelay: `${index * 80}ms` } }))),
+        h('i', { class: 'h-1.5 w-1.5 rounded-full bg-[var(--varo-agent-primary)]', style: { animationDelay: `${index * 80}ms` } }))),
       h('span', { class: 'min-w-0 flex-1 truncate text-[13px] font-semibold' }, props.label),
-      h('span', { class: 'text-[11px] tabular-nums text-slate-400' }, `${elapsed.value.toFixed(1)}s`),
+      h('span', { class: 'text-[12px] tabular-nums text-[var(--varo-agent-muted)]' }, `${elapsed.value.toFixed(1)}s`),
     ])
   },
 })
@@ -139,10 +153,10 @@ export const AgentMessage = defineComponent({
       'class': ['agent-message flex w-full min-w-0 items-start gap-2.5', props.role === 'user' && 'justify-end'],
       'data-role': props.role,
     }, [
-      props.role !== 'user' ? h('span', { 'class': 'grid h-8 w-8 flex-none place-items-center rounded-[10px] bg-teal-700 text-xs font-black text-white', 'aria-hidden': 'true' }, 'V') : null,
+      props.role !== 'user' ? h('span', { 'class': 'grid h-8 w-8 flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-black text-white', 'aria-hidden': 'true' }, 'V') : null,
       h('div', { class: ['grid min-w-0 max-w-[82%] gap-1', props.role === 'user' && 'justify-items-end'] }, [
         props.label || props.timestamp
-          ? h('header', { class: 'flex w-full items-center justify-between gap-3 px-1 text-[10px] text-slate-400' }, [
+          ? h('header', { class: 'flex w-full items-center justify-between gap-3 px-1 text-[11px] text-[var(--varo-agent-muted)]' }, [
               h('span', props.label || (props.role === 'assistant' ? 'Varo Agent' : props.role === 'user' ? '你' : '系统')),
               props.timestamp ? h('time', props.timestamp) : null,
             ])
@@ -151,8 +165,8 @@ export const AgentMessage = defineComponent({
           class: [
             'min-w-11 max-w-full overflow-hidden break-words border px-3.5 py-2.5 shadow-sm',
             props.role === 'user'
-              ? 'rounded-[16px_4px_16px_16px] border-teal-700 bg-teal-700 text-white'
-              : 'rounded-[4px_16px_16px_16px] border-slate-200 bg-white text-slate-800',
+              ? 'rounded-[16px_4px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-white'
+              : 'rounded-[4px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]',
           ],
         }, slots.default?.()),
       ]),
@@ -176,7 +190,7 @@ export const AgentThinking = defineComponent({
     const completed = computed(() => props.steps.filter(step => step.status === 'completed').length)
 
     return () => h('section', {
-      'class': cn('agent-thinking overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm', props.className),
+      'class': cn('agent-thinking overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
       'data-open': String(currentOpen.value),
     }, [
       h('button', {
@@ -248,11 +262,11 @@ export const AgentToolChip = defineComponent({
     tool: { type: Object as PropType<AgentToolPart>, required: true },
   },
   setup(props) {
-    return () => h('span', { class: 'inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5' }, [
+    return () => h('span', { class: 'inline-flex max-w-full items-center gap-2 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 py-1.5' }, [
       h('i', { class: ['h-2 w-2 flex-none rounded-full', partMark(props.tool.status)] }),
       h('span', { class: 'grid min-w-0' }, [
-        h('strong', { class: 'truncate text-[11px] text-slate-700' }, props.tool.name),
-        props.tool.summary && !props.compact ? h('small', { class: 'truncate text-[10px] text-slate-400' }, props.tool.summary) : null,
+        h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, props.tool.name),
+        props.tool.summary && !props.compact ? h('small', { class: 'truncate text-[11px] text-[var(--varo-agent-muted)]' }, props.tool.summary) : null,
       ]),
     ])
   },
@@ -266,16 +280,16 @@ export const AgentTaskList = defineComponent({
   },
   setup(props) {
     const completed = computed(() => props.tasks.filter(task => task.status === 'completed').length)
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-slate-200 bg-white', 'aria-live': 'polite' }, [
-      h('header', { class: 'flex min-h-11 items-center justify-between border-b border-slate-100 px-3.5' }, [
-        h('strong', { class: 'text-[13px] text-slate-950' }, props.title),
-        h('span', { class: 'text-[11px] tabular-nums text-slate-400' }, `${completed.value}/${props.tasks.length}`),
+    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-live': 'polite' }, [
+      h('header', { class: 'flex min-h-11 items-center justify-between border-b border-[var(--varo-agent-border)] px-3.5' }, [
+        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
+        h('span', { class: 'text-[12px] tabular-nums text-[var(--varo-agent-muted)]' }, `${completed.value}/${props.tasks.length}`),
       ]),
-      ...props.tasks.map((task, index) => h('div', { class: 'flex min-h-[50px] items-center gap-2.5 border-b border-slate-50 px-3.5 py-2 last:border-0', key: task.id }, [
-        h('span', { class: ['grid h-6 w-6 flex-none place-items-center rounded-full border text-[10px] font-bold', task.status === 'completed' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 text-slate-500'] }, task.status === 'completed' ? '✓' : String(index + 1)),
+      ...props.tasks.map((task, index) => h('div', { class: 'flex min-h-[50px] items-center gap-2.5 border-b border-[var(--varo-agent-border)] px-3.5 py-2 last:border-0', key: task.id }, [
+        h('span', { class: ['grid h-6 w-6 flex-none place-items-center rounded-full border text-[11px] font-bold', task.status === 'completed' ? 'border-[var(--varo-agent-success)] bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]' : 'border-[var(--varo-agent-border)] text-[var(--varo-agent-text)]'] }, task.status === 'completed' ? renderCheckIcon() : String(index + 1)),
         h('span', { class: 'grid min-w-0 flex-1 gap-1' }, [
-          h('span', { class: 'flex justify-between gap-2 text-xs font-semibold text-slate-700' }, [task.title, task.meta ? h('small', { class: 'text-slate-400' }, task.meta) : null]),
-          task.progress === undefined ? null : h('span', { class: 'h-1 overflow-hidden rounded-full bg-slate-100' }, [h('i', { class: 'block h-full bg-teal-600', style: { width: `${Math.min(100, Math.max(0, task.progress))}%` } })]),
+          h('span', { class: 'flex justify-between gap-2 text-xs font-semibold text-[var(--varo-agent-foreground)]' }, [task.title, task.meta ? h('small', { class: 'text-[var(--varo-agent-muted)]' }, task.meta) : null]),
+          task.progress === undefined ? null : h('span', { class: 'h-1 overflow-hidden rounded-full bg-[var(--varo-agent-fill)]' }, [h('i', { class: 'block h-full bg-[var(--varo-agent-primary)]', style: { width: `${Math.min(100, Math.max(0, task.progress))}%` } })]),
         ]),
       ])),
     ])
@@ -300,7 +314,19 @@ export const AgentApproval = defineComponent({
   setup(props, { emit, slots }) {
     return () => h('section', { 'class': 'agent-approval', 'role': 'group', 'aria-label': props.title }, [
       h('header', { class: 'agent-approval__header' }, [
-        h('span', { 'class': 'agent-approval__icon', 'aria-hidden': 'true' }, '!'),
+        h('span', { 'class': 'agent-approval__icon', 'aria-hidden': 'true' }, [
+          h('svg', {
+            'fill': 'none',
+            'stroke': 'currentColor',
+            'stroke-linecap': 'round',
+            'stroke-linejoin': 'round',
+            'stroke-width': 1.8,
+            'viewBox': '0 0 24 24',
+          }, [
+            h('path', { d: 'm12 3-7 3v5c0 4.6 3 8.6 7 10 4-1.4 7-5.4 7-10V6z' }),
+            h('path', { d: 'M12 8v4 M12 16h.01' }),
+          ]),
+        ]),
         h('span', { class: 'agent-approval__heading' }, [
           h('small', { class: 'agent-approval__eyebrow' }, '需要你的确认'),
           h('strong', { class: 'agent-approval__title' }, props.title),
@@ -364,10 +390,10 @@ export const AgentRecommendation = defineComponent({
   emits: { accept: () => true },
   setup(props, { emit, slots }) {
     const confidence = computed(() => Math.min(100, Math.max(0, props.confidence)))
-    return () => h('section', { class: 'grid gap-3 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-4 shadow-sm' }, [
-      h('header', { class: 'flex justify-between text-[10px] font-extrabold tracking-widest text-blue-700' }, [h('span', 'AGENT 建议'), h('span', `${confidence.value}%`)]),
-      h('strong', { class: 'text-[15px] text-slate-950' }, props.title),
-      props.description ? h('p', { class: 'm-0 text-xs leading-5 text-slate-600' }, props.description) : null,
+    return () => h('section', { class: 'grid gap-3 rounded-2xl border border-[var(--varo-agent-border)] bg-gradient-to-br from-white to-blue-50 p-4 shadow-sm' }, [
+      h('header', { class: 'flex justify-between text-[11px] font-extrabold tracking-widest text-[var(--varo-agent-primary)]' }, [h('span', 'AGENT 建议'), h('span', `${confidence.value}%`)]),
+      h('strong', { class: 'text-[15px] text-[var(--varo-agent-foreground)]' }, props.title),
+      props.description ? h('p', { class: 'm-0 text-xs leading-5 text-[var(--varo-agent-text)]' }, props.description) : null,
       h('span', { class: 'h-1.5 overflow-hidden rounded-full bg-blue-100' }, [h('i', { class: 'block h-full rounded-full bg-blue-600', style: { width: `${confidence.value}%` } })]),
       slots.default?.(),
       h('footer', { class: 'flex justify-end gap-2' }, [slots.secondary?.(), h('button', { class: primaryButton, type: 'button', onClick: () => emit('accept') }, props.acceptText)]),
@@ -381,7 +407,7 @@ export const AgentPromptSuggestions = defineComponent({
   emits: { select: (_value: string) => true },
   setup(props, { emit }) {
     return () => h('div', { class: 'flex max-w-full gap-2 overflow-x-auto pb-1' }, props.suggestions.map(suggestion =>
-      h('button', { class: 'min-h-9 flex-none rounded-full border border-slate-200 bg-white px-3 text-[11px] font-semibold text-slate-600 hover:border-teal-300 hover:text-teal-800', key: suggestion, type: 'button', onClick: () => emit('select', suggestion) }, suggestion),
+      h('button', { class: 'min-h-9 flex-none rounded-full border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-semibold text-[var(--varo-agent-text)] hover:border-[var(--varo-agent-primary)] hover:text-[var(--varo-agent-primary)]', key: suggestion, type: 'button', onClick: () => emit('select', suggestion) }, suggestion),
     ))
   },
 })
@@ -389,6 +415,7 @@ export const AgentPromptSuggestions = defineComponent({
 export const AgentComposer = defineComponent({
   name: 'AgentComposer',
   props: {
+    ariaLabel: { type: String, default: 'Agent 输入' },
     busy: Boolean,
     maxLength: { type: Number, default: 4000 },
     modelValue: { type: String, default: '' },
@@ -405,21 +432,22 @@ export const AgentComposer = defineComponent({
       if (!normalized || props.busy) { return }
       emit('submit', normalized)
     }
-    return () => h('div', { class: 'grid w-full min-w-0 gap-2.5' }, [
+    return () => h('div', { class: 'agent-composer grid w-full min-w-0 gap-2.5' }, [
       h(AgentPromptSuggestions, { suggestions: props.suggestions, onSelect: submit }),
-      h('div', { class: 'flex min-h-14 min-w-0 items-center gap-2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-lg' }, [
+      h('div', { class: 'agent-composer__shell flex min-h-14 min-w-0 items-center gap-2 rounded-[18px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-2 shadow-lg' }, [
         slots.leading?.(),
         h('textarea', {
-          class: 'max-h-40 min-h-10 min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2.5 text-sm leading-5 text-slate-900 outline-none placeholder:text-slate-400',
-          disabled: props.busy,
-          maxlength: props.maxLength,
-          placeholder: props.placeholder,
-          rows: 1,
-          value: props.modelValue,
-          onInput: (event: Event) => {
+          'aria-label': props.ariaLabel,
+          'class': 'max-h-40 min-h-10 min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2.5 text-sm leading-5 text-[var(--varo-agent-foreground)] outline-none placeholder:text-[var(--varo-agent-muted)]',
+          'disabled': props.busy,
+          'maxlength': props.maxLength,
+          'placeholder': props.placeholder,
+          'rows': 1,
+          'value': props.modelValue,
+          'onInput': (event: Event) => {
             if (event.target instanceof HTMLTextAreaElement) { emit('update:modelValue', event.target.value) }
           },
-          onKeydown: (event: KeyboardEvent) => {
+          'onKeydown': (event: KeyboardEvent) => {
             if (event.key === 'Enter' && !event.shiftKey) {
               event.preventDefault()
               submit()
@@ -431,7 +459,7 @@ export const AgentComposer = defineComponent({
           'button',
           {
             'aria-label': props.busy ? 'Agent 正在处理' : '发送',
-            'class': 'grid h-10 w-10 flex-none place-items-center self-center rounded-full bg-teal-700 text-lg font-bold text-white shadow-sm transition-transform active:scale-95 disabled:opacity-45',
+            'class': 'grid h-10 w-10 flex-none place-items-center self-center rounded-full bg-[var(--varo-agent-primary)] text-lg font-bold text-white shadow-sm transition-transform active:translate-y-px disabled:opacity-45',
             'disabled': props.busy || !props.modelValue.trim(),
             'type': 'button',
             'onClick': () => submit(),
@@ -446,7 +474,20 @@ export const AgentComposer = defineComponent({
                     style: { animationDelay: `${index * 90}ms` },
                   })),
               )
-            : h('span', { 'aria-hidden': 'true', 'class': '-translate-y-px' }, '↑'),
+            : h('svg', {
+                'fill': 'none',
+                'stroke': 'currentColor',
+                'stroke-linecap': 'round',
+                'stroke-linejoin': 'round',
+                'stroke-width': 1.9,
+                'viewBox': '0 0 24 24',
+                'width': 20,
+                'height': 20,
+                'aria-hidden': 'true',
+              }, [
+                h('path', { d: 'm4 12 16-8-5 16-3.5-6.5L4 12Z' }),
+                h('path', { d: 'M11.5 13.5 20 4' }),
+              ]),
         ),
       ]),
     ])
@@ -465,10 +506,10 @@ export const AgentStream = defineComponent({
   },
   emits: { retry: () => true },
   setup(props, { emit, slots }) {
-    return () => h('div', { 'class': cn('agent-stream text-sm leading-7 text-slate-800', props.className), 'data-status': props.status, 'aria-live': 'polite' }, [
+    return () => h('div', { 'class': cn('agent-stream text-sm leading-7 text-[var(--varo-agent-foreground)]', props.className), 'data-status': props.status, 'aria-live': 'polite' }, [
       h(AgentMarkdown, { content: props.content, final: props.final || props.status === 'completed' }),
-      props.cursor && props.status === 'streaming' ? h('i', { class: 'agent-ui__cursor ml-1 inline-block h-[1.15em] w-0.5 rounded-full bg-teal-700 align-[-.18em]' }) : null,
-      props.status === 'failed' ? h('div', { class: 'mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-xl bg-red-50 px-3 py-2.5 text-xs text-red-700', role: 'alert' }, [h('span', props.error || '生成失败，请重试'), h('button', { class: quietButton, type: 'button', onClick: () => emit('retry') }, '重试')]) : null,
+      props.cursor && props.status === 'streaming' ? h('i', { class: 'agent-ui__cursor ml-1 inline-block h-[1.15em] w-0.5 rounded-full bg-[var(--varo-agent-primary)] align-[-.18em]' }) : null,
+      props.status === 'failed' ? h('div', { class: 'mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-xl bg-[var(--varo-agent-danger-soft)] px-3 py-2.5 text-xs text-[var(--varo-agent-danger)]', role: 'alert' }, [h('span', props.error || '生成失败，请重试'), h('button', { class: quietButton, type: 'button', onClick: () => emit('retry') }, '重试')]) : null,
       props.status === 'completed' ? h('div', { class: 'mt-3 flex flex-wrap gap-2' }, slots.actions?.()) : null,
     ])
   },
@@ -509,13 +550,13 @@ export const AgentArtifact = defineComponent({
       h('article', { class: 'overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg' }, [
         h('header', { class: 'flex min-h-14 items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-4' }, [
           h('span', { class: 'grid min-w-0 gap-0.5' }, [
-            h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-300' }, props.artifact.kind || 'artifact'),
+            h('small', { class: 'text-[10px] font-black uppercase tracking-[0.16em] text-teal-300' }, props.artifact.kind || 'artifact'),
             h('strong', { class: 'truncate text-xs text-slate-100' }, props.artifact.title),
           ]),
           h(
             'button',
             {
-              class: 'min-h-8 flex-none rounded-lg border border-slate-700 bg-slate-800 px-3 text-[10px] font-bold text-slate-200 transition-colors hover:border-teal-500 hover:text-white',
+              class: 'min-h-8 flex-none rounded-lg border border-slate-700 bg-slate-800 px-3 text-[11px] font-bold text-slate-200 transition-colors hover:border-teal-500 hover:text-white',
               type: 'button',
               onClick: () => emit('open', props.artifact),
             },
@@ -525,7 +566,7 @@ export const AgentArtifact = defineComponent({
         props.artifact.content
           ? h(
               'pre',
-              { class: 'm-0 max-h-72 overflow-auto whitespace-pre-wrap break-words bg-slate-950 px-4 py-3.5 font-mono text-[11px] leading-5 text-slate-200' },
+              { class: 'm-0 max-h-72 overflow-auto whitespace-pre-wrap break-words bg-slate-950 px-4 py-3.5 font-mono text-[12px] leading-5 text-slate-200' },
               props.artifact.content,
             )
           : null,
@@ -542,13 +583,13 @@ export const AgentSourceList = defineComponent({
   emits: { open: (_source: AgentSourceItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('section', { class: 'grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
+      h('section', { class: 'grid gap-2.5 rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] p-3 shadow-sm' }, [
         h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
           h('span', { class: 'grid gap-0.5' }, [
-            h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-700' }, 'Sources'),
-            h('strong', { class: 'text-xs text-slate-800' }, props.title),
+            h('small', { class: 'text-[10px] font-black uppercase tracking-[0.16em] text-[var(--varo-agent-primary)]' }, 'Sources'),
+            h('strong', { class: 'text-xs text-[var(--varo-agent-foreground)]' }, props.title),
           ]),
-          h('small', { class: 'rounded-full bg-white px-2 py-1 text-[9px] font-bold text-slate-500 ring-1 ring-slate-200' }, `${props.sources.length} refs`),
+          h('small', { class: 'rounded-full bg-[var(--varo-agent-surface)] px-2 py-1 text-[10px] font-bold text-[var(--varo-agent-text)] ring-1 ring-slate-200' }, `${props.sources.length} refs`),
         ]),
         h(
           'div',
@@ -557,7 +598,7 @@ export const AgentSourceList = defineComponent({
             h(
               'a',
               {
-                class: 'group flex min-h-14 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-xs text-slate-700 shadow-sm transition-all hover:-translate-y-px hover:border-teal-300 hover:shadow-md',
+                class: 'group flex min-h-14 items-center gap-3 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-xs text-[var(--varo-agent-foreground)] shadow-sm transition-all hover:-translate-y-px hover:border-[var(--varo-agent-primary)] hover:shadow-md',
                 href: source.url,
                 key: source.id,
                 rel: 'noreferrer noopener',
@@ -565,12 +606,12 @@ export const AgentSourceList = defineComponent({
                 onClick: () => emit('open', source),
               },
               [
-                h('span', { class: 'grid h-8 w-8 flex-none place-items-center rounded-xl bg-teal-50 text-[11px] font-black text-teal-700' }, String(index + 1).padStart(2, '0')),
+                h('span', { class: 'grid h-8 w-8 flex-none place-items-center rounded-xl bg-[var(--varo-agent-primary-soft)] text-[12px] font-black text-[var(--varo-agent-primary)]' }, String(index + 1).padStart(2, '0')),
                 h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-                  h('strong', { class: 'truncate text-[11px] text-slate-800' }, source.title),
-                  h('small', { class: 'truncate text-[9px] text-slate-400' }, source.domain || source.description || source.url),
+                  h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, source.title),
+                  h('small', { class: 'truncate text-[10px] text-[var(--varo-agent-muted)]' }, source.domain || source.description || source.url),
                 ]),
-                h('span', { 'aria-hidden': 'true', 'class': 'text-xs text-slate-300 transition-colors group-hover:text-teal-600' }, '↗'),
+                h('span', { 'aria-hidden': 'true', 'class': 'text-xs text-slate-300 transition-colors group-hover:text-[var(--varo-agent-primary)]' }, '↗'),
               ],
             ),
           ),
@@ -585,35 +626,35 @@ export const AgentAttachmentList = defineComponent({
   emits: { remove: (_item: AgentAttachmentItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('section', { class: 'grid gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm' }, [
+      h('section', { class: 'grid gap-2.5 rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] p-3 shadow-sm' }, [
         h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
           h('span', { class: 'grid gap-0.5' }, [
-            h('small', { class: 'text-[9px] font-black uppercase tracking-[0.16em] text-teal-700' }, 'Files'),
-            h('strong', { class: 'text-xs text-slate-800' }, '附件'),
+            h('small', { class: 'text-[10px] font-black uppercase tracking-[0.16em] text-[var(--varo-agent-primary)]' }, 'Files'),
+            h('strong', { class: 'text-xs text-[var(--varo-agent-foreground)]' }, '附件'),
           ]),
-          h('small', { class: 'text-[9px] font-bold text-slate-400' }, `${props.attachments.length} items`),
+          h('small', { class: 'text-[10px] font-bold text-[var(--varo-agent-muted)]' }, `${props.attachments.length} items`),
         ]),
         h(
           'div',
           { class: 'grid gap-2' },
           props.attachments.map(item =>
-            h('article', { class: 'flex min-h-14 min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 shadow-sm', key: item.id }, [
+            h('article', { class: 'flex min-h-14 min-w-0 items-center gap-3 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 shadow-sm', key: item.id }, [
               item.previewUrl
                 ? h('img', { alt: '', class: 'h-9 w-9 flex-none rounded-xl object-cover', src: item.previewUrl })
                 : h(
                     'i',
-                    { class: 'grid h-9 w-9 flex-none place-items-center rounded-xl bg-slate-900 text-[9px] font-black not-italic text-white' },
+                    { class: 'grid h-9 w-9 flex-none place-items-center rounded-xl bg-slate-900 text-[10px] font-black not-italic text-white' },
                     item.name.split('.').pop()?.slice(0, 4).toUpperCase() || 'FILE',
                   ),
               h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-                h('strong', { class: 'truncate text-[11px] text-slate-800' }, item.name),
-                h('small', { class: 'text-[9px] text-slate-400' }, [item.size, item.mimeType].filter(Boolean).join(' · ')),
+                h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, item.name),
+                h('small', { class: 'text-[10px] text-[var(--varo-agent-muted)]' }, [item.size, item.mimeType].filter(Boolean).join(' · ')),
               ]),
               h(
                 'button',
                 {
                   'aria-label': `移除 ${item.name}`,
-                  'class': 'min-h-8 flex-none rounded-lg border border-transparent px-2 text-[9px] font-bold text-slate-400 transition-colors hover:border-red-100 hover:bg-red-50 hover:text-red-600',
+                  'class': 'min-h-8 flex-none rounded-lg border border-transparent px-2 text-[10px] font-bold text-[var(--varo-agent-muted)] transition-colors hover:border-red-100 hover:bg-[var(--varo-agent-danger-soft)] hover:text-[var(--varo-agent-danger)]',
                   'type': 'button',
                   'onClick': () => emit('remove', item),
                 },

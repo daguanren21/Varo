@@ -86,6 +86,8 @@ describe('ui-h5 style entry', () => {
     expect(h5Layout).toContain('.varo-col')
     expect(h5Layout).toContain('.varo-space')
     expect(h5Layout).toContain('.varo-sticky')
+    expect(h5Layout).toContain('.varo-region-picker')
+    expect(h5Layout).toContain('.varo-map')
     expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: relative;[\s\S]*?width: 36px/)
     expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: -9px;[\s\S]*?right: -15px/)
     expect(weapp.slice(weapp.indexOf(marker))).toBe(h5Layout)

@@ -29,14 +29,15 @@ import { AgentComposer } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type       | Default | Description            |
-| ------------- | ---------- | ------- | ---------------------- |
-| `busy`        | `boolean`  | `false` | Busy                   |
-| `disabled`    | `boolean`  | `false` | Disabled; mini program |
-| `maxLength`   | `number`   | `4000`  | Max length; H5         |
-| `modelValue`  | `string`   | `''`    | Prompt value           |
-| `placeholder` | `string`   | `—`     | Placeholder            |
-| `suggestions` | `string[]` | `[]`    | Suggestions            |
+| Prop          | Type       | Default      | Description            |
+| ------------- | ---------- | ------------ | ---------------------- |
+| `ariaLabel`   | `string`   | `Agent 输入` | Accessible input name  |
+| `busy`        | `boolean`  | `false`      | Busy                   |
+| `disabled`    | `boolean`  | `false`      | Disabled; mini program |
+| `maxLength`   | `number`   | `4000`       | Max length; H5         |
+| `modelValue`  | `string`   | `''`         | Prompt value           |
+| `placeholder` | `string`   | `—`          | Placeholder            |
+| `suggestions` | `string[]` | `[]`         | Suggestions            |
 
 ## Events
 

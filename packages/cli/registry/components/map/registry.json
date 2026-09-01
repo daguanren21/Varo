@@ -1,0 +1,37 @@
+{
+  "name": "map",
+  "type": "component",
+  "title": "VMap",
+  "description": "Typed WeChat mini-program map wrapper for markers, routes, circles, viewport controls, location, and native map events.",
+  "exportName": "VMap",
+  "targets": [
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "weapp",
+      "from": "registry/components/map/map.weapp.ts",
+      "to": "src/components/ui/map.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/map/map.types.ts",
+      "to": "src/components/ui/map.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/map/v-map.weapp-vite.vue",
+      "to": "src/components/ui/v-map.vue"
+    }
+  ],
+  "docs": "/components/map"
+}

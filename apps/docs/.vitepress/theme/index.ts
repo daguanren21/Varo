@@ -37,6 +37,7 @@ import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
+import RegionPickerDemo from '../../src/components/RegionPickerDemo.vue'
 import DocsLayout from './DocsLayout.vue'
 import '@varo-ui/h5/source/style.css'
 import './tailwind.css'
@@ -64,6 +65,7 @@ const theme: Theme = {
     app.component('ComponentCatalog', ComponentCatalog)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
+    app.component('RegionPickerDemo', RegionPickerDemo)
     app.component('PrimitiveCatalog', PrimitiveCatalog)
     app.component('PrimitiveExample', PrimitiveExample)
     app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)

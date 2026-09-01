@@ -34,7 +34,7 @@ const lines = computed(() => props.code.split('\n'))
 
 function lineClass(line: number) {
   return cn(
-    'flex min-w-max px-3 font-mono text-[11px] leading-[19px] text-slate-300',
+    'flex min-w-max px-3 font-mono text-[12px] leading-[19px] text-slate-300',
     props.focusedLines.includes(line) && 'bg-teal-400/15 text-slate-50',
   )
 }
@@ -47,11 +47,11 @@ function lineClass(line: number) {
         <text class="truncate text-xs font-bold text-slate-50">
           {{ filename }}
         </text>
-        <text class="text-[9px] font-semibold uppercase tracking-[.08em] text-slate-500">
+        <text class="text-[10px] font-semibold uppercase tracking-[.08em] text-[var(--varo-agent-text)]">
           {{ language }}
         </text>
       </view>
-      <button class="min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[10px] font-semibold text-slate-400" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
+      <button class="min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[11px] font-semibold text-[var(--varo-agent-muted)]" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
         Copy
       </button>
     </view>
@@ -59,7 +59,7 @@ function lineClass(line: number) {
     <scroll-view class="py-2.5" scroll-x :show-scrollbar="false">
       <view class="grid min-w-max">
         <view v-for="(line, index) in lines" :key="index" :class="lineClass(index + 1)">
-          <text v-if="lineNumbers" class="w-7 flex-none select-none text-right tabular-nums text-slate-600" aria-hidden="true">
+          <text v-if="lineNumbers" class="w-7 flex-none select-none text-right tabular-nums text-[var(--varo-agent-text)]" aria-hidden="true">
             {{ index + 1 }}
           </text>
           <text class="whitespace-pre px-2 font-normal">

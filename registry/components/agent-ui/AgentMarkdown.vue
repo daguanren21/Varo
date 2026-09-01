@@ -8,7 +8,7 @@ import {
   normalizeMarkdownNodes,
 
 } from '@varo-ui/ai'
-import { computed } from 'wevu'
+import { computed, shallowRef, watch } from 'wevu'
 import { cn } from '../../lib/cn'
 import AgentMarkdownNode from './AgentMarkdownNode.vue'
 
@@ -34,24 +34,32 @@ catch (error) {
   emit('error', message)
 }
 let previousContent = ''
-const nodes = computed<AgentMarkdownViewNode[]>(() => {
-  const content = String(props.content ?? '')
+const nodes = shallowRef<AgentMarkdownViewNode[]>([])
+
+function updateNodes(content: string, final: boolean) {
   if (!parser) {
-    return content ? [{ kind: 'text', text: content }] : []
+    nodes.value = content ? [{ kind: 'text', text: content }] : []
+    return
   }
   if (!content.startsWith(previousContent)) {
     parser.reset()
   }
   previousContent = content
   try {
-    return normalizeMarkdownNodes(parser.parse(content, { final: props.final }))
+    nodes.value = normalizeMarkdownNodes(parser.parse(content, { final }))
   }
   catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
     emit('error', message)
-    return content ? [{ kind: 'text', text: content }] : []
+    nodes.value = content ? [{ kind: 'text', text: content }] : []
   }
-})
+}
+
+watch(
+  () => [String(props.content ?? ''), props.final] as const,
+  ([content, final]) => updateNodes(content, final),
+  { immediate: true },
+)
 const rootClass = computed(() =>
   cn('agent-markdown break-words text-sm leading-7 text-inherit', props.className),
 )

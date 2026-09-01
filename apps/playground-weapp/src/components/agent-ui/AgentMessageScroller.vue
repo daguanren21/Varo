@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
-import { cn, type ClassValue } from '../../lib/cn'
+import { cn } from '../../lib/cn'
 
 const props = withDefaults(
   defineProps<{
@@ -12,20 +13,20 @@ const props = withDefaults(
   {
     atLiveEdge: true,
     followLabel: 'Jump to latest',
-    maxHeight: 480
-  }
+    maxHeight: 480,
+  },
 )
 
 const emit = defineEmits<{
-  follow: []
+  'follow': []
   'update:atLiveEdge': [value: boolean]
 }>()
 
 const rootClass = computed(() =>
-  cn('agent-message-scroller relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50', props.className)
+  cn('agent-message-scroller relative overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)]', props.className),
 )
 const rootStyle = computed(() => ({
-  maxHeight: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight
+  maxHeight: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight,
 }))
 
 function follow() {
@@ -41,7 +42,7 @@ function follow() {
     </scroll-view>
     <button
       v-if="!atLiveEdge"
-      class="mx-auto mb-2.5 flex min-h-[34px] w-fit items-center justify-center rounded-full border border-teal-200 bg-white px-3 text-[11px] font-bold text-teal-700 shadow-sm"
+      class="mx-auto mb-2.5 flex min-h-9 w-fit items-center justify-center rounded-full border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-bold text-[var(--varo-agent-primary)] shadow-sm"
       type="button"
       @click="follow"
     >
@@ -51,7 +52,9 @@ function follow() {
 </template>
 
 <style scoped>
-.agent-message-scroller button::after { border: 0; }
+.agent-message-scroller button::after {
+  border: 0;
+}
 </style>
 
 <json lang="jsonc">

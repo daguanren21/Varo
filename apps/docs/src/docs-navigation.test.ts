@@ -338,6 +338,8 @@ describe('docs navigation', () => {
       'components/switch.md',
       'components/loading.md',
       'components/toast.md',
+      'components/region-picker.md',
+      'components/map.md',
       'blocks/build-your-own.md',
       'blocks/profile-edit.md',
       'blocks/order-filter.md',
@@ -345,6 +347,8 @@ describe('docs navigation', () => {
       'en/components/switch.md',
       'en/components/loading.md',
       'en/components/toast.md',
+      'en/components/region-picker.md',
+      'en/components/map.md',
       'en/blocks/build-your-own.md',
       'en/blocks/profile-edit.md',
       'en/blocks/order-filter.md',
@@ -355,6 +359,8 @@ describe('docs navigation', () => {
       '/components/switch',
       '/components/loading',
       '/components/toast',
+      '/components/region-picker',
+      '/components/map',
       '/blocks/build-your-own',
       '/blocks/profile-edit',
       '/blocks/order-filter',
@@ -362,6 +368,8 @@ describe('docs navigation', () => {
       '/en/components/switch',
       '/en/components/loading',
       '/en/components/toast',
+      '/en/components/region-picker',
+      '/en/components/map',
       '/en/blocks/build-your-own',
       '/en/blocks/profile-edit',
       '/en/blocks/order-filter',
@@ -376,12 +384,14 @@ describe('docs navigation', () => {
     expect(phase1Manifest.targets).toEqual(['h5', 'weapp'])
     expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
     expect(phase1Manifest.components).toHaveLength(15)
-    expect(componentTiers.registryCatalog).toEqual({ h5: 56, weappSfcBaseKit: 15, weappVite: 45 })
+    expect(componentTiers.registryCatalog).toEqual({ h5: 57, weappSfcBaseKit: 15, weappVite: 47 })
     expect(componentTiers.agentUi).toHaveLength(36)
     expect(homeZh).toContain('Base Kit 包含 15 个已经通过微信开发者工具编译的原生 SFC 组件')
-    expect(homeZh).toContain('小程序已开放 45 个高共识组件族')
+    expect(homeZh).toContain('小程序开放 45 个高共识组件族')
     expect(homeEn).toContain('The Base Kit contains 15 native SFC components verified by WeChat DevTools')
     expect(homeEn).toContain('mini-program registry exposes 45 high-consensus families')
+    expect(homeZh).toContain('`RegionPicker` 与原生 `Map`')
+    expect(homeEn).toContain('`RegionPicker` and native `Map`')
     baseKitPhase1Components.forEach((component) => {
       expect(homeZh).toContain(`\`${component}\``)
       expect(homeEn).toContain(`\`${component}\``)

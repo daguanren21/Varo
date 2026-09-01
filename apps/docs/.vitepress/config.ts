@@ -217,6 +217,8 @@ export default defineConfig({
                 items: [
                   { text: 'Popover 气泡浮层', link: '/components/popover' },
                   { text: 'Dialog 对话框', link: '/components/dialog' },
+                  { text: 'RegionPicker 地区选择', link: '/components/region-picker' },
+                  { text: 'Map 小程序地图', link: '/components/map' },
                 ],
               },
             ],
@@ -468,6 +470,8 @@ export default defineConfig({
                 items: [
                   { text: 'Popover', link: '/en/components/popover' },
                   { text: 'Dialog', link: '/en/components/dialog' },
+                  { text: 'RegionPicker', link: '/en/components/region-picker' },
+                  { text: 'Map', link: '/en/components/map' },
                 ],
               },
             ],

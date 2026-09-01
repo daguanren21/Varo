@@ -1,5 +1,5 @@
-import { createSmoothMarkdownStream } from 'markstream-core'
 import type { TextStreamController, TextStreamOptions, TextStreamSnapshot } from './types'
+import { createSmoothMarkdownStream } from 'markstream-core'
 
 interface SegmenterLike {
   segment: (value: string) => Iterable<{ segment: string }>
@@ -21,20 +21,64 @@ function splitGraphemes(value: string): string[] {
     locale?: string,
     options?: { granularity: 'grapheme' }
   ) => SegmenterLike
-  return Array.from(new Segmenter(undefined, { granularity: 'grapheme' }).segment(value), (item) => item.segment)
+  return Array.from(new Segmenter(undefined, { granularity: 'grapheme' }).segment(value), item => item.segment)
 }
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
 
+function hasUnclosedFence(value: string) {
+  let marker: '`' | '~' | undefined
+  let markerLength = 0
+  for (const line of value.split(/\r?\n/)) {
+    const match = /^ {0,3}(`{3,}|~{3,})/.exec(line)
+    if (!match) { continue }
+    const nextMarker = match[1][0] as '`' | '~'
+    const nextLength = match[1].length
+    if (!marker) {
+      marker = nextMarker
+      markerLength = nextLength
+    }
+    else if (marker === nextMarker && nextLength >= markerLength) {
+      marker = undefined
+      markerLength = 0
+    }
+  }
+  return marker !== undefined
+}
+
+function fenceSafeCommitCount(visible: string, source: string, segments: string[]) {
+  if (segments.length === 0) { return 0 }
+  const candidate = visible + segments.join('')
+  const lineStart = candidate.lastIndexOf('\n') + 1
+  const candidateLine = candidate.slice(lineStart)
+  const sourceLineEnd = source.indexOf('\n', lineStart)
+  const sourceLine = source.slice(lineStart, sourceLineEnd < 0 ? source.length : sourceLineEnd)
+  const match = /^ {0,3}(`+|~+)/.exec(sourceLine)
+  if (!match) { return segments.length }
+
+  const marker = match[1]
+  const unresolvedCandidate = marker.length < 3 && sourceLine.trim() === marker
+  const completeFence = marker.length >= 3
+  if ((unresolvedCandidate || completeFence) && /^ {0,3}(?:`+|~+)/.test(candidateLine)) {
+    return 0
+  }
+  return segments.length
+}
+
 function createTimerTextStream(options: TextStreamOptions = {}): TextStreamController {
   const minCharsPerSecond = Math.max(1, options.minCharsPerSecond ?? 40)
-  const maxCharsPerSecond = Math.max(minCharsPerSecond, options.maxCharsPerSecond ?? 800)
-  const targetLatencyMs = Math.max(50, options.targetLatencyMs ?? 700)
-  const maxCommitFps = Math.max(1, Math.min(30, options.maxCommitFps ?? 20))
-  const maxCharsPerCommit = Math.max(1, options.maxCharsPerCommit ?? 64)
-  const catchUpThreshold = Math.max(1, options.catchUpThreshold ?? 320)
+  const maxCharsPerSecond = Math.max(minCharsPerSecond, options.maxCharsPerSecond ?? 1000)
+  const targetLatencyMs = Math.max(1, options.targetLatencyMs ?? 900)
+  const catchUpLatencyMs = Math.max(1, options.catchUpLatencyMs ?? 350)
+  const maxCommitFps = Math.max(1, Math.min(30, options.maxCommitFps ?? 30))
+  const maxCharsPerCommit = Math.max(1, options.maxCharsPerCommit ?? 80)
+  const catchUpThreshold = Math.max(0, options.catchUpThreshold ?? 600)
+  const startDelayMs = Math.max(0, options.startDelayMs ?? 80)
+  const flushOnFinish = options.flushOnFinish ?? false
+  const burstInitialContent = options.burstInitialContent ?? false
+  const burstRevealThresholdChars = Math.max(1, options.burstRevealThresholdChars ?? 2048)
   const listeners = new Set<() => void>()
   const pending: string[] = []
   let pendingOffset = 0
@@ -45,6 +89,7 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
   let destroyed = false
   let timer: ReturnType<typeof setTimeout> | undefined
   let lastTick = Date.now()
+  let firstPendingAt = 0
   let budget = 0
 
   function pendingCount() {
@@ -52,38 +97,46 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
   }
 
   function snapshot(): TextStreamSnapshot {
-    const pendingChars = pendingCount()
+    const pendingChars = Math.max(0, source.length - visible.length)
     return {
-      caughtUp: pendingChars === 0,
+      caughtUp: pendingCount() === 0,
       done,
-      final: done && pendingChars === 0,
+      final: done && pendingCount() === 0,
       paused,
       pendingChars,
       source,
-      visible
+      visible,
     }
   }
 
   function emit() {
-    listeners.forEach((listener) => listener())
+    listeners.forEach(listener => listener())
   }
 
   function compactPending() {
-    if (pendingOffset < 1024 || pendingOffset * 2 < pending.length) return
+    if (pendingOffset < 1024 || pendingOffset * 2 < pending.length) { return }
     pending.splice(0, pendingOffset)
     pendingOffset = 0
   }
 
   function schedule() {
-    if (destroyed || paused || timer || pendingCount() === 0) return
+    if (destroyed || paused || timer || pendingCount() === 0) { return }
+    // The scheduler and tick callback are mutually recursive by design.
+    // eslint-disable-next-line ts/no-use-before-define
     timer = setTimeout(tick, Math.ceil(1000 / maxCommitFps))
   }
 
   function tick() {
     timer = undefined
-    if (destroyed || paused) return
+    if (destroyed || paused) { return }
 
     const now = Date.now()
+    if (firstPendingAt && now - firstPendingAt < startDelayMs) {
+      schedule()
+      return
+    }
+    firstPendingAt = 0
+
     const deltaMs = Math.max(1, now - lastTick)
     lastTick = now
     const backlog = pendingCount()
@@ -92,14 +145,28 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
       return
     }
 
-    const latencyCps = (backlog * 1000) / targetLatencyMs
-    const catchUpBoost = backlog >= catchUpThreshold ? 1.8 : 1
-    const cps = clamp(latencyCps * catchUpBoost, minCharsPerSecond, maxCharsPerSecond)
+    const latencyMs = backlog >= catchUpThreshold ? catchUpLatencyMs : targetLatencyMs
+    const latencyCps = (backlog * 1000) / latencyMs
+    const cps = clamp(latencyCps, minCharsPerSecond, maxCharsPerSecond)
     budget += (cps * deltaMs) / 1000
     const commitCount = Math.min(backlog, maxCharsPerCommit, Math.max(1, Math.floor(budget)))
-    budget = Math.max(0, budget - commitCount)
-    visible += pending.slice(pendingOffset, pendingOffset + commitCount).join('')
-    pendingOffset += commitCount
+    let proposedSegments = pending.slice(pendingOffset, pendingOffset + commitCount)
+    let safeCommitCount = fenceSafeCommitCount(visible, source, proposedSegments)
+    if (safeCommitCount === 0) {
+      const newlineOffset = pending.slice(pendingOffset).findIndex(segment => segment.includes('\n'))
+      if (newlineOffset >= 0) {
+        proposedSegments = pending.slice(pendingOffset, pendingOffset + newlineOffset + 1)
+        safeCommitCount = fenceSafeCommitCount(visible, source, proposedSegments)
+      }
+    }
+    if (safeCommitCount === 0) {
+      emit()
+      schedule()
+      return
+    }
+    budget = Math.max(0, budget - safeCommitCount)
+    visible += proposedSegments.slice(0, safeCommitCount).join('')
+    pendingOffset += safeCommitCount
     compactPending()
     emit()
     schedule()
@@ -110,27 +177,45 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
     timer = undefined
   }
 
+  function destroy() {
+    if (destroyed) { return }
+    destroyed = true
+    cancelTimer()
+    pending.length = 0
+    listeners.clear()
+  }
+
   return {
-    destroy() {
-      if (destroyed) return
-      destroyed = true
-      cancelTimer()
-      pending.length = 0
-      listeners.clear()
-    },
+    destroy,
+    dispose: destroy,
     enqueue(chunk) {
-      if (destroyed || !chunk) return
-      if (done) done = false
+      if (destroyed || !chunk) { return }
+      if (done) { done = false }
+      const initialChunk = source.length === 0
       source += chunk
       pending.push(...splitGraphemes(chunk))
+      if (initialChunk) { firstPendingAt = Date.now() }
       lastTick = Date.now()
+
+      if (
+        initialChunk
+        && burstInitialContent
+        && pendingCount() >= burstRevealThresholdChars
+        && !hasUnclosedFence(source)
+      ) {
+        visible = source
+        pending.length = 0
+        pendingOffset = 0
+        firstPendingAt = 0
+      }
+
       emit()
       schedule()
     },
     finish(finishOptions = {}) {
-      if (destroyed) return
+      if (destroyed) { return }
       done = true
-      if (finishOptions.flush) {
+      if (finishOptions.flush ?? flushOnFinish) {
         visible = source
         pending.length = 0
         pendingOffset = 0
@@ -140,7 +225,7 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
       schedule()
     },
     flush() {
-      if (destroyed) return
+      if (destroyed) { return }
       visible = source
       pending.length = 0
       pendingOffset = 0
@@ -150,12 +235,12 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
     },
     getSnapshot: snapshot,
     pause() {
-      if (destroyed || paused) return
+      if (destroyed || paused) { return }
       paused = true
       cancelTimer()
       emit()
     },
-    reset(content = '') {
+    reset(content = '', _resetOptions = {}) {
       cancelTimer()
       source = content
       visible = content
@@ -164,21 +249,22 @@ function createTimerTextStream(options: TextStreamOptions = {}): TextStreamContr
       done = false
       paused = false
       budget = 0
+      firstPendingAt = 0
       lastTick = Date.now()
       emit()
     },
     resume() {
-      if (destroyed || !paused) return
+      if (destroyed || !paused) { return }
       paused = false
       lastTick = Date.now()
       emit()
       schedule()
     },
     subscribe(listener) {
-      if (destroyed) return () => {}
+      if (destroyed) { return () => {} }
       listeners.add(listener)
       return () => listeners.delete(listener)
-    }
+    },
   }
 }
 
@@ -190,6 +276,7 @@ export function createTextStream(options: TextStreamOptions = {}): TextStreamCon
   const controller = createSmoothMarkdownStream(options)
   return {
     destroy: controller.destroy,
+    dispose: controller.dispose,
     enqueue: controller.enqueue,
     finish: controller.finish,
     flush: controller.flush,
@@ -197,6 +284,6 @@ export function createTextStream(options: TextStreamOptions = {}): TextStreamCon
     pause: controller.pause,
     reset: controller.reset,
     resume: controller.resume,
-    subscribe: controller.subscribe
+    subscribe: controller.subscribe,
   }
 }

@@ -42,27 +42,27 @@ onBeforeUnmount(stop)
 </script>
 
 <template>
-  <view class="agent-loading flex min-h-12 items-center gap-3 text-slate-700" :data-active="String(active)" role="status">
+  <view class="agent-loading flex min-h-12 items-center gap-3 text-[var(--varo-agent-foreground)]" :data-active="String(active)" role="status">
     <view
       v-if="variant !== 'orbit'"
-      :class="variant === 'dots' ? 'flex h-5 w-[30px] items-center gap-1 bg-transparent' : 'grid h-[30px] w-[30px] grid-cols-3 gap-[3px] rounded-[10px] bg-slate-100 p-1'"
+      :class="variant === 'dots' ? 'flex h-5 w-[30px] items-center gap-1 bg-transparent' : 'grid h-[30px] w-[30px] grid-cols-3 gap-[3px] rounded-[10px] bg-[var(--varo-agent-fill)] p-1'"
       aria-hidden="true"
     >
       <text
         v-for="index in pixelCount"
         :key="index"
-        class="agent-loading__pixel rounded-sm bg-teal-700 opacity-20"
+        class="agent-loading__pixel rounded-sm bg-[var(--varo-agent-primary)] opacity-20"
         :style="{ animationDelay: `${index * 45}ms` }"
       />
     </view>
-    <view v-else class="agent-loading__orbit relative h-[30px] w-[30px] flex-none rounded-full border border-teal-100" aria-hidden="true">
-      <text class="agent-loading__orbit-dot absolute left-1/2 top-[-2px] h-2 w-2 -translate-x-1/2 rounded-full bg-teal-700" />
+    <view v-else class="agent-loading__orbit relative h-[30px] w-[30px] flex-none rounded-full border border-[var(--varo-agent-border-strong)]" aria-hidden="true">
+      <text class="agent-loading__orbit-dot absolute left-1/2 top-[-2px] h-2 w-2 -translate-x-1/2 rounded-full bg-[var(--varo-agent-primary)]" />
     </view>
     <view class="flex min-w-0 flex-1 items-baseline justify-between gap-3">
       <text class="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-semibold">
         {{ label }}
       </text>
-      <text class="text-[11px] tabular-nums text-slate-400">
+      <text class="text-[12px] tabular-nums text-[var(--varo-agent-muted)]">
         {{ elapsedLabel }}
       </text>
     </view>

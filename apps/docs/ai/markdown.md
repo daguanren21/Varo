@@ -44,6 +44,10 @@ const markdownContent = '## Result\n\n**Ready**'
 | ------ | -------- | -------- |
 | `link` | `string` | 链接点击 |
 
+## 小程序渲染
+
+小程序继续使用平台无关的 `stream-markdown-parser` 生成安全 AST。普通行内节点会转换为微信 `rich-text nodes`，标题、列表、代码块、表格、图片和引用继续使用原生小程序节点。链接不会交给 `rich-text`，仍通过 `link` 事件由业务决定如何打开；原始 HTML 不会直接注入。
+
 ## 平台差异
 
 | Target | Import                                    |

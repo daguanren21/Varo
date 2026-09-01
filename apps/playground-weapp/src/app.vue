@@ -113,6 +113,7 @@ page {
     "pages/retail-cart/index",
     "pages/retail-profile/index",
     "pages/mall/index",
+    "pages/form-showcase/index",
     "pages/index/index"
   ],
   "subPackages": [

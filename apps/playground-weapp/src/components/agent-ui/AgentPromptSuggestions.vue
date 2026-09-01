@@ -6,8 +6,8 @@ withDefaults(
   }>(),
   {
     disabled: false,
-    suggestions: () => []
-  }
+    suggestions: () => [],
+  },
 )
 
 const emit = defineEmits<{
@@ -21,12 +21,14 @@ const emit = defineEmits<{
       <button
         v-for="suggestion in suggestions"
         :key="suggestion"
-        class="box-border inline-flex min-h-[34px] flex-none items-center justify-center rounded-full border border-slate-200 bg-white px-3 disabled:opacity-45"
+        class="box-border inline-flex min-h-9 flex-none items-center justify-center rounded-full border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 disabled:opacity-45"
         type="button"
         :disabled="disabled"
         @click="emit('select', suggestion)"
       >
-        <text class="whitespace-nowrap text-[11px] font-semibold text-slate-700">{{ suggestion }}</text>
+        <text class="whitespace-nowrap text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
+          {{ suggestion }}
+        </text>
       </button>
     </view>
   </scroll-view>

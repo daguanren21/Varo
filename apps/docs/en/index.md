@@ -96,7 +96,7 @@ features:
 
 The Base Kit contains 15 native SFC components verified by WeChat DevTools: `avatar`, `badge`, `button`, `card`, `checkbox`, `empty`, `icon`, `image`, `input`, `input-number`, `loading`, `progress`, `select`, `switch`, and `tag`.
 
-Registry supports both `h5` and `weapp-vite`: H5 covers all 56 runtime families; the mini-program registry exposes 45 high-consensus families while retaining those 15 SFCs as the minimal composable base. `registry/component-tiers.v0.1.json` is the machine-readable boundary.
+Registry supports `h5` and `weapp`: H5 covers all 56 runtime families; the mini-program registry exposes 45 high-consensus families plus `RegionPicker` and native `Map` extensions. `registry/component-tiers.v0.1.json` is the machine-readable boundary.
 
 ## Package Boundaries
 

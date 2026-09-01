@@ -96,7 +96,7 @@ features:
 
 Base Kit 包含 15 个已经通过微信开发者工具编译的原生 SFC 组件：`avatar`、`badge`、`button`、`card`、`checkbox`、`empty`、`icon`、`image`、`input`、`input-number`、`loading`、`progress`、`select`、`switch`、`tag`。
 
-Registry 同时支持 `h5` 与 `weapp-vite`：H5 覆盖 56 个 runtime 组件族；小程序已开放 45 个高共识组件族，并保留上述 15 个 SFC 作为最小可组合基座。完整分级由 `registry/component-tiers.v0.1.json` 约束。
+Registry 同时支持 `h5` 与 `weapp`：H5 覆盖 56 个 runtime 组件族；小程序开放 45 个高共识组件族，并增加 `RegionPicker` 与原生 `Map` 扩展。完整分级由 `registry/component-tiers.v0.1.json` 约束。
 
 ## 包边界
 

@@ -1,4 +1,4 @@
-import type { FieldRule, FormRules, FormValues, ReactiveRuntime, UseFormReturn } from '@varo-ui/headless'
+import type { FieldRule, FormRules, FormValues, ReactiveRuntime, StandardSchemaV1, UseFormReturn } from '@varo-ui/headless'
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import { createVariantClass, useForm } from '@varo-ui/headless'
 import { useVaroTheme } from '@varo-ui/theme'
@@ -7,12 +7,9 @@ import {
   defineComponent,
   h,
   inject,
-
   onBeforeUnmount,
-
   provide,
   ref,
-
   watch,
 } from 'vue'
 import '../../styles/varo.css'
@@ -51,7 +48,11 @@ export const VForm = defineComponent({
     },
     rules: {
       type: Object as PropType<FormRules>,
-      default: () => ({}),
+      default: undefined,
+    },
+    validationSchema: {
+      type: Object as PropType<StandardSchemaV1<FormValues>>,
+      default: undefined,
     },
     labelAlign: {
       type: String as PropType<FormLabelAlign>,
@@ -65,7 +66,10 @@ export const VForm = defineComponent({
       type: Boolean,
       default: true,
     },
-    validateOnChange: Boolean,
+    validateOnChange: {
+      type: Boolean,
+      default: undefined,
+    },
   },
   emits: ['submit', 'failed', 'reset'],
   setup(props, { attrs, emit, expose, slots }) {
@@ -90,6 +94,7 @@ export const VForm = defineComponent({
       rules: props.rules,
       runtime: vueRuntime,
       validateOnChange: props.validateOnChange,
+      validationSchema: props.validationSchema,
       values,
     })
     const classes = computed(() =>
@@ -104,6 +109,10 @@ export const VForm = defineComponent({
       () => props.rules,
       rules => form.setRules(rules),
       { deep: true },
+    )
+    watch(
+      () => props.validationSchema,
+      schema => form.setValidationSchema(schema),
     )
 
     provide(formContextKey, {

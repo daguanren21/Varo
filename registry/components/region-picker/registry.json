@@ -1,0 +1,61 @@
+{
+  "name": "region-picker",
+  "type": "component",
+  "title": "VRegionPicker",
+  "description": "Controlled hierarchical region picker with breadcrumbs, shortcuts, disabled options, confirmation, and coordinates.",
+  "exportName": "VRegionPicker",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/region-picker/region-picker.ts",
+      "to": "src/components/ui/region-picker.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/components/region-picker/region-picker.shared.ts",
+      "to": "src/components/ui/region-picker.shared.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/components/region-picker/region-picker.types.ts",
+      "to": "src/components/ui/region-picker.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/region-picker/region-picker.weapp.ts",
+      "to": "src/components/ui/region-picker.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/region-picker/region-picker.shared.ts",
+      "to": "src/components/ui/region-picker.shared.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/region-picker/region-picker.types.ts",
+      "to": "src/components/ui/region-picker.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/region-picker/v-region-picker.weapp-vite.vue",
+      "to": "src/components/ui/v-region-picker.vue"
+    }
+  ],
+  "docs": "/components/region-picker"
+}

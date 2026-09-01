@@ -27,5 +27,5 @@
       "to": "src/components/ui/popover.ts"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/popover"
 }

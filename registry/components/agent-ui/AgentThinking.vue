@@ -30,7 +30,7 @@ const currentOpen = computed(() => props.open ?? internalOpen.value)
 const completedCount = computed(() => props.steps.filter(step => step.status === 'completed').length)
 const rootClass = computed(() =>
   cn(
-    'agent-thinking overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 shadow-sm',
+    'agent-thinking overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)] shadow-sm',
     currentOpen.value && 'agent-thinking--open',
     props.className,
   ),
@@ -44,11 +44,11 @@ function toggle() {
 
 function dotClass(status: AgentTraceStep['status']) {
   return cn(
-    'agent-thinking__dot absolute left-[-5px] top-[15px] box-border h-[9px] w-[9px] rounded-full border-2 border-slate-50',
-    status === 'completed' && 'bg-green-600',
-    status === 'running' && 'agent-thinking__running bg-teal-700 shadow-[0_0_0_3px_#ccfbf1]',
-    status === 'failed' && 'bg-red-600',
-    status === 'waiting' && 'bg-slate-300',
+    'agent-thinking__dot absolute left-[-5px] top-[15px] box-border h-[9px] w-[9px] rounded-full border-2 border-[var(--varo-agent-border)]',
+    status === 'completed' && 'bg-[var(--varo-agent-success)]',
+    status === 'running' && 'agent-thinking__running bg-[var(--varo-agent-primary)] shadow-[0_0_0_3px_#ccfbf1]',
+    status === 'failed' && 'bg-[var(--varo-agent-danger)]',
+    status === 'waiting' && 'bg-[var(--varo-agent-border-strong)]',
   )
 }
 
@@ -65,38 +65,38 @@ function detailText(step: AgentTraceStep) {
 <template>
   <view :class="rootClass" :data-open="String(currentOpen)">
     <button
-      class="agent-thinking__trigger box-border flex min-h-16 w-full items-center gap-3 border-0 bg-white px-[15px] py-2.5 text-left text-slate-950"
+      class="agent-thinking__trigger box-border flex min-h-16 w-full items-center gap-3 border-0 bg-[var(--varo-agent-surface)] px-[15px] py-2.5 text-left text-[var(--varo-agent-foreground)]"
       type="button"
       :aria-expanded="currentOpen"
       @click="toggle"
     >
-      <view class="agent-thinking__icon grid h-[34px] w-[34px] flex-none place-items-center rounded-[11px] border border-teal-100 bg-emerald-50 shadow-[0_4px_12px_rgba(15,118,110,.1)]" aria-hidden="true">
+      <view class="agent-thinking__icon grid h-[34px] w-[34px] flex-none place-items-center rounded-[11px] border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-success-soft)] shadow-[0_4px_12px_rgba(15,118,110,.1)]" aria-hidden="true">
         <image class="h-[19px] w-[19px]" :src="thinkingIcon" mode="aspectFit" />
       </view>
       <view class="grid min-w-0 flex-1 gap-0.5">
-        <text class="truncate text-[13px] font-bold leading-[18px] text-slate-950">
+        <text class="truncate text-[13px] font-bold leading-[18px] text-[var(--varo-agent-foreground)]">
           {{ label }}
         </text>
-        <text class="text-[11px] leading-4 text-slate-500">
+        <text class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
           {{ completedCount }}/{{ steps.length }} 已完成
         </text>
       </view>
       <image class="agent-thinking__chevron h-[17px] w-[17px] flex-none" :src="chevronIcon" mode="aspectFit" aria-hidden="true" />
     </button>
 
-    <view v-if="currentOpen" class="grid border-t border-slate-200 bg-slate-50 pb-[13px] pl-[31px] pr-[15px] pt-[5px]">
-      <view v-for="step in steps" :key="step.id" class="relative flex min-h-[45px] gap-3 border-l border-slate-300 py-[9px] pl-5" :data-status="step.status">
+    <view v-if="currentOpen" class="grid border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] pb-[13px] pl-[31px] pr-[15px] pt-[5px]">
+      <view v-for="step in steps" :key="step.id" class="relative flex min-h-[45px] gap-3 border-l border-[var(--varo-agent-border-strong)] py-[9px] pl-5" :data-status="step.status">
         <text :class="dotClass(step.status)" aria-hidden="true" />
         <view class="grid min-w-0 flex-1 gap-[3px]">
           <view class="flex items-center justify-between gap-2.5">
-            <text class="text-xs font-semibold leading-[17px] text-slate-800">
+            <text class="text-xs font-semibold leading-[17px] text-[var(--varo-agent-foreground)]">
               {{ step.title }}
             </text>
-            <text v-if="durationLabel(step)" class="text-[11px] leading-4 text-slate-500">
+            <text v-if="durationLabel(step)" class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
               {{ durationLabel(step) }}
             </text>
           </view>
-          <text v-if="detailText(step)" class="text-[11px] leading-4 text-slate-500">
+          <text v-if="detailText(step)" class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
             {{ detailText(step) }}
           </text>
         </view>

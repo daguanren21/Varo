@@ -18,7 +18,7 @@ Varo is a registry-first component system for Vue 3 mobile H5 applications and `
 ## Current capabilities
 
 - **H5 runtime catalog:** 56 component families
-- **Weapp runtime catalog:** 56 component families; the Registry exposes 45 high-consensus families, including 15 native Vue SFC Base Kit components
+- **Weapp runtime catalog:** 56 component families; the Registry exposes 45 high-consensus families plus `RegionPicker` and native `Map` extensions, including 15 native Vue SFC Base Kit components
 - **Agent Core:** shared event protocol, SSE/chunk transport, Markstream scheduling on H5, timed-frame scheduling on mini programs, and a safe incremental Markdown AST
 - **Agent UI:** 36 dual-target components plus the Agent Chat Block for conversations, streaming, tools, approvals, code, diffs, citations, image generation, tables, workflows, and workspaces
 - **Dual-target Blocks:** Login Form, Profile Card, Profile Edit, Product List, Order Filter, and Agent Chat
@@ -31,7 +31,7 @@ Varo is a registry-first component system for Vue 3 mobile H5 applications and `
 
 - The high-consensus Weapp Registry is based on the overlapping capabilities of [Vant Weapp](https://vant-ui.github.io/vant-weapp/), [NutUI](https://nutui.jd.com/h5/vue/4x/), [TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview), and [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview).
 - Motion and Agent interaction patterns reference [Beautiful UI](https://www.beautifului.dev/) and [beUI](https://beui.dev/), while production code remains native to Vue and mini-program runtimes.
-- Both runtime catalogs contain 56 component families. The Weapp Registry currently exposes 45; `calendar`, `cascader`, `date-picker`, `elevator`, `fixed-nav`, `number-keyboard`, `picker`, `range`, `short-password`, `side-navbar`, and `uploader` remain runtime-only until their native WeChat interactions are verified.
+- Both runtime catalogs contain 56 component families. The Weapp Registry exposes 45 high-consensus families plus `RegionPicker` and native `Map`; `calendar`, `cascader`, `date-picker`, `elevator`, `fixed-nav`, `number-keyboard`, `picker`, `range`, `short-password`, `side-navbar`, and `uploader` remain runtime-only until their native WeChat interactions are verified.
 - H5 streaming uses [Markstream Core](https://github.com/Simon-He95/markstream-vue) scheduling and Markdown parsing. Mini programs use the same protocol and AST with a timed scheduler that does not depend on `requestAnimationFrame`.
 - The machine-readable boundary is defined in [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json).
 

@@ -113,6 +113,12 @@ export const VGridItem = defineComponent({
       '--varo-grid-item-span': props.span,
     }))
 
+    function keydown(event: KeyboardEvent) {
+      if (!clickable.value || tag.value !== 'div' || (event.key !== 'Enter' && event.key !== ' ')) { return }
+      event.preventDefault()
+      emit('click', event)
+    }
+
     return () =>
       h(
         tag.value,
@@ -128,6 +134,7 @@ export const VGridItem = defineComponent({
           'data-dot': String(props.dot),
           'data-span': String(props.span),
           'onClick': (event: MouseEvent) => emit('click', event),
+          'onKeydown': keydown,
         },
         [
           props.icon || slots.icon || props.badge || props.dot

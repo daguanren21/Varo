@@ -6,6 +6,7 @@ import '../../styles/varo.css'
 export const VRange = defineComponent({
   name: 'VRange',
   props: {
+    ariaLabel: String,
     disabled: Boolean,
     max: {
       type: Number,
@@ -54,14 +55,15 @@ export const VRange = defineComponent({
           }),
         ]),
         h('input', {
-          class: 'varo-range__input',
-          disabled: props.disabled,
-          max: props.max,
-          min: props.min,
-          step: props.step,
-          type: 'range',
-          value: String(currentValue.value),
-          onInput: (event: Event) => update(Number((event.target as HTMLInputElement).value)),
+          'aria-label': props.ariaLabel,
+          'class': 'varo-range__input',
+          'disabled': props.disabled,
+          'max': props.max,
+          'min': props.min,
+          'step': props.step,
+          'type': 'range',
+          'value': String(currentValue.value),
+          'onInput': (event: Event) => update(Number((event.target as HTMLInputElement).value)),
         }),
       ])
   },

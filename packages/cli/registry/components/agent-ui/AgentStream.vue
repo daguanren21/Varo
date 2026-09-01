@@ -26,7 +26,7 @@ const emit = defineEmits<{
   retry: []
 }>()
 const rootClass = computed(() =>
-  cn('agent-stream text-sm leading-7 text-slate-800', props.className),
+  cn('agent-stream text-sm leading-7 text-[var(--varo-agent-foreground)]', props.className),
 )
 const normalizedContent = computed(() => String(props.content ?? ''))
 </script>
@@ -39,12 +39,12 @@ const normalizedContent = computed(() => String(props.content ?? ''))
     <AgentMarkdown v-else :content="normalizedContent" :final="final || status === 'completed'" />
     <text
       v-if="cursor && status === 'streaming'"
-      class="agent-stream__cursor ml-[3px] inline-block h-[1.15em] w-0.5 rounded-full bg-teal-700 align-[-.18em]"
+      class="agent-stream__cursor ml-[3px] inline-block h-[1.15em] w-0.5 rounded-full bg-[var(--varo-agent-primary)] align-[-.18em]"
       aria-hidden="true"
     />
-    <view v-if="status === 'failed'" class="mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-[10px] bg-red-50 px-3 py-2.5 text-xs text-red-700" role="alert">
+    <view v-if="status === 'failed'" class="mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-[10px] bg-[var(--varo-agent-danger-soft)] px-3 py-2.5 text-xs text-[var(--varo-agent-danger)]" role="alert">
       <text>{{ error || '生成失败，请重试' }}</text>
-      <button class="inline-flex min-h-[34px] min-w-[54px] items-center justify-center rounded-lg border border-red-200 bg-white px-2.5 text-xs font-semibold text-red-700" type="button" @click="emit('retry')">
+      <button class="inline-flex min-h-9 min-w-[54px] items-center justify-center rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-xs font-semibold text-[var(--varo-agent-danger)]" type="button" @click="emit('retry')">
         重试
       </button>
     </view>

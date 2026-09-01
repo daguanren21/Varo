@@ -8,9 +8,15 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
@@ -22,8 +28,23 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/tabs/tabs.ts",
+      "from": "registry/components/tabs/tabs.weapp.ts",
       "to": "src/components/ui/tabs.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/tabs/tabs-context.weapp.ts",
+      "to": "src/components/ui/tabs-context.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/tabs/v-tabs.weapp-vite.vue",
+      "to": "src/components/ui/v-tabs.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/tabs/v-tab.weapp-vite.vue",
+      "to": "src/components/ui/v-tab.vue"
     }
   ],
   "docs": "/components/tabs"

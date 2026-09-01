@@ -50,6 +50,10 @@ import { AgentStream } from '@/components/agent-ui'
 | --------- | ------------------ |
 | `actions` | Completion actions |
 
+## Streaming scheduler
+
+`@varo-ui/ai` tracks `markstream-core 2.0.7` and `stream-markdown-parser 1.2.13`. H5 uses RAF; the mini-program target uses timed frames while preserving grapheme boundaries, atomic fence commits, catch-up latency, start delay, burst reveal, pause, resume, flush, and dispose contracts.
+
 ## Target Notes
 
 | Target | Import                                    |

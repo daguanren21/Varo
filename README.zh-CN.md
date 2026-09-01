@@ -18,7 +18,7 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 ## 当前能力
 
 - **H5 runtime catalog：**56 个组件族
-- **Weapp runtime catalog：**56 个组件族；Registry 已开放 45 个高共识组件，其中 15 个 Base Kit 组件提供原生 Vue SFC
+- **Weapp runtime catalog：**56 个组件族；Registry 已开放 45 个高共识组件，并增加 `RegionPicker` 与原生 `Map` 扩展，其中 15 个 Base Kit 组件提供原生 Vue SFC
 - **Agent Core：**统一事件协议、SSE/分块通道、H5 Markstream 平滑调度、小程序定时帧调度与安全增量 Markdown AST
 - **Agent UI：**36 个双端组件 + Agent Chat Block，覆盖对话、流式、工具、审批、代码、Diff、引用、图片生成、数据表格、工作流与工作区
 - **双端 Blocks：**Login Form、Profile Card、Profile Edit、Product List、Order Filter、Agent Chat
@@ -31,7 +31,7 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 
 - 高共识小程序 Registry 以 [Vant Weapp](https://vant-ui.github.io/vant-weapp/)、[NutUI](https://nutui.jd.com/h5/vue/4x/)、[TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview) 与 [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview) 的重叠能力为基线。
 - 动效与 Agent 交互参考 [Beautiful UI](https://www.beautifului.dev/) 与 [beUI](https://beui.dev/)；生产代码保持 Vue 与小程序运行时原生实现。
-- H5 与小程序 runtime 都维护 56 个组件族；小程序 Registry 当前开放其中 45 个。`calendar`、`cascader`、`date-picker`、`elevator`、`fixed-nav`、`number-keyboard`、`picker`、`range`、`short-password`、`side-navbar`、`uploader` 仍保留在 runtime，待逐项通过真实微信交互后再开放复制入口。
+- H5 与小程序 runtime 都维护 56 个组件族；小程序 Registry 开放 45 个高共识组件，并增加 `RegionPicker` 与原生 `Map`。`calendar`、`cascader`、`date-picker`、`elevator`、`fixed-nav`、`number-keyboard`、`picker`、`range`、`short-password`、`side-navbar`、`uploader` 仍保留在 runtime，待逐项通过真实微信交互后再开放复制入口。
 - H5 流式实现使用 [Markstream Core](https://github.com/Simon-He95/markstream-vue) 调度与 Markdown Parser；小程序使用相同协议和 AST，但改用不依赖 `requestAnimationFrame` 的定时调度。
 - 机器可读边界见 [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json)。
 

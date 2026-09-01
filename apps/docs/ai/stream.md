@@ -50,6 +50,10 @@ import { AgentStream } from '@/components/agent-ui'
 | --------- | ------------ |
 | `actions` | 完成后的操作 |
 
+## 流式调度
+
+`@varo-ui/ai` 对齐 `markstream-core 2.0.7` 和 `stream-markdown-parser 1.2.13`。H5 使用 RAF 调度；小程序使用定时帧调度，但保持 grapheme 边界、代码围栏原子提交、追赶延迟、启动延迟、burst reveal、暂停、恢复、flush 和 dispose 契约。
+
 ## 平台差异
 
 | Target | Import                                    |

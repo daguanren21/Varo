@@ -46,7 +46,7 @@
     "test:e2e": "echo agent-core has no e2e"
   },
   "dependencies": {
-    "markstream-core": "^2.0.0",
-    "stream-markdown-parser": "^1.2.8"
+    "markstream-core": "^2.0.7",
+    "stream-markdown-parser": "^1.2.13"
   }
 }

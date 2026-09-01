@@ -18,7 +18,9 @@
       "wevu"
     ]
   },
-  "registryDependencies": [],
+  "registryDependencies": [
+    "themes/base"
+  ],
   "targetRegistryDependencies": {
     "h5": [
       "utils/cn"

@@ -29,15 +29,16 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 
 ## Props
 
-| Prop          | Type                         | Default      | 说明   |
-| ------------- | ---------------------------- | ------------ | ------ |
-| `modelValue`  | `string`                     | `''`         | 提示词 |
-| `busy`        | `boolean`                    | `false`      | 忙碌   |
-| `messages`    | `AgentConversationMessage[]` | `[]`         | 消息   |
-| `snapshot`    | `AgentStreamSnapshot`        | `—`          | 快照   |
-| `subtitle`    | `string`                     | `—`          | 副标题 |
-| `suggestions` | `string[]`                   | `[]`         | 建议词 |
-| `title`       | `string`                     | `Varo Agent` | 标题   |
+| Prop          | Type                         | Default      | 说明         |
+| ------------- | ---------------------------- | ------------ | ------------ |
+| `modelValue`  | `string`                     | `''`         | 提示词       |
+| `busy`        | `boolean`                    | `false`      | 忙碌         |
+| `closeLabel`  | `string`                     | `关闭 Agent` | 关闭按钮名称 |
+| `messages`    | `AgentConversationMessage[]` | `[]`         | 消息         |
+| `snapshot`    | `AgentStreamSnapshot`        | `—`          | 快照         |
+| `subtitle`    | `string`                     | `—`          | 副标题       |
+| `suggestions` | `string[]`                   | `[]`         | 建议词       |
+| `title`       | `string`                     | `Varo Agent` | 标题         |
 
 ## Events
 

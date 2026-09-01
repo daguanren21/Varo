@@ -1,5 +1,6 @@
+import type { PropType, StyleValue } from 'vue'
+import { computed, defineComponent, h, shallowRef, useId } from 'vue'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, shallowRef, type PropType, type StyleValue } from 'vue'
 
 export interface FixedNavItem {
   id?: string | number
@@ -13,26 +14,27 @@ export const VFixedNav = defineComponent({
   props: {
     visible: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
+      default: undefined,
     },
     defaultVisible: Boolean,
     navList: {
       type: Array as PropType<FixedNavItem[]>,
-      default: () => []
+      default: () => [],
     },
     position: {
       type: String as PropType<'left' | 'right'>,
-      default: 'right'
+      default: 'right',
     },
     activeText: {
       type: String,
-      default: '导航'
-    }
+      default: '导航',
+    },
   },
   emits: ['update:visible', 'visibleChange', 'select'],
   setup(props, { attrs, emit }) {
     const localVisible = shallowRef(props.defaultVisible)
     const open = computed(() => props.visible ?? localVisible.value)
+    const listId = useId()
 
     function setVisible(visible: boolean) {
       if (props.visible === undefined) {
@@ -48,25 +50,27 @@ export const VFixedNav = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-fixed-nav', attrs.class],
-          style: attrs.style as StyleValue,
+          'class': ['varo-fixed-nav', attrs.class],
+          'style': attrs.style as StyleValue,
           'data-position': props.position,
-          'data-visible': String(open.value)
+          'data-visible': String(open.value),
         },
         [
           h(
             'button',
             {
-              type: 'button',
-              class: 'varo-fixed-nav__trigger',
-              onClick: () => setVisible(!open.value)
+              'type': 'button',
+              'class': 'varo-fixed-nav__trigger',
+              'aria-controls': listId,
+              'aria-expanded': String(open.value),
+              'onClick': () => setVisible(!open.value),
             },
-            props.activeText
+            props.activeText,
           ),
           open.value
             ? h(
                 'div',
-                { class: 'varo-fixed-nav__list' },
+                { id: listId, class: 'varo-fixed-nav__list' },
                 props.navList.map((item, index) =>
                   h(
                     'button',
@@ -74,18 +78,18 @@ export const VFixedNav = defineComponent({
                       key: item.id ?? index,
                       type: 'button',
                       class: 'varo-fixed-nav__item',
-                      onClick: () => emit('select', item, index)
+                      onClick: () => emit('select', item, index),
                     },
                     [
-                      item.icon ? h('span', { class: 'varo-fixed-nav__icon' }, item.icon) : null,
+                      item.icon ? h('span', { 'aria-hidden': 'true', 'class': 'varo-fixed-nav__icon' }, item.icon) : null,
                       h('span', { class: 'varo-fixed-nav__text' }, item.text),
-                      item.num != null ? h('sup', { class: 'varo-fixed-nav__badge' }, String(item.num)) : null
-                    ]
-                  )
-                )
+                      item.num != null ? h('sup', { class: 'varo-fixed-nav__badge' }, String(item.num)) : null,
+                    ],
+                  ),
+                ),
               )
-            : null
-        ]
+            : null,
+        ],
       )
-  }
+  },
 })

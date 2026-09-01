@@ -3,6 +3,7 @@ import type { AgentChoice } from './types'
 import { computed, shallowRef } from 'wevu'
 import VButton from '../ui/v-button.vue'
 import VCard from '../ui/v-card.vue'
+import { agentShieldAlertIcon } from './agent-icons'
 
 const props = withDefaults(
   defineProps<{
@@ -50,7 +51,7 @@ function approve() {
     <view class="agent-approval__body">
       <view class="agent-approval__header">
         <view class="agent-approval__icon" aria-hidden="true">
-          <text>!</text>
+          <image :src="agentShieldAlertIcon" mode="aspectFit" />
         </view>
         <view class="agent-approval__heading">
           <text class="agent-approval__eyebrow">
@@ -140,6 +141,11 @@ function approve() {
   color: var(--varo-ui-warning-dark);
   background: var(--varo-ui-warning-soft);
   border-radius: 9px;
+}
+
+.agent-approval__icon image {
+  width: 20px;
+  height: 20px;
 }
 
 .agent-approval__heading,

@@ -5,10 +5,14 @@
     "weappVite": 56
   },
   "registryCatalog": {
-    "h5": 56,
-    "weappVite": 45,
+    "h5": 57,
+    "weappVite": 47,
     "weappSfcBaseKit": 15
   },
+  "registryExtensions": [
+    "map",
+    "region-picker"
+  ],
   "weappHighConsensus": [
     "action-sheet",
     "avatar",

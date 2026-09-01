@@ -1,0 +1,27 @@
+{
+  "name": "theme-provider",
+  "type": "component",
+  "title": "VThemeProvider",
+  "description": "Reactive Weapp page provider that binds Varo theme tokens as inherited CSS variables.",
+  "exportName": "VThemeProvider",
+  "targets": [
+    "weapp"
+  ],
+  "targetDependencies": {
+    "weapp": [
+      "@varo-ui/theme",
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "weapp",
+      "from": "registry/components/theme-provider/weapp-vite.vue",
+      "to": "src/components/ui/v-theme-provider.vue"
+    }
+  ],
+  "docs": "/guide/theme"
+}

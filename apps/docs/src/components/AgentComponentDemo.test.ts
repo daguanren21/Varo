@@ -129,4 +129,16 @@ describe('AgentComponentDemo', () => {
     expect(image.get('.agent-image-generation__progress-meta').text()).toContain('68%')
     expect(image.find('.agent-image-generation__placeholder > i').exists()).toBe(false)
   })
+
+  it('uses semantic icons and accessible composer controls', () => {
+    const composer = mount(AgentComponentDemo, { props: { component: 'composer' } })
+    expect(composer.get('textarea').attributes('aria-label')).toBe('Agent 输入')
+    expect(composer.get('button[aria-label="发送"] svg').attributes('viewBox')).toBe('0 0 24 24')
+
+    const approval = mount(AgentComponentDemo, { props: { component: 'approval' } })
+    expect(approval.get('.agent-approval__icon svg').attributes('viewBox')).toBe('0 0 24 24')
+
+    const toolApproval = mount(AgentComponentDemo, { props: { component: 'tool-approval' } })
+    expect(toolApproval.get('.agent-tool-approval > header svg').attributes('viewBox')).toBe('0 0 24 24')
+  })
 })

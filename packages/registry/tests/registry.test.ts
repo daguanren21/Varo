@@ -99,13 +99,15 @@ describe('registry catalog', () => {
     const tiers = readJson<{
       agentUi: string[]
       registryCatalog: { h5: number, weappSfcBaseKit: number, weappVite: number }
+      registryExtensions: string[]
       runtimeCatalog: { h5: number, weappVite: number }
       weappHighConsensus: string[]
       weappSpecializedPendingRegistry: string[]
     }>('registry/component-tiers.v0.1.json')
 
     expect(tiers.runtimeCatalog).toEqual({ h5: 56, weappVite: 56 })
-    expect(tiers.registryCatalog).toEqual({ h5: 56, weappSfcBaseKit: 15, weappVite: 45 })
+    expect(tiers.registryCatalog).toEqual({ h5: 57, weappSfcBaseKit: 15, weappVite: 47 })
+    expect(tiers.registryExtensions).toEqual(['map', 'region-picker'])
     expect(tiers.weappHighConsensus).toEqual(weappComponentCatalogV01)
     expect(
       [...tiers.weappHighConsensus, ...tiers.weappSpecializedPendingRegistry].sort(),
@@ -140,11 +142,22 @@ describe('registry catalog', () => {
       'AgentFineTune',
     ]
 
+    const markdownNode = readText('registry/components/agent-ui/AgentMarkdownNode.vue')
+    const advancedStyles = readText('registry/components/agent-ui/agent-advanced.css')
+
+    expect(manifest.registryDependencies).toContain('themes/base')
     expect(manifest.targetRegistryDependencies?.['weapp']).toContain('utils/cn')
     expect(manifest.targetDependencies?.h5).toContain('vue')
     expect(manifest.targetDependencies?.['weapp']).toContain('wevu')
     expect(weappFiles.some(file => file.to.endsWith('/advanced.ts'))).toBe(false)
     expect(weappFiles.some(file => file.to.endsWith('/agent-advanced.css'))).toBe(false)
+    expect(markdownNode).toContain('<rich-text v-if="richTextNodes"')
+    expect(markdownNode).toContain('toAgentRichTextNodes')
+    expect(markdownNode).not.toContain('v-html')
+    expect(advancedStyles).toContain('--agent-surface: var(--varo-agent-surface')
+    expect(advancedStyles).toContain(':is(button, input, select):focus-visible')
+    expect(advancedStyles).toContain('animation: varo-agent-surface-enter 180ms ease-out both')
+    expect(advancedStyles).not.toContain('translateY(8px) scale(.99)')
     advancedComponents.forEach((name) => {
       expect(
         weappFiles.some(file => file.to === `src/components/agent-ui/${name}.vue`),
@@ -226,6 +239,39 @@ describe('registry catalog', () => {
       expect(readText(file.from), file.from).toContain('from \'wevu\'')
       expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
     })
+  })
+
+  it('ships RegionPicker cross-target and Map as a native weapp component', () => {
+    const regionPicker = readJson<RegistryItem>('registry/components/region-picker/registry.json')
+    const map = readJson<RegistryItem>('registry/components/map/registry.json')
+    const regionWeappFiles = regionPicker.files.filter(file => file.target === 'weapp')
+
+    expect(regionPicker.targets).toEqual(['h5', 'weapp'])
+    expect(regionPicker.targetDependencies).toEqual({
+      h5: ['vue'],
+      weapp: ['wevu'],
+    })
+    expect(regionPicker.registryDependencies).toContain('themes/base')
+    expect(regionWeappFiles.map(file => file.to)).toEqual([
+      'src/components/ui/region-picker.ts',
+      'src/components/ui/region-picker.shared.ts',
+      'src/components/ui/region-picker.types.ts',
+      'src/components/ui/v-region-picker.vue',
+    ])
+    expect(readText('registry/components/region-picker/v-region-picker.weapp-vite.vue')).toContain('from \'wevu\'')
+    expect(readText('registry/components/region-picker/v-region-picker.weapp-vite.vue')).not.toMatch(/from ['"]vue['"]/)
+
+    expect(map.targets).toEqual(['weapp'])
+    expect(map.targetDependencies).toEqual({ weapp: ['wevu'] })
+    expect(map.files.map(file => file.to)).toEqual([
+      'src/components/ui/map.ts',
+      'src/components/ui/map.types.ts',
+      'src/components/ui/v-map.vue',
+    ])
+    const mapSource = readText('registry/components/map/v-map.weapp-vite.vue')
+    expect(mapSource).toContain('<map')
+    expect(mapSource).toContain('@regionchange=')
+    expect(mapSource).not.toMatch(/from ['"]vue['"]/)
   })
 
   it('composes Block controls through headless-backed Base Kit components', () => {
