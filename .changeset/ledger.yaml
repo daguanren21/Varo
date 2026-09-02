@@ -22,6 +22,19 @@
   dir: packages/cli
   intents:
     - warm-themes-flow
+"@varo-ui/cli@1.3.0":
+  dir: packages/cli
+  intents:
+    - brave-robots-chat
+    - bright-forms-unify
+    - bright-navigation-speaks
+    - calm-demos-fit
+    - calm-layouts-flow
+    - fresh-forms-bloom
+    - neat-cities-rise
+    - quiet-maps-fit
+    - upset-pugs-reply
+    - wise-sticky-measures
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -34,6 +47,20 @@
   dir: packages/ui-h5
   intents:
     - upset-bees-invite
+"@varo-ui/h5@1.3.0":
+  dir: packages/ui-h5
+  intents:
+    - bright-navigation-speaks
+    - calm-demos-fit
+    - calm-layouts-flow
+    - famous-pumas-slide
+    - fancy-comics-sin
+    - flat-weeks-juggle
+    - fresh-forms-bloom
+    - neat-cities-rise
+    - quiet-maps-fit
+    - upset-pugs-reply
+    - wise-sticky-measures
 "@varo-ui/headless@1.0.0":
   dir: packages/primitives-core
   intents:
@@ -62,6 +89,10 @@
   dir: packages/theme
   intents:
     - warm-themes-flow
+"@varo-ui/theme@1.3.0":
+  dir: packages/theme
+  intents:
+    - flat-weeks-juggle
 "@varo-ui/weapp@1.0.0":
   dir: packages/ui-weapp
   intents:
@@ -75,3 +106,17 @@
   intents:
     - calm-trees-resolve
     - upset-bees-invite
+"@varo-ui/weapp@1.3.0":
+  dir: packages/ui-weapp
+  intents:
+    - bright-navigation-speaks
+    - calm-demos-fit
+    - calm-layouts-flow
+    - famous-pumas-slide
+    - fancy-comics-sin
+    - flat-weeks-juggle
+    - fresh-forms-bloom
+    - neat-cities-rise
+    - quiet-maps-fit
+    - upset-pugs-reply
+    - wise-sticky-measures
