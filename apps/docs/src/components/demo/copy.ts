@@ -11,8 +11,8 @@ export const zhCopy = {
   copyManual: '手动复制',
   copySuccess: '已复制到剪贴板',
   copyUnsupported: '请手动复制代码',
-  h5CodeTitle: 'H5 组件',
-  weappCodeTitle: '小程序组件',
+  h5CodeTitle: 'H5 写法',
+  weappCodeTitle: '小程序写法',
   runtimeLabel: '运行时',
   variantLabel: '变体',
   sizeLabel: '尺寸',
@@ -42,22 +42,22 @@ export const zhCopy = {
     { title: 'F', items: ['福州', '佛山', '抚顺', '阜阳'] },
     { title: 'G', items: ['广州', '桂林', '贵阳', '赣州'] },
     { title: 'H', items: ['杭州', '合肥', '哈尔滨', '海口'] },
-    { title: 'J', items: ['济南', '嘉兴', '金华', '江门'] }
+    { title: 'J', items: ['济南', '嘉兴', '金华', '江门'] },
   ],
   fixedNavItems: [
     { text: '首页', icon: '⌂' },
     { text: '消息', icon: '✉', num: 2 },
-    { text: '客服', icon: '?' }
+    { text: '客服', icon: '?' },
   ],
   menuOptions: [
     { text: '全部商品', value: 'all' },
     { text: '新品优先', value: 'new' },
-    { text: '价格排序', value: 'price' }
+    { text: '价格排序', value: 'price' },
   ],
   menuStockOptions: [
     { text: '全部库存', value: 'all' },
     { text: '仅看有货', value: 'in-stock' },
-    { text: '预售商品', value: 'presale' }
+    { text: '预售商品', value: 'presale' },
   ],
   navTitle: '订单详情',
   navLeft: '返回',
@@ -65,18 +65,18 @@ export const zhCopy = {
   sideNavItems: [
     { title: '订单', name: 'orders' },
     { title: '资产', name: 'assets', badge: '3' },
-    { title: '设置', name: 'settings' }
+    { title: '设置', name: 'settings' },
   ],
   tabbarItems: [
     { title: '首页', name: 'home', icon: '⌂' },
     { title: '分类', name: 'category', icon: '◇' },
-    { title: '我的', name: 'profile', icon: '○' }
+    { title: '我的', name: 'profile', icon: '○' },
   ],
   tabsItems: [
     { title: '概览', name: 'overview', body: '核心数据和最近动态' },
     { title: '明细', name: 'detail', body: '列表、筛选和状态切换' },
-    { title: '配置', name: 'config', body: '基础设置与策略' }
-  ]
+    { title: '配置', name: 'config', body: '基础设置与策略' },
+  ],
 }
 
 export const enCopy = {
@@ -90,8 +90,8 @@ export const enCopy = {
   copyManual: 'Manual',
   copySuccess: 'Copied to clipboard',
   copyUnsupported: 'Copy the code manually',
-  h5CodeTitle: 'H5 Component',
-  weappCodeTitle: 'Mini-program Component',
+  h5CodeTitle: 'H5 Usage',
+  weappCodeTitle: 'Mini-program Usage',
   runtimeLabel: 'Runtime',
   variantLabel: 'Variant',
   sizeLabel: 'Size',
@@ -121,22 +121,22 @@ export const enCopy = {
     { title: 'F', items: ['Fresno', 'Fairfax', 'Frisco', 'Fremont'] },
     { title: 'G', items: ['Glendale', 'Greenville', 'Gilbert', 'Grand Rapids'] },
     { title: 'H', items: ['Houston', 'Hartford', 'Henderson', 'Honolulu'] },
-    { title: 'J', items: ['Jacksonville', 'Jersey City', 'Juneau', 'Joliet'] }
+    { title: 'J', items: ['Jacksonville', 'Jersey City', 'Juneau', 'Joliet'] },
   ],
   fixedNavItems: [
     { text: 'Home', icon: '⌂' },
     { text: 'Inbox', icon: '✉', num: 2 },
-    { text: 'Help', icon: '?' }
+    { text: 'Help', icon: '?' },
   ],
   menuOptions: [
     { text: 'All items', value: 'all' },
     { text: 'Newest first', value: 'new' },
-    { text: 'Price order', value: 'price' }
+    { text: 'Price order', value: 'price' },
   ],
   menuStockOptions: [
     { text: 'All stock', value: 'all' },
     { text: 'In stock', value: 'in-stock' },
-    { text: 'Presale', value: 'presale' }
+    { text: 'Presale', value: 'presale' },
   ],
   navTitle: 'Order Detail',
   navLeft: 'Back',
@@ -144,20 +144,19 @@ export const enCopy = {
   sideNavItems: [
     { title: 'Orders', name: 'orders' },
     { title: 'Assets', name: 'assets', badge: '3' },
-    { title: 'Settings', name: 'settings' }
+    { title: 'Settings', name: 'settings' },
   ],
   tabbarItems: [
     { title: 'Home', name: 'home', icon: '⌂' },
     { title: 'Category', name: 'category', icon: '◇' },
-    { title: 'Profile', name: 'profile', icon: '○' }
+    { title: 'Profile', name: 'profile', icon: '○' },
   ],
   tabsItems: [
     { title: 'Overview', name: 'overview', body: 'Key metrics and recent activity' },
     { title: 'Details', name: 'detail', body: 'Lists, filters, and status switching' },
-    { title: 'Config', name: 'config', body: 'Basic settings and rules' }
-  ]
+    { title: 'Config', name: 'config', body: 'Basic settings and rules' },
+  ],
 }
-
 
 export type DemoUiCopy = typeof zhCopy
 

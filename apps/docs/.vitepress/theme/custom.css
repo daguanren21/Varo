@@ -11,38 +11,44 @@
   --vp-home-hero-name-color: var(--varo-accent);
   --vp-home-hero-image-background-image: none;
   --vp-home-hero-image-filter: none;
-  --varo-bg: #f2f3f5;
-  --varo-foreground: #303133;
-  --varo-text-regular: #606266;
-  --varo-muted: #909399;
-  --varo-placeholder: #a8abb2;
-  --varo-disabled: #c0c4cc;
-  --varo-surface: #fff;
-  --varo-surface-strong: #f5f7fa;
-  --varo-card: rgb(255 255 255 / 94%);
-  --varo-card-solid: #fff;
-  --varo-card-muted: #f0f2f5;
-  --varo-border: #dcdfe6;
-  --varo-border-strong: #cdd0d6;
-  --varo-border-dark: #d4d7de;
-  --varo-border-light: #e4e7ed;
-  --varo-border-lighter: #ebeef5;
-  --varo-border-extra-light: #f2f6fc;
-  --varo-fill: #f0f2f5;
-  --varo-fill-darker: #e6e8eb;
-  --varo-fill-dark: #ebedf0;
-  --varo-fill-light: #f5f7fa;
-  --varo-fill-lighter: #fafafa;
-  --varo-fill-extra-light: #fafcff;
-  --varo-gridline: rgb(48 49 51 / 4.5%);
-  --varo-accent: #07c160;
-  --varo-accent-dark: #06ad56;
-  --varo-accent-hover: #38cd80;
-  --varo-accent-soft: #e6f9ef;
-  --varo-ring: rgb(7 193 96 / 22%);
-  --varo-shadow: 0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%);
-  --varo-shadow-sm: 0 1px 2px rgb(48 49 51 / 6%);
-  --varo-shadow-popover: 0 0 12px rgb(0 0 0 / 12%);
+  --vp-c-bg: #edf3f0;
+  --vp-c-bg-alt: #e7efeb;
+  --vp-c-bg-elv: #fbfdfc;
+  --vp-c-bg-soft: #e8f1ec;
+  --vp-c-divider: #cfddd6;
+  --vp-c-gutter: #dce7e1;
+  --varo-bg: #edf3f0;
+  --varo-foreground: #1d2924;
+  --varo-text-regular: #4f5e57;
+  --varo-muted: #728078;
+  --varo-placeholder: #89968f;
+  --varo-disabled: #adb7b1;
+  --varo-surface: #f8fbf9;
+  --varo-surface-strong: #e8f0ec;
+  --varo-card: rgb(248 252 250 / 90%);
+  --varo-card-solid: #fbfdfc;
+  --varo-card-muted: #eaf2ee;
+  --varo-border: #cfddd6;
+  --varo-border-strong: #b8cbc1;
+  --varo-border-dark: #c2d2ca;
+  --varo-border-light: #d9e5df;
+  --varo-border-lighter: #e2ebe7;
+  --varo-border-extra-light: #e9f0ed;
+  --varo-fill: #e8f0ec;
+  --varo-fill-darker: #dce8e2;
+  --varo-fill-dark: #e1ebe6;
+  --varo-fill-light: #edf4f1;
+  --varo-fill-lighter: #f3f7f5;
+  --varo-fill-extra-light: #f7faf8;
+  --varo-gridline: rgb(9 96 61 / 6%);
+  --varo-accent: #07b95c;
+  --varo-accent-dark: #05964a;
+  --varo-accent-hover: #2fc976;
+  --varo-accent-soft: #ddf7e8;
+  --varo-ring: rgb(7 185 92 / 22%);
+  --varo-shadow: 0 24px 64px rgb(18 68 48 / 10%), 0 3px 10px rgb(18 68 48 / 6%);
+  --varo-shadow-sm: 0 8px 24px rgb(18 68 48 / 6%), 0 1px 2px rgb(18 68 48 / 5%);
+  --varo-shadow-popover: 0 20px 52px rgb(18 68 48 / 16%);
   --varo-radius: 8px;
   --varo-radius-lg: 12px;
   --varo-primary: #07c160;
@@ -149,6 +155,12 @@
 }
 
 .dark {
+  --vp-c-bg: #0a0a0a;
+  --vp-c-bg-alt: #111212;
+  --vp-c-bg-elv: #141414;
+  --vp-c-bg-soft: #1b1c1c;
+  --vp-c-divider: #303333;
+  --vp-c-gutter: #202222;
   --vp-c-brand-1: #38cd80;
   --vp-c-brand-2: #07c160;
   --vp-c-brand-3: #06ad56;
@@ -240,6 +252,51 @@ body {
   text-rendering: optimizelegibility;
 }
 
+html:not(.dark) body {
+  background:
+    radial-gradient(circle at 12% 6%, rgb(7 185 92 / 11%), transparent 30rem),
+    radial-gradient(circle at 88% 2%, rgb(0 125 255 / 7%), transparent 26rem),
+    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px),
+    var(--varo-bg);
+  background-attachment: fixed;
+  background-size: auto, auto, 32px 32px, 32px 32px, auto;
+}
+
+html:not(.dark) .Layout,
+html:not(.dark) .VPContent {
+  background: transparent;
+}
+
+html:not(.dark) .VPContent:not(.is-home) {
+  background:
+    radial-gradient(circle at 78% 8%, rgb(7 185 92 / 6%), transparent 28rem),
+    linear-gradient(180deg, rgb(255 255 255 / 20%), transparent 28rem);
+}
+
+html:not(.dark) .VPSidebar {
+  background: color-mix(in srgb, var(--varo-surface-strong) 88%, transparent) !important;
+  border-right: 1px solid color-mix(in srgb, var(--varo-accent) 9%, var(--varo-border));
+  box-shadow: 12px 0 36px rgb(18 68 48 / 4%);
+  backdrop-filter: blur(18px);
+}
+
+html:not(.dark) .VPDocAsideOutline {
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--varo-card) 88%, transparent);
+  border: 1px solid var(--varo-border);
+  border-radius: var(--varo-radius-lg);
+  box-shadow: var(--varo-shadow-sm);
+  backdrop-filter: blur(14px);
+}
+
+html:not(.dark) .VPNavBar {
+  background: color-mix(in srgb, var(--varo-card-solid) 86%, transparent) !important;
+  border-bottom-color: color-mix(in srgb, var(--varo-accent) 12%, var(--varo-border));
+  box-shadow: 0 10px 32px rgb(18 68 48 / 6%);
+  backdrop-filter: blur(18px) saturate(135%);
+}
+
 .VPNavBar {
   background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important;
   border-bottom: 1px solid var(--varo-border);
@@ -286,9 +343,10 @@ body {
 
 .VPButton.alt {
   color: var(--varo-foreground) !important;
-  background: transparent !important;
+  background: color-mix(in srgb, var(--varo-card) 88%, transparent) !important;
   border: 1px solid var(--varo-border) !important;
-  box-shadow: none;
+  box-shadow: var(--varo-shadow-sm);
+  backdrop-filter: blur(10px);
 }
 
 .VPHero {
@@ -310,6 +368,16 @@ body {
     radial-gradient(circle at 12% 20%, var(--varo-accent-soft), transparent 30%);
   background-size: 32px 32px, 32px 32px, auto;
   mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+}
+
+html:not(.dark) .VPHero::before {
+  background:
+    linear-gradient(var(--varo-gridline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--varo-gridline) 1px, transparent 1px),
+    radial-gradient(circle at 12% 20%, rgb(7 185 92 / 16%), transparent 32%),
+    radial-gradient(circle at 82% 8%, rgb(0 125 255 / 8%), transparent 28%),
+    linear-gradient(135deg, rgb(248 252 250 / 84%), rgb(237 243 240 / 38%));
+  background-size: 32px 32px, 32px 32px, auto, auto, auto;
 }
 
 .VPHero .container {
@@ -406,6 +474,24 @@ body {
 .VPFeature:hover {
   background: var(--varo-card) !important;
   border-color: color-mix(in srgb, var(--varo-accent) 42%, var(--varo-border)) !important;
+}
+
+html:not(.dark) .VPFeature {
+  background: color-mix(in srgb, var(--varo-card) 88%, transparent) !important;
+  border-color: color-mix(in srgb, var(--varo-accent) 8%, var(--varo-border)) !important;
+  box-shadow: var(--varo-shadow-sm), inset 0 1px 0 rgb(255 255 255 / 72%);
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+html:not(.dark) .VPFeature:hover {
+  background: var(--varo-card-solid) !important;
+  box-shadow: var(--varo-shadow);
+  transform: translateY(-2px);
 }
 
 .VPFeature .title {

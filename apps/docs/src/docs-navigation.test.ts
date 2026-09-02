@@ -258,12 +258,13 @@ describe('docs navigation', () => {
     expect(css).toContain('--vp-content-container: 960px')
   })
 
-  it('uses a product-grade docs palette and fixes dark demo contrast for form labels', () => {
+  it('uses a precision-lab light palette and preserves dark demo contrast', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-bg: #f2f3f5')
-    expect(css).toContain('--varo-surface: #fff')
-    expect(css).toContain('--varo-surface-strong: #f5f7fa')
+    expect(css).toContain('--vp-c-bg: #edf3f0')
+    expect(css).toContain('--varo-bg: #edf3f0')
+    expect(css).toContain('--varo-surface: #f8fbf9')
+    expect(css).toContain('--varo-surface-strong: #e8f0ec')
     expect(css).toContain('--varo-primary: #07c160')
     expect(css).toContain('--varo-primary-foreground: #fff')
     expect(css).toContain('--varo-success: #13b248')
@@ -272,7 +273,7 @@ describe('docs navigation', () => {
     expect(css).toContain('--varo-info: #73767a')
     expect(css).toContain('--varo-radius: 8px')
     expect(css).toContain('--varo-radius-lg: 12px')
-    expect(css).toContain('--varo-gridline: rgb(48 49 51 / 4.5%)')
+    expect(css).toContain('--varo-gridline: rgb(9 96 61 / 6%)')
     expect(css).toContain('font-family: Inter, \"SF Pro Text\", \"PingFang SC\",')
     expect(css).toContain('--varo-ui-text: var(--varo-foreground)')
     expect(css).toContain('--varo-ui-text-regular: var(--varo-text-regular)')
@@ -286,6 +287,12 @@ describe('docs navigation', () => {
     expect(css).toContain('color: var(--varo-ui-text);')
     expect(css).toContain('background: var(--varo-ui-surface);')
     expect(css).not.toContain('color: color-mix(in srgb, var(--varo-bg) 90%, #e6e4df)')
+    expect(css).toContain('html:not(.dark) body')
+    expect(css).toContain('radial-gradient(circle at 12% 6%, rgb(7 185 92 / 11%)')
+    expect(css).toContain('html:not(.dark) .VPSidebar')
+    expect(css).toContain('html:not(.dark) .VPDocAsideOutline')
+    expect(css).toContain('html:not(.dark) .VPFeature')
+    expect(css).toMatch(/\.dark\s*\{[\s\S]*?--vp-c-bg: #0a0a0a/)
   })
 
   it('keeps code copy controls icon-only until hover or focus', () => {
@@ -300,15 +307,16 @@ describe('docs navigation', () => {
     expect(css).not.toContain('Copy Code')
   })
 
-  it('keeps docs chrome quieter than the content surface', () => {
+  it('gives light docs chrome structured depth without overpowering content', () => {
     const css = readFileSync(resolve(docsRoot, '.vitepress/theme/custom.css'), 'utf8')
 
-    expect(css).toContain('--varo-gridline: rgb(48 49 51 / 4.5%)')
+    expect(css).toContain('--varo-gridline: rgb(9 96 61 / 6%)')
     expect(css).toContain('.VPNavBar {')
-    expect(css).toContain('background: color-mix(in srgb, var(--varo-bg) 94%, transparent) !important')
-    expect(css).toContain('backdrop-filter: blur(12px)')
+    expect(css).toContain('html:not(.dark) .VPNavBar')
+    expect(css).toContain('backdrop-filter: blur(18px) saturate(135%)')
     expect(css).toContain('.VPFeature {')
     expect(css).toContain('background: color-mix(in srgb, var(--varo-card) 84%, transparent) !important')
+    expect(css).toContain('html:not(.dark) .VPFeature')
   })
 
   it('adds a dedicated narrow-screen hero rule to avoid mobile title clipping', () => {
