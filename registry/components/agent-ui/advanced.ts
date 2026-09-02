@@ -991,25 +991,56 @@ export const AgentFineTune = defineComponent({
   },
   emits: { 'apply': (_controls: AgentFineTuneControl[]) => true, 'update:controls': (_value: AgentFineTuneControl[]) => true },
   setup(props, { emit }) {
+    const choiceGroupId = useId()
+
     function update(index: number, value: string) {
       const controls = props.controls.map((control, controlIndex) => controlIndex === index ? { ...control, value: control.type === 'number' ? Number(value) : value } : control)
       emit('update:controls', controls)
     }
+
+    function renderControl(control: AgentFineTuneControl, index: number) {
+      if (control.type === 'select') {
+        return h('fieldset', { class: 'agent-fine-tune__field', key: control.label }, [
+          h('legend', { class: 'agent-fine-tune__label' }, control.label),
+          control.values?.length
+            ? h('div', { class: 'agent-fine-tune__choices' }, control.values.map((option) => {
+                const selected = String(control.value) === option.value
+                return h('label', {
+                  'class': 'agent-fine-tune__choice',
+                  'data-selected': String(selected),
+                  'key': option.value,
+                }, [
+                  h('input', {
+                    checked: selected,
+                    name: `${choiceGroupId}-${index}`,
+                    type: 'radio',
+                    value: option.value,
+                    onChange: () => update(index, option.value),
+                  }),
+                  h('span', option.label),
+                  h('span', { 'class': 'agent-fine-tune__choice-check', 'aria-hidden': 'true' }, selected ? '✓' : ''),
+                ])
+              }))
+            : h('span', { class: 'agent-fine-tune__empty' }, 'No options'),
+        ])
+      }
+
+      return h('label', { class: 'agent-fine-tune__field', key: control.label }, [
+        h('span', { class: 'agent-fine-tune__label' }, control.label),
+        h('input', {
+          max: control.max,
+          min: control.min,
+          step: control.step,
+          type: control.type,
+          value: String(control.value),
+          onInput: (event: Event) => update(index, eventValue(event)),
+        }),
+      ])
+    }
+
     return () => h('section', { class: 'agent-fine-tune' }, [
       h('header', [h('strong', props.title), h('span', 'Adjust')]),
-      h('div', props.controls.map((control, index) => h('label', { key: control.label }, [
-        h('span', control.label),
-        control.type === 'select'
-          ? h('select', { value: String(control.value), onChange: (event: Event) => update(index, eventValue(event)) }, control.values?.map(item => h('option', { key: item.value, value: item.value }, item.label)))
-          : h('input', {
-              max: control.max,
-              min: control.min,
-              step: control.step,
-              type: control.type,
-              value: String(control.value),
-              onInput: (event: Event) => update(index, eventValue(event)),
-            }),
-      ]))),
+      h('div', props.controls.map(renderControl)),
       h('footer', [h('button', { type: 'button', onClick: () => emit('apply', props.controls) }, 'Apply changes')]),
     ])
   },

@@ -141,4 +141,17 @@ describe('AgentComponentDemo', () => {
     const toolApproval = mount(AgentComponentDemo, { props: { component: 'tool-approval' } })
     expect(toolApproval.get('.agent-tool-approval > header svg').attributes('viewBox')).toBe('0 0 24 24')
   })
+  it('uses visible radio choices instead of a native select menu for fine tuning', async () => {
+    const wrapper = mount(AgentComponentDemo, { props: { component: 'fine-tune' } })
+
+    expect(wrapper.find('select').exists()).toBe(false)
+    const choices = wrapper.findAll('.agent-fine-tune__choice')
+    expect(choices).toHaveLength(2)
+    expect(choices[0]!.attributes('data-selected')).toBe('true')
+    expect(choices[0]!.get('input').attributes('type')).toBe('radio')
+    expect(choices[0]!.get('input').attributes('name')).toBe(choices[1]!.get('input').attributes('name'))
+
+    await choices[1]!.get('input').setValue(true)
+    expect(wrapper.get('.agent-fine-tune__choice[data-selected="true"]').text()).toContain('Expressive')
+  })
 })

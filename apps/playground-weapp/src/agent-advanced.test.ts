@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import type { AgentFineTuneControl } from './components/agent-ui/advanced-types'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import AgentActivity from './components/agent-ui/AgentActivity.vue'
@@ -129,11 +130,41 @@ describe('advanced mini-program Agent UI', () => {
     expect(flow.emitted('select')?.[0]?.[0]).toMatchObject({ id: 'trigger' })
 
     const tune = mount(AgentFineTune, {
-      global: { stubs: { picker: { template: '<select><slot /></select>' } } },
-      props: { controls: [{ label: 'Width', type: 'number', value: 320 }] },
+      props: {
+        controls: [
+          { label: 'Width', type: 'number', value: 320 },
+          {
+            label: 'Tone',
+            type: 'select',
+            value: 'neutral',
+            values: [
+              { label: 'Neutral', value: 'neutral' },
+              { label: 'Expressive', value: 'expressive' },
+            ],
+          },
+        ],
+      },
     })
     await tune.get('input').setValue('360')
-    expect(tune.emitted('update:controls')?.at(-1)?.[0]).toEqual([{ label: 'Width', type: 'number', value: 360 }])
+    expect(tune.emitted('update:controls')?.at(-1)?.[0]).toEqual([
+      { label: 'Width', type: 'number', value: 360 },
+      {
+        label: 'Tone',
+        type: 'select',
+        value: 'neutral',
+        values: [
+          { label: 'Neutral', value: 'neutral' },
+          { label: 'Expressive', value: 'expressive' },
+        ],
+      },
+    ])
+    expect(tune.find('picker').exists()).toBe(false)
+    const toneChoices = tune.findAll('[role="radio"]')
+    expect(toneChoices).toHaveLength(2)
+    expect(toneChoices[0]!.attributes('aria-checked')).toBe('true')
+    await toneChoices[1]!.trigger('click')
+    const latestControls = tune.emitted('update:controls')?.at(-1)?.[0] as AgentFineTuneControl[] | undefined
+    expect(latestControls?.[1]).toMatchObject({ label: 'Tone', value: 'expressive' })
   })
 
   it('emits message, code, and tool-result actions', async () => {
