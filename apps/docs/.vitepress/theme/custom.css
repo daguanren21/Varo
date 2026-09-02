@@ -150,6 +150,7 @@
   );
   --varo-demo-phone-card: color-mix(in srgb, var(--vp-c-bg) 96%, var(--varo-card-solid));
   --varo-demo-code-bg: #0f1722;
+  --varo-demo-code-text: #dbe7f5;
   --varo-demo-radius: 14px;
   --varo-demo-radius-lg: 18px;
 }
@@ -1234,8 +1235,8 @@ html:not(.dark) .VPFeature:hover {
 .varo-code-preview {
   margin-top: 14px;
   overflow: hidden;
-  color: color-mix(in srgb, var(--varo-bg) 88%, #fff);
-  background: color-mix(in srgb, var(--varo-foreground) 96%, #000);
+  color: var(--varo-demo-code-text);
+  background: var(--varo-demo-code-bg);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
 }
@@ -1246,6 +1247,7 @@ html:not(.dark) .VPFeature:hover {
   overflow-x: auto;
   font-size: 12px;
   line-height: 1.65;
+  background: transparent;
 }
 
 .varo-code-preview code {
@@ -1261,7 +1263,7 @@ html:not(.dark) .VPFeature:hover {
   height: auto;
   min-height: 100%;
   overflow: hidden;
-  color: color-mix(in srgb, var(--varo-bg) 88%, #fff);
+  color: var(--varo-demo-code-text);
   background: var(--varo-demo-code-bg);
   border: 1px solid var(--varo-demo-border);
   border-radius: var(--varo-demo-radius);

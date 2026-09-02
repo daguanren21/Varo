@@ -1,8 +1,6 @@
 # RobotChat
 
-`VRobotChat` is a Wevu wrapper for the WeChat Conversational Open Platform `chatbotwidget` Mini Program plugin. It supports only the `weapp` target. The wrapper owns plugin initialization, loading and failure states, event forwarding, and an editable `operateCard` abstract-node implementation.
-
-This component bridges the WeChat plugin. For provider-neutral streaming Agent UI, use [Agent Chat](/en/ai/agent-chat).
+`VRobotChat` is a Wevu wrapper for the `chatbotwidget` Mini Program plugin. It supports only the `weapp` target and provides initialization states, event forwarding, and an editable input area.
 
 ## Install
 
@@ -12,7 +10,7 @@ pnpm dlx @varo-ui/cli add --target weapp robot-chat
 
 ## App configuration
 
-The Registry installer does not modify the application manifest. The Mini Program must be approved to use `chatbotwidget` and declare the plugin under the fixed `varoRobot` alias in `app.json`:
+Enable the plugin for the Mini Program, then declare it under the fixed `varoRobot` alias in `app.json`:
 
 ```json
 {
@@ -25,7 +23,7 @@ The Registry installer does not modify the application manifest. The Mini Progra
 }
 ```
 
-`1.1.15` is the version pinned by WeChat's official override example. Before release, set the version approved for the application. Treat the [chatbotwidget plugin documentation](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1) as authoritative for access, versions, and native capabilities.
+Use the plugin version enabled for the Mini Program. See the [chatbotwidget plugin documentation](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1) for configuration details.
 
 ## Usage
 
@@ -55,17 +53,9 @@ const options = computed<VaroRobotChatOptions>(() => ({
 </template>
 ```
 
-## Customizing `operateCard`
+## Custom input area
 
-The core constraint behind [Taro #14063](https://github.com/NervJS/taro/issues/14063) is not dynamic prop naming. WeChat abstract nodes require the value of `generic:operateCard` to be a static component alias; data binding is not supported.
-
-`VRobotChat` always compiles:
-
-```html
-<wechat-robot-chat generic:operateCard="varo-robot-operate-card" />
-```
-
-After installation, edit `src/components/ui/v-robot-operate-card.vue` directly instead of passing a component object to `VRobotChat`. The shipped implementation supports text submission and returning home. Its `focus`, `inputText`, `inputing`, and `height` props are injected by the plugin. See [WeChat Mini Program abstract nodes](https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/generics.html) for the native contract.
+Edit `src/components/ui/v-robot-operate-card.vue` after installation. It provides text submission and return actions; the plugin injects `focus`, `inputText`, `inputing`, and `height`.
 
 ## VRobotChat-owned API
 
@@ -87,4 +77,4 @@ After installation, edit `src/components/ui/v-robot-operate-card.vue` directly i
 | `queryCallback` | Forwards the plugin query callback       |
 | `backHome`      | Forwards the plugin return-home callback |
 
-`VaroRobotChatOptions` types the common initialization fields shown in WeChat's example and accepts additional plugin fields. For the full initialization options, message types, and event payloads, see the [chatbotwidget plugin documentation](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1).
+For other initialization options, message types, and event payloads, see the [chatbotwidget plugin documentation](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1).

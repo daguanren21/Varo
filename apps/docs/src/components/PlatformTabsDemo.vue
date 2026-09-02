@@ -2357,30 +2357,105 @@ onBeforeUnmount(() => {
 .platform-demo__phone-frame {
   display: flex;
   justify-content: center;
+  padding: 12px 0 6px;
 }
 
 .platform-demo__phone-bezel {
   position: relative;
-  width: min(100%, 420px);
+  box-sizing: border-box;
+  width: min(100%, 397px);
+  padding: 10px;
+  background: linear-gradient(145deg, #34363a 0%, #111214 34%, #050506 100%);
+  border: 1px solid color-mix(in srgb, #fff 18%, transparent);
+  border-radius: 54px;
+  box-shadow:
+    0 24px 56px rgb(0 0 0 / 28%),
+    inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+
+.platform-demo__phone-bezel::before {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  z-index: 3;
+  width: 96px;
+  height: 25px;
+  content: '';
+  background: #050506;
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+.platform-demo__phone-bezel::after {
+  position: absolute;
+  bottom: 17px;
+  left: 50%;
+  z-index: 3;
+  width: 112px;
+  height: 4px;
+  content: '';
+  background: color-mix(in srgb, var(--vp-c-text-1) 58%, transparent);
+  border-radius: 999px;
+  transform: translateX(-50%);
 }
 
 .platform-demo__phone-screen {
   position: relative;
-  min-height: 560px;
+  min-height: 667px;
   overflow: hidden;
   color: var(--vp-c-text-1);
   background: var(--demo-phone-screen);
+  border-radius: 44px;
 }
 
 .platform-demo__phone-content {
   position: relative;
   z-index: 1;
-  padding: 20px;
+  padding: 52px 16px 38px;
 }
 
 .platform-demo__preview-content {
   display: grid;
   gap: 12px;
+}
+
+.platform-demo__phone-bezel .platform-demo__button-sample,
+.platform-demo__phone-bezel .platform-demo__badge-sample,
+.platform-demo__phone-bezel .platform-demo__popover-sample,
+.platform-demo__phone-bezel .platform-demo__input-sample {
+  padding: 16px;
+}
+
+.platform-demo__phone-bezel .platform-demo__button-row {
+  gap: 8px;
+}
+
+.platform-demo__phone-bezel .platform-demo__badge-counts,
+.platform-demo__phone-bezel .platform-demo__input-state-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.platform-demo__phone-bezel .platform-demo__badge-statuses,
+.platform-demo__phone-bezel .platform-demo__badge-variants {
+  gap: 12px;
+}
+
+.platform-demo__phone-bezel .platform-demo__popover-canvas {
+  min-height: 250px;
+  padding: 18px;
+}
+
+.platform-demo__phone-bezel .platform-demo__popover-placements {
+  gap: 28px;
+  min-height: 132px;
+  padding: 26px 40px;
+}
+
+.platform-demo__phone-bezel .platform-demo__popover-tip[data-side='right'] {
+  top: calc(100% + 8px);
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .platform-demo__card,
@@ -5054,7 +5129,7 @@ onBeforeUnmount(() => {
   background: var(--varo-danger);
 }
 
-/* Button sample — practical states without detached controls or device chrome. */
+/* Button sample — practical states inside the shared iPhone preview. */
 .platform-demo__button-sample {
   box-sizing: border-box;
   width: min(100%, 680px);
@@ -5138,25 +5213,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__preview-content[data-example='button'] {
   display: block;
-}
-
-.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='button']) {
-  width: min(100%, 720px);
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='button']) {
-  min-height: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-}
-
-.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='button']) {
-  padding: 0;
 }
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='button']) .platform-demo__code-shell {
@@ -5306,25 +5362,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__preview-content[data-example='badge'] {
   display: block;
-}
-
-.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='badge']) {
-  width: min(100%, 720px);
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='badge']) {
-  min-height: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-}
-
-.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='badge']) {
-  padding: 0;
 }
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='badge']) .platform-demo__code-shell {
@@ -5536,25 +5573,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__preview-content[data-example='popover'] {
   display: block;
-}
-
-.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='popover']) {
-  width: min(100%, 720px);
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='popover']) {
-  min-height: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-}
-
-.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='popover']) {
-  padding: 0;
 }
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='popover']) .platform-demo__code-shell {
@@ -5847,25 +5865,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__preview-content[data-example='input'] {
   display: block;
-}
-
-.platform-demo__phone-bezel:has(.platform-demo__preview-content[data-example='input']) {
-  width: min(100%, 720px);
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.platform-demo__phone-screen:has(.platform-demo__preview-content[data-example='input']) {
-  min-height: 0;
-  overflow: visible;
-  background: transparent;
-  border-radius: 0;
-}
-
-.platform-demo__phone-content:has(.platform-demo__preview-content[data-example='input']) {
-  padding: 0;
 }
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='input']) .platform-demo__code-shell {
