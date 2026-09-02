@@ -51,7 +51,8 @@ describe('PlatformTabsDemo', () => {
     const toggle = wrapper.get('.platform-demo__code-toggle')
     expect(toggle.attributes('aria-label')).toBe('展开代码')
     expect(toggle.attributes('aria-expanded')).toBe('false')
-    expect(toggle.text()).toContain('展开代码')
+    expect(toggle.text()).toBe('')
+    expect(toggle.get('svg').attributes('viewBox')).toBe('0 0 24 24')
     expect(wrapper.find('.platform-demo__code-copy').exists()).toBe(false)
 
     await toggle.trigger('click')
@@ -63,12 +64,16 @@ describe('PlatformTabsDemo', () => {
     expect(toggle.attributes('data-active')).toBe('true')
     expect(toggle.attributes('aria-expanded')).toBe('true')
     expect(toggle.attributes('aria-label')).toBe('收起代码')
-    expect(toggle.text()).toContain('收起代码')
+    expect(toggle.text()).toBe('')
 
     const codeTabs = codeShell.findAll('.platform-demo__code-tab')
     expect(codeTabs).toHaveLength(2)
-    expect(codeTabs[0]!.text()).toBe('H5 组件')
-    expect(codeTabs[1]!.text()).toBe('小程序组件')
+    expect(codeTabs[0]!.text()).toBe('')
+    expect(codeTabs[1]!.text()).toBe('')
+    expect(codeTabs[0]!.attributes('aria-label')).toBe('H5 组件')
+    expect(codeTabs[1]!.attributes('aria-label')).toBe('小程序组件')
+    expect(codeTabs[0]!.get('svg').attributes('viewBox')).toBe('0 0 24 24')
+    expect(codeTabs[1]!.get('svg').attributes('viewBox')).toBe('0 0 24 24')
     expect(codeTabs[0]!.attributes('data-active')).toBe('true')
     expect(codeTabs[1]!.attributes('data-active')).toBe('false')
     expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
@@ -80,7 +85,7 @@ describe('PlatformTabsDemo', () => {
 
     const copyButton = wrapper.get('.platform-demo__code-copy')
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
-    expect(copyButton.text()).toContain('复制 H5 代码')
+    expect(copyButton.text()).toBe('')
     expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
   })
 

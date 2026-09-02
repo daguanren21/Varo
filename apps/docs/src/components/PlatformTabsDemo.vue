@@ -2142,11 +2142,31 @@ onBeforeUnmount(() => {
                 role="tab"
                 :aria-controls="codePanelId"
                 :aria-selected="activePlatform === codeExample.key"
+                :aria-label="codeExample.title"
+                :title="codeExample.title"
                 :tabindex="activePlatform === codeExample.key ? 0 : -1"
                 @click="setPlatform(codeExample.key)"
                 @keydown="handlePlatformTabKeydown"
               >
-                {{ codeExample.title }}
+                <svg
+                  v-if="codeExample.key === 'h5'"
+                  class="platform-demo__toolbar-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                  <path d="M3 8h18" />
+                  <path d="M7 6h.01M10 6h.01" />
+                </svg>
+                <svg
+                  v-else
+                  class="platform-demo__toolbar-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <rect x="6" y="2" width="12" height="20" rx="2.5" />
+                  <path d="M9 5h6M10 19h4" />
+                </svg>
               </button>
             </div>
             <div class="platform-demo__code-actions">
@@ -2160,7 +2180,6 @@ onBeforeUnmount(() => {
                 @click="copySnippet"
               >
                 <span class="platform-demo__code-copy-icon" aria-hidden="true" />
-                <span class="platform-demo__code-copy-label">{{ copyLabel }}</span>
               </button>
               <button
                 class="platform-demo__code-toggle"
@@ -2168,9 +2187,12 @@ onBeforeUnmount(() => {
                 type="button"
                 :aria-expanded="codeExpanded"
                 :aria-label="codeToggleLabel"
+                :title="codeToggleLabel"
                 @click="toggleCodeExpanded"
               >
-                <span>{{ codeToggleLabel }}</span>
+                <svg class="platform-demo__toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14" />
+                </svg>
               </button>
             </div>
           </div>
@@ -2378,9 +2400,9 @@ onBeforeUnmount(() => {
 
 .platform-demo__code-shell {
   overflow: hidden;
-  color: var(--demo-code-text);
-  background: var(--demo-code-bg);
-  border: 1px solid var(--demo-code-border);
+  color: var(--vp-c-text-1);
+  background: var(--demo-surface-strong);
+  border: 1px solid var(--demo-border);
   border-radius: 14px;
 }
 
@@ -2411,16 +2433,27 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
 }
 
+.platform-demo__toolbar-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .platform-demo__code-tab {
-  min-height: 36px;
-  padding: 0 14px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--demo-code-muted);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  min-height: 40px;
+  padding: 0;
+  color: var(--demo-text-muted);
   cursor: pointer;
-  background: transparent;
-  border: 1px solid var(--demo-code-border);
-  border-radius: 8px;
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 10px;
   transition:
     border-color var(--demo-duration-instant) var(--demo-ease-out),
     background var(--demo-duration-instant) var(--demo-ease-out),
@@ -2429,33 +2462,29 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__code-tab[data-active='true'] {
-  color: var(--demo-code-text);
-  background: color-mix(in srgb, var(--demo-brand) 10%, var(--demo-code-surface));
-  border-color: color-mix(in srgb, var(--demo-brand) 32%, var(--demo-code-border));
+  color: var(--demo-brand);
+  background: color-mix(in srgb, var(--demo-brand) 10%, var(--demo-surface));
+  border-color: color-mix(in srgb, var(--demo-brand) 38%, var(--demo-border));
 }
 
 .platform-demo__code-tab:hover:not([data-active='true']) {
   color: var(--demo-brand);
-  background: color-mix(in srgb, var(--demo-brand) 8%, transparent);
-  border-color: color-mix(in srgb, var(--demo-brand) 40%, var(--demo-border));
+  background: color-mix(in srgb, var(--demo-brand) 7%, var(--demo-surface));
+  border-color: color-mix(in srgb, var(--demo-brand) 32%, var(--demo-border));
 }
 
 .platform-demo__code-toggle,
 .platform-demo__code-copy {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 14px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--demo-code-text);
-  white-space: nowrap;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  min-height: 40px;
+  padding: 0;
+  color: var(--demo-text-muted);
   cursor: pointer;
-  background: transparent;
-  border: 1px solid var(--demo-code-border);
-  border-radius: 8px;
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 10px;
   transition:
     border-color var(--demo-duration-fast) var(--demo-ease-out),
     background var(--demo-duration-fast) var(--demo-ease-out),
@@ -2467,8 +2496,8 @@ onBeforeUnmount(() => {
 .platform-demo__code-toggle[data-active='true'],
 .platform-demo__code-copy:hover {
   color: var(--demo-brand);
-  background: color-mix(in srgb, var(--demo-brand) 10%, transparent);
-  border-color: color-mix(in srgb, var(--demo-brand) 32%, var(--demo-border));
+  background: color-mix(in srgb, var(--demo-brand) 10%, var(--demo-surface));
+  border-color: color-mix(in srgb, var(--demo-brand) 38%, var(--demo-border));
 }
 
 .platform-demo__code-copy[data-state='copied'] {
@@ -2512,17 +2541,13 @@ onBeforeUnmount(() => {
   opacity: 0.18;
 }
 
-.platform-demo__code-copy-label {
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
 .platform-demo__code-section {
   padding: 0;
   margin: 0;
-  background: transparent;
+  color: var(--demo-code-text);
+  background: var(--demo-code-bg);
   border: 0;
+  border-top: 1px solid var(--demo-code-border);
 }
 
 .platform-demo__code-section .platform-demo__code-head {

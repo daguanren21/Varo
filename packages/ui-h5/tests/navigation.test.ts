@@ -12,14 +12,8 @@ import { VTabbar, VTabbarItem } from '../src/tabbar'
 import { VTab, VTabs } from '../src/tabs'
 
 describe('ui-h5 navigation components', () => {
-  it('renders elevator groups and changes active index', async () => {
+  it('scrolls only the Elevator content when an index is selected', async () => {
     const onUpdate = vi.fn()
-    const scrollIntoView = vi.fn()
-    const originalScrollIntoView = Element.prototype.scrollIntoView
-    Object.defineProperty(Element.prototype, 'scrollIntoView', {
-      configurable: true,
-      value: scrollIntoView,
-    })
     const wrapper = mount(VElevator, {
       props: {
         'activeIndex': 'A',
@@ -30,27 +24,18 @@ describe('ui-h5 navigation components', () => {
         'onUpdate:activeIndex': onUpdate,
       },
     })
+    const content = wrapper.get<HTMLElement>('.varo-elevator__content').element
+    const target = wrapper.findAll<HTMLElement>('.varo-elevator__group')[1]!.element
+    const scrollTo = vi.fn()
+    Object.defineProperty(content, 'scrollTo', { configurable: true, value: scrollTo })
+    Object.defineProperty(target, 'offsetTop', { configurable: true, value: 200 })
 
-    try {
-      expect(wrapper.findAll('.varo-elevator__group')).toHaveLength(2)
-      expect(wrapper.findAll('.varo-elevator__index')[0].attributes('aria-pressed')).toBe('true')
-      expect(wrapper.findAll('.varo-elevator__index')[1].attributes('aria-pressed')).toBe('false')
-      await wrapper.findAll('.varo-elevator__index')[1].trigger('click')
+    expect(wrapper.findAll('.varo-elevator__index')[0]!.attributes('aria-pressed')).toBe('true')
+    expect(wrapper.findAll('.varo-elevator__index')[1]!.attributes('aria-pressed')).toBe('false')
+    await wrapper.findAll('.varo-elevator__index')[1]!.trigger('click')
 
-      expect(onUpdate).toHaveBeenCalledWith('B')
-      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start', behavior: 'smooth' })
-    }
-    finally {
-      if (originalScrollIntoView) {
-        Object.defineProperty(Element.prototype, 'scrollIntoView', {
-          configurable: true,
-          value: originalScrollIntoView,
-        })
-      }
-      else {
-        delete (Element.prototype as { scrollIntoView?: Element['scrollIntoView'] }).scrollIntoView
-      }
-    }
+    expect(onUpdate).toHaveBeenCalledWith('B')
+    expect(scrollTo).toHaveBeenCalledWith({ top: 200, behavior: 'smooth' })
   })
 
   it('updates the Elevator anchor while its content scrolls', async () => {

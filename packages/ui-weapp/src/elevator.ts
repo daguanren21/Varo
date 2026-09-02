@@ -38,7 +38,15 @@ export const VElevator = defineComponent({
 
     function setActive(title: string) {
       applyActive(title, true)
-      groupRefs.get(title)?.scrollIntoView?.({ block: 'start', behavior: 'smooth' })
+      const content = contentRef.value
+      const group = groupRefs.get(title)
+      if (!content || !group) { return }
+      if (typeof content.scrollTo === 'function') {
+        content.scrollTo({ top: group.offsetTop, behavior: 'smooth' })
+      }
+      else {
+        content.scrollTop = group.offsetTop
+      }
     }
 
     function syncActiveFromScroll() {
