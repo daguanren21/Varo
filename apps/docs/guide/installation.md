@@ -73,10 +73,8 @@ pnpm add clsx @weapp-tailwindcss/merge
 - 对外消费优先走正式包入口，workspace 开发阶段再切到源码入口
 - H5 与小程序共享 primitives 命名，视觉层由 `@varo-ui/h5` 与 `@varo-ui/weapp` 分别承接
 
-## 版本说明
+## 版本策略
 
-- `weapp-vite` 当前对齐 `6.23.0`
-- `wevu` 当前对齐 `6.23.0`
-- `weapp-tailwindcss` 当前对齐 `^5.3.6`
-- 文档站基于 `VitePress 2.0.0-alpha.19`
-- Vue 侧统一使用 `Vue 3.5.41`、TypeScript 与 `<script setup>`
+- 工具链使用当前兼容版本，文档不固定 `weapp-vite`、`wevu` 或 `weapp-tailwindcss` 的具体版本号
+- 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
+- VitePress、Vue 与 TypeScript 跟随 workspace 统一升级

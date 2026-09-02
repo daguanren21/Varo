@@ -441,6 +441,7 @@ describe('docs navigation', () => {
     expect(installationZh).toContain('pnpm add vue wevu @varo-ui/weapp @varo-ui/theme')
     expect(installationZh).toContain('pnpm add -D weapp-vite weapp-tailwindcss tailwindcss')
     expect(installationZh).not.toMatch(/\b(?:weapp-vite|wevu|weapp-tailwindcss)@\^?\d/)
+    expect(installationZh).not.toMatch(/\b(?:6\.23\.0|5\.3\.6|3\.5\.41)\b/)
     expect(installationZh).toContain('@weapp-tailwindcss/merge')
     expect(installationEn).toContain('pnpm dlx @varo-ui/cli add --target weapp button select card')
     expect(installationEn).toContain('pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit')
@@ -448,6 +449,7 @@ describe('docs navigation', () => {
     expect(installationEn).toContain('pnpm add vue wevu @varo-ui/weapp @varo-ui/theme')
     expect(installationEn).toContain('pnpm add -D weapp-vite weapp-tailwindcss tailwindcss')
     expect(installationEn).not.toMatch(/\b(?:weapp-vite|wevu|weapp-tailwindcss)@\^?\d/)
+    expect(installationEn).not.toMatch(/\b(?:6\.23\.0|5\.3\.6|3\.5\.41)\b/)
     expect(installationEn).toContain('@weapp-tailwindcss/merge')
     expect(shadcnZh).toContain('pnpm dlx @varo-ui/cli add --target weapp button form toast')
     expect(shadcnZh).toContain('pnpm dlx @varo-ui/cli add --target weapp --force button')
@@ -480,6 +482,8 @@ describe('docs navigation', () => {
     const agentMarkdown = readFileSync(resolve(docsRoot, 'src/components/agent-ui/agent-markdown.css'), 'utf8')
     const aiZh = readFileSync(resolve(docsRoot, 'ai/index.md'), 'utf8')
     const aiEn = readFileSync(resolve(docsRoot, 'en/ai/index.md'), 'utf8')
+    const loadingZh = readFileSync(resolve(docsRoot, 'ai/loading.md'), 'utf8')
+    const loadingEn = readFileSync(resolve(docsRoot, 'en/ai/loading.md'), 'utf8')
     const packageJson = JSON.parse(readFileSync(resolve(docsRoot, 'package.json'), 'utf8')) as {
       dependencies: Record<string, string>
     }
@@ -506,6 +510,14 @@ describe('docs navigation', () => {
     expect(agentIndex).not.toContain('from-white')
     expect(agentMarkdown).toContain('background: var(--varo-agent-surface-strong)')
     expect(agentMarkdown).not.toContain('background: #f8fafc')
+    expect(loadingZh).toContain('pnpm add @varo-ui/ai')
+    expect(loadingEn).toContain('pnpm add @varo-ui/ai')
+    expect(loadingZh).toContain('import { AgentLoading } from \'@/components/agent-ui\'')
+    expect(loadingEn).toContain('import { AgentLoading } from \'@/components/agent-ui\'')
+    expect(loadingZh).toContain('`@varo-ui/ai` 只提供事件协议、流控制和 Markdown 能力')
+    expect(loadingEn).toContain('`@varo-ui/ai` provides the event protocol, stream controller, and Markdown primitives')
+    expect(loadingZh).not.toContain('import { AgentLoading } from \'@varo-ui/ai\'')
+    expect(loadingEn).not.toContain('import { AgentLoading } from \'@varo-ui/ai\'')
 
     const slugs = [
       'loading',
@@ -555,6 +567,10 @@ describe('docs navigation', () => {
       expect(enPage).toContain('## Props')
       expect(zhPage).not.toContain('@/components/agent-ui/advanced')
       expect(enPage).not.toContain('@/components/agent-ui/advanced')
+      expect(zhPage).toContain('pnpm add @varo-ui/ai')
+      expect(enPage).toContain('pnpm add @varo-ui/ai')
+      expect(zhPage).toContain('不导出 Vue/Wevu UI 组件')
+      expect(enPage).toContain('not Vue/Wevu UI components')
     })
   })
 })

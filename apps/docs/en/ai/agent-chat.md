@@ -9,11 +9,12 @@ Complete block composing header, history, events, approval, and prompt input.
 ## Install
 
 ```bash
+pnpm add @varo-ui/ai
 pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 ```
 
-This component ships in `components/agent-ui`; the CLI copies real source rather than a runtime black box.
+Registry installs the UI component into your project, so import it from `@/components/agent-ui`; `@varo-ui/ai` provides the event protocol, stream controller, and Markdown primitives—not Vue/Wevu UI components.
 
 ## Basic Usage
 

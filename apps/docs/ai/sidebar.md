@@ -9,11 +9,12 @@ AI 工作区侧栏，支持分组、折叠、创建和选中状态。
 ## 安装
 
 ```bash
+pnpm add @varo-ui/ai
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
 ```
 
-该组件属于 `components/agent-ui` 套件，CLI 会复制真实源码，不是运行时黑盒。
+UI 组件由 Registry 安装到项目本地，因此从 `@/components/agent-ui` 导入；`@varo-ui/ai` 只提供事件协议、流控制和 Markdown 能力，不导出 Vue/Wevu UI 组件。
 
 ## 基础用法
 

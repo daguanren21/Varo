@@ -73,10 +73,8 @@ The mini-program Base Kit ships real Vue SFCs and consumes Tailwind v4 utilities
 - Consume published package entries externally; use source aliases only for workspace development
 - H5 and mini-program wrappers share primitive naming, while `@varo-ui/h5` and `@varo-ui/weapp` own the visual layer
 
-## Version notes
+## Version strategy
 
-- `weapp-vite` is aligned to `6.23.0`
-- `wevu` is aligned to `6.23.0`
-- `weapp-tailwindcss` is aligned to `^5.3.6`
-- Docs are powered by `VitePress 2.0.0-alpha.19`
-- Vue packages are aligned on `Vue 3.5.41`, TypeScript, and `<script setup>`
+- Use the current compatible toolchain; docs do not pin specific `weapp-vite`, `wevu`, or `weapp-tailwindcss` versions
+- Production projects should follow their lockfile, package `peerDependencies`, and CI build result
+- VitePress, Vue, and TypeScript move with the workspace upgrade policy
