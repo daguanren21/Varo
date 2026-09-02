@@ -398,7 +398,7 @@ export const AgentFileDiff = defineComponent({
     }
 
     return () => h('section', {
-      'class': cn('agent-file-diff overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-sm', props.className),
+      'class': cn('agent-file-diff overflow-hidden rounded-[14px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
       'data-indicators': props.indicators,
       'data-line-numbers': String(currentLineNumbers.value),
       'data-open': String(currentOpen.value),
@@ -553,14 +553,14 @@ export const AgentImageGeneration = defineComponent({
     )
 
     return () => h('figure', {
-      'class': cn('agent-image-generation overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm', props.className),
+      'class': cn('agent-image-generation overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
       'data-status': props.status,
     }, [
       h('div', { class: 'agent-image-generation__canvas relative grid min-h-[252px] place-items-center overflow-hidden' }, [
         props.src
           ? h('img', { class: 'block min-h-[252px] h-full w-full object-cover', alt: props.alt, src: props.src })
           : h('div', { class: 'agent-image-generation__placeholder relative z-10 grid place-items-center gap-3 text-center' }, [
-              h('div', { 'class': 'agent-image-generation__preview relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[20px] border border-teal-700/20 bg-white/80 text-teal-700 shadow-[0_18px_34px_rgba(15,118,110,.13)]', 'aria-hidden': 'true' }, [
+              h('div', { 'class': 'agent-image-generation__preview relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[20px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-primary)] shadow-[var(--varo-agent-shadow)]', 'aria-hidden': 'true' }, [
                 h('span', { class: 'agent-image-generation__glow absolute h-[46px] w-[46px] rounded-2xl bg-teal-300/15 blur-lg' }),
                 h('svg', {
                   'class': 'relative z-[2] h-[34px] w-[34px]',
@@ -591,7 +591,7 @@ export const AgentImageGeneration = defineComponent({
                 h('small', { class: 'font-semibold tracking-[.03em]' }, 'Generation progress'),
                 h('strong', { class: 'text-[10px] tabular-nums text-teal-700' }, `${progress.value}%`),
               ]),
-              h('span', { class: 'agent-image-generation__track block h-[5px] overflow-hidden rounded-full bg-white/80' }, [
+              h('span', { class: 'agent-image-generation__track block h-[5px] overflow-hidden rounded-full bg-[var(--varo-agent-surface-strong)]' }, [
                 h('i', { class: 'block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300', style: { width: `${progress.value}%` } }),
               ]),
             ])
@@ -903,8 +903,8 @@ export const AgentFilterTable = defineComponent({
         'class': cn(
           'inline-flex min-h-[34px] items-center gap-1.5 rounded-full border px-3 py-0 text-[10px] font-bold leading-none',
           filter.value === props.filter
-            ? 'border-teal-700 bg-emerald-50 text-teal-700'
-            : 'border-slate-200 bg-white text-slate-500',
+            ? 'border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]'
+            : 'border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-muted)]',
         ),
         'data-active': String(filter.value === props.filter),
         'key': filter.value,

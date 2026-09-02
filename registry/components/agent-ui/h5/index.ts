@@ -390,7 +390,7 @@ export const AgentRecommendation = defineComponent({
   emits: { accept: () => true },
   setup(props, { emit, slots }) {
     const confidence = computed(() => Math.min(100, Math.max(0, props.confidence)))
-    return () => h('section', { class: 'grid gap-3 rounded-2xl border border-[var(--varo-agent-border)] bg-gradient-to-br from-white to-blue-50 p-4 shadow-sm' }, [
+    return () => h('section', { class: 'agent-recommendation grid gap-3 rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-4 shadow-[var(--varo-agent-shadow)]' }, [
       h('header', { class: 'flex justify-between text-[11px] font-extrabold tracking-widest text-[var(--varo-agent-primary)]' }, [h('span', 'AGENT 建议'), h('span', `${confidence.value}%`)]),
       h('strong', { class: 'text-[15px] text-[var(--varo-agent-foreground)]' }, props.title),
       props.description ? h('p', { class: 'm-0 text-xs leading-5 text-[var(--varo-agent-text)]' }, props.description) : null,

@@ -32,7 +32,7 @@ const confidenceLabel = computed(() => (confidence.value >= 80 ? '高置信度' 
 
 <template>
   <VCard class="agent-recommendation" :padding="false" variant="outline">
-    <view class="grid gap-3 rounded-2xl bg-[linear-gradient(145deg,#fff_0%,#eff6ff_100%)] p-[15px] shadow-[0_8px_24px_rgba(30,64,175,.08)]">
+    <view class="grid gap-3 rounded-2xl bg-[var(--varo-agent-surface)] p-[15px] shadow-[var(--varo-agent-shadow)]">
       <view class="flex items-center justify-between gap-3">
         <text class="text-[11px] font-extrabold tracking-[.12em] text-[var(--varo-agent-primary)]">
           Agent 建议
@@ -56,7 +56,7 @@ const confidenceLabel = computed(() => (confidence.value >= 80 ? '高置信度' 
         <button
           v-for="alternative in alternatives"
           :key="alternative.value"
-          class="flex min-h-[46px] items-center justify-between gap-2.5 rounded-[10px] border border-[var(--varo-agent-border)] bg-white/80 px-2.5 py-2 text-left text-[var(--varo-agent-foreground)]"
+          class="flex min-h-[46px] items-center justify-between gap-2.5 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-2.5 py-2 text-left text-[var(--varo-agent-foreground)]"
           type="button"
           @click="emit('selectAlternative', alternative)"
         >

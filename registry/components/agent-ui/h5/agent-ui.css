@@ -47,10 +47,10 @@
   width: 34px;
   height: 34px;
   color: var(--varo-agent-primary, #0f766e);
-  background: linear-gradient(145deg, #f0fdfa, #e6fffa);
-  border: 1px solid #b9eee5;
+  background: var(--varo-agent-primary-soft, #f0fdfa);
+  border: 1px solid color-mix(in srgb, var(--varo-agent-primary, #0f766e) 38%, var(--varo-agent-border, #dbe3ea));
   border-radius: 11px;
-  box-shadow: 0 4px 12px rgb(15 118 110 / 10%);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--varo-agent-primary, #0f766e) 10%, transparent);
 }
 .agent-thinking__icon svg { display: block; width: 19px; height: 19px; }
 .agent-thinking__copy { display: grid; flex: 1; gap: 2px; min-width: 0; }

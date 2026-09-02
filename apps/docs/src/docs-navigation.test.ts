@@ -453,6 +453,8 @@ describe('docs navigation', () => {
     const theme = readFileSync(resolve(docsRoot, '.vitepress/theme/index.ts'), 'utf8')
     const tailwind = readFileSync(resolve(docsRoot, '.vitepress/theme/tailwind.css'), 'utf8')
     const demo = readFileSync(resolve(docsRoot, 'src/components/AgentComponentsDemo.vue'), 'utf8')
+    const agentIndex = readFileSync(resolve(docsRoot, 'src/components/agent-ui/index.ts'), 'utf8')
+    const agentMarkdown = readFileSync(resolve(docsRoot, 'src/components/agent-ui/agent-markdown.css'), 'utf8')
     const aiZh = readFileSync(resolve(docsRoot, 'ai/index.md'), 'utf8')
     const aiEn = readFileSync(resolve(docsRoot, 'en/ai/index.md'), 'utf8')
     const packageJson = JSON.parse(readFileSync(resolve(docsRoot, 'package.json'), 'utf8')) as {
@@ -475,6 +477,12 @@ describe('docs navigation', () => {
     expect(demo).toContain('AgentEventRenderer')
     expect(demo).toContain('AgentArtifact')
     expect(demo).toContain('AgentAttachmentList')
+    expect(demo).toContain('--ai-demo-card: var(--varo-surface)')
+    expect(demo).not.toMatch(/background:\s*#(?:fff|f8fafc|eef2f6)\b/)
+    expect(agentIndex).toContain('bg-[var(--varo-agent-surface)]')
+    expect(agentIndex).not.toContain('from-white')
+    expect(agentMarkdown).toContain('background: var(--varo-agent-surface-strong)')
+    expect(agentMarkdown).not.toContain('background: #f8fafc')
 
     const slugs = [
       'loading',

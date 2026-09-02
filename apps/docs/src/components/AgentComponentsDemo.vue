@@ -227,10 +227,23 @@ function t(zh: string, en: string) {
 
 <style scoped>
 .ai-docs-demo {
+  --ai-demo-surface: var(--varo-demo-surface);
+  --ai-demo-surface-strong: var(--varo-demo-surface-strong);
+  --ai-demo-card: var(--varo-surface);
+  --ai-demo-border: var(--varo-demo-border);
+  --ai-demo-text: var(--varo-foreground);
+  --ai-demo-text-regular: var(--varo-text-regular);
+  --ai-demo-muted: var(--varo-muted);
+  --ai-demo-accent: var(--varo-primary);
+  --ai-demo-accent-soft: var(--varo-primary-soft);
+  --ai-demo-success: var(--varo-success);
+  --ai-demo-success-soft: var(--varo-success-soft);
+  --ai-demo-shadow: var(--varo-demo-shadow);
+
   display: grid;
   gap: 20px;
   margin: 24px 0 40px;
-  color: #172033;
+  color: var(--ai-demo-text);
 }
 
 .ai-docs-demo__hero {
@@ -240,9 +253,13 @@ function t(zh: string, en: string) {
   justify-content: space-between;
   padding: 22px;
   background:
-    radial-gradient(circle at 88% 15%, rgb(45 212 191 / 20%), transparent 28%),
-    linear-gradient(145deg, #f8fafc, #ecfdf5);
-  border: 1px solid rgb(15 118 110 / 18%);
+    radial-gradient(circle at 88% 15%, color-mix(in srgb, var(--ai-demo-accent) 16%, transparent), transparent 28%),
+    linear-gradient(
+      145deg,
+      var(--ai-demo-surface-strong),
+      color-mix(in srgb, var(--ai-demo-accent) 7%, var(--ai-demo-surface))
+    );
+  border: 1px solid color-mix(in srgb, var(--ai-demo-accent) 24%, var(--ai-demo-border));
   border-radius: 24px;
 }
 
@@ -250,7 +267,7 @@ function t(zh: string, en: string) {
   margin: 0 0 8px;
   font-size: 11px;
   font-weight: 900;
-  color: #0f766e;
+  color: var(--ai-demo-accent);
   letter-spacing: 0.16em;
 }
 
@@ -259,7 +276,7 @@ function t(zh: string, en: string) {
   margin: 0;
   font-size: clamp(20px, 3vw, 30px);
   line-height: 1.15;
-  color: #172033;
+  color: var(--ai-demo-text);
   letter-spacing: -0.035em;
   text-wrap: balance;
   border: 0;
@@ -269,7 +286,7 @@ function t(zh: string, en: string) {
   display: block;
   margin-top: 8px;
   font-size: 13px;
-  color: #64748b;
+  color: var(--ai-demo-muted);
 }
 
 .ai-docs-demo__hero output {
@@ -278,26 +295,26 @@ function t(zh: string, en: string) {
   padding: 8px 12px;
   font-size: 11px;
   font-weight: 900;
-  color: #64748b;
+  color: var(--ai-demo-muted);
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  background: #fff;
-  border: 1px solid #cbd5e1;
+  background: var(--ai-demo-card);
+  border: 1px solid var(--ai-demo-border);
   border-radius: 999px;
 }
 
 .ai-docs-demo__hero output[data-status='streaming'],
 .ai-docs-demo__hero output[data-status='waiting'] {
-  color: #0f766e;
-  background: #f0fdfa;
-  border-color: #99f6e4;
+  color: var(--ai-demo-accent);
+  background: var(--ai-demo-accent-soft);
+  border-color: color-mix(in srgb, var(--ai-demo-accent) 48%, var(--ai-demo-border));
 }
 
 .ai-docs-demo__hero output[data-status='completed'] {
-  color: #15803d;
-  background: #f0fdf4;
-  border-color: #bbf7d0;
+  color: var(--ai-demo-success);
+  background: var(--ai-demo-success-soft);
+  border-color: color-mix(in srgb, var(--ai-demo-success) 48%, var(--ai-demo-border));
 }
 
 .ai-docs-demo__workspace {
@@ -316,10 +333,10 @@ function t(zh: string, en: string) {
   display: grid;
   min-width: 0;
   overflow: hidden;
-  background: #f8fafc;
-  border: 1px solid #dbe4ee;
+  background: var(--ai-demo-surface);
+  border: 1px solid var(--ai-demo-border);
   border-radius: 24px;
-  box-shadow: 0 22px 60px rgb(15 23 42 / 10%);
+  box-shadow: var(--ai-demo-shadow);
 }
 
 .ai-docs-demo__chat-head {
@@ -328,8 +345,8 @@ function t(zh: string, en: string) {
   align-items: center;
   min-height: 64px;
   padding: 0 16px;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--ai-demo-card);
+  border-bottom: 1px solid var(--ai-demo-border);
 }
 
 .ai-docs-demo__chat-head i {
@@ -339,8 +356,8 @@ function t(zh: string, en: string) {
   height: 40px;
   font-style: normal;
   font-weight: 900;
-  color: #fff;
-  background: #0f766e;
+  color: var(--varo-primary-foreground);
+  background: var(--ai-demo-accent);
   border-radius: 14px;
 }
 
@@ -354,7 +371,7 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo__chat-head small {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--ai-demo-muted);
 }
 
 .ai-docs-demo__transcript {
@@ -368,7 +385,7 @@ function t(zh: string, en: string) {
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
-  scrollbar-color: #94a3b8 transparent;
+  scrollbar-color: var(--ai-demo-muted) transparent;
   scrollbar-width: thin;
 }
 
@@ -381,19 +398,19 @@ function t(zh: string, en: string) {
   padding: 0 14px;
   font-size: 11px;
   font-weight: 800;
-  color: #0f766e;
+  color: var(--ai-demo-accent);
   cursor: pointer;
-  background: rgb(255 255 255 / 94%);
-  border: 1px solid #99f6e4;
+  background: color-mix(in srgb, var(--ai-demo-card) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ai-demo-accent) 48%, var(--ai-demo-border));
   border-radius: 999px;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+  box-shadow: var(--ai-demo-shadow);
   backdrop-filter: blur(10px);
 }
 
 .ai-docs-demo__chat > footer {
   padding: 12px;
-  background: #fff;
-  border-top: 1px solid #e2e8f0;
+  background: var(--ai-demo-card);
+  border-top: 1px solid var(--ai-demo-border);
 }
 
 .ai-docs-demo__specimens {
@@ -405,12 +422,12 @@ function t(zh: string, en: string) {
   padding: 12px;
   overflow-y: auto;
   scrollbar-gutter: stable;
-  scrollbar-color: #94a3b8 transparent;
+  scrollbar-color: var(--ai-demo-muted) transparent;
   scrollbar-width: thin;
-  background: #eef2f6;
-  border: 1px solid #dbe4ee;
+  background: var(--ai-demo-surface-strong);
+  border: 1px solid var(--ai-demo-border);
   border-radius: 24px;
-  box-shadow: 0 18px 44px rgb(15 23 42 / 8%);
+  box-shadow: var(--ai-demo-shadow);
 }
 
 .ai-docs-demo__specimens-head {
@@ -429,13 +446,13 @@ function t(zh: string, en: string) {
 .ai-docs-demo__specimens-head small {
   font-size: 9px;
   font-weight: 900;
-  color: #0f766e;
+  color: var(--ai-demo-accent);
   letter-spacing: 0.14em;
 }
 
 .ai-docs-demo__specimens-head strong {
   font-size: 13px;
-  color: #172033;
+  color: var(--ai-demo-text);
 }
 
 .ai-docs-demo__specimens-head i {
@@ -443,16 +460,16 @@ function t(zh: string, en: string) {
   font-size: 9px;
   font-style: normal;
   font-weight: 900;
-  color: #0f766e;
+  color: var(--ai-demo-accent);
   letter-spacing: 0.08em;
-  background: #ccfbf1;
+  background: var(--ai-demo-accent-soft);
   border-radius: 999px;
 }
 
 .ai-docs-demo__ledger {
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--ai-demo-card);
+  border: 1px solid var(--ai-demo-border);
   border-radius: 20px;
 }
 
@@ -462,13 +479,13 @@ function t(zh: string, en: string) {
   justify-content: space-between;
   min-height: 48px;
   padding: 0 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--ai-demo-border);
 }
 
 .ai-docs-demo__ledger header span {
   font-size: 12px;
   font-weight: 800;
-  color: #0f766e;
+  color: var(--ai-demo-accent);
 }
 
 .ai-docs-demo__ledger > div {
@@ -482,29 +499,29 @@ function t(zh: string, en: string) {
   padding: 6px 10px;
   font-size: 11px;
   font-weight: 700;
-  color: #475569;
-  background: #f8fafc;
-  border: 1px solid #dbe4ee;
+  color: var(--ai-demo-text-regular);
+  background: var(--ai-demo-surface-strong);
+  border: 1px solid var(--ai-demo-border);
   border-radius: 999px;
 }
 
 .ai-docs-demo :deep(button:focus-visible),
 .ai-docs-demo :deep(a:focus-visible) {
-  outline: 2px solid #0f766e;
+  outline: 2px solid var(--ai-demo-accent);
   outline-offset: 2px;
 }
 
 .ai-docs-demo :deep(.agent-markdown__table-scroll) {
   overflow-x: auto;
-  background: #fff;
-  border: 1px solid #dbe4ee;
+  background: var(--ai-demo-card);
+  border: 1px solid var(--ai-demo-border);
   border-radius: 14px;
 }
 
 .ai-docs-demo :deep(.agent-markdown__table) {
   width: 100%;
-  color: #334155;
-  background: #fff;
+  color: var(--ai-demo-text-regular);
+  background: var(--ai-demo-card);
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -512,14 +529,14 @@ function t(zh: string, en: string) {
 
 .ai-docs-demo :deep(.agent-markdown__table th),
 .ai-docs-demo :deep(.agent-markdown__table td) {
-  color: #334155;
-  background: #fff;
-  border-color: #dbe4ee;
+  color: var(--ai-demo-text-regular);
+  background: var(--ai-demo-card);
+  border-color: var(--ai-demo-border);
 }
 
 .ai-docs-demo :deep(.agent-markdown__table th) {
-  color: #172033;
-  background: #f1f5f9;
+  color: var(--ai-demo-text);
+  background: var(--ai-demo-surface-strong);
 }
 
 @media (max-width: 760px) {

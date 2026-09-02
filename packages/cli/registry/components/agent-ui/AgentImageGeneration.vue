@@ -47,7 +47,7 @@ const hasAction = computed(() =>
     <view class="agent-image-generation__canvas relative grid min-h-[252px] place-items-center overflow-hidden">
       <image v-if="src" class="block h-full min-h-[252px] w-full object-cover" :src="src" :alt="alt" mode="aspectFill" />
       <view v-else class="relative z-10 grid place-items-center gap-3 text-center text-[var(--varo-agent-text)]">
-        <view class="agent-image-generation__preview relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[20px] border border-teal-700/20 bg-white/80 shadow-[0_18px_34px_rgba(15,118,110,.13)]" aria-hidden="true">
+        <view class="agent-image-generation__preview relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[20px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-[var(--varo-agent-shadow)]" aria-hidden="true">
           <text class="absolute h-[46px] w-[46px] rounded-2xl bg-teal-300/15 blur-lg" />
           <image class="relative z-[2] h-[34px] w-[34px]" :src="imageIcon" mode="aspectFit" />
           <text v-if="status === 'generating'" class="agent-image-generation__scan" />
@@ -71,7 +71,7 @@ const hasAction = computed(() =>
             {{ progressValue }}%
           </text>
         </view>
-        <view class="block h-[5px] overflow-hidden rounded-full bg-white/80">
+        <view class="block h-[5px] overflow-hidden rounded-full bg-[var(--varo-agent-surface-strong)]">
           <text class="agent-image-generation__track block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300" :style="{ width: `${progressValue}%` }" />
         </view>
       </view>
@@ -101,7 +101,7 @@ const hasAction = computed(() =>
 .agent-image-generation__canvas {
   background:
     radial-gradient(circle at 50% 38%, rgb(45 212 191 / 16%), transparent 34%),
-    linear-gradient(145deg, #f4f7fb, #e8eef5);
+    linear-gradient(145deg, var(--varo-agent-surface), var(--varo-agent-surface-strong));
 }
 
 .agent-image-generation__canvas::before {

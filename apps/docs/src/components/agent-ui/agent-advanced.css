@@ -419,8 +419,8 @@
 
 .agent-image-generation__canvas {
   background:
-    radial-gradient(circle at 50% 38%, rgb(45 212 191 / 16%), transparent 34%),
-    linear-gradient(145deg, #f4f7fb, #e8eef5);
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--agent-primary) 16%, transparent), transparent 34%),
+    linear-gradient(145deg, var(--agent-surface), var(--agent-surface-strong));
 }
 
 .agent-image-generation__canvas::before {
@@ -559,8 +559,8 @@
 .agent-command-search > div small { font-size: 10px; color: var(--agent-muted); }
 .agent-command-search kbd { padding: 2px 6px; font-size: 10px; color: var(--agent-muted); background: var(--agent-surface-strong); border: 1px solid var(--agent-border); border-radius: 6px; }
 .agent-command-search > p { padding: 22px; margin: 0; font-size: 11px; color: var(--agent-muted); text-align: center; }
-.agent-flowchart { overflow: hidden; background: radial-gradient(#dbe4ee 1px, transparent 1px); background-size: 14px 14px; border: 1px solid var(--agent-border); border-radius: 18px; }
-.agent-flowchart > header { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 13px; background: rgb(255 255 255 / 92%); border-bottom: 1px solid var(--agent-border); }
+.agent-flowchart { overflow: hidden; background: radial-gradient(var(--agent-border) 1px, transparent 1px); background-size: 14px 14px; border: 1px solid var(--agent-border); border-radius: 18px; }
+.agent-flowchart > header { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 13px; background: var(--agent-surface); border-bottom: 1px solid var(--agent-border); }
 .agent-flowchart > header strong { font-size: 12px; }
 .agent-flowchart > header button { min-height: 32px; padding: 0 9px; font-size: 10px; color: var(--agent-primary); background: var(--agent-surface); border: 1px solid var(--agent-border); border-radius: 9px; }
 .agent-flowchart > div { display: grid; justify-items: center; padding: 24px; }
