@@ -5885,6 +5885,55 @@ onBeforeUnmount(() => {
   }
 }
 
+.platform-demo__phone-content
+  > .platform-demo__preview-content
+  > :is(
+    .platform-demo__button-sample,
+    .platform-demo__badge-sample,
+    .platform-demo__popover-sample,
+    .platform-demo__input-sample,
+    .platform-demo__card,
+    .platform-demo__cell-demo,
+    .platform-demo__image-demo,
+    .platform-demo__divider-demo,
+    .platform-demo__grid-demo,
+    .platform-demo__layout-demo,
+    .platform-demo__space-demo,
+    .platform-demo__sticky-demo,
+    .platform-demo__nav-demo,
+    .platform-demo__overlay-demo,
+    .platform-demo__popup-demo
+  ) {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.platform-demo__phone-content
+  :is(
+    .platform-demo__divider-order,
+    .platform-demo__grid-service,
+    .platform-demo__layout-overview,
+    .platform-demo__space-filter,
+    .platform-demo__sticky-feed,
+    .platform-demo__elevator-directory,
+    .platform-demo__fixed-nav-product,
+    .platform-demo__indicator-slide,
+    .platform-demo__menu-catalog,
+    .platform-demo__pagination-orders,
+    .platform-demo__tabbar-page
+  ) {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .platform-demo__input-sample :deep(.varo-input__body),
   .platform-demo__input-sample :deep(.varo-input__clear::before) {

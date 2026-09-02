@@ -616,7 +616,6 @@ html:not(.dark) .VPFeature:hover {
   border-color: var(--varo-border-strong);
 }
 
-.varo-grid,
 .varo-package-grid,
 .varo-stat-grid,
 .varo-block-grid {
@@ -627,7 +626,6 @@ html:not(.dark) .VPFeature:hover {
   margin: 20px 0 28px;
 }
 
-.varo-grid,
 .varo-package-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1889,7 +1887,6 @@ html:not(.dark) .VPFeature:hover {
 }
 
 @media (max-width: 960px) {
-  .varo-grid,
   .varo-package-grid,
   .varo-stat-grid,
   .varo-block-grid,
