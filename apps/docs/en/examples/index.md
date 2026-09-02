@@ -6,9 +6,9 @@ This page is not a crowded gallery. It collects reusable business blocks with re
 
 ## Mini-program Build Chain
 
-- `weapp-vite@6.23.0` handles mini-program builds, component JSON, complex list keys, and generated types
-- `wevu@6.23.0` is the mini-program runtime peer for `@varo-ui/weapp`; `@varo-ui/headless` does not bind Vue or Wevu
-- `weapp-tailwindcss@^5.3.6` plugs into the `weapp-vite` chain for class translation; current mini-program output removes unsupported interaction pseudo-classes, so components use native `hover-class` for pressed feedback
+- `weapp-vite` handles mini-program builds, component JSON, complex list keys, and generated types
+- `wevu` is the mini-program runtime peer for `@varo-ui/weapp`; `@varo-ui/headless` does not bind Vue or Wevu
+- `weapp-tailwindcss` plugs into the `weapp-vite` chain for class translation; current mini-program output removes unsupported interaction pseudo-classes, so components use native `hover-class` for pressed feedback
 - For internal design systems, build upward from `@varo-ui/headless`, then promote blocks into business templates
 
 ## Related Docs

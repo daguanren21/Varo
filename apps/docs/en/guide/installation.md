@@ -18,7 +18,7 @@ pnpm install
 
 ```bash
 pnpm add vue @varo-ui/h5 @varo-ui/theme
-pnpm add vue wevu@6.23.0 @varo-ui/weapp @varo-ui/theme
+pnpm add vue wevu @varo-ui/weapp @varo-ui/theme
 pnpm add @varo-ui/ai # only when the product needs Agent events and Markdown
 ```
 
@@ -61,7 +61,7 @@ void controller.connect(transport.source)
 ## Mini-program build chain
 
 ```bash
-pnpm add -D weapp-vite@6.23.0 weapp-tailwindcss@^5.3.6 tailwindcss
+pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
