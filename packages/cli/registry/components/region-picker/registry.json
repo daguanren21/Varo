@@ -2,7 +2,7 @@
   "name": "region-picker",
   "type": "component",
   "title": "VRegionPicker",
-  "description": "Controlled hierarchical region picker with breadcrumbs, shortcuts, disabled options, confirmation, and coordinates.",
+  "description": "Controlled hierarchical region picker with async root and child loading, retry states, breadcrumbs, confirmation, and coordinates.",
   "exportName": "VRegionPicker",
   "targets": [
     "h5",

@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 
+import type { VaroRegionLoadContext } from './components/ui/region-picker.types'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import FormRegionMapDemo from './components/demos/FormRegionMapDemo.vue'
 import VMap from './components/ui/v-map.vue'
+import VRegionPicker from './components/ui/v-region-picker.vue'
 
 describe('standalone Varo Form region and map demo', () => {
   it('validates fields, selects a region, and submits business data', async () => {
@@ -36,6 +38,43 @@ describe('standalone Varo Form region and map demo', () => {
     expect(wrapper.get('[role="status"]').text()).toContain('已提交：Varo 用户 · 中国 / 浙江省 / 杭州市 / 西湖区')
     expect(wrapper.get('map').attributes('latitude')).toBe('30.259')
     expect(wrapper.get('map').attributes('longitude')).toBe('120.13')
+  })
+
+  it('loads RegionPicker levels dynamically and retries failed requests', async () => {
+    let attempt = 0
+    const loadChildren = vi.fn(async (_context: VaroRegionLoadContext) => {
+      attempt += 1
+      if (attempt === 1) {
+        return [{ label: '中国', value: 'cn', hasChildren: true }]
+      }
+      if (attempt === 2) {
+        throw new Error('network')
+      }
+      return [{ label: '浙江省', value: 'zhejiang' }]
+    })
+    const wrapper = mount(VRegionPicker, {
+      props: {
+        loadChildren,
+        options: [],
+        visible: true,
+      },
+    })
+
+    await flushPromises()
+    expect(loadChildren).toHaveBeenNthCalledWith(1, { level: 0, path: [] })
+    await wrapper.get('.varo-region-picker__option').trigger('click')
+    await flushPromises()
+    expect(loadChildren.mock.calls[1]?.[0]).toMatchObject({ level: 1, path: ['cn'] })
+    expect(wrapper.get('[role="alert"]').text()).toContain('地区加载失败')
+
+    await wrapper.get('.varo-region-picker__retry').trigger('click')
+    await flushPromises()
+    expect(wrapper.get('.varo-region-picker__option').text()).toContain('浙江省')
+    await wrapper.get('.varo-region-picker__option').trigger('click')
+    await wrapper.get('.varo-region-picker__confirm').trigger('click')
+    expect(wrapper.emitted('confirm')?.[0]?.[0]).toMatchObject({ path: ['cn', 'zhejiang'] })
+    expect(wrapper.emitted('loadError')).toHaveLength(1)
+    expect(wrapper.emitted('loadSuccess')).toHaveLength(2)
   })
 
   it('forwards native map events with typed props', async () => {

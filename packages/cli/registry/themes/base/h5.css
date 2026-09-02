@@ -3249,11 +3249,30 @@ textarea.varo-input__control {
 
 .varo-region-picker__state {
   display: grid;
+  gap: 10px;
   place-items: center;
   min-height: 220px;
+  padding: 24px;
   margin: 0;
   font-size: 13px;
   color: var(--varo-ui-text-muted);
+  text-align: center;
+}
+
+.varo-region-picker__state p {
+  margin: 0;
+}
+
+.varo-region-picker__retry {
+  min-height: 36px;
+  padding: 0 14px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--varo-ui-danger);
+  cursor: pointer;
+  background: var(--varo-ui-danger-soft);
+  border: 1px solid color-mix(in srgb, var(--varo-ui-danger) 42%, var(--varo-ui-border));
+  border-radius: var(--varo-ui-radius);
 }
 
 .varo-region-picker button:focus-visible,

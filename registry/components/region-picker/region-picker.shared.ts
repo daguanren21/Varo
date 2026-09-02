@@ -4,6 +4,13 @@ export function findRegionOption(options: VaroRegionOption[], value: RegionValue
   return options.find(option => option.value === value)
 }
 
+export function cloneRegionOptions(options: VaroRegionOption[]): VaroRegionOption[] {
+  return options.map(option => ({
+    ...option,
+    children: option.children ? cloneRegionOptions(option.children) : undefined,
+  }))
+}
+
 export function normalizeRegionPath(options: VaroRegionOption[], path: RegionValue[]) {
   const normalized: RegionValue[] = []
   let current = options
@@ -26,6 +33,29 @@ export function regionOptionsAtLevel(options: VaroRegionOption[], path: RegionVa
   return current
 }
 
+export function replaceRegionChildren(
+  options: VaroRegionOption[],
+  path: RegionValue[],
+  children: VaroRegionOption[],
+): VaroRegionOption[] {
+  if (path.length === 0) { return cloneRegionOptions(children) }
+  const [value, ...rest] = path
+  return options.map((option) => {
+    if (option.value !== value) { return option }
+    if (rest.length === 0) {
+      return {
+        ...option,
+        children: cloneRegionOptions(children),
+        hasChildren: children.length > 0,
+      }
+    }
+    return {
+      ...option,
+      children: replaceRegionChildren(option.children ?? [], rest, children),
+    }
+  })
+}
+
 export function resolveRegionSelection(options: VaroRegionOption[], path: RegionValue[]): VaroRegionSelection {
   const normalized = normalizeRegionPath(options, path)
   const labels: string[] = []
@@ -46,6 +76,10 @@ export function resolveRegionSelection(options: VaroRegionOption[], path: Region
   }
 }
 
+export function regionOptionHasChildren(option: VaroRegionOption | undefined) {
+  return Boolean(option && (option.hasChildren || option.children?.length))
+}
+
 export function isRegionLeaf(option: VaroRegionOption | undefined) {
-  return Boolean(option && (!option.children || option.children.length === 0))
+  return Boolean(option && !regionOptionHasChildren(option))
 }
