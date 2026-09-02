@@ -88,6 +88,7 @@ describe('ui-h5 style entry', () => {
     expect(h5Layout).toContain('.varo-sticky')
     expect(h5Layout).toContain('.varo-region-picker')
     expect(h5Layout).toContain('.varo-map')
+    expect(h5Layout).toMatch(/\.varo-map\s*\{[\s\S]*?box-sizing: border-box;[\s\S]*?max-width: 100%/)
     expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: relative;[\s\S]*?width: 40px;[\s\S]*?height: 40px/)
     expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: 0;[\s\S]*?right: 0;[\s\S]*?width: 20px;[\s\S]*?height: 20px/)
     expect(h5Layout).not.toContain('top: -9px')

@@ -3301,7 +3301,11 @@ textarea.varo-input__control {
 }
 
 .varo-map {
+  box-sizing: border-box;
   display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   background: var(--varo-ui-fill-light);
   border: 1px solid var(--varo-ui-border);

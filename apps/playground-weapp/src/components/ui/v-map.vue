@@ -50,7 +50,7 @@ const props = withDefaults(
     rotate: 0,
     scale: 14,
     showCompass: false,
-    showLocation: true,
+    showLocation: false,
     showScale: false,
     skew: 0,
     subkey: '',
@@ -75,7 +75,7 @@ function size(value: number | string) {
 }
 
 const rootClass = computed(() => ['varo-map', props.className].filter(Boolean).join(' '))
-const rootStyle = computed(() => `width:${size(props.width)};height:${size(props.height)};`)
+const rootStyle = computed(() => `width:${size(props.width)};max-width:100vw;height:${size(props.height)};max-height:720px;box-sizing:border-box;`)
 </script>
 
 <template>

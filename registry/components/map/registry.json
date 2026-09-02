@@ -2,7 +2,7 @@
   "name": "map",
   "type": "component",
   "title": "VMap",
-  "description": "Typed WeChat mini-program map wrapper for markers, routes, circles, viewport controls, location, and native map events.",
+  "description": "Typed WeChat map wrapper with constrained sizing, opt-in location, gesture controls, markers, routes, and native events.",
   "exportName": "VMap",
   "targets": [
     "weapp"

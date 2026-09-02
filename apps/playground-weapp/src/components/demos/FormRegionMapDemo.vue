@@ -176,9 +176,12 @@ function failed(payload: unknown) {
           :latitude="model.latitude"
           :longitude="model.longitude"
           :markers="markers"
+          :enable-scroll="false"
+          :enable-zoom="false"
           :scale="14"
           height="220px"
           aria-label="已选活动区域地图"
+          :show-location="false"
         />
       </VCard>
 
