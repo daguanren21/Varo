@@ -3418,6 +3418,15 @@ onBeforeUnmount(() => {
   color: var(--varo-text-tertiary);
 }
 
+.platform-demo__menu-result > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .platform-demo__menu-result strong {
   font-size: 0.7rem;
   color: var(--varo-primary);
