@@ -20,6 +20,7 @@ const themePlugin: [Plugin, ThemeConfig] = [VaroConfigProvider, themeConfig]
 describe('FormComponentDemo', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    vi.useRealTimers()
   })
 
   it('expands one active code sample and switches between H5 and mini-program code', async () => {
@@ -484,7 +485,7 @@ describe('FormComponentDemo', () => {
     expect(wrapper.findAll('.varo-form-item__error').some(node => node.text().includes('公司 2'))).toBe(false)
   })
 
-  it('renders select, switch, toast, and loading demos', async () => {
+  it('renders select, switch, toast, loading, and skeleton demos', async () => {
     const select = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
       props: { example: 'select', locale: 'zh' },
@@ -528,5 +529,18 @@ describe('FormComponentDemo', () => {
     })
     expect(loading.findAll('.varo-loading').length).toBeGreaterThanOrEqual(3)
     expect(loading.text()).toContain('Loading')
+
+    vi.useFakeTimers()
+    const skeleton = mount(FormComponentDemo, {
+      global: { plugins: [themePlugin] },
+      props: { example: 'skeleton', locale: 'zh' },
+    })
+    await vi.advanceTimersByTimeAsync(180)
+    expect(skeleton.get('.varo-skeleton').attributes('aria-busy')).toBe('true')
+    expect(skeleton.find('.varo-skeleton__avatar').exists()).toBe(true)
+    expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(4)
+    await skeleton.get('.form-demo__skeleton-card > header button').trigger('click')
+    expect(skeleton.find('.varo-skeleton').exists()).toBe(false)
+    expect(skeleton.get('.form-demo__skeleton-content').text()).toContain('真实内容替换占位结构')
   })
 })

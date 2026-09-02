@@ -21,6 +21,7 @@ import {
   VSearchbar as H5Searchbar,
   VSelect as H5Select,
   VShortPassword as H5ShortPassword,
+  VSkeleton as H5Skeleton,
   VSwitch as H5Switch,
   VTextarea as H5Textarea,
   VToast as H5Toast,
@@ -48,6 +49,7 @@ import {
   VSearchbar as WeappSearchbar,
   VSelect as WeappSelect,
   VShortPassword as WeappShortPassword,
+  VSkeleton as WeappSkeleton,
   VSwitch as WeappSwitch,
   VTextarea as WeappTextarea,
   VToast as WeappToast,
@@ -73,6 +75,7 @@ type FormDemoKind
     | 'rate'
     | 'searchbar'
     | 'select'
+    | 'skeleton'
     | 'short-password'
     | 'switch'
     | 'textarea'
@@ -113,6 +116,7 @@ const VRange = computed(() => activePlatform.value === 'h5' ? H5Range : WeappRan
 const VRate = computed(() => activePlatform.value === 'h5' ? H5Rate : WeappRate)
 const VSearchbar = computed(() => activePlatform.value === 'h5' ? H5Searchbar : WeappSearchbar)
 const VSelect = computed(() => activePlatform.value === 'h5' ? H5Select : WeappSelect)
+const VSkeleton = computed(() => activePlatform.value === 'h5' ? H5Skeleton : WeappSkeleton)
 const VShortPassword = computed(() => activePlatform.value === 'h5' ? H5ShortPassword : WeappShortPassword)
 const VSwitch = computed(() => activePlatform.value === 'h5' ? H5Switch : WeappSwitch)
 const VTextarea = computed(() => activePlatform.value === 'h5' ? H5Textarea : WeappTextarea)
@@ -125,6 +129,7 @@ const radioValue = shallowRef('wechat')
 const selectValue = shallowRef<string | number>('hangzhou')
 const switchValue = shallowRef(true)
 const toastVisible = ref(true)
+const skeletonLoading = shallowRef(true)
 const inputNumberValue = shallowRef(2)
 const rateValue = shallowRef(3)
 const rangeValue = shallowRef(40)
@@ -251,6 +256,11 @@ const copy = computed(() =>
         toastClose: 'Close notification',
         toastShow: 'Show Toast',
         loadingText: 'Loading',
+        skeletonTitle: 'Article skeleton',
+        skeletonShowContent: 'Show content',
+        skeletonShowLoading: 'Show skeleton',
+        skeletonContentTitle: 'Cross-runtime loading state',
+        skeletonContentBody: 'Real content replaces the placeholder without changing the surrounding layout.',
         textareaPlaceholder: 'Enter content',
         keyboardDone: 'Done',
         keyboardDelete: 'Delete',
@@ -395,6 +405,11 @@ const copy = computed(() =>
         toastClose: '关闭通知',
         toastShow: '显示 Toast',
         loadingText: '加载中',
+        skeletonTitle: '文章骨架屏',
+        skeletonShowContent: '显示内容',
+        skeletonShowLoading: '显示骨架屏',
+        skeletonContentTitle: '跨端加载状态',
+        skeletonContentBody: '真实内容替换占位结构时，不改变外围布局。',
         textareaPlaceholder: '请输入内容',
         keyboardDone: '完成',
         keyboardDelete: '删除',
@@ -1203,6 +1218,24 @@ import { VLoading } from '${packageName}'
   <VLoading size="lg" tone="success" />
 </template>
       `.trim()
+    case 'skeleton':
+      return `
+<script setup lang="ts">
+import { shallowRef } from '${runtimePackage}'
+import { VSkeleton } from '${packageName}'
+
+const loading = shallowRef(true)
+<\/script>
+
+<template>
+  <VSkeleton :loading="loading" :delay="180" content-fade avatar title :rows="4" round>
+    <article>
+      <strong>${copy.value.skeletonContentTitle}</strong>
+      <p>${copy.value.skeletonContentBody}</p>
+    </article>
+  </VSkeleton>
+</template>
+      `.trim()
     default:
       return ''
   }
@@ -1603,6 +1636,20 @@ function onFormArrayFailed() {
               />
             </label>
           </div>
+        </section>
+        <section v-else-if="example === 'skeleton'" class="form-demo__skeleton-card">
+          <header>
+            <strong>{{ copy.skeletonTitle }}</strong>
+            <button type="button" @click="skeletonLoading = !skeletonLoading">
+              {{ skeletonLoading ? copy.skeletonShowContent : copy.skeletonShowLoading }}
+            </button>
+          </header>
+          <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
+            <article class="form-demo__skeleton-content">
+              <strong>{{ copy.skeletonContentTitle }}</strong>
+              <p>{{ copy.skeletonContentBody }}</p>
+            </article>
+          </VSkeleton>
         </section>
         <div v-else-if="example === 'loading'" class="form-demo__loading-row">
           <VLoading :text="copy.loadingText" />
@@ -2346,6 +2393,67 @@ function onFormArrayFailed() {
   border: 1px solid var(--varo-border);
   border-radius: 20px;
   box-shadow: var(--varo-shadow-sm);
+}
+
+.form-demo__skeleton-card {
+  display: grid;
+  gap: 18px;
+  width: min(100%, 560px);
+  padding: 18px;
+  background: var(--varo-card-solid);
+  border: 1px solid var(--varo-border);
+  border-radius: 20px;
+  box-shadow: var(--varo-shadow-sm);
+}
+
+.form-demo__skeleton-card > header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-demo__skeleton-card > header strong {
+  font-size: 0.84rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__skeleton-card > header button {
+  min-height: 36px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--varo-primary);
+  cursor: pointer;
+  background: var(--varo-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--varo-primary) 42%, var(--varo-border));
+  border-radius: 10px;
+}
+
+.form-demo__skeleton-card > header button:focus-visible {
+  outline: 2px solid var(--varo-primary);
+  outline-offset: 2px;
+}
+
+.form-demo__skeleton-content {
+  display: grid;
+  gap: 8px;
+  align-content: center;
+  min-height: 92px;
+}
+
+.form-demo__skeleton-content strong {
+  font-size: 0.92rem;
+  color: var(--varo-text-primary);
+}
+
+.form-demo__skeleton-content p {
+  max-width: 48ch;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: var(--varo-text-secondary);
 }
 
 .form-demo__save--request {

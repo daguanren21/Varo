@@ -359,13 +359,18 @@ describe('registry catalog', () => {
         expect(readText(weappFile!.from)).toContain('"styleIsolation": "apply-shared"')
       }
       else if (supportsWeapp) {
-        const weappFile = item.files.find(
-          file => file.target === 'weapp' && file.to === `src/components/ui/${name}.ts`,
-        )
+        const weappFile = item.files.find(file => file.target === 'weapp')
         expect(item.targets).toEqual(targets)
         expect(weappFile, `${name} must expose its weapp source`).toBeDefined()
         const weappSource = readText(weappFile!.from)
-        expect(weappSource).toContain('import \'../../styles/varo.css\'')
+        if (weappFile!.to.endsWith('.vue')) {
+          expect(weappFile!.from.endsWith('.vue')).toBe(true)
+          expect(weappSource).toContain('"styleIsolation": "apply-shared"')
+        }
+        else {
+          expect(weappFile!.to).toBe(`src/components/ui/${name}.ts`)
+          expect(weappSource).toContain('import \'../../styles/varo.css\'')
+        }
       }
       else {
         expect(item.targets).toEqual(['h5'])

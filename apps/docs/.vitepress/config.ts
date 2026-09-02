@@ -206,6 +206,7 @@ export default defineConfig({
                 collapsed: true,
                 items: [
                   { text: 'Loading 加载', link: '/components/loading' },
+                  { text: 'Skeleton 骨架屏', link: '/components/skeleton' },
                   { text: 'Overlay 遮罩层', link: '/components/overlay' },
                   { text: 'Popup 弹出层', link: '/components/popup' },
                   { text: 'Toast 轻提示', link: '/components/toast' },
@@ -306,21 +307,27 @@ export default defineConfig({
                 items: [
                   { text: 'Button', link: '/primitives/button' },
                   { text: 'Input', link: '/primitives/input' },
-                  { text: 'Number Field', link: '/primitives/number-field' },
-                  { text: 'Image', link: '/primitives/image' },
-                  { text: 'Cell', link: '/primitives/cell' },
-                  { text: 'Sticky', link: '/primitives/sticky' },
                 ],
               },
               {
                 text: '选择与切换',
                 collapsed: false,
                 items: [
+                  { text: 'Number Field', link: '/primitives/number-field' },
                   { text: 'Checkbox', link: '/primitives/checkbox' },
                   { text: 'Radio Group', link: '/primitives/radio-group' },
                   { text: 'Switch', link: '/primitives/switch' },
                   { text: 'Tabs', link: '/primitives/tabs' },
                   { text: 'Select', link: '/primitives/select' },
+                ],
+              },
+              {
+                text: '内容与布局',
+                collapsed: false,
+                items: [
+                  { text: 'Image', link: '/primitives/image' },
+                  { text: 'Cell', link: '/primitives/cell' },
+                  { text: 'Sticky', link: '/primitives/sticky' },
                 ],
               },
               {
@@ -492,6 +499,7 @@ export default defineConfig({
                 collapsed: true,
                 items: [
                   { text: 'Loading', link: '/en/components/loading' },
+                  { text: 'Skeleton', link: '/en/components/skeleton' },
                   { text: 'Overlay', link: '/en/components/overlay' },
                   { text: 'Popup', link: '/en/components/popup' },
                   { text: 'Toast', link: '/en/components/toast' },
@@ -592,21 +600,27 @@ export default defineConfig({
                 items: [
                   { text: 'Button', link: '/en/primitives/button' },
                   { text: 'Input', link: '/en/primitives/input' },
-                  { text: 'Number Field', link: '/en/primitives/number-field' },
-                  { text: 'Image', link: '/en/primitives/image' },
-                  { text: 'Cell', link: '/en/primitives/cell' },
-                  { text: 'Sticky', link: '/en/primitives/sticky' },
                 ],
               },
               {
                 text: 'Selection & Toggle',
                 collapsed: false,
                 items: [
+                  { text: 'Number Field', link: '/en/primitives/number-field' },
                   { text: 'Checkbox', link: '/en/primitives/checkbox' },
                   { text: 'Radio Group', link: '/en/primitives/radio-group' },
                   { text: 'Switch', link: '/en/primitives/switch' },
                   { text: 'Tabs', link: '/en/primitives/tabs' },
                   { text: 'Select', link: '/en/primitives/select' },
+                ],
+              },
+              {
+                text: 'Content & Layout',
+                collapsed: false,
+                items: [
+                  { text: 'Image', link: '/en/primitives/image' },
+                  { text: 'Cell', link: '/en/primitives/cell' },
+                  { text: 'Sticky', link: '/en/primitives/sticky' },
                 ],
               },
               {

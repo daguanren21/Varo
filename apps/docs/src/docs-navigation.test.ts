@@ -35,6 +35,19 @@ describe('docs navigation', () => {
     expect(config).toContain('{ text: \'Menu 菜单\', link: \'/components/menu\' }')
   })
 
+  it('keeps the shipped Skeleton component visible in feedback documentation', () => {
+    const config = readFileSync(configPath, 'utf8')
+    const skeletonZh = readFileSync(resolve(docsRoot, 'components/skeleton.md'), 'utf8')
+    const skeletonEn = readFileSync(resolve(docsRoot, 'en/components/skeleton.md'), 'utf8')
+
+    expect(config).toContain('{ text: \'Skeleton 骨架屏\', link: \'/components/skeleton\' }')
+    expect(config).toContain('{ text: \'Skeleton\', link: \'/en/components/skeleton\' }')
+    expect(skeletonZh).toContain('<FormComponentDemo example=\"skeleton\" locale=\"zh\" />')
+    expect(skeletonEn).toContain('<FormComponentDemo example=\"skeleton\" locale=\"en\" />')
+    expect(skeletonZh).toContain('VSkeleton')
+    expect(skeletonEn).toContain('VSkeleton')
+  })
+
   it('adds a primitives catalog and dedicated pages for interactive behavior primitives', () => {
     const config = readFileSync(configPath, 'utf8')
     const primitiveZh = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
@@ -74,6 +87,10 @@ describe('docs navigation', () => {
     expect(catalog).toContain('title: \'Button\'')
     expect(catalog).toContain('title: \'Dialog\'')
     expect(catalog).toContain('const routePrefix = props.locale === \'en\' ? \'/en\' : \'\'')
+    expect(config).toContain('text: \'内容与布局\'')
+    expect(config).toContain('text: \'Content & Layout\'')
+    expect(catalog).toMatch(/id: 'number-field'[\s\S]*?category: 'controls'/)
+    expect(catalog).toMatch(/id: 'image'[\s\S]*?category: 'content'/)
     expect(example).toContain('name: PrimitiveExampleName')
     expect(example).toContain('resolvePrimitiveExample')
 

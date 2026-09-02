@@ -2209,6 +2209,22 @@ textarea.varo-input__control {
   width: 100%;
 }
 
+.varo-skeleton--pending {
+  min-height: 72px;
+  opacity: 0;
+}
+
+.varo-skeleton__loaded[data-fade='true'] {
+  animation: varo-skeleton-content-in 180ms ease-out both;
+}
+
+@keyframes varo-skeleton-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
 .varo-skeleton__avatar,
 .varo-skeleton__title,
 .varo-skeleton__row {
@@ -2258,6 +2274,18 @@ textarea.varo-input__control {
 @keyframes varo-skeleton-shimmer {
   to {
     transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-skeleton[data-animated='true'] :where(.varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
+    opacity: 0;
+    transform: none;
+    animation: none;
+  }
+
+  .varo-skeleton__loaded[data-fade='true'] {
+    animation: none;
   }
 }
 

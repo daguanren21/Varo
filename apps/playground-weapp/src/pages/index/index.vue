@@ -15,6 +15,7 @@ import ProfileCard from '../../components/blocks/profile-card.vue'
 import ProfileEdit from '../../components/blocks/profile-edit.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VInput from '../../components/ui/v-input.vue'
+import VSkeleton from '../../components/ui/v-skeleton.vue'
 import VSwitch from '../../components/ui/v-switch.vue'
 import VThemeProvider from '../../components/ui/v-theme-provider.vue'
 
@@ -73,6 +74,7 @@ const violetTheme = createTheme({
 })
 const name = shallowRef('Varo')
 const loading = shallowRef(false)
+const skeletonLoading = shallowRef(true)
 const enabled = shallowRef(true)
 const clicks = shallowRef(0)
 const lastEvent = shallowRef('等待交互')
@@ -164,6 +166,10 @@ function onPrimaryClick() {
   }, 900)
 }
 
+function toggleSkeleton() {
+  skeletonLoading.value = !skeletonLoading.value
+}
+
 function record(message: string) {
   lastEvent.value = message
 }
@@ -227,6 +233,25 @@ function openFormShowcase() {
         <text class="meta">
           当前值：{{ name || '空' }}
         </text>
+      </view>
+
+      <view class="card">
+        <text class="card-title">
+          Skeleton / Content Fade
+        </text>
+        <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
+          <view class="skeleton-loaded">
+            <text class="card-title">
+              真实内容已加载
+            </text>
+            <text class="meta">
+              延迟骨架屏避免短请求闪烁，内容完成后淡入。
+            </text>
+          </view>
+        </VSkeleton>
+        <VButton variant="outline" @click="toggleSkeleton">
+          {{ skeletonLoading ? '显示真实内容' : '重新加载' }}
+        </VButton>
       </view>
 
       <view class="agent-review">
@@ -376,6 +401,13 @@ function openFormShowcase() {
 .meta {
   font-size: 12px;
   color: #5b677a;
+}
+
+.skeleton-loaded {
+  display: grid;
+  gap: 6px;
+  align-content: center;
+  min-height: 72px;
 }
 
 .agent-review {

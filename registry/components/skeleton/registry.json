@@ -2,15 +2,21 @@
   "name": "skeleton",
   "type": "component",
   "title": "VSkeleton",
-  "description": "Animated content placeholder with avatar, title, and configurable rows.",
+  "description": "Delayed content placeholder with avatar, title, configurable rows, reduced motion, and loaded-content fade.",
   "exportName": "VSkeleton",
   "targets": [
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
@@ -22,9 +28,9 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/skeleton/skeleton.ts",
-      "to": "src/components/ui/skeleton.ts"
+      "from": "registry/components/skeleton/weapp-vite.vue",
+      "to": "src/components/ui/v-skeleton.vue"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/skeleton"
 }

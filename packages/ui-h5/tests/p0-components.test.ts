@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { h, nextTick } from 'vue'
 import { VActionSheet } from '../src/action-sheet'
 import { VAvatar } from '../src/avatar'
 import { VBadge } from '../src/badge'
@@ -28,10 +28,10 @@ describe('P0 display components', () => {
             h(VCardContent, null, { default: () => [
               h(VIcon, { name: 'check', label: 'Completed' }),
               h(VAvatar, { fallback: 'VA', alt: 'Varo account' }),
-              h(VBadge, { content: 120, max: 99 })
-            ] })
-          ]
-        })
+              h(VBadge, { content: 120, max: 99 }),
+            ] }),
+          ],
+        }),
     })
 
     expect(wrapper.get('.varo-card').attributes('data-variant')).toBe('outline')
@@ -41,11 +41,29 @@ describe('P0 display components', () => {
     expect(wrapper.get('.varo-badge').text()).toBe('99+')
   })
 
-  it('renders empty, skeleton, and clamped progress states', async () => {
-    const skeleton = mount(VSkeleton, { props: { rows: 2 } })
-    expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(2)
-    await skeleton.setProps({ loading: false })
-    expect(skeleton.find('.varo-skeleton').exists()).toBe(false)
+  it('delays skeleton placeholders and fades loaded content in', async () => {
+    vi.useFakeTimers()
+    try {
+      const skeleton = mount(VSkeleton, {
+        props: { delay: 180, rows: 2 },
+        slots: { default: 'Loaded content' },
+      })
+      expect(skeleton.attributes('data-state')).toBe('pending')
+      expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(0)
+
+      await vi.advanceTimersByTimeAsync(179)
+      expect(skeleton.attributes('data-state')).toBe('pending')
+      await vi.advanceTimersByTimeAsync(1)
+      expect(skeleton.attributes('data-state')).toBe('visible')
+      expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(2)
+
+      await skeleton.setProps({ loading: false })
+      expect(skeleton.get('.varo-skeleton__loaded').text()).toBe('Loaded content')
+      expect(skeleton.attributes('data-fade')).toBe('true')
+    }
+    finally {
+      vi.useRealTimers()
+    }
 
     const progress = mount(VProgress, { props: { percentage: 140 } })
     expect(progress.attributes('aria-valuenow')).toBe('100')
@@ -68,7 +86,7 @@ describe('P0 interaction components', () => {
   it('toggles checkable tags and emits close separately', async () => {
     const wrapper = mount(VTag, {
       props: { checkable: true, checked: false, closeable: true },
-      slots: { default: () => 'New' }
+      slots: { default: () => 'New' },
     })
 
     await wrapper.trigger('click')
@@ -79,7 +97,7 @@ describe('P0 interaction components', () => {
 
   it('selects steps only when clickable', async () => {
     const wrapper = mount(VSteps, {
-      props: { clickable: true, current: 0, items: ['Created', 'Shipped'] }
+      props: { clickable: true, current: 0, items: ['Created', 'Shipped'] },
     })
 
     await wrapper.findAll('.varo-steps__trigger')[1].trigger('click')
@@ -98,8 +116,8 @@ describe('P0 interaction components', () => {
     const collapse = mount({
       render: () =>
         h(VCollapse, { collapsible: true }, {
-          default: () => h(VCollapseItem, { title: 'Details', value: 'details' }, { default: () => 'Body' })
-        })
+          default: () => h(VCollapseItem, { title: 'Details', value: 'details' }, { default: () => 'Body' }),
+        }),
     })
     expect(collapse.text()).not.toContain('Body')
     await collapse.get('.varo-collapse-item__trigger').trigger('click')
@@ -110,9 +128,9 @@ describe('P0 interaction components', () => {
         h(VPopoverRoot, null, {
           default: () => [
             h(VPopoverTrigger, null, { default: () => 'Open' }),
-            h(VPopoverContent, null, { default: () => 'Popover body' })
-          ]
-        })
+            h(VPopoverContent, null, { default: () => 'Popover body' }),
+          ],
+        }),
     })
     expect(popover.text()).not.toContain('Popover body')
     await popover.get('.varo-popover__trigger').trigger('click')
@@ -121,7 +139,7 @@ describe('P0 interaction components', () => {
 
   it('selects action-sheet entries and requests close', async () => {
     const wrapper = mount(VActionSheet, {
-      props: { visible: true, actions: [{ name: 'Archive', value: 'archive' }] }
+      props: { visible: true, actions: [{ name: 'Archive', value: 'archive' }] },
     })
 
     await wrapper.get('.varo-action-sheet__action').trigger('click')
@@ -132,7 +150,7 @@ describe('P0 interaction components', () => {
   it('opens swipe actions after crossing the configured threshold', async () => {
     const wrapper = mount(VSwipeCell, {
       props: { leftWidth: 80, threshold: 0.25 },
-      slots: { default: () => 'Order' }
+      slots: { default: () => 'Order' },
     })
     const content = wrapper.get('.varo-swipe-cell__content')
 
@@ -148,7 +166,7 @@ describe('P0 interaction components', () => {
     const onLoad = vi.fn()
     const wrapper = mount(VList, {
       props: { errorText: undefined, onLoad },
-      slots: { default: () => h('div', 'Row') }
+      slots: { default: () => h('div', 'Row') },
     })
     await nextTick()
     expect(onLoad).toHaveBeenCalledTimes(1)

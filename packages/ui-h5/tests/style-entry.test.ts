@@ -91,8 +91,23 @@ describe('ui-h5 style entry', () => {
     expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: relative;[\s\S]*?width: 36px/)
     expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: -9px;[\s\S]*?right: -15px/)
     expect(weapp.slice(weapp.indexOf(marker))).toBe(h5Layout)
+
     expect(registryH5.slice(registryH5.indexOf(marker))).toBe(h5Layout)
     expect(registryWeapp.slice(registryWeapp.indexOf(marker))).toBe(h5Layout)
+  })
+  it('ships delayed Skeleton and reduced-motion styles across targets', () => {
+    const sources = [
+      readFileSync(resolve(packageRoot, 'src/style.css'), 'utf8'),
+      readFileSync(resolve(packageRoot, '../ui-weapp/src/style.css'), 'utf8'),
+      readFileSync(resolve(packageRoot, '../../registry/themes/base/h5.css'), 'utf8'),
+      readFileSync(resolve(packageRoot, '../../registry/themes/base/weapp-vite.css'), 'utf8'),
+    ]
+
+    sources.forEach((source) => {
+      expect(source).toContain('.varo-skeleton--pending')
+      expect(source).toContain('.varo-skeleton__loaded[data-fade=\'true\']')
+      expect(source).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.varo-skeleton/)
+    })
   })
 
   it('ships source-owned pagination and Toast styles across targets', () => {

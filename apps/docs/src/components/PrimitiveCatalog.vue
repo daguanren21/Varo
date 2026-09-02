@@ -2,7 +2,7 @@
 import { withBase } from 'vitepress'
 
 type Locale = 'zh' | 'en'
-type Category = 'foundation' | 'controls' | 'disclosure' | 'layers'
+type Category = 'foundation' | 'controls' | 'content' | 'disclosure' | 'layers'
 
 interface CatalogItemDefinition {
   id: string
@@ -26,6 +26,7 @@ const copy = props.locale === 'en'
       categories: {
         foundation: 'Foundation',
         controls: 'Selection & Toggle',
+        content: 'Content & Layout',
         disclosure: 'Disclosure & Floating',
         layers: 'Layers',
       },
@@ -36,6 +37,7 @@ const copy = props.locale === 'en'
       categories: {
         foundation: '基础控件',
         controls: '选择与切换',
+        content: '内容与布局',
         disclosure: '展开与轻浮层',
         layers: '遮罩与弹层',
       },
@@ -72,7 +74,7 @@ const definitions: CatalogItemDefinition[] = [
       zh: '数值边界、步进、精度与组合式加减控件。',
       en: 'Numeric bounds, step, precision, and composable increment controls.',
     },
-    category: 'foundation',
+    category: 'controls',
   },
   {
     id: 'image',
@@ -82,7 +84,7 @@ const definitions: CatalogItemDefinition[] = [
       zh: '图片加载、失败、占位与尺寸适配状态。',
       en: 'Image loading, failure, placeholder, and sizing state.',
     },
-    category: 'foundation',
+    category: 'content',
   },
   {
     id: 'cell',
@@ -92,7 +94,7 @@ const definitions: CatalogItemDefinition[] = [
       zh: '列表行、设置项、链接行与键盘激活契约。',
       en: 'List row, settings item, link row, and keyboard activation contract.',
     },
-    category: 'foundation',
+    category: 'content',
   },
   {
     id: 'sticky',
@@ -102,7 +104,7 @@ const definitions: CatalogItemDefinition[] = [
       zh: '吸顶状态、偏移量与滚动事件适配。',
       en: 'Sticky state, offset, and runtime-specific scroll events.',
     },
-    category: 'foundation',
+    category: 'content',
   },
   {
     id: 'checkbox',
@@ -217,7 +219,7 @@ const definitions: CatalogItemDefinition[] = [
 ]
 
 const routePrefix = props.locale === 'en' ? '/en' : ''
-const groups = (['foundation', 'controls', 'disclosure', 'layers'] as const).map(id => ({
+const groups = (['foundation', 'controls', 'content', 'disclosure', 'layers'] as const).map(id => ({
   id,
   title: copy.categories[id],
   items: definitions
