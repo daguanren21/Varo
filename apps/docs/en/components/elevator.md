@@ -1,5 +1,7 @@
 # Elevator
 
+`VElevator` keeps the index rail synchronized with the group header currently crossing the content viewport. Reaching the bottom activates the final group, while index clicks still use smooth scrolling.
+
 ## Demo
 
 <PlatformTabsDemo example="elevator" locale="en" />
@@ -23,6 +25,12 @@ const indexes = [
   <VElevator v-model:active-index="activeIndex" :indexes="indexes" />
 </template>
 ```
+
+## Scroll synchronization
+
+- `activeIndex` updates when a group heading crosses the content container top.
+- Reaching the bottom activates the last index so short final groups do not stay unreachable.
+- Clicking the index rail updates state immediately and smooth-scrolls to its group.
 
 ## Props
 

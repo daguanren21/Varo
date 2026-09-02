@@ -239,16 +239,43 @@ function openFormShowcase() {
         <text class="card-title">
           Skeleton / Content Fade
         </text>
-        <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
-          <view class="skeleton-loaded">
-            <text class="card-title">
-              真实内容已加载
-            </text>
+        <view class="skeleton-grid">
+          <view class="skeleton-item">
             <text class="meta">
-              延迟骨架屏避免短请求闪烁，内容完成后淡入。
+              文章
             </text>
+            <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
+              <view class="skeleton-loaded">
+                <text class="card-title">
+                  真实内容已加载
+                </text>
+                <text class="meta">
+                  延迟骨架屏避免短请求闪烁，内容完成后淡入。
+                </text>
+              </view>
+            </VSkeleton>
           </view>
-        </VSkeleton>
+          <view class="skeleton-item">
+            <text class="meta">
+              图片
+            </text>
+            <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="image" :rows="2">
+              <view class="skeleton-media-loaded">
+                <text>图片内容已加载</text>
+              </view>
+            </VSkeleton>
+          </view>
+          <view class="skeleton-item">
+            <text class="meta">
+              视频
+            </text>
+            <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="video" :rows="2">
+              <view class="skeleton-media-loaded">
+                <text>视频内容已加载</text>
+              </view>
+            </VSkeleton>
+          </view>
+        </view>
         <VButton variant="outline" @click="toggleSkeleton">
           {{ skeletonLoading ? '显示真实内容' : '重新加载' }}
         </VButton>
@@ -401,6 +428,22 @@ function openFormShowcase() {
 .meta {
   font-size: 12px;
   color: #5b677a;
+}
+
+.skeleton-grid,
+.skeleton-item {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton-media-loaded {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  font-size: 13px;
+  color: #0f766e;
+  background: #e6fffa;
+  border-radius: 12px;
 }
 
 .skeleton-loaded {

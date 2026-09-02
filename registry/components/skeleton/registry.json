@@ -2,7 +2,7 @@
   "name": "skeleton",
   "type": "component",
   "title": "VSkeleton",
-  "description": "Delayed content placeholder with avatar, title, configurable rows, reduced motion, and loaded-content fade.",
+  "description": "Delayed article, image, and video placeholders with configurable rows, reduced motion, and loaded-content fade.",
   "exportName": "VSkeleton",
   "targets": [
     "h5",

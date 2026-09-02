@@ -111,6 +111,8 @@ export const VGridItem = defineComponent({
     const style = computed(() => ({
       '--varo-grid-item-span': props.span,
     }))
+    const badgeText = computed(() => props.badge == null ? '' : String(props.badge))
+    const badgeWide = computed(() => badgeText.value.length > 1)
 
     function keydown(event: KeyboardEvent) {
       if (!clickable.value || tag.value !== 'div' || (event.key !== 'Enter' && event.key !== ' ')) { return }
@@ -139,7 +141,7 @@ export const VGridItem = defineComponent({
           props.icon || slots.icon || props.badge || props.dot
             ? h('span', { class: 'varo-grid__icon-wrap' }, [
                 slots.icon?.() ?? (props.icon ? h('span', { class: 'varo-grid__icon' }, props.icon) : null),
-                props.badge != null ? h('sup', { class: 'varo-grid__badge' }, String(props.badge)) : null,
+                props.badge != null ? h('sup', { 'class': 'varo-grid__badge', 'data-wide': String(badgeWide.value) }, badgeText.value) : null,
                 props.dot ? h('sup', { class: 'varo-grid__dot' }) : null,
               ])
             : null,

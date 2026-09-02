@@ -53,6 +53,44 @@ describe('ui-h5 navigation components', () => {
     }
   })
 
+  it('updates the Elevator anchor while its content scrolls', async () => {
+    const wrapper = mount(VElevator, {
+      props: {
+        defaultActiveIndex: 'A',
+        indexes: [
+          { title: 'A', items: ['Apple'] },
+          { title: 'B', items: ['Banana'] },
+          { title: 'C', items: ['Cherry'] },
+        ],
+      },
+    })
+    const content = wrapper.get<HTMLElement>('.varo-elevator__content').element
+    const groups = wrapper.findAll<HTMLElement>('.varo-elevator__group')
+    let scrollTop = 40
+    Object.defineProperties(content, {
+      clientHeight: { configurable: true, value: 100 },
+      scrollHeight: { configurable: true, value: 300 },
+      scrollTop: {
+        configurable: true,
+        get: () => scrollTop,
+        set: (value) => { scrollTop = Number(value) },
+      },
+    })
+    vi.spyOn(content, 'getBoundingClientRect').mockReturnValue({ top: 100 } as DOMRect)
+    vi.spyOn(groups[0]!.element, 'getBoundingClientRect').mockReturnValue({ top: 80 } as DOMRect)
+    vi.spyOn(groups[1]!.element, 'getBoundingClientRect').mockReturnValue({ top: 100 } as DOMRect)
+    vi.spyOn(groups[2]!.element, 'getBoundingClientRect').mockReturnValue({ top: 180 } as DOMRect)
+
+    await wrapper.get('.varo-elevator__content').trigger('scroll')
+    expect(wrapper.attributes('data-active-index')).toBe('B')
+    expect(wrapper.emitted('update:activeIndex')?.at(-1)).toEqual(['B'])
+
+    scrollTop = 200
+    await wrapper.get('.varo-elevator__content').trigger('scroll')
+    expect(wrapper.attributes('data-active-index')).toBe('C')
+    expect(wrapper.emitted('update:activeIndex')?.at(-1)).toEqual(['C'])
+  })
+
   it('toggles fixed nav and emits selected item', async () => {
     const onUpdate = vi.fn()
     const onSelect = vi.fn()

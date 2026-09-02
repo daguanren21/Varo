@@ -20,6 +20,15 @@ describe('ui-h5 grid', () => {
     expect(wrapper.get('.varo-grid__item').text()).toContain('宫格')
   })
 
+  it('keeps single-digit badges circular and marks wider values', async () => {
+    const item = mount(VGridItem, { props: { badge: 2, icon: '□', text: '订单' } })
+    const badge = item.get('.varo-grid__badge')
+    expect(badge.attributes('data-wide')).toBe('false')
+
+    await item.setProps({ badge: '12' })
+    expect(badge.attributes('data-wide')).toBe('true')
+  })
+
   it('activates clickable items with Enter and Space', async () => {
     const onClick = vi.fn()
     const wrapper = mount(VGrid, {

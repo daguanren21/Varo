@@ -1,4 +1,7 @@
+import type { PropType } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, shallowRef, watch } from 'vue'
+
+export type SkeletonMedia = 'image' | 'none' | 'video'
 
 export const VSkeleton = defineComponent({
   name: 'VSkeleton',
@@ -20,6 +23,14 @@ export const VSkeleton = defineComponent({
       type: Boolean,
       default: true,
     },
+    media: {
+      type: String as PropType<SkeletonMedia>,
+      default: 'none',
+    },
+    mediaRatio: {
+      type: String,
+      default: '16 / 9',
+    },
     round: Boolean,
     rows: {
       type: Number,
@@ -32,6 +43,7 @@ export const VSkeleton = defineComponent({
   },
   setup(props, { attrs, slots }) {
     const rows = computed(() => Array.from({ length: Math.max(0, Math.floor(props.rows)) }, (_, index) => index))
+    const mediaStyle = computed(() => ({ aspectRatio: props.mediaRatio }))
     const showSkeleton = shallowRef(false)
     let delayTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -84,6 +96,7 @@ export const VSkeleton = defineComponent({
           'class': ['varo-skeleton', 'varo-skeleton--pending', attrs.class],
           'aria-busy': 'true',
           'aria-label': 'Loading',
+          'data-media': props.media,
           'data-state': 'pending',
         })
       }
@@ -96,20 +109,31 @@ export const VSkeleton = defineComponent({
           'aria-busy': 'true',
           'aria-label': 'Loading',
           'data-animated': String(props.animated),
+          'data-media': props.media,
           'data-round': String(props.round),
           'data-state': 'visible',
         },
         [
-          props.avatar ? h('span', { class: 'varo-skeleton__avatar' }) : null,
-          h('div', { class: 'varo-skeleton__content' }, [
-            props.title ? h('span', { class: 'varo-skeleton__title' }) : null,
-            ...rows.value.map(row =>
-              h('span', {
-                key: row,
-                class: 'varo-skeleton__row',
-                style: row === rows.value.length - 1 ? { width: '64%' } : undefined,
-              }),
-            ),
+          props.media !== 'none'
+            ? h('span', {
+                'class': 'varo-skeleton__media',
+                'aria-hidden': 'true',
+                'data-kind': props.media,
+                'style': mediaStyle.value,
+              })
+            : null,
+          h('div', { class: 'varo-skeleton__body' }, [
+            props.avatar ? h('span', { class: 'varo-skeleton__avatar' }) : null,
+            h('div', { class: 'varo-skeleton__content' }, [
+              props.title ? h('span', { class: 'varo-skeleton__title' }) : null,
+              ...rows.value.map(row =>
+                h('span', {
+                  key: row,
+                  class: 'varo-skeleton__row',
+                  style: row === rows.value.length - 1 ? { width: '64%' } : undefined,
+                }),
+              ),
+            ]),
           ]),
         ],
       )

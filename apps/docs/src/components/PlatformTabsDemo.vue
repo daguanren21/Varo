@@ -2943,15 +2943,23 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  align-items: center;
   padding: 0;
   margin: 4px 0 0;
   list-style: none;
 }
 
 .platform-demo__fixed-nav-product li {
-  padding: 5px 7px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 8px;
+  margin: 0;
   font-size: 0.66rem;
+  line-height: 1.2;
   color: var(--varo-text-secondary);
+  white-space: nowrap;
   background: var(--varo-fill-light);
   border-radius: 8px;
 }

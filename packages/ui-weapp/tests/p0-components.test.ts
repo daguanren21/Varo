@@ -56,6 +56,12 @@ describe('P0 display components', () => {
       await vi.advanceTimersByTimeAsync(1)
       expect(skeleton.attributes('data-state')).toBe('visible')
       expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(2)
+      await skeleton.setProps({ media: 'image', mediaRatio: '4 / 3' })
+      expect(skeleton.attributes('data-media')).toBe('image')
+      expect(skeleton.get('.varo-skeleton__media').attributes('data-kind')).toBe('image')
+      expect(skeleton.get('.varo-skeleton__media').attributes('style')).toContain('aspect-ratio: 4 / 3')
+      await skeleton.setProps({ media: 'video' })
+      expect(skeleton.get('.varo-skeleton__media').attributes('data-kind')).toBe('video')
 
       await skeleton.setProps({ loading: false })
       expect(skeleton.get('.varo-skeleton__loaded').text()).toBe('Loaded content')

@@ -24,15 +24,42 @@ export const VElevator = defineComponent({
     const localActive = shallowRef(props.defaultActiveIndex ?? props.indexes[0]?.title ?? '')
     const current = computed(() => props.activeIndex ?? localActive.value)
     const groupRefs = new Map<string, HTMLElement>()
+    const contentRef = shallowRef<HTMLElement>()
 
-    function setActive(title: string) {
+    function applyActive(title: string, force = false) {
+      if (!force && current.value === title) { return }
       if (props.activeIndex === undefined) {
         localActive.value = title
       }
 
       emit('update:activeIndex', title)
       emit('change', title)
+    }
+
+    function setActive(title: string) {
+      applyActive(title, true)
       groupRefs.get(title)?.scrollIntoView?.({ block: 'start', behavior: 'smooth' })
+    }
+
+    function syncActiveFromScroll() {
+      const content = contentRef.value
+      if (!content || props.indexes.length === 0) { return }
+
+      const lastGroup = props.indexes.at(-1)
+      const atEnd = content.scrollTop + content.clientHeight >= content.scrollHeight - 1
+      if (atEnd && lastGroup) {
+        applyActive(lastGroup.title)
+        return
+      }
+
+      const threshold = content.getBoundingClientRect().top + 1
+      let next = props.indexes[0]?.title ?? ''
+      for (const group of props.indexes) {
+        const element = groupRefs.get(group.title)
+        if (!element || element.getBoundingClientRect().top > threshold) { break }
+        next = group.title
+      }
+      if (next) { applyActive(next) }
     }
 
     return () =>
@@ -47,7 +74,7 @@ export const VElevator = defineComponent({
         [
           h(
             'div',
-            { class: 'varo-elevator__content' },
+            { ref: contentRef, class: 'varo-elevator__content', onScroll: syncActiveFromScroll },
             props.indexes.map(group =>
               h(
                 'section',

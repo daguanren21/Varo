@@ -88,8 +88,10 @@ describe('ui-h5 style entry', () => {
     expect(h5Layout).toContain('.varo-sticky')
     expect(h5Layout).toContain('.varo-region-picker')
     expect(h5Layout).toContain('.varo-map')
-    expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: relative;[\s\S]*?width: 36px/)
-    expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: -9px;[\s\S]*?right: -15px/)
+    expect(h5Layout).toMatch(/\.varo-grid__icon-wrap\s*\{[\s\S]*?position: relative;[\s\S]*?width: 40px;[\s\S]*?height: 40px/)
+    expect(h5Layout).toMatch(/\.varo-grid__badge,[\s\S]*?top: 0;[\s\S]*?right: 0;[\s\S]*?width: 20px;[\s\S]*?height: 20px/)
+    expect(h5Layout).not.toContain('top: -9px')
+    expect(h5Layout).not.toContain('right: -15px')
     expect(weapp.slice(weapp.indexOf(marker))).toBe(h5Layout)
 
     expect(registryH5.slice(registryH5.indexOf(marker))).toBe(h5Layout)

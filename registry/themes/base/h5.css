@@ -2204,9 +2204,15 @@ textarea.varo-input__control {
 }
 
 .varo-skeleton {
-  display: flex;
+  display: grid;
   gap: 12px;
   width: 100%;
+}
+
+.varo-skeleton__body {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
 }
 
 .varo-skeleton--pending {
@@ -2225,12 +2231,33 @@ textarea.varo-input__control {
   }
 }
 
+.varo-skeleton__media,
 .varo-skeleton__avatar,
 .varo-skeleton__title,
 .varo-skeleton__row {
   position: relative;
   overflow: hidden;
   background: var(--varo-ui-surface-muted);
+}
+
+.varo-skeleton__media {
+  display: block;
+  width: 100%;
+  min-height: 96px;
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-skeleton__media[data-kind='video']::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  content: '';
+  background: color-mix(in srgb, var(--varo-ui-text-muted) 48%, transparent);
+  clip-path: polygon(28% 18%, 82% 50%, 28% 82%);
+  transform: translate(-50%, -50%);
 }
 
 .varo-skeleton__avatar {
@@ -2244,6 +2271,7 @@ textarea.varo-input__control {
   display: grid;
   flex: 1;
   gap: 9px;
+  min-width: 0;
 }
 
 .varo-skeleton__title {
@@ -2262,7 +2290,7 @@ textarea.varo-input__control {
   border-radius: 999px;
 }
 
-.varo-skeleton[data-animated='true'] :where(.varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
+.varo-skeleton[data-animated='true'] :where(.varo-skeleton__media, .varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
   position: absolute;
   inset: 0;
   content: '';
@@ -2278,7 +2306,7 @@ textarea.varo-input__control {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .varo-skeleton[data-animated='true'] :where(.varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
+  .varo-skeleton[data-animated='true'] :where(.varo-skeleton__media, .varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
     opacity: 0;
     transform: none;
     animation: none;
@@ -2903,34 +2931,42 @@ textarea.varo-input__control {
   display: inline-grid;
   flex: none;
   place-items: center;
-  width: 36px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
 }
 
 .varo-grid__badge,
 .varo-grid__dot {
   position: absolute;
-  top: -9px;
-  right: -15px;
+  top: 0;
+  right: 0;
   box-sizing: border-box;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0;
   font-size: 0.65rem;
-  line-height: 16px;
+  line-height: 1;
   color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-danger);
   border: 2px solid var(--varo-ui-surface);
   border-radius: 999px;
 }
 
+.varo-grid__badge[data-wide='true'] {
+  width: auto;
+  padding-inline: 5px;
+}
+
 .varo-grid__dot {
-  top: -2px;
-  right: -5px;
+  top: 2px;
+  right: 2px;
   width: 8px;
   min-width: 8px;
   height: 8px;
-  padding: 0;
+  border: 0;
 }
 
 .varo-row {

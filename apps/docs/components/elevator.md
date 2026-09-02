@@ -1,5 +1,7 @@
 # Elevator 电梯楼层
 
+`VElevator` 会在内容滚动时根据当前分组标题同步右侧索引；滚动到底部时固定到最后一组，点击索引仍使用平滑滚动。
+
 ## 演示
 
 <PlatformTabsDemo example="elevator" locale="zh" />
@@ -23,6 +25,12 @@ const indexes = [
   <VElevator v-model:active-index="activeIndex" :indexes="indexes" />
 </template>
 ```
+
+## 滚动同步
+
+- 分组标题越过内容容器顶部时，`activeIndex` 自动切换。
+- 内容滚动到底部时，最后一个索引保持激活，避免短分组无法触顶。
+- 点击右侧索引会立即更新状态并平滑滚动到对应分组。
 
 ## Props
 

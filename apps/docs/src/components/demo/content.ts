@@ -1589,7 +1589,7 @@ import { VDivider } from '@varo-ui/weapp'
   },
   'elevator': {
     title: 'Elevator 跨端示例与演示',
-    description: '展示楼层索引、分组列表和索引点击切换。',
+    description: '展示分组滚动同步、底部索引修正和索引点击平滑跳转。',
     platforms: {
       h5: {
         runtime: 'H5 wrapper',

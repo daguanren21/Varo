@@ -257,6 +257,11 @@ const copy = computed(() =>
         toastShow: 'Show Toast',
         loadingText: 'Loading',
         skeletonTitle: 'Article skeleton',
+        skeletonArticle: 'Article',
+        skeletonImage: 'Image',
+        skeletonVideo: 'Video',
+        skeletonImageContent: 'Product cover loaded',
+        skeletonVideoContent: 'Tutorial video loaded',
         skeletonShowContent: 'Show content',
         skeletonShowLoading: 'Show skeleton',
         skeletonContentTitle: 'Cross-runtime loading state',
@@ -406,6 +411,11 @@ const copy = computed(() =>
         toastShow: '显示 Toast',
         loadingText: '加载中',
         skeletonTitle: '文章骨架屏',
+        skeletonArticle: '文章',
+        skeletonImage: '图片',
+        skeletonVideo: '视频',
+        skeletonImageContent: '商品封面已加载',
+        skeletonVideoContent: '教学视频已加载',
         skeletonShowContent: '显示内容',
         skeletonShowLoading: '显示骨架屏',
         skeletonContentTitle: '跨端加载状态',
@@ -1234,6 +1244,12 @@ const loading = shallowRef(true)
       <p>${copy.value.skeletonContentBody}</p>
     </article>
   </VSkeleton>
+  <VSkeleton :loading="loading" :delay="180" content-fade media="image" :rows="2">
+    <article>Image loaded</article>
+  </VSkeleton>
+  <VSkeleton :loading="loading" :delay="180" content-fade media="video" :rows="2">
+    <article>Video loaded</article>
+  </VSkeleton>
 </template>
       `.trim()
     default:
@@ -1644,12 +1660,35 @@ function onFormArrayFailed() {
               {{ skeletonLoading ? copy.skeletonShowContent : copy.skeletonShowLoading }}
             </button>
           </header>
-          <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
-            <article class="form-demo__skeleton-content">
-              <strong>{{ copy.skeletonContentTitle }}</strong>
-              <p>{{ copy.skeletonContentBody }}</p>
-            </article>
-          </VSkeleton>
+          <div class="form-demo__skeleton-grid">
+            <section>
+              <small>{{ copy.skeletonArticle }}</small>
+              <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
+                <article class="form-demo__skeleton-content">
+                  <strong>{{ copy.skeletonContentTitle }}</strong>
+                  <p>{{ copy.skeletonContentBody }}</p>
+                </article>
+              </VSkeleton>
+            </section>
+            <section>
+              <small>{{ copy.skeletonImage }}</small>
+              <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="image" :rows="2">
+                <article class="form-demo__skeleton-media-content" data-kind="image">
+                  <span aria-hidden="true">IMG</span>
+                  <strong>{{ copy.skeletonImageContent }}</strong>
+                </article>
+              </VSkeleton>
+            </section>
+            <section>
+              <small>{{ copy.skeletonVideo }}</small>
+              <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="video" :rows="2">
+                <article class="form-demo__skeleton-media-content" data-kind="video">
+                  <span aria-hidden="true">▶</span>
+                  <strong>{{ copy.skeletonVideoContent }}</strong>
+                </article>
+              </VSkeleton>
+            </section>
+          </div>
         </section>
         <div v-else-if="example === 'loading'" class="form-demo__loading-row">
           <VLoading :text="copy.loadingText" />
@@ -2434,6 +2473,64 @@ function onFormArrayFailed() {
 .form-demo__skeleton-card > header button:focus-visible {
   outline: 2px solid var(--varo-primary);
   outline-offset: 2px;
+}
+
+.form-demo__skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form-demo__skeleton-grid > section {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+}
+
+.form-demo__skeleton-grid > section > small {
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: var(--varo-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-demo__skeleton-media-content {
+  display: grid;
+  gap: 8px;
+  place-content: center;
+  aspect-ratio: 16 / 9;
+  padding: 14px;
+  color: var(--varo-text-primary);
+  text-align: center;
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
+  border-radius: var(--varo-radius-lg);
+}
+
+.form-demo__skeleton-media-content span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin: auto;
+  font-size: 0.68rem;
+  font-weight: 850;
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-radius: 999px;
+}
+
+.form-demo__skeleton-media-content[data-kind='video'] span {
+  padding-left: 2px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+  .form-demo__skeleton-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .form-demo__skeleton-content {
