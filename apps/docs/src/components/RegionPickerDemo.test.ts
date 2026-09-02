@@ -50,6 +50,7 @@ describe('RegionPickerDemo', () => {
     await option('杭州市').trigger('click')
     await settleRequest()
     await option('西湖区').trigger('click')
+    expect(wrapper.get('.varo-region-picker__breadcrumbs').text()).not.toContain('请选择')
     await wrapper.get('.varo-region-picker__confirm').trigger('click')
 
     expect(wrapper.text()).toContain('中国 / 浙江省 / 杭州市 / 西湖区')

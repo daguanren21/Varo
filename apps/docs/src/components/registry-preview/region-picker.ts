@@ -145,6 +145,7 @@ export const VRegionPicker = defineComponent({
       level: index,
       value: draftPath.value[index],
     })))
+    const showPlaceholder = computed(() => !isRegionLeaf(selection.value.option))
     const isLoading = computed(() => props.loading || internalLoading.value)
     const canConfirm = computed(() => {
       if (draftPath.value.length === 0 || isLoading.value || loadError.value !== undefined) { return false }
@@ -241,12 +242,14 @@ export const VRegionPicker = defineComponent({
                 'data-active': String(item.active),
                 'onClick': () => { level.value = item.level },
               }, item.label)),
-              h('button', {
-                'key': 'placeholder',
-                'type': 'button',
-                'data-active': String(level.value >= breadcrumbs.value.length),
-                'onClick': () => { level.value = breadcrumbs.value.length },
-              }, props.placeholder),
+              showPlaceholder.value
+                ? h('button', {
+                    'key': 'placeholder',
+                    'type': 'button',
+                    'data-active': String(level.value >= breadcrumbs.value.length),
+                    'onClick': () => { level.value = breadcrumbs.value.length },
+                  }, props.placeholder)
+                : null,
             ]),
             h('div', { 'class': 'varo-region-picker__options', 'role': 'listbox', 'aria-busy': isLoading.value || undefined }, isLoading.value
               ? h('p', { class: 'varo-region-picker__state', role: 'status' }, props.loadingText)

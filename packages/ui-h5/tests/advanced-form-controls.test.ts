@@ -228,6 +228,8 @@ describe('ui-h5 advanced form controls', () => {
     expect(wrapper.find('.varo-uploader__delete').exists()).toBe(true)
     expect(wrapper.find('.varo-uploader__progress').attributes('aria-valuenow')).toBe('68')
     expect(wrapper.find('.varo-uploader__progress-bar').attributes('style')).toContain('width: 68%')
+    expect(wrapper.get('.varo-uploader__file-icon').find('svg').exists()).toBe(true)
+    expect(wrapper.get('.varo-uploader__file-icon').text()).toBe('')
     expect(wrapper.find('.varo-uploader__trigger-icon').text()).toBe('+')
   })
 

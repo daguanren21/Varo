@@ -420,7 +420,7 @@ describe('FormComponentDemo', () => {
     const textarea = wrapper.get<HTMLTextAreaElement>('textarea.varo-input__control')
     expect(textarea.attributes('aria-label')).toBe('问题描述')
     await textarea.setValue('点击确认后没有响应')
-    expect(wrapper.get('.form-demo__control-head output').text()).toBe('9/120')
+    expect(wrapper.get('.varo-input__word-limit').text()).toBe('9/120')
   })
   it('presents Uploader as a bounded business-document workflow', async () => {
     const wrapper = mount(FormComponentDemo, {
@@ -516,12 +516,14 @@ describe('FormComponentDemo', () => {
       global: { plugins: [themePlugin] },
       props: { example: 'toast', locale: 'zh' },
     })
-    expect(toast.find('.varo-toast').exists()).toBe(true)
-    await toast.get('.varo-toast__close').trigger('click')
-    expect(toast.find('.varo-toast').exists()).toBe(false)
-    expect(toast.find('.form-demo__reopen').exists()).toBe(true)
-    await toast.get('.form-demo__reopen').trigger('click')
-    expect(toast.find('.varo-toast').exists()).toBe(true)
+    const toasts = toast.findAll('.varo-toast')
+    expect(toasts).toHaveLength(4)
+    expect(toasts.map(item => item.attributes('data-type'))).toEqual(['text', 'warning', 'danger', 'success'])
+    expect(toast.text()).toContain('信息已更新')
+    expect(toast.text()).toContain('请检查必填项')
+    expect(toast.text()).toContain('请求失败')
+    expect(toast.text()).toContain('保存成功')
+    expect(toast.find('.varo-toast__close').exists()).toBe(false)
 
     const loading = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
@@ -536,15 +538,21 @@ describe('FormComponentDemo', () => {
       props: { example: 'skeleton', locale: 'zh' },
     })
     await vi.advanceTimersByTimeAsync(180)
-    expect(skeleton.findAll('.varo-skeleton')).toHaveLength(3)
-    expect(skeleton.findAll('.varo-skeleton').every(item => item.attributes('aria-busy') === 'true')).toBe(true)
+    expect(skeleton.findAll('.varo-skeleton')).toHaveLength(1)
+    expect(skeleton.get('.varo-skeleton').attributes('aria-busy')).toBe('true')
     expect(skeleton.find('.varo-skeleton__avatar').exists()).toBe(true)
-    expect(skeleton.findAll('.varo-skeleton__media').map(item => item.attributes('data-kind'))).toEqual(['image', 'video'])
-    expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(8)
+    expect(skeleton.findAll('.varo-skeleton__row')).toHaveLength(4)
+
+    await skeleton.get('.form-demo__skeleton-cases [data-case="image"]').trigger('click')
+    await vi.advanceTimersByTimeAsync(180)
+    expect(skeleton.get('.varo-skeleton__media').attributes('data-kind')).toBe('image')
+
+    await skeleton.get('.form-demo__skeleton-cases [data-case="video"]').trigger('click')
+    await vi.advanceTimersByTimeAsync(180)
+    expect(skeleton.get('.varo-skeleton__media').attributes('data-kind')).toBe('video')
+
     await skeleton.get('.form-demo__skeleton-card > header button').trigger('click')
     expect(skeleton.find('.varo-skeleton').exists()).toBe(false)
-    expect(skeleton.get('.form-demo__skeleton-content').text()).toContain('真实内容替换占位结构')
-    expect(skeleton.text()).toContain('商品封面已加载')
-    expect(skeleton.text()).toContain('教学视频已加载')
+    expect(skeleton.get('.form-demo__skeleton-media-content').text()).toContain('教学视频已加载')
   })
 })

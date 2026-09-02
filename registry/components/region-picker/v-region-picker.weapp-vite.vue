@@ -179,6 +179,7 @@ const canConfirm = computed(() => {
   return props.allowIntermediate || isRegionLeaf(selection.value.option)
 })
 const placeholderActive = computed(() => String(level.value >= breadcrumbs.value.length))
+const showPlaceholder = computed(() => !isRegionLeaf(selection.value.option))
 
 function close() {
   emit('update:visible', false)
@@ -258,6 +259,7 @@ function selectLevel(nextLevel: number) {
           {{ item.label }}
         </button>
         <button
+          v-if="showPlaceholder"
           type="button"
           :data-active="placeholderActive"
           @click="selectLevel(breadcrumbs.length)"

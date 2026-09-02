@@ -257,7 +257,7 @@ page {
 textarea.varo-input__control {
   min-height: 72px;
   padding: 10px 0;
-  resize: vertical;
+  resize: none;
 }
 
 .varo-input__prefix,
@@ -1274,6 +1274,16 @@ textarea.varo-input__control {
   display: grid;
   gap: 7px;
   min-width: 0;
+}
+
+.varo-uploader__file-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .varo-uploader__name {
@@ -2939,6 +2949,13 @@ textarea.varo-input__control {
   place-items: center;
   width: 40px;
   height: 40px;
+}
+
+.varo-grid__text {
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .varo-grid__badge,

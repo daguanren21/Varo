@@ -94,16 +94,16 @@ const indicatorSampleCopy = computed(() => ({
   itemLabel: props.locale === 'en' ? 'Feature {index} of {total}' : '第 {index} 个功能，共 {total} 个',
   items: props.locale === 'en'
     ? [
-        { tag: 'Registry', title: 'Own the source', body: 'Install editable target-correct components into your project.' },
-        { tag: 'Dual runtime', title: 'One public API', body: 'Use the same contracts on H5 and Wevu mini-programs.' },
-        { tag: 'Agent UI', title: 'Model-neutral', body: 'Render streaming, tools, reasoning, and approvals.' },
-        { tag: 'Release', title: 'Production ready', body: 'Validate types, tests, builds, Registry paths, and docs.' },
+        { tag: 'Registry', title: 'Own the source', body: 'Install editable target-correct components into your project.', image: '/blocks/retail-home.png' },
+        { tag: 'Dual runtime', title: 'One public API', body: 'Use the same contracts on H5 and Wevu mini-programs.', image: '/blocks/retail-category.png' },
+        { tag: 'Agent UI', title: 'Model-neutral', body: 'Render streaming, tools, reasoning, and approvals.', image: '/blocks/agent-chat.png' },
+        { tag: 'Release', title: 'Production ready', body: 'Validate types, tests, builds, Registry paths, and docs.', image: '/blocks/retail-order-list.png' },
       ]
     : [
-        { tag: 'Registry', title: '源码归属业务', body: '把可编辑、目标正确的组件源码安装进项目。' },
-        { tag: '双端运行', title: '一套公共 API', body: 'H5 与 Wevu 小程序共享组件契约。' },
-        { tag: 'Agent UI', title: '模型无关', body: '覆盖流式文本、工具、推理与审批。' },
-        { tag: '发布保障', title: '生产可用', body: '验证类型、测试、构建、Registry 路径与文档。' },
+        { tag: 'Registry', title: '源码归属业务', body: '把可编辑、目标正确的组件源码安装进项目。', image: '/blocks/retail-home.png' },
+        { tag: '双端运行', title: '一套公共 API', body: 'H5 与 Wevu 小程序共享组件契约。', image: '/blocks/retail-category.png' },
+        { tag: 'Agent UI', title: '模型无关', body: '覆盖流式文本、工具、推理与审批。', image: '/blocks/agent-chat.png' },
+        { tag: '发布保障', title: '生产可用', body: '验证类型、测试、构建、Registry 路径与文档。', image: '/blocks/retail-order-list.png' },
       ],
 }))
 const menuSampleCopy = computed(() => ({
@@ -616,6 +616,9 @@ const runtime = computed(() => getDemoRuntime(activePlatform.value))
 const currentIndicatorItem = computed(
   () => indicatorSampleCopy.value.items[indicatorCurrent.value] ?? indicatorSampleCopy.value.items[0]!,
 )
+const indicatorSlideStyle = computed(() => ({
+  backgroundImage: `linear-gradient(135deg, rgb(5 8 10 / 92%), rgb(5 8 10 / 58%)), url("${currentIndicatorItem.value.image}")`,
+}))
 const codeExamples = computed(() => [
   {
     key: 'h5' as Platform,
@@ -1746,7 +1749,7 @@ onBeforeUnmount(() => {
 
                   <template v-else-if="example === 'indicator'">
                     <section class="platform-demo__nav-demo platform-demo__indicator-demo">
-                      <article class="platform-demo__indicator-slide">
+                      <article class="platform-demo__indicator-slide" :style="indicatorSlideStyle">
                         <header>
                           <span>{{ currentIndicatorItem.tag }}</span>
                           <span>{{ String(indicatorCurrent + 1).padStart(2, '0') }} / 04</span>
@@ -3181,9 +3184,9 @@ onBeforeUnmount(() => {
   width: 100%;
   min-height: 158px;
   padding: 16px;
-  background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 18%, transparent), transparent 42%),
-    var(--varo-card-solid);
+  background-color: var(--varo-card-solid);
+  background-position: center;
+  background-size: cover;
   border: 1px solid var(--varo-border);
   border-radius: 16px;
   transition: background var(--demo-duration-enter) var(--demo-ease-out);
@@ -3203,14 +3206,14 @@ onBeforeUnmount(() => {
 
 .platform-demo__indicator-slide > strong {
   font-size: 1rem;
-  color: var(--varo-text-primary);
+  color: #fff;
 }
 
 .platform-demo__indicator-slide > p {
   margin: 0;
   font-size: 0.74rem;
   line-height: 1.5;
-  color: var(--varo-text-secondary);
+  color: rgb(255 255 255 / 78%);
 }
 
 .platform-demo__indicator-controls {
@@ -5931,7 +5934,6 @@ onBeforeUnmount(() => {
     .platform-demo__sticky-feed,
     .platform-demo__elevator-directory,
     .platform-demo__fixed-nav-product,
-    .platform-demo__indicator-slide,
     .platform-demo__menu-catalog,
     .platform-demo__pagination-orders,
     .platform-demo__tabbar-page

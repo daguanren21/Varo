@@ -659,10 +659,12 @@ describe('PlatformTabsDemo', () => {
     expect(indicator.attributes('data-current')).toBe('0')
     expect(wrapper.get('.platform-demo__indicator-slide > strong').text()).toBe('源码归属业务')
     expect(wrapper.findAll('.platform-demo__indicator-slide > header span')[1]!.text()).toBe('01 / 04')
+    expect(wrapper.get('.platform-demo__indicator-slide').attributes('style')).toContain('/blocks/retail-home.png')
 
     await vi.advanceTimersByTimeAsync(1800)
     expect(indicator.attributes('data-current')).toBe('1')
     expect(wrapper.get('.platform-demo__indicator-slide > strong').text()).toBe('一套公共 API')
+    expect(wrapper.get('.platform-demo__indicator-slide').attributes('style')).toContain('/blocks/retail-category.png')
 
     await indicator.findAll('.varo-indicator__item')[3]!.trigger('click')
     expect(indicator.attributes('data-current')).toBe('3')

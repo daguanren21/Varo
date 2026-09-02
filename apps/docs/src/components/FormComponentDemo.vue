@@ -128,8 +128,8 @@ const checkboxValue = shallowRef(['wechat'])
 const radioValue = shallowRef('wechat')
 const selectValue = shallowRef<string | number>('hangzhou')
 const switchValue = shallowRef(true)
-const toastVisible = ref(true)
 const skeletonLoading = shallowRef(true)
+const skeletonCase = shallowRef<'article' | 'image' | 'video'>('article')
 const inputNumberValue = shallowRef(2)
 const rateValue = shallowRef(3)
 const rangeValue = shallowRef(40)
@@ -142,6 +142,12 @@ const componentSearchResults = computed(() => {
   )
 })
 const textareaValue = shallowRef(props.locale === 'en' ? 'The confirmation button does not respond after selecting a date.' : '选择日期后点击确认按钮没有响应。')
+const toastItems = computed(() => [
+  { id: 'info', message: props.locale === 'en' ? 'Information updated' : '信息已更新', type: 'text' as const },
+  { id: 'warning', message: props.locale === 'en' ? 'Check required fields' : '请检查必填项', type: 'warning' as const },
+  { id: 'error', message: props.locale === 'en' ? 'Request failed' : '请求失败', type: 'danger' as const },
+  { id: 'success', message: props.locale === 'en' ? 'Saved successfully' : '保存成功', type: 'success' as const },
+])
 const formModel = reactive({
   account: '',
   budget: 40,
@@ -252,11 +258,8 @@ const copy = computed(() =>
         mobilePlaceholder: 'Mobile number',
         searchPlaceholder: 'Search',
         selectPlaceholder: 'Select city',
-        toastMessage: 'Saved successfully',
-        toastClose: 'Close notification',
-        toastShow: 'Show Toast',
         loadingText: 'Loading',
-        skeletonTitle: 'Article skeleton',
+        skeletonTitle: 'Skeleton cases',
         skeletonArticle: 'Article',
         skeletonImage: 'Image',
         skeletonVideo: 'Video',
@@ -406,11 +409,8 @@ const copy = computed(() =>
         mobilePlaceholder: '请输入手机号',
         searchPlaceholder: '搜索',
         selectPlaceholder: '请选择城市',
-        toastMessage: '保存成功',
-        toastClose: '关闭通知',
-        toastShow: '显示 Toast',
         loadingText: '加载中',
-        skeletonTitle: '文章骨架屏',
+        skeletonTitle: '骨架屏案例',
         skeletonArticle: '文章',
         skeletonImage: '图片',
         skeletonVideo: '视频',
@@ -1206,14 +1206,18 @@ const marketingEnabled = shallowRef(true)
     case 'toast':
       return `
 <script setup lang="ts">
-import { ref } from '${runtimePackage}'
 import { VToast } from '${packageName}'
 
-const visible = ref(true)
+const toasts = [
+  { message: '信息提示', type: 'text' },
+  { message: '警告提示', type: 'warning' },
+  { message: '错误提示', type: 'danger' },
+  { message: '成功提示', type: 'success' }
+] as const
 <\/script>
 
 <template>
-  <VToast v-model:visible="visible" type="success" position="top" close-label="${copy.value.toastClose}" message="${copy.value.toastMessage}" />
+  <VToast v-for="toast in toasts" :key="toast.type" :visible="true" :type="toast.type" :message="toast.message" :closeable="false" />
 </template>
       `.trim()
     case 'loading':
@@ -1562,7 +1566,6 @@ function onFormArrayFailed() {
               <strong>{{ copy.textareaTitle }}</strong>
               <span>{{ copy.textareaHint }}</span>
             </div>
-            <output>{{ textareaValue.length }}/120</output>
           </header>
           <VTextarea
             v-model:value="textareaValue"
@@ -1660,9 +1663,19 @@ function onFormArrayFailed() {
               {{ skeletonLoading ? copy.skeletonShowContent : copy.skeletonShowLoading }}
             </button>
           </header>
-          <div class="form-demo__skeleton-grid">
-            <section>
-              <small>{{ copy.skeletonArticle }}</small>
+          <nav class="form-demo__skeleton-cases" aria-label="骨架屏案例">
+            <button type="button" data-case="article" :aria-pressed="skeletonCase === 'article'" @click="skeletonCase = 'article'">
+              {{ copy.skeletonArticle }}
+            </button>
+            <button type="button" data-case="image" :aria-pressed="skeletonCase === 'image'" @click="skeletonCase = 'image'">
+              {{ copy.skeletonImage }}
+            </button>
+            <button type="button" data-case="video" :aria-pressed="skeletonCase === 'video'" @click="skeletonCase = 'video'">
+              {{ copy.skeletonVideo }}
+            </button>
+          </nav>
+          <div class="form-demo__skeleton-preview">
+            <section v-if="skeletonCase === 'article'">
               <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
                 <article class="form-demo__skeleton-content">
                   <strong>{{ copy.skeletonContentTitle }}</strong>
@@ -1670,8 +1683,7 @@ function onFormArrayFailed() {
                 </article>
               </VSkeleton>
             </section>
-            <section>
-              <small>{{ copy.skeletonImage }}</small>
+            <section v-else-if="skeletonCase === 'image'">
               <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="image" :rows="2">
                 <article class="form-demo__skeleton-media-content" data-kind="image">
                   <span aria-hidden="true">IMG</span>
@@ -1679,8 +1691,7 @@ function onFormArrayFailed() {
                 </article>
               </VSkeleton>
             </section>
-            <section>
-              <small>{{ copy.skeletonVideo }}</small>
+            <section v-else>
               <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="video" :rows="2">
                 <article class="form-demo__skeleton-media-content" data-kind="video">
                   <span aria-hidden="true">▶</span>
@@ -1695,14 +1706,16 @@ function onFormArrayFailed() {
           <VLoading size="sm" tone="primary" />
           <VLoading size="lg" tone="success" />
         </div>
-        <VToast
-          v-else-if="example === 'toast'"
-          v-model:visible="toastVisible"
-          type="success"
-          position="top"
-          :message="copy.toastMessage"
-          :close-label="copy.toastClose"
-        />
+        <section v-else-if="example === 'toast'" class="form-demo__toast-grid">
+          <VToast
+            v-for="toast in toastItems"
+            :key="toast.id"
+            :visible="true"
+            :type="toast.type"
+            :message="toast.message"
+            :closeable="false"
+          />
+        </section>
         <section
           v-else-if="example === 'uploader'"
           class="form-demo__control-scenario"
@@ -2244,15 +2257,6 @@ function onFormArrayFailed() {
             </VButton>
           </div>
         </section>
-
-        <button
-          v-if="example === 'toast' && !toastVisible"
-          class="form-demo__reopen"
-          type="button"
-          @click="toastVisible = true"
-        >
-          {{ copy.toastShow }}
-        </button>
       </div>
 
       <button
@@ -2427,22 +2431,12 @@ function onFormArrayFailed() {
   display: grid;
   gap: 16px;
   width: min(100%, 560px);
-  padding: 18px;
-  background: var(--varo-card-solid);
-  border: 1px solid var(--varo-border);
-  border-radius: 20px;
-  box-shadow: var(--varo-shadow-sm);
 }
 
 .form-demo__skeleton-card {
   display: grid;
   gap: 18px;
   width: min(100%, 560px);
-  padding: 18px;
-  background: var(--varo-card-solid);
-  border: 1px solid var(--varo-border);
-  border-radius: 20px;
-  box-shadow: var(--varo-shadow-sm);
 }
 
 .form-demo__skeleton-card > header {
@@ -2475,25 +2469,36 @@ function onFormArrayFailed() {
   outline-offset: 2px;
 }
 
-.form-demo__skeleton-grid {
+.form-demo__skeleton-cases {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 8px;
 }
 
-.form-demo__skeleton-grid > section {
+.form-demo__skeleton-cases button {
+  min-height: 36px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--varo-text-secondary);
+  cursor: pointer;
+  background: var(--varo-fill-light);
+  border: 1px solid var(--varo-border);
+  border-radius: 10px;
+}
+
+.form-demo__skeleton-cases button[aria-pressed='true'] {
+  color: var(--varo-primary);
+  background: var(--varo-primary-soft);
+  border-color: var(--varo-primary);
+}
+
+.form-demo__skeleton-preview > section {
   display: grid;
   gap: 8px;
   align-content: start;
   min-width: 0;
-}
-
-.form-demo__skeleton-grid > section > small {
-  font-size: 0.72rem;
-  font-weight: 750;
-  color: var(--varo-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .form-demo__skeleton-media-content {
@@ -2525,12 +2530,6 @@ function onFormArrayFailed() {
 .form-demo__skeleton-media-content[data-kind='video'] span {
   padding-left: 2px;
   font-size: 0.9rem;
-}
-
-@media (max-width: 760px) {
-  .form-demo__skeleton-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .form-demo__skeleton-content {
@@ -2996,11 +2995,26 @@ function onFormArrayFailed() {
 .form-demo__preview[data-example='toast'] {
   align-items: center;
   justify-content: center;
-  min-height: 148px;
-  padding: 18px;
-  background: color-mix(in srgb, var(--form-demo-surface-strong) 88%, transparent);
-  border: 1px solid var(--form-demo-border);
-  border-radius: 18px;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.form-demo__toast-grid {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 420px);
+}
+
+.form-demo__toast-grid :deep(.varo-toast) {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  transform: none;
 }
 
 .form-demo__preview[data-example='calendar'] :deep(.varo-calendar),
