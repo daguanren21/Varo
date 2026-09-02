@@ -114,6 +114,7 @@ page {
     "pages/retail-profile/index",
     "pages/mall/index",
     "pages/form-showcase/index",
+    "pages/robot-chat-showcase/index",
     "pages/index/index"
   ],
   "subPackages": [
@@ -170,6 +171,12 @@ page {
       ]
     }
   ],
+  "plugins": {
+    "varoRobot": {
+      "version": "1.1.15",
+      "provider": "wx8c631f7e9f2465e1"
+    }
+  },
   "tabBar": {
     "color": "#94a3b8",
     "selectedColor": "#0f766e",

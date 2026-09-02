@@ -1,0 +1,43 @@
+{
+  "name": "robot-chat",
+  "type": "component",
+  "title": "VRobotChat",
+  "description": "WeChat Conversational Open Platform plugin bridge with typed initialization, lifecycle states, events, and an editable operate-card generic.",
+  "exportName": "VRobotChat",
+  "targets": [
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "components/button",
+    "themes/base"
+  ],
+  "files": [
+    {
+      "target": "weapp",
+      "from": "registry/components/robot-chat/robot-chat.weapp.ts",
+      "to": "src/components/ui/robot-chat.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/robot-chat/robot-chat.types.ts",
+      "to": "src/components/ui/robot-chat.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/robot-chat/v-robot-chat.weapp-vite.vue",
+      "to": "src/components/ui/v-robot-chat.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/robot-chat/v-robot-operate-card.weapp-vite.vue",
+      "to": "src/components/ui/v-robot-operate-card.vue"
+    }
+  ],
+  "docs": "/components/robot-chat"
+}

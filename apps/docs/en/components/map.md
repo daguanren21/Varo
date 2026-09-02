@@ -56,24 +56,15 @@ Location previews inside forms should disable gestures so the map does not captu
 />
 ```
 
-## Props
+## VMap-owned API
 
-| Prop                                | Type                | Default        | Description                                                          |
-| ----------------------------------- | ------------------- | -------------- | -------------------------------------------------------------------- |
-| `mapId`                             | `string`            | required       | Native map ID                                                        |
-| `latitude`                          | `number`            | required       | Center latitude                                                      |
-| `longitude`                         | `number`            | required       | Center longitude                                                     |
-| `markers`                           | `VaroMapMarker[]`   | `[]`           | Markers                                                              |
-| `polylines`                         | `VaroMapPolyline[]` | `[]`           | Routes                                                               |
-| `circles`                           | `VaroMapCircle[]`   | `[]`           | Circle overlays                                                      |
-| `includePoints`                     | `VaroMapPoint[]`    | `[]`           | Points included in the viewport                                      |
-| `scale`                             | `number`            | `14`           | Zoom level                                                           |
-| `minScale` / `maxScale`             | `number`            | `3` / `20`     | Zoom bounds                                                          |
-| `showLocation`                      | `boolean`           | `false`        | Shows current location; requires permission when enabled             |
-| `enableZoom` / `enableScroll`       | `boolean`           | `true`         | Gesture controls                                                     |
-| `enableSatellite` / `enableTraffic` | `boolean`           | `false`        | Satellite and traffic layers                                         |
-| `width` / `height`                  | `number \| string`  | `100%` / `240` | Final size is constrained to the parent, `100vw`, and `720px` height |
+Native `latitude` and `longitude` remain required to render the map. `VMap` adds only these basic wrapper capabilities:
 
-## Events
+| Prop               | Type               | Default        | Description                                                             |
+| ------------------ | ------------------ | -------------- | ----------------------------------------------------------------------- |
+| `mapId`            | `string`           | required       | Maps to the native `id`, including lookup through `wx.createMapContext` |
+| `className`        | `string`           | `''`           | Merges with the component's default `varo-map` class                    |
+| `ariaLabel`        | `string`           | `'地图'`       | Maps to the native `aria-label`                                         |
+| `width` / `height` | `number \| string` | `100%` / `240` | Numbers become `px`; size is capped by the parent, `100vw`, and `720px` |
 
-The component forwards `updated`, `regionChange`, `markerTap`, `calloutTap`, `controlTap`, `labelTap`, `pointTap`, `anchorPointTap`, and `error`.
+Markers, routes, overlays, viewport and gesture props, and map events retain the semantics of WeChat's native `map` component. Vue templates use event names such as `@marker-tap` and `@region-change`. For the complete property definitions, event payloads, base-library versions, and permission requirements, see the [WeChat Mini Program `map` component](https://developers.weixin.qq.com/miniprogram/dev/component/map.html).

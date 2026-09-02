@@ -181,6 +181,10 @@ function toggleTheme() {
 function openFormShowcase() {
   void wx.navigateTo({ url: '/pages/form-showcase/index' })
 }
+
+function openRobotChatShowcase() {
+  void wx.navigateTo({ url: '/pages/robot-chat-showcase/index' })
+}
 </script>
 
 <template>
@@ -199,6 +203,9 @@ function openFormShowcase() {
       </view>
       <VButton block variant="outline" tone="default" @click="openFormShowcase">
         打开 Varo Form / Region / Map Demo
+      </VButton>
+      <VButton block variant="outline" tone="default" @click="openRobotChatShowcase">
+        打开微信机器人对话 Demo
       </VButton>
 
       <view class="card">

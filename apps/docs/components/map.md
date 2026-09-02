@@ -56,24 +56,15 @@ const markers = [{
 />
 ```
 
-## Props
+## VMap 自有 API
 
-| Prop                                | Type                | Default        | 说明                                                  |
-| ----------------------------------- | ------------------- | -------------- | ----------------------------------------------------- |
-| `mapId`                             | `string`            | 必填           | 原生 map ID                                           |
-| `latitude`                          | `number`            | 必填           | 中心纬度                                              |
-| `longitude`                         | `number`            | 必填           | 中心经度                                              |
-| `markers`                           | `VaroMapMarker[]`   | `[]`           | 标记点                                                |
-| `polylines`                         | `VaroMapPolyline[]` | `[]`           | 路线                                                  |
-| `circles`                           | `VaroMapCircle[]`   | `[]`           | 圆形覆盖物                                            |
-| `includePoints`                     | `VaroMapPoint[]`    | `[]`           | 自动包含的坐标点                                      |
-| `scale`                             | `number`            | `14`           | 缩放级别                                              |
-| `minScale` / `maxScale`             | `number`            | `3` / `20`     | 缩放范围                                              |
-| `showLocation`                      | `boolean`           | `false`        | 显示当前位置；开启前需声明权限                        |
-| `enableZoom` / `enableScroll`       | `boolean`           | `true`         | 手势能力                                              |
-| `enableSatellite` / `enableTraffic` | `boolean`           | `false`        | 卫星图与路况                                          |
-| `width` / `height`                  | `number \| string`  | `100%` / `240` | 地图尺寸；最终限制在父容器、`100vw` 与 `720px` 高度内 |
+`latitude`、`longitude` 仍是渲染地图所需的原生必填参数。`VMap` 只额外定义以下基础封装能力：
 
-## Events
+| Prop               | Type               | Default        | 说明                                                          |
+| ------------------ | ------------------ | -------------- | ------------------------------------------------------------- |
+| `mapId`            | `string`           | 必填           | 映射为原生 `id`，供 `wx.createMapContext` 等能力定位地图实例  |
+| `className`        | `string`           | `''`           | 合并到组件默认的 `varo-map` 类名                              |
+| `ariaLabel`        | `string`           | `'地图'`       | 映射为原生 `aria-label`                                       |
+| `width` / `height` | `number \| string` | `100%` / `240` | 数字按 `px` 处理，并限制在父容器、`100vw` 与 `720px` 高度以内 |
 
-组件转发 `updated`、`regionChange`、`markerTap`、`calloutTap`、`controlTap`、`labelTap`、`pointTap`、`anchorPointTap` 和 `error`。
+标记点、路线、覆盖物、视野、手势等参数及地图事件沿用微信原生 `map` 组件语义；事件在 Vue 模板中使用 `@marker-tap`、`@region-change` 等写法。完整参数、事件返回值、基础库版本和权限要求请参考[微信小程序 map 组件](https://developers.weixin.qq.com/miniprogram/dev/component/map.html)。

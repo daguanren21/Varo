@@ -51,18 +51,28 @@ describe('playground-weapp delivery contract', () => {
     if (!existsSync(appJsonPath)) {
       expect(existsSync(resolve(playgroundRoot, 'src/pages/retail-home/index.vue'))).toBe(true)
       expect(existsSync(resolve(playgroundRoot, 'src/pages/mall/index.vue'))).toBe(true)
+      expect(existsSync(resolve(playgroundRoot, 'src/pages/robot-chat-showcase/index.vue'))).toBe(true)
       return
     }
 
     const app = readJson<{
       pages: string[]
+      plugins: Record<string, { provider: string, version: string }>
       tabBar: { list: Array<{ iconPath: string, pagePath: string, selectedIconPath: string, text: string }> }
     }>('devtools/build/mp-weixin/app.json')
     const retailPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/retail-home/index.json')
     const mallPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/mall/index.json')
+    const robotPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/robot-chat-showcase/index.json')
+    const robotChat = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/components/ui/v-robot-chat.json')
+    const robotChatWxml = readFileSync(resolve(outputRoot, 'components/ui/v-robot-chat.wxml'), 'utf8')
 
     expect(app.pages[0]).toBe('pages/retail-home/index')
     expect(app.pages).toContain('pages/mall/index')
+    expect(app.pages).toContain('pages/robot-chat-showcase/index')
+    expect(app.plugins.varoRobot).toEqual({
+      provider: 'wx8c631f7e9f2465e1',
+      version: '1.1.15',
+    })
     expect(app.tabBar.list).toHaveLength(4)
     const tabIcons = app.tabBar.list.flatMap(item => [item.iconPath, item.selectedIconPath])
     expect(tabIcons).toHaveLength(8)
@@ -82,6 +92,14 @@ describe('playground-weapp delivery contract', () => {
       'mall-header': '/components/mall/MallHeader',
       'mall-product-grid': '/components/mall/MallProductGrid',
     })
+    expect(robotPage.usingComponents).toMatchObject({
+      'v-robot-chat': '/components/ui/v-robot-chat',
+    })
+    expect(robotChat.usingComponents).toMatchObject({
+      'varo-robot-operate-card': './v-robot-operate-card',
+      'wechat-robot-chat': 'plugin://varoRobot/chat',
+    })
+    expect(robotChatWxml).toContain('generic:operateCard="varo-robot-operate-card"')
     expect(Object.keys(retailPage.usingComponents).every(name => name === name.toLowerCase())).toBe(true)
     ;[retailPage, mallPage].flatMap(page => Object.values(page.usingComponents)).filter(componentPath => componentPath.startsWith('/components/')).forEach((componentPath) => {
       expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.json`))).toBe(true)
