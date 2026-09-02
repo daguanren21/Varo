@@ -1,6 +1,12 @@
 export type Locale = 'zh' | 'en'
 export type PrimitiveExampleName
-  = | 'checkbox'
+  = | 'button'
+    | 'input'
+    | 'number-field'
+    | 'image'
+    | 'cell'
+    | 'sticky'
+    | 'checkbox'
     | 'radio-group'
     | 'switch'
     | 'tabs'
@@ -8,11 +14,25 @@ export type PrimitiveExampleName
     | 'collapsible'
     | 'accordion'
     | 'popover'
+    | 'dialog'
+    | 'overlay'
+    | 'popup'
 
 export interface PrimitiveExampleData {
   h5Code: string
   weappCode: string
   contractRows: Array<{ label: string, value: string }>
+}
+
+function dualRuntimeExample(source: string) {
+  return {
+    h5: source
+      .replaceAll('__FRAMEWORK__', 'vue')
+      .replaceAll('__PACKAGE__', '@varo-ui/h5/primitives'),
+    weapp: source
+      .replaceAll('__FRAMEWORK__', 'wevu')
+      .replaceAll('__PACKAGE__', '@varo-ui/weapp/primitives'),
+  }
 }
 
 const checkbox = {
@@ -331,7 +351,153 @@ const open = ref(false)
 </template>`,
 }
 
+const button = dualRuntimeExample(`<script setup lang="ts">
+import { ButtonRoot } from '__PACKAGE__'
+</script>
+
+<template>
+  <ButtonRoot @click="onPress">
+    Press
+  </ButtonRoot>
+</template>`)
+
+const inputExample = dualRuntimeExample(`<script setup lang="ts">
+import { shallowRef } from '__FRAMEWORK__'
+import { InputRoot } from '__PACKAGE__'
+
+const value = shallowRef('')
+</script>
+
+<template>
+  <InputRoot v-model:value="value" placeholder="Type a value" />
+</template>`)
+
+const numberField = dualRuntimeExample(`<script setup lang="ts">
+import { shallowRef } from '__FRAMEWORK__'
+import {
+  NumberFieldRoot,
+  NumberFieldDecrement,
+  NumberFieldInput,
+  NumberFieldIncrement
+} from '__PACKAGE__'
+
+const value = shallowRef(2)
+</script>
+
+<template>
+  <NumberFieldRoot v-model:value="value" :min="0" :max="5">
+    <NumberFieldDecrement>−</NumberFieldDecrement>
+    <NumberFieldInput />
+    <NumberFieldIncrement>+</NumberFieldIncrement>
+  </NumberFieldRoot>
+</template>`)
+
+const imageExample = dualRuntimeExample(`<script setup lang="ts">
+import { ImageRoot } from '__PACKAGE__'
+</script>
+
+<template>
+  <ImageRoot
+    src="/avatar.png"
+    alt="Profile"
+    fit="cover"
+    :width="96"
+    :height="96"
+    :radius="16"
+  />
+</template>`)
+
+const cell = dualRuntimeExample(`<script setup lang="ts">
+import { CellGroupRoot, CellRoot } from '__PACKAGE__'
+</script>
+
+<template>
+  <CellGroupRoot title="Settings">
+    <CellRoot
+      title="Notifications"
+      sub-title="Primitive row"
+      desc="Enabled"
+      clickable
+      is-link
+      @click="openSettings"
+    />
+  </CellGroupRoot>
+</template>`)
+
+const sticky = dualRuntimeExample(`<script setup lang="ts">
+import { StickyRoot } from '__PACKAGE__'
+</script>
+
+<template>
+  <StickyRoot :offset-top="8">
+    <template #default="{ fixed }">
+      Sticky · data-fixed={{ fixed }}
+    </template>
+  </StickyRoot>
+</template>`)
+
+const dialog = dualRuntimeExample(`<script setup lang="ts">
+import { shallowRef } from '__FRAMEWORK__'
+import {
+  DialogRoot,
+  DialogTrigger,
+  DialogOverlay,
+  DialogContent,
+  DialogClose
+} from '__PACKAGE__'
+
+const open = shallowRef(false)
+</script>
+
+<template>
+  <DialogRoot v-model:open="open">
+    <DialogTrigger>Open dialog</DialogTrigger>
+    <DialogOverlay />
+    <DialogContent>
+      Dialog content
+      <DialogClose>Close</DialogClose>
+    </DialogContent>
+  </DialogRoot>
+</template>`)
+
+const overlay = dualRuntimeExample(`<script setup lang="ts">
+import { shallowRef } from '__FRAMEWORK__'
+import { ButtonRoot, OverlayRoot } from '__PACKAGE__'
+
+const visible = shallowRef(false)
+</script>
+
+<template>
+  <ButtonRoot @click="visible = true">Show overlay</ButtonRoot>
+  <OverlayRoot v-model:visible="visible" @click="visible = false" />
+</template>`)
+
+const popup = dualRuntimeExample(`<script setup lang="ts">
+import { shallowRef } from '__FRAMEWORK__'
+import { ButtonRoot, PopupRoot } from '__PACKAGE__'
+
+const visible = shallowRef(false)
+</script>
+
+<template>
+  <ButtonRoot @click="visible = true">Open popup</ButtonRoot>
+  <PopupRoot
+    v-model:visible="visible"
+    position="bottom"
+    round
+    closeable
+  >
+    Popup content
+  </PopupRoot>
+</template>`)
+
 const catalog: Record<PrimitiveExampleName, { h5: string, weapp: string }> = {
+  button,
+  'input': inputExample,
+  'number-field': numberField,
+  'image': imageExample,
+  cell,
+  sticky,
   checkbox,
   'radio-group': radio,
   'switch': switchExample,
@@ -340,6 +506,9 @@ const catalog: Record<PrimitiveExampleName, { h5: string, weapp: string }> = {
   collapsible,
   accordion,
   popover,
+  dialog,
+  overlay,
+  popup,
 }
 
 const contractsZh: Record<PrimitiveExampleName, Array<{ label: string, value: string }>> = {
@@ -391,6 +560,60 @@ const contractsZh: Record<PrimitiveExampleName, Array<{ label: string, value: st
     { label: 'Parts', value: 'PopoverRoot, Trigger, Content, Close' },
     { label: '差异', value: '小程序用显式 Close/遮罩 dismiss，不依赖 document' },
   ],
+  'button': [
+    { label: '状态', value: 'pressed / disabled / loading' },
+    { label: '事件', value: 'click 与 press 生命周期' },
+    { label: 'Parts', value: 'ButtonRoot / usePressableRoot' },
+    { label: '差异', value: '平台适配原生按压反馈与禁用行为' },
+  ],
+  'input': [
+    { label: '状态', value: 'value / disabled / readonly / invalid' },
+    { label: '事件', value: 'update:value, valueChange, focus, blur' },
+    { label: 'Parts', value: 'InputRoot / useFieldRoot' },
+    { label: '差异', value: '输入法、formatter 与 autosize 由平台适配' },
+  ],
+  'number-field': [
+    { label: '状态', value: 'value / min / max / step / precision' },
+    { label: '事件', value: 'update:value, valueChange' },
+    { label: 'Parts', value: 'NumberFieldRoot, Decrement, Input, Increment' },
+    { label: '差异', value: '边界与精度逻辑跨端一致' },
+  ],
+  'image': [
+    { label: '状态', value: 'loading / loaded / error / src' },
+    { label: '事件', value: 'load, error, click' },
+    { label: 'Parts', value: 'ImageRoot / useImageRoot' },
+    { label: '差异', value: 'DOM img 与小程序 image 各自渲染' },
+  ],
+  'cell': [
+    { label: '状态', value: 'clickable / link / size / alignment' },
+    { label: '事件', value: 'click' },
+    { label: 'Parts', value: 'CellGroupRoot, CellRoot' },
+    { label: '差异', value: 'H5 键盘激活，小程序使用原生点击' },
+  ],
+  'sticky': [
+    { label: '状态', value: 'fixed / disabled / offsetTop' },
+    { label: '事件', value: 'change, scroll' },
+    { label: 'Parts', value: 'StickyRoot' },
+    { label: '差异', value: '平台分别观察 window 与页面滚动' },
+  ],
+  'dialog': [
+    { label: '状态', value: 'open / disabled' },
+    { label: '事件', value: 'update:open, openChange' },
+    { label: 'Parts', value: 'DialogRoot, Trigger, Overlay, Content, Close' },
+    { label: '差异', value: 'H5 支持 Escape；焦点管理由 wrapper 加强' },
+  ],
+  'overlay': [
+    { label: '状态', value: 'visible / disabled / lockScroll' },
+    { label: '事件', value: 'update:visible, visibleChange, close, click' },
+    { label: 'Parts', value: 'OverlayRoot' },
+    { label: '差异', value: '滚动锁定由平台适配' },
+  ],
+  'popup': [
+    { label: '状态', value: 'visible / position / overlay / closeable' },
+    { label: '事件', value: 'update:visible, visibleChange, close, clickOverlay' },
+    { label: 'Parts', value: 'PopupRoot' },
+    { label: '差异', value: '安全区与定位由目标运行时实现' },
+  ],
 }
 
 const contractsEn: Record<PrimitiveExampleName, Array<{ label: string, value: string }>> = {
@@ -441,6 +664,60 @@ const contractsEn: Record<PrimitiveExampleName, Array<{ label: string, value: st
     { label: 'Events', value: 'update:open, openChange' },
     { label: 'Parts', value: 'PopoverRoot, Trigger, Content, Close' },
     { label: 'Difference', value: 'Weapp dismiss uses explicit Close/mask, not document events' },
+  ],
+  'button': [
+    { label: 'State', value: 'pressed / disabled / loading' },
+    { label: 'Events', value: 'click and press lifecycle' },
+    { label: 'Parts', value: 'ButtonRoot / usePressableRoot' },
+    { label: 'Difference', value: 'Each runtime adapts native pressed and disabled feedback' },
+  ],
+  'input': [
+    { label: 'State', value: 'value / disabled / readonly / invalid' },
+    { label: 'Events', value: 'update:value, valueChange, focus, blur' },
+    { label: 'Parts', value: 'InputRoot / useFieldRoot' },
+    { label: 'Difference', value: 'IME, formatter, and autosize stay runtime-owned' },
+  ],
+  'number-field': [
+    { label: 'State', value: 'value / min / max / step / precision' },
+    { label: 'Events', value: 'update:value, valueChange' },
+    { label: 'Parts', value: 'NumberFieldRoot, Decrement, Input, Increment' },
+    { label: 'Difference', value: 'Bounds and precision stay aligned across targets' },
+  ],
+  'image': [
+    { label: 'State', value: 'loading / loaded / error / src' },
+    { label: 'Events', value: 'load, error, click' },
+    { label: 'Parts', value: 'ImageRoot / useImageRoot' },
+    { label: 'Difference', value: 'DOM img and native mini-program image render separately' },
+  ],
+  'cell': [
+    { label: 'State', value: 'clickable / link / size / alignment' },
+    { label: 'Events', value: 'click' },
+    { label: 'Parts', value: 'CellGroupRoot, CellRoot' },
+    { label: 'Difference', value: 'H5 adds keyboard activation; Weapp uses native tap' },
+  ],
+  'sticky': [
+    { label: 'State', value: 'fixed / disabled / offsetTop' },
+    { label: 'Events', value: 'change, scroll' },
+    { label: 'Parts', value: 'StickyRoot' },
+    { label: 'Difference', value: 'Each runtime observes its own scrolling surface' },
+  ],
+  'dialog': [
+    { label: 'State', value: 'open / disabled' },
+    { label: 'Events', value: 'update:open, openChange' },
+    { label: 'Parts', value: 'DialogRoot, Trigger, Overlay, Content, Close' },
+    { label: 'Difference', value: 'H5 supports Escape; wrappers strengthen focus management' },
+  ],
+  'overlay': [
+    { label: 'State', value: 'visible / disabled / lockScroll' },
+    { label: 'Events', value: 'update:visible, visibleChange, close, click' },
+    { label: 'Parts', value: 'OverlayRoot' },
+    { label: 'Difference', value: 'Scroll locking is runtime-adapted' },
+  ],
+  'popup': [
+    { label: 'State', value: 'visible / position / overlay / closeable' },
+    { label: 'Events', value: 'update:visible, visibleChange, close, clickOverlay' },
+    { label: 'Parts', value: 'PopupRoot' },
+    { label: 'Difference', value: 'Safe area and placement are target-owned' },
   ],
 }
 

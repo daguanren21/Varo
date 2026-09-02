@@ -300,14 +300,47 @@ export default defineConfig({
             text: 'Primitives',
             items: [
               { text: '总览', link: '/primitives/' },
-              { text: 'Checkbox', link: '/primitives/checkbox' },
-              { text: 'Radio Group', link: '/primitives/radio-group' },
-              { text: 'Switch', link: '/primitives/switch' },
-              { text: 'Tabs', link: '/primitives/tabs' },
-              { text: 'Select', link: '/primitives/select' },
-              { text: 'Collapsible', link: '/primitives/collapsible' },
-              { text: 'Accordion', link: '/primitives/accordion' },
-              { text: 'Popover', link: '/primitives/popover' },
+              {
+                text: '基础控件',
+                collapsed: false,
+                items: [
+                  { text: 'Button', link: '/primitives/button' },
+                  { text: 'Input', link: '/primitives/input' },
+                  { text: 'Number Field', link: '/primitives/number-field' },
+                  { text: 'Image', link: '/primitives/image' },
+                  { text: 'Cell', link: '/primitives/cell' },
+                  { text: 'Sticky', link: '/primitives/sticky' },
+                ],
+              },
+              {
+                text: '选择与切换',
+                collapsed: false,
+                items: [
+                  { text: 'Checkbox', link: '/primitives/checkbox' },
+                  { text: 'Radio Group', link: '/primitives/radio-group' },
+                  { text: 'Switch', link: '/primitives/switch' },
+                  { text: 'Tabs', link: '/primitives/tabs' },
+                  { text: 'Select', link: '/primitives/select' },
+                ],
+              },
+              {
+                text: '展开与轻浮层',
+                collapsed: false,
+                items: [
+                  { text: 'Collapsible', link: '/primitives/collapsible' },
+                  { text: 'Accordion', link: '/primitives/accordion' },
+                  { text: 'Popover', link: '/primitives/popover' },
+                ],
+              },
+              {
+                text: '遮罩与弹层',
+                collapsed: false,
+                items: [
+                  { text: 'Dialog', link: '/primitives/dialog' },
+                  { text: 'Overlay', link: '/primitives/overlay' },
+                  { text: 'Popup', link: '/primitives/popup' },
+                ],
+              },
             ],
           },
           {
@@ -553,14 +586,47 @@ export default defineConfig({
             text: 'Primitives',
             items: [
               { text: 'Overview', link: '/en/primitives/' },
-              { text: 'Checkbox', link: '/en/primitives/checkbox' },
-              { text: 'Radio Group', link: '/en/primitives/radio-group' },
-              { text: 'Switch', link: '/en/primitives/switch' },
-              { text: 'Tabs', link: '/en/primitives/tabs' },
-              { text: 'Select', link: '/en/primitives/select' },
-              { text: 'Collapsible', link: '/en/primitives/collapsible' },
-              { text: 'Accordion', link: '/en/primitives/accordion' },
-              { text: 'Popover', link: '/en/primitives/popover' },
+              {
+                text: 'Foundation',
+                collapsed: false,
+                items: [
+                  { text: 'Button', link: '/en/primitives/button' },
+                  { text: 'Input', link: '/en/primitives/input' },
+                  { text: 'Number Field', link: '/en/primitives/number-field' },
+                  { text: 'Image', link: '/en/primitives/image' },
+                  { text: 'Cell', link: '/en/primitives/cell' },
+                  { text: 'Sticky', link: '/en/primitives/sticky' },
+                ],
+              },
+              {
+                text: 'Selection & Toggle',
+                collapsed: false,
+                items: [
+                  { text: 'Checkbox', link: '/en/primitives/checkbox' },
+                  { text: 'Radio Group', link: '/en/primitives/radio-group' },
+                  { text: 'Switch', link: '/en/primitives/switch' },
+                  { text: 'Tabs', link: '/en/primitives/tabs' },
+                  { text: 'Select', link: '/en/primitives/select' },
+                ],
+              },
+              {
+                text: 'Disclosure & Floating',
+                collapsed: false,
+                items: [
+                  { text: 'Collapsible', link: '/en/primitives/collapsible' },
+                  { text: 'Accordion', link: '/en/primitives/accordion' },
+                  { text: 'Popover', link: '/en/primitives/popover' },
+                ],
+              },
+              {
+                text: 'Layers',
+                collapsed: false,
+                items: [
+                  { text: 'Dialog', link: '/en/primitives/dialog' },
+                  { text: 'Overlay', link: '/en/primitives/overlay' },
+                  { text: 'Popup', link: '/en/primitives/popup' },
+                ],
+              },
             ],
           },
           {

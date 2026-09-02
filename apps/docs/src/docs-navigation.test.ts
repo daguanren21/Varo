@@ -42,6 +42,12 @@ describe('docs navigation', () => {
     const catalog = readFileSync(resolve(docsRoot, 'src/components/PrimitiveCatalog.vue'), 'utf8')
     const example = readFileSync(resolve(docsRoot, 'src/components/PrimitiveExample.vue'), 'utf8')
     const dedicatedPages = [
+      'button',
+      'input',
+      'number-field',
+      'image',
+      'cell',
+      'sticky',
       'checkbox',
       'radio-group',
       'switch',
@@ -50,6 +56,9 @@ describe('docs navigation', () => {
       'collapsible',
       'accordion',
       'popover',
+      'dialog',
+      'overlay',
+      'popup',
     ]
 
     expect(config).toContain('{ text: \'Primitives\', link: \'/primitives/\' }')
@@ -62,9 +71,9 @@ describe('docs navigation', () => {
     expect(primitiveEn).not.toContain('<PrimitiveInteractionDemo')
     expect(primitiveZh).not.toContain('Reka-style anatomy')
     expect(primitiveEn).not.toContain('Reka-style anatomy')
-    expect(catalog).toContain('title: \'Checkbox\'')
-    expect(catalog).toContain('href: \'/primitives/checkbox\'')
-    expect(catalog).toContain('href: \'/en/primitives/popover\'')
+    expect(catalog).toContain('title: \'Button\'')
+    expect(catalog).toContain('title: \'Dialog\'')
+    expect(catalog).toContain('const routePrefix = props.locale === \'en\' ? \'/en\' : \'\'')
     expect(example).toContain('name: PrimitiveExampleName')
     expect(example).toContain('resolvePrimitiveExample')
 
@@ -82,6 +91,12 @@ describe('docs navigation', () => {
     })
 
     ;[
+      'ButtonRoot / usePressableRoot',
+      'InputRoot / useFieldRoot',
+      'NumberFieldRoot / Decrement / Input / Increment',
+      'ImageRoot / useImageRoot',
+      'CellGroupRoot / CellRoot',
+      'StickyRoot',
       'CheckboxRoot / CheckboxIndicator',
       'RadioGroup / RadioItem / RadioIndicator',
       'SwitchRoot / SwitchThumb',
@@ -90,6 +105,9 @@ describe('docs navigation', () => {
       'CollapsibleRoot / Trigger / Content',
       'AccordionRoot / Item / Trigger / Content',
       'PopoverRoot / Trigger / Content / Close',
+      'DialogRoot / Trigger / Overlay / Content / Close',
+      'OverlayRoot',
+      'PopupRoot',
     ].forEach((parts) => {
       expect(catalog).toContain(parts)
     })
@@ -101,6 +119,11 @@ describe('docs navigation', () => {
     expect(selectZh).toContain('SelectTrigger')
     expect(selectZh).toContain('SelectValue')
 
+    expect(primitiveZh).toContain('当前 17 个公开 primitives')
+    expect(primitiveZh).toContain('## 下一批基础候选')
+    expect(primitiveZh).toContain('`Menu` / `DropdownMenu`')
+    expect(primitiveEn).toContain('current 17 public primitives')
+    expect(primitiveEn).toContain('## Next foundational candidates')
     expect(primitiveZh).toContain('## 产品边界')
     expect(primitiveZh).toContain('**primitive** 管行为契约')
     expect(primitiveZh).toContain('**UI wrapper** 管视觉与定位')

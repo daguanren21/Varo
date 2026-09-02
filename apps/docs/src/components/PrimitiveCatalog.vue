@@ -2,14 +2,13 @@
 import { withBase } from 'vitepress'
 
 type Locale = 'zh' | 'en'
-type Category = 'controls' | 'disclosure'
+type Category = 'foundation' | 'controls' | 'disclosure' | 'layers'
 
-interface CatalogItem {
+interface CatalogItemDefinition {
   id: string
-  href: string
   title: string
   parts: string
-  summary: string
+  summary: Record<Locale, string>
   category: Category
 }
 
@@ -24,165 +23,211 @@ const props = withDefaults(
 
 const copy = props.locale === 'en'
   ? {
-      controls: 'Controls',
-      disclosure: 'Disclosure & Floating',
+      categories: {
+        foundation: 'Foundation',
+        controls: 'Selection & Toggle',
+        disclosure: 'Disclosure & Floating',
+        layers: 'Layers',
+      },
       parts: 'Parts',
       open: 'Open page',
     }
   : {
-      controls: '选择控件',
-      disclosure: '展开与浮层',
+      categories: {
+        foundation: '基础控件',
+        controls: '选择与切换',
+        disclosure: '展开与轻浮层',
+        layers: '遮罩与弹层',
+      },
       parts: 'Parts',
       open: '打开文档',
     }
 
-const items: CatalogItem[]
-  = props.locale === 'en'
-    ? [
-        {
-          id: 'checkbox',
-          href: '/en/primitives/checkbox',
-          title: 'Checkbox',
-          parts: 'CheckboxRoot / CheckboxIndicator',
-          summary: 'Checked state, disabled behavior, and indicator rendering.',
-          category: 'controls',
-        },
-        {
-          id: 'radio-group',
-          href: '/en/primitives/radio-group',
-          title: 'Radio Group',
-          parts: 'RadioGroup / RadioItem / RadioIndicator',
-          summary: 'Single-select group value with item-level disabled support.',
-          category: 'controls',
-        },
-        {
-          id: 'switch',
-          href: '/en/primitives/switch',
-          title: 'Switch',
-          parts: 'SwitchRoot / SwitchThumb',
-          summary: 'Binary toggle with loading and disabled contracts.',
-          category: 'controls',
-        },
-        {
-          id: 'tabs',
-          href: '/en/primitives/tabs',
-          title: 'Tabs',
-          parts: 'TabsRoot / TabsList / TabsTrigger / TabsContent',
-          summary: 'Tab value ownership, orientation, and panel association.',
-          category: 'controls',
-        },
-        {
-          id: 'select',
-          href: '/en/primitives/select',
-          title: 'Select',
-          parts: 'SelectRoot / Trigger / Value / Content / Item',
-          summary: 'Composable select state, open contract, and option rendering.',
-          category: 'controls',
-        },
-        {
-          id: 'collapsible',
-          href: '/en/primitives/collapsible',
-          title: 'Collapsible',
-          parts: 'CollapsibleRoot / Trigger / Content',
-          summary: 'Single disclosure open state for expandable content.',
-          category: 'disclosure',
-        },
-        {
-          id: 'accordion',
-          href: '/en/primitives/accordion',
-          title: 'Accordion',
-          parts: 'AccordionRoot / Item / Trigger / Content',
-          summary: 'Single or multiple expandable sections with item disable.',
-          category: 'disclosure',
-        },
-        {
-          id: 'popover',
-          href: '/en/primitives/popover',
-          title: 'Popover',
-          parts: 'PopoverRoot / Trigger / Content / Close',
-          summary: 'Lightweight floating layer open/close and dismiss contract.',
-          category: 'disclosure',
-        },
-      ]
-    : [
-        {
-          id: 'checkbox',
-          href: '/primitives/checkbox',
-          title: 'Checkbox',
-          parts: 'CheckboxRoot / CheckboxIndicator',
-          summary: '选中态、禁用态与 indicator 渲染契约。',
-          category: 'controls',
-        },
-        {
-          id: 'radio-group',
-          href: '/primitives/radio-group',
-          title: 'Radio Group',
-          parts: 'RadioGroup / RadioItem / RadioIndicator',
-          summary: '单选组 value 与选项级 disabled 语义。',
-          category: 'controls',
-        },
-        {
-          id: 'switch',
-          href: '/primitives/switch',
-          title: 'Switch',
-          parts: 'SwitchRoot / SwitchThumb',
-          summary: '开关态、loading 与 disabled 契约。',
-          category: 'controls',
-        },
-        {
-          id: 'tabs',
-          href: '/primitives/tabs',
-          title: 'Tabs',
-          parts: 'TabsRoot / TabsList / TabsTrigger / TabsContent',
-          summary: '当前 tab value、orientation 与 panel 关联。',
-          category: 'controls',
-        },
-        {
-          id: 'select',
-          href: '/primitives/select',
-          title: 'Select',
-          parts: 'SelectRoot / Trigger / Value / Content / Item',
-          summary: '选择器状态、open 契约与选项组合。',
-          category: 'controls',
-        },
-        {
-          id: 'collapsible',
-          href: '/primitives/collapsible',
-          title: 'Collapsible',
-          parts: 'CollapsibleRoot / Trigger / Content',
-          summary: '单个展开区域的 open 状态契约。',
-          category: 'disclosure',
-        },
-        {
-          id: 'accordion',
-          href: '/primitives/accordion',
-          title: 'Accordion',
-          parts: 'AccordionRoot / Item / Trigger / Content',
-          summary: 'single/multiple 展开集合与 item disabled。',
-          category: 'disclosure',
-        },
-        {
-          id: 'popover',
-          href: '/primitives/popover',
-          title: 'Popover',
-          parts: 'PopoverRoot / Trigger / Content / Close',
-          summary: '轻量浮层开关与 dismiss 契约。',
-          category: 'disclosure',
-        },
-      ]
-
-const groups = [
+const definitions: CatalogItemDefinition[] = [
   {
-    id: 'controls' as const,
-    title: copy.controls,
-    items: items.filter(item => item.category === 'controls'),
+    id: 'button',
+    title: 'Button',
+    parts: 'ButtonRoot / usePressableRoot',
+    summary: {
+      zh: '统一 pressed、disabled、loading 与原生激活语义。',
+      en: 'Shared pressed, disabled, loading, and native activation semantics.',
+    },
+    category: 'foundation',
   },
   {
-    id: 'disclosure' as const,
-    title: copy.disclosure,
-    items: items.filter(item => item.category === 'disclosure'),
+    id: 'input',
+    title: 'Input',
+    parts: 'InputRoot / useFieldRoot',
+    summary: {
+      zh: '文本值、格式化、只读、校验与输入事件基座。',
+      en: 'Text value, formatting, readonly, invalid, and input-event foundation.',
+    },
+    category: 'foundation',
+  },
+  {
+    id: 'number-field',
+    title: 'Number Field',
+    parts: 'NumberFieldRoot / Decrement / Input / Increment',
+    summary: {
+      zh: '数值边界、步进、精度与组合式加减控件。',
+      en: 'Numeric bounds, step, precision, and composable increment controls.',
+    },
+    category: 'foundation',
+  },
+  {
+    id: 'image',
+    title: 'Image',
+    parts: 'ImageRoot / useImageRoot',
+    summary: {
+      zh: '图片加载、失败、占位与尺寸适配状态。',
+      en: 'Image loading, failure, placeholder, and sizing state.',
+    },
+    category: 'foundation',
+  },
+  {
+    id: 'cell',
+    title: 'Cell',
+    parts: 'CellGroupRoot / CellRoot',
+    summary: {
+      zh: '列表行、设置项、链接行与键盘激活契约。',
+      en: 'List row, settings item, link row, and keyboard activation contract.',
+    },
+    category: 'foundation',
+  },
+  {
+    id: 'sticky',
+    title: 'Sticky',
+    parts: 'StickyRoot',
+    summary: {
+      zh: '吸顶状态、偏移量与滚动事件适配。',
+      en: 'Sticky state, offset, and runtime-specific scroll events.',
+    },
+    category: 'foundation',
+  },
+  {
+    id: 'checkbox',
+    title: 'Checkbox',
+    parts: 'CheckboxRoot / CheckboxIndicator',
+    summary: {
+      zh: '选中态、禁用态与 indicator 渲染契约。',
+      en: 'Checked state, disabled behavior, and indicator rendering.',
+    },
+    category: 'controls',
+  },
+  {
+    id: 'radio-group',
+    title: 'Radio Group',
+    parts: 'RadioGroup / RadioItem / RadioIndicator',
+    summary: {
+      zh: '单选组 value 与选项级 disabled 语义。',
+      en: 'Single-select group value with item-level disabled support.',
+    },
+    category: 'controls',
+  },
+  {
+    id: 'switch',
+    title: 'Switch',
+    parts: 'SwitchRoot / SwitchThumb',
+    summary: {
+      zh: '开关态、loading 与 disabled 契约。',
+      en: 'Binary toggle with loading and disabled contracts.',
+    },
+    category: 'controls',
+  },
+  {
+    id: 'tabs',
+    title: 'Tabs',
+    parts: 'TabsRoot / TabsList / TabsTrigger / TabsContent',
+    summary: {
+      zh: '当前 tab value、orientation 与 panel 关联。',
+      en: 'Tab value ownership, orientation, and panel association.',
+    },
+    category: 'controls',
+  },
+  {
+    id: 'select',
+    title: 'Select',
+    parts: 'SelectRoot / Trigger / Value / Content / Item',
+    summary: {
+      zh: '选择器状态、open 契约与选项组合。',
+      en: 'Composable select state, open contract, and option rendering.',
+    },
+    category: 'controls',
+  },
+  {
+    id: 'collapsible',
+    title: 'Collapsible',
+    parts: 'CollapsibleRoot / Trigger / Content',
+    summary: {
+      zh: '单个展开区域的 open 状态契约。',
+      en: 'Single disclosure open state for expandable content.',
+    },
+    category: 'disclosure',
+  },
+  {
+    id: 'accordion',
+    title: 'Accordion',
+    parts: 'AccordionRoot / Item / Trigger / Content',
+    summary: {
+      zh: 'single/multiple 展开集合与 item disabled。',
+      en: 'Single or multiple expandable sections with item disable.',
+    },
+    category: 'disclosure',
+  },
+  {
+    id: 'popover',
+    title: 'Popover',
+    parts: 'PopoverRoot / Trigger / Content / Close',
+    summary: {
+      zh: '轻量浮层开关与显式 dismiss 契约。',
+      en: 'Lightweight floating layer open/close and explicit dismiss contract.',
+    },
+    category: 'disclosure',
+  },
+  {
+    id: 'dialog',
+    title: 'Dialog',
+    parts: 'DialogRoot / Trigger / Overlay / Content / Close',
+    summary: {
+      zh: '模态打开态、遮罩、内容与退出动作。',
+      en: 'Modal open state, overlay, content, and exit actions.',
+    },
+    category: 'layers',
+  },
+  {
+    id: 'overlay',
+    title: 'Overlay',
+    parts: 'OverlayRoot',
+    summary: {
+      zh: '遮罩可见态、点击关闭与滚动锁定。',
+      en: 'Overlay visibility, click dismiss, and scroll locking.',
+    },
+    category: 'layers',
+  },
+  {
+    id: 'popup',
+    title: 'Popup',
+    parts: 'PopupRoot',
+    summary: {
+      zh: '带定位、遮罩、安全区与关闭行为的弹出层。',
+      en: 'Positioned popup with overlay, safe area, and close behavior.',
+    },
+    category: 'layers',
   },
 ]
+
+const routePrefix = props.locale === 'en' ? '/en' : ''
+const groups = (['foundation', 'controls', 'disclosure', 'layers'] as const).map(id => ({
+  id,
+  title: copy.categories[id],
+  items: definitions
+    .filter(item => item.category === id)
+    .map(item => ({
+      ...item,
+      href: `${routePrefix}/primitives/${item.id}`,
+      summary: item.summary[props.locale],
+    })),
+}))
 </script>
 
 <template>
