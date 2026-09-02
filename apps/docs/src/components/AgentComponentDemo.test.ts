@@ -154,4 +154,14 @@ describe('AgentComponentDemo', () => {
     await choices[1]!.get('input').setValue(true)
     expect(wrapper.get('.agent-fine-tune__choice[data-selected="true"]').text()).toContain('Expressive')
   })
+  it('keeps attachment removal a borderless destructive action', async () => {
+    const wrapper = mount(AgentComponentDemo, { props: { component: 'attachments' } })
+    const remove = wrapper.get('button[aria-label="移除 agent-events.schema.json"]')
+
+    expect(remove.classes()).toContain('agent-action--danger')
+    expect(remove.classes()).toContain('border-0')
+    expect(remove.classes()).not.toContain('hover:border-red-100')
+    await remove.trigger('click')
+    expect(wrapper.get('output').text()).toContain('移除 agent-events.schema.json')
+  })
 })

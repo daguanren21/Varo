@@ -530,7 +530,7 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
     box-shadow 160ms ease;
 }
 
-.agent-component-demo__stage :deep(button:hover:not(:disabled)) {
+.agent-component-demo__stage :deep(button:hover:not(:disabled, .agent-action--danger)) {
   border-color: color-mix(in srgb, var(--vp-c-brand-1) 38%, var(--varo-border));
 }
 

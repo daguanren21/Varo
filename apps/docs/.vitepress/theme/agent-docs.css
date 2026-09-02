@@ -25,6 +25,7 @@
 .dark .agent-component-demo .border-slate-300 {
   border-color: var(--varo-border) !important;
 }
+
 .dark .agent-component-demo .agent-message-scroller,
 .dark .agent-component-demo .agent-file-diff,
 .dark .agent-component-demo .agent-tool-result,
@@ -39,9 +40,9 @@
 .dark .agent-component-demo .agent-command-search,
 .dark .agent-component-demo .agent-flowchart,
 .dark .agent-component-demo .agent-image-generation {
-  border-color: var(--varo-border) !important;
-  background: var(--varo-surface) !important;
   color: var(--varo-foreground) !important;
+  background: var(--varo-surface) !important;
+  border-color: var(--varo-border) !important;
 }
 
 .dark .agent-component-demo .agent-sidebar > header,
@@ -51,9 +52,9 @@
 .dark .agent-component-demo .agent-context-card > header,
 .dark .agent-component-demo .agent-insight-card > header,
 .dark .agent-component-demo .agent-fine-tune > header {
-  border-color: var(--varo-border) !important;
-  background: var(--varo-surface-strong) !important;
   color: var(--varo-foreground) !important;
+  background: var(--varo-surface-strong) !important;
+  border-color: var(--varo-border) !important;
 }
 
 .dark .agent-component-demo .agent-flowchart__node strong,
@@ -82,17 +83,17 @@
 .dark .agent-component-demo .agent-sidebar__item[data-active='true'],
 .dark .agent-component-demo .agent-flowchart__node,
 .dark .agent-component-demo .agent-command-search > div button:hover {
-  border-color: var(--varo-border);
-  background: var(--varo-surface-strong);
   color: var(--varo-foreground);
+  background: var(--varo-surface-strong);
+  border-color: var(--varo-border);
 }
 
 .dark .agent-component-demo .agent-table th,
 .dark .agent-component-demo .agent-fine-tune input,
 .dark .agent-component-demo .agent-fine-tune select {
-  border-color: var(--varo-border);
-  background: var(--varo-surface-strong);
   color: var(--varo-foreground);
+  background: var(--varo-surface-strong);
+  border-color: var(--varo-border);
 }
 
 .agent-component-demo button:focus-visible,
@@ -102,4 +103,8 @@
 .agent-component-demo textarea:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
+}
+
+.agent-component-demo button.agent-action--danger:focus-visible {
+  outline-color: var(--varo-agent-danger);
 }

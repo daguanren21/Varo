@@ -654,7 +654,7 @@ export const AgentAttachmentList = defineComponent({
                 'button',
                 {
                   'aria-label': `移除 ${item.name}`,
-                  'class': 'min-h-8 flex-none rounded-lg border border-transparent px-2 text-[10px] font-bold text-[var(--varo-agent-muted)] transition-colors hover:border-red-100 hover:bg-[var(--varo-agent-danger-soft)] hover:text-[var(--varo-agent-danger)]',
+                  'class': 'agent-attachments__remove agent-action--danger min-h-8 flex-none rounded-lg border-0 bg-transparent px-2 text-[10px] font-bold text-[var(--varo-agent-muted)] transition-colors hover:bg-[var(--varo-agent-danger-soft)] hover:text-[var(--varo-agent-danger)] focus-visible:outline-[var(--varo-agent-danger)]',
                   'type': 'button',
                   'onClick': () => emit('remove', item),
                 },
