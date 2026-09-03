@@ -6,6 +6,7 @@
   "packageManager": "pnpm@11.24.0",
   "scripts": {
     "analyze": "cross-env VARO_WEAPP_OUTPUT=production wv analyze -p weapp",
+    "prebuild": "pnpm run verify:migration",
     "build": "cross-env VARO_WEAPP_OUTPUT=production wv build -p weapp && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
     "dev": "node scripts/prepare-devtools-project.mjs && cross-env VARO_WEAPP_OUTPUT=development wv dev -p weapp --project-config dist/dev/project.config.json",
     "postinstall": "wv prepare -p weapp",
@@ -18,13 +19,12 @@
     "@varo-ui/theme": "workspace:^",
     "@weapp-tailwindcss/merge": "^2.2.2",
     "clsx": "^2.1.1",
-    "lodash.isequal": "^4.5.0",
+    "dayjs": "^1.11.23",
+    "es-toolkit": "^1.51.0",
     "mitt": "^3.0.0",
-    "moment": "^2.30.1",
     "wevu": "6.25.1"
   },
   "devDependencies": {
-    "@types/lodash.isequal": "^4.5.8",
     "cross-env": "^10.1.0",
     "miniprogram-api-typings": "^5.2.1",
     "sass": "^1.92.1",

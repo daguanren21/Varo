@@ -1,4 +1,4 @@
-import { createTheme } from '@varo-ui/theme/source/theme'
+import { createTheme } from '@varo-ui/theme/weapp'
 
 export const realworldTheme = createTheme({
   primary: '#ff6216',

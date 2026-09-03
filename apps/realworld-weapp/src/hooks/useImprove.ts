@@ -12,6 +12,7 @@ import { uploadFiles } from '../request/index'
 import { parseDeviceSn, parseDeviceSnFromUrl, parseElectrodeSheetCodeDate, parseLockSN } from '../utils/util'
 import { cacDays, parseCmark } from './../utils/util'
 import { useAedNavigation, useGolbalData, useJxFilter, useJxToast, useMessage } from './index'
+import { useBrand } from './useBrand'
 
 const deviceInit = {
   id: '',
@@ -1271,50 +1272,6 @@ export function useOpenInfo() {
     addTime,
     removeTime,
     _publicTimes,
-  }
-}
-/**
- * 公共hook
- */
-// 品牌获取
-interface BrandTarget {
-  brandId?: number | string
-  brandNameEn?: string
-}
-
-export function useBrand(device: ComputedRef<BrandTarget>, brandName = 'Jousing') {
-  const aedStore = useAedStore()
-  const { state } = aedStore
-  const brandList = computed(() => state.brandList)
-  if (!brandList.value.length) { aedStore.loadBrands() }
-  const brandDefault = brandList.value.findIndex((v: WechatMiniprogram.IAnyObject) => v.id == 0)
-  if (brandDefault == -1) {
-    brandList.value.unshift({ id: 0, nameEn: 'SELECT', nameCh: '请选择' })
-  }
-  const index = brandList.value.findIndex((v: WechatMiniprogram.IAnyObject) => v.nameEn == brandName)
-  const brandIndex = ref<number>(index == -1 ? 0 : index)
-  watchEffect(() => {
-    if (brandList.value.length) {
-      const index = brandList.value.findIndex((v: WechatMiniprogram.IAnyObject) => v.id === device.value.brandId)
-      if (index !== -1) {
-        brandIndex.value = index
-      }
-      device.value.brandId = brandList.value[brandIndex.value].id
-      device.value.brandNameEn = brandList.value[brandIndex.value].nameEn
-    }
-  })
-  const isJs = computed(() => brandList.value[brandIndex.value] && brandList.value[brandIndex.value].nameEn == 'Jousing')
-  // 切换品牌
-  const changeBrand = (e: WechatMiniprogram.IAnyObject) => {
-    brandIndex.value = e.detail.value
-    device.value.brandId = brandList.value[brandIndex.value].id
-    device.value.brandNameEn = brandList.value[brandIndex.value].nameEn
-  }
-  return {
-    changeBrand,
-    brandList,
-    brandIndex,
-    isJs,
   }
 }
 /**

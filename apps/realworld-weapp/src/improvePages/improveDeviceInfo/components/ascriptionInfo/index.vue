@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useAedNavigation } from '../../../hooks'
+import { useAedNavigation } from '../../../../hooks'
 
-import { useInsInfo } from '../../../hooks/useImprove'
+import { useInsInfo } from '../../../../hooks/useImprove'
 
 const { toRoute } = useAedNavigation()
 

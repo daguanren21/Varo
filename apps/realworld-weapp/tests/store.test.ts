@@ -1,4 +1,4 @@
-import { renderWeappThemeCss } from '@varo-ui/theme/source/weapp'
+import { renderWeappThemeCss } from '@varo-ui/theme/weapp'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createStore } from 'wevu'
 import { useAedStore } from '../src/store'

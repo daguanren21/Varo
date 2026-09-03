@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useOpenInfo } from '../../../hooks/useImprove'
+import { useOpenInfo } from '../../../../hooks/useImprove'
 
 const openInfo = useOpenInfo()
 

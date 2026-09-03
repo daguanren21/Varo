@@ -4,7 +4,7 @@ import type { IDeviceParams } from '../../request/api/manage'
 import { computed, nextTick, onMounted, reactive, ref, toRaw, toRefs } from 'wevu'
 import { useAedStore } from '@/store'
 import { useAedNavigation, useGolbalData, useJxToast } from '../../hooks/index'
-import { useBrand } from '../../hooks/useImprove'
+import { useBrand } from '../../hooks/useBrand'
 
 import { handleIndexList } from '../../hooks/useJxLoc'
 import * as deviceApi from '../../request/api/deviceMap'

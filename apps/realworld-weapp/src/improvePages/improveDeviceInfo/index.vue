@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { ImproveSectionExpose } from '../../hooks/useImprove'
 import { computed, useTemplateRef } from 'wevu'
-import AscriptionInfo from '../../components/improveDeviceInfo/ascriptionInfo/index.vue'
-import BasicInfo from '../../components/improveDeviceInfo/basicInfo/index.vue'
-import DeployInfo from '../../components/improveDeviceInfo/deployInfo/index.vue'
-import OpenInfo from '../../components/improveDeviceInfo/openInfo/index.vue'
-import PartsInfo from '../../components/improveDeviceInfo/partsInfo/index.vue'
 import { useImproveInfo } from '../../hooks/useImprove'
+import AscriptionInfo from './components/ascriptionInfo/index.vue'
+import BasicInfo from './components/basicInfo/index.vue'
+import DeployInfo from './components/deployInfo/index.vue'
+import OpenInfo from './components/openInfo/index.vue'
+import PartsInfo from './components/partsInfo/index.vue'
 
 definePageJson({
   navigationBarTitleText: '完善设备信息',

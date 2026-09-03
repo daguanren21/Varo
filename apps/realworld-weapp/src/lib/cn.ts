@@ -1,5 +1,5 @@
 import type { ClassValue } from 'clsx'
-import { twMerge } from '@weapp-tailwindcss/merge'
+import { twMerge } from '@weapp-tailwindcss/merge/slim'
 import { clsx } from 'clsx'
 
 export function cn(...inputs: ClassValue[]): string {

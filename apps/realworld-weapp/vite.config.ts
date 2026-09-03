@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite'
 import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { posix, relative, resolve } from 'node:path'
-import { createVaroWeappThemePlugin } from '@varo-ui/theme/source/weapp-vite'
+import { createVaroWeappThemePlugin } from '@varo-ui/theme/weapp-vite'
 import { defineConfig } from 'weapp-vite/config'
 import { realworldTheme } from './src/theme.ts'
 

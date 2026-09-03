@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useScanDevice } from '../../../hooks/useImprove'
+import { useScanDevice } from '../../../../hooks/useImprove'
 
 const scanHooks = useScanDevice()
 

@@ -4,7 +4,7 @@
 /**
  * 全局过滤器
  */
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 const ErunningState = {
   UNKNOWN: 'UNKNOWN',
@@ -214,12 +214,13 @@ const NET_LOCK_SN_PREFIX = 'JCC'
 const BLE_LOCK_SN_PREFIX = 'JCB'
 
 export function cacDays(year: number, month: number): number {
-  const startOfMonth = moment([year, month - 1])
-  // const endOfMonth = moment(startOfMonth).add(1, 'months');
-  // 计算这两个日期之间的天数
-  const daysInMonth = startOfMonth.daysInMonth()
-  return daysInMonth
+  return dayjs()
+    .date(1)
+    .year(year)
+    .month(month - 1)
+    .daysInMonth()
 }
+
 export const weekDays = {
   1: '周一',
   2: '周二',
@@ -502,7 +503,7 @@ export const filter = {
     }
   },
   dateFilter(dateStr: string | Date | null | undefined, format = 'YYYY-MM-DD HH:mm:ss') {
-    return dateStr ? moment(dateStr).format(format) : '---'
+    return dateStr ? dayjs(dateStr).format(format) : '---'
   },
   minuteFilter(minute: number) {
     if (minute == null) {

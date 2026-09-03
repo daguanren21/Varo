@@ -1,4 +1,4 @@
-import isEqual from 'lodash.isequal'
+import { isEqual } from 'es-toolkit'
 
 import { computed, isProxy, onMounted, reactive, ref, toRaw, toRefs, watch } from 'wevu'
 import { readRouteParams } from '@/composables/useAedNavigation'

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useDeployInfo } from '../../../hooks/useImprove'
+import JxChangeLoc from '../../../../components/jxChangeLoc/index.vue'
 
-import JxChangeLoc from '../../jxChangeLoc/index.vue'
+import { useDeployInfo } from '../../../../hooks/useImprove'
 
 const deployFn = useDeployInfo()
 
@@ -110,27 +110,27 @@ const { device, chooseLocation, openJxLoc, closeJxLoc, handleChangeImg, isFloatO
             <view class="ft">
               正面
             </view>
-            <image class="image" src="../../../static/images/jx-deploy-one.jpg" />
+            <image class="image" src="../../../../static/images/jx-deploy-one.jpg" />
           </view>
 
           <view class="item">
             <view class="ft">
               侧面
             </view>
-            <image class="image" src="../../../static/images/jx-deploy-two.jpg" />
+            <image class="image" src="../../../../static/images/jx-deploy-two.jpg" />
           </view>
           <view class="item">
             <view class="ft">
               门头
             </view>
 
-            <image class="image" src="../../../static/images/jx-deploy-three.jpg" />
+            <image class="image" src="../../../../static/images/jx-deploy-three.jpg" />
           </view>
           <view class="item">
             <view class="ft">
               远景
             </view>
-            <image class="image" src="../../../static/images/jx-deploy-four.jpg" />
+            <image class="image" src="../../../../static/images/jx-deploy-four.jpg" />
           </view>
         </view>
       </view>

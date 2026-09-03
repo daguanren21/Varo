@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PropType } from 'wevu'
 import { toRefs } from 'wevu'
-import { useJxFilter } from '../../../hooks'
-import { usePartsInfo } from '../../../hooks/useImprove'
+import { useJxFilter } from '../../../../hooks'
+import { usePartsInfo } from '../../../../hooks/useImprove'
 
 const props = defineProps({
   cb: {
