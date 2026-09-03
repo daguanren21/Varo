@@ -12,7 +12,7 @@
 
 ## 搜索与 Dropdown
 
-`searchable` 开启本地搜索；`mode="dropdown"` 切换为下拉展示。
+`filterable` 让 Select 字段本身直接输入并过滤本地选项；展开面板不会再重复渲染第二个搜索框。`mode="dropdown"` 切换为下拉展示。
 
 ## 二次封装边界
 
@@ -31,7 +31,7 @@
 | `clearable` | `boolean` | `false` | 可清空 |
 | `multiple` | `boolean` | `false` | 多选 |
 | `max` | `number` | `undefined` | 最多选择数量 |
-| `searchable` | `boolean` | `false` | 本地搜索 |
+| `filterable` | `boolean` | `false` | 允许直接在 Select 字段中搜索本地选项 |
 | `confirmable` | `boolean` | `true` | 多选时是否确认提交 |
 | `filterOption` | `(query, option) => boolean` | `undefined` | 自定义本地过滤 |
 | `loading` | `boolean` | `false` | 加载状态展示 |

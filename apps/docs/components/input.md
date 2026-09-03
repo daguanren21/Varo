@@ -92,6 +92,10 @@ const digits = (value: string) => value.replace(/\D/g, '')
 | `suffixIcon` | `string` | `undefined` | 后缀内容 |
 | `errorMessage` | `string` | `undefined` | 错误文案 |
 
+> Weapp 的 property 系统无法区分省略 `value` 与显式传入 `:value="undefined"`；两者都会使用非受控 `defaultValue`。需要受控空值时请传入 `value=""`。`VTextarea` 遵循同一规则。
+
+Weapp 原生控件桥接使用显式 props：`name` 参与表单提交，`inputId` 设置内部 `<input>`/`<textarea>` 的 id，`className` 与 `customStyle` 设置组件外层；`ariaDescribedby`、`ariaLabelledby`、`form`、`focus`、`autoFocus`、`cursor`、`selectionStart`、`selectionEnd`、`adjustPosition` 与 `holdKeyboard` 会转发到内部原生控件。H5 仍可直接使用原生 attrs。
+
 ## Events
 
 | Event | Payload | 描述 |

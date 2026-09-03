@@ -2,27 +2,25 @@
   "name": "selection",
   "type": "util",
   "title": "Selection Controls",
-  "description": "Shared checkbox and radio implementations used by their public registry entries.",
+  "description": "Shared H5 checkbox and radio implementations used by their public registry entries.",
   "targets": [
-    "h5",
-    "weapp"
+    "h5"
   ],
   "dependencies": [
     "@varo-ui/headless",
-    "@varo-ui/theme",
-    "vue"
+    "@varo-ui/theme"
   ],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ]
+  },
   "registryDependencies": [
     "utils/primitives"
   ],
   "files": [
     {
       "target": "h5",
-      "from": "registry/utils/selection/selection.ts",
-      "to": "src/components/ui/selection.ts"
-    },
-    {
-      "target": "weapp",
       "from": "registry/utils/selection/selection.ts",
       "to": "src/components/ui/selection.ts"
     }

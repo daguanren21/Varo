@@ -4,13 +4,22 @@ import type {
   AgentStreamSnapshot,
   AgentStreamStatus,
   AgentToolPart,
+  AgentThreadVersion,
 } from '@varo-ui/ai'
-import type { PropType } from 'vue'
+import { useBodyScrollLock } from '@varo-ui/headless'
+import type { PropType, ShallowRef } from 'vue'
 import type { ClassValue } from '../../lib/cn'
+import type {
+  AgentContextSource,
+  AgentRetrievalItem,
+  AgentSourceReceiptItem,
+  AgentWorkspacePlacement,
+} from './advanced-types'
 import {
   computed,
   defineComponent,
   h,
+  nextTick,
   onBeforeUnmount,
   onMounted,
 
@@ -31,8 +40,11 @@ export interface AgentChoice {
 
 export interface AgentTask {
   id: string
+  description?: string
   meta?: string
   progress?: number
+  requiresApproval?: boolean
+  retryable?: boolean
   status: AgentPartStatus
   title: string
 }
@@ -293,6 +305,553 @@ export const AgentTaskList = defineComponent({
         ]),
       ])),
     ])
+  },
+})
+
+const workspaceActionButton = 'relative m-0 inline-flex min-h-9 min-w-12 items-center justify-center rounded-lg px-2.5 text-[11px] font-bold transition-colors before:absolute before:-inset-1 before:content-[\'\'] motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-45'
+const workspacePrimaryTextButton = `${workspaceActionButton} border border-transparent bg-transparent text-[var(--varo-agent-primary)] hover:bg-[var(--varo-agent-primary-soft)]`
+const workspaceQuietButton = `${workspaceActionButton} border border-transparent bg-transparent text-[var(--varo-agent-foreground)] hover:bg-[var(--varo-agent-fill)]`
+const workspaceDangerTextButton = `${workspaceActionButton} border border-transparent bg-transparent text-[var(--varo-agent-danger)] hover:bg-[var(--varo-agent-danger-soft)]`
+
+const contextSourceStatusLabels = {
+  available: '可用',
+  connecting: '连接中',
+  unavailable: '不可用',
+} as const
+const contextSourceStatusClasses = {
+  available: 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]',
+  connecting: 'bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]',
+  unavailable: 'bg-[var(--varo-agent-danger-soft)] text-[var(--varo-agent-danger)]',
+} as const
+const retrievalStatusLabels = {
+  failed: '读取失败',
+  queued: '排队中',
+  read: '已读取',
+  reading: '读取中',
+  skipped: '已跳过',
+} as const
+const retrievalStatusClasses = {
+  failed: 'bg-[var(--varo-agent-danger-soft)] text-[var(--varo-agent-danger)]',
+  queued: 'bg-[var(--varo-agent-fill)] text-[var(--varo-agent-muted)]',
+  read: 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]',
+  reading: 'bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]',
+  skipped: 'bg-[var(--varo-agent-warning-soft)] text-[var(--varo-agent-warning)]',
+} as const
+const receiptStatusLabels = {
+  failed: '读取失败',
+  read: '已读取',
+  skipped: '已跳过',
+} as const
+const receiptStatusClasses = {
+  failed: 'bg-[var(--varo-agent-danger-soft)] text-[var(--varo-agent-danger)]',
+  read: 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]',
+  skipped: 'bg-[var(--varo-agent-warning-soft)] text-[var(--varo-agent-warning)]',
+} as const
+
+function renderCloseIcon() {
+  return h('svg', {
+    'aria-hidden': 'true',
+    'class': 'h-5 w-5',
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 2,
+    'viewBox': '0 0 24 24',
+  }, [
+    h('path', { d: 'M6 6l12 12M18 6 6 18' }),
+  ])
+}
+
+export const AgentComposerScope = defineComponent({
+  name: 'AgentComposerScope',
+  props: {
+    disabled: Boolean,
+    sources: { type: Array as PropType<AgentContextSource[]>, default: () => [] },
+    title: { type: String, default: '可访问来源' },
+    usagePercent: { type: Number, default: 0 },
+  },
+  emits: {
+    connect: (_source: AgentContextSource) => true,
+    toggle: (_source: AgentContextSource, _enabled: boolean) => true,
+  },
+  setup(props, { emit }) {
+    const usage = computed(() => {
+      const value = Number.isFinite(props.usagePercent) ? props.usagePercent : 0
+      return Math.min(100, Math.max(0, value))
+    })
+    const enabledCount = computed(() => props.sources.filter(source => source.enabled).length)
+    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
+      h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
+        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
+        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${enabledCount.value} 个已启用`),
+      ]),
+      props.sources.length
+        ? h('div', { class: 'grid gap-1 p-2' }, props.sources.map(source => {
+            const status = source.status ?? 'available'
+            return h('div', { 'class': 'flex min-h-[58px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', 'data-status': status, 'key': source.id }, [
+              h('i', { 'class': ['h-3 w-3 flex-none rounded-full', contextSourceStatusClasses[status]], 'aria-hidden': 'true' }),
+              h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
+                h('span', { class: 'flex min-w-0 items-center gap-2' }, [
+                  h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, source.label),
+                  h('small', { class: 'flex-none text-[10px] font-semibold text-[var(--varo-agent-muted)]' }, contextSourceStatusLabels[status]),
+                ]),
+                source.description || source.meta
+                  ? h('small', { class: 'truncate text-[11px] text-[var(--varo-agent-muted)]' }, source.description || source.meta)
+                  : null,
+              ]),
+              status === 'available'
+                ? h('button', {
+                    'aria-label': `${source.enabled ? '停用' : '启用'}${source.label}`,
+                    'aria-pressed': source.enabled,
+                    'class': workspaceQuietButton,
+                    'disabled': props.disabled,
+                    'type': 'button',
+                    'onClick': () => emit('toggle', source, !source.enabled),
+                  }, source.enabled ? '停用' : '启用')
+                : status === 'unavailable'
+                  ? h('button', {
+                      'aria-label': `连接${source.label}`,
+                      'class': workspacePrimaryTextButton,
+                      'disabled': props.disabled,
+                      'type': 'button',
+                      'onClick': () => emit('connect', source),
+                    }, '连接')
+                  : null,
+            ])
+          }))
+        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无来源'),
+      h('footer', { class: 'grid gap-2 border-t border-[var(--varo-agent-border)] px-3.5 py-3' }, [
+        h('span', { class: 'flex items-center justify-between gap-3' }, [
+          h('span', { class: 'text-[11px] font-semibold text-[var(--varo-agent-text)]' }, '上下文使用'),
+          h('strong', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-primary)]' }, `${usage.value}%`),
+        ]),
+        h('span', {
+          'class': 'block h-1.5 overflow-hidden rounded-full bg-[var(--varo-agent-fill)]',
+          'role': 'progressbar',
+          'aria-label': '上下文使用量',
+          'aria-valuemax': 100,
+          'aria-valuemin': 0,
+          'aria-valuenow': usage.value,
+        }, [
+          h('i', { class: 'block h-full rounded-full bg-[var(--varo-agent-primary)]', style: { width: `${usage.value}%` } }),
+        ]),
+      ]),
+    ])
+  },
+})
+
+export const AgentRetrievalProgress = defineComponent({
+  name: 'AgentRetrievalProgress',
+  props: {
+    items: { type: Array as PropType<AgentRetrievalItem[]>, default: () => [] },
+    title: { type: String, default: '检索进度' },
+  },
+  emits: {
+    retry: (_item: AgentRetrievalItem) => true,
+  },
+  setup(props, { emit }) {
+    const settled = computed(() => props.items.filter(item => item.status === 'read' || item.status === 'skipped' || item.status === 'failed').length)
+    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-atomic': 'false', 'aria-live': 'polite' }, [
+      h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
+        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
+        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${settled.value}/${props.items.length} 已处理`),
+      ]),
+      props.items.length
+        ? h('div', { class: 'grid gap-1 p-2' }, props.items.map(item => h('div', { 'class': 'flex min-h-[56px] items-center gap-2.5 rounded-xl px-2.5 py-2', 'data-status': item.status, 'key': item.id }, [
+            h('i', { 'class': ['h-3 w-3 flex-none rounded-full', retrievalStatusClasses[item.status]], 'aria-hidden': 'true' }),
+            h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
+              h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, item.title),
+              item.detail ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, item.detail) : null,
+            ]),
+            h('span', { class: 'flex flex-none items-center gap-2' }, [
+              h('small', { class: 'text-[10px] font-semibold text-[var(--varo-agent-text)]' }, retrievalStatusLabels[item.status]),
+              item.status === 'failed' && item.retryable
+                ? h('button', {
+                    'aria-label': `重试${item.title}`,
+                    'class': workspaceQuietButton,
+                    'type': 'button',
+                    'onClick': () => emit('retry', item),
+                  }, '重试')
+                : null,
+            ]),
+          ])))
+        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无检索项'),
+    ])
+  },
+})
+
+export const AgentSourceReceipt = defineComponent({
+  name: 'AgentSourceReceipt',
+  props: {
+    items: { type: Array as PropType<AgentSourceReceiptItem[]>, default: () => [] },
+    summary: { type: String, default: '' },
+    title: { type: String, default: '来源回执' },
+  },
+  emits: {
+    connect: (_item: AgentSourceReceiptItem) => true,
+    open: (_item: AgentSourceReceiptItem) => true,
+  },
+  setup(props, { emit }) {
+    const readCount = computed(() => props.items.filter(item => item.status === 'read').length)
+    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
+      h('header', { class: 'grid min-h-12 gap-0.5 border-b border-[var(--varo-agent-border)] px-3.5 py-2.5' }, [
+        h('span', { class: 'flex items-center justify-between gap-3' }, [
+          h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
+          h('small', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${readCount.value}/${props.items.length} 已读取`),
+        ]),
+        props.summary ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, props.summary) : null,
+      ]),
+      props.items.length
+        ? h('div', { class: 'grid gap-1 p-2' }, props.items.map(item => h('div', { 'class': 'flex min-h-[56px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', 'data-status': item.status, 'key': item.id }, [
+            h('i', { 'class': ['h-3 w-3 flex-none rounded-full', receiptStatusClasses[item.status]], 'aria-hidden': 'true' }),
+            h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
+              h('span', { class: 'flex min-w-0 items-baseline gap-2' }, [
+                h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, item.label),
+                item.itemCount === undefined
+                  ? null
+                  : h('small', { class: 'flex-none text-[10px] tabular-nums text-[var(--varo-agent-muted)]' }, `${item.itemCount} 项`),
+              ]),
+              item.detail ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, item.detail) : null,
+              h('small', { class: 'text-[10px] font-semibold text-[var(--varo-agent-text)]' }, receiptStatusLabels[item.status]),
+            ]),
+            item.status === 'read'
+              ? h('button', {
+                  'aria-label': `查看${item.label}`,
+                  'class': workspaceQuietButton,
+                  'type': 'button',
+                  'onClick': () => emit('open', item),
+                }, '查看')
+              : item.status === 'failed'
+                ? h('button', {
+                    'aria-label': `连接${item.label}`,
+                    'class': workspacePrimaryTextButton,
+                    'type': 'button',
+                    'onClick': () => emit('connect', item),
+                  }, '连接')
+                : null,
+          ])))
+        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无来源回执'),
+    ])
+  },
+})
+
+export const AgentTaskRunner = defineComponent({
+  name: 'AgentTaskRunner',
+  props: {
+    busy: Boolean,
+    tasks: { type: Array as PropType<AgentTask[]>, default: () => [] },
+    title: { type: String, default: '执行计划' },
+  },
+  emits: {
+    approve: (_task: AgentTask) => true,
+    cancel: () => true,
+    retry: (_task: AgentTask) => true,
+  },
+  setup(props, { emit }) {
+    const actionableTasks = computed(() => {
+      if (props.busy) { return [] }
+      return props.tasks.filter(task =>
+        (task.status === 'failed' && task.retryable)
+        || (task.status === 'waiting' && task.requiresApproval),
+      )
+    })
+    const canCancel = computed(() => props.busy || props.tasks.some(task => task.status === 'running'))
+    return () => h('section', { class: 'grid gap-2.5' }, [
+      h(AgentTaskList, { tasks: props.tasks, title: props.title }),
+      actionableTasks.value.length || canCancel.value
+        ? h('div', { class: 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]' }, [
+            actionableTasks.value.length
+              ? h('div', { class: 'grid gap-1 p-2' }, actionableTasks.value.map(task => h('div', { class: 'flex min-h-[56px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', key: task.id }, [
+                  h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
+                    h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, task.title),
+                    task.description ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, task.description) : null,
+                    h('small', { class: 'text-[10px] font-semibold text-[var(--varo-agent-text)]' }, task.status === 'failed' ? '执行失败' : '等待确认'),
+                  ]),
+                  task.status === 'failed'
+                    ? h('button', {
+                        'aria-label': `重试${task.title}`,
+                        'class': workspaceQuietButton,
+                        'type': 'button',
+                        'onClick': () => emit('retry', task),
+                      }, '重试')
+                    : h('button', {
+                        'aria-label': `批准${task.title}`,
+                        'class': workspacePrimaryTextButton,
+                        'type': 'button',
+                        'onClick': () => emit('approve', task),
+                      }, '批准'),
+                ])))
+              : null,
+            canCancel.value
+              ? h('div', { class: 'flex min-h-[60px] items-center justify-between gap-3 border-t border-[var(--varo-agent-border)] px-3.5 py-2' }, [
+                  h('span', { class: 'text-[11px] text-[var(--varo-agent-muted)]' }, '任务正在执行'),
+                  h('button', {
+                    'aria-label': '取消当前任务',
+                    'class': workspaceDangerTextButton,
+                    'type': 'button',
+                    'onClick': () => emit('cancel'),
+                  }, '取消'),
+                ])
+              : null,
+          ])
+        : null,
+    ])
+  },
+})
+
+export const AgentThreadVersions = defineComponent({
+  name: 'AgentThreadVersions',
+  props: {
+    activeId: { type: String, default: '' },
+    title: { type: String, default: '会话版本' },
+    versions: { type: Array as PropType<readonly AgentThreadVersion[]>, default: () => [] },
+  },
+  emits: {
+    branch: (_version: AgentThreadVersion) => true,
+    pin: (_version: AgentThreadVersion) => true,
+    select: (_version: AgentThreadVersion) => true,
+  },
+  setup(props, { emit }) {
+    const displayVersions = computed(() => {
+      const labels = new Map<string, string>()
+      props.versions.forEach((version, index) => {
+        labels.set(version.id, version.label || `版本 ${index + 1}`)
+      })
+      return props.versions.map((version, index) => ({
+        active: version.id === props.activeId,
+        label: version.label || `版本 ${index + 1}`,
+        parentLabel: version.parentId ? labels.get(version.parentId) || version.parentId : '起始版本',
+        version,
+      }))
+    })
+    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
+      h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
+        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
+        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${props.versions.length} 个版本`),
+      ]),
+      displayVersions.value.length
+        ? h('div', { 'class': 'flex max-w-full gap-2 overflow-x-auto p-2.5', 'role': 'list', 'aria-label': '会话版本列表' }, displayVersions.value.map(entry =>
+            h('article', {
+              'class': [
+                'grid w-[252px] flex-none gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3',
+                entry.active
+                  ? 'border-[var(--varo-agent-primary)] shadow-[0_0_0_2px_var(--varo-agent-primary-soft)]'
+                  : 'border-[var(--varo-agent-border)]',
+              ],
+              'data-active': String(entry.active),
+              'key': entry.version.id,
+              'role': 'listitem',
+            }, [
+              h('span', { class: 'flex min-w-0 items-center justify-between gap-2' }, [
+                h('span', { class: 'flex min-w-0 items-center gap-2' }, [
+                  h('i', { 'class': ['h-2 w-2 flex-none rounded-full', entry.active ? 'bg-[var(--varo-agent-primary)]' : 'bg-[var(--varo-agent-border-strong)]'], 'aria-hidden': 'true' }),
+                  h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, entry.label),
+                ]),
+                entry.active
+                  ? h('small', { class: 'flex-none text-[10px] font-bold text-[var(--varo-agent-primary)]' }, '当前')
+                  : entry.version.pinned
+                    ? h('small', { class: 'flex-none text-[10px] font-bold text-[var(--varo-agent-text)]' }, '已固定')
+                    : null,
+              ]),
+              h('p', { class: 'm-0 min-h-8 text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, entry.version.summary || '暂无版本摘要'),
+              h('span', { class: 'grid gap-0.5 text-[10px] text-[var(--varo-agent-muted)]' }, [
+                h('small', { class: 'truncate' }, `来源：${entry.parentLabel}`),
+                entry.version.createdAt ? h('time', { class: 'truncate' }, `创建：${entry.version.createdAt}`) : null,
+              ]),
+              h('footer', { class: 'flex flex-wrap gap-2 border-t border-[var(--varo-agent-border)] pt-2' }, [
+                entry.active
+                  ? null
+                  : h('button', {
+                      'aria-label': `选择${entry.label}`,
+                      'class': workspacePrimaryTextButton,
+                      'type': 'button',
+                      'onClick': () => emit('select', entry.version),
+                    }, '选择'),
+                h('button', {
+                  'aria-label': `从${entry.label}创建分支`,
+                  'class': workspaceQuietButton,
+                  'type': 'button',
+                  'onClick': () => emit('branch', entry.version),
+                }, '分支'),
+                entry.version.pinned
+                  ? null
+                  : h('button', {
+                      'aria-label': `固定${entry.label}`,
+                      'class': workspaceQuietButton,
+                      'type': 'button',
+                      'onClick': () => emit('pin', entry.version),
+                    }, '固定'),
+              ]),
+            ]),
+          ))
+        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无会话版本'),
+    ])
+  },
+})
+
+interface AgentShellModalEntry {
+  close: () => void
+  closeRef: ShallowRef<HTMLButtonElement | null>
+  panelRef: ShallowRef<HTMLElement | null>
+}
+
+const agentShellModalStack: AgentShellModalEntry[] = []
+let agentShellRestoreTarget: HTMLElement | null = null
+
+function focusAgentShellModal(entry: AgentShellModalEntry) {
+  void nextTick(() => {
+    const top = agentShellModalStack[agentShellModalStack.length - 1]
+    if (top === entry) { entry.closeRef.value?.focus({ preventScroll: true }) }
+  })
+}
+
+function onAgentShellModalKeydown(event: KeyboardEvent) {
+  const entry = agentShellModalStack[agentShellModalStack.length - 1]
+  if (!entry) { return }
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    entry.close()
+    return
+  }
+  if (event.key !== 'Tab' || !entry.panelRef.value) { return }
+  const panel = entry.panelRef.value
+  const focusable = Array.from(panel.querySelectorAll<HTMLElement>(
+    'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+  )).filter(element => element.getAttribute('aria-hidden') !== 'true' && element.getClientRects().length > 0)
+  if (!focusable.length) {
+    event.preventDefault()
+    panel.focus()
+    return
+  }
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+  const activeElement = document.activeElement
+  if (event.shiftKey && (activeElement === first || !panel.contains(activeElement))) {
+    event.preventDefault()
+    last.focus()
+  }
+  else if (!event.shiftKey && (activeElement === last || !panel.contains(activeElement))) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+function registerAgentShellModal(entry: AgentShellModalEntry) {
+  if (typeof document === 'undefined' || agentShellModalStack.includes(entry)) { return }
+  if (!agentShellModalStack.length) {
+    agentShellRestoreTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    document.addEventListener('keydown', onAgentShellModalKeydown)
+  }
+  agentShellModalStack.push(entry)
+  focusAgentShellModal(entry)
+}
+
+function unregisterAgentShellModal(entry: AgentShellModalEntry) {
+  const index = agentShellModalStack.indexOf(entry)
+  if (index < 0) { return }
+  const wasTop = index === agentShellModalStack.length - 1
+  agentShellModalStack.splice(index, 1)
+  if (agentShellModalStack.length) {
+    if (wasTop) { focusAgentShellModal(agentShellModalStack[agentShellModalStack.length - 1]) }
+    return
+  }
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('keydown', onAgentShellModalKeydown)
+  }
+  const focusTarget = agentShellRestoreTarget
+  agentShellRestoreTarget = null
+  if (focusTarget?.isConnected) { focusTarget.focus({ preventScroll: true }) }
+}
+
+export const AgentShell = defineComponent({
+  name: 'AgentShell',
+  props: {
+    closeLabel: { type: String, default: '关闭工作区' },
+    open: { type: Boolean, default: true },
+    placement: { type: String as PropType<AgentWorkspacePlacement>, default: 'page' },
+    title: { type: String, default: 'Agent 工作区' },
+  },
+  emits: {
+    close: () => true,
+  },
+  setup(props, { emit, slots }) {
+    const panelRef = shallowRef<HTMLElement | null>(null)
+    const closeRef = shallowRef<HTMLButtonElement | null>(null)
+    const visible = computed(() => props.open)
+    const scrollLockEnabled = computed(() => props.placement === 'sheet')
+    const scrollLock = useBodyScrollLock(visible, scrollLockEnabled)
+    const modalEntry: AgentShellModalEntry = {
+      close: () => emit('close'),
+      closeRef,
+      panelRef,
+    }
+
+    watch(
+      [() => visible.value, () => scrollLockEnabled.value],
+      ([open, enabled]) => {
+        if (open && enabled) { registerAgentShellModal(modalEntry) }
+        else { unregisterAgentShellModal(modalEntry) }
+      },
+      { immediate: true },
+    )
+    watch([() => visible.value, () => scrollLockEnabled.value], scrollLock.sync)
+    onBeforeUnmount(() => unregisterAgentShellModal(modalEntry))
+    onBeforeUnmount(scrollLock.dispose)
+
+    return () => {
+      if (!visible.value) { return null }
+      const isSheet = scrollLockEnabled.value
+      const panel = h('section', {
+        'class': [
+          'relative z-[1] flex min-h-0 w-full flex-col overflow-hidden border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]',
+          props.placement === 'page' && 'min-h-screen rounded-none',
+          props.placement === 'docked' && 'max-h-[calc(100vh-32px)] max-w-[420px] rounded-[18px] shadow-[var(--varo-agent-shadow)]',
+          isSheet && 'max-h-[86vh] rounded-t-[22px] pb-[env(safe-area-inset-bottom)] shadow-[0_-16px_40px_rgb(15_23_42_/_18%)]',
+        ],
+        'ref': panelRef,
+        'role': isSheet ? 'dialog' : 'region',
+        'tabindex': -1,
+        'aria-label': props.title,
+        'aria-modal': isSheet ? 'true' : undefined,
+      }, [
+        h('header', { class: 'flex min-h-14 flex-none items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5 py-1.5' }, [
+          h('strong', { class: 'truncate text-[14px] text-[var(--varo-agent-foreground)]' }, props.title),
+          h('button', {
+            'aria-label': props.closeLabel,
+            'class': 'relative grid h-10 w-10 flex-none place-items-center rounded-[10px] border border-transparent bg-transparent text-[18px] leading-none text-[var(--varo-agent-muted)] transition-colors before:absolute before:-inset-0.5 before:content-[\'\'] hover:bg-[var(--varo-agent-fill)] motion-reduce:transition-none',
+            'ref': closeRef,
+            'type': 'button',
+            'onClick': () => emit('close'),
+          }, renderCloseIcon()),
+        ]),
+        h('div', {
+          class: [
+            'min-h-0 min-w-0 flex-1',
+            props.placement === 'page' ? 'w-full' : 'max-h-[calc(86vh-56px-env(safe-area-inset-bottom))] overflow-y-auto',
+          ],
+        }, slots.default?.()),
+      ])
+      return h('div', {
+        'class': [
+          'box-border w-full text-[var(--varo-agent-foreground)]',
+          props.placement === 'docked' && 'flex justify-end',
+          isSheet && 'fixed inset-0 z-[100] flex items-end',
+        ],
+        'data-placement': props.placement,
+      }, [
+        isSheet
+          ? h('button', {
+              'aria-label': props.closeLabel,
+              'class': 'fixed inset-0 z-0 h-full w-full border-0 bg-black/40 p-0',
+              'tabindex': -1,
+              'type': 'button',
+              'onClick': () => emit('close'),
+            })
+          : null,
+        panel,
+      ])
+    }
   },
 })
 

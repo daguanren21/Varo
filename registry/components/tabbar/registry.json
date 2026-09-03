@@ -8,12 +8,23 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -22,8 +33,18 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/tabbar/tabbar.ts",
-      "to": "src/components/ui/tabbar.ts"
+      "from": "registry/components/tabbar/tabbar-context.ts",
+      "to": "src/components/ui/tabbar-context.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/tabbar/v-tabbar.vue",
+      "to": "src/components/ui/v-tabbar.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/tabbar/v-tabbar-item.vue",
+      "to": "src/components/ui/v-tabbar-item.vue"
     }
   ],
   "docs": "/components/tabbar"

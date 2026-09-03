@@ -8,13 +8,24 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "components/input"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -23,8 +34,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/textarea/textarea.ts",
-      "to": "src/components/ui/textarea.ts"
+      "from": "registry/components/textarea/v-textarea.vue",
+      "to": "src/components/ui/v-textarea.vue"
     }
   ],
   "docs": "/components/textarea"

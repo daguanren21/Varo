@@ -8,12 +8,24 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "components/icon",
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -22,8 +34,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/navbar/navbar.ts",
-      "to": "src/components/ui/navbar.ts"
+      "from": "registry/components/navbar/v-navbar.vue",
+      "to": "src/components/ui/v-navbar.vue"
     }
   ],
   "docs": "/components/navbar"

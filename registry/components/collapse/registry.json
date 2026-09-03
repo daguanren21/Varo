@@ -8,14 +8,26 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "@varo-ui/headless",
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/primitives",
     "components/icon"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +36,18 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/collapse/collapse.ts",
-      "to": "src/components/ui/collapse.ts"
+      "from": "registry/components/collapse/v-collapse.vue",
+      "to": "src/components/ui/v-collapse.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/collapse/v-collapse-item.vue",
+      "to": "src/components/ui/v-collapse-item.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/collapse/collapse-context.ts",
+      "to": "src/components/ui/collapse-context.ts"
     }
   ],
   "docs": "/guide/shadcn-mode"

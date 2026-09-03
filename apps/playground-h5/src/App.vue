@@ -15,6 +15,7 @@ import {
   AgentResponseActions,
   AgentSourceList,
 } from './components/agent-ui'
+import AgentWorkspaceDemo from './components/agent-workspace/AgentWorkspaceDemo.vue'
 import AgentChat from './components/blocks/agent-chat.vue'
 import LoginForm from './components/blocks/login-form.vue'
 import OrderFilter from './components/blocks/order-filter.vue'
@@ -207,6 +208,8 @@ function record(message: string) {
           </aside>
         </div>
       </section>
+
+      <AgentWorkspaceDemo />
 
       <section class="pg__blocks">
         <header class="pg__block-intro">

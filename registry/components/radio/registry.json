@@ -9,10 +9,23 @@
     "weapp"
   ],
   "dependencies": [],
+  "targetDependencies": {
+    "weapp": [
+      "@varo-ui/headless",
+      "wevu"
+    ]
+  },
   "registryDependencies": [
-    "themes/base",
-    "utils/selection"
+    "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "h5": [
+      "utils/selection"
+    ],
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -21,8 +34,18 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/radio/radio.ts",
-      "to": "src/components/ui/radio.ts"
+      "from": "registry/components/radio/weapp-vite.vue",
+      "to": "src/components/ui/v-radio.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/radio/radio-group.weapp-vite.vue",
+      "to": "src/components/ui/v-radio-group.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/radio/radio-context.ts",
+      "to": "src/components/ui/radio-context.ts"
     }
   ],
   "docs": "/components/radio"

@@ -115,6 +115,7 @@ page {
     "pages/mall/index",
     "pages/form-showcase/index",
     "pages/robot-chat-showcase/index",
+    "pages/agent-workspace/index",
     "pages/index/index"
   ],
   "subPackages": [
@@ -169,6 +170,10 @@ page {
         "address/edit/index",
         "name-edit/index"
       ]
+    },
+    {
+      "root": "registry-catalog",
+      "pages": ["index/index"]
     }
   ],
   "plugins": {

@@ -24,8 +24,9 @@ const safeMessages = computed(() => (Array.isArray(props.messages) ? props.messa
 </script>
 
 <template>
-  <view class="agent-conversation grid gap-3" role="log" aria-live="polite">
+  <view class="agent-conversation box-border grid w-full min-w-0 max-w-full gap-3 overflow-hidden" role="log" aria-live="polite">
     <AgentMessage
+      class="block w-full min-w-0 max-w-full overflow-hidden"
       v-for="message in safeMessages"
       :key="message.id"
       :content="message.content"

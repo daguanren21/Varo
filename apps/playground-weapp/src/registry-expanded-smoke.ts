@@ -1,4 +1,3 @@
-import type { Component } from 'vue'
 import AgentChat from './components/blocks/agent-chat.vue'
 import AgentArtifact from './components/agent-ui/AgentArtifact.vue'
 import AgentAttachmentList from './components/agent-ui/AgentAttachmentList.vue'
@@ -36,38 +35,49 @@ import AgentSelectionActions from './components/agent-ui/AgentSelectionActions.v
 import AgentSidebar from './components/agent-ui/AgentSidebar.vue'
 import AgentToolApproval from './components/agent-ui/AgentToolApproval.vue'
 import AgentToolResult from './components/agent-ui/AgentToolResult.vue'
-import { VActionSheet } from './components/ui/action-sheet'
-import { VCell } from './components/ui/cell'
-import { VCollapse } from './components/ui/collapse'
+import VActionSheet from './components/ui/v-action-sheet.vue'
+import VCell from './components/ui/v-cell.vue'
+import VCellGroup from './components/ui/v-cell-group.vue'
+import VCollapse from './components/ui/v-collapse.vue'
+import VCollapseItem from './components/ui/v-collapse-item.vue'
 import { VDialogRoot } from './components/ui/dialog'
-import { VDivider } from './components/ui/divider'
+import VDivider from './components/ui/v-divider.vue'
 import { VForm } from './components/ui/form'
-import { VGrid } from './components/ui/grid'
-import { VIndicator } from './components/ui/indicator'
-import { VRow } from './components/ui/layout'
-import { VList } from './components/ui/list'
-import { VMenu } from './components/ui/menu'
-import { VNavbar } from './components/ui/navbar'
-import { VNoticeBar } from './components/ui/notice-bar'
-import { VOverlay } from './components/ui/overlay'
-import { VPagination } from './components/ui/pagination'
-import { VPopoverRoot } from './components/ui/popover'
-import { VPopup } from './components/ui/popup'
-import { VRadio } from './components/ui/radio'
-import { VRate } from './components/ui/rate'
-import { VSafeArea } from './components/ui/safe-area'
-import { VSearchbar } from './components/ui/searchbar'
-import { VSkeleton } from './components/ui/skeleton'
-import { VSpace } from './components/ui/space'
-import { VSteps } from './components/ui/steps'
-import { VSticky } from './components/ui/sticky'
-import { VSwipeCell } from './components/ui/swipe-cell'
-import { VTabbar } from './components/ui/tabbar'
-import { VTabs } from './components/ui/tabs'
-import { VTextarea } from './components/ui/textarea'
-import { VToast } from './components/ui/toast'
+import VGrid from './components/ui/v-grid.vue'
+import VGridItem from './components/ui/v-grid-item.vue'
+import VIndicator from './components/ui/v-indicator.vue'
+import VCol from './components/ui/v-col.vue'
+import VRow from './components/ui/v-row.vue'
+import VList from './components/ui/v-list.vue'
+import VMenu from './components/ui/v-menu.vue'
+import VMenuItem from './components/ui/v-menu-item.vue'
+import VNavbar from './components/ui/v-navbar.vue'
+import VNoticeBar from './components/ui/v-notice-bar.vue'
+import VOverlay from './components/ui/v-overlay.vue'
+import VPagination from './components/ui/v-pagination.vue'
+import VPopoverClose from './components/ui/v-popover-close.vue'
+import VPopoverContent from './components/ui/v-popover-content.vue'
+import VPopoverRoot from './components/ui/v-popover-root.vue'
+import VPopoverTrigger from './components/ui/v-popover-trigger.vue'
+import VPopup from './components/ui/v-popup.vue'
+import VRadio from './components/ui/v-radio.vue'
+import VRadioGroup from './components/ui/v-radio-group.vue'
+import VRate from './components/ui/v-rate.vue'
+import VSafeArea from './components/ui/v-safe-area.vue'
+import VSearchbar from './components/ui/v-searchbar.vue'
+import VSkeleton from './components/ui/v-skeleton.vue'
+import VSpace from './components/ui/v-space.vue'
+import VSteps from './components/ui/v-steps.vue'
+import VSticky from './components/ui/v-sticky.vue'
+import VSwipeCell from './components/ui/v-swipe-cell.vue'
+import VTab from './components/ui/v-tab.vue'
+import VTabbar from './components/ui/v-tabbar.vue'
+import VTabbarItem from './components/ui/v-tabbar-item.vue'
+import VTabs from './components/ui/v-tabs.vue'
+import VTextarea from './components/ui/v-textarea.vue'
+import VToast from './components/ui/v-toast.vue'
 
-export const extendedRegistryComponents: readonly Component[] = [
+export const extendedRegistryComponentCount = [
   AgentActivity,
   AgentCitations,
   AgentArtifact,
@@ -106,22 +116,31 @@ export const extendedRegistryComponents: readonly Component[] = [
   AgentToolResult,
   VActionSheet,
   VCell,
+  VCellGroup,
   VCollapse,
+  VCollapseItem,
   VDialogRoot,
   VDivider,
   VForm,
   VGrid,
+  VGridItem,
   VIndicator,
+  VCol,
   VRow,
   VList,
   VMenu,
+  VMenuItem,
   VNavbar,
   VNoticeBar,
   VOverlay,
   VPagination,
+  VPopoverClose,
+  VPopoverContent,
   VPopoverRoot,
+  VPopoverTrigger,
   VPopup,
   VRadio,
+  VRadioGroup,
   VRate,
   VSafeArea,
   VSearchbar,
@@ -130,9 +149,11 @@ export const extendedRegistryComponents: readonly Component[] = [
   VSteps,
   VSticky,
   VSwipeCell,
+  VTab,
   VTabbar,
+  VTabbarItem,
   VTabs,
   VTextarea,
   VToast,
   AgentChat
-]
+].length

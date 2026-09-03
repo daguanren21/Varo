@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'wevu'
 import { useSelectRoot } from '@varo-ui/headless'
-import { computed, shallowRef, toRef } from 'wevu'
+import { computed, shallowRef, toRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 type SelectValue = number | string
@@ -15,10 +15,10 @@ interface SelectOption {
 const props = defineProps({
   clearable: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
+  filterable: { type: Boolean, default: false },
   multiple: { type: Boolean, default: false },
   options: { type: Array as PropType<SelectOption[]>, default: () => [] },
   placeholder: { type: String, default: '请选择' },
-  searchable: { type: Boolean, default: false },
   value: {
     type: null as unknown as PropType<SelectValue | SelectValue[] | undefined>,
     default: undefined,
@@ -65,16 +65,29 @@ const filteredOptions = computed(() => {
   return query ? props.options.filter(option => option.label.toLocaleLowerCase().includes(query)) : props.options
 })
 const valueClass = computed(() => selectedValues.value.length ? 'varo-select__value' : 'varo-select__placeholder')
+const filterInputValue = computed(() => {
+  if (selectOpen.value) return keyword.value
+  return selectedValues.value.length ? displayValue.value : ''
+})
+
+watch(selectOpen, (isOpen) => {
+  if (!isOpen) keyword.value = ''
+})
 
 function update(value: SelectValue | SelectValue[] | undefined) {
   emit('update:value', value)
   emit('change', value)
 }
 
+function openPanel() {
+  selectRoot.events.open()
+}
+
 function search(event: Event) {
   const miniEvent = event as Event & { detail?: { value?: string } }
   const target = event.target as HTMLInputElement | null
   keyword.value = miniEvent.detail?.value ?? target?.value ?? ''
+  openPanel()
   emit('search', keyword.value)
 }
 
@@ -98,44 +111,80 @@ function closePanel() {
 
 <template>
   <view class="varo-select" :data-disabled="String(selectDisabled)" :data-multiple="String(multiple)" :data-open="String(selectOpen)">
-    <button
+    <view
+      v-if="props.filterable"
       class="varo-select__trigger"
-      type="button"
-      :disabled="!interactive"
-      :aria-expanded="selectOpen"
-      @click="togglePanel"
+      :data-open="String(selectOpen)"
+      @click="openPanel"
     >
-      <text :class="valueClass">
-        {{ displayValue }}
-      </text>
+      <input
+        class="varo-select__filter-input"
+        :value="filterInputValue"
+        :placeholder="props.placeholder"
+        :disabled="!interactive"
+        :aria-expanded="selectOpen"
+        aria-haspopup="listbox"
+        role="combobox"
+        aria-autocomplete="list"
+        @focus="openPanel"
+        @input="search"
+      >
       <view class="varo-select__suffix">
-        <text
+        <button
           v-if="props.clearable && selectedValues.length && interactive"
           class="varo-select__clear"
-          role="button"
+          type="button"
           aria-label="Clear selection"
           @click.stop="clear"
         >
           ×
-        </text>
+        </button>
         <text class="varo-select__arrow" aria-hidden="true" />
       </view>
-    </button>
+    </view>
+
+    <view
+      v-else
+      class="varo-select__trigger"
+      :data-open="String(selectOpen)"
+      @click="togglePanel"
+    >
+      <button
+        class="varo-select__control"
+        type="button"
+        :disabled="!interactive"
+        :aria-expanded="selectOpen"
+        aria-haspopup="listbox"
+        @click.stop="togglePanel"
+      >
+        <text :class="valueClass">
+          {{ displayValue }}
+        </text>
+      </button>
+      <view class="varo-select__suffix">
+        <button
+          v-if="props.clearable && selectedValues.length && interactive"
+          class="varo-select__clear"
+          type="button"
+          aria-label="Clear selection"
+          @click.stop="clear"
+        >
+          ×
+        </button>
+        <text class="varo-select__arrow" aria-hidden="true" />
+      </view>
+    </view>
 
     <view v-if="selectOpen" class="varo-select__panel">
-      <input
-        v-if="props.searchable"
-        class="varo-select__search"
-        :value="keyword"
-        placeholder="搜索选项"
-        @input="search"
-      >
       <view class="varo-select__options" role="listbox" :aria-multiselectable="multiple">
         <button
           v-for="option in filteredOptions"
           :key="String(option.value)"
           class="varo-select__option"
           type="button"
+          :aria-disabled="option.disabled"
+          :aria-selected="selectedValues.includes(option.value)"
+          role="option"
           :disabled="option.disabled"
           :data-active="String(selectedValues.includes(option.value))"
           @click="selectOption(option)"

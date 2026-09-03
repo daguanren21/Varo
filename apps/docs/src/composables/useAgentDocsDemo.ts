@@ -64,7 +64,7 @@ export function useAgentDocsDemo() {
       channel.push({ id: 'registry', name: 'varo.registry.inspect', summary: '读取 Agent UI 双端清单', type: 'tool.start' })
       await sleep(180)
       if (activeRun !== runId) { return }
-      channel.push({ id: 'registry', output: { components: 36, surfaces: 37, targets: 2 }, summary: '36 components + 1 block', type: 'tool.result' })
+      channel.push({ id: 'registry', output: { components: 42, surfaces: 44, targets: 2 }, summary: '42 components + 2 blocks', type: 'tool.result' })
       channel.push({ messageId, role: 'assistant', type: 'message.start' })
 
       const content = request.includes('发布')

@@ -42,7 +42,7 @@ pnpm dlx @varo-ui/cli add --target h5 button select card components/agent-ui
 
 组件会进入 `src/components/ui/*`，blocks 会进入 `src/components/blocks/*`。业务项目可以继续在 `src/components/biz/*` 里封装 `UserSelect`、`DepartmentSelect`、`ProductSelect` 这类领域组件。
 
-H5 Registry 覆盖 56 个 runtime 组件族；小程序 Registry 覆盖 45 个高共识组件族，其中 15 个 Base Kit 组件提供直接编译为 WXML/WXSS/JSON 的原生 SFC。其余高共识组件以可复制 TypeScript runtime source 交付，并共享目标平台 primitives。
+H5 Registry 覆盖 56 个 runtime 组件族；小程序 Registry 覆盖 45 个高共识组件族。copy-owned 小程序 renderer 均以 target-specific 原生 Wevu SFC 交付并直接编译为 WXML/WXSS/JSON；纯 adapter 可重导出目标 primitives，双端只共享类型、纯函数和 headless primitives。
 
 ## Agent 流式接入
 
@@ -55,8 +55,10 @@ const transport = createAgentSseEventSource()
 const controller = createAgentStreamController()
 
 requestTask.onChunkReceived(({ data }) => transport.feed(data))
-void controller.connect(transport.source)
+await controller.connect(transport.source)
 ```
+
+`connect()` 负责事件迭代器的生命周期：协议 `done`/`error` 会结束连接并发起迭代器清理；迭代器自然结束时会合成 `done`。
 
 ## 小程序构建链
 
@@ -65,7 +67,7 @@ pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
-小程序 Base Kit 使用真正的 Vue SFC，并通过 `styleIsolation: apply-shared` 消费 Tailwind v4 utilities。扩展 Registry 组件使用同一份目标中立 runtime source 与小程序 primitives。`cn()` 使用 `@weapp-tailwindcss/merge`，不会引入浏览器版 `tailwind-merge` 的转义差异。
+copy-owned 小程序 Registry 组件使用真正的 Wevu SFC，并通过 `styleIsolation: apply-shared` 消费 Tailwind v4 utilities。渲染和生命周期保持 target-specific；纯 adapter 可重导出目标 primitives，跨端共享仅限类型、纯函数和 headless primitives。`cn()` 使用 `@weapp-tailwindcss/merge`，不会引入浏览器版 `tailwind-merge` 的转义差异。
 
 ## 工程化建议
 

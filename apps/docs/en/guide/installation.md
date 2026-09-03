@@ -42,7 +42,7 @@ pnpm dlx @varo-ui/cli add --target h5 button select card components/agent-ui
 
 Components land in `src/components/ui/*`; blocks land in `src/components/blocks/*`. Your product can then create `UserSelect`, `DepartmentSelect`, and `ProductSelect` in `src/components/biz/*`.
 
-The H5 registry covers all 56 runtime component families. The mini-program registry covers 45 high-consensus families; 15 Base Kit families ship native SFCs that compile to WXML/WXSS/JSON, while the extended set ships copy-owned, target-neutral TypeScript runtime source backed by mini-program primitives.
+The H5 registry covers all 56 runtime component families. The mini-program registry covers 45 high-consensus families. Copy-owned mini-program renderers ship as target-specific native Wevu SFCs that compile directly to WXML/WXSS/JSON; pure adapters may re-export target primitives, and only types, pure functions, and headless primitives are shared across targets.
 
 ## Agent streaming
 
@@ -55,8 +55,10 @@ const transport = createAgentSseEventSource()
 const controller = createAgentStreamController()
 
 requestTask.onChunkReceived(({ data }) => transport.feed(data))
-void controller.connect(transport.source)
+await controller.connect(transport.source)
 ```
+
+`connect()` owns the event-iterator lifecycle: protocol `done`/`error` events settle the connection and request iterator cleanup; natural iterator exhaustion synthesizes `done`.
 
 ## Mini-program build chain
 
@@ -65,7 +67,7 @@ pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
-The mini-program Base Kit ships real Vue SFCs and consumes Tailwind v4 utilities through `styleIsolation: apply-shared`. Extended registry components use the same target-neutral runtime source with mini-program primitives. The `cn()` helper uses `@weapp-tailwindcss/merge`, preserving mini-program escaping behavior.
+Copy-owned mini-program Registry components use native Wevu SFCs and consume Tailwind v4 utilities through `styleIsolation: apply-shared`. Rendering and lifecycle code remain target-specific; pure adapters may re-export target primitives, and cross-target sharing is limited to types, pure functions, and headless primitives. The `cn()` helper uses `@weapp-tailwindcss/merge`, preserving mini-program escaping behavior.
 
 ## Engineering notes
 

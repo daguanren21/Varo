@@ -379,7 +379,7 @@ describe('docs navigation', () => {
       readFileSync(resolve(workspaceRoot, 'registry/component-tiers.v0.1.json'), 'utf8'),
     ) as {
       agentUi: string[]
-      registryCatalog: { h5: number, weappSfcBaseKit: number, weappVite: number }
+      registryCatalog: { h5: number, weappSfc: number, weappSfcBaseKit: number, weappVite: number }
     }
     const requiredPages = [
       'components/select.md',
@@ -434,12 +434,14 @@ describe('docs navigation', () => {
     expect(phase1Manifest.targets).toEqual(['h5', 'weapp'])
     expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
     expect(phase1Manifest.components).toHaveLength(15)
-    expect(componentTiers.registryCatalog).toEqual({ h5: 57, weappSfcBaseKit: 15, weappVite: 47 })
-    expect(componentTiers.agentUi).toHaveLength(36)
+    expect(componentTiers.registryCatalog).toEqual({ h5: 57, weappSfc: 46, weappSfcBaseKit: 15, weappVite: 47 })
+    expect(componentTiers.agentUi).toHaveLength(42)
     expect(homeZh).toContain('Base Kit 包含 15 个已经通过微信开发者工具编译的原生 SFC 组件')
     expect(homeZh).toContain('小程序开放 45 个高共识组件族')
     expect(homeEn).toContain('The Base Kit contains 15 native SFC components verified by WeChat DevTools')
     expect(homeEn).toContain('mini-program registry exposes 45 high-consensus families')
+    expect(homeZh).toContain('copy-owned Weapp renderer 均为 target-specific 原生 Wevu SFC')
+    expect(homeEn).toContain('Every copy-owned Weapp renderer is a target-specific native Wevu SFC')
     expect(homeZh).toContain('`RegionPicker` 与原生 `Map`')
     expect(homeEn).toContain('`RegionPicker` and native `Map`')
     baseKitPhase1Components.forEach((component) => {
@@ -524,10 +526,12 @@ describe('docs navigation', () => {
     expect(tailwind).toContain('@source "../../src/components/agent-ui/**/*.{ts,vue}";')
     expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
-    expect(aiZh).toContain('36 个双端 Agent 组件')
-    expect(aiEn).toContain('36 dual-target Agent components')
-    expect(aiZh).toContain('Beautiful UI / beUI 对标')
-    expect(aiEn).toContain('Beautiful UI / beUI Coverage')
+    expect(aiZh).toContain('42 个双端 Agent 组件')
+    expect(aiEn).toContain('42 dual-target Agent components')
+    expect(aiZh).toContain('Beautiful UI / beUI / ReUI 对标')
+    expect(aiEn).toContain('Beautiful UI / beUI / ReUI Coverage')
+    expect(aiZh).toContain('AgentWorkspace')
+    expect(aiEn).toContain('AgentWorkspace')
     expect(demo).toContain('AgentEventRenderer')
     expect(demo).toContain('AgentArtifact')
     expect(demo).toContain('AgentAttachmentList')

@@ -8,12 +8,24 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "components/icon",
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -22,8 +34,18 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/menu/menu.ts",
-      "to": "src/components/ui/menu.ts"
+      "from": "registry/components/menu/menu-context.weapp.ts",
+      "to": "src/components/ui/menu-context.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/menu/v-menu.vue",
+      "to": "src/components/ui/v-menu.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/menu/v-menu-item.vue",
+      "to": "src/components/ui/v-menu-item.vue"
     }
   ],
   "docs": "/components/menu"

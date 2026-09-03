@@ -32,7 +32,7 @@ const displayTasks = computed(() =>
 </script>
 
 <template>
-  <view class="agent-tasks overflow-hidden rounded-[14px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" aria-live="polite">
+  <view class="agent-tasks box-border w-full min-w-0 max-w-full overflow-hidden rounded-[14px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" aria-live="polite">
     <view class="flex min-h-11 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-[13px]">
       <text class="text-[13px] font-bold text-[var(--varo-agent-foreground)]">
         {{ title }}
@@ -59,6 +59,7 @@ const displayTasks = computed(() =>
             </text>
           </view>
           <VProgress
+            class="block w-full min-w-0 max-w-full overflow-hidden"
             v-if="task.progress !== undefined"
             :percentage="task.progress"
             :show-text="false"

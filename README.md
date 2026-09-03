@@ -18,10 +18,10 @@ Varo is a registry-first component system for Vue 3 mobile H5 applications and `
 ## Current capabilities
 
 - **H5 runtime catalog:** 56 component families
-- **Weapp runtime catalog:** 56 component families; the Registry exposes 45 high-consensus families plus `RegionPicker` and native `Map` extensions, including 15 native Vue SFC Base Kit components
+- **Weapp runtime catalog:** 56 component families; copy-owned Registry renderers ship as target-specific native Wevu SFCs, while pure adapters may re-export target primitives across the 45 high-consensus families plus `RegionPicker` and native `Map`
 - **Agent Core:** shared event protocol, SSE/chunk transport, Markstream scheduling on H5, timed-frame scheduling on mini programs, and a safe incremental Markdown AST
-- **Agent UI:** 36 dual-target components plus the Agent Chat Block for conversations, streaming, tools, approvals, code, diffs, citations, image generation, tables, workflows, and workspaces
-- **Dual-target Blocks:** Login Form, Profile Card, Profile Edit, Product List, Order Filter, and Agent Chat
+- **Agent UI:** 42 dual-target components plus Agent Chat and Agent Workspace Blocks for scoped context, visible retrieval, tasks, thread versions, placement shells, conversations, streaming, tools, approvals, code, diffs, citations, media, tables, and workflows
+- **Dual-target Blocks:** Login Form, Profile Card, Profile Edit, Product List, Order Filter, Agent Chat, and Agent Workspace
 - **AI commerce demo:** real incremental events, reasoning and tool states, human approval for purchases and returns, order history, and address configuration
 - **Registry targets:** `h5` and `weapp`
 - **Mini-program styling:** Tailwind CSS v4, [`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss), and `@weapp-tailwindcss/merge`

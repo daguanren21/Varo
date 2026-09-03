@@ -2,9 +2,9 @@
   "version": "0.2",
   "targets": ["h5", "weapp"],
   "summary": {
-    "components": 36,
-    "blocks": 1,
-    "surfaces": 37
+    "components": 42,
+    "blocks": 2,
+    "surfaces": 44
   },
   "beautifulUi": {
     "source": "https://www.beautifului.dev/",
@@ -51,6 +51,17 @@
       "Agent Loading States": ["AgentLoading"],
       "AI Sidebar": ["AgentSidebar"],
       "Chat App": ["AgentChat", "AgentEventRenderer"]
+    }
+  },
+  "reui": {
+    "source": "https://reui.io/blocks/ai-agents/ai-chat",
+    "reviewedBlocks": ["ai-chat-1", "ai-chat-6", "ai-chat-9", "ai-chat-12"],
+    "coverage": {
+      "Scoped Composer": ["AgentComposerScope", "AgentComposer"],
+      "Visible Retrieval": ["AgentRetrievalProgress", "AgentSourceReceipt"],
+      "Task Controls": ["AgentTaskRunner", "AgentTaskList"],
+      "Thread Versions": ["AgentThreadVersions"],
+      "Placement Shell": ["AgentShell", "AgentWorkspace"]
     }
   },
   "notes": [

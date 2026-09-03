@@ -5,6 +5,49 @@ import { fileURLToPath } from 'node:url'
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(projectRoot, 'devtools/build/mp-weixin')
 const requiredComponentExtensions = ['.js', '.json', '.wxml']
+const requiredRegistryCatalogComponents = [
+  'v-action-sheet',
+  'v-cell',
+  'v-cell-group',
+  'v-collapse',
+  'v-collapse-item',
+  'v-col',
+  'v-divider',
+  'v-grid',
+  'v-grid-item',
+  'v-icon',
+  'v-indicator',
+  'v-input',
+  'v-list',
+  'v-loading',
+  'v-menu',
+  'v-menu-item',
+  'v-navbar',
+  'v-notice-bar',
+  'v-overlay',
+  'v-pagination',
+  'v-popover-close',
+  'v-popover-content',
+  'v-popover-root',
+  'v-popover-trigger',
+  'v-popup',
+  'v-radio',
+  'v-radio-group',
+  'v-rate',
+  'v-row',
+  'v-safe-area',
+  'v-searchbar',
+  'v-space',
+  'v-steps',
+  'v-sticky',
+  'v-swipe-cell',
+  'v-tab',
+  'v-tabbar',
+  'v-tabbar-item',
+  'v-tabs',
+  'v-textarea',
+  'v-toast',
+]
 
 function pageJsonPaths(appJson) {
   const pages = [...(appJson.pages ?? [])]
@@ -38,6 +81,17 @@ if (devtoolsProject.appid && !/^wx[0-9a-f]{16}$/i.test(devtoolsProject.appid)) {
 
 const appJsonPath = resolve(outputRoot, 'app.json')
 const appJson = JSON.parse(await readFile(appJsonPath, 'utf8'))
+const registryCatalogPageJsonPath = resolve(outputRoot, 'registry-catalog/index/index.json')
+if (!await exists(registryCatalogPageJsonPath)) {
+  throw new Error('Compiled Registry catalog page is missing')
+}
+const registryCatalogPageJson = JSON.parse(await readFile(registryCatalogPageJsonPath, 'utf8'))
+const registeredCatalogComponents = new Set(Object.keys(registryCatalogPageJson.usingComponents ?? {}))
+const missingCatalogComponents = requiredRegistryCatalogComponents
+  .filter(component => !registeredCatalogComponents.has(component))
+if (missingCatalogComponents.length > 0) {
+  throw new Error(`Compiled Registry catalog is missing components: ${missingCatalogComponents.join(', ')}`)
+}
 const queue = [appJsonPath, ...pageJsonPaths(appJson)]
 const visited = new Set()
 const missing = []
@@ -52,7 +106,15 @@ while (queue.length > 0) {
   }
 
   const json = JSON.parse(await readFile(ownerPath, 'utf8'))
-  for (const [name, componentPath] of Object.entries(json.usingComponents ?? {})) {
+  const componentReferences = [
+    ...Object.entries(json.usingComponents ?? {}),
+    ...Object.entries(json.componentGenerics ?? {}).flatMap(([name, options]) => {
+      if (options === null || typeof options !== 'object') return []
+      const componentPath = options.default
+      return typeof componentPath === 'string' ? [[`${name}.default`, componentPath]] : []
+    }),
+  ]
+  for (const [name, componentPath] of componentReferences) {
     if (typeof componentPath !== 'string') continue
     const basePath = componentBasePath(ownerPath, componentPath)
     if (!basePath) continue

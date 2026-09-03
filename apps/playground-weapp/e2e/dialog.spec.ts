@@ -36,11 +36,13 @@ describe('playground-weapp delivery contract', () => {
     const pageFiles = collectFiles(resolve(playgroundRoot, 'src/pages'), '.vue')
     const featureFiles = collectFiles(resolve(playgroundRoot, 'src/features'), '.ts')
     const viteConfig = readFileSync(resolve(playgroundRoot, 'vite.config.ts'), 'utf8')
+    const wevuTestAdapter = readFileSync(resolve(playgroundRoot, 'test/wevu.ts'), 'utf8')
 
     ;[...sfcFiles, ...pageFiles, ...featureFiles].forEach((path) => {
       expect(readFileSync(path, 'utf8'), path).not.toMatch(/from ['"]vue['"]/)
     })
-    expect(viteConfig).toContain('wevu: \'vue\'')
+    expect(viteConfig).toContain('wevu: resolve(root, \'test/wevu.ts\')')
+    expect(wevuTestAdapter).toContain('export * from \'vue\'')
     expect(viteConfig).toContain('autoImportComponents: false')
     expect(viteConfig).not.toContain('vue: \'wevu\'')
   })

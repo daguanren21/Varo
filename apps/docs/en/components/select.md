@@ -12,7 +12,7 @@ Multiple selection confirms draft changes by default. Set `:confirmable="false"`
 
 ## Search And Dropdown
 
-Use `searchable` for local search and `mode="dropdown"` for dropdown presentation.
+Use `filterable` to type and filter local options directly in the Select field; the open panel does not render a second search input. Use `mode="dropdown"` for dropdown presentation.
 
 ## Wrapper Boundary
 
@@ -31,7 +31,7 @@ Grouped options, remote search, and async paging belong in secondary wrappers. B
 | `clearable` | `boolean` | `false` | Shows a clear action |
 | `multiple` | `boolean` | `false` | Enables multiple selection |
 | `max` | `number` | `undefined` | Maximum selected count |
-| `searchable` | `boolean` | `false` | Enables local search |
+| `filterable` | `boolean` | `false` | Filters local options directly from the Select field |
 | `confirmable` | `boolean` | `true` | Confirms draft changes in multiple mode |
 | `filterOption` | `(query, option) => boolean` | `undefined` | Custom local filter |
 | `loading` | `boolean` | `false` | Loading display |

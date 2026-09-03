@@ -155,7 +155,7 @@ function t(zh: string, en: string) {
           <i aria-hidden="true">V</i>
           <span>
             <strong>Varo Agent</strong>
-            <small>{{ t('37 个双端 AI UI surface 已连接', '37 dual-target AI UI surfaces connected') }}</small>
+            <small>{{ t('44 个双端 AI UI surface 已连接', '44 dual-target AI UI surfaces connected') }}</small>
           </span>
         </header>
 
@@ -216,7 +216,7 @@ function t(zh: string, en: string) {
     <div class="ai-docs-demo__ledger">
       <header>
         <strong>{{ t('组件能力清单', 'Capability ledger') }}</strong>
-        <span>37 / 37</span>
+        <span>44 / 44</span>
       </header>
       <div>
         <span v-for="capability in capabilities" :key="capability">{{ capability }}</span>

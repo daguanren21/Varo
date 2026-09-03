@@ -91,7 +91,7 @@ function submit() {
       </view>
       <view class="grid gap-2 pb-6 text-sm font-semibold text-slate-700">
         <text>所在城市</text>
-        <VSelect v-model:value="city" :options="cities" searchable clearable placeholder="请选择城市" />
+        <VSelect v-model:value="city" :options="cities" filterable clearable placeholder="请选择城市" />
       </view>
       <view class="pb-6">
         <VInput

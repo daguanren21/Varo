@@ -16,6 +16,33 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+function createOpenEventSource(
+  event: AgentStreamEvent,
+  cleanup: () => void | Promise<void> = () => {},
+): AsyncIterable<AgentStreamEvent> {
+  return {
+    [Symbol.asyncIterator]() {
+      let emitted = false
+      return {
+        async next(): Promise<IteratorResult<AgentStreamEvent>> {
+          if (!emitted) {
+            emitted = true
+            return { done: false, value: event }
+          }
+          return await new Promise<IteratorResult<AgentStreamEvent>>(() => {})
+        },
+        return(): Promise<IteratorResult<AgentStreamEvent>> {
+          const result = cleanup()
+          return Promise.resolve(result).then<IteratorResult<AgentStreamEvent>>(() => ({
+            done: true,
+            value: undefined,
+          }))
+        },
+      }
+    },
+  }
+}
+
 describe('text stream', () => {
   it('reveals grapheme-safe text incrementally and finalizes after the queue drains', () => {
     vi.useFakeTimers()
@@ -88,6 +115,25 @@ describe('text stream', () => {
   })
 })
 
+describe('agent event channel', () => {
+  it('ends the channel and clears queued events when its consumer returns', async () => {
+    const channel = createAgentEventChannel()
+    const iterator = channel.source[Symbol.asyncIterator]()
+    channel.push({ name: 'first', type: 'data', value: 1 })
+    channel.push({ name: 'queued', type: 'data', value: 2 })
+
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: { name: 'first', type: 'data', value: 1 },
+    })
+    await iterator.return?.()
+    channel.push({ name: 'after-return', type: 'data', value: 3 })
+
+    const laterIterator = channel.source[Symbol.asyncIterator]()
+    await expect(laterIterator.next()).resolves.toEqual({ done: true, value: undefined })
+  })
+})
+
 describe('agent stream controller', () => {
   it('projects protocol events into message, reasoning, tool, approval, and usage state', () => {
     vi.useFakeTimers()
@@ -137,6 +183,88 @@ describe('agent stream controller', () => {
     channel.end()
     controller.destroy()
   })
+
+  it('completes and cleans up when an open source emits done', async () => {
+    const cleanup = vi.fn()
+    const controller = createAgentStreamController()
+
+    await expect(controller.connect(createOpenEventSource({ type: 'done' }, cleanup))).resolves.toMatchObject({
+      status: 'completed',
+    })
+    expect(cleanup).toHaveBeenCalledOnce()
+    controller.destroy()
+  })
+
+  it('fails and cleans up when an open source emits a protocol error', async () => {
+    const cleanup = vi.fn()
+    const controller = createAgentStreamController()
+
+    await expect(controller.connect(createOpenEventSource({
+      code: 'upstream_failed',
+      message: 'Upstream failed',
+      type: 'error',
+    }, cleanup))).resolves.toMatchObject({
+      error: { code: 'upstream_failed', message: 'Upstream failed' },
+      status: 'failed',
+    })
+    expect(cleanup).toHaveBeenCalledOnce()
+    controller.destroy()
+  })
+
+  it('preserves completed status when iterator cleanup throws synchronously', async () => {
+    const cleanup = vi.fn(() => {
+      throw new Error('Synchronous cleanup failure')
+    })
+    const controller = createAgentStreamController()
+
+    await expect(controller.connect(createOpenEventSource({ type: 'done' }, cleanup))).resolves.toMatchObject({
+      status: 'completed',
+    })
+    expect(cleanup).toHaveBeenCalledOnce()
+    controller.destroy()
+  })
+
+  it('preserves protocol failure when iterator cleanup rejects', async () => {
+    const cleanup = vi.fn(() => Promise.reject(new Error('Asynchronous cleanup failure')))
+    const controller = createAgentStreamController()
+
+    await expect(controller.connect(createOpenEventSource({
+      code: 'upstream_failed',
+      message: 'Upstream failed',
+      type: 'error',
+    }, cleanup))).resolves.toMatchObject({
+      error: { code: 'upstream_failed', message: 'Upstream failed' },
+      status: 'failed',
+    })
+    expect(cleanup).toHaveBeenCalledOnce()
+    controller.destroy()
+  })
+
+  it('accepts a new connection after terminal completion', async () => {
+    const controller = createAgentStreamController()
+
+    await expect(controller.connect(createOpenEventSource({ type: 'done' }))).resolves.toMatchObject({
+      status: 'completed',
+    })
+    await expect(controller.connect(createOpenEventSource({ type: 'done' }))).resolves.toMatchObject({
+      status: 'completed',
+    })
+    controller.destroy()
+  })
+
+  it('synthesizes done when a source exhausts naturally', async () => {
+    const controller = createAgentStreamController()
+    const events = (async function* (): AsyncIterable<AgentStreamEvent> {
+      yield { name: 'result', type: 'data', value: 42 }
+    })()
+
+    await expect(controller.connect(events)).resolves.toMatchObject({
+      data: [{ name: 'result', value: 42 }],
+      eventCount: 2,
+      status: 'completed',
+    })
+    controller.destroy()
+  })
 })
 
 describe('SSE transport', () => {
@@ -158,6 +286,61 @@ describe('SSE transport', () => {
     await expect(eventsPromise).resolves.toEqual([
       { delta: '你好', messageId: 'm1', type: 'text.delta' },
     ])
+  })
+
+  it('treats SSE [DONE] as terminal without transport end', async () => {
+    const transport = createAgentSseEventSource()
+    const controller = createAgentStreamController()
+    const connection = controller.connect(transport.source)
+
+    transport.feed('data: [DONE]\n\n')
+
+    await expect(connection).resolves.toMatchObject({ status: 'completed' })
+    controller.destroy()
+  })
+
+  it('ignores feed after SSE [DONE] for later source iteration', async () => {
+    const transport = createAgentSseEventSource()
+    const iterator = transport.source[Symbol.asyncIterator]()
+
+    transport.feed('data: [DONE]\n\n')
+    await expect(iterator.next()).resolves.toEqual({
+      done: false,
+      value: { type: 'done' },
+    })
+
+    transport.feed('data: {"type":"data","name":"stale","value":true}\n\n')
+    await expect(iterator.next()).resolves.toEqual({ done: true, value: undefined })
+
+    const laterIterator = transport.source[Symbol.asyncIterator]()
+    await expect(laterIterator.next()).resolves.toEqual({ done: true, value: undefined })
+  })
+
+  it('ignores feed after a protocol error for later source iteration', async () => {
+    const transport = createAgentSseEventSource()
+    const iterator = transport.source[Symbol.asyncIterator]()
+
+    transport.feed('data: {"type":"error","message":"Upstream failed"}\n\n')
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: { message: 'Upstream failed', type: 'error' },
+    })
+
+    transport.feed('data: {"type":"data","name":"stale","value":true}\n\n')
+    await expect(iterator.next()).resolves.toEqual({ done: true, value: undefined })
+
+    const laterIterator = transport.source[Symbol.asyncIterator]()
+    await expect(laterIterator.next()).resolves.toEqual({ done: true, value: undefined })
+  })
+
+  it('preserves explicit transport failure behavior', async () => {
+    const transport = createAgentSseEventSource()
+    const iterator = transport.source[Symbol.asyncIterator]()
+    const nextEvent = iterator.next()
+
+    transport.fail(new Error('Transport failed'))
+
+    await expect(nextEvent).rejects.toThrow('Transport failed')
   })
 })
 

@@ -18,10 +18,10 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 ## 当前能力
 
 - **H5 runtime catalog：**56 个组件族
-- **Weapp runtime catalog：**56 个组件族；Registry 已开放 45 个高共识组件，并增加 `RegionPicker` 与原生 `Map` 扩展，其中 15 个 Base Kit 组件提供原生 Vue SFC
+- **Weapp runtime catalog：**56 个组件族；Registry 中 copy-owned renderer 均以 target-specific 原生 Wevu SFC 交付，纯 adapter 可重导出目标 primitives，覆盖 45 个高共识组件以及 `RegionPicker` 与原生 `Map`
 - **Agent Core：**统一事件协议、SSE/分块通道、H5 Markstream 平滑调度、小程序定时帧调度与安全增量 Markdown AST
-- **Agent UI：**36 个双端组件 + Agent Chat Block，覆盖对话、流式、工具、审批、代码、Diff、引用、图片生成、数据表格、工作流与工作区
-- **双端 Blocks：**Login Form、Profile Card、Profile Edit、Product List、Order Filter、Agent Chat
+- **Agent UI：**42 个双端组件 + Agent Chat 与 Agent Workspace Blocks，覆盖上下文授权、可见检索、任务、会话版本、placement shell、对话、流式、工具、审批、代码、Diff、引用、媒体、表格与工作流
+- **双端 Blocks：**Login Form、Profile Card、Profile Edit、Product List、Order Filter、Agent Chat、Agent Workspace
 - **AI 商城 Demo：**真实增量事件、推理与工具状态、人工确认购买和退货、历史记录与地址配置
 - **双端 Registry target：**`h5`、`weapp`
 - **小程序样式：**Tailwind CSS v4、[`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss)、`@weapp-tailwindcss/merge`

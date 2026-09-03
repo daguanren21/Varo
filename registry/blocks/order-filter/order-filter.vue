@@ -12,6 +12,6 @@ const statusOptions = [
 
 <template>
   <section class="varo-block varo-order-filter">
-    <VSelect v-model:value="statuses" multiple searchable :options="statusOptions" placeholder="筛选订单状态" />
+    <VSelect v-model:value="statuses" multiple filterable :options="statusOptions" placeholder="筛选订单状态" />
   </section>
 </template>

@@ -9,13 +9,25 @@
     "weapp"
   ],
   "dependencies": [
-    "@varo-ui/headless",
-    "vue"
+    "@varo-ui/headless"
   ],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/primitives"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +36,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/overlay/overlay.ts",
-      "to": "src/components/ui/overlay.ts"
+      "from": "registry/components/overlay/v-overlay.vue",
+      "to": "src/components/ui/v-overlay.vue"
     }
   ],
   "docs": "/components/overlay"

@@ -9,14 +9,27 @@
     "weapp"
   ],
   "dependencies": [
-    "@varo-ui/headless",
-    "@varo-ui/theme",
-    "vue"
+    "@varo-ui/headless"
   ],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/theme",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "components/input"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "components/icon",
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -25,8 +38,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/searchbar/searchbar.ts",
-      "to": "src/components/ui/searchbar.ts"
+      "from": "registry/components/searchbar/v-searchbar.vue",
+      "to": "src/components/ui/v-searchbar.vue"
     }
   ],
   "docs": "/components/searchbar"

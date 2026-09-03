@@ -94,20 +94,45 @@ export function createAgentSseEventSource(): AgentSseEventSource {
   let textBuffer = ''
   let ended = false
 
+  function clearBufferedInput() {
+    dataLines.length = 0
+    textBuffer = ''
+  }
+
+  function closeSource() {
+    if (ended) return
+    ended = true
+    clearBufferedInput()
+    channel.end()
+  }
+
+  function failSource(error: unknown) {
+    if (ended) return
+    ended = true
+    clearBufferedInput()
+    channel.fail(error)
+  }
+
+  function finishWith(event: AgentStreamEvent) {
+    channel.push(event)
+    closeSource()
+  }
+
   function dispatch() {
     if (dataLines.length === 0 || ended) return
     const payload = dataLines.join('\n')
     dataLines.length = 0
     if (payload === '[DONE]') {
-      channel.push({ type: 'done' })
+      finishWith({ type: 'done' })
       return
     }
 
     try {
-      channel.push(parseAgentStreamEvent(JSON.parse(payload)))
+      const event = parseAgentStreamEvent(JSON.parse(payload))
+      if (event.type === 'done' || event.type === 'error') finishWith(event)
+      else channel.push(event)
     } catch (error) {
-      ended = true
-      channel.fail(error)
+      failSource(error)
     }
   }
 
@@ -129,10 +154,12 @@ export function createAgentSseEventSource(): AgentSseEventSource {
   }
 
   function appendText(value: string) {
+    if (ended) return
     textBuffer += value
     let lineEnd = textBuffer.indexOf('\n')
     while (lineEnd >= 0) {
       processLine(textBuffer.slice(0, lineEnd))
+      if (ended) return
       textBuffer = textBuffer.slice(lineEnd + 1)
       lineEnd = textBuffer.indexOf('\n')
     }
@@ -142,15 +169,13 @@ export function createAgentSseEventSource(): AgentSseEventSource {
     end() {
       if (ended) return
       appendText(decoder.decode(new Uint8Array(0), true))
+      if (ended) return
       if (textBuffer.length > 0) processLine(textBuffer)
       dispatch()
-      ended = true
-      channel.end()
+      closeSource()
     },
     fail(error) {
-      if (ended) return
-      ended = true
-      channel.fail(error)
+      failSource(error)
     },
     feed(chunk) {
       if (ended) return

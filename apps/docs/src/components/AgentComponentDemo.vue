@@ -106,11 +106,11 @@ const messages = [
 ]
 const reasoningSteps = [
   { id: 'intent', title: '理解请求', detail: '识别为发布前检查', status: 'completed' as const, duration: '0.2s' },
-  { id: 'registry', title: '读取 Registry', detail: '验证 37 个 Agent UI surface', status: 'completed' as const, duration: '0.4s' },
+  { id: 'registry', title: '读取 Registry', detail: '验证 44 个 Agent UI surface', status: 'completed' as const, duration: '0.4s' },
   { id: 'build', title: '检查构建', detail: '双端产物已生成', status: 'running' as const },
 ]
 const tools = [
-  { id: 'registry', name: 'registry.inspect', status: 'completed' as const, summary: '37 surfaces' },
+  { id: 'registry', name: 'registry.inspect', status: 'completed' as const, summary: '44 surfaces' },
   { id: 'build', name: 'workspace.build', status: 'running' as const, summary: 'weapp-vite' },
   { id: 'publish', name: 'npm.publish', status: 'waiting' as const, summary: '等待审批' },
 ]
@@ -145,7 +145,7 @@ const eventSnapshot: AgentStreamSnapshot = {
   message: { final: false, id: 'response', role: 'assistant', source: '## 发布检查\n\n双端组件已经通过。', visible: '## 发布检查\n\n双端组件已经通过。' },
   reasoning: [{ content: '已读取组件清单', id: 'reason', status: 'completed', title: '检查 Registry' }],
   status: 'waiting',
-  tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '37 surfaces' }],
+  tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '44 surfaces' }],
 }
 const code = `const controller = createAgentStreamController({\n  text: { targetLatencyMs: 620 }\n})\n\nawait controller.connect(events)`
 const markdownContent = `## 安全 Markdown
@@ -175,12 +175,12 @@ const citations = [
 ]
 const activity = [
   { detail: '识别发布检查意图', duration: '0.2s', id: 'reason', kind: 'reasoning' as const, status: 'completed' as const, title: 'Reasoning' },
-  { detail: '找到 37 个 Agent UI surface', duration: '0.4s', id: 'search', kind: 'search' as const, status: 'completed' as const, title: 'Registry search' },
+  { detail: '找到 44 个 Agent UI surface', duration: '0.4s', id: 'search', kind: 'search' as const, status: 'completed' as const, title: 'Registry search' },
   { detail: '正在构建 weapp-vite', id: 'tool', kind: 'tool' as const, status: 'running' as const, title: 'Build tool' },
 ]
 const sidebarGroups = [
   { id: 'workspace', label: 'Workspace', items: [{ id: 'release', label: 'Release agent', meta: 'Active', badge: 2 }, { id: 'research', label: 'Research', meta: 'Yesterday' }] },
-  { id: 'saved', label: 'Saved', items: [{ id: 'components', label: 'Agent components', meta: '37 surfaces' }] },
+  { id: 'saved', label: 'Saved', items: [{ id: 'components', label: 'Agent components', meta: '44 surfaces' }] },
 ]
 const contextChunks = [
   { content: 'Cold-chain certification must be verified before a new supplier can be approved.', id: 'policy', label: 'Supplier policy', source: 'Onboarding SOP.pdf', sourceType: 'PDF' },

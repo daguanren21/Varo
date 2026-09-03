@@ -14,6 +14,15 @@ export interface AgentStreamControllerOptions {
   text?: TextStreamOptions
 }
 
+function requestIteratorCleanup(iterator: AsyncIterator<AgentStreamEvent>) {
+  try {
+    const cleanup = iterator.return?.()
+    if (cleanup) void cleanup.catch(() => undefined)
+  } catch {
+    // Cleanup failures must not replace an already terminal connection result.
+  }
+}
+
 function initialSnapshot(): AgentStreamSnapshot {
   return {
     data: [],
@@ -240,6 +249,7 @@ export function createAgentStreamController(
       })
       cancelActiveConnect = resolveCancellation
 
+      let protocolTerminal = false
       try {
         try {
           while (!cancelled && !destroyed) {
@@ -248,7 +258,12 @@ export function createAgentStreamController(
               cancellation.then(() => ({ kind: 'cancelled' as const }))
             ])
             if (outcome.kind === 'cancelled' || outcome.result.done) break
-            push(outcome.result.value)
+            const event = outcome.result.value
+            push(event)
+            if (event.type === 'done' || event.type === 'error') {
+              protocolTerminal = true
+              break
+            }
           }
           if (!transportDone && !cancelled && !destroyed) push({ type: 'done' })
         } catch (error) {
@@ -258,7 +273,7 @@ export function createAgentStreamController(
             type: 'error'
           })
         } finally {
-          if (cancelled || destroyed) void iterator.return?.()
+          if (protocolTerminal || cancelled || destroyed) requestIteratorCleanup(iterator)
         }
         return await waitForTerminal()
       } finally {

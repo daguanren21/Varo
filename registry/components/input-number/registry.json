@@ -15,6 +15,9 @@
   "targetDependencies": {
     "h5": [
       "vue"
+    ],
+    "weapp": [
+      "wevu"
     ]
   },
   "registryDependencies": [

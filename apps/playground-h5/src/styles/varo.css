@@ -342,6 +342,21 @@ textarea.varo-input__control {
     box-shadow 0.18s ease;
 }
 
+.varo-select__control {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
 .varo-select__trigger[data-open='true'] {
   border-color: color-mix(in srgb, var(--varo-ui-primary, #0f766e) 55%, var(--varo-ui-border, #d8dee8));
   box-shadow: 0 0 0 3px var(--varo-ui-ring, rgb(8 120 111 / 16%));
@@ -362,8 +377,22 @@ textarea.varo-input__control {
 }
 
 .varo-select__clear {
+  display: grid;
   flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
   color: var(--varo-ui-text-muted, #64748b);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+
+.varo-select__control::after,
+.varo-select__clear::after {
+  border: 0;
 }
 
 .varo-select__arrow {
@@ -428,13 +457,22 @@ textarea.varo-input__control {
   display: none;
 }
 
-.varo-select__search {
-  min-height: 38px;
-  padding: 0 10px;
+.varo-select__filter-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
   font: inherit;
+  color: inherit;
+  cursor: text;
+  background: transparent;
   outline: 0;
-  border: 1px solid var(--varo-ui-border, #d8dee8);
-  border-radius: 10px;
+  border: 0;
+}
+
+.varo-select__filter-input::placeholder {
+  color: var(--varo-ui-text-muted, #64748b);
+  opacity: 1;
 }
 
 .varo-select__options {

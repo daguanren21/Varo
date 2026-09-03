@@ -92,6 +92,10 @@ const digits = (value: string) => value.replace(/\D/g, '')
 | `suffixIcon` | `string` | `undefined` | Suffix content |
 | `errorMessage` | `string` | `undefined` | Error message |
 
+> Weapp properties cannot distinguish an omitted `value` from an explicit `:value="undefined"`; both use the uncontrolled `defaultValue`. Pass `value=""` for a controlled empty value. `VTextarea` follows the same rule.
+
+The Weapp native-control bridge uses explicit props: `name` participates in form submission, `inputId` sets the inner `<input>`/`<textarea>` id, and `className`/`customStyle` style the component wrapper. `ariaDescribedby`, `ariaLabelledby`, `form`, `focus`, `autoFocus`, `cursor`, `selectionStart`, `selectionEnd`, `adjustPosition`, and `holdKeyboard` are forwarded to the inner native control. H5 continues to accept native attrs directly.
+
 ## Events
 
 | Event | Payload | Description |

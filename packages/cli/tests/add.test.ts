@@ -1,28 +1,75 @@
 import type { RegistryTarget } from '../src/index'
+import type { Mode, PathLike, RmOptions } from 'node:fs'
+import type * as FileSystem from '../src/file-system.ts'
 import { execFileSync } from 'node:child_process'
 import {
   existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
+  realpathSync,
   rmSync,
   symlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
-import {
-  installRegistryItems,
+import { dirname, join, resolve } from 'node:path'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-  resolveRegistryItems,
-} from '../src/index'
+const fsFaultState = vi.hoisted(() => ({
+  failBackupCleanup: false,
+  failOpenPath: undefined as string | undefined,
+  failRemovePath: undefined as string | undefined,
+  openAttempts: [] as string[],
+}))
+
+vi.mock('../src/file-system.ts', async (importOriginal) => {
+  const actual = await importOriginal<typeof FileSystem>()
+  const mockedOpen = async (
+    path: PathLike,
+    flags?: string | number,
+    mode?: Mode,
+  ) => {
+    const targetPath = String(path)
+    fsFaultState.openAttempts.push(targetPath)
+    if (targetPath === fsFaultState.failOpenPath) {
+      throw new Error(`Injected open failure: ${targetPath}`)
+    }
+    return actual.open(path, flags, mode)
+  }
+  const mockedRm = async (path: PathLike, options?: RmOptions): Promise<void> => {
+    const targetPath = String(path)
+    const isBackup = targetPath.split(/[\\/]/).at(-1)?.startsWith('.varo-backup-') === true
+    if (
+      targetPath === fsFaultState.failRemovePath
+      || (fsFaultState.failBackupCleanup && isBackup)
+    ) {
+      throw new Error(`Injected remove failure: ${targetPath}`)
+    }
+    return actual.rm(path, options)
+  }
+
+  return {
+    ...actual,
+    open: vi.fn(mockedOpen),
+    rm: vi.fn(mockedRm),
+  }
+})
+
+// Import after the local filesystem mock so the CLI captures fault-injected bindings.
+const { installRegistryItems, resolveRegistryItems } = await import('../src/index')
 
 const workspaceRoot = resolve(__dirname, '../../..')
 const registryRoot = resolve(workspaceRoot, 'registry')
 let projectRoot: string | undefined
 
 afterEach(() => {
+  fsFaultState.failBackupCleanup = false
+  fsFaultState.failOpenPath = undefined
+  fsFaultState.failRemovePath = undefined
+  fsFaultState.openAttempts.length = 0
+
   if (projectRoot) {
     rmSync(projectRoot, { force: true, recursive: true })
     projectRoot = undefined
@@ -193,6 +240,23 @@ describe('varo add targets', () => {
     expect(readFileSync(join(projectRoot, 'src/lib/varo-primitives.ts'), 'utf8')).toContain('@varo-ui/h5/primitives')
   })
 
+  it('uses the authored root Registry from the source executable', () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const binPath = join(projectRoot, 'varo-cli.ts')
+    symlinkSync(resolve(workspaceRoot, 'packages/cli/src/index.ts'), binPath)
+
+    const output = execFileSync(
+      process.execPath,
+      [binPath, 'add', '--target', 'weapp', 'blocks/agent-workspace'],
+      { cwd: projectRoot, encoding: 'utf8' },
+    )
+
+    expect(output).toContain('agent-workspace')
+    expect(readFileSync(join(projectRoot, 'src/components/blocks/agent-workspace.vue'), 'utf8'))
+      .toContain('AgentComposerScope')
+    expect(existsSync(join(projectRoot, 'src/components/agent-ui/AgentShell.vue'))).toBe(true)
+  })
+
   it('reports unsupported CLI and registry targets clearly', () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const binPath = join(projectRoot, 'varo-cli.ts')
@@ -264,11 +328,11 @@ describe('varo add safety', () => {
       'Invalid registry item name: blocks/../../outside',
     )
     expect(() => resolveRegistryItems(['source-escape'], { registryRoot: fixtureRegistry })).toThrow(
-      'outside the registry root',
+      'file.from must start with registry/: ../outside.ts',
     )
     await expect(
       installRegistryItems(['target-escape'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
-    ).rejects.toThrow('outside the project root')
+    ).rejects.toThrow('file.to must start with src/: ../outside.ts')
     expect(existsSync(join(projectRoot, 'outside.ts'))).toBe(false)
   })
 
@@ -301,6 +365,31 @@ describe('varo add safety', () => {
 
     await installRegistryItems(['alpha'], { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry })
     expect(readFileSync(targetPath, 'utf8')).toContain('export const alpha')
+    expect(readdirSync(dirname(targetPath)).filter(name => name.startsWith('.varo-backup-'))).toEqual([])
+  })
+
+  it('keeps a successful force install when backup cleanup fails', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha')
+    const consumerRoot = join(projectRoot, 'consumer')
+    const targetPath = join(consumerRoot, 'src/components/ui/alpha.ts')
+    mkdirSync(dirname(targetPath), { recursive: true })
+    writeFileSync(targetPath, 'consumer customization\n')
+    fsFaultState.failBackupCleanup = true
+
+    const plan = await installRegistryItems(
+      ['alpha'],
+      { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry },
+    )
+
+    expect(readFileSync(targetPath, 'utf8')).toContain('export const alpha')
+    const backupNames = readdirSync(dirname(targetPath)).filter(name => name.startsWith('.varo-backup-'))
+    expect(backupNames).toHaveLength(1)
+    const backupPath = join(dirname(targetPath), backupNames[0]!)
+    expect(readFileSync(backupPath, 'utf8')).toBe('consumer customization\n')
+    expect(plan.warnings).toEqual([
+      expect.stringContaining(backupNames[0]!),
+    ])
   })
 
   it('rejects registry items that target the same consumer file', async () => {
@@ -315,5 +404,203 @@ describe('varo add safety', () => {
       installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
     ).rejects.toThrow('Registry items target the same file: src/components/ui/shared.ts')
     expect(existsSync(join(consumerRoot, target))).toBe(false)
+  })
+
+  it('rejects case-only target aliases before writing either file', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const upperTarget = 'src/components/ui/Shared.ts'
+    const lowerTarget = 'src/components/ui/shared.ts'
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', { to: upperTarget })
+    writeRegistryItem(projectRoot, 'components/beta', { to: lowerTarget })
+    const consumerRoot = join(projectRoot, 'consumer')
+    mkdirSync(consumerRoot)
+
+    await expect(
+      installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
+    ).rejects.toThrow(`Registry items target the same file: ${lowerTarget}`)
+    expect(existsSync(join(consumerRoot, upperTarget))).toBe(false)
+    expect(existsSync(join(consumerRoot, lowerTarget))).toBe(false)
+  })
+
+  it.each([
+    'src/components/ui/alpha.ts.',
+    'src/components/ui /alpha.ts',
+    'src/components/ui/victim.ts:stream',
+    'src/components/ui/CON.txt',
+  ])('rejects non-portable target path %s', (target) => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', { to: target })
+
+    expect(() => resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).toThrow(
+      `file.to must use portable path segments: ${target}`,
+    )
+  })
+
+  it('installs portable Unicode, internal-space, and symbol path segments', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const target = 'src/components/组件 +@[demo]/alpha.ts'
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', { to: target })
+    const consumerRoot = join(projectRoot, 'consumer')
+    mkdirSync(consumerRoot)
+
+    await installRegistryItems(['alpha'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry })
+
+    expect(readFileSync(join(consumerRoot, target), 'utf8')).toContain('export const alpha')
+  })
+
+  it('rejects symlinked target ancestors without overwriting the project package manifest', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/escape', {
+      to: 'src/link/package.json',
+    })
+    const consumerRoot = join(projectRoot, 'consumer')
+    const packagePath = join(consumerRoot, 'package.json')
+    mkdirSync(join(consumerRoot, 'src'), { recursive: true })
+    writeFileSync(packagePath, '{ "name": "consumer" }\n')
+    symlinkSync('..', join(consumerRoot, 'src/link'), 'dir')
+
+    await expect(
+      installRegistryItems(['escape'], { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
+    ).rejects.toThrow('Registry target path must not contain a symbolic link: src/link/package.json')
+    expect(readFileSync(packagePath, 'utf8')).toBe('{ "name": "consumer" }\n')
+  })
+
+  it('validates malformed custom registry manifests with item and path context', () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/malformed')
+    writeFileSync(
+      join(fixtureRegistry, 'components/malformed/registry.json'),
+      JSON.stringify({ files: 'malformed', name: 'malformed' }),
+    )
+
+    expect(() => resolveRegistryItems(['malformed'], { registryRoot: fixtureRegistry })).toThrow(
+      /Invalid registry item components\/malformed at .*registry\.json: .*files must be an array/,
+    )
+  })
+
+  it('rejects registry manifests that resolve outside the registry root before parsing them', () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/escape')
+    const outsideManifest = join(projectRoot, 'outside-registry.json')
+    const manifestPath = join(fixtureRegistry, 'components/escape/registry.json')
+    writeFileSync(outsideManifest, '{not valid json')
+    rmSync(manifestPath)
+    symlinkSync(outsideManifest, manifestPath)
+
+    expect(() => resolveRegistryItems(['escape'], { registryRoot: fixtureRegistry })).toThrow(
+      `Invalid registry item components/escape at ${manifestPath}: manifest is outside the registry root`,
+    )
+  })
+
+  it('rejects traversing destinations without overwriting the project package manifest', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/escape', {
+      to: 'src/../package.json',
+    })
+    const consumerRoot = join(projectRoot, 'consumer')
+    const packagePath = join(consumerRoot, 'package.json')
+    mkdirSync(consumerRoot)
+    writeFileSync(packagePath, '{ "name": "consumer" }\n')
+
+    await expect(
+      installRegistryItems(['escape'], { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
+    ).rejects.toThrow('file.to must stay within src/: src/../package.json')
+    expect(readFileSync(packagePath, 'utf8')).toBe('{ "name": "consumer" }\n')
+  })
+
+  it('rolls back files after the second target fails to open', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha')
+    writeRegistryItem(projectRoot, 'components/beta')
+    const consumerRoot = join(projectRoot, 'consumer')
+    mkdirSync(consumerRoot)
+    const canonicalConsumerRoot = realpathSync(consumerRoot)
+    const alphaPath = join(canonicalConsumerRoot, 'src/components/ui/alpha.ts')
+    const betaPath = join(canonicalConsumerRoot, 'src/components/ui/beta.ts')
+    fsFaultState.failOpenPath = betaPath
+
+    await expect(
+      installRegistryItems(['alpha', 'beta'], { projectRoot: consumerRoot, registryRoot: fixtureRegistry }),
+    ).rejects.toThrow(`Injected open failure: ${betaPath}`)
+    expect(fsFaultState.openAttempts).toEqual([alphaPath, betaPath])
+    expect(existsSync(alphaPath)).toBe(false)
+    expect(existsSync(betaPath)).toBe(false)
+    expect(existsSync(join(consumerRoot, 'src'))).toBe(false)
+  })
+
+  it('restores original contents when a force install fails after replacement', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha')
+    writeRegistryItem(projectRoot, 'components/beta')
+    const consumerRoot = join(projectRoot, 'consumer')
+    const originalPath = join(consumerRoot, 'src/components/ui/alpha.ts')
+    mkdirSync(dirname(originalPath), { recursive: true })
+    writeFileSync(originalPath, 'consumer customization\n')
+    const canonicalConsumerRoot = realpathSync(consumerRoot)
+    const openedOriginalPath = join(canonicalConsumerRoot, 'src/components/ui/alpha.ts')
+    const betaPath = join(canonicalConsumerRoot, 'src/components/ui/beta.ts')
+    fsFaultState.failOpenPath = betaPath
+
+    await expect(
+      installRegistryItems(
+        ['alpha', 'beta'],
+        { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry },
+      ),
+    ).rejects.toThrow(`Injected open failure: ${betaPath}`)
+    expect(fsFaultState.openAttempts).toEqual([openedOriginalPath, betaPath])
+    expect(readFileSync(originalPath, 'utf8')).toBe('consumer customization\n')
+    expect(existsSync(betaPath)).toBe(false)
+    expect(readdirSync(dirname(originalPath)).filter(name => name.startsWith('.varo-backup-'))).toEqual([])
+  })
+
+  it('preserves the original backup when forced rollback cannot remove its replacement', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha')
+    writeRegistryItem(projectRoot, 'components/beta')
+    const consumerRoot = join(projectRoot, 'consumer')
+    const originalPath = join(consumerRoot, 'src/components/ui/alpha.ts')
+    mkdirSync(dirname(originalPath), { recursive: true })
+    writeFileSync(originalPath, 'consumer customization\n')
+    const canonicalConsumerRoot = realpathSync(consumerRoot)
+    const openedOriginalPath = join(canonicalConsumerRoot, 'src/components/ui/alpha.ts')
+    const betaPath = join(canonicalConsumerRoot, 'src/components/ui/beta.ts')
+    fsFaultState.failOpenPath = betaPath
+    fsFaultState.failRemovePath = openedOriginalPath
+
+    let installError: unknown
+    try {
+      await installRegistryItems(
+        ['alpha', 'beta'],
+        { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry },
+      )
+    }
+    catch (error) {
+      installError = error
+    }
+
+    expect(fsFaultState.openAttempts).toEqual([openedOriginalPath, betaPath])
+    expect(installError).toBeInstanceOf(AggregateError)
+    const backupNames = readdirSync(dirname(originalPath)).filter(name => name.startsWith('.varo-backup-'))
+    expect(backupNames).toHaveLength(1)
+    const backupPath = join(dirname(originalPath), backupNames[0]!)
+    expect((installError as AggregateError).message).toContain(backupPath)
+    expect(readFileSync(backupPath, 'utf8')).toBe('consumer customization\n')
+    expect(readFileSync(originalPath, 'utf8')).toContain('export const alpha')
+  })
+
+  it('protects existing non-regular registry targets', async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
+    const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha')
+    const consumerRoot = join(projectRoot, 'consumer')
+    const targetPath = join(consumerRoot, 'src/components/ui/alpha.ts')
+    mkdirSync(targetPath, { recursive: true })
+
+    await expect(
+      installRegistryItems(
+        ['alpha'],
+        { force: true, projectRoot: consumerRoot, registryRoot: fixtureRegistry },
+      ),
+    ).rejects.toThrow('Registry target must be a regular file: src/components/ui/alpha.ts')
+    expect(readdirSync(targetPath)).toEqual([])
   })
 })

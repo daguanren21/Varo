@@ -9,11 +9,11 @@
     "weapp"
   ],
   "dependencies": [
-    "@varo-ui/headless",
-    "@varo-ui/theme"
+    "@varo-ui/headless"
   ],
   "targetDependencies": {
     "h5": [
+      "@varo-ui/theme",
       "vue"
     ],
     "weapp": [
@@ -24,6 +24,12 @@
     "themes/base",
     "utils/primitives"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "components/icon",
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -32,13 +38,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/input/weapp-vite.vue",
+      "from": "registry/components/input/v-input.vue",
       "to": "src/components/ui/v-input.vue"
-    },
-    {
-      "target": "weapp",
-      "from": "registry/components/input/input.ts",
-      "to": "src/components/ui/input.ts"
     }
   ],
   "docs": "/components/input"

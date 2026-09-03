@@ -6,21 +6,44 @@ export function createAgentEventChannel(): AgentEventChannel {
   let failure: Error | undefined
   let wake: (() => void) | undefined
 
-  async function* iterate(): AsyncGenerator<AgentStreamEvent> {
-    while (!ended || queue.length > 0) {
-      if (failure) throw failure
-      const event = queue.shift()
-      if (event) {
-        yield event
-        continue
-      }
+  function stopConsuming() {
+    ended = true
+    queue.length = 0
+    notify()
+  }
 
-      await new Promise<void>((resolve) => {
-        wake = resolve
-      })
-      wake = undefined
+  async function* iterate(): AsyncGenerator<AgentStreamEvent> {
+    try {
+      while (!ended || queue.length > 0) {
+        if (failure) throw failure
+        const event = queue.shift()
+        if (event) {
+          yield event
+          continue
+        }
+
+        await new Promise<void>((resolve) => {
+          wake = resolve
+        })
+        wake = undefined
+      }
+      if (failure) throw failure
+    } finally {
+      stopConsuming()
     }
-    if (failure) throw failure
+  }
+
+  function createIterator(): AsyncIterator<AgentStreamEvent> {
+    const iterator = iterate()
+    return {
+      next() {
+        return iterator.next()
+      },
+      return() {
+        stopConsuming()
+        return iterator.return(undefined)
+      }
+    }
   }
 
   function notify() {
@@ -43,7 +66,7 @@ export function createAgentEventChannel(): AgentEventChannel {
       notify()
     },
     source: {
-      [Symbol.asyncIterator]: iterate
+      [Symbol.asyncIterator]: createIterator
     }
   }
 }

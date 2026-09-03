@@ -149,20 +149,95 @@ export const weappComponentCatalogV01 = [
   'toast',
 ] as const
 
-const allowedTargets: RegistryTarget[] = ['h5', 'weapp']
-const allowedTypes: RegistryItemType[] = ['component', 'block', 'hook', 'util', 'theme', 'template']
+const allowedTargets: readonly RegistryTarget[] = ['h5', 'weapp']
+const allowedTypes: readonly RegistryItemType[] = ['component', 'block', 'hook', 'util', 'theme', 'template']
 
-export function validateRegistryItem(item: RegistryItem): string[] {
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+function formatValue(value: unknown): string {
+  if (
+    value === undefined
+    || value === null
+    || typeof value === 'string'
+    || typeof value === 'number'
+    || typeof value === 'boolean'
+    || typeof value === 'bigint'
+  ) {
+    return String(value)
+  }
+
+  return typeof value
+}
+
+function isSafeRegistryPath(value: string, root: 'registry' | 'src'): boolean {
+  if (!value.startsWith(`${root}/`) || value.includes('\\') || value.includes('\0')) {
+    return false
+  }
+
+  return value
+    .slice(root.length + 1)
+    .split('/')
+    .every(segment => segment !== '' && segment !== '.' && segment !== '..')
+}
+
+const windowsInvalidPathCharacterPattern = /[<>:"|?*\u0000-\u001F]/
+const windowsReservedPathNamePattern = /^(?:aux|com[1-9¹²³]|con|conin\$|conout\$|lpt[1-9¹²³]|nul|prn)$/i
+
+function hasPortablePathSegments(value: string): boolean {
+  return value.split('/').every((segment) => {
+    if (
+      segment.endsWith('.')
+      || segment.endsWith(' ')
+      || windowsInvalidPathCharacterPattern.test(segment)
+    ) {
+      return false
+    }
+
+    const extensionIndex = segment.indexOf('.')
+    const basename = extensionIndex === -1 ? segment : segment.slice(0, extensionIndex)
+    return !windowsReservedPathNamePattern.test(basename)
+  })
+}
+
+function validateDependencyArray(
+  value: unknown,
+  field: 'dependencies' | 'devDependencies' | 'registryDependencies',
+  errors: string[],
+  required: boolean,
+) {
+  if (value === undefined && !required) { return }
+
+  if (!Array.isArray(value) || value.some(dependency => !isNonEmptyString(dependency))) {
+    errors.push(`${field} must be an array of package names`)
+  }
+}
+
+export function validateRegistryItem(input: unknown): string[] {
+  if (input === null || typeof input !== 'object' || Array.isArray(input)) {
+    return ['registry item must be an object']
+  }
+
+  const registryItem = input as Record<string, unknown>
   const errors: string[] = []
-  const registryItem = item as Partial<Record<keyof RegistryItem, unknown>>
 
-  if (!item.name) { errors.push('name is required') }
-  if (!item.title) { errors.push('title is required') }
-  if (!item.description) { errors.push('description is required') }
-  if (!allowedTypes.includes(item.type)) { errors.push(`unsupported type: ${item.type}`) }
+  for (const field of ['name', 'title', 'description'] as const) {
+    if (!isNonEmptyString(registryItem[field])) {
+      errors.push(`${field} must be a non-empty string`)
+    }
+  }
+
+  if (!allowedTypes.includes(registryItem.type as RegistryItemType)) {
+    errors.push(`unsupported type: ${formatValue(registryItem.type)}`)
+  }
 
   if (typeof registryItem.docs !== 'string' || !registryItem.docs.startsWith('/')) {
     errors.push('docs must be an absolute docs route')
+  }
+
+  if (registryItem.exportName !== undefined && !isNonEmptyString(registryItem.exportName)) {
+    errors.push('exportName must be a non-empty string')
   }
 
   const targets = registryItem.targets
@@ -173,9 +248,15 @@ export function validateRegistryItem(item: RegistryItem): string[] {
     if (targets.length === 0) { errors.push('targets must not be empty') }
 
     targets.forEach((target) => {
-      if (!allowedTargets.includes(target as RegistryTarget)) { errors.push(`unsupported target: ${target}`) }
+      if (!allowedTargets.includes(target as RegistryTarget)) {
+        errors.push(`unsupported target: ${formatValue(target)}`)
+      }
     })
   }
+
+  validateDependencyArray(registryItem.dependencies, 'dependencies', errors, false)
+  validateDependencyArray(registryItem.devDependencies, 'devDependencies', errors, false)
+  validateDependencyArray(registryItem.registryDependencies, 'registryDependencies', errors, true)
 
   const files = registryItem.files
   if (!Array.isArray(files)) {
@@ -184,28 +265,49 @@ export function validateRegistryItem(item: RegistryItem): string[] {
   else {
     if (files.length === 0) { errors.push('files must not be empty') }
 
-    files.forEach((file) => {
-      const registryFile
-        = file !== null && typeof file === 'object' ? (file as Partial<Record<keyof RegistryFile, unknown>>) : {}
+    files.forEach((file, index) => {
+      const fileIsObject = file !== null && typeof file === 'object' && !Array.isArray(file)
+      const registryFile = fileIsObject ? file as Record<string, unknown> : {}
+      if (!fileIsObject) {
+        errors.push(`files[${index}] must be an object`)
+      }
 
       if (!allowedTargets.includes(registryFile.target as RegistryTarget)) {
-        errors.push(`unsupported file target: ${registryFile.target}`)
+        errors.push(`unsupported file target: ${formatValue(registryFile.target)}`)
       }
       if (Array.isArray(targets) && !targets.includes(registryFile.target)) {
-        errors.push(`file target is not declared by item: ${registryFile.target}`)
+        errors.push(`file target is not declared by item: ${formatValue(registryFile.target)}`)
       }
+
       if (typeof registryFile.from !== 'string' || !registryFile.from.startsWith('registry/')) {
-        errors.push(`file.from must start with registry/: ${registryFile.from}`)
+        errors.push(`file.from must start with registry/: ${formatValue(registryFile.from)}`)
+      }
+      else if (!isSafeRegistryPath(registryFile.from, 'registry')) {
+        errors.push(`file.from must stay within registry/: ${registryFile.from}`)
+      }
+      else if (!hasPortablePathSegments(registryFile.from)) {
+        errors.push(`file.from must use portable path segments: ${registryFile.from}`)
       }
       if (typeof registryFile.to !== 'string' || !registryFile.to.startsWith('src/')) {
-        errors.push(`file.to must start with src/: ${registryFile.to}`)
+        errors.push(`file.to must start with src/: ${formatValue(registryFile.to)}`)
+      }
+      else if (!isSafeRegistryPath(registryFile.to, 'src')) {
+        errors.push(`file.to must stay within src/: ${registryFile.to}`)
+      }
+      else if (!hasPortablePathSegments(registryFile.to)) {
+        errors.push(`file.to must use portable path segments: ${registryFile.to}`)
       }
     })
 
     if (Array.isArray(targets)) {
       targets.forEach((target) => {
-        if (!files.some(file => file?.target === target)) {
-          errors.push(`target has no files: ${target}`)
+        if (!files.some(file =>
+          file !== null
+          && typeof file === 'object'
+          && !Array.isArray(file)
+          && (file as Record<string, unknown>).target === target,
+        )) {
+          errors.push(`target has no files: ${formatValue(target)}`)
         }
       })
     }
@@ -223,7 +325,7 @@ export function validateRegistryItem(item: RegistryItem): string[] {
       if (!allowedTargets.includes(target as RegistryTarget)) {
         errors.push(`unsupported ${field} target: ${target}`)
       }
-      if (!Array.isArray(dependencies) || dependencies.some(dependency => typeof dependency !== 'string')) {
+      if (!Array.isArray(dependencies) || dependencies.some(dependency => !isNonEmptyString(dependency))) {
         errors.push(`${field}.${target} must be an array of package names`)
       }
     })

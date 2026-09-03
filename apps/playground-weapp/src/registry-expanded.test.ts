@@ -4,12 +4,16 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h, nextTick } from 'vue'
 import AgentChat from './components/blocks/agent-chat.vue'
-import { VActionSheet } from './components/ui/action-sheet'
-import { VCollapse, VCollapseItem } from './components/ui/collapse'
-import { VList } from './components/ui/list'
-import { VNoticeBar } from './components/ui/notice-bar'
-import { VSteps } from './components/ui/steps'
-import { VSwipeCell } from './components/ui/swipe-cell'
+import VActionSheet from './components/ui/v-action-sheet.vue'
+import VCollapse from './components/ui/v-collapse.vue'
+import VCollapseItem from './components/ui/v-collapse-item.vue'
+import VList from './components/ui/v-list.vue'
+import VNoticeBar from './components/ui/v-notice-bar.vue'
+import VSteps from './components/ui/v-steps.vue'
+import VSwipeCell from './components/ui/v-swipe-cell.vue'
+import VInput from './components/ui/v-input.vue'
+import VTextarea from './components/ui/v-textarea.vue'
+import VSelect from './components/ui/select.vue'
 import VButton from './components/ui/v-button.vue'
 import VCard from './components/ui/v-card.vue'
 
@@ -81,6 +85,59 @@ describe('expanded weapp registry components', () => {
     await content.trigger('touchmove', { touches: [{ clientX: 40 }] })
     await content.trigger('touchend', { changedTouches: [{ clientX: 40 }] })
     expect(swipe.emitted('update:modelValue')?.at(-1)).toEqual(['left'])
+  })
+
+  it('filters from the Select field without a duplicate panel search box', async () => {
+    const wrapper = mount(VSelect, {
+      props: {
+        filterable: true,
+        options: [
+          { label: 'Shanghai', value: 'shanghai' },
+          { label: 'Hangzhou', value: 'hangzhou' },
+          { label: 'Suzhou', value: 'suzhou' },
+        ],
+        value: 'shanghai',
+      },
+    })
+    const filterInput = wrapper.get('.varo-select__filter-input')
+    expect(filterInput.attributes('value')).toBe('Shanghai')
+
+    await filterInput.trigger('focus')
+    expect(wrapper.find('.varo-select__panel .varo-select__filter-input').exists()).toBe(false)
+    await filterInput.setValue('zhou')
+
+    expect(wrapper.emitted('search')?.at(-1)).toEqual(['zhou'])
+    expect(wrapper.findAll('.varo-select__option').map(option => option.text())).toEqual(['Hangzhou', 'Suzhou'])
+  })
+
+  it('preserves uncontrolled native input and textarea values', async () => {
+    const input = mount(VInput, {
+      props: {
+        ariaDescribedby: 'name-help',
+        className: 'consumer-input',
+        defaultValue: 'seed',
+        formatter: (value: string) => value.toUpperCase(),
+        inputId: 'customer-name',
+        name: 'customerName',
+        selectionStart: 1,
+      },
+    })
+    expect(input.get('input').attributes('value')).toBe('seed')
+    expect(input.get('.varo-input').classes()).toContain('consumer-input')
+    expect(input.get('.varo-input').attributes('name')).toBeUndefined()
+    expect(input.get('input').attributes('id')).toBe('customer-name')
+    expect(input.get('input').attributes('name')).toBe('customerName')
+    expect(input.get('input').attributes('aria-describedby')).toBe('name-help')
+    expect(input.get('input').attributes('selection-start')).toBe('1')
+
+    await input.get('input').trigger('input', { detail: { value: 'next' } })
+    expect(input.emitted('update:value')?.at(-1)).toEqual(['NEXT'])
+    expect(input.get('input').attributes('value')).toBe('NEXT')
+
+    const textarea = mount(VTextarea, {
+      props: { defaultValue: 'memo' },
+    })
+    expect(textarea.get('textarea').attributes('value')).toBe('memo')
   })
 
   it('renders the mini-program Agent Chat block and forwards prompts', async () => {

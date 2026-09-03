@@ -226,3 +226,28 @@ export interface AgentEventChannel {
   push: (event: AgentStreamEvent) => void
   source: AsyncIterable<AgentStreamEvent>
 }
+
+export interface AgentThreadVersion {
+  readonly createdAt?: string
+  readonly id: string
+  readonly label?: string
+  readonly messageId?: string
+  readonly parentId?: string
+  readonly pinned?: boolean
+  readonly summary?: string
+}
+
+export interface AgentThreadSnapshot {
+  readonly activeVersionId?: string
+  readonly versions: readonly AgentThreadVersion[]
+}
+
+export interface AgentThreadController {
+  append: (version: AgentThreadVersion) => void
+  destroy: () => void
+  fork: (parentId: string, version: Omit<AgentThreadVersion, 'parentId'>) => void
+  getSnapshot: () => AgentThreadSnapshot
+  reset: (initial?: AgentThreadSnapshot) => void
+  select: (id: string) => void
+  subscribe: (listener: () => void) => () => void
+}

@@ -52,7 +52,7 @@ export default defineConfig({
   oxc: false,
   resolve: {
     alias: {
-      ...(isTest ? { wevu: 'vue' } : {}),
+      ...(isTest ? { wevu: resolve(root, 'test/wevu.ts') } : {}),
       '@varo-ui/weapp/source/style.css': resolve(root, '../../packages/ui-weapp/src/style.css'),
       '@varo-ui/weapp/primitives': resolve(root, '../../packages/ui-weapp/src/primitives.ts'),
       '@varo-ui/ai': resolve(import.meta.dirname, '../../packages/agent-core/src/index.ts'),

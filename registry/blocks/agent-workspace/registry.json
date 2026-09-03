@@ -1,0 +1,30 @@
+{
+  "name": "agent-workspace",
+  "type": "block",
+  "title": "Agent Workspace",
+  "description": "Portable Agent workspace with visible source scope, conversation, retrieval progress, task decisions, receipts, thread versions, and page, docked, or sheet presentation.",
+  "targets": ["h5", "weapp"],
+  "dependencies": [
+    "@varo-ui/ai"
+  ],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp": ["wevu"]
+  },
+  "registryDependencies": [
+    "components/agent-ui"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-workspace/h5.vue",
+      "to": "src/components/blocks/agent-workspace.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/blocks/agent-workspace/weapp-vite.vue",
+      "to": "src/components/blocks/agent-workspace.vue"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

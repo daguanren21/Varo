@@ -1,5 +1,5 @@
 import '../../styles/varo.css'
-import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
+import { computed, defineComponent, h, shallowRef, useId, watch, type PropType } from 'vue'
 import {
   clearSelectValue,
   createSelectDisplay,
@@ -41,7 +41,7 @@ export const VSelect = defineComponent({
       type: Number,
       default: undefined
     },
-    searchable: Boolean,
+    filterable: Boolean,
     confirmable: {
       type: Boolean,
       default: true
@@ -61,11 +61,13 @@ export const VSelect = defineComponent({
     const visible = shallowRef(false)
     const query = shallowRef('')
     const draftValue = shallowRef<VSelectValue[]>([])
+    const listboxId = useId()
 
     const selectedArray = computed(() => normalizeSelectArray(props.value))
     const activeArray = computed(() => (props.multiple && props.confirmable && visible.value ? draftValue.value : selectedArray.value))
     const filteredOptions = computed(() => filterSelectOptions(props.options, query.value, props.filterOption))
     const displayText = computed(() => createSelectDisplay(props.options, props.value, props.placeholder))
+    const selectedText = computed(() => selectedArray.value.length > 0 ? displayText.value : '')
 
     watch(
       () => visible.value,
@@ -91,7 +93,7 @@ export const VSelect = defineComponent({
     }
 
     function open() {
-      if (props.disabled || props.readonly) return
+      if (props.disabled || props.readonly || visible.value) { return }
       visible.value = true
       emit('open')
     }
@@ -149,7 +151,8 @@ export const VSelect = defineComponent({
       close()
     }
 
-    function clear(event: MouseEvent) {
+    function clear(event: Event) {
+      event.preventDefault()
       event.stopPropagation()
       const value = clearSelectValue(props.multiple)
       if (props.multiple && props.confirmable) {
@@ -159,10 +162,98 @@ export const VSelect = defineComponent({
       emit('clear')
     }
 
+
     function search(event: Event) {
+      open()
       const value = (event.target as HTMLInputElement).value
       query.value = value
       emit('search', value)
+    }
+
+    function triggerKeydown(event: KeyboardEvent) {
+      if (event.key === 'Escape' && visible.value) {
+        event.preventDefault()
+        close()
+        return
+      }
+      if (event.key === 'ArrowDown' && !visible.value) {
+        event.preventDefault()
+        open()
+      }
+    }
+
+    function renderSuffix() {
+      return h(
+        'span',
+        { class: 'varo-select__suffix' },
+        [
+          props.clearable && selectedArray.value.length > 0 && !props.disabled && !props.readonly
+            ? h(
+                'button',
+                {
+                  'aria-label': '清除选择',
+                  'class': 'varo-select__clear',
+                  'type': 'button',
+                  'onClick': clear,
+                },
+                '×',
+              )
+            : null,
+          h('span', {
+            'aria-hidden': 'true',
+            'class': 'varo-select__arrow',
+            'data-open': String(visible.value),
+          }),
+        ],
+      )
+    }
+
+    function renderTrigger() {
+      const triggerAttrs = {
+        'class': 'varo-select__trigger',
+        'data-open': String(visible.value),
+        'onClick': open,
+      }
+
+      if (props.filterable) {
+        return h('div', triggerAttrs, [
+          h('input', {
+            'aria-autocomplete': 'list',
+            'aria-controls': listboxId,
+            'aria-expanded': visible.value,
+            'aria-haspopup': 'listbox',
+            'class': 'varo-select__filter-input',
+            'disabled': props.disabled,
+            'placeholder': visible.value ? '搜索' : props.placeholder,
+            'readonly': props.readonly,
+            'role': 'combobox',
+            'value': visible.value ? query.value : selectedText.value,
+            'onFocus': open,
+            'onInput': search,
+            'onKeydown': triggerKeydown,
+          }),
+          renderSuffix(),
+        ])
+      }
+
+      return h('div', triggerAttrs, [
+        h('button', {
+          'aria-controls': listboxId,
+          'aria-expanded': visible.value,
+          'aria-haspopup': 'listbox',
+          'class': 'varo-select__control',
+          'disabled': props.disabled,
+          'type': 'button',
+          'onClick': open,
+        }, [
+          h(
+            'span',
+            { class: 'varo-select__value' },
+            slots.value?.({ text: displayText.value }) ?? displayText.value,
+          ),
+        ]),
+        renderSuffix(),
+      ])
     }
 
     function renderOption(option: VSelectOption) {
@@ -171,10 +262,12 @@ export const VSelect = defineComponent({
       return h(
         'button',
         {
+          'aria-selected': selected,
           class: 'varo-select__option',
           type: 'button',
           disabled: option.disabled,
           'data-active': String(selected),
+          role: 'option',
           onClick: () => select(option)
         },
         [
@@ -189,19 +282,11 @@ export const VSelect = defineComponent({
 
       const options = filteredOptions.value
 
-      return h('div', { class: 'varo-select__panel', 'data-mode': props.mode }, [
-        props.searchable
-          ? h('input', {
-              class: 'varo-select__search',
-              value: query.value,
-              placeholder: '搜索',
-              onInput: search
-            })
-          : null,
+      return h('div', { 'class': 'varo-select__panel', 'data-mode': props.mode }, [
         props.loading ? h('div', { class: 'varo-select__loading' }, '加载中') : null,
         !props.loading && options.length === 0 ? h('div', { class: 'varo-select__empty' }, props.emptyText) : null,
         !props.loading && options.length > 0
-          ? h('div', { class: 'varo-select__options' }, options.map((option) => renderOption(option)))
+          ? h('div', { 'aria-multiselectable': props.multiple, 'class': 'varo-select__options', id: listboxId, role: 'listbox' }, options.map(option => renderOption(option)))
           : null,
         props.multiple && props.confirmable
           ? h('div', { class: 'varo-select__footer' }, [
@@ -224,46 +309,7 @@ export const VSelect = defineComponent({
           'data-open': String(visible.value)
         },
         [
-          h(
-            'button',
-            {
-              class: 'varo-select__trigger',
-              type: 'button',
-              disabled: props.disabled,
-              'aria-expanded': String(visible.value),
-              'aria-haspopup': 'listbox',
-              'data-open': String(visible.value),
-              onClick: open
-            },
-            [
-              h(
-                'span',
-                { class: 'varo-select__value' },
-                slots.value?.({ text: displayText.value }) ?? displayText.value
-              ),
-              h(
-                'span',
-                { class: 'varo-select__suffix', 'aria-hidden': 'true' },
-                [
-                  props.clearable && selectedArray.value.length > 0 && !props.disabled && !props.readonly
-                    ? h(
-                        'span',
-                        {
-                          class: 'varo-select__clear',
-                          role: 'button',
-                          onClick: clear
-                        },
-                        '×'
-                      )
-                    : null,
-                  h('span', {
-                    class: 'varo-select__arrow',
-                    'data-open': String(visible.value)
-                  })
-                ]
-              )
-            ]
-          ),
+          renderTrigger(),
           renderPanel()
         ]
       )

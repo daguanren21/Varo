@@ -99,17 +99,32 @@ describe('ui-h5 select', () => {
     const onSearch = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
-        searchable: true,
+        clearable: true,
+        filterable: true,
         options,
-        onSearch
+        onSearch,
+        value: 'shanghai'
       }
     })
 
-    await wrapper.get('.varo-select__trigger').trigger('click')
-    await wrapper.get('.varo-select__search').setValue('zhou')
+    const filterInput = wrapper.get('.varo-select__filter-input')
+    expect(filterInput.attributes('value')).toBe('Shanghai')
+    await filterInput.trigger('focus')
+    expect(wrapper.get('.varo-select__trigger').element.tagName).toBe('DIV')
+    expect(wrapper.find('.varo-select__panel .varo-select__filter-input').exists()).toBe(false)
+    await filterInput.setValue('zhou')
 
     expect(onSearch).toHaveBeenCalledWith('zhou')
     expect(wrapper.findAll('.varo-select__option').map((item) => item.text())).toEqual(['Hangzhou', 'Suzhou'])
+
+    await filterInput.trigger('keydown', { key: 'Escape' })
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
+    await filterInput.setValue('shang')
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(true)
+    expect(wrapper.findAll('.varo-select__option').map(item => item.text())).toEqual(['Shanghai✓'])
+    await filterInput.trigger('keydown', { key: 'Escape' })
+    await wrapper.get('.varo-select__clear').trigger('click')
+    expect(wrapper.attributes('data-open')).toBe('false')
   })
 
   it('supports dropdown mode, clearable state, and max limits', async () => {
@@ -133,8 +148,14 @@ describe('ui-h5 select', () => {
     })
 
     expect(wrapper.classes()).toContain('varo-select--dropdown')
+    expect(wrapper.get('.varo-select__trigger').element.tagName).toBe('DIV')
+    expect(wrapper.get('.varo-select__control').element.tagName).toBe('BUTTON')
+    expect(wrapper.get('.varo-select__control').find('.varo-select__clear').exists()).toBe(false)
+    expect(wrapper.get('.varo-select__clear').element.tagName).toBe('BUTTON')
 
     await wrapper.get('.varo-select__trigger').trigger('click')
+    expect(wrapper.findAll('.varo-select__option').every(option => option.attributes('role') === 'option')).toBe(true)
+    expect(wrapper.findAll('.varo-select__option')[0]?.attributes('aria-selected')).toBe('true')
     await wrapper.findAll('.varo-select__option')[1].trigger('click')
 
     expect(onLimit).toHaveBeenCalledWith({ max: 1 })

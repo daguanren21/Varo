@@ -2,7 +2,7 @@
   "name": "agent-ui",
   "type": "component",
   "title": "Varo Agent UI",
-  "description": "Dual-target Agent UI suite covering streaming, reasoning, tools, approvals, messages, prompt input, citations, code, diffs, generated media, activity, context, tables, workflows, sidebars, insights, and complete chat applications.",
+  "description": "Dual-target Agent UI suite covering streaming, reasoning, tools, approvals, messages, prompt input, citations, code, diffs, generated media, activity, context, tables, workflows, sidebars, insights, and scoped agent workspaces.",
   "targets": [
     "h5",
     "weapp"
@@ -12,6 +12,7 @@
   ],
   "targetDependencies": {
     "h5": [
+      "@varo-ui/headless",
       "vue"
     ],
     "weapp": [
@@ -293,6 +294,36 @@
       "target": "weapp",
       "from": "registry/components/agent-ui/AgentAttachmentList.vue",
       "to": "src/components/agent-ui/AgentAttachmentList.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentComposerScope.vue",
+      "to": "src/components/agent-ui/AgentComposerScope.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentRetrievalProgress.vue",
+      "to": "src/components/agent-ui/AgentRetrievalProgress.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentSourceReceipt.vue",
+      "to": "src/components/agent-ui/AgentSourceReceipt.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentTaskRunner.vue",
+      "to": "src/components/agent-ui/AgentTaskRunner.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentThreadVersions.vue",
+      "to": "src/components/agent-ui/AgentThreadVersions.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentShell.vue",
+      "to": "src/components/agent-ui/AgentShell.vue"
     }
   ],
   "docs": "/guide/shadcn-mode"

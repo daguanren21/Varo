@@ -25,8 +25,8 @@
       "import": "./dist/index.mjs"
     },
     "./source": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
   },
   "main": "./dist/index.mjs",
@@ -37,8 +37,7 @@
   },
   "files": [
     "dist",
-    "registry",
-    "src"
+    "registry"
   ],
   "scripts": {
     "build": "tsdown",
@@ -50,5 +49,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "echo cli has no e2e"
+  },
+  "devDependencies": {
+    "@varo/registry": "workspace:*"
   }
 }
