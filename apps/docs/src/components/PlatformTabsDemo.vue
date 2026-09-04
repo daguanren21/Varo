@@ -457,6 +457,7 @@ const buttonSampleCopy = computed(() => props.locale === 'en'
       primary: 'Save changes',
       secondary: 'Cancel',
       tertiary: 'Later',
+      textAction: 'Text action',
       tones: 'Semantic tones',
       success: 'Complete',
       warning: 'Review',
@@ -478,6 +479,7 @@ const buttonSampleCopy = computed(() => props.locale === 'en'
       primary: '保存更改',
       secondary: '取消',
       tertiary: '稍后处理',
+      textAction: '文字按钮',
       tones: '语义色',
       success: '已完成',
       warning: '需确认',
@@ -837,6 +839,14 @@ onBeforeUnmount(() => {
                               variant="ghost"
                             >
                               {{ buttonSampleCopy.tertiary }}
+                            </component>
+                            <component
+                              :is="runtime.Button"
+                              native-type="button"
+                              tone="primary"
+                              variant="text"
+                            >
+                              {{ buttonSampleCopy.textAction }}
                             </component>
                           </div>
                         </section>

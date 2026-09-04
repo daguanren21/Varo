@@ -6,7 +6,7 @@ import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
-type ButtonVariant = 'solid' | 'outline' | 'ghost'
+type ButtonVariant = 'solid' | 'outline' | 'ghost' | 'text'
 type ButtonSize = 'sm' | 'md' | 'lg'
 type ButtonShape = 'default' | 'square' | 'round'
 

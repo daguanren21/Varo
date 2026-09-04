@@ -8,9 +8,13 @@
   --varo-ui-border-strong: #aeb8c6;
   --varo-ui-primary: #08786f;
   --varo-ui-primary-foreground: #fff;
+  --varo-ui-primary-text: #104e51;
   --varo-ui-success: #15803d;
+  --varo-ui-success-text: #165238;
   --varo-ui-warning: #b76b00;
+  --varo-ui-warning-text: #68481a;
   --varo-ui-danger: #c7372f;
+  --varo-ui-danger-text: #702e31;
   --varo-ui-radius: 8px;
   --varo-ui-radius-sm: 6px;
   --varo-ui-shadow-sm: 0 1px 2px rgb(24 36 51 / 6%);
@@ -50,6 +54,11 @@
   transform: translateY(1px);
 }
 
+.varo-button[data-pressed='true'],
+.varo-button--pressed {
+  transform: translateY(1px);
+}
+
 .varo-button[data-size='sm'] {
   min-height: 34px;
   padding: 0 12px;
@@ -74,6 +83,54 @@
   color: var(--varo-ui-text);
   background: var(--varo-ui-surface-muted);
   box-shadow: none;
+}
+
+.varo-button[data-variant='text'] {
+  --varo-button-text-fill: var(--varo-ui-primary-soft);
+
+  color: var(--varo-ui-primary-text);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.varo-button[data-tone='default'][data-variant='text'] {
+  color: var(--varo-ui-text);
+
+  --varo-button-text-fill: var(--varo-ui-fill-light);
+}
+
+.varo-button[data-tone='success'][data-variant='text'] {
+  color: var(--varo-ui-success-text);
+
+  --varo-button-text-fill: var(--varo-ui-success-soft);
+}
+
+.varo-button[data-tone='warning'][data-variant='text'] {
+  color: var(--varo-ui-warning-text);
+
+  --varo-button-text-fill: var(--varo-ui-warning-soft);
+}
+
+.varo-button[data-tone='danger'][data-variant='text'] {
+  color: var(--varo-ui-danger-text);
+
+  --varo-button-text-fill: var(--varo-ui-danger-soft);
+}
+
+@media (hover: hover) {
+  .varo-button[data-variant='text']:not([data-disabled='true'], [data-loading='true']):hover {
+    background: var(--varo-button-text-fill);
+  }
+}
+
+.varo-button[data-variant='text']:not([data-disabled='true'], [data-loading='true']):active {
+  background: var(--varo-button-text-fill);
+}
+
+.varo-button[data-variant='text'][data-pressed='true'],
+.varo-button[data-variant='text'].varo-button--pressed {
+  background: var(--varo-button-text-fill);
 }
 
 .varo-button[data-tone='success'][data-variant='solid'] {
@@ -465,8 +522,8 @@ textarea.varo-input__control {
   font: inherit;
   color: inherit;
   cursor: text;
-  background: transparent;
   outline: 0;
+  background: transparent;
   border: 0;
 }
 

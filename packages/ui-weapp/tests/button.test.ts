@@ -82,8 +82,42 @@ describe('ui-weapp button', () => {
     expect(style).toContain('.varo-button[data-variant=\'solid\']')
     expect(style).toContain('border: 0')
     expect(style).toContain('.varo-button[data-variant=\'solid\'].varo-button--pressed')
+    expect(style).toContain('.varo-button[data-variant=\'solid\'][data-pressed=\'true\']')
     expect(style).toContain('background: var(--varo-button-hover-fill)')
     expect(style).toContain('data-loading=\'true\'')
     expect(style).toContain('cursor: progress')
+  })
+
+  it('renders a borderless text variant with a custom color', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        color: '#16a34a',
+        variant: 'text',
+      },
+      slots: {
+        default: () => '文字按钮',
+      },
+    })
+
+    expect(wrapper.attributes('data-variant')).toBe('text')
+    expect(wrapper.attributes('style')).toContain('border-color: transparent')
+    expect(wrapper.attributes('style')).toContain('color: #16a34a')
+  })
+
+  it('drives text pressed feedback from touch events', async () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        variant: 'text',
+      },
+    })
+
+    await wrapper.trigger('touchstart')
+    expect(wrapper.attributes('data-pressed')).toBe('true')
+    expect(wrapper.classes()).toContain('varo-button--pressed')
+    await wrapper.trigger('touchend')
+    expect(wrapper.attributes('data-pressed')).toBe('false')
+    expect(wrapper.classes()).not.toContain('varo-button--pressed')
   })
 })

@@ -4,18 +4,18 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h, nextTick } from 'vue'
 import AgentChat from './components/blocks/agent-chat.vue'
+import VSelect from './components/ui/select.vue'
 import VActionSheet from './components/ui/v-action-sheet.vue'
-import VCollapse from './components/ui/v-collapse.vue'
+import VButton from './components/ui/v-button.vue'
+import VCard from './components/ui/v-card.vue'
 import VCollapseItem from './components/ui/v-collapse-item.vue'
+import VCollapse from './components/ui/v-collapse.vue'
+import VInput from './components/ui/v-input.vue'
 import VList from './components/ui/v-list.vue'
 import VNoticeBar from './components/ui/v-notice-bar.vue'
 import VSteps from './components/ui/v-steps.vue'
 import VSwipeCell from './components/ui/v-swipe-cell.vue'
-import VInput from './components/ui/v-input.vue'
 import VTextarea from './components/ui/v-textarea.vue'
-import VSelect from './components/ui/select.vue'
-import VButton from './components/ui/v-button.vue'
-import VCard from './components/ui/v-card.vue'
 
 describe('expanded weapp registry components', () => {
   it('uses native mini-program hover classes for pressed feedback', () => {
@@ -28,6 +28,9 @@ describe('expanded weapp registry components', () => {
 
     const disabledButton = mount(VButton, { props: { disabled: true } })
     expect(disabledButton.get('button').attributes('hover-class')).toBe('none')
+
+    const textButton = mount(VButton, { props: { variant: 'text' } })
+    expect(textButton.get('button').attributes('data-variant')).toBe('text')
 
     const card = mount(VCard, { props: { className: 'rounded-none shadow-none', interactive: true } })
     expect(card.get('.varo-card').attributes('hover-class')).toBe('varo-card--pressed')

@@ -37,6 +37,9 @@
   <VButton variant="ghost">
     浅色按钮
   </VButton>
+  <VButton variant="text">
+    文字按钮
+  </VButton>
   <VButton plain>
     朴素按钮
   </VButton>
@@ -115,7 +118,7 @@
 
 | Prop           | 类型                                                           | 默认值      | 描述                           |
 | -------------- | -------------------------------------------------------------- | ----------- | ------------------------------ |
-| `variant`      | `'solid' \| 'outline' \| 'ghost'`                              | `'solid'`   | 视觉变体                       |
+| `variant`      | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | 视觉变体                       |
 | `tone`         | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | 语义色                         |
 | `size`         | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | 尺寸                           |
 | `shape`        | `'default' \| 'square' \| 'round'`                             | `'default'` | 形状                           |

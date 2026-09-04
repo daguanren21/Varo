@@ -86,19 +86,20 @@ export const VButton = defineComponent({
 
       const base = {
         '--varo-button-color': props.color,
-        'borderColor': props.color,
       }
 
       if (visualVariant.value === 'solid') {
         return {
           ...base,
           background: props.color,
+          borderColor: props.color,
           color: '#fff',
         }
       }
 
       return {
         ...base,
+        borderColor: visualVariant.value === 'text' ? 'transparent' : props.color,
         color: props.color,
       }
     })

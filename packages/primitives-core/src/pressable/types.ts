@@ -1,7 +1,7 @@
 import type { ReactiveRuntime, Ref } from '../reactive'
 
 export type PressableSize = 'sm' | 'md' | 'lg'
-export type PressableVariant = 'solid' | 'ghost' | 'outline'
+export type PressableVariant = 'solid' | 'ghost' | 'outline' | 'text'
 
 export interface PressableRootOptions {
   runtime?: ReactiveRuntime

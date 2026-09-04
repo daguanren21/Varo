@@ -110,4 +110,21 @@ describe('ui-h5 button', () => {
     expect(wrapper.text()).toContain('Saving...')
     expect(wrapper.text()).not.toContain('Save')
   })
+
+  it('renders a borderless text variant with a custom color', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        color: '#0f766e',
+        variant: 'text',
+      },
+      slots: {
+        default: () => 'Text action',
+      },
+    })
+
+    expect(wrapper.attributes('data-variant')).toBe('text')
+    expect(wrapper.attributes('style')).toContain('border-color: transparent')
+    expect(wrapper.attributes('style')).toContain('color: #0f766e')
+  })
 })

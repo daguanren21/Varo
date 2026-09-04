@@ -3,6 +3,20 @@ import { createThemeCssVariables, renderThemeCssVariables } from '../src/css'
 import { createTheme, mergeThemeOverrides } from '../src/theme'
 import { renderWeappThemeCss } from '../src/weapp'
 
+function relativeLuminance(color: string): number {
+  const channels = [1, 3, 5].map(offset => Number.parseInt(color.slice(offset, offset + 2), 16) / 255).map(channel => channel <= 0.04045
+    ? channel / 12.92
+    : ((channel + 0.055) / 1.055) ** 2.4)
+  return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722
+}
+
+function contrastRatio(foreground: string, background: string): number {
+  const foregroundLuminance = relativeLuminance(foreground)
+  const backgroundLuminance = relativeLuminance(background)
+  return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+    / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+}
+
 describe('theme', () => {
   it('creates a base theme', () => {
     const theme = createTheme({
@@ -31,6 +45,7 @@ describe('theme', () => {
       neutral: '#303133',
       info: '#73767a',
     })
+    const variables = createThemeCssVariables(theme)
 
     expect(theme.palette.primary).toMatchObject({
       dark: '#06ad56',
@@ -56,6 +71,12 @@ describe('theme', () => {
       surfaceElevated: '#f2f3f5',
       borderBase: '#dcdfe6',
       fillBase: '#f0f2f5',
+    })
+    expect(variables).toMatchObject({
+      '--varo-ui-primary-text': '#1c794a',
+      '--varo-ui-success-text': '#22723e',
+      '--varo-ui-warning-text': '#95621a',
+      '--varo-ui-danger-text': '#8e3335',
     })
   })
 
@@ -95,7 +116,35 @@ describe('theme', () => {
       '--varo-ui-border': '#4c4d4f',
       '--varo-ui-fill': '#303030',
       '--varo-ui-shadow-sm': '0 1px 2px rgb(0 0 0 / 46%)',
+      '--varo-ui-primary-text': '#76d6aa',
+      '--varo-ui-success-text': '#7cce9e',
+      '--varo-ui-warning-text': '#f0be7a',
+      '--varo-ui-danger-text': '#e88f95',
     })
+  })
+
+  it.each(['light', 'dark'] as const)('keeps %s semantic text actions AA at rest and pressed', (mode) => {
+    const variables = createThemeCssVariables(createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+      info: '#73767a',
+      mode,
+    }))
+    const surface = variables['--varo-ui-surface']
+    const tonePairs = [
+      ['--varo-ui-primary-text', '--varo-ui-primary-soft'],
+      ['--varo-ui-success-text', '--varo-ui-success-soft'],
+      ['--varo-ui-warning-text', '--varo-ui-warning-soft'],
+      ['--varo-ui-danger-text', '--varo-ui-danger-soft'],
+    ] as const
+
+    for (const [textToken, pressedToken] of tonePairs) {
+      expect(contrastRatio(variables[textToken], surface)).toBeGreaterThanOrEqual(4.5)
+      expect(contrastRatio(variables[textToken], variables[pressedToken])).toBeGreaterThanOrEqual(4.5)
+    }
   })
 
   it('merges semantic and input overrides', () => {

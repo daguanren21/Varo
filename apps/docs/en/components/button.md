@@ -37,6 +37,9 @@
   <VButton variant="ghost">
     Ghost
   </VButton>
+  <VButton variant="text">
+    Text action
+  </VButton>
   <VButton plain>
     Plain
   </VButton>
@@ -115,7 +118,7 @@
 
 | Prop           | Type                                                           | Default     | Description                                |
 | -------------- | -------------------------------------------------------------- | ----------- | ------------------------------------------ |
-| `variant`      | `'solid' \| 'outline' \| 'ghost'`                              | `'solid'`   | Visual variant                             |
+| `variant`      | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | Visual variant                             |
 | `tone`         | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Semantic tone                              |
 | `size`         | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | Button size                                |
 | `shape`        | `'default' \| 'square' \| 'round'`                             | `'default'` | Button shape                               |

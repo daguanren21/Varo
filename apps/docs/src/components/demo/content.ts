@@ -4,7 +4,7 @@ export const demoContent: Record<Locale, Partial<Record<DemoKind, DemoContent>>>
   zh: {
     button: {
       title: 'Button 跨端示例与演示',
-      description: '展示操作层级、语义色、尺寸、加载/禁用、形状和块级布局。',
+      description: '展示操作层级、文字按钮、语义色、尺寸、加载/禁用、形状和块级布局。',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -25,6 +25,7 @@ import { VButton } from '@varo-ui/h5'
     <VButton>保存更改</VButton>
     <VButton tone="default" variant="outline">取消</VButton>
     <VButton tone="default" variant="ghost">稍后处理</VButton>
+    <VButton variant="text">文字按钮</VButton>
 
     <VButton tone="success">已完成</VButton>
     <VButton tone="warning">需确认</VButton>
@@ -62,6 +63,7 @@ import { VButton } from '@varo-ui/weapp'
     <VButton>保存更改</VButton>
     <VButton tone="default" variant="outline">取消</VButton>
     <VButton tone="default" variant="ghost">稍后处理</VButton>
+    <VButton variant="text">文字按钮</VButton>
 
     <VButton tone="success">已完成</VButton>
     <VButton tone="warning">需确认</VButton>
@@ -758,7 +760,7 @@ const mobile = ref('')
   en: {
     button: {
       title: 'Button Cross-platform Example and Preview',
-      description: 'Shows action hierarchy, semantic tones, sizes, loading/disabled states, shapes, and block layout.',
+      description: 'Shows action hierarchy, text actions, semantic tones, sizes, loading/disabled states, shapes, and block layout.',
       platforms: {
         h5: {
           runtime: 'H5 wrapper',
@@ -779,6 +781,7 @@ import { VButton } from '@varo-ui/h5'
     <VButton>Save changes</VButton>
     <VButton tone="default" variant="outline">Cancel</VButton>
     <VButton tone="default" variant="ghost">Later</VButton>
+    <VButton variant="text">Text action</VButton>
 
     <VButton tone="success">Complete</VButton>
     <VButton tone="warning">Review</VButton>
@@ -816,6 +819,7 @@ import { VButton } from '@varo-ui/weapp'
     <VButton>Save changes</VButton>
     <VButton tone="default" variant="outline">Cancel</VButton>
     <VButton tone="default" variant="ghost">Later</VButton>
+    <VButton variant="text">Text action</VButton>
 
     <VButton tone="success">Complete</VButton>
     <VButton tone="warning">Review</VButton>

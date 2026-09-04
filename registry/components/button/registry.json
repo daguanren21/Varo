@@ -2,7 +2,7 @@
   "name": "button",
   "type": "component",
   "title": "VButton",
-  "description": "Mobile action control with variants, sizes, loading, disabled, icon, and block states.",
+  "description": "Mobile action control with solid, outline, ghost, and text variants, sizes, loading, disabled, icon, and block states.",
   "exportName": "VButton",
   "targets": [
     "h5",

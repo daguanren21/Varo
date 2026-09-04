@@ -130,6 +130,9 @@ function record(message: string) {
           <VButton variant="ghost" :disabled="!enabled">
             Ghost
           </VButton>
+          <VButton variant="text">
+            文字按钮
+          </VButton>
         </div>
         <label class="pg__switch">
           <span>启用 Ghost 按钮</span>

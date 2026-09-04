@@ -222,6 +222,9 @@ function openRobotChatShowcase() {
           <VButton variant="ghost" :disabled="!enabled">
             Ghost
           </VButton>
+          <VButton variant="text">
+            文字按钮
+          </VButton>
         </view>
         <VButton variant="outline" @click="toggleTheme">
           {{ alternateThemeEnabled ? '切换默认主题' : '切换紫色主题' }}

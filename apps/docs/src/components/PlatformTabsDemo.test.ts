@@ -351,15 +351,17 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
     expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
     expect(wrapper.findAll('.platform-demo__button-sample')).toHaveLength(1)
-    expect(wrapper.findAll('.platform-demo__button-sample .varo-button')).toHaveLength(14)
+    expect(wrapper.findAll('.platform-demo__button-sample .varo-button')).toHaveLength(15)
 
     const hierarchy = wrapper.get('[data-case="hierarchy"]').findAll('.varo-button')
     expect(hierarchy.map(button => button.attributes('data-variant'))).toEqual([
       'solid',
       'outline',
       'ghost',
+      'text',
     ])
     expect(hierarchy[0]!.text()).toBe('保存更改')
+    expect(hierarchy[3]!.text()).toBe('文字按钮')
 
     const tones = wrapper.get('[data-case="tones"]').findAll('.varo-button')
     expect(tones.map(button => button.attributes('data-tone'))).toEqual([

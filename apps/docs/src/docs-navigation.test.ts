@@ -284,6 +284,10 @@ describe('docs navigation', () => {
     expect(css).toContain('--varo-ui-fill: var(--varo-fill)')
     expect(css).toContain('--varo-ui-primary-hover: var(--varo-primary-hover)')
     expect(css).toContain('--varo-ui-success-soft: var(--varo-success-soft)')
+    expect(css).toContain('--varo-ui-primary-text: var(--varo-primary-text)')
+    expect(css).toContain('--varo-ui-success-text: var(--varo-success-text)')
+    expect(css).toContain('--varo-ui-warning-text: var(--varo-warning-text)')
+    expect(css).toContain('--varo-ui-danger-text: var(--varo-danger-text)')
     expect(css).toContain('color: var(--varo-ui-text);')
     expect(css).toContain('background: var(--varo-ui-surface);')
     expect(css).not.toContain('color: color-mix(in srgb, var(--varo-bg) 90%, #e6e4df)')
@@ -293,6 +297,8 @@ describe('docs navigation', () => {
     expect(css).toContain('html:not(.dark) .VPDocAsideOutline')
     expect(css).toContain('html:not(.dark) .VPFeature')
     expect(css).toMatch(/\.dark\s*\{[\s\S]*?--vp-c-bg: #0a0a0a/)
+    expect(css).toMatch(/\.dark\s*\{[\s\S]*?--varo-primary-text: #76d6aa/)
+    expect(css).toMatch(/\.dark\s*\{[\s\S]*?--varo-warning-text: #f0be7a/)
   })
 
   it('keeps code copy controls icon-only until hover or focus', () => {

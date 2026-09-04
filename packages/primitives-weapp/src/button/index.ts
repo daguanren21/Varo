@@ -51,6 +51,7 @@ export const ButtonRoot = defineComponent({
     const rootAttrs = computed(() => ({
       ...attrs,
       ...pressable.attrs.root,
+      'class': [attrs.class, pressable.state.pressed.value && 'varo-button--pressed'],
       'aria-busy': pressable.state.loading.value || undefined,
       'aria-disabled': !pressable.state.interactive.value || undefined,
       'data-disabled': String(pressable.state.disabled.value),
@@ -76,6 +77,18 @@ export const ButtonRoot = defineComponent({
       },
       'onMouseleave': (event: MouseEvent) => {
         callHandler(attrs.onMouseleave, event)
+        pressable.events.pressCancel()
+      },
+      'onTouchstart': (event: TouchEvent) => {
+        callHandler(attrs.onTouchstart, event)
+        pressable.events.pressStart()
+      },
+      'onTouchend': (event: TouchEvent) => {
+        callHandler(attrs.onTouchend, event)
+        pressable.events.pressEnd()
+      },
+      'onTouchcancel': (event: TouchEvent) => {
+        callHandler(attrs.onTouchcancel, event)
         pressable.events.pressCancel()
       },
       'onBlur': (event: FocusEvent) => {
