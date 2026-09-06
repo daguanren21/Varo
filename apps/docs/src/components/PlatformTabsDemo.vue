@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DemoKind, Locale, Platform } from './demo'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { blockGalleryCaptureDate } from './block-gallery'
 import {
 
   getDemoCopy,
@@ -20,14 +21,16 @@ const props = withDefaults(
 )
 
 const platforms = ['h5', 'weapp'] as const
+const withDocsBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`
+const platformPreferenceKey = 'varo.docs.platform'
 
 const inputValue = ref(props.locale === 'en' ? 'Avery Lin' : '林默')
 const inputUrl = ref('varo-ui')
 const inputBio = ref(props.locale === 'en' ? 'Registry-first mobile UI.' : 'Registry-first 移动端 UI。')
 const inputInvalid = computed(() => inputValue.value.trim().length === 0)
 const overviewInputInvalid = ref(false)
-const activePlatform = ref<Platform>('h5')
-const codeExpanded = ref(false)
+const activePlatform = shallowRef<Platform>('h5')
+const codeExpanded = shallowRef(false)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 const platformPanelId = computed(() => `platform-${props.example}-panel`)
 const codePanelId = computed(() => `platform-${props.example}-code-panel`)
@@ -639,6 +642,9 @@ const activeCodeExample = computed(
   () => codeExamples.value.find(item => item.key === activePlatform.value) ?? codeExamples.value[0]!,
 )
 const hasControls = computed(() => props.example === 'overview')
+const weappEvidenceHref = computed(() =>
+  withDocsBase(`${props.locale === 'en' ? '/en' : ''}/examples/#weapp-devtools-evidence`),
+)
 const codeToggleLabel = computed(() =>
   codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand,
 )
@@ -653,6 +659,56 @@ const copyLabel = computed(() => {
 
   return activePlatform.value === 'h5' ? copy.value.copyCodeH5 : copy.value.copyCodeWeapp
 })
+
+function isPlatform(value: string | null): value is Platform {
+  return value === 'h5' || value === 'weapp'
+}
+
+function syncDemoQuery() {
+  const url = new URL(window.location.href)
+  url.searchParams.set('platform', activePlatform.value)
+  if (codeExpanded.value) {
+    url.searchParams.set('code', 'open')
+  }
+  else {
+    url.searchParams.delete('code')
+  }
+  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
+}
+
+function storePlatformPreference() {
+  try {
+    window.sessionStorage.setItem(platformPreferenceKey, activePlatform.value)
+  }
+  catch {
+    // URL state remains the source of truth when storage is unavailable.
+  }
+}
+
+function restoreDemoQuery() {
+  const params = new URL(window.location.href).searchParams
+  const requestedPlatform = params.get('platform')
+  let storedPlatform: string | null = null
+
+  try {
+    storedPlatform = window.sessionStorage.getItem(platformPreferenceKey)
+  }
+  catch {
+    // The URL still restores shared state when storage is unavailable.
+  }
+
+  activePlatform.value = isPlatform(requestedPlatform)
+    ? requestedPlatform
+    : isPlatform(storedPlatform)
+      ? storedPlatform
+      : 'h5'
+  codeExpanded.value = params.get('code') === 'open'
+  storePlatformPreference()
+
+  if (!isPlatform(requestedPlatform) && isPlatform(storedPlatform)) {
+    syncDemoQuery()
+  }
+}
 
 function resetCopyState() {
   if (copyFeedbackTimer) {
@@ -679,6 +735,8 @@ async function copySnippet() {
 
 function setPlatform(platform: Platform) {
   activePlatform.value = platform
+  storePlatformPreference()
+  syncDemoQuery()
   resetCopyState()
 }
 
@@ -721,6 +779,7 @@ function handlePlatformTabKeydown(event: KeyboardEvent) {
 
 function toggleCodeExpanded() {
   codeExpanded.value = !codeExpanded.value
+  syncDemoQuery()
   if (!codeExpanded.value) {
     resetCopyState()
   }
@@ -729,6 +788,8 @@ function toggleCodeExpanded() {
 let indicatorTimer: ReturnType<typeof setInterval> | undefined
 
 onMounted(() => {
+  restoreDemoQuery()
+
   if (props.example !== 'indicator') {
     return
   }
@@ -810,6 +871,17 @@ onBeforeUnmount(() => {
       </section>
 
       <section class="platform-demo__panel platform-demo__panel--preview">
+        <div class="platform-demo__evidence" :data-level="activePlatform === 'h5' ? 'live' : 'contract-preview'">
+          <strong>{{ activePlatform === 'h5' ? 'H5 Live' : 'Weapp Contract Preview' }}</strong>
+          <span>
+            {{ activePlatform === 'h5'
+              ? (locale === 'en' ? 'Interactive browser runtime' : '浏览器运行时实时交互')
+              : (locale === 'en' ? 'Browser-rendered contract, not a mini-program runtime' : '浏览器渲染的组件契约，并非小程序运行时') }}
+          </span>
+          <a v-if="activePlatform === 'weapp'" :href="weappEvidenceHref">
+            Weapp DevTools Verified · <time :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
+          </a>
+        </div>
         <div class="platform-demo__phone-frame" :data-platform="activePlatform">
           <div class="platform-demo__phone-bezel">
             <div class="platform-demo__phone-screen">
@@ -2367,6 +2439,44 @@ onBeforeUnmount(() => {
   gap: 14px;
 }
 
+.platform-demo__evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px 12px;
+  color: var(--demo-text-muted);
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 10px;
+}
+
+.platform-demo__evidence strong {
+  font-size: 0.76rem;
+  color: var(--demo-brand);
+}
+
+.platform-demo__evidence span,
+.platform-demo__evidence a {
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.platform-demo__evidence a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: var(--demo-brand);
+  text-underline-offset: 3px;
+}
+
+.platform-demo__evidence a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--demo-brand) 70%, transparent);
+  outline-offset: 2px;
+}
+
 .platform-demo__phone-frame {
   display: flex;
   justify-content: center;
@@ -2714,7 +2824,33 @@ onBeforeUnmount(() => {
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  .platform-demo__platform-switch {
+    width: 100%;
+  }
+
+  .platform-demo__platform-tab {
+    flex: 1;
+  }
+
+  .platform-demo__platform-tab,
+  .platform-demo__code-toggle,
+  .platform-demo__code-tab,
+  .platform-demo__code-copy,
+  .platform-demo__chip,
+  .platform-demo__evidence a {
+    min-height: 44px;
+  }
+
+  .platform-demo button,
+  .platform-demo :deep(.varo-button) {
+    min-height: 44px !important;
+  }
+
+  .platform-demo__evidence {
+    justify-content: flex-start;
+  }
+
   .platform-demo__phone-bezel {
     width: 100%;
   }
@@ -4660,7 +4796,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 16px;
   font-weight: 600;
   cursor: pointer;
@@ -4677,7 +4813,7 @@ onBeforeUnmount(() => {
 }
 
 :deep(.varo-button[data-size='md']) {
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 16px;
   font-size: 0.92rem;
   border-radius: 16px;
@@ -4685,7 +4821,7 @@ onBeforeUnmount(() => {
 
 :deep(.varo-button[data-size='lg']) {
   gap: 10px;
-  min-height: 50px;
+  min-height: 48px;
   padding: 0 20px;
   font-size: 1rem;
   border-radius: 18px;

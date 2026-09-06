@@ -73,14 +73,14 @@ function move(delta: number) {
 
     <view class="flex min-h-12 items-center justify-between gap-3 border-t border-[var(--varo-agent-border)] px-3">
       <view class="flex gap-1.5">
-        <button class="grid h-8 w-8 place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Previous insight" @click="move(-1)">
+        <button class="agent-native-button agent-insight-card__nav grid place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Previous insight" @click="move(-1)">
           <image class="h-3.5 w-3.5 rotate-90" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
         </button>
-        <button class="grid h-8 w-8 place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Next insight" @click="move(1)">
+        <button class="agent-native-button agent-insight-card__nav grid place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Next insight" @click="move(1)">
           <image class="h-3.5 w-3.5 -rotate-90" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
         </button>
       </view>
-      <button v-if="active?.action" class="min-h-8 rounded-lg border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-white" type="button" @click="emit('action', active)">
+      <button v-if="active?.action" class="agent-native-button min-h-8 rounded-lg border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]" type="button" @click="emit('action', active)">
         {{ active.action }}
       </button>
     </view>

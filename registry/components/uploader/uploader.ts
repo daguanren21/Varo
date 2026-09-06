@@ -1,5 +1,6 @@
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
+import { VIcon } from './icon'
 import '../../styles/varo.css'
 
 export interface UploaderFile {
@@ -121,7 +122,7 @@ export const VUploader = defineComponent({
         'type': 'button',
         'aria-label': 'Delete file',
         'onClick': () => remove(index),
-      }, '×')
+      }, h(VIcon, { name: 'close', size: 14 }))
     }
 
     function itemSlotProps(file: UploaderFile, index: number) {
@@ -210,7 +211,7 @@ export const VUploader = defineComponent({
         customTrigger?.length
           ? customTrigger
           : [
-              h('span', { 'class': 'varo-uploader__trigger-icon', 'aria-hidden': 'true' }, '+'),
+              h(VIcon, { class: 'varo-uploader__trigger-icon', name: 'plus', size: 22 }),
               h('span', { class: 'varo-uploader__trigger-text' }, props.uploadText),
             ],
         h('input', {

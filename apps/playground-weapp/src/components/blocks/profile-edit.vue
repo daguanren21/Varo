@@ -45,7 +45,7 @@ const name = shallowRef(props.initialProfile.name ?? '')
 const phone = shallowRef(props.initialProfile.phone ?? '')
 const canSubmit = computed(() => name.value.trim().length > 0 && phone.value.trim().length > 0 && !props.loading)
 const rootClass = computed(() =>
-  cn('w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className),
+  cn('box-border w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className),
 )
 
 function formatPhone(value: string) {

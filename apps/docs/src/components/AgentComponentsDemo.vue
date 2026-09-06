@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, shallowRef, useTemplateRef, watch } from 'vue'
+import { agentInventory } from '../agent-component-catalog'
 import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
 import {
   AgentArtifact,
@@ -73,45 +74,6 @@ onBeforeUnmount(() => {
   }
 })
 
-const capabilities = [
-  'AgentLoading',
-  'AgentThinking',
-  'AgentMarkdown',
-  'AgentStream',
-  'AgentMessage',
-  'AgentConversation',
-  'AgentMessageScroller',
-  'AgentToolChip',
-  'AgentToolResult',
-  'AgentTaskList',
-  'AgentActivity',
-  'AgentApproval',
-  'AgentToolApproval',
-  'AgentRecommendation',
-  'AgentEventRenderer',
-  'AgentRadioGroup',
-  'AgentPromptSuggestions',
-  'AgentComposer',
-  'AgentResponseActions',
-  'AgentSelectionActions',
-  'AgentCommandSearch',
-  'AgentArtifact',
-  'AgentAttachmentList',
-  'AgentSourceList',
-  'AgentCitations',
-  'AgentContextCard',
-  'AgentCodeBlock',
-  'AgentFileDiff',
-  'AgentImageGeneration',
-  'AgentSidebar',
-  'AgentInsightCard',
-  'AgentDiffTable',
-  'AgentRecordsTable',
-  'AgentFilterTable',
-  'AgentFlowchart',
-  'AgentFineTune',
-  'AgentChat Block',
-]
 const tasks = [
   { id: 'protocol', title: '统一事件协议', status: 'completed' as const, progress: 100 },
   { id: 'renderer', title: '双端增量渲染', status: 'completed' as const, progress: 100 },
@@ -139,7 +101,7 @@ function t(zh: string, en: string) {
 </script>
 
 <template>
-  <section class="ai-docs-demo" aria-label="Varo Agent UI live demo">
+  <section class="ai-docs-demo" :aria-label="t('Varo Agent UI 实时演示', 'Varo Agent UI live demo')">
     <header class="ai-docs-demo__hero">
       <div>
         <p>VARO AGENT UI</p>
@@ -155,7 +117,11 @@ function t(zh: string, en: string) {
           <i aria-hidden="true">V</i>
           <span>
             <strong>Varo Agent</strong>
-            <small>{{ t('44 个双端 AI UI surface 已连接', '44 dual-target AI UI surfaces connected') }}</small>
+            <small>
+              {{ agentInventory.components.length }} {{ t('个双端组件', 'dual-target components') }}
+              · {{ agentInventory.blocks.length }} Blocks
+              · {{ agentInventory.surfaces.length }} {{ t('个 surface', 'surfaces') }}
+            </small>
           </span>
         </header>
 
@@ -215,11 +181,20 @@ function t(zh: string, en: string) {
 
     <div class="ai-docs-demo__ledger">
       <header>
-        <strong>{{ t('组件能力清单', 'Capability ledger') }}</strong>
-        <span>44 / 44</span>
+        <strong>{{ t('Registry Agent 清单', 'Registry Agent inventory') }}</strong>
+        <span>
+          {{ agentInventory.components.length }} {{ t('个组件', 'components') }}
+          · {{ agentInventory.blocks.length }} Blocks
+          · {{ agentInventory.surfaces.length }} {{ t('个 surface', 'surfaces') }}
+        </span>
       </header>
       <div>
-        <span v-for="capability in capabilities" :key="capability">{{ capability }}</span>
+        <span v-for="component in agentInventory.components" :key="component.id">
+          {{ component.label }}
+        </span>
+        <span v-for="block in agentInventory.blocks" :key="block.id">
+          Block · {{ block.label }}
+        </span>
       </div>
     </div>
   </section>

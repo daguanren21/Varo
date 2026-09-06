@@ -29,7 +29,7 @@ const emit = defineEmits<{
           {{ artifact.kind || 'document' }}
         </text>
       </view>
-      <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)]" type="button" @click="emit('open', artifact)">
+      <button class="agent-native-button min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)]" type="button" @click="emit('open', artifact)">
         打开
       </button>
     </view>

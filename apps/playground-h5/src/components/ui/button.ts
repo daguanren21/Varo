@@ -1,8 +1,8 @@
 import type { PropType, StyleValue } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type { PressableSize, PressableVariant } from '../../lib/varo-primitives'
-import { useVaroTheme } from '@varo-ui/theme'
-import { createVariantClass } from '@varo/shared'
+import { createVariantClass } from '@varo-ui/headless'
+import { contrastSafeForeground } from '@varo-ui/theme'
 import { computed, defineComponent, h } from 'vue'
 import { cn } from '../../lib/cn'
 import {
@@ -11,7 +11,7 @@ import {
 } from '../../lib/varo-primitives'
 import '../../styles/varo.css'
 
-type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
+type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
 type ButtonShape = 'default' | 'square' | 'round'
 type ButtonIconPosition = 'left' | 'right'
 type ButtonNativeType = 'button' | 'submit' | 'reset'
@@ -57,17 +57,19 @@ export const VButton = defineComponent({
       type: String,
       default: undefined,
     },
+    foregroundColor: {
+      type: String,
+      default: undefined,
+    },
     nativeType: {
       type: String as PropType<ButtonNativeType>,
       default: undefined,
     },
   },
   setup(props, { slots, attrs }) {
-    const theme = useVaroTheme()
     const visualVariant = computed<PressableVariant>(() => (props.plain ? 'outline' : props.variant))
     const classes = computed(() =>
       createVariantClass('varo-button', {
-        radius: theme.value.components.button.borderRadius,
         size: props.size,
         variant: visualVariant.value,
         tone: props.tone,
@@ -93,7 +95,7 @@ export const VButton = defineComponent({
           ...base,
           background: props.color,
           borderColor: props.color,
-          color: '#fff',
+          color: props.foregroundColor ?? contrastSafeForeground(props.color),
         }
       }
 

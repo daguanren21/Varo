@@ -1,18 +1,10 @@
 import { resolve } from 'node:path'
-import { weappTailwindcss } from 'weapp-tailwindcss/vite'
 import { defineConfig } from 'weapp-vite/config'
 
 export default defineConfig(({ mode }) => {
   const isTest = mode === 'test' || process.env.VITEST === 'true'
 
   return {
-    plugins: [
-      weappTailwindcss({
-        appType: 'weapp-vite',
-        disabled: isTest ? { plugin: true } : false,
-        logLevel: isTest ? 'silent' : 'warn',
-      }),
-    ].flat(),
     resolve: {
       alias: {
         ...(isTest ? { wevu: 'vue' } : {}),
@@ -29,6 +21,7 @@ export default defineConfig(({ mode }) => {
       passWithNoTests: true,
     },
     weapp: {
+      tailwindcss: false,
       platform: 'weapp',
       lib: {
         componentJson: 'auto',

@@ -20,7 +20,7 @@ const global = {
 }
 
 describe('ui-h5 button', () => {
-  it('exports a themed primitive button', () => {
+  it('exports a CSS-token-themed primitive button without raw geometry classes', () => {
     const wrapper = mount(VButton, {
       global,
       props: {
@@ -35,6 +35,9 @@ describe('ui-h5 button', () => {
     expect(wrapper.attributes('data-variant')).toBe('outline')
     expect(wrapper.attributes('data-size')).toBe('lg')
     expect(wrapper.classes().join(' ')).toContain('varo-button')
+    expect(wrapper.classes().join(' ')).not.toContain('radius-')
+    expect(document.documentElement.style.getPropertyValue('--varo-ui-primary')).toBe('#2563eb')
+    expect(document.documentElement.style.getPropertyValue('--varo-ui-button-height-md')).toBe('44px')
   })
 
   it('forwards one click without duplicate fallthrough listeners', async () => {
@@ -62,6 +65,22 @@ describe('ui-h5 button', () => {
     expect(loadingIcon.attributes('aria-hidden')).toBe('true')
     expect(wrapper.text()).toContain('Saving')
     expect(wrapper.attributes('aria-busy')).toBe('true')
+  })
+
+  it('exposes the info tone for its own solid foreground and background pair', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        tone: 'info',
+        variant: 'solid',
+      },
+      slots: {
+        default: () => 'Details',
+      },
+    })
+
+    expect(wrapper.attributes('data-tone')).toBe('info')
+    expect(wrapper.attributes('data-variant')).toBe('solid')
   })
 
   it('exposes Varo-style equivalents for Vant and NutUI button features', () => {
@@ -126,5 +145,43 @@ describe('ui-h5 button', () => {
     expect(wrapper.attributes('data-variant')).toBe('text')
     expect(wrapper.attributes('style')).toContain('border-color: transparent')
     expect(wrapper.attributes('style')).toContain('color: #0f766e')
+  })
+
+  it('selects a contrast-safe foreground for custom solid colors', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        color: '#fef08a',
+      },
+      slots: {
+        default: () => 'Custom action',
+      },
+    })
+
+    expect((wrapper.element as HTMLElement).style.color).toBe('rgb(0, 0, 0)')
+  })
+
+  it('requires an explicit foreground for non-hex custom colors', () => {
+    expect(() => mount(VButton, {
+      global,
+      props: {
+        color: 'rgb(15, 23, 42)',
+      },
+    })).toThrow('Contrast-safe foreground requires a hex color')
+  })
+
+  it('accepts explicit foregrounds for CSS custom color syntax', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        color: 'rgb(15, 23, 42)',
+        foregroundColor: '#ffffff',
+      },
+      slots: {
+        default: () => 'Custom action',
+      },
+    })
+
+    expect((wrapper.element as HTMLElement).style.color).toBe('rgb(255, 255, 255)')
   })
 })

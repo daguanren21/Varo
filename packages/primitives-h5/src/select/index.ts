@@ -105,7 +105,7 @@ export const SelectTrigger = defineComponent({
           ...restAttrs,
           ...select.attrs.trigger,
           class: [attrClass],
-          disabled: props.as === 'button' ? !select.state.interactive.value : undefined,
+          disabled: props.as === 'button' ? select.state.disabled.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
             callHandler(userClick, event)

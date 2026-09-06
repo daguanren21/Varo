@@ -1,5 +1,7 @@
 # CalendarCard
 
+<RegistryInstallStrip item="components/calendar" :targets="['h5']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="calendar-card" locale="en" />
@@ -10,16 +12,16 @@ Use `minDate` and `maxDate` to limit selectable dates.
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string` | `undefined` | Selected date |
-| `month` | `string` | Current month | Displayed month, formatted as `YYYY-MM` |
-| `minDate` | `string` | `undefined` | Minimum selectable date |
-| `maxDate` | `string` | `undefined` | Maximum selectable date |
+| Prop      | Type     | Default       | Description                             |
+| --------- | -------- | ------------- | --------------------------------------- |
+| `value`   | `string` | `undefined`   | Selected date                           |
+| `month`   | `string` | Current month | Displayed month, formatted as `YYYY-MM` |
+| `minDate` | `string` | `undefined`   | Minimum selectable date                 |
+| `maxDate` | `string` | `undefined`   | Maximum selectable date                 |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
+| Event          | Payload  | Description           |
+| -------------- | -------- | --------------------- |
 | `update:value` | `string` | Selected date changed |
-| `select` | `string` | Select a date |
+| `select`       | `string` | Select a date         |

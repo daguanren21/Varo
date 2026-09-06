@@ -1,21 +1,39 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { computed } from 'wevu'
+import VIcon from './v-icon.vue'
 
-const props = defineProps({
-  checkable: { type: Boolean, default: false },
-  checked: { type: Boolean, default: false },
-  closeable: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  label: { type: null as unknown as PropType<string>, default: '' },
-  round: { type: Boolean, default: false },
-  size: { type: null as unknown as PropType<'sm' | 'md' | 'lg'>, default: 'md' },
-  tone: {
-    type: null as unknown as PropType<'default' | 'primary' | 'success' | 'warning' | 'danger'>,
-    default: 'default',
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    label: { type: null, value: '' },
+    tone: { type: null, value: 'default' },
   },
-  variant: { type: null as unknown as PropType<'solid' | 'soft' | 'outline'>, default: 'soft' },
 })
+
+const props = withDefaults(
+  defineProps<{
+    checkable?: boolean
+    checked?: boolean
+    closeable?: boolean
+    disabled?: boolean
+    label?: string
+    round?: boolean
+    size?: 'sm' | 'md' | 'lg'
+    tone?: 'default' | 'primary' | 'success' | 'warning' | 'danger'
+    variant?: 'solid' | 'soft' | 'outline'
+  }>(),
+  {
+    checkable: false,
+    checked: false,
+    closeable: false,
+    disabled: false,
+    label: '',
+    round: false,
+    size: 'md',
+    tone: 'default',
+    variant: 'soft',
+  },
+)
 const emit = defineEmits<{
   'change': [checked: boolean]
   'click': [event: unknown]
@@ -62,7 +80,7 @@ function close(event: { stopPropagation?: () => void }) {
       <slot>{{ safeLabel }}</slot>
     </text>
     <button v-if="closeable" class="varo-tag__close" type="button" :disabled="disabled" aria-label="Remove" @click="close">
-      ×
+      <VIcon name="close" :size="12" />
     </button>
   </view>
 </template>

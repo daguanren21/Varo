@@ -70,7 +70,7 @@ function approve() {
         <button
           v-for="choice in choices"
           :key="choice.value"
-          class="agent-approval__choice"
+          class="agent-native-button agent-approval__choice"
           type="button"
           role="radio"
           :disabled="choice.disabled"

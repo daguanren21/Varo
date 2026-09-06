@@ -1,5 +1,7 @@
 # ShortPassword
 
+<RegistryInstallStrip item="components/short-password" :targets="['h5']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="short-password" locale="en" />

@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { postcss } from 'weapp-tailwindcss/core'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(projectRoot, 'devtools/build/mp-weixin')
@@ -52,22 +53,23 @@ const requiredRegistryCatalogComponents = [
 function pageJsonPaths(appJson) {
   const pages = [...(appJson.pages ?? [])]
   for (const subPackage of appJson.subPackages ?? appJson.subpackages ?? []) {
-    for (const page of subPackage.pages ?? []) pages.push(`${subPackage.root}/${page}`)
+    for (const page of subPackage.pages ?? []) { pages.push(`${subPackage.root}/${page}`) }
   }
-  return pages.map((page) => resolve(outputRoot, `${page}.json`))
+  return pages.map(page => resolve(outputRoot, `${page}.json`))
 }
 
 async function exists(path) {
   try {
     await access(path)
     return true
-  } catch {
+  }
+  catch {
     return false
   }
 }
 
 function componentBasePath(ownerPath, componentPath) {
-  if (componentPath.startsWith('plugin://') || componentPath.startsWith('ext://')) return undefined
+  if (componentPath.startsWith('plugin://') || componentPath.startsWith('ext://')) { return undefined }
   return componentPath.startsWith('/')
     ? resolve(outputRoot, componentPath.slice(1))
     : resolve(dirname(ownerPath), componentPath)
@@ -98,7 +100,7 @@ const missing = []
 
 while (queue.length > 0) {
   const ownerPath = queue.shift()
-  if (!ownerPath || visited.has(ownerPath)) continue
+  if (!ownerPath || visited.has(ownerPath)) { continue }
   visited.add(ownerPath)
   if (!await exists(ownerPath)) {
     missing.push({ componentPath: ownerPath, extension: '', name: 'page', ownerPath: appJsonPath })
@@ -109,15 +111,15 @@ while (queue.length > 0) {
   const componentReferences = [
     ...Object.entries(json.usingComponents ?? {}),
     ...Object.entries(json.componentGenerics ?? {}).flatMap(([name, options]) => {
-      if (options === null || typeof options !== 'object') return []
+      if (options === null || typeof options !== 'object') { return [] }
       const componentPath = options.default
       return typeof componentPath === 'string' ? [[`${name}.default`, componentPath]] : []
     }),
   ]
   for (const [name, componentPath] of componentReferences) {
-    if (typeof componentPath !== 'string') continue
+    if (typeof componentPath !== 'string') { continue }
     const basePath = componentBasePath(ownerPath, componentPath)
-    if (!basePath) continue
+    if (!basePath) { continue }
     for (const extension of requiredComponentExtensions) {
       const targetPath = `${basePath}${extension}`
 
@@ -132,7 +134,7 @@ while (queue.length > 0) {
 if (missing.length > 0) {
   const details = missing
     .map(({ componentPath, extension, name, ownerPath }) =>
-      `${ownerPath.replace(`${projectRoot}/`, '')}: ${name} -> ${componentPath}${extension}`
+      `${ownerPath.replace(`${projectRoot}/`, '')}: ${name} -> ${componentPath}${extension}`,
     )
     .join('\n')
   throw new Error(`Unresolved mini-program components:\n${details}`)
@@ -140,12 +142,35 @@ if (missing.length > 0) {
 
 for (const component of ['AgentEventRenderer', 'AgentMessage', 'AgentConversation', 'AgentStream']) {
   const componentJsonPath = resolve(outputRoot, `components/agent-ui/${component}.json`)
-  if (!await exists(componentJsonPath)) continue
+  if (!await exists(componentJsonPath)) { continue }
   const componentJson = JSON.parse(await readFile(componentJsonPath, 'utf8'))
   const componentNames = Object.keys(componentJson.usingComponents ?? {})
-  if (componentNames.some((name) => name.startsWith('scoped-slot-'))) {
+  if (componentNames.some(name => name.startsWith('scoped-slot-'))) {
     throw new Error(`${component} streaming content must not cross a scoped-slot boundary`)
   }
 }
 
-console.log('Verified mini-program component paths')
+const styleQueue = [resolve(outputRoot, 'app.wxss')]
+const visitedStyles = new Set()
+let hasFlexUtility = false
+while (styleQueue.length > 0) {
+  const stylePath = styleQueue.shift()
+  if (!stylePath || visitedStyles.has(stylePath)) { continue }
+  visitedStyles.add(stylePath)
+  const styles = postcss.parse(await readFile(stylePath, 'utf8'), { from: stylePath })
+  styles.walkRules('.flex', (rule) => {
+    hasFlexUtility ||= rule.nodes.some(node => node.type === 'decl' && node.prop === 'display' && node.value === 'flex')
+  })
+  styles.walkAtRules(/^(theme|tailwind)$/, (rule) => {
+    throw new Error(`Compiled ${stylePath} still contains @${rule.name}; Tailwind CSS was not generated`)
+  })
+  styles.walkAtRules('import', (rule) => {
+    const importedPath = rule.params.match(/^(['"])(.+)\1$/)?.[2]
+    if (importedPath) { styleQueue.push(componentBasePath(stylePath, importedPath)) }
+  })
+}
+if (!hasFlexUtility) {
+  throw new Error('Compiled app.wxss is missing the flex layout utility; check the Tailwind CSS entry import')
+}
+
+console.log('Verified mini-program component paths and compiled styles')

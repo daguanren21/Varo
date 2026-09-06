@@ -1,5 +1,7 @@
 # SideNavbar 侧边栏导航
 
+<RegistryInstallStrip item="components/side-navbar" :targets="['h5']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="side-navbar" locale="zh" />

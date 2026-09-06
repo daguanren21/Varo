@@ -1,5 +1,7 @@
 # Searchbar
 
+<RegistryInstallStrip item="components/searchbar" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="searchbar" locale="en" />

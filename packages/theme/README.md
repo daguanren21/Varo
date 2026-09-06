@@ -8,12 +8,40 @@ Token-driven themes and providers for Varo H5 and mini-program components.
 pnpm add @varo-ui/theme
 ```
 
-## H5 usage
+## H5 application theme
+
+Use `VaroConfigProvider` when one theme owns the application-level CSS variables:
 
 ```ts
-import { createTheme, provideVaroTheme } from '@varo-ui/theme'
+import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
+import { createApp, shallowRef } from 'vue'
+import App from './App.vue'
 
-const theme = createTheme({
+const activeTheme = shallowRef(createTheme({
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133',
+  info: '#73767a'
+}))
+
+createApp(App)
+  .use(VaroConfigProvider, { theme: activeTheme })
+  .mount('#app')
+```
+
+The plugin provides the resolved theme for injection and binds its CSS variables to `document.documentElement` by default. Pass `target` in the configuration to bind another element. Replacing a reactive `theme` or `overrides` value updates the bound variables.
+
+## H5 scoped theme
+
+Use `VaroThemeProvider` to render a CSS-variable scope inside an application:
+
+```vue
+<script setup lang="ts">
+import { createTheme, VaroThemeProvider } from '@varo-ui/theme'
+
+const sectionTheme = createTheme({
   primary: '#07c160',
   success: '#13b248',
   warning: '#fa9200',
@@ -21,8 +49,20 @@ const theme = createTheme({
   neutral: '#303133',
   info: '#73767a'
 })
-provideVaroTheme({ theme })
+</script>
+
+<template>
+  <VaroThemeProvider :theme="sectionTheme">
+    <RouterView />
+  </VaroThemeProvider>
+</template>
 ```
+
+`VaroThemeProvider` applies the resolved variables to its wrapper element and provides the same theme to descendants. Its `overrides` prop accepts component and token overrides.
+
+## Injection-only theme context
+
+`provideVaroTheme({ theme, overrides })` only provides the resolved theme for descendants that call `useVaroTheme()`. It does not bind CSS variables or render a themed wrapper, so it is not a replacement for `VaroConfigProvider` or `VaroThemeProvider` when components need visual theme variables.
 
 ## Weapp build-time theme
 

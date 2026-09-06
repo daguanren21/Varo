@@ -17,6 +17,10 @@ const blocks = [
   'retail-profile',
 ]
 
+function normalizePagePath(path) {
+  return path.replace(/^\/+/, '')
+}
+
 async function main() {
   const runtimeFailures = []
   const miniProgram = await new Launcher().connect({
@@ -40,7 +44,7 @@ async function main() {
       const route = `/retail-showcase/index/index?block=${encodeURIComponent(block)}&capture=1`
       const page = await miniProgram.reLaunch(route)
       await page.waitFor(1_200)
-      assert.equal(page.path, 'retail-showcase/index/index')
+      assert.equal(normalizePagePath(page.path), 'retail-showcase/index/index')
     }
 
     assert.deepEqual(runtimeFailures, [], runtimeFailures.join('\n'))

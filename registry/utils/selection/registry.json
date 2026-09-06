@@ -16,7 +16,8 @@
     ]
   },
   "registryDependencies": [
-    "utils/primitives"
+    "utils/primitives",
+    "components/icon"
   ],
   "files": [
     {

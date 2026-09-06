@@ -80,7 +80,7 @@ const displaySources = computed(() => props.sources.map((source) => {
         </view>
         <button
           v-if="item.canToggle"
-          class="agent-composer-scope__action"
+          class="agent-native-button agent-composer-scope__action"
           type="button"
           :disabled="disabled"
           :aria-label="item.toggleLabel"
@@ -94,7 +94,7 @@ const displaySources = computed(() => props.sources.map((source) => {
         </button>
         <button
           v-else-if="item.canConnect"
-          class="agent-composer-scope__action agent-composer-scope__action--primary"
+          class="agent-native-button agent-composer-scope__action agent-composer-scope__action--primary"
           type="button"
           :disabled="disabled"
           :aria-label="`连接${item.source.label}`"
@@ -160,11 +160,11 @@ const displaySources = computed(() => props.sources.map((source) => {
   justify-content: center;
   min-width: 48px;
   height: 36px;
-  margin: 0;
   padding: 0 10px;
+  margin: 0;
   font-size: 11px;
-  line-height: 1;
   font-weight: 700;
+  line-height: 1;
   color: var(--varo-agent-text);
   background: transparent;
   border: 0;
@@ -194,8 +194,8 @@ const displaySources = computed(() => props.sources.map((source) => {
 }
 
 .agent-composer-scope__meter {
-  transition: transform 180ms ease-out;
   transform-origin: left center;
+  transition: transform 180ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {

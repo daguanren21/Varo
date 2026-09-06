@@ -36,10 +36,25 @@ const gridStyle = computed(() => ({
 
 function changeClass(change: DiffTableRow['change']) {
   return cn(
-    'grid min-h-11 w-full border-0 border-b border-[var(--varo-agent-border)] p-0 text-left last:border-b-0',
+    'agent-native-button--block grid min-h-11 border-0 border-b border-[var(--varo-agent-border)] p-0 text-left last:border-b-0',
     change === 'add' && 'bg-[var(--varo-agent-success-soft)]',
     change === 'remove' && 'bg-[var(--varo-agent-danger-soft)]',
     (!change || change === 'update') && 'bg-[var(--varo-agent-surface)]',
+  )
+}
+
+function changeMarker(change: DiffTableRow['change']) {
+  if (change === 'add') { return '+' }
+  if (change === 'remove') { return '−' }
+  return '~'
+}
+
+function changeMarkerClass(change: DiffTableRow['change']) {
+  return cn(
+    'px-3 py-3 text-[12px] font-black',
+    change === 'add' && 'text-[var(--varo-agent-success)]',
+    change === 'remove' && 'text-[var(--varo-agent-danger)]',
+    (!change || change === 'update') && 'text-[var(--varo-agent-warning)]',
   )
 }
 </script>
@@ -65,9 +80,9 @@ function changeClass(change: DiffTableRow['change']) {
             {{ column.label }}
           </text>
         </view>
-        <button v-for="row in rows" :key="row.id" :class="changeClass(row.change)" :style="gridStyle" type="button" :data-change="row.change || 'update'" @click="emit('select', row)">
-          <text :class="cn('px-3 py-3 text-[12px] font-black', row.change === 'add' ? 'text-[var(--varo-agent-success)]' : row.change === 'remove' ? 'text-[var(--varo-agent-danger)]' : 'text-[var(--varo-agent-warning)]')">
-            {{ row.change === 'add' ? '+' : row.change === 'remove' ? '−' : '~' }}
+        <button v-for="row in rows" :key="row.id" class="agent-native-button" :class="changeClass(row.change)" :style="gridStyle" type="button" :data-change="row.change || 'update'" @click="emit('select', row)">
+          <text :class="changeMarkerClass(row.change)">
+            {{ changeMarker(row.change) }}
           </text>
           <text v-for="column in columns" :key="column.key" :class="cn('truncate px-3 py-3 text-[12px] text-[var(--varo-agent-foreground)]', row.change === 'remove' && 'line-through')">
             {{ agentTableCellValue(row, column.key) }}
@@ -77,10 +92,10 @@ function changeClass(change: DiffTableRow['change']) {
     </scroll-view>
 
     <view class="flex min-h-12 items-center justify-end gap-2 border-t border-[var(--varo-agent-border)] px-3">
-      <button class="min-h-9 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('reject')">
+      <button class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('reject')">
         Reject
       </button>
-      <button class="min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-white" type="button" @click="emit('accept')">
+      <button class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]" type="button" @click="emit('accept')">
         Accept changes
       </button>
     </view>

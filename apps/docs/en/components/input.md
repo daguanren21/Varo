@@ -1,5 +1,7 @@
 # Input
 
+<RegistryInstallStrip item="components/input" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="input" locale="en" />
@@ -67,30 +69,30 @@ const digits = (value: string) => value.replace(/\D/g, '')
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `value` | `string \| undefined` | `undefined` | Controlled value |
-| `defaultValue` | `string` | `''` | Initial uncontrolled value |
-| `placeholder` | `string \| undefined` | `undefined` | Placeholder text |
-| `type` | `string` | `'text'` | Input type; `textarea` renders a textarea |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size |
-| `align` | `'left' \| 'center' \| 'right'` | `'left'` | Text alignment |
-| `disabled` | `boolean` | `false` | Disabled state |
-| `readonly` | `boolean` | `false` | Readonly state |
-| `invalid` | `boolean` | `false` | Invalid state |
-| `clearable` | `boolean` | `false` | Show a clear control |
-| `clearTrigger` | `'focus' \| 'always'` | `'focus'` | When the clear control is visible |
-| `maxLength` | `number \| string` | `undefined` | Maximum input length |
-| `showWordLimit` | `boolean` | `false` | Show word count |
-| `formatter` | `(value: string) => string` | `undefined` | Value formatter |
-| `formatTrigger` | `'onInput' \| 'onBlur'` | `'onInput'` | Formatter trigger |
-| `rows` | `number \| string` | `undefined` | Textarea rows |
-| `autosize` | `boolean \| { minRows?: number; maxRows?: number }` | `false` | Textarea autosize |
-| `label` | `string` | `undefined` | Left label |
-| `labelWidth` | `number \| string` | `undefined` | Label width |
-| `prefixIcon` | `string` | `undefined` | Prefix content |
-| `suffixIcon` | `string` | `undefined` | Suffix content |
-| `errorMessage` | `string` | `undefined` | Error message |
+| Prop            | Type                                                | Default     | Description                               |
+| --------------- | --------------------------------------------------- | ----------- | ----------------------------------------- |
+| `value`         | `string \| undefined`                               | `undefined` | Controlled value                          |
+| `defaultValue`  | `string`                                            | `''`        | Initial uncontrolled value                |
+| `placeholder`   | `string \| undefined`                               | `undefined` | Placeholder text                          |
+| `type`          | `string`                                            | `'text'`    | Input type; `textarea` renders a textarea |
+| `size`          | `'sm' \| 'md' \| 'lg'`                              | `'md'`      | Input size                                |
+| `align`         | `'left' \| 'center' \| 'right'`                     | `'left'`    | Text alignment                            |
+| `disabled`      | `boolean`                                           | `false`     | Disabled state                            |
+| `readonly`      | `boolean`                                           | `false`     | Readonly state                            |
+| `invalid`       | `boolean`                                           | `false`     | Invalid state                             |
+| `clearable`     | `boolean`                                           | `false`     | Show a clear control                      |
+| `clearTrigger`  | `'focus' \| 'always'`                               | `'focus'`   | When the clear control is visible         |
+| `maxLength`     | `number \| string`                                  | `undefined` | Maximum input length                      |
+| `showWordLimit` | `boolean`                                           | `false`     | Show word count                           |
+| `formatter`     | `(value: string) => string`                         | `undefined` | Value formatter                           |
+| `formatTrigger` | `'onInput' \| 'onBlur'`                             | `'onInput'` | Formatter trigger                         |
+| `rows`          | `number \| string`                                  | `undefined` | Textarea rows                             |
+| `autosize`      | `boolean \| { minRows?: number; maxRows?: number }` | `false`     | Textarea autosize                         |
+| `label`         | `string`                                            | `undefined` | Left label                                |
+| `labelWidth`    | `number \| string`                                  | `undefined` | Label width                               |
+| `prefixIcon`    | `string`                                            | `undefined` | Prefix content                            |
+| `suffixIcon`    | `string`                                            | `undefined` | Suffix content                            |
+| `errorMessage`  | `string`                                            | `undefined` | Error message                             |
 
 > Weapp properties cannot distinguish an omitted `value` from an explicit `:value="undefined"`; both use the uncontrolled `defaultValue`. Pass `value=""` for a controlled empty value. `VTextarea` follows the same rule.
 
@@ -98,30 +100,30 @@ The Weapp native-control bridge uses explicit props: `name` participates in form
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:value` | `string` | Value update |
-| `valueChange` | `string` | Value change |
-| `clear` | `MouseEvent` | Clear control click |
-| `focus` | `FocusEvent` | Focus |
-| `blur` | `FocusEvent` | Blur |
+| Event          | Payload      | Description         |
+| -------------- | ------------ | ------------------- |
+| `update:value` | `string`     | Value update        |
+| `valueChange`  | `string`     | Value change        |
+| `clear`        | `MouseEvent` | Clear control click |
+| `focus`        | `FocusEvent` | Focus               |
+| `blur`         | `FocusEvent` | Blur                |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
-| `label` | Custom label |
+| Slot     | Description   |
+| -------- | ------------- |
+| `label`  | Custom label  |
 | `prefix` | Custom prefix |
 | `suffix` | Custom suffix |
 
 ## Data Attributes
 
-| Attribute | Description |
-| --- | --- |
-| `data-size` | Current size |
-| `data-align` | Current alignment |
-| `data-clearable` | Clearable state |
-| `data-focused` | Focus state |
-| `data-invalid` | Invalid state |
-| `data-readonly` | Readonly state |
-| `data-disabled` | Disabled state |
+| Attribute        | Description       |
+| ---------------- | ----------------- |
+| `data-size`      | Current size      |
+| `data-align`     | Current alignment |
+| `data-clearable` | Clearable state   |
+| `data-focused`   | Focus state       |
+| `data-invalid`   | Invalid state     |
+| `data-readonly`  | Readonly state    |
+| `data-disabled`  | Disabled state    |

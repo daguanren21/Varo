@@ -1,5 +1,7 @@
 # FixedNav
 
+<RegistryInstallStrip item="components/fixed-nav" :targets="['h5']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="fixed-nav" locale="en" />

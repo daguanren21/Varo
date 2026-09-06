@@ -47,78 +47,82 @@ const displayVersions = computed(() => {
     </view>
 
     <view v-if="displayVersions.length" class="box-border grid w-full min-w-0 max-w-full gap-2 p-2.5" role="list" aria-label="会话版本列表">
-        <view
-          v-for="entry in displayVersions"
-          :key="entry.version.id"
-          class="agent-thread-versions__card box-border grid w-full min-w-0 max-w-full gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3"
-          :data-active="String(entry.active)"
-          role="listitem"
-        >
-          <view class="flex min-w-0 items-center justify-between gap-2">
-            <view class="flex min-w-0 items-center gap-2">
-              <view class="agent-thread-versions__status-dot" aria-hidden="true" />
-              <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
-                {{ entry.label }}
-              </text>
-            </view>
-            <text v-if="entry.active" class="flex-none text-[10px] font-bold text-[var(--varo-agent-primary)]">
-              当前
-            </text>
-            <text v-else-if="entry.version.pinned" class="flex-none text-[10px] font-bold text-[var(--varo-agent-text)]">
-              已固定
+      <view
+        v-for="entry in displayVersions"
+        :key="entry.version.id"
+        class="agent-thread-versions__card box-border grid w-full min-w-0 max-w-full gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3"
+        :data-active="String(entry.active)"
+        role="listitem"
+      >
+        <view class="flex min-w-0 items-center justify-between gap-2">
+          <view class="flex min-w-0 items-center gap-2">
+            <view class="agent-thread-versions__status-dot" aria-hidden="true" />
+            <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
+              {{ entry.label }}
             </text>
           </view>
-
-          <text v-if="entry.version.summary" class="block min-h-8 whitespace-normal text-[11px] leading-4 text-[var(--varo-agent-muted)]">
-            {{ entry.version.summary }}
+          <text v-if="entry.active" class="flex-none text-[10px] font-bold text-[var(--varo-agent-primary)]">
+            当前
           </text>
-          <text v-else class="block min-h-8 whitespace-normal text-[11px] leading-4 text-[var(--varo-agent-muted)]">
-            暂无版本摘要
+          <text v-else-if="entry.version.pinned" class="flex-none text-[10px] font-bold text-[var(--varo-agent-text)]">
+            已固定
           </text>
-
-          <view class="grid gap-0.5 text-[10px] text-[var(--varo-agent-muted)]">
-            <text class="truncate">来源：{{ entry.parentLabel }}</text>
-            <text v-if="entry.version.createdAt" class="truncate">创建：{{ entry.version.createdAt }}</text>
-          </view>
-
-          <view class="flex flex-wrap gap-2 border-t border-[var(--varo-agent-border)] pt-2">
-            <button
-              v-if="!entry.active"
-              class="agent-thread-versions__action agent-thread-versions__action--primary"
-              type="button"
-              :aria-label="`选择${entry.label}`"
-              hover-class="agent-thread-versions__action--pressed"
-              :hover-start-time="20"
-              :hover-stay-time="70"
-              @click="emit('select', entry.version)"
-            >
-              选择
-            </button>
-            <button
-              class="agent-thread-versions__action"
-              type="button"
-              :aria-label="`从${entry.label}创建分支`"
-              hover-class="agent-thread-versions__action--pressed"
-              :hover-start-time="20"
-              :hover-stay-time="70"
-              @click="emit('branch', entry.version)"
-            >
-              分支
-            </button>
-            <button
-              v-if="!entry.version.pinned"
-              class="agent-thread-versions__action"
-              type="button"
-              :aria-label="`固定${entry.label}`"
-              hover-class="agent-thread-versions__action--pressed"
-              :hover-start-time="20"
-              :hover-stay-time="70"
-              @click="emit('pin', entry.version)"
-            >
-              固定
-            </button>
-          </view>
         </view>
+
+        <text v-if="entry.version.summary" class="block min-h-8 whitespace-normal text-[11px] leading-4 text-[var(--varo-agent-muted)]">
+          {{ entry.version.summary }}
+        </text>
+        <text v-else class="block min-h-8 whitespace-normal text-[11px] leading-4 text-[var(--varo-agent-muted)]">
+          暂无版本摘要
+        </text>
+
+        <view class="grid gap-0.5 text-[10px] text-[var(--varo-agent-muted)]">
+          <text class="truncate">
+            来源：{{ entry.parentLabel }}
+          </text>
+          <text v-if="entry.version.createdAt" class="truncate">
+            创建：{{ entry.version.createdAt }}
+          </text>
+        </view>
+
+        <view class="flex flex-wrap gap-2 border-t border-[var(--varo-agent-border)] pt-2">
+          <button
+            v-if="!entry.active"
+            class="agent-native-button agent-thread-versions__action agent-thread-versions__action--primary"
+            type="button"
+            :aria-label="`选择${entry.label}`"
+            hover-class="agent-thread-versions__action--pressed"
+            :hover-start-time="20"
+            :hover-stay-time="70"
+            @click="emit('select', entry.version)"
+          >
+            选择
+          </button>
+          <button
+            class="agent-native-button agent-thread-versions__action"
+            type="button"
+            :aria-label="`从${entry.label}创建分支`"
+            hover-class="agent-thread-versions__action--pressed"
+            :hover-start-time="20"
+            :hover-stay-time="70"
+            @click="emit('branch', entry.version)"
+          >
+            分支
+          </button>
+          <button
+            v-if="!entry.version.pinned"
+            class="agent-native-button agent-thread-versions__action"
+            type="button"
+            :aria-label="`固定${entry.label}`"
+            hover-class="agent-thread-versions__action--pressed"
+            :hover-start-time="20"
+            :hover-stay-time="70"
+            @click="emit('pin', entry.version)"
+          >
+            固定
+          </button>
+        </view>
+      </view>
     </view>
     <view v-else class="grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]">
       <text>暂无会话版本</text>
@@ -156,11 +160,11 @@ const displayVersions = computed(() => {
   justify-content: center;
   min-width: 48px;
   height: 36px;
-  margin: 0;
   padding: 0 10px;
+  margin: 0;
   font-size: 11px;
-  line-height: 1;
   font-weight: 700;
+  line-height: 1;
   color: var(--varo-agent-text);
   background: transparent;
   border: 0;

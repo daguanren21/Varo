@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import type { RetailProduct } from '../../lib/retail'
 import { computed } from 'wevu'
 import { formatRetailMoney, normalizeRetailProduct } from '../../lib/retail'
@@ -9,11 +8,17 @@ import VButton from '../ui/v-button.vue'
 import VCard from '../ui/v-card.vue'
 import VImage from '../ui/v-image.vue'
 
-const props = defineProps({
-  cartCount: { type: null as unknown as PropType<number>, default: 0 },
-  product: { type: null as unknown as PropType<RetailProduct>, default: undefined },
-  quantity: { type: null as unknown as PropType<number>, default: 1 },
-})
+const props = withDefaults(
+  defineProps<{
+    cartCount?: number
+    product?: RetailProduct
+    quantity?: number
+  }>(),
+  {
+    cartCount: 0,
+    quantity: 1,
+  },
+)
 const emit = defineEmits<{
   'add': [payload: { product: RetailProduct, quantity: number }]
   'back': []

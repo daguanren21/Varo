@@ -22,9 +22,9 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 
 通过上方演示面板切换 H5 实时预览，以及小程序运行时契约/代码。
 
-## 分组与只读
+## 分组、只读与禁用
 
-分组用 `SelectGroup/SelectLabel`；`readonly` 阻止变更但仍可展示当前值。定位与动画交给 UI wrapper。
+分组用 `SelectGroup/SelectLabel`。`readonly` 状态下组件仍可打开、关闭和浏览选项，但 `SelectItem` 和 `setValue` 不会更改 value；`disabled` 连打开操作也会阻止。定位与动画交给 UI wrapper。
 
 ## Parts
 
@@ -71,9 +71,9 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 
 ## 无障碍
 
-- Trigger 负责打开。
-- Item 负责选择。
-- disabled/readonly 时不应改 value。
+- Trigger 在普通与 readonly 状态下负责打开；disabled 时不能打开。
+- Item 负责选择；readonly/disabled 时不应改 value。
+- `aria-readonly` 由拥有选择语义的 role owner 暴露，不把 readonly 报告为 disabled。
 
 ## 平台说明
 

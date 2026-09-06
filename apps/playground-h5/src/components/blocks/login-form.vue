@@ -80,7 +80,7 @@ function submit() {
           <VSwitch v-model="remember" />
           <span>记住我</span>
         </label>
-        <VButton size="sm" tone="default" variant="ghost" class="!min-h-0 !p-0 !font-semibold !text-teal-700" @click="emit('forgotPassword')">
+        <VButton size="sm" tone="default" variant="ghost" class="!min-h-11 !px-2 !py-0 !font-semibold !text-teal-700" @click="emit('forgotPassword')">
           忘记密码？
         </VButton>
       </div>

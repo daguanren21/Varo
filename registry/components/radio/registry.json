@@ -20,7 +20,8 @@
   ],
   "targetRegistryDependencies": {
     "h5": [
-      "utils/selection"
+      "utils/selection",
+      "components/icon"
     ],
     "weapp": [
       "utils/cn"

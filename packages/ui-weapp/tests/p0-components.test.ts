@@ -19,7 +19,7 @@ import { VSwipeCell } from '../src/swipe-cell'
 import { VTag } from '../src/tag'
 
 describe('P0 display components', () => {
-  it('renders card anatomy, icon glyphs, avatar fallback, and bounded badges', () => {
+  it('renders card anatomy, icon SVGs, avatar fallback, and bounded badges', () => {
     const wrapper = mount({
       render: () =>
         h(VCard, { variant: 'outline' }, {
@@ -36,7 +36,8 @@ describe('P0 display components', () => {
 
     expect(wrapper.get('.varo-card').attributes('data-variant')).toBe('outline')
     expect(wrapper.get('.varo-card__title').text()).toBe('Overview')
-    expect(wrapper.get('.varo-icon').text()).toBe('✓')
+    expect(wrapper.get('.varo-icon').attributes('aria-label')).toBe('Completed')
+    expect(wrapper.get('.varo-icon').find('svg').exists()).toBe(true)
     expect(wrapper.get('.varo-avatar__fallback').text()).toBe('VA')
     expect(wrapper.get('.varo-badge').text()).toBe('99+')
   })

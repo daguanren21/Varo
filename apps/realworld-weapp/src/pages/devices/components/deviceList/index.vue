@@ -34,6 +34,11 @@ function showMapNavigation(item: WechatMiniprogram.IAnyObject) {
 const listFn = useManageList(props, emit)
 
 const { list, status, handleReachBottom, noDataFilter, dateFilter, activationStateFilter, goToDetail, itemHeight } = listFn
+
+function positionState(item: WechatMiniprogram.IAnyObject) {
+  if (item.isControllerOrSingle) { return item.devicePositionState }
+  return item.locationFenceState
+}
 </script>
 
 <template>
@@ -111,7 +116,7 @@ const { list, status, handleReachBottom, noDataFilter, dateFilter, activationSta
 
               <JxDot
                 class="flex_dot"
-                :state="item.isControllerOrSingle ? item.devicePositionState : item.locationFenceState"
+                :state="positionState(item)"
               />
             </AedFlexItem>
           </AedFlex>

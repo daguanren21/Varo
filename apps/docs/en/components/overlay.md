@@ -1,5 +1,7 @@
 # Overlay
 
+<RegistryInstallStrip item="components/overlay" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="overlay" locale="en" />
@@ -14,7 +16,9 @@ const visible = ref(false)
 </script>
 
 <template>
-  <VButton @click="visible = true">Open overlay</VButton>
+  <VButton @click="visible = true">
+    Open overlay
+  </VButton>
   <VOverlay v-model:visible="visible" />
 </template>
 ```
@@ -37,29 +41,29 @@ const visible = ref(false)
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `visible` | `boolean \| undefined` | `undefined` | Controlled visibility |
-| `defaultVisible` | `boolean` | `false` | Initial uncontrolled visibility |
-| `disabled` | `boolean \| undefined` | `undefined` | Disable internal visibility changes |
-| `zIndex` | `number \| string` | `undefined` | Overlay z-index |
-| `duration` | `number \| string` | `undefined` | Animation duration; numbers are seconds |
-| `lockScroll` | `boolean` | `false` | Lock body scroll while visible |
-| `closeOnClickOverlay` | `boolean` | `true` | Close on overlay click |
+| Prop                  | Type                   | Default     | Description                             |
+| --------------------- | ---------------------- | ----------- | --------------------------------------- |
+| `visible`             | `boolean \| undefined` | `undefined` | Controlled visibility                   |
+| `defaultVisible`      | `boolean`              | `false`     | Initial uncontrolled visibility         |
+| `disabled`            | `boolean \| undefined` | `undefined` | Disable internal visibility changes     |
+| `zIndex`              | `number \| string`     | `undefined` | Overlay z-index                         |
+| `duration`            | `number \| string`     | `undefined` | Animation duration; numbers are seconds |
+| `lockScroll`          | `boolean`              | `false`     | Lock body scroll while visible          |
+| `closeOnClickOverlay` | `boolean`              | `true`      | Close on overlay click                  |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `update:visible` | `boolean` | Controlled sync event |
-| `visibleChange` | `boolean` | Visibility changed |
-| `close` | `void` | Close requested |
-| `click` | `MouseEvent` | Overlay clicked |
+| Event            | Payload      | Description           |
+| ---------------- | ------------ | --------------------- |
+| `update:visible` | `boolean`    | Controlled sync event |
+| `visibleChange`  | `boolean`    | Visibility changed    |
+| `close`          | `void`       | Close requested       |
+| `click`          | `MouseEvent` | Overlay clicked       |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
+| Slot      | Description            |
+| --------- | ---------------------- |
 | `default` | Custom overlay content |
 
 ## Primitives

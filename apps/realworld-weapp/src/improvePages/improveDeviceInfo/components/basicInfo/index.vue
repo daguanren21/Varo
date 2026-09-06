@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import { useScanDevice } from '../../../../hooks/useImprove'
 
 const scanHooks = useScanDevice()
 
 const { changeBrand, brandList, brandIndex, isJs, device } = scanHooks
+const brandName = computed(() => {
+  const brand = brandList.value[brandIndex.value]
+  return brand?.nameCh || '请选择'
+})
 </script>
 
 <template>
@@ -12,8 +17,7 @@ const { changeBrand, brandList, brandIndex, isJs, device } = scanHooks
       <view>
         <picker mode="selector" :range="brandList" range-key="nameCh" :value="brandIndex" @change="changeBrand">
           <viewItem
-            class="label_required" title="品牌" :extra-text="brandList[brandIndex] ? brandList[brandIndex].nameCh : '请选择'
-            " arrow="right"
+            class="label_required" title="品牌" :extra-text="brandName" arrow="right"
           />
         </picker>
       </view>

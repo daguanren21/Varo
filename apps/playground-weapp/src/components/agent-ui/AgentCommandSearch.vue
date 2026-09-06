@@ -51,7 +51,7 @@ function inputValue(event: Event) {
     </view>
 
     <scroll-view v-if="visibleItems.length" class="max-h-[280px] p-2" scroll-y :show-scrollbar="false">
-      <button v-for="item in visibleItems" :key="item.id" class="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border-0 bg-[var(--varo-agent-surface)] px-2.5 py-2 text-left" hover-class="bg-[var(--varo-agent-surface-strong)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', item)">
+      <button v-for="item in visibleItems" :key="item.id" class="agent-native-button agent-native-button--block flex min-h-12 items-center justify-between gap-3 rounded-xl border-0 bg-[var(--varo-agent-surface)] px-2.5 py-2 text-left" hover-class="bg-[var(--varo-agent-surface-strong)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', item)">
         <view class="grid min-w-0 flex-1 gap-0.5">
           <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
             {{ item.label }}

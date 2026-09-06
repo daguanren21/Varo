@@ -2,6 +2,8 @@
 
 `VElevator` keeps the index rail synchronized with the group header currently crossing the content viewport. Reaching the bottom activates the final group, while index clicks scroll only the component list and never move the browser document.
 
+<RegistryInstallStrip item="components/elevator" :targets="['h5']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="elevator" locale="en" />

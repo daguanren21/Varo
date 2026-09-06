@@ -1,7 +1,8 @@
 import type { InjectionKey, PropType } from 'vue'
 import { createVariantClass } from '@varo-ui/headless'
-import { useVaroTheme } from '@varo-ui/theme'
+
 import { computed, defineComponent, h, inject, provide } from 'vue'
+import { VIcon } from './icon'
 
 export type SelectionDirection = 'horizontal' | 'vertical'
 export type CheckboxValue = string | number | boolean
@@ -98,16 +99,11 @@ export const VCheckbox = defineComponent({
   },
   emits: ['update:checked', 'change'],
   setup(props, { attrs, emit, slots }) {
-    const theme = useVaroTheme()
     const group = inject(checkboxGroupKey, undefined)
     const isChecked = computed(() => group?.isChecked(props.value) ?? Boolean(props.checked))
     const isDisabled = computed(() => props.disabled || Boolean(group?.disabled()))
     const classes = computed(() =>
-      createVariantClass('varo-checkbox', {
-        radius: theme.value.components.button.borderRadius,
-        checked: isChecked.value,
-        disabled: isDisabled.value,
-      }),
+      createVariantClass('varo-checkbox', { checked: isChecked.value, disabled: isDisabled.value }),
     )
 
     function toggle() {
@@ -139,7 +135,7 @@ export const VCheckbox = defineComponent({
           'onClick': toggle,
         },
         [
-          h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, isChecked.value ? '✓' : ''),
+          h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, isChecked.value ? [h(VIcon, { name: 'check', size: 14 })] : []),
           h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
         ],
       )
@@ -204,16 +200,11 @@ export const VRadio = defineComponent({
   },
   emits: ['update:checked', 'change'],
   setup(props, { attrs, emit, slots }) {
-    const theme = useVaroTheme()
     const group = inject(radioGroupKey, undefined)
     const isChecked = computed(() => group?.isChecked(props.value) ?? Boolean(props.checked))
     const isDisabled = computed(() => props.disabled || Boolean(group?.disabled()))
     const classes = computed(() =>
-      createVariantClass('varo-radio', {
-        radius: theme.value.components.button.borderRadius,
-        checked: isChecked.value,
-        disabled: isDisabled.value,
-      }),
+      createVariantClass('varo-radio', { checked: isChecked.value, disabled: isDisabled.value }),
     )
 
     function select() {
@@ -244,7 +235,7 @@ export const VRadio = defineComponent({
           'onClick': select,
         },
         [
-          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, isChecked.value ? '●' : ''),
+          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, isChecked.value ? [h(VIcon, { name: 'dot', size: 10 })] : []),
           h('span', { class: 'varo-radio__label' }, slots.default?.() ?? props.label),
         ],
       )

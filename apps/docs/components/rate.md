@@ -1,5 +1,7 @@
 # Rate 评分
 
+<RegistryInstallStrip item="components/rate" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="rate" locale="zh" />
@@ -10,10 +12,10 @@
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `number` | `0` | 当前评分 |
-| `count` | `number` | `5` | 图标数量 |
-| `allowClear` | `boolean` | `true` | 再次点击当前值时清空 |
-| `disabled` | `boolean` | `false` | 禁用 |
-| `readonly` | `boolean` | `false` | 只读 |
+| Prop         | 类型      | 默认值  | 描述                 |
+| ------------ | --------- | ------- | -------------------- |
+| `value`      | `number`  | `0`     | 当前评分             |
+| `count`      | `number`  | `5`     | 图标数量             |
+| `allowClear` | `boolean` | `true`  | 再次点击当前值时清空 |
+| `disabled`   | `boolean` | `false` | 禁用                 |
+| `readonly`   | `boolean` | `false` | 只读                 |

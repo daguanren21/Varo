@@ -31,7 +31,7 @@ const props = withDefaults(
     zIndex?: PopupDimension
   }>(),
   {
-    closeIcon: '×',
+    closeIcon: 'close',
     closeIconPosition: 'top-right',
     closeOnClickOverlay: true,
     closeable: false,
@@ -50,9 +50,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  clickOverlay: []
-  close: []
-  visibleChange: [visible: boolean]
+  'clickOverlay': []
+  'close': []
+  'visibleChange': [visible: boolean]
   'update:visible': [visible: boolean]
 }>()
 
@@ -91,7 +91,6 @@ const classes = computed(() =>
 const dataState = computed(() => currentVisible.value ? 'open' : 'closed')
 const dataRound = computed(() => String(props.round))
 const dataSafeAreaInsetBottom = computed(() => String(props.safeAreaInsetBottom))
-const closeIconName = computed(() => props.closeIcon === '×' ? 'close' : props.closeIcon)
 const contentStyle = computed(() => {
   const declarations: string[] = []
   const zIndex = normalizeContentZIndex(props.zIndex)
@@ -182,7 +181,9 @@ function lockTouchMove() {
         :disabled="popupDisabled"
         @click="close"
       >
-        <slot name="closeIcon"><VIcon :name="closeIconName" /></slot>
+        <slot name="closeIcon">
+          <VIcon :name="props.closeIcon" />
+        </slot>
       </button>
     </view>
   </view>
@@ -224,7 +225,9 @@ function lockTouchMove() {
         :disabled="popupDisabled"
         @click="close"
       >
-        <slot name="closeIcon"><VIcon :name="closeIconName" /></slot>
+        <slot name="closeIcon">
+          <VIcon :name="props.closeIcon" />
+        </slot>
       </button>
     </view>
   </view>

@@ -50,7 +50,7 @@ function dotClass() {
 
 <template>
   <view :class="rootClass" :data-status="status">
-    <button class="flex min-h-12 w-full items-center justify-between gap-3 border-0 bg-[var(--varo-agent-surface)] px-[13px] text-left" type="button" :aria-expanded="open" @click="toggle">
+    <button class="agent-native-button agent-native-button--block flex min-h-12 items-center justify-between gap-3 border-0 bg-[var(--varo-agent-surface)] px-[13px] text-left" type="button" :aria-expanded="open" @click="toggle">
       <view class="flex min-w-0 items-center gap-2.5">
         <text :class="dotClass()" aria-hidden="true" />
         <text class="truncate text-xs font-bold text-[var(--varo-agent-foreground)]">
@@ -73,7 +73,7 @@ function dotClass() {
       </slot>
     </view>
 
-    <button v-if="status === 'failed' && open" class="m-3 min-h-8 rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-[11px] font-bold text-[var(--varo-agent-danger)]" type="button" @click="emit('retry')">
+    <button v-if="status === 'failed' && open" class="agent-native-button m-3 min-h-8 rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-[11px] font-bold text-[var(--varo-agent-danger)]" type="button" @click="emit('retry')">
       Retry
     </button>
   </view>

@@ -28,7 +28,7 @@ const rootClass = computed(() =>
 
 function nodeClass(type: AgentFlowNode['type']) {
   return cn(
-    'agent-flowchart__node grid min-h-[72px] w-full gap-1 rounded-[14px] border bg-[var(--varo-agent-surface)] p-3 text-left shadow-sm',
+    'agent-native-button--block agent-flowchart__node grid min-h-[72px] gap-1 rounded-[14px] border bg-[var(--varo-agent-surface)] p-3 text-left shadow-sm',
     type === 'trigger' && 'border-[var(--varo-agent-border-strong)]',
     type === 'condition' && 'border-[var(--varo-agent-warning)]',
     type === 'action' && 'border-[var(--varo-agent-primary)]',
@@ -53,7 +53,7 @@ function statusClass(status?: AgentAdvancedStatus) {
       <text class="text-xs font-bold text-[var(--varo-agent-foreground)]">
         {{ title }}
       </text>
-      <button class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('add', undefined)">
+      <button class="agent-native-button inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('add', undefined)">
         <image class="h-3.5 w-3.5" :src="agentPlusIcon" mode="aspectFit" aria-hidden="true" />
         Step
       </button>
@@ -61,7 +61,7 @@ function statusClass(status?: AgentAdvancedStatus) {
 
     <view class="grid p-3">
       <template v-for="(node, index) in nodes" :key="node.id">
-        <button :class="nodeClass(node.type)" type="button" :data-type="node.type" @click="emit('select', node)">
+        <button class="agent-native-button" :class="nodeClass(node.type)" type="button" :data-type="node.type" @click="emit('select', node)">
           <view class="flex items-center justify-between gap-2">
             <text class="text-[10px] font-bold uppercase tracking-[.1em] text-[var(--varo-agent-muted)]">
               {{ node.type }}
@@ -75,7 +75,7 @@ function statusClass(status?: AgentAdvancedStatus) {
             {{ node.detail }}
           </text>
         </button>
-        <button v-if="index < nodes.length - 1" class="agent-flowchart__connector mx-auto grid h-9 w-7 place-items-center border-0 bg-transparent" type="button" :aria-label="`Add after ${node.label}`" @click="emit('add', node.id)">
+        <button v-if="index < nodes.length - 1" class="agent-native-button agent-flowchart__connector mx-auto grid place-items-center border-0 bg-transparent" type="button" :aria-label="`Add after ${node.label}`" @click="emit('add', node.id)">
           <image class="h-3.5 w-3.5" :src="agentPlusIcon" mode="aspectFit" aria-hidden="true" />
         </button>
       </template>

@@ -2,16 +2,11 @@
 
 `VRegionPicker` is a controlled hierarchical selector. It owns level navigation, shortcuts, disabled state, confirmation, and async root/child loading feedback; API implementation, caching policy, authorization, and coordinate resolution stay in application code.
 
+<RegistryInstallStrip item="components/region-picker" :targets="['h5', 'weapp']" :wrapper-targets="[]" locale="en" />
+
 ## Demo
 
 <RegionPickerDemo />
-
-## Install
-
-```bash
-pnpm dlx @varo-ui/cli add --target h5 region-picker
-pnpm dlx @varo-ui/cli add --target weapp region-picker
-```
 
 ## Usage
 

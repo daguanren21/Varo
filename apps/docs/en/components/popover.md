@@ -1,5 +1,7 @@
 # Popover
 
+<RegistryInstallStrip item="components/popover" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="popover" locale="en" />

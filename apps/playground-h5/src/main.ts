@@ -1,7 +1,7 @@
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { createApp } from 'vue'
 import App from './App.vue'
-import '@varo-ui/h5/source/style.css'
+import './styles/varo.css'
 import './styles.css'
 
 const theme = createTheme({

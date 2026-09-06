@@ -1,15 +1,32 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 import VImage from './v-image.vue'
 
-const props = defineProps({
-  alt: { type: null as unknown as PropType<string>, default: '' },
-  fallback: { type: null as unknown as PropType<string>, default: '' },
-  shape: { type: String as PropType<'circle' | 'rounded' | 'square'>, default: 'circle' },
-  size: { type: null as unknown as PropType<number | string>, default: 40 },
-  src: { type: null as unknown as PropType<string>, default: '' },
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    alt: { type: null, value: '' },
+    fallback: { type: null, value: '' },
+    src: { type: null, value: '' },
+  },
 })
+
+const props = withDefaults(
+  defineProps<{
+    alt?: string
+    fallback?: string
+    shape?: 'circle' | 'rounded' | 'square'
+    size?: number | string
+    src?: string
+  }>(),
+  {
+    alt: '',
+    fallback: '',
+    shape: 'circle',
+    size: 40,
+    src: '',
+  },
+)
 
 const safeAlt = computed(() => props.alt || '')
 const safeFallback = computed(() => props.fallback || '')

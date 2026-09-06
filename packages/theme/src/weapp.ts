@@ -21,5 +21,6 @@ export function renderWeappThemeCss(
 }
 
 export type { ThemeCssVariableOverrides, ThemeCssVariables } from './css.ts'
+export { contrastSafeForeground } from './css.ts'
 export { createTheme, mergeThemeOverrides } from './theme.ts'
 export type { ThemeDefinition } from './types.ts'

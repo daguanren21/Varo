@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h, nextTick } from 'vue'
@@ -15,9 +17,33 @@ import VList from './components/ui/v-list.vue'
 import VNoticeBar from './components/ui/v-notice-bar.vue'
 import VSteps from './components/ui/v-steps.vue'
 import VSwipeCell from './components/ui/v-swipe-cell.vue'
+import VSwitch from './components/ui/v-switch.vue'
 import VTextarea from './components/ui/v-textarea.vue'
 
 describe('expanded weapp registry components', () => {
+  it('moves the Switch thumb with controlled checked state', async () => {
+    const style = document.createElement('style')
+    style.textContent = readFileSync(resolve(import.meta.dirname, 'styles/varo.css'), 'utf8')
+    document.head.append(style)
+    const wrapper = mount(VSwitch, {
+      attachTo: document.body,
+      props: { modelValue: false },
+    })
+
+    try {
+      const thumb = wrapper.get('.varo-switch__thumb').element
+      const uncheckedTransform = getComputedStyle(thumb).transform
+      await wrapper.setProps({ modelValue: true })
+      expect(getComputedStyle(thumb).transform).toBe('translateX(20px)')
+      await wrapper.setProps({ modelValue: false })
+      expect(getComputedStyle(thumb).transform).toBe(uncheckedTransform)
+    }
+    finally {
+      wrapper.unmount()
+      style.remove()
+    }
+  })
+
   it('uses native mini-program hover classes for pressed feedback', () => {
     const button = mount(VButton, { props: { className: 'rounded-none shadow-none' } })
     expect(button.get('button').attributes('hover-class')).toBe('varo-button--pressed')
@@ -111,6 +137,48 @@ describe('expanded weapp registry components', () => {
 
     expect(wrapper.emitted('search')?.at(-1)).toEqual(['zhou'])
     expect(wrapper.findAll('.varo-select__option').map(option => option.text())).toEqual(['Hangzhou', 'Suzhou'])
+  })
+
+  it('keeps readonly native Select values immutable while allowing browsing', async () => {
+    const wrapper = mount(VSelect, {
+      props: {
+        clearable: true,
+        filterable: true,
+        options: [
+          { label: 'Shanghai', value: 'shanghai' },
+          { label: 'Hangzhou', value: 'hangzhou' },
+        ],
+        readonly: true,
+        value: 'shanghai',
+      },
+    })
+
+    expect(wrapper.find('.varo-select__filter-input').exists()).toBe(false)
+    expect(wrapper.find('.varo-select__clear').exists()).toBe(false)
+    const trigger = wrapper.get('.varo-select__control')
+    expect(trigger.attributes('disabled')).toBeUndefined()
+    expect(trigger.attributes('aria-disabled')).toBe('false')
+    expect(trigger.attributes('aria-readonly')).toBe('true')
+
+    await trigger.trigger('click')
+    expect(wrapper.get('[role="listbox"]').attributes('aria-readonly')).toBe('true')
+    await wrapper.findAll('.varo-select__option')[1].trigger('click')
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(true)
+
+    await trigger.trigger('click')
+    await wrapper.setProps({ multiple: true, value: ['shanghai'] })
+    await trigger.trigger('click')
+    await wrapper.findAll('.varo-select__option')[1].trigger('click')
+    await wrapper.get('.varo-select__confirm').trigger('click')
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
+
+    await wrapper.setProps({ disabled: true })
+    await wrapper.get('.varo-select__trigger').trigger('click')
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
   })
 
   it('preserves uncontrolled native input and textarea values', async () => {

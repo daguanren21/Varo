@@ -37,7 +37,7 @@ function toggle() {
 
 <template>
   <view :class="rootClass" :data-open="String(open)">
-    <button class="flex min-h-12 w-full items-center justify-between gap-3 border-0 bg-[var(--varo-agent-surface)] px-[13px] text-left" type="button" :aria-expanded="open" @click="toggle">
+    <button class="agent-native-button agent-native-button--block flex min-h-12 items-center justify-between gap-3 border-0 bg-[var(--varo-agent-surface)] px-[13px] text-left" type="button" :aria-expanded="open" @click="toggle">
       <view class="flex min-w-0 items-center gap-2">
         <text class="truncate text-xs font-bold text-[var(--varo-agent-foreground)]">
           {{ title }}
@@ -50,7 +50,7 @@ function toggle() {
     </button>
 
     <view v-if="open" class="grid gap-1 border-t border-[var(--varo-agent-border)] p-2">
-      <button v-for="(item, index) in items" :key="item.id" class="flex min-h-11 w-full items-center gap-2.5 rounded-xl border-0 bg-[var(--varo-agent-surface-strong)] px-2.5 py-2 text-left" hover-class="bg-[var(--varo-agent-fill)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('open', item)">
+      <button v-for="(item, index) in items" :key="item.id" class="agent-native-button agent-native-button--block flex min-h-11 items-center gap-2.5 rounded-xl border-0 bg-[var(--varo-agent-surface-strong)] px-2.5 py-2 text-left" hover-class="bg-[var(--varo-agent-fill)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('open', item)">
         <text class="grid h-6 w-6 flex-none place-items-center rounded-lg bg-[var(--varo-agent-surface)] text-[10px] font-bold tabular-nums text-[var(--varo-agent-primary)] shadow-sm">
           {{ index + 1 }}
         </text>

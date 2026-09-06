@@ -22,11 +22,11 @@
   },
   "registryDependencies": [
     "themes/base",
+    "components/icon",
     "utils/primitives"
   ],
   "targetRegistryDependencies": {
     "weapp": [
-      "components/icon",
       "utils/cn"
     ]
   },

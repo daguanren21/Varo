@@ -2,11 +2,7 @@
 
 `VMap` 是微信小程序原生 `<map>` 的类型化 Wevu 封装，统一尺寸、地图能力和事件命名。该组件仅支持 `weapp` target；业务接口、位置权限和地图 Context 仍由页面负责。
 
-## 安装
-
-```bash
-pnpm dlx @varo-ui/cli add --target weapp map
-```
+<RegistryInstallStrip item="components/map" :targets="['weapp']" :wrapper-targets="[]" locale="zh" />
 
 ## 使用
 

@@ -1,5 +1,7 @@
 # Form 表单
 
+<RegistryInstallStrip item="components/form" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="form" locale="zh" />

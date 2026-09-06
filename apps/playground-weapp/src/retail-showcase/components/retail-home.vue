@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import type { RetailProduct } from '../../lib/retail'
 import { computed, shallowRef } from 'wevu'
 import VBadge from '../../components/ui/badge.vue'
@@ -14,13 +13,30 @@ interface RetailCategory {
   label: string
 }
 
-const props = defineProps({
-  banner: { type: null as unknown as PropType<string>, default: '' },
-  cartCount: { type: null as unknown as PropType<number>, default: 0 },
-  categories: { type: null as unknown as PropType<RetailCategory[]>, default: () => [] },
-  products: { type: null as unknown as PropType<RetailProduct[]>, default: () => [] },
-  title: { type: String, default: 'Varo 零售生活馆' },
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    banner: { type: null, value: '' },
+    cartCount: { type: null, value: 0 },
+  },
 })
+
+const props = withDefaults(
+  defineProps<{
+    banner?: string
+    cartCount?: number
+    categories?: RetailCategory[]
+    products?: RetailProduct[]
+    title?: string
+  }>(),
+  {
+    banner: '',
+    cartCount: 0,
+    categories: () => [],
+    products: () => [],
+    title: 'Varo 零售生活馆',
+  },
+)
 
 const emit = defineEmits<{
   add: [product: RetailProduct]

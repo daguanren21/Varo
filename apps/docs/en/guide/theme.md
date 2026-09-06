@@ -6,7 +6,34 @@ Varo keeps theme ownership inside `@varo-ui/theme` so wrappers can remain token-
 
 ```ts
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
+import { createApp, shallowRef } from 'vue'
+
+const activeTheme = shallowRef(createTheme({
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133'
+}))
+
+createApp(App).use(VaroConfigProvider, { theme: activeTheme }).mount('#app')
 ```
+
+Replacing `activeTheme.value` updates the application-level CSS variables. The provider restores the variables it owns when the app unmounts. Use `VaroThemeProvider` when multiple theme scopes share one document:
+
+```vue
+<script setup lang="ts">
+import { VaroThemeProvider } from '@varo-ui/theme'
+</script>
+
+<template>
+  <VaroThemeProvider :theme="activeTheme">
+    <RouterView />
+  </VaroThemeProvider>
+</template>
+```
+
+Theme seeds use `#RGB` or `#RRGGBB` so Varo can derive contrast-safe foregrounds. When `VButton color` uses a CSS variable, named color, or `rgb()`, also provide `foreground-color`.
 
 ## Weapp build-time theme
 

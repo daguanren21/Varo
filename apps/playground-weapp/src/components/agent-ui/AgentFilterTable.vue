@@ -44,7 +44,7 @@ const gridStyle = computed(() => ({
 
 function filterClass(value: string) {
   return cn(
-    'inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-0 text-[11px] font-bold leading-none',
+    'agent-native-button inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-0 text-[11px] font-bold leading-none',
     value === props.filter
       ? 'border-[var(--varo-agent-primary)] bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-primary)]'
       : 'border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-text)]',
@@ -86,7 +86,7 @@ function filterClass(value: string) {
         <button
           v-for="row in visibleRows"
           :key="row.id"
-          class="grid min-h-11 w-full border-0 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-0 text-left last:border-b-0"
+          class="agent-native-button agent-native-button--block grid min-h-11 border-0 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-0 text-left last:border-b-0"
           hover-class="bg-[var(--varo-agent-surface-strong)]"
           :hover-start-time="20"
           :hover-stay-time="70"

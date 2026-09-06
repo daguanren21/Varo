@@ -1,5 +1,7 @@
 # Range
 
+<RegistryInstallStrip item="components/range" :targets="['h5']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="range" locale="en" />

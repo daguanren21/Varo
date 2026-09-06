@@ -1,5 +1,7 @@
 # SideNavbar
 
+<RegistryInstallStrip item="components/side-navbar" :targets="['h5']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="side-navbar" locale="en" />

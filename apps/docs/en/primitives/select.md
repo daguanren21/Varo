@@ -22,9 +22,9 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 
 Use the Demo panel above to switch H5 live preview and mini-program runtime contract/code.
 
-## Groups and readonly
+## Groups, Readonly, And Disabled
 
-Use `SelectGroup/SelectLabel` for grouping; `readonly` blocks changes while still showing the current value. Placement and motion stay in UI wrappers.
+Use `SelectGroup/SelectLabel` for grouping. In `readonly`, the component can still open, close, and browse options, while `SelectItem` and `setValue` cannot change value. `disabled` also blocks opening. Placement and motion stay in UI wrappers.
 
 ## Parts
 
@@ -71,9 +71,9 @@ Use `SelectGroup/SelectLabel` for grouping; `readonly` blocks changes while stil
 
 ## Accessibility
 
-- Trigger opens the surface.
-- Item performs selection.
-- disabled/readonly must not change value.
+- Trigger opens in regular and readonly states; disabled blocks opening.
+- Item performs selection; readonly/disabled must not change value.
+- The role owner exposes `aria-readonly` without reporting readonly as disabled.
 
 ## Platform notes
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import { usePressableRoot } from '@varo-ui/headless'
+import { contrastSafeForeground } from '@varo-ui/theme/weapp'
 import { computed, toRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
@@ -14,8 +15,10 @@ const props = withDefaults(
   defineProps<{
     block?: boolean
     className?: ClassValue
+    color?: string
     disabled?: boolean
     hairline?: boolean
+    foregroundColor?: string
     icon?: string
     iconPosition?: 'left' | 'right'
     loading?: boolean
@@ -49,6 +52,22 @@ const emit = defineEmits<{
 }>()
 
 const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
+const customStyle = computed(() => {
+  if (!props.color) {
+    return undefined
+  }
+  if (visualVariant.value === 'solid') {
+    return {
+      backgroundColor: props.color,
+      borderColor: props.color,
+      color: props.foregroundColor ?? contrastSafeForeground(props.color),
+    }
+  }
+  return {
+    borderColor: visualVariant.value === 'text' ? 'transparent' : props.color,
+    color: props.color,
+  }
+})
 const pressable = usePressableRoot({
   runtime: varoReactiveRuntime,
   disabled: toRef(props, 'disabled'),
@@ -95,6 +114,7 @@ function pressCancel() {
 <template>
   <button
     :class="classes"
+    :style="customStyle"
     :disabled="!interactive"
     :form-type="formType"
     :hover-class="hoverClass"

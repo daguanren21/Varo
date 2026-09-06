@@ -60,7 +60,7 @@ describe('VRobotChat', () => {
     expect(wrapper.emitted('ready')).toHaveLength(1)
 
     const chat = wrapper.getComponent(WechatRobotChatStub)
-    const generic = chat.attributes()['generic:operatecard'] ?? chat.attributes()['generic:operateCard']
+    const generic = chat.attributes()['generic:operate-card']
     expect(generic).toBe('varo-robot-operate-card')
 
     chat.vm.$emit('queryCallback', { detail: { query: '订单' } })

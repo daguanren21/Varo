@@ -7,14 +7,14 @@ describe('ui-h5 input', () => {
     const wrapper = mount(VInput, {
       global: {
         config: {
-          warnHandler() {}
-        }
+          warnHandler() {},
+        },
       },
       props: {
         size: 'lg',
         invalid: true,
-        defaultValue: 'hello'
-      }
+        defaultValue: 'hello',
+      },
     })
 
     expect(wrapper.find('input').attributes('data-invalid')).toBe('true')
@@ -34,8 +34,8 @@ describe('ui-h5 input', () => {
         showWordLimit: true,
         align: 'right',
         prefixIcon: '🔎',
-        suffixIcon: '✓'
-      }
+        suffixIcon: '✓',
+      },
     })
 
     expect(wrapper.get('.varo-input__label').text()).toBe('Name')
@@ -52,13 +52,13 @@ describe('ui-h5 input', () => {
     const onClear = vi.fn()
     const wrapper = mount(VInput, {
       props: {
-        defaultValue: 'Varo',
-        clearable: true,
-        clearTrigger: 'always',
+        'defaultValue': 'Varo',
+        'clearable': true,
+        'clearTrigger': 'always',
         'onUpdate:value': onUpdateValue,
         onValueChange,
-        onClear
-      }
+        onClear,
+      },
     })
 
     expect(wrapper.find('.varo-input__clear').exists()).toBe(true)
@@ -82,8 +82,8 @@ describe('ui-h5 input', () => {
         autosize: true,
         readonly: true,
         invalid: true,
-        errorMessage: 'Required'
-      }
+        errorMessage: 'Required',
+      },
     })
 
     const textarea = wrapper.get('textarea')
@@ -94,5 +94,22 @@ describe('ui-h5 input', () => {
     expect(textarea.attributes('data-autosize')).toBe('true')
     expect(wrapper.attributes('data-readonly')).toBe('true')
     expect(wrapper.get('.varo-input__error').text()).toBe('Required')
+  })
+
+  it('associates visible labels and errors with the native control', () => {
+    const wrapper = mount(VInput, {
+      props: {
+        errorMessage: 'Name is required',
+        invalid: true,
+        label: 'Name',
+      },
+    })
+    const input = wrapper.get('input')
+    const label = wrapper.get('label')
+    const error = wrapper.get('.varo-input__error')
+    expect(label.attributes('for')).toBe(input.attributes('id'))
+    expect(input.attributes('aria-labelledby')).toContain(label.attributes('id'))
+    expect(input.attributes('aria-describedby')).toContain(error.attributes('id'))
+    expect(input.attributes('aria-invalid')).toBe('true')
   })
 })

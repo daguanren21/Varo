@@ -1,5 +1,7 @@
 # Pagination
 
+<RegistryInstallStrip item="components/pagination" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="pagination" locale="en" />

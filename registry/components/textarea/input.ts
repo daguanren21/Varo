@@ -1,8 +1,9 @@
 import type { PressableSize } from '@varo-ui/headless'
 import type { PropType, StyleValue } from 'vue'
 import { createVariantClass, InputRoot } from '@varo-ui/headless'
-import { useVaroTheme } from '@varo-ui/theme'
+
 import { computed, defineComponent, h, ref } from 'vue'
+import { VIcon } from './icon'
 
 type InputAlign = 'left' | 'center' | 'right'
 type InputClearTrigger = 'focus' | 'always'
@@ -90,7 +91,6 @@ export const VInput = defineComponent({
   },
   emits: ['update:value', 'valueChange', 'clear', 'focus', 'blur'],
   setup(props, { attrs, emit, slots }) {
-    const theme = useVaroTheme()
     const inputRoot = ref<InputRootExpose>()
     const focused = ref(false)
     const localValue = ref(props.defaultValue)
@@ -103,15 +103,7 @@ export const VInput = defineComponent({
       return typeof props.labelWidth === 'number' ? `${props.labelWidth}px` : props.labelWidth
     })
     const classes = computed(() =>
-      createVariantClass('varo-input', {
-        radius: theme.value.components.input.borderRadius,
-        size: props.size,
-        align: props.align,
-        disabled: props.disabled,
-        invalid: props.invalid,
-        readonly: props.readonly,
-        clearable: props.clearable,
-      }),
+      createVariantClass('varo-input', { size: props.size, align: props.align, disabled: props.disabled, invalid: props.invalid, readonly: props.readonly, clearable: props.clearable }),
     )
     const normalizedMaxLength = computed(() => {
       if (props.maxLength == null || props.maxLength === '') {
@@ -245,7 +237,7 @@ export const VInput = defineComponent({
                     'onClick': clear,
                     'onMousedown': (event: MouseEvent) => event.preventDefault(),
                   },
-                  '×',
+                  h(VIcon, { name: 'close', size: 14 }),
                 )
               : null,
             props.showWordLimit ? h('span', { class: 'varo-input__word-limit' }, wordLimit.value) : null,

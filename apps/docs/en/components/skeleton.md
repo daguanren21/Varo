@@ -2,6 +2,8 @@
 
 `VSkeleton` waits `180ms` before showing placeholders by default, preventing flashes on short requests. It covers article, image, and video layouts, then fades loaded slot content in.
 
+<RegistryInstallStrip item="components/skeleton" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="skeleton" locale="en" />

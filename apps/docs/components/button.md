@@ -1,5 +1,7 @@
 # Button
 
+<RegistryInstallStrip item="components/button" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="button" locale="zh" />
@@ -94,7 +96,7 @@
   <VButton loading>
     提交中
   </VButton>
-  <VButton loading loading-text="保存中..." />
+  <VButton loading loading-text="保存中…" />
 </template>
 ```
 
@@ -104,6 +106,9 @@
 <template>
   <VButton color="#07c160">
     自定义颜色
+  </VButton>
+  <VButton color="var(--brand-action)" foreground-color="#ffffff">
+    CSS 变量颜色
   </VButton>
   <VButton native-type="submit">
     提交表单
@@ -116,22 +121,23 @@
 
 ## Props
 
-| Prop           | 类型                                                           | 默认值      | 描述                           |
-| -------------- | -------------------------------------------------------------- | ----------- | ------------------------------ |
-| `variant`      | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | 视觉变体                       |
-| `tone`         | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | 语义色                         |
-| `size`         | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | 尺寸                           |
-| `shape`        | `'default' \| 'square' \| 'round'`                             | `'default'` | 形状                           |
-| `plain`        | `boolean`                                                      | `false`     | 朴素按钮，等价于描边视觉       |
-| `hairline`     | `boolean`                                                      | `false`     | 细边框标记                     |
-| `block`        | `boolean`                                                      | `false`     | 宽度占满父容器                 |
-| `icon`         | `string`                                                       | `undefined` | 图标文本或图标名，由样式层解释 |
-| `iconPosition` | `'left' \| 'right'`                                            | `'left'`    | 图标位置                       |
-| `loading`      | `boolean`                                                      | `false`     | 加载中，自动禁用点击           |
-| `loadingText`  | `string`                                                       | `undefined` | 加载时替换默认内容             |
-| `disabled`     | `boolean`                                                      | `false`     | 禁用按钮                       |
-| `color`        | `string`                                                       | `undefined` | 自定义按钮颜色                 |
-| `nativeType`   | `'button' \| 'submit' \| 'reset'`                              | `undefined` | 原生 button type               |
+| Prop              | 类型                                                           | 默认值      | 描述                                       |
+| ----------------- | -------------------------------------------------------------- | ----------- | ------------------------------------------ |
+| `variant`         | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | 视觉变体                                   |
+| `tone`            | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | 语义色                                     |
+| `size`            | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | 尺寸                                       |
+| `shape`           | `'default' \| 'square' \| 'round'`                             | `'default'` | 形状                                       |
+| `plain`           | `boolean`                                                      | `false`     | 朴素按钮，等价于描边视觉                   |
+| `hairline`        | `boolean`                                                      | `false`     | 细边框标记                                 |
+| `block`           | `boolean`                                                      | `false`     | 宽度占满父容器                             |
+| `icon`            | `string`                                                       | `undefined` | 图标文本或图标名，由样式层解释             |
+| `iconPosition`    | `'left' \| 'right'`                                            | `'left'`    | 图标位置                                   |
+| `loading`         | `boolean`                                                      | `false`     | 加载中，自动禁用点击                       |
+| `loadingText`     | `string`                                                       | `undefined` | 加载时替换默认内容                         |
+| `disabled`        | `boolean`                                                      | `false`     | 禁用按钮                                   |
+| `color`           | `string`                                                       | `undefined` | 自定义按钮颜色                             |
+| `foregroundColor` | `string`                                                       | `undefined` | 非十六进制实心自定义色必须显式提供的前景色 |
+| `nativeType`      | `'button' \| 'submit' \| 'reset'`                              | `undefined` | 原生 button type                           |
 
 ## Slots
 

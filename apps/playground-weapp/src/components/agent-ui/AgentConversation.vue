@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 import AgentMessage from './AgentMessage.vue'
 
@@ -11,9 +10,14 @@ export interface AgentConversationMessage {
   timestamp?: string
 }
 
-const props = defineProps({
-  messages: { type: null as unknown as PropType<AgentConversationMessage[]>, default: () => [] },
-})
+const props = withDefaults(
+  defineProps<{
+    messages?: AgentConversationMessage[]
+  }>(),
+  {
+    messages: () => [],
+  },
+)
 const safeMessages = computed(() => (Array.isArray(props.messages) ? props.messages : []).map(message => ({
   content: String(message?.content ?? ''),
   id: String(message?.id ?? ''),
@@ -26,9 +30,9 @@ const safeMessages = computed(() => (Array.isArray(props.messages) ? props.messa
 <template>
   <view class="agent-conversation box-border grid w-full min-w-0 max-w-full gap-3 overflow-hidden" role="log" aria-live="polite">
     <AgentMessage
-      class="block w-full min-w-0 max-w-full overflow-hidden"
       v-for="message in safeMessages"
       :key="message.id"
+      class="block w-full min-w-0 max-w-full overflow-hidden"
       :content="message.content"
       :label="message.label"
       :markdown="message.role !== 'user'"

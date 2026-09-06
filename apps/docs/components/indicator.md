@@ -1,5 +1,7 @@
 # Indicator 指示器
 
+<RegistryInstallStrip item="components/indicator" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="indicator" locale="zh" />

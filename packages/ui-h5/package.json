@@ -57,7 +57,7 @@
   "dependencies": {
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
-    "vue": "^3.5.41"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@varo/hooks": "workspace:*",

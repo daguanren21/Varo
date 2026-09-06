@@ -2,6 +2,8 @@
 
 `VToast` is a controlled low-level toast component. Queues, global APIs, and request integration belong in secondary wrappers.
 
+<RegistryInstallStrip item="components/toast" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="toast" locale="en" />

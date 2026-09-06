@@ -1,5 +1,7 @@
 # Sticky
 
+<RegistryInstallStrip item="components/sticky" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="sticky" locale="zh" />
@@ -9,7 +11,9 @@
 ```vue
 <template>
   <VSticky>
-    <div class="sticky-bar">吸顶区域</div>
+    <div class="sticky-bar">
+      吸顶区域
+    </div>
   </VSticky>
 </template>
 ```
@@ -19,7 +23,9 @@
 ```vue
 <template>
   <VSticky :offset-top="12" :z-index="10">
-    <div class="sticky-bar">距离顶部 12px</div>
+    <div class="sticky-bar">
+      距离顶部 12px
+    </div>
   </VSticky>
 </template>
 ```
@@ -29,30 +35,32 @@
 ```vue
 <template>
   <VSticky @change="fixed => console.log(fixed)" @scroll="event => console.log(event)">
-    <div class="sticky-bar">吸顶区域</div>
+    <div class="sticky-bar">
+      吸顶区域
+    </div>
   </VSticky>
 </template>
 ```
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `offsetTop` | `number \| string` | `0` | 吸顶时距离顶部的距离 |
-| `zIndex` | `number \| string` | `undefined` | 层级 |
-| `disabled` | `boolean` | `false` | 是否禁用吸顶行为 |
+| Prop        | 类型               | 默认值      | 描述                 |
+| ----------- | ------------------ | ----------- | -------------------- |
+| `offsetTop` | `number \| string` | `0`         | 吸顶时距离顶部的距离 |
+| `zIndex`    | `number \| string` | `undefined` | 层级                 |
+| `disabled`  | `boolean`          | `false`     | 是否禁用吸顶行为     |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
-| `change` | `boolean` | 固定状态变化 |
+| Event    | Payload                                   | 描述           |
+| -------- | ----------------------------------------- | -------------- |
+| `change` | `boolean`                                 | 固定状态变化   |
 | `scroll` | `{ isFixed: boolean; scrollTop: number }` | 页面滚动时触发 |
 
 ## Slots
 
-| Slot | 描述 |
-| --- | --- |
+| Slot      | 描述                              |
+| --------- | --------------------------------- |
 | `default` | 吸顶内容，slot props 包含 `fixed` |
 
 ## Primitives

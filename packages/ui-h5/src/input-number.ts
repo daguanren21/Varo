@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import { useVaroTheme } from '@varo-ui/theme'
+
 import {
   NumberFieldDecrement,
   NumberFieldIncrement,
@@ -22,13 +22,8 @@ export const VInputNumber = defineComponent({
   },
   emits: ['update:value', 'change', 'blur', 'focus'],
   setup(props, { attrs, emit }) {
-    const theme = useVaroTheme()
     const classes = computed(() =>
-      createVariantClass('varo-input-number', {
-        radius: theme.value.components.button.borderRadius,
-        disabled: props.disabled,
-        readonly: props.readonly,
-      }),
+      createVariantClass('varo-input-number', { disabled: props.disabled, readonly: props.readonly }),
     )
 
     return () =>

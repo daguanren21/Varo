@@ -53,7 +53,7 @@ const invalidRange = computed(() => minPrice.value > maxPrice.value)
 const activeCount = computed(() => selectedStatuses.value.length + Number(minPrice.value > 0) + Number(maxPrice.value < 9999))
 const statusOptions = computed(() => Array.isArray(props.statuses) ? props.statuses : [])
 const rootClass = computed(() =>
-  cn('w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className),
+  cn('box-border w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className),
 )
 
 function currentValue(): OrderFilterValue {

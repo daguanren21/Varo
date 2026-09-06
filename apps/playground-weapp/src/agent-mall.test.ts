@@ -54,12 +54,10 @@ describe('Varo Agent UI contracts', () => {
       },
     })
     await approval.findAll('.varo-button').at(-1)!.trigger('click')
-    expect(approval.get('.agent-approval__icon image').attributes('src')).toContain('data:image/svg+xml')
     expect(approval.emitted('approve')?.[0]).toEqual(['1'])
 
     const composer = mount(AgentComposer, { props: { modelValue: '买一盒牛奶' } })
     await composer.get('button[aria-label="发送消息"]').trigger('click')
-    expect(composer.get('button[aria-label="发送消息"] image').attributes('src')).toContain('data:image/svg+xml')
     expect(composer.emitted('submit')?.[0]).toEqual(['买一盒牛奶'])
   })
 

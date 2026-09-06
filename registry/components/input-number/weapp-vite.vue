@@ -1,18 +1,35 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { useNumberFieldRoot } from '@varo-ui/headless'
 import { computed, shallowRef, toRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
-const props = defineProps({
-  disabled: { type: Boolean, default: false },
-  max: { type: null as unknown as PropType<number>, default: Number.POSITIVE_INFINITY },
-  min: { type: null as unknown as PropType<number>, default: Number.NEGATIVE_INFINITY },
-  precision: { type: null as unknown as PropType<number | undefined>, default: undefined },
-  readonly: { type: Boolean, default: false },
-  step: { type: null as unknown as PropType<number>, default: 1 },
-  value: { type: null as unknown as PropType<number>, default: 0 },
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    max: { type: null, value: Number.POSITIVE_INFINITY },
+    value: { type: null, value: 0 },
+  },
 })
+
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean
+    max?: number
+    min?: number
+    precision?: number
+    readonly?: boolean
+    step?: number
+    value?: number
+  }>(),
+  {
+    disabled: false,
+    max: Number.POSITIVE_INFINITY,
+    min: Number.NEGATIVE_INFINITY,
+    readonly: false,
+    step: 1,
+    value: 0,
+  },
+)
 
 const emit = defineEmits<{
   'change': [value: number]

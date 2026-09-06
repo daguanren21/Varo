@@ -1,5 +1,7 @@
 # Range 区间选择器
 
+<RegistryInstallStrip item="components/range" :targets="['h5']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="range" locale="zh" />

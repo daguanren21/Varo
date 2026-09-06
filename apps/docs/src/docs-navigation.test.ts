@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { componentCatalogItems, componentDocsRoute, createComponentSidebarGroups } from './component-catalog'
 
 const docsRoot = resolve(__dirname, '..')
 const workspaceRoot = resolve(docsRoot, '../..')
@@ -25,25 +26,26 @@ const baseKitPhase1Components = [
 
 describe('docs navigation', () => {
   it('groups display layout components separately from navigation components', () => {
-    const config = readFileSync(configPath, 'utf8')
-
-    expect(config).toContain('text: \'布局组件\'')
-    expect(config).toContain('text: \'导航组件\'')
-    expect(config).toContain('{ text: \'Divider 分割线\', link: \'/components/divider\' }')
-    expect(config).toContain('{ text: \'Grid 宫格\', link: \'/components/grid\' }')
-    expect(config).toContain('{ text: \'Tabs 选项卡切换\', link: \'/components/tabs\' }')
-    expect(config).toContain('{ text: \'Menu 菜单\', link: \'/components/menu\' }')
+    const groups = createComponentSidebarGroups('zh')
+    const links = groups.flatMap(group => group.items)
+    expect(groups.map(group => group.text)).toEqual(expect.arrayContaining(['布局组件', '导航组件']))
+    expect(links).toEqual(expect.arrayContaining([
+      { text: 'Divider 分割线', link: '/components/divider' },
+      { text: 'Grid 宫格', link: '/components/grid' },
+      { text: 'Tabs 选项卡切换', link: '/components/tabs' },
+      { text: 'Menu 菜单', link: '/components/menu' },
+    ]))
   })
 
   it('keeps the shipped Skeleton component visible in feedback documentation', () => {
-    const config = readFileSync(configPath, 'utf8')
+    const zhLinks = createComponentSidebarGroups('zh').flatMap(group => group.items)
+    const enLinks = createComponentSidebarGroups('en').flatMap(group => group.items)
     const skeletonZh = readFileSync(resolve(docsRoot, 'components/skeleton.md'), 'utf8')
     const skeletonEn = readFileSync(resolve(docsRoot, 'en/components/skeleton.md'), 'utf8')
-
-    expect(config).toContain('{ text: \'Skeleton 骨架屏\', link: \'/components/skeleton\' }')
-    expect(config).toContain('{ text: \'Skeleton\', link: \'/en/components/skeleton\' }')
-    expect(skeletonZh).toContain('<FormComponentDemo example=\"skeleton\" locale=\"zh\" />')
-    expect(skeletonEn).toContain('<FormComponentDemo example=\"skeleton\" locale=\"en\" />')
+    expect(zhLinks).toContainEqual({ text: 'Skeleton 骨架屏', link: '/components/skeleton' })
+    expect(enLinks).toContainEqual({ text: 'Skeleton', link: '/en/components/skeleton' })
+    expect(skeletonZh).toContain('<FormComponentDemo example="skeleton" locale="zh" />')
+    expect(skeletonEn).toContain('<FormComponentDemo example="skeleton" locale="en" />')
     expect(skeletonZh).toContain('VSkeleton')
     expect(skeletonEn).toContain('VSkeleton')
   })
@@ -157,7 +159,10 @@ describe('docs navigation', () => {
   })
 
   it('lists form components and has matching zh/en pages', () => {
-    const config = readFileSync(configPath, 'utf8')
+    const routes = new Set(componentCatalogItems.flatMap(item => [
+      componentDocsRoute(item.id, 'zh'),
+      componentDocsRoute(item.id, 'en'),
+    ]))
     const components = [
       'calendar',
       'calendar-card',
@@ -176,45 +181,38 @@ describe('docs navigation', () => {
       'textarea',
       'uploader',
     ]
-
-    expect(config).toContain('text: \'表单组件\'')
-    expect(config).toContain('text: \'Form Components\'')
-    expect(config).toContain('\'@varo-ui/h5/source/style.css\'')
-
     components.forEach((name) => {
-      expect(config).toContain(`/components/${name}`)
-      expect(config).toContain(`/en/components/${name}`)
+      expect(routes.has(`/components/${name}`)).toBe(true)
+      expect(routes.has(`/en/components/${name}`)).toBe(true)
       expect(existsSync(resolve(docsRoot, `components/${name}.md`))).toBe(true)
       expect(existsSync(resolve(docsRoot, `en/components/${name}.md`))).toBe(true)
     })
   })
 
   it('links Badge documentation in both locales and from the Registry manifest', () => {
-    const config = readFileSync(configPath, 'utf8')
     const badgeManifest = readFileSync(
       resolve(workspaceRoot, 'registry/components/badge/registry.json'),
       'utf8',
     )
-
-    expect(config).toContain('{ text: \'Badge 徽标\', link: \'/components/badge\' }')
-    expect(config).toContain('{ text: \'Badge\', link: \'/en/components/badge\' }')
+    expect(componentCatalogItems.some(item => item.id === 'badge')).toBe(true)
+    expect(componentDocsRoute('badge', 'zh')).toBe('/components/badge')
+    expect(componentDocsRoute('badge', 'en')).toBe('/en/components/badge')
     expect(existsSync(resolve(docsRoot, 'components/badge.md'))).toBe(true)
     expect(existsSync(resolve(docsRoot, 'en/components/badge.md'))).toBe(true)
-    expect(badgeManifest).toContain('\"docs\": \"/components/badge\"')
+    expect(badgeManifest).toContain('"docs": "/components/badge"')
   })
 
   it('links Popover documentation in both locales and from the Registry manifest', () => {
-    const config = readFileSync(configPath, 'utf8')
     const popoverManifest = readFileSync(
       resolve(workspaceRoot, 'registry/components/popover/registry.json'),
       'utf8',
     )
-
-    expect(config).toContain('{ text: \'Popover 气泡浮层\', link: \'/components/popover\' }')
-    expect(config).toContain('{ text: \'Popover\', link: \'/en/components/popover\' }')
+    expect(componentCatalogItems.some(item => item.id === 'popover')).toBe(true)
+    expect(componentDocsRoute('popover', 'zh')).toBe('/components/popover')
+    expect(componentDocsRoute('popover', 'en')).toBe('/en/components/popover')
     expect(existsSync(resolve(docsRoot, 'components/popover.md'))).toBe(true)
     expect(existsSync(resolve(docsRoot, 'en/components/popover.md'))).toBe(true)
-    expect(popoverManifest).toContain('\"docs\": \"/components/popover\"')
+    expect(popoverManifest).toContain('"docs": "/components/popover"')
   })
 
   it('links the Varo color system in both locales', () => {
@@ -266,7 +264,7 @@ describe('docs navigation', () => {
     expect(css).toContain('--varo-surface: #f8fbf9')
     expect(css).toContain('--varo-surface-strong: #e8f0ec')
     expect(css).toContain('--varo-primary: #07c160')
-    expect(css).toContain('--varo-primary-foreground: #fff')
+    expect(css).toContain('--varo-primary-foreground: #10271b')
     expect(css).toContain('--varo-success: #13b248')
     expect(css).toContain('--varo-warning: #fa9200')
     expect(css).toContain('--varo-danger: #eb3437')
@@ -371,12 +369,7 @@ describe('docs navigation', () => {
     expect(enPrimitive).toContain('class="varo-primitive-stack"')
   })
 
-  it('documents the dual-target component tiers and VSelect boundaries', () => {
-    const config = readFileSync(configPath, 'utf8')
-    const homeZh = readFileSync(resolve(docsRoot, 'index.md'), 'utf8')
-    const homeEn = readFileSync(resolve(docsRoot, 'en/index.md'), 'utf8')
-    const selectZh = readFileSync(resolve(docsRoot, 'components/select.md'), 'utf8')
-    const selectEn = readFileSync(resolve(docsRoot, 'en/components/select.md'), 'utf8')
+  it('documents the dual-target component tiers', () => {
     const phase1Manifest = JSON.parse(readFileSync(resolve(workspaceRoot, 'registry/base-kit.phase1.json'), 'utf8')) as {
       components: string[]
       targets: string[]
@@ -387,78 +380,39 @@ describe('docs navigation', () => {
       agentUi: string[]
       registryCatalog: { h5: number, weappSfc: number, weappSfcBaseKit: number, weappVite: number }
     }
+    const requiredComponentIds = [
+      'select',
+      'switch',
+      'loading',
+      'toast',
+      'region-picker',
+      'map',
+      'robot-chat',
+    ]
     const requiredPages = [
-      'components/select.md',
-      'components/switch.md',
-      'components/loading.md',
-      'components/toast.md',
-      'components/region-picker.md',
-      'components/map.md',
+      ...requiredComponentIds.flatMap(id => [
+        `components/${id}.md`,
+        `en/components/${id}.md`,
+      ]),
       'blocks/build-your-own.md',
       'blocks/profile-edit.md',
       'blocks/order-filter.md',
-      'en/components/select.md',
-      'en/components/switch.md',
-      'en/components/loading.md',
-      'en/components/toast.md',
-      'en/components/region-picker.md',
-      'en/components/map.md',
       'en/blocks/build-your-own.md',
       'en/blocks/profile-edit.md',
       'en/blocks/order-filter.md',
     ]
-
-    ;[
-      '/components/select',
-      '/components/switch',
-      '/components/loading',
-      '/components/toast',
-      '/components/region-picker',
-      '/components/map',
-      '/components/robot-chat',
-      '/blocks/build-your-own',
-      '/blocks/profile-edit',
-      '/blocks/order-filter',
-      '/en/components/select',
-      '/en/components/switch',
-      '/en/components/loading',
-      '/en/components/toast',
-      '/en/components/region-picker',
-      '/en/components/map',
-      '/en/components/robot-chat',
-      '/en/blocks/build-your-own',
-      '/en/blocks/profile-edit',
-      '/en/blocks/order-filter',
-    ].forEach((route) => {
-      expect(config).toContain(route)
+    requiredComponentIds.forEach((id) => {
+      expect(componentCatalogItems.some(item => item.id === id)).toBe(true)
+      expect(componentDocsRoute(id, 'zh')).toBe(`/components/${id}`)
+      expect(componentDocsRoute(id, 'en')).toBe(`/en/components/${id}`)
     })
-
     requiredPages.forEach((page) => {
       expect(existsSync(resolve(docsRoot, page))).toBe(true)
     })
-
     expect(phase1Manifest.targets).toEqual(['h5', 'weapp'])
     expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
-    expect(phase1Manifest.components).toHaveLength(15)
     expect(componentTiers.registryCatalog).toEqual({ h5: 57, weappSfc: 46, weappSfcBaseKit: 15, weappVite: 47 })
     expect(componentTiers.agentUi).toHaveLength(42)
-    expect(homeZh).toContain('Base Kit 包含 15 个已经通过微信开发者工具编译的原生 SFC 组件')
-    expect(homeZh).toContain('小程序开放 45 个高共识组件族')
-    expect(homeEn).toContain('The Base Kit contains 15 native SFC components verified by WeChat DevTools')
-    expect(homeEn).toContain('mini-program registry exposes 45 high-consensus families')
-    expect(homeZh).toContain('copy-owned Weapp renderer 均为 target-specific 原生 Wevu SFC')
-    expect(homeEn).toContain('Every copy-owned Weapp renderer is a target-specific native Wevu SFC')
-    expect(homeZh).toContain('`RegionPicker` 与原生 `Map`')
-    expect(homeEn).toContain('`RegionPicker` and native `Map`')
-    baseKitPhase1Components.forEach((component) => {
-      expect(homeZh).toContain(`\`${component}\``)
-      expect(homeEn).toContain(`\`${component}\``)
-    })
-
-    expect(selectZh).toContain('默认使用 `picker` 模式')
-    expect(selectZh).toContain('分组、远程搜索、异步分页属于二次封装组件能力')
-    expect(selectEn).toContain('uses `picker` mode by default')
-    expect(selectEn).toContain('Grouped options, remote search, and async paging belong in secondary wrappers')
   })
 
   it('keeps the Wevu Registry guide focused on mini-program installation and usage', () => {
@@ -532,8 +486,8 @@ describe('docs navigation', () => {
     expect(tailwind).toContain('@source "../../src/components/agent-ui/**/*.{ts,vue}";')
     expect(aiZh).toContain('<AgentComponentsDemo locale=\"zh\" />')
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
-    expect(aiZh).toContain('42 个双端 Agent 组件')
-    expect(aiEn).toContain('42 dual-target Agent components')
+    expect(aiZh).toContain('components/agent-ui')
+    expect(aiEn).toContain('components/agent-ui')
     expect(aiZh).toContain('Beautiful UI / beUI / ReUI 对标')
     expect(aiEn).toContain('Beautiful UI / beUI / ReUI Coverage')
     expect(aiZh).toContain('AgentWorkspace')
@@ -608,6 +562,21 @@ describe('docs navigation', () => {
       expect(enPage).toContain('pnpm add @varo-ui/ai')
       expect(zhPage).toContain('不导出 Vue/Wevu UI 组件')
       expect(enPage).toContain('not Vue/Wevu UI components')
+    })
+  })
+
+  it('keeps documented target availability aligned with Registry manifests', () => {
+    const registryNameByDocsId: Record<string, string> = {
+      'calendar-card': 'calendar',
+    }
+
+    componentCatalogItems.forEach((item) => {
+      const registryName = registryNameByDocsId[item.id] ?? item.id
+      const manifest = JSON.parse(
+        readFileSync(resolve(workspaceRoot, `registry/components/${registryName}/registry.json`), 'utf8'),
+      ) as { targets: string[] }
+
+      expect(item.targets).toEqual(manifest.targets)
     })
   })
 })

@@ -87,10 +87,10 @@ const hasAction = computed(() =>
     </view>
 
     <view v-if="hasAction" class="flex min-h-12 items-center justify-end gap-2 border-t border-[var(--varo-agent-border)] px-3">
-      <button v-if="status === 'failed'" class="min-h-9 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('retry')">
+      <button v-if="status === 'failed'" class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('retry')">
         Retry
       </button>
-      <button v-if="status === 'completed' && src" class="min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-white" type="button" @click="emit('download', src)">
+      <button v-if="status === 'completed' && src" class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]" type="button" @click="emit('download', src)">
         Download
       </button>
     </view>

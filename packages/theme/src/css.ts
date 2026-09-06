@@ -29,31 +29,50 @@ export interface ThemeCssVariables {
   '--varo-ui-primary-hover': string
   '--varo-ui-primary-soft': string
   '--varo-ui-primary-foreground': string
+  '--varo-ui-primary-hover-foreground': string
   '--varo-ui-primary-text': string
   '--varo-ui-success': string
   '--varo-ui-success-dark': string
   '--varo-ui-success-hover': string
   '--varo-ui-success-soft': string
+  '--varo-ui-success-foreground': string
+  '--varo-ui-success-hover-foreground': string
   '--varo-ui-success-text': string
   '--varo-ui-warning': string
   '--varo-ui-warning-dark': string
   '--varo-ui-warning-hover': string
   '--varo-ui-warning-soft': string
+  '--varo-ui-warning-foreground': string
+  '--varo-ui-warning-hover-foreground': string
   '--varo-ui-warning-text': string
   '--varo-ui-danger': string
   '--varo-ui-danger-dark': string
   '--varo-ui-danger-hover': string
   '--varo-ui-danger-soft': string
+  '--varo-ui-danger-foreground': string
+  '--varo-ui-danger-hover-foreground': string
   '--varo-ui-danger-text': string
   '--varo-ui-info': string
   '--varo-ui-info-dark': string
   '--varo-ui-info-hover': string
   '--varo-ui-info-soft': string
+  '--varo-ui-info-foreground': string
+  '--varo-ui-info-hover-foreground': string
+  '--varo-ui-info-text': string
   '--varo-ui-radius': string
   '--varo-ui-radius-sm': string
+  '--varo-ui-button-radius': string
+  '--varo-ui-button-height-sm': string
+  '--varo-ui-button-height-md': string
+  '--varo-ui-button-height-lg': string
+  '--varo-ui-input-radius': string
+  '--varo-ui-input-height-sm': string
+  '--varo-ui-input-height-md': string
+  '--varo-ui-input-height-lg': string
   '--varo-ui-shadow-sm': string
   '--varo-ui-shadow-md': string
   '--varo-ui-ring': string
+  '--varo-ui-focus': string
   [name: `--${string}`]: string
 }
 
@@ -91,6 +110,38 @@ function semanticTextColor(base: string, text: string): string {
   return `#${channels.join('')}`
 }
 
+function relativeLuminance(color: string): number | undefined {
+  const value = color.slice(1)
+  const normalized = value.length === 3
+    ? value.split('').map(part => `${part}${part}`).join('')
+    : value
+
+  if (!color.startsWith('#') || !/^[\da-f]{6}$/i.test(normalized)) {
+    return undefined
+  }
+
+  const channelLuminance = (offset: number) => {
+    const channel = Number.parseInt(normalized.slice(offset, offset + 2), 16) / 255
+    return channel <= 0.04045
+      ? channel / 12.92
+      : ((channel + 0.055) / 1.055) ** 2.4
+  }
+  return channelLuminance(0) * 0.2126
+    + channelLuminance(2) * 0.7152
+    + channelLuminance(4) * 0.0722
+}
+
+export function contrastSafeForeground(background: string): '#000000' | '#ffffff' {
+  const backgroundLuminance = relativeLuminance(background)
+  if (backgroundLuminance == null) {
+    throw new Error(`Contrast-safe foreground requires a hex color (#RGB or #RRGGBB): ${background}`)
+  }
+
+  const blackContrast = (backgroundLuminance + 0.05) / 0.05
+  const whiteContrast = 1.05 / (backgroundLuminance + 0.05)
+  return blackContrast >= whiteContrast ? '#000000' : '#ffffff'
+}
+
 export function createThemeCssVariables(
   theme: ThemeDefinition,
   overrides: ThemeCssVariableOverrides = {},
@@ -123,29 +174,47 @@ export function createThemeCssVariables(
     '--varo-ui-primary-dark': theme.semantic.primaryDark,
     '--varo-ui-primary-hover': theme.semantic.primaryHover,
     '--varo-ui-primary-soft': theme.semantic.primarySoft,
-    '--varo-ui-primary-foreground': theme.palette.neutral.white,
+    '--varo-ui-primary-foreground': contrastSafeForeground(theme.semantic.primaryBase),
+    '--varo-ui-primary-hover-foreground': contrastSafeForeground(theme.semantic.primaryHover),
     '--varo-ui-primary-text': semanticTextColor(theme.semantic.primaryBase, theme.semantic.textBase),
     '--varo-ui-success': theme.semantic.successBase,
     '--varo-ui-success-dark': theme.semantic.successDark,
     '--varo-ui-success-hover': theme.semantic.successHover,
     '--varo-ui-success-soft': theme.semantic.successSoft,
+    '--varo-ui-success-foreground': contrastSafeForeground(theme.semantic.successBase),
+    '--varo-ui-success-hover-foreground': contrastSafeForeground(theme.semantic.successHover),
     '--varo-ui-success-text': semanticTextColor(theme.semantic.successBase, theme.semantic.textBase),
     '--varo-ui-warning': theme.semantic.warningBase,
     '--varo-ui-warning-dark': theme.semantic.warningDark,
     '--varo-ui-warning-hover': theme.semantic.warningHover,
     '--varo-ui-warning-soft': theme.semantic.warningSoft,
+    '--varo-ui-warning-foreground': contrastSafeForeground(theme.semantic.warningBase),
+    '--varo-ui-warning-hover-foreground': contrastSafeForeground(theme.semantic.warningHover),
     '--varo-ui-warning-text': semanticTextColor(theme.semantic.warningBase, theme.semantic.textBase),
     '--varo-ui-danger': theme.semantic.dangerBase,
     '--varo-ui-danger-dark': theme.semantic.dangerDark,
     '--varo-ui-danger-hover': theme.semantic.dangerHover,
     '--varo-ui-danger-soft': theme.semantic.dangerSoft,
+    '--varo-ui-danger-foreground': contrastSafeForeground(theme.semantic.dangerBase),
+    '--varo-ui-danger-hover-foreground': contrastSafeForeground(theme.semantic.dangerHover),
     '--varo-ui-danger-text': semanticTextColor(theme.semantic.dangerBase, theme.semantic.textBase),
     '--varo-ui-info': theme.semantic.infoBase,
     '--varo-ui-info-dark': theme.semantic.infoDark,
     '--varo-ui-info-hover': theme.semantic.infoHover,
     '--varo-ui-info-soft': theme.semantic.infoSoft,
-    '--varo-ui-radius': theme.components.button.borderRadius,
-    '--varo-ui-radius-sm': theme.components.input.borderRadius,
+    '--varo-ui-info-foreground': contrastSafeForeground(theme.semantic.infoBase),
+    '--varo-ui-info-hover-foreground': contrastSafeForeground(theme.semantic.infoHover),
+    '--varo-ui-info-text': semanticTextColor(theme.semantic.infoBase, theme.semantic.textBase),
+    '--varo-ui-button-radius': theme.components.button.borderRadius,
+    '--varo-ui-button-height-sm': theme.components.button.heightSm,
+    '--varo-ui-button-height-md': theme.components.button.heightMd,
+    '--varo-ui-button-height-lg': theme.components.button.heightLg,
+    '--varo-ui-input-radius': theme.components.input.borderRadius,
+    '--varo-ui-input-height-sm': theme.components.input.heightSm,
+    '--varo-ui-input-height-md': theme.components.input.heightMd,
+    '--varo-ui-input-height-lg': theme.components.input.heightLg,
+    '--varo-ui-radius': 'var(--varo-ui-button-radius)',
+    '--varo-ui-radius-sm': 'var(--varo-ui-input-radius)',
     '--varo-ui-shadow-sm': theme.seed.mode === 'dark'
       ? '0 1px 2px rgb(0 0 0 / 46%)'
       : '0 1px 2px rgb(48 49 51 / 6%)',
@@ -153,6 +222,7 @@ export function createThemeCssVariables(
       ? '0 12px 32px 4px rgb(0 0 0 / 36%), 0 8px 20px rgb(0 0 0 / 72%)'
       : '0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%)',
     '--varo-ui-ring': colorWithAlpha(theme.semantic.primaryBase, 16),
+    '--varo-ui-focus': contrastSafeForeground(theme.semantic.surfaceBase),
     ...overrides,
   }
 }

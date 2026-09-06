@@ -1,5 +1,7 @@
 # Searchbar 搜索栏
 
+<RegistryInstallStrip item="components/searchbar" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="searchbar" locale="zh" />

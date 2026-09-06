@@ -1,5 +1,7 @@
 # Tabbar 标签栏
 
+<RegistryInstallStrip item="components/tabbar" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="tabbar" locale="zh" />

@@ -74,7 +74,7 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
         </view>
         <button
           v-if="entry.canOpen"
-          class="agent-source-receipt__action"
+          class="agent-native-button agent-source-receipt__action"
           type="button"
           :aria-label="`查看${entry.item.label}`"
           hover-class="agent-source-receipt__action--pressed"
@@ -86,7 +86,7 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
         </button>
         <button
           v-else-if="entry.canConnect"
-          class="agent-source-receipt__action agent-source-receipt__action--primary"
+          class="agent-native-button agent-source-receipt__action agent-source-receipt__action--primary"
           type="button"
           :aria-label="`连接${entry.item.label}`"
           hover-class="agent-source-receipt__action--pressed"
@@ -135,11 +135,11 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
   justify-content: center;
   min-width: 48px;
   height: 36px;
-  margin: 0;
   padding: 0 10px;
+  margin: 0;
   font-size: 11px;
-  line-height: 1;
   font-weight: 700;
+  line-height: 1;
   color: var(--varo-agent-text);
   background: transparent;
   border: 0;

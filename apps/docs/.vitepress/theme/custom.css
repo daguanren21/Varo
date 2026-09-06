@@ -46,6 +46,7 @@
   --varo-accent-hover: #2fc976;
   --varo-accent-soft: #ddf7e8;
   --varo-ring: rgb(7 185 92 / 22%);
+  --varo-focus: #10271b;
   --varo-shadow: 0 24px 64px rgb(18 68 48 / 10%), 0 3px 10px rgb(18 68 48 / 6%);
   --varo-shadow-sm: 0 8px 24px rgb(18 68 48 / 6%), 0 1px 2px rgb(18 68 48 / 5%);
   --varo-shadow-popover: 0 20px 52px rgb(18 68 48 / 16%);
@@ -55,7 +56,7 @@
   --varo-primary-dark: #06ad56;
   --varo-primary-hover: #38cd80;
   --varo-primary-soft: #e6f9ef;
-  --varo-primary-foreground: #fff;
+  --varo-primary-foreground: #10271b;
   --varo-primary-text: #1c794a;
   --varo-success: #13b248;
   --varo-success-dark: #10973d;
@@ -140,6 +141,7 @@
   --varo-ui-shadow-sm: var(--varo-shadow-sm);
   --varo-ui-shadow-md: var(--varo-shadow-popover);
   --varo-ui-ring: var(--varo-ring);
+  --varo-ui-focus: var(--varo-focus);
   --varo-demo-surface: color-mix(in srgb, var(--vp-c-bg-soft) 90%, transparent);
   --varo-demo-surface-strong: color-mix(in srgb, var(--vp-c-bg) 96%, transparent);
   --varo-demo-border: color-mix(in srgb, var(--vp-c-divider) 88%, transparent);
@@ -203,6 +205,7 @@
   --varo-accent-hover: #38cd80;
   --varo-accent-soft: #122c1f;
   --varo-ring: rgb(56 205 128 / 28%);
+  --varo-focus: #f4fff8;
   --varo-shadow: 0 12px 32px 4px rgb(0 0 0 / 36%), 0 8px 20px rgb(0 0 0 / 72%);
   --varo-shadow-sm: 0 1px 2px rgb(0 0 0 / 46%);
   --varo-shadow-popover: 0 0 12px rgb(0 0 0 / 72%);
@@ -210,7 +213,7 @@
   --varo-primary-dark: #06ad56;
   --varo-primary-hover: #38cd80;
   --varo-primary-soft: #122c1f;
-  --varo-primary-foreground: #fff;
+  --varo-primary-foreground: #10271b;
   --varo-primary-text: #76d6aa;
   --varo-success: #13b248;
   --varo-success-dark: #10973d;
@@ -334,7 +337,7 @@ html:not(.dark) .VPNavBar {
 }
 
 .VPButton {
-  min-height: 40px;
+  min-height: 44px;
   font-weight: 680;
   border-radius: var(--varo-radius) !important;
   transition:
@@ -612,7 +615,7 @@ html:not(.dark) .VPFeature:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 13px;
   color: var(--varo-foreground);
   text-decoration: none;
@@ -2011,11 +2014,65 @@ html:not(.dark) .VPFeature:hover {
   }
 }
 
+.varo-adoption-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.varo-adoption-grid article {
+  min-width: 0;
+  padding: 16px;
+  background: color-mix(in srgb, var(--varo-card) 84%, transparent);
+  border: 1px solid var(--varo-border);
+  border-radius: var(--varo-radius-lg);
+}
+
+.varo-adoption-grid span {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--varo-accent);
+  letter-spacing: 0.1em;
+}
+
+.varo-adoption-grid h3 {
+  margin: 8px 0 12px;
+  font-size: 1rem;
+}
+
+.varo-adoption-grid code {
+  display: block;
+  padding: 10px;
+  color: var(--varo-primary-text);
+  overflow-wrap: anywhere;
+  background: var(--varo-primary-soft);
+  border-radius: var(--varo-radius);
+}
+
+.varo-adoption-grid p {
+  margin: 12px 0 0;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--varo-muted);
+}
+
+@media (max-width: 760px) {
+  .varo-adoption-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .VPHero {
     padding-top: 86px !important;
     padding-bottom: 30px !important;
   }
+
+  .VPHero .image {
+    display: none;
+  }
+
 
   .VPHero .main {
     padding-top: 0;

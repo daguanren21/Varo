@@ -35,6 +35,17 @@ const rootClass = computed(() =>
     props.className,
   ),
 )
+const headerTitle = computed(() => props.collapsed ? 'AI' : props.title)
+const toggleIconClass = computed(() => props.collapsed ? '-rotate-90' : 'rotate-90')
+
+function itemClass(item: AgentSidebarItem) {
+  const active = item.id === props.activeId
+  return cn(
+    'flex min-h-10 items-center gap-2 rounded-xl border-0 px-2 text-left',
+    active && 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-primary)]',
+    !active && 'bg-transparent text-[var(--varo-agent-text)]',
+  )
+}
 
 function select(item: AgentSidebarItem) {
   emit('update:activeId', item.id)
@@ -46,14 +57,14 @@ function select(item: AgentSidebarItem) {
   <view :class="rootClass" :data-collapsed="String(collapsed)">
     <view class="flex min-h-12 items-center justify-between gap-2 border-b border-[var(--varo-agent-border)] px-3">
       <text class="truncate text-xs font-bold text-[var(--varo-agent-foreground)]">
-        {{ collapsed ? 'AI' : title }}
+        {{ headerTitle }}
       </text>
-      <button class="grid h-7 w-7 flex-none place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Toggle sidebar" @click="emit('update:collapsed', !collapsed)">
-        <image class="h-3.5 w-3.5" :class="[collapsed ? '-rotate-90' : 'rotate-90']" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
+      <button class="agent-native-button agent-sidebar__toggle grid flex-none place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Toggle sidebar" @click="emit('update:collapsed', !collapsed)">
+        <image class="h-3.5 w-3.5" :class="toggleIconClass" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
       </button>
     </view>
 
-    <button v-if="!collapsed" class="mx-2.5 mt-2.5 flex min-h-9 w-[calc(100%_-_20px)] items-center justify-center rounded-xl border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-success-soft)] text-[12px] font-bold text-[var(--varo-agent-primary)]" type="button" @click="emit('create')">
+    <button v-if="!collapsed" class="agent-native-button agent-sidebar__create mx-2.5 mt-2.5 flex min-h-9 items-center justify-center rounded-xl border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-success-soft)] text-[12px] font-bold text-[var(--varo-agent-primary)]" type="button" @click="emit('create')">
       + New chat
     </button>
 
@@ -65,7 +76,8 @@ function select(item: AgentSidebarItem) {
         <button
           v-for="item in group.items"
           :key="item.id"
-          :class="cn('flex min-h-10 w-full items-center gap-2 rounded-xl border-0 px-2 text-left', item.id === activeId ? 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-primary)]' : 'bg-transparent text-[var(--varo-agent-text)]')"
+          :class="itemClass(item)"
+          class="agent-native-button agent-native-button--block"
           type="button"
           :title="item.label"
           :data-active="String(item.id === activeId)"

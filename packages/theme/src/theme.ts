@@ -201,8 +201,8 @@ export function createComponentTokens(semantic: SemanticTokens): ComponentTokens
   return {
     button: {
       borderRadius: '12px',
-      heightSm: '32px',
-      heightMd: '40px',
+      heightSm: '36px',
+      heightMd: '44px',
       heightLg: '48px',
     },
     dialog: {
@@ -211,8 +211,8 @@ export function createComponentTokens(semantic: SemanticTokens): ComponentTokens
     },
     input: {
       borderRadius: '12px',
-      heightSm: '32px',
-      heightMd: '40px',
+      heightSm: '36px',
+      heightMd: '44px',
       heightLg: '48px',
     },
   }

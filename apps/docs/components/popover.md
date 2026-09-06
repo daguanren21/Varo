@@ -1,5 +1,7 @@
 # Popover 气泡浮层
 
+<RegistryInstallStrip item="components/popover" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="popover" locale="zh" />

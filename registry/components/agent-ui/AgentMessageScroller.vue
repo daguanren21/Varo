@@ -42,7 +42,7 @@ function follow() {
     </scroll-view>
     <button
       v-if="!atLiveEdge"
-      class="mx-auto mb-2.5 flex min-h-9 w-fit items-center justify-center rounded-full border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-bold text-[var(--varo-agent-primary)] shadow-sm"
+      class="agent-native-button agent-native-button--fit mx-auto mb-2.5 flex min-h-9 items-center justify-center rounded-full border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-bold text-[var(--varo-agent-primary)] shadow-sm"
       type="button"
       @click="follow"
     >

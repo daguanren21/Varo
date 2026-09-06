@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { AgentMarkdownViewNode, StreamingMarkdownParser } from '@varo-ui/ai'
-import type { PropType } from 'wevu'
 import type { ClassValue } from '../../lib/cn'
 import {
 
@@ -12,12 +11,26 @@ import { computed, shallowRef, watch } from 'wevu'
 import { cn } from '../../lib/cn'
 import AgentMarkdownNode from './AgentMarkdownNode.vue'
 
-const props = defineProps({
-  className: { type: null as unknown as PropType<ClassValue>, default: undefined },
-  content: { type: null as unknown as PropType<string>, default: '' },
-  customHtmlTags: { type: null as unknown as PropType<string[]>, default: () => [] },
-  final: { type: Boolean, default: false },
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    content: { type: null, value: '' },
+  },
 })
+
+const props = withDefaults(
+  defineProps<{
+    className?: ClassValue
+    content?: string
+    customHtmlTags?: string[]
+    final?: boolean
+  }>(),
+  {
+    content: '',
+    customHtmlTags: () => [],
+    final: false,
+  },
+)
 
 const emit = defineEmits<{
   error: [message: string]

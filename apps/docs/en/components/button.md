@@ -1,5 +1,7 @@
 # Button
 
+<RegistryInstallStrip item="components/button" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="button" locale="en" />
@@ -94,7 +96,7 @@
   <VButton loading>
     Submitting
   </VButton>
-  <VButton loading loading-text="Saving..." />
+  <VButton loading loading-text="Saving…" />
 </template>
 ```
 
@@ -104,6 +106,9 @@
 <template>
   <VButton color="#07c160">
     Custom Color
+  </VButton>
+  <VButton color="var(--brand-action)" foreground-color="#ffffff">
+    CSS Variable Color
   </VButton>
   <VButton native-type="submit">
     Submit Form
@@ -116,22 +121,23 @@
 
 ## Props
 
-| Prop           | Type                                                           | Default     | Description                                |
-| -------------- | -------------------------------------------------------------- | ----------- | ------------------------------------------ |
-| `variant`      | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | Visual variant                             |
-| `tone`         | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Semantic tone                              |
-| `size`         | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | Button size                                |
-| `shape`        | `'default' \| 'square' \| 'round'`                             | `'default'` | Button shape                               |
-| `plain`        | `boolean`                                                      | `false`     | Plain button, mapped to outline styling    |
-| `hairline`     | `boolean`                                                      | `false`     | Hairline border marker                     |
-| `block`        | `boolean`                                                      | `false`     | Fill the parent width                      |
-| `icon`         | `string`                                                       | `undefined` | Icon text or icon name for the style layer |
-| `iconPosition` | `'left' \| 'right'`                                            | `'left'`    | Icon position                              |
-| `loading`      | `boolean`                                                      | `false`     | Loading state, blocks clicks               |
-| `loadingText`  | `string`                                                       | `undefined` | Replaces default content while loading     |
-| `disabled`     | `boolean`                                                      | `false`     | Disabled state                             |
-| `color`        | `string`                                                       | `undefined` | Custom button color                        |
-| `nativeType`   | `'button' \| 'submit' \| 'reset'`                              | `undefined` | Native button type                         |
+| Prop              | Type                                                           | Default     | Description                                         |
+| ----------------- | -------------------------------------------------------------- | ----------- | --------------------------------------------------- |
+| `variant`         | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | Visual variant                                      |
+| `tone`            | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Semantic tone                                       |
+| `size`            | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | Button size                                         |
+| `shape`           | `'default' \| 'square' \| 'round'`                             | `'default'` | Button shape                                        |
+| `plain`           | `boolean`                                                      | `false`     | Plain button, mapped to outline styling             |
+| `hairline`        | `boolean`                                                      | `false`     | Hairline border marker                              |
+| `block`           | `boolean`                                                      | `false`     | Fill the parent width                               |
+| `icon`            | `string`                                                       | `undefined` | Icon text or icon name for the style layer          |
+| `iconPosition`    | `'left' \| 'right'`                                            | `'left'`    | Icon position                                       |
+| `loading`         | `boolean`                                                      | `false`     | Loading state, blocks clicks                        |
+| `loadingText`     | `string`                                                       | `undefined` | Replaces default content while loading              |
+| `disabled`        | `boolean`                                                      | `false`     | Disabled state                                      |
+| `color`           | `string`                                                       | `undefined` | Custom button color                                 |
+| `foregroundColor` | `string`                                                       | `undefined` | Required foreground for non-hex solid custom colors |
+| `nativeType`      | `'button' \| 'submit' \| 'reset'`                              | `undefined` | Native button type                                  |
 
 ## Slots
 

@@ -39,7 +39,7 @@ function lockTouchMove() {
     @touchmove.stop="lockTouchMove"
   >
     <button
-      class="agent-shell__overlay"
+      class="agent-native-button agent-native-button--block agent-shell__overlay"
       type="button"
       :aria-label="closeLabel"
       hover-class="none"
@@ -52,7 +52,7 @@ function lockTouchMove() {
           {{ title }}
         </text>
         <button
-          class="agent-shell__close"
+          class="agent-native-button agent-shell__close"
           type="button"
           :aria-label="closeLabel"
           hover-class="agent-shell__close--pressed"
@@ -77,7 +77,7 @@ function lockTouchMove() {
           {{ title }}
         </text>
         <button
-          class="agent-shell__close"
+          class="agent-native-button agent-shell__close"
           type="button"
           :aria-label="closeLabel"
           hover-class="agent-shell__close--pressed"
@@ -102,8 +102,8 @@ function lockTouchMove() {
 <style scoped>
 .agent-shell {
   box-sizing: border-box;
-  min-width: 0;
   width: 100%;
+  min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
   color: var(--varo-agent-foreground);
@@ -115,8 +115,8 @@ function lockTouchMove() {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  min-width: 0;
   width: 100%;
+  min-width: 0;
   max-width: 100%;
   min-height: 0;
   overflow: hidden;
@@ -138,10 +138,10 @@ function lockTouchMove() {
 .agent-shell__title {
   min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 14px;
   font-weight: 750;
   color: var(--varo-agent-foreground);
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -150,11 +150,10 @@ function lockTouchMove() {
   box-sizing: border-box;
   display: grid;
   flex: none;
-  width: 40px;
-  height: 40px;
-  margin: 0 0 0 auto;
-  padding: 0;
   place-items: center;
+  height: 40px;
+  padding: 0;
+  margin: 0 0 0 auto;
   background: transparent;
   border: 0;
   border-radius: 10px;
@@ -182,11 +181,11 @@ function lockTouchMove() {
 
 .agent-shell__content {
   box-sizing: border-box;
-  min-width: 0;
   width: 100%;
+  min-width: 0;
   max-width: 100%;
-  overflow-x: hidden;
   min-height: 0;
+  overflow-x: hidden;
 }
 
 .agent-shell__content--page {
@@ -226,13 +225,12 @@ function lockTouchMove() {
   position: fixed;
   inset: 0;
   z-index: 0;
-  width: 100%;
   height: 100%;
   padding: 0;
   background: var(--varo-agent-foreground);
-  opacity: 0.42;
   border: 0;
   border-radius: 0;
+  opacity: 0.42;
   animation: agent-shell-overlay-in 180ms ease-out;
 }
 
@@ -257,8 +255,8 @@ function lockTouchMove() {
 
 @keyframes agent-shell-sheet-in {
   from {
-    transform: translateY(16px);
     opacity: 0;
+    transform: translateY(16px);
   }
 }
 

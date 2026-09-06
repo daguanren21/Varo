@@ -1,17 +1,33 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { computed } from 'wevu'
-import { agentSendIcon } from './agent-icons'
+import { agentSendIconStyle } from './agent-icons'
 import AgentPromptSuggestions from './AgentPromptSuggestions.vue'
 
-const props = defineProps({
-  ariaLabel: { type: null as unknown as PropType<string>, default: 'Agent 输入' },
-  busy: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  modelValue: { type: null as unknown as PropType<string>, default: '' },
-  placeholder: { type: null as unknown as PropType<string>, default: '告诉 Agent 你想买什么、退什么或查看什么' },
-  suggestions: { type: null as unknown as PropType<string[]>, default: () => [] },
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    modelValue: { type: null, value: '' },
+  },
 })
+
+const props = withDefaults(
+  defineProps<{
+    ariaLabel?: string
+    busy?: boolean
+    disabled?: boolean
+    modelValue?: string
+    placeholder?: string
+    suggestions?: string[]
+  }>(),
+  {
+    ariaLabel: 'Agent 输入',
+    busy: false,
+    disabled: false,
+    modelValue: '',
+    placeholder: '告诉 Agent 你想买什么、退什么或查看什么',
+    suggestions: () => [],
+  },
+)
 
 const emit = defineEmits<{
   'submit': [prompt: string]
@@ -22,7 +38,7 @@ const promptValue = computed(() => props.modelValue || '')
 const promptSuggestions = computed(() => Array.isArray(props.suggestions) ? props.suggestions : [])
 const canSubmit = computed(() => promptValue.value.trim().length > 0 && !props.busy && !props.disabled)
 const submitClass = computed(() => canSubmit.value
-  ? 'bg-[var(--varo-agent-primary)] text-white'
+  ? 'bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)]'
   : 'bg-[var(--varo-agent-border)] text-[var(--varo-agent-muted)]')
 
 function submit(prompt = promptValue.value) {
@@ -63,7 +79,7 @@ function update(event: Event) {
         @confirm="submit()"
       />
       <button
-        class="box-border grid h-[42px] w-[42px] min-w-[42px] flex-none place-items-center rounded-full border-0 p-0 disabled:opacity-45"
+        class="agent-native-button agent-composer__submit box-border grid flex-none place-items-center rounded-full border-0 disabled:opacity-45"
         :class="submitClass"
         type="button"
         :disabled="!canSubmit"
@@ -73,7 +89,7 @@ function update(event: Event) {
         <view v-if="busy" class="agent-composer__busy flex items-center gap-0.5" aria-hidden="true">
           <text v-for="index in 3" :key="index" class="h-1 w-1 rounded-full bg-current" />
         </view>
-        <image v-else class="h-5 w-5" :src="agentSendIcon" mode="aspectFit" aria-hidden="true" />
+        <view v-else class="agent-composer__send-icon" :style="agentSendIconStyle" aria-hidden="true" />
       </button>
     </view>
   </view>

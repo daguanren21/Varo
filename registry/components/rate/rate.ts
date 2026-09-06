@@ -1,5 +1,5 @@
 import { createVariantClass } from '@varo-ui/headless'
-import { useVaroTheme } from '@varo-ui/theme'
+
 import { computed, defineComponent, h } from 'vue'
 import '../../styles/varo.css'
 
@@ -23,13 +23,8 @@ export const VRate = defineComponent({
   },
   emits: ['update:value', 'change'],
   setup(props, { attrs, emit, slots }) {
-    const theme = useVaroTheme()
     const classes = computed(() =>
-      createVariantClass('varo-rate', {
-        radius: theme.value.components.button.borderRadius,
-        disabled: props.disabled,
-        readonly: props.readonly,
-      }),
+      createVariantClass('varo-rate', { disabled: props.disabled, readonly: props.readonly }),
     )
 
     function update(next: number) {

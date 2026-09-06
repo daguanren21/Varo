@@ -51,7 +51,7 @@ function toggle() {
     role="switch"
     :disabled="!interactive"
     :aria-checked="checked"
-    :data-checked="String(checked)"
+    :data-state="thumbState"
     :data-loading="String(loading)"
     @click="toggle"
   >

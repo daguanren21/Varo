@@ -143,6 +143,29 @@ const splitAriaLabels = computed(() =>
       : '',
   })),
 )
+const unifiedLineKeys = computed(() =>
+  props.lines.map((line, index) => line.id ?? index),
+)
+const unifiedSelectionStates = computed(() =>
+  unifiedLineKeys.value.map(key => String(selectedKey.value === `${key}:unified`)),
+)
+const splitRowKeys = computed(() =>
+  splitRows.value.map((row, index) => row.hunk?.line.id ?? `row:${index}`),
+)
+const splitDeletionSelectionStates = computed(() =>
+  splitRows.value.map((row) => {
+    if (!row.deletion) { return 'false' }
+    const key = row.deletion.line.id ?? row.deletion.index
+    return String(selectedKey.value === `${key}:old`)
+  }),
+)
+const splitAdditionSelectionStates = computed(() =>
+  splitRows.value.map((row) => {
+    if (!row.addition) { return 'false' }
+    const key = row.addition.line.id ?? row.addition.index
+    return String(selectedKey.value === `${key}:new`)
+  }),
+)
 
 function statusLabel(status: AgentFileDiffStatus) {
   if (status === 'completed') { return 'Completed' }
@@ -230,7 +253,7 @@ function statusDotClass(status: AgentFileDiffStatus) {
           </text>
         </view>
         <button
-          class="agent-file-diff__control agent-file-diff__collapse"
+          class="agent-native-button agent-file-diff__control agent-file-diff__collapse"
           type="button"
           :aria-controls="bodyId"
           :aria-expanded="currentOpen"
@@ -246,7 +269,7 @@ function statusDotClass(status: AgentFileDiffStatus) {
       <view v-if="showToolbar" class="agent-file-diff__toolbar" :aria-label="resolvedLabels.display">
         <view class="agent-file-diff__segmented" role="group">
           <button
-            class="agent-file-diff__control"
+            class="agent-native-button agent-file-diff__control"
             type="button"
             :aria-pressed="currentView === 'unified'"
             :data-active="String(currentView === 'unified')"
@@ -255,7 +278,7 @@ function statusDotClass(status: AgentFileDiffStatus) {
             {{ resolvedLabels.unified }}
           </button>
           <button
-            class="agent-file-diff__control"
+            class="agent-native-button agent-file-diff__control"
             type="button"
             :aria-pressed="currentView === 'split'"
             :data-active="String(currentView === 'split')"
@@ -266,7 +289,7 @@ function statusDotClass(status: AgentFileDiffStatus) {
         </view>
         <view class="agent-file-diff__settings">
           <button
-            class="agent-file-diff__control"
+            class="agent-native-button agent-file-diff__control"
             type="button"
             :aria-pressed="currentWrap"
             :data-active="String(currentWrap)"
@@ -275,7 +298,7 @@ function statusDotClass(status: AgentFileDiffStatus) {
             {{ resolvedLabels.wrap }}
           </button>
           <button
-            class="agent-file-diff__control"
+            class="agent-native-button agent-file-diff__control"
             type="button"
             :aria-pressed="currentLineNumbers"
             :data-active="String(currentLineNumbers)"
@@ -292,10 +315,10 @@ function statusDotClass(status: AgentFileDiffStatus) {
         </view>
 
         <view v-else-if="currentView === 'unified'" class="agent-file-diff__unified">
-          <template v-for="(line, index) in lines" :key="line.id ?? index">
+          <template v-for="(line, index) in lines" :key="unifiedLineKeys[index]">
             <button
               v-if="line.type === 'hunk'"
-              class="agent-file-diff__hunk"
+              class="agent-native-button agent-native-button--block agent-file-diff__hunk"
               type="button"
               :disabled="!line.collapsedLines"
               :aria-label="hunkAriaLabels[index]"
@@ -311,10 +334,10 @@ function statusDotClass(status: AgentFileDiffStatus) {
             </button>
             <button
               v-else
-              class="agent-file-diff__line"
+              class="agent-native-button agent-native-button--block agent-file-diff__line"
               type="button"
               :aria-label="unifiedAriaLabels[index]"
-              :data-selected="String(selectedKey === `${line.id ?? index}:unified`)"
+              :data-selected="unifiedSelectionStates[index]"
               :data-type="line.type"
               @click="selectLine(index, line, 'unified')"
             >
@@ -341,10 +364,10 @@ function statusDotClass(status: AgentFileDiffStatus) {
         </view>
 
         <view v-else class="agent-file-diff__split">
-          <template v-for="(row, rowIndex) in splitRows" :key="row.hunk?.line.id ?? `row:${rowIndex}`">
+          <template v-for="(row, rowIndex) in splitRows" :key="splitRowKeys[rowIndex]">
             <button
               v-if="row.hunk"
-              class="agent-file-diff__hunk"
+              class="agent-native-button agent-native-button--block agent-file-diff__hunk"
               type="button"
               :disabled="!row.hunk.line.collapsedLines"
               :aria-label="splitAriaLabels[rowIndex].hunk"
@@ -361,10 +384,10 @@ function statusDotClass(status: AgentFileDiffStatus) {
             <view v-else class="agent-file-diff__split-row">
               <button
                 v-if="row.deletion"
-                class="agent-file-diff__side"
+                class="agent-native-button agent-native-button--block agent-file-diff__side"
                 type="button"
                 :aria-label="splitAriaLabels[rowIndex].deletion"
-                :data-selected="String(selectedKey === `${row.deletion.line.id ?? row.deletion.index}:old`)"
+                :data-selected="splitDeletionSelectionStates[rowIndex]"
                 :data-type="row.deletion.line.type"
                 @click="selectLine(row.deletion.index, row.deletion.line, 'old')"
               >
@@ -388,10 +411,10 @@ function statusDotClass(status: AgentFileDiffStatus) {
 
               <button
                 v-if="row.addition"
-                class="agent-file-diff__side"
+                class="agent-native-button agent-native-button--block agent-file-diff__side"
                 type="button"
                 :aria-label="splitAriaLabels[rowIndex].addition"
-                :data-selected="String(selectedKey === `${row.addition.line.id ?? row.addition.index}:new`)"
+                :data-selected="splitAdditionSelectionStates[rowIndex]"
                 :data-type="row.addition.line.type"
                 @click="selectLine(row.addition.index, row.addition.line, 'new')"
               >
@@ -425,10 +448,10 @@ function statusDotClass(status: AgentFileDiffStatus) {
         </text> {{ resolvedLabels.changed }}
       </text>
       <view>
-        <button class="agent-file-diff__action" type="button" :disabled="disabled" @click="emit('reject')">
+        <button class="agent-native-button agent-file-diff__action" type="button" :disabled="disabled" @click="emit('reject')">
           {{ resolvedLabels.reject }}
         </button>
-        <button class="agent-file-diff__action" type="button" :disabled="disabled" @click="emit('accept')">
+        <button class="agent-native-button agent-file-diff__action" type="button" :disabled="disabled" @click="emit('accept')">
           {{ resolvedLabels.accept }}
         </button>
       </view>

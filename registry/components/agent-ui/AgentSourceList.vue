@@ -31,7 +31,7 @@ const emit = defineEmits<{
     <button
       v-for="(source, index) in sources"
       :key="source.id"
-      class="flex min-h-11 w-full items-center gap-3 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-left"
+      class="agent-native-button agent-native-button--block flex min-h-11 items-center gap-3 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-left"
       type="button"
       @click="emit('open', source)"
     >

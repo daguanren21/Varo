@@ -3,10 +3,9 @@ import type {
   AgentPartStatus,
   AgentStreamSnapshot,
   AgentStreamStatus,
-  AgentToolPart,
   AgentThreadVersion,
+  AgentToolPart,
 } from '@varo-ui/ai'
-import { useBodyScrollLock } from '@varo-ui/headless'
 import type { PropType, ShallowRef } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type {
@@ -15,6 +14,7 @@ import type {
   AgentSourceReceiptItem,
   AgentWorkspacePlacement,
 } from './advanced-types'
+import { useBodyScrollLock } from '@varo-ui/headless'
 import {
   computed,
   defineComponent,
@@ -92,7 +92,7 @@ export interface AgentAttachmentItem {
 }
 
 const baseButton = 'inline-flex min-h-10 items-center justify-center rounded-xl border px-3 text-xs font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-45'
-const primaryButton = `${baseButton} border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-white hover:opacity-90`
+const primaryButton = `${baseButton} border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)] hover:opacity-90`
 const quietButton = `${baseButton} border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)] hover:bg-[var(--varo-agent-surface-strong)]`
 
 function partMark(status: AgentPartStatus) {
@@ -165,7 +165,7 @@ export const AgentMessage = defineComponent({
       'class': ['agent-message flex w-full min-w-0 items-start gap-2.5', props.role === 'user' && 'justify-end'],
       'data-role': props.role,
     }, [
-      props.role !== 'user' ? h('span', { 'class': 'grid h-8 w-8 flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-black text-white', 'aria-hidden': 'true' }, 'V') : null,
+      props.role !== 'user' ? h('span', { 'class': 'grid h-8 w-8 flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-black text-[var(--varo-agent-primary-foreground)]', 'aria-hidden': 'true' }, 'V') : null,
       h('div', { class: ['grid min-w-0 max-w-[82%] gap-1', props.role === 'user' && 'justify-items-end'] }, [
         props.label || props.timestamp
           ? h('header', { class: 'flex w-full items-center justify-between gap-3 px-1 text-[11px] text-[var(--varo-agent-muted)]' }, [
@@ -177,7 +177,7 @@ export const AgentMessage = defineComponent({
           class: [
             'min-w-11 max-w-full overflow-hidden break-words border px-3.5 py-2.5 shadow-sm',
             props.role === 'user'
-              ? 'rounded-[16px_4px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-white'
+              ? 'rounded-[16px_4px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)]'
               : 'rounded-[4px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]',
           ],
         }, slots.default?.()),
@@ -387,7 +387,7 @@ export const AgentComposerScope = defineComponent({
         h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${enabledCount.value} 个已启用`),
       ]),
       props.sources.length
-        ? h('div', { class: 'grid gap-1 p-2' }, props.sources.map(source => {
+        ? h('div', { class: 'grid gap-1 p-2' }, props.sources.map((source) => {
             const status = source.status ?? 'available'
             return h('div', { 'class': 'flex min-h-[58px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', 'data-status': status, 'key': source.id }, [
               h('i', { 'class': ['h-3 w-3 flex-none rounded-full', contextSourceStatusClasses[status]], 'aria-hidden': 'true' }),
@@ -1018,7 +1018,7 @@ export const AgentComposer = defineComponent({
           'button',
           {
             'aria-label': props.busy ? 'Agent 正在处理' : '发送',
-            'class': 'grid h-10 w-10 flex-none place-items-center self-center rounded-full bg-[var(--varo-agent-primary)] text-lg font-bold text-white shadow-sm transition-transform active:translate-y-px disabled:opacity-45',
+            'class': 'grid h-10 w-10 flex-none place-items-center self-center rounded-full bg-[var(--varo-agent-primary)] text-lg font-bold text-[var(--varo-agent-primary-foreground)] shadow-sm transition-transform active:translate-y-px disabled:opacity-45',
             'disabled': props.busy || !props.modelValue.trim(),
             'type': 'button',
             'onClick': () => submit(),

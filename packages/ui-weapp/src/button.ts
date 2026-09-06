@@ -1,6 +1,7 @@
 import type { PressableSize, PressableVariant } from '@varo/primitives-weapp'
 import type { PropType, StyleValue } from 'vue'
-import { useVaroTheme } from '@varo-ui/theme'
+import { contrastSafeForeground } from '@varo-ui/theme'
+
 import {
   ButtonRoot,
 
@@ -54,27 +55,19 @@ export const VButton = defineComponent({
       type: String,
       default: undefined,
     },
+    foregroundColor: {
+      type: String,
+      default: undefined,
+    },
     nativeType: {
       type: String as PropType<ButtonNativeType>,
       default: undefined,
     },
   },
   setup(props, { slots, attrs }) {
-    const theme = useVaroTheme()
     const visualVariant = computed<PressableVariant>(() => (props.plain ? 'outline' : props.variant))
     const classes = computed(() =>
-      createVariantClass('varo-button', {
-        radius: theme.value.components.button.borderRadius,
-        size: props.size,
-        variant: visualVariant.value,
-        tone: props.tone,
-        shape: props.shape,
-        plain: props.plain,
-        hairline: props.hairline,
-        block: props.block,
-        loading: props.loading,
-        disabled: props.disabled,
-      }),
+      createVariantClass('varo-button', { size: props.size, variant: visualVariant.value, tone: props.tone, shape: props.shape, plain: props.plain, hairline: props.hairline, block: props.block, loading: props.loading, disabled: props.disabled }),
     )
     const customColorStyle = computed<Record<string, string> | undefined>(() => {
       if (!props.color) {
@@ -90,7 +83,7 @@ export const VButton = defineComponent({
           ...base,
           background: props.color,
           borderColor: props.color,
-          color: '#fff',
+          color: props.foregroundColor ?? contrastSafeForeground(props.color),
         }
       }
 

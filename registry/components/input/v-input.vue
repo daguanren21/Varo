@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import { createVariantClass, useFieldRoot } from '@varo-ui/headless'
-import { computed, shallowRef, toRef } from 'wevu'
+import { computed, getCurrentInstance, inject, shallowRef, toRef, useSlots, watch } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import VIcon from './v-icon.vue'
@@ -21,8 +21,26 @@ interface NativeValueEvent {
   }
 }
 
+interface PublicRef<T> {
+  value: T
+}
+
+interface FormItemControlContext {
+  controlId: PublicRef<string>
+  defaultControlId: string
+  errorId: string
+  errorVisible: PublicRef<boolean>
+  invalid: PublicRef<boolean>
+  labelId: string
+  labelVisible: PublicRef<boolean>
+}
+
+// WeChat validates initial child bindings before Wevu applies setup defaults.
 defineOptions({
   inheritAttrs: false,
+  properties: {
+    value: { type: null, value: '' },
+  },
 })
 
 const props = withDefaults(
@@ -146,12 +164,48 @@ const emit = defineEmits<{
   'valueChange': [value: string]
 }>()
 
+const formItemControlContextKey = 'varo-form-item-control'
+
+function mergeAriaTokens(...values: Array<string | undefined>) {
+  const tokens = values.flatMap(value => value?.split(/\s+/).filter(Boolean) ?? [])
+  return tokens.length > 0 ? [...new Set(tokens)].join(' ') : undefined
+}
+
+const slots = useSlots()
 const focused = shallowRef(false)
 const focusRequested = shallowRef(false)
 const value = computed(() => props.value ?? '')
 const valueControlled = computed(() => props.value !== undefined)
 const disabled = toRef(props, 'disabled')
-const invalid = toRef(props, 'invalid')
+const formItemControl = inject<FormItemControlContext | null>(formItemControlContextKey, null)
+const instance = getCurrentInstance()
+const inputId = `varo-input-${instance?.uid ?? 'control'}`
+const ownControlId = `${inputId}-control`
+const ownErrorId = `${inputId}-error`
+const ownLabelId = `${inputId}-label`
+const labelVisible = computed(() => Boolean(props.label || slots.label))
+const invalid = computed(() => props.invalid || formItemControl?.invalid.value || false)
+const controlId = computed(() => props.inputId || ownControlId)
+const describedBy = computed(() => mergeAriaTokens(
+  props.ariaDescribedby,
+  formItemControl?.errorVisible.value ? formItemControl.errorId : undefined,
+  props.errorMessage ? ownErrorId : undefined,
+))
+const labelledBy = computed(() => mergeAriaTokens(
+  props.ariaLabelledby,
+  formItemControl?.labelVisible.value ? formItemControl.labelId : undefined,
+  labelVisible.value ? ownLabelId : undefined,
+))
+
+watch(
+  () => props.inputId,
+  (nextInputId) => {
+    if (formItemControl) {
+      formItemControl.controlId.value = nextInputId || ownControlId
+    }
+  },
+  { immediate: true },
+)
 const field = useFieldRoot({
   runtime: varoReactiveRuntime,
   defaultValue: props.defaultValue,
@@ -404,11 +458,17 @@ function touchstart(event: unknown) {
     :data-readonly="dataReadonly"
     :data-size="props.size"
   >
-    <view v-if="props.label || $slots.label" class="varo-input__label" :style="labelStyle">
+    <label
+      v-if="labelVisible"
+      :id="ownLabelId"
+      class="varo-input__label"
+      :for="controlId"
+      :style="labelStyle"
+    >
       <slot name="label">
         {{ props.label }}
       </slot>
-    </view>
+    </label>
     <view class="varo-input__body">
       <view
         v-if="$slots.prefix || props.prefixIcon"
@@ -421,14 +481,14 @@ function touchstart(event: unknown) {
       </view>
       <textarea
         v-if="isTextarea"
+        :id="controlId"
         class="varo-input__control"
         :aria-label="props.ariaLabel"
         :aria-invalid="ariaInvalid"
         :aria-controls="props.ariaControls"
-        :aria-describedby="props.ariaDescribedby"
-        :aria-labelledby="props.ariaLabelledby"
+        :aria-describedby="describedBy"
+        :aria-labelledby="labelledBy"
         :role="props.role"
-        :id="props.inputId"
         :name="props.name"
         :form="props.form"
         :hidden="props.hidden"
@@ -476,14 +536,14 @@ function touchstart(event: unknown) {
       />
       <input
         v-else
+        :id="controlId"
         class="varo-input__control"
         :aria-label="props.ariaLabel"
         :aria-invalid="ariaInvalid"
         :aria-controls="props.ariaControls"
-        :aria-describedby="props.ariaDescribedby"
-        :aria-labelledby="props.ariaLabelledby"
+        :aria-describedby="describedBy"
+        :aria-labelledby="labelledBy"
         :role="props.role"
-        :id="props.inputId"
         :name="props.name"
         :form="props.form"
         :hidden="props.hidden"
@@ -557,7 +617,7 @@ function touchstart(event: unknown) {
         </slot>
       </view>
     </view>
-    <view v-if="props.errorMessage" class="varo-input__error">
+    <view v-if="props.errorMessage" :id="ownErrorId" class="varo-input__error">
       {{ props.errorMessage }}
     </view>
   </view>

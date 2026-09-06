@@ -1,9 +1,10 @@
 import type { PressableSize } from '@varo/primitives-weapp'
-import type { PropType, StyleValue } from 'vue'
-import { useVaroTheme } from '@varo-ui/theme'
+import type { ComputedRef, InjectionKey, PropType, ShallowRef, StyleValue } from 'vue'
+
 import { InputRoot } from '@varo/primitives-weapp'
 import { createVariantClass } from '@varo/shared'
-import { computed, defineComponent, getCurrentInstance, h, ref, shallowRef } from 'vue'
+import { computed, defineComponent, getCurrentInstance, h, inject, onUpdated, ref, shallowRef, useId } from 'vue'
+import { VIcon } from './icon'
 
 type InputAlign = 'left' | 'center' | 'right'
 type InputClearTrigger = 'focus' | 'always'
@@ -15,7 +16,23 @@ interface InputRootExpose {
   focus: () => void
 }
 
+interface FormItemControlContext {
+  controlId: ShallowRef<string>
+  defaultControlId: string
+  errorId: string
+  errorVisible: ComputedRef<boolean>
+  invalid: ComputedRef<boolean>
+  labelId: string
+  labelVisible: ComputedRef<boolean>
+}
+
 const hasOwn = Object.prototype.hasOwnProperty
+const formItemControlContextKey = 'varo-form-item-control' as unknown as InjectionKey<FormItemControlContext>
+
+function mergeAriaTokens(...values: unknown[]) {
+  const tokens = values.flatMap(value => typeof value === 'string' ? value.split(/\s+/).filter(Boolean) : [])
+  return tokens.length > 0 ? [...new Set(tokens)].join(' ') : undefined
+}
 
 export const VInput = defineComponent({
   name: 'VInput',
@@ -93,11 +110,35 @@ export const VInput = defineComponent({
   },
   emits: ['update:value', 'valueChange', 'clear', 'focus', 'blur'],
   setup(props, { attrs, emit, slots }) {
-    const theme = useVaroTheme()
     const instance = getCurrentInstance()
     const inputRoot = ref<InputRootExpose>()
     const focused = shallowRef(false)
     const localValue = shallowRef(props.defaultValue)
+    const formItemControl = inject(formItemControlContextKey, null)
+    const inputId = `varo-input-${useId().replaceAll(':', '')}`
+    const ownControlId = `${inputId}-control`
+    const ownErrorId = `${inputId}-error`
+    const ownLabelId = `${inputId}-label`
+    const labelVisible = computed(() => Boolean(props.label || slots.label))
+    const effectiveInvalid = computed(() => props.invalid || formItemControl?.invalid.value || false)
+    const controlId = computed(() => {
+      const callerId = attrs.id
+      return typeof callerId === 'string' && callerId.length > 0 ? callerId : ownControlId
+    })
+
+    function syncFormControlId() {
+      if (!formItemControl) {
+        return
+      }
+
+      const callerId = attrs.id
+      formItemControl.controlId.value = typeof callerId === 'string' && callerId.length > 0
+        ? callerId
+        : ownControlId
+    }
+
+    syncFormControlId()
+    onUpdated(syncFormControlId)
     const valueControlled = computed(() => {
       const vnodeProps = instance?.vnode.props
       return vnodeProps ? hasOwn.call(vnodeProps, 'value') : false
@@ -111,15 +152,7 @@ export const VInput = defineComponent({
       return typeof props.labelWidth === 'number' ? `${props.labelWidth}px` : props.labelWidth
     })
     const classes = computed(() =>
-      createVariantClass('varo-input', {
-        radius: theme.value.components.input.borderRadius,
-        size: props.size,
-        align: props.align,
-        disabled: props.disabled,
-        invalid: props.invalid,
-        readonly: props.readonly,
-        clearable: props.clearable,
-      }),
+      createVariantClass('varo-input', { size: props.size, align: props.align, disabled: props.disabled, invalid: effectiveInvalid.value, readonly: props.readonly, clearable: props.clearable }),
     )
     const normalizedMaxLength = computed(() => {
       if (props.maxLength == null || props.maxLength === '') {
@@ -186,11 +219,27 @@ export const VInput = defineComponent({
     }
 
     return () => {
-      const { class: className, style, ...inputAttrs } = attrs
+      const {
+        'aria-describedby': callerDescribedBy,
+        'aria-labelledby': callerLabelledBy,
+        class: className,
+        id: _callerId,
+        style,
+        ...inputAttrs
+      } = attrs
       const prefix = renderAffix('prefix', props.prefixIcon)
       const suffix = renderAffix('suffix', props.suffixIcon)
       const controlledValueProps = valueControlled.value ? { value: props.value } : {}
-
+      const describedBy = mergeAriaTokens(
+        callerDescribedBy,
+        formItemControl?.errorVisible.value ? formItemControl.errorId : undefined,
+        props.errorMessage ? ownErrorId : undefined,
+      )
+      const labelledBy = mergeAriaTokens(
+        callerLabelledBy,
+        formItemControl?.labelVisible.value ? formItemControl.labelId : undefined,
+        labelVisible.value ? ownLabelId : undefined,
+      )
       return h(
         'div',
         {
@@ -200,16 +249,18 @@ export const VInput = defineComponent({
           'data-clearable': String(props.clearable),
           'data-disabled': String(props.disabled),
           'data-focused': String(focused.value),
-          'data-invalid': String(props.invalid),
+          'data-invalid': String(effectiveInvalid.value),
           'data-readonly': String(props.readonly),
           'data-size': props.size,
         },
         [
-          props.label || slots.label
+          labelVisible.value
             ? h(
-                'span',
+                'label',
                 {
                   class: 'varo-input__label',
+                  for: controlId.value,
+                  id: ownLabelId,
                   style: labelBasis.value ? { width: labelBasis.value, flexBasis: labelBasis.value } : undefined,
                 },
                 slots.label?.() ?? props.label,
@@ -220,29 +271,32 @@ export const VInput = defineComponent({
             h(InputRoot, {
               ...inputAttrs,
               ...controlledValueProps,
-              ref: inputRoot,
-              autosize: props.autosize,
-              class: 'varo-input__control',
-              defaultValue: props.defaultValue,
-              disabled: props.disabled,
-              formatTrigger: props.formatTrigger,
-              formatter: props.formatter,
-              invalid: props.invalid,
-              maxLength: props.maxLength,
-              placeholder: props.placeholder,
-              readonly: props.readonly,
-              rows: props.rows,
-              style: { textAlign: props.align },
-              type: props.type,
-              onBlur: (event: FocusEvent) => {
+              'ref': inputRoot,
+              'autosize': props.autosize,
+              'class': 'varo-input__control',
+              'aria-describedby': describedBy,
+              'aria-labelledby': labelledBy,
+              'defaultValue': props.defaultValue,
+              'id': controlId.value,
+              'disabled': props.disabled,
+              'formatTrigger': props.formatTrigger,
+              'formatter': props.formatter,
+              'invalid': effectiveInvalid.value,
+              'maxLength': props.maxLength,
+              'placeholder': props.placeholder,
+              'readonly': props.readonly,
+              'rows': props.rows,
+              'style': { textAlign: props.align },
+              'type': props.type,
+              'onBlur': (event: FocusEvent) => {
                 focused.value = false
                 emit('blur', event)
               },
-              onFocus: (event: FocusEvent) => {
+              'onFocus': (event: FocusEvent) => {
                 focused.value = true
                 emit('focus', event)
               },
-              onValueChange: updateCurrentValue,
+              'onValueChange': updateCurrentValue,
             }),
             showClear.value
               ? h(
@@ -254,13 +308,13 @@ export const VInput = defineComponent({
                     'onClick': clear,
                     'onMousedown': (event: MouseEvent) => event.preventDefault(),
                   },
-                  '×',
+                  h(VIcon, { name: 'close', size: 14 }),
                 )
               : null,
             props.showWordLimit ? h('span', { class: 'varo-input__word-limit' }, wordLimit.value) : null,
             suffix,
           ]),
-          props.errorMessage ? h('div', { class: 'varo-input__error' }, props.errorMessage) : null,
+          props.errorMessage ? h('div', { class: 'varo-input__error', id: ownErrorId }, props.errorMessage) : null,
         ],
       )
     }

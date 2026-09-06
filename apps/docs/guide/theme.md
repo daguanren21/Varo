@@ -21,6 +21,31 @@ const theme = createTheme({
 createApp(App).use(VaroConfigProvider, { theme }).mount('#app')
 ```
 
+应用级主题可以传入 `shallowRef`；Provider 会响应替换后的主题，并在应用卸载时恢复它原本接管的根变量。需要在一个页面中隔离多个主题时，使用作用域组件：
+
+```vue
+<script setup lang="ts">
+import { createTheme, VaroThemeProvider } from '@varo-ui/theme'
+import { shallowRef } from 'vue'
+
+const activeTheme = shallowRef(createTheme({
+  primary: '#07c160',
+  success: '#13b248',
+  warning: '#fa9200',
+  error: '#eb3437',
+  neutral: '#303133'
+}))
+</script>
+
+<template>
+  <VaroThemeProvider :theme="activeTheme">
+    <RouterView />
+  </VaroThemeProvider>
+</template>
+```
+
+主题种子使用 `#RGB` 或 `#RRGGBB`，以便自动计算满足对比度要求的前景色。`VButton color` 使用 CSS 变量、命名色或 `rgb()` 时，必须同时传入 `foreground-color`。
+
 ## Weapp 构建时主题
 
 固定品牌主题应在构建时写入全局 WXSS。`createVaroWeappThemePlugin` 会把完整的 `page { --varo-ui-* }` 变量附加到应用样式：

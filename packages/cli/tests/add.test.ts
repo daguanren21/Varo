@@ -1,13 +1,13 @@
-import type { RegistryTarget } from '../src/index'
 import type { Mode, PathLike, RmOptions } from 'node:fs'
 import type * as FileSystem from '../src/file-system.ts'
+import type { RegistryTarget } from '../src/index'
 import { execFileSync } from 'node:child_process'
 import {
   existsSync,
   mkdirSync,
   mkdtempSync,
-  readFileSync,
   readdirSync,
+  readFileSync,
   realpathSync,
   rmSync,
   symlinkSync,
@@ -160,8 +160,8 @@ describe('varo add targets', () => {
     const h5 = resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
     const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp' })
 
-    expect(h5.items.map(item => item.name)).toEqual(['base', 'primitives', 'selection', 'checkbox'])
-    expect(weapp.items.map(item => item.name)).toEqual(['base', 'primitives', 'checkbox'])
+    expect(h5.items.map(item => item.name)).toEqual(['base', 'icon', 'primitives', 'selection', 'checkbox'])
+    expect(weapp.items.map(item => item.name)).toEqual(['base', 'cn', 'icon', 'primitives', 'checkbox'])
     expect(weapp.files.map(file => file.to)).toContain('src/components/ui/v-checkbox.vue')
     expect(weapp.files.map(file => file.to)).not.toContain('src/components/ui/selection.ts')
   })

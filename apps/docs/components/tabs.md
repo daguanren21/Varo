@@ -1,5 +1,7 @@
 # Tabs 选项卡切换
 
+<RegistryInstallStrip item="components/tabs" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="tabs" locale="zh" />

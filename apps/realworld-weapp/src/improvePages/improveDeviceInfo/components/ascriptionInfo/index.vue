@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import { useAedNavigation } from '../../../../hooks'
 
 import { useInsInfo } from '../../../../hooks/useImprove'
@@ -12,6 +13,14 @@ function goToSearch() {
 }
 
 const { device, btnText, getSmsCode, isExistPhone, globalTip, cancelIns, investorTypeIndex, phoneTypeIndex, phoneTypeList, investorTypeList, handleChangeinvestorType, handleChangePhoneType } = insFn
+const investorTypeLabel = computed(() => {
+  const option = investorTypeList.value[investorTypeIndex.value]
+  return option?.name || '请选择出资单位类型'
+})
+const phoneTypeLabel = computed(() => {
+  const option = phoneTypeList.value[phoneTypeIndex.value]
+  return option?.name || '请选择号码格式'
+})
 </script>
 
 <template>
@@ -38,22 +47,14 @@ const { device, btnText, getSmsCode, isExistPhone, globalTip, cancelIns, investo
           mode="selector" :value="investorTypeIndex" range-key="name" :range="investorTypeList"
           @change="handleChangeinvestorType"
         >
-          <!-- <VInput readonly label="出资单位类型" type="text"
-            :value="investorTypeIndex >= 0 ? investorTypeList[investorTypeIndex].name : ''" placeholder="请选择出资单位类型">
-            <VIcon style="z-index: 800;color:#ccc" name="chevron-right"></VIcon>
-          </VInput> -->
-          <viewItem class="label_required" has-border title="出资单位类型" :extra-text="investorTypeIndex >= 0 ? investorTypeList[investorTypeIndex].name : '请选择出资单位类型'" arrow="right" />
+          <viewItem class="label_required" has-border title="出资单位类型" :extra-text="investorTypeLabel" arrow="right" />
         </picker>
         <VInput v-model:value="device.contactName" required :cursor="-1" label="联系人" type="text" placeholder="请输入联系人" />
         <picker
           mode="selector" :value="phoneTypeIndex" range-key="name" :range="phoneTypeList"
           @change="handleChangePhoneType"
         >
-          <!-- <VInput readonly label="号码格式" type="text"
-            :value="investorTypeIndex >= 0 ? phoneTypeList[phoneTypeIndex].name : ''" placeholder="请选择号码格式">
-            <VIcon style="z-index: 800;color:#ccc" name="chevron-right"></VIcon>
-          </VInput> -->
-          <viewItem has-border title="号码格式" :extra-text="phoneTypeIndex >= 0 ? phoneTypeList[phoneTypeIndex].name : '请选择号码格式'" arrow="right" />
+          <viewItem has-border title="号码格式" :extra-text="phoneTypeLabel" arrow="right" />
         </picker>
         <VInput v-model:value="device.contactPhone" required :cursor="-1" label="联系方式" type="number" placeholder="请输入联系方式" />
         <VInput v-if="!isExistPhone" v-model:value="device.smsCode" label="验证码" :cursor="-1" type="number" placeholder="请输入验证码">

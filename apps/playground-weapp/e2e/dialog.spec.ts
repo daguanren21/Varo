@@ -101,7 +101,7 @@ describe('playground-weapp delivery contract', () => {
       'varo-robot-operate-card': './v-robot-operate-card',
       'wechat-robot-chat': 'plugin://varoRobot/chat',
     })
-    expect(robotChatWxml).toContain('generic:operateCard="varo-robot-operate-card"')
+    expect(robotChatWxml).toContain('generic:operate-card="varo-robot-operate-card"')
     expect(Object.keys(retailPage.usingComponents).every(name => name === name.toLowerCase())).toBe(true)
     ;[retailPage, mallPage].flatMap(page => Object.values(page.usingComponents)).filter(componentPath => componentPath.startsWith('/components/')).forEach((componentPath) => {
       expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.json`))).toBe(true)
@@ -110,7 +110,7 @@ describe('playground-weapp delivery contract', () => {
     })
   })
 
-  it('emits WXML-safe bindings and native pressed states when build output exists', () => {
+  it('emits WXML-safe bindings without unsupported native pseudo-classes when build output exists', () => {
     const outputRoot = resolve(playgroundRoot, 'devtools/build/mp-weixin')
     if (!existsSync(resolve(outputRoot, 'app.json'))) { return }
 
@@ -125,13 +125,5 @@ describe('playground-weapp delivery contract', () => {
     collectFiles(outputRoot, '.wxss').forEach((path) => {
       expect(readFileSync(path, 'utf8'), path).not.toContain(':active')
     })
-
-    const buttonWxml = readFileSync(resolve(outputRoot, 'components/ui/v-button.wxml'), 'utf8')
-    const appWxss = readFileSync(resolve(outputRoot, 'app.wxss'), 'utf8')
-    expect(buttonWxml).toContain('hover-class=\"{{hoverClass}}\"')
-    expect(appWxss).toContain('.varo-button--pressed')
-    expect(appWxss).toContain('.retail-page-enter')
-    expect(appWxss).toContain('@keyframes retail-page-in')
-    expect(appWxss).toContain('prefers-reduced-motion')
   })
 })

@@ -6,6 +6,16 @@ const openInfo = useOpenInfo()
 const { publicIndex, publicList, changeStartTime, changeEndTime, changePublic, device, showWeekDays, showWorkDayCheck, checkAllOptions, checkedALLList, checkboxOptions, checkedList, checkAll, closeCheckDay, handleCheck, openLayout, addTime, removeTime, _publicTimes } = openInfo
 
 defineExpose({ _publicTimes })
+
+function timeLabelClass(index: number) {
+  if (index !== 0) { return '' }
+  return 'label_required'
+}
+
+function timeLabelTitle(index: number) {
+  if (index !== 0) { return '' }
+  return '开放时间'
+}
 </script>
 
 <template>
@@ -29,8 +39,8 @@ defineExpose({ _publicTimes })
               :value="item.start" @change="changeStartTime($event, item)"
             >
               <viewItem
-                v-if="device.dataPublic == 'HALF'" :class="index === 0 ? 'label_required' : ''"
-                :title="index === 0 ? '开放时间' : ''" has-border arrow="right" :extra-text="item.start || '请选择'"
+                v-if="device.dataPublic == 'HALF'" :class="timeLabelClass(index)"
+                :title="timeLabelTitle(index)" has-border arrow="right" :extra-text="item.start || '请选择'"
               />
             </picker>
             <picker

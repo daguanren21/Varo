@@ -56,7 +56,7 @@ const canCancel = computed(() => props.busy || props.tasks.some(task => task.sta
           </view>
           <button
             v-if="task.status === 'failed'"
-            class="agent-task-runner__action"
+            class="agent-native-button agent-task-runner__action"
             type="button"
             :aria-label="`重试${task.title}`"
             hover-class="agent-task-runner__action--pressed"
@@ -68,7 +68,7 @@ const canCancel = computed(() => props.busy || props.tasks.some(task => task.sta
           </button>
           <button
             v-else
-            class="agent-task-runner__action agent-task-runner__action--primary"
+            class="agent-native-button agent-task-runner__action agent-task-runner__action--primary"
             type="button"
             :aria-label="`批准${task.title}`"
             hover-class="agent-task-runner__action--pressed"
@@ -86,7 +86,7 @@ const canCancel = computed(() => props.busy || props.tasks.some(task => task.sta
           任务正在执行
         </text>
         <button
-          class="agent-task-runner__action agent-task-runner__action--danger"
+          class="agent-native-button agent-task-runner__action agent-task-runner__action--danger"
           type="button"
           aria-label="取消当前任务"
           hover-class="agent-task-runner__action--pressed"
@@ -110,11 +110,11 @@ const canCancel = computed(() => props.busy || props.tasks.some(task => task.sta
   justify-content: center;
   min-width: 48px;
   height: 36px;
-  margin: 0;
   padding: 0 10px;
+  margin: 0;
   font-size: 11px;
-  line-height: 1;
   font-weight: 700;
+  line-height: 1;
   color: var(--varo-agent-text);
   background: transparent;
   border: 0;

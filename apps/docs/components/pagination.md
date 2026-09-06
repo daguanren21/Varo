@@ -1,5 +1,7 @@
 # Pagination 分页
 
+<RegistryInstallStrip item="components/pagination" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="pagination" locale="zh" />

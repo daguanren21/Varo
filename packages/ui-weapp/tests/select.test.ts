@@ -5,7 +5,7 @@ import { VSelect } from '../src/select'
 const options = [
   { label: 'Shanghai', value: 'shanghai' },
   { label: 'Hangzhou', value: 'hangzhou' },
-  { label: 'Suzhou', value: 'suzhou', disabled: true }
+  { label: 'Suzhou', value: 'suzhou', disabled: true },
 ]
 
 describe('ui-weapp select', () => {
@@ -16,8 +16,8 @@ describe('ui-weapp select', () => {
       props: {
         options,
         'onUpdate:value': onUpdate,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
 
     expect(wrapper.classes()).toContain('varo-select--picker')
@@ -38,8 +38,8 @@ describe('ui-weapp select', () => {
     const wrapper = mount(VSelect, {
       props: {
         value: 'shanghai',
-        options
-      }
+        options,
+      },
     })
 
     await wrapper.get('.varo-select__trigger').trigger('click')
@@ -55,12 +55,12 @@ describe('ui-weapp select', () => {
     const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
-        value: ['shanghai'],
-        multiple: true,
+        'value': ['shanghai'],
+        'multiple': true,
         options,
         'onUpdate:value': onUpdate,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
 
     await wrapper.get('.varo-select__trigger').trigger('click')
@@ -79,13 +79,13 @@ describe('ui-weapp select', () => {
     const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
-        confirmable: false,
-        value: ['shanghai'],
-        multiple: true,
+        'confirmable': false,
+        'value': ['shanghai'],
+        'multiple': true,
         options,
         'onUpdate:value': onUpdate,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
 
     await wrapper.get('.varo-select__trigger').trigger('click')
@@ -103,8 +103,8 @@ describe('ui-weapp select', () => {
         filterable: true,
         options,
         onSearch,
-        value: 'shanghai'
-      }
+        value: 'shanghai',
+      },
     })
 
     const filterInput = wrapper.get('.varo-select__filter-input')
@@ -115,13 +115,14 @@ describe('ui-weapp select', () => {
     await filterInput.setValue('zhou')
 
     expect(onSearch).toHaveBeenCalledWith('zhou')
-    expect(wrapper.findAll('.varo-select__option').map((item) => item.text())).toEqual(['Hangzhou', 'Suzhou'])
+    expect(wrapper.findAll('.varo-select__option').map(item => item.text())).toEqual(['Hangzhou', 'Suzhou'])
 
     await filterInput.trigger('keydown', { key: 'Escape' })
     expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
     await filterInput.setValue('shang')
     expect(wrapper.find('.varo-select__panel').exists()).toBe(true)
-    expect(wrapper.findAll('.varo-select__option').map(item => item.text())).toEqual(['Shanghai✓'])
+    expect(wrapper.findAll('.varo-select__option').map(item => item.text())).toEqual(['Shanghai'])
+    expect(wrapper.get('.varo-select__check').find('svg').exists()).toBe(true)
     await filterInput.trigger('keydown', { key: 'Escape' })
     await wrapper.get('.varo-select__clear').trigger('click')
     expect(wrapper.attributes('data-open')).toBe('false')
@@ -134,17 +135,17 @@ describe('ui-weapp select', () => {
     const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
-        clearable: true,
-        max: 1,
-        mode: 'dropdown',
-        value: ['shanghai'],
-        multiple: true,
+        'clearable': true,
+        'max': 1,
+        'mode': 'dropdown',
+        'value': ['shanghai'],
+        'multiple': true,
         options,
         onClear,
         onLimit,
         'onUpdate:value': onUpdate,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
 
     expect(wrapper.classes()).toContain('varo-select--dropdown')
@@ -173,15 +174,15 @@ describe('ui-weapp select', () => {
     const onValueChange = vi.fn()
     const wrapper = mount(VSelect, {
       props: {
-        clearable: true,
-        confirmable: true,
-        value: ['shanghai'],
-        multiple: true,
+        'clearable': true,
+        'confirmable': true,
+        'value': ['shanghai'],
+        'multiple': true,
         options,
         onConfirm,
         'onUpdate:value': onUpdate,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
 
     await wrapper.get('.varo-select__trigger').trigger('click')
@@ -194,5 +195,37 @@ describe('ui-weapp select', () => {
     expect(onValueChange).not.toHaveBeenCalledWith(['shanghai'])
     expect(onConfirm).toHaveBeenCalledWith([])
     expect(onConfirm).not.toHaveBeenCalledWith(['shanghai'])
+  })
+
+  it('opens readonly multiple selection without changing its value', async () => {
+    const onConfirm = vi.fn()
+    const onUpdate = vi.fn()
+    const wrapper = mount(VSelect, {
+      props: {
+        'clearable': true,
+        'multiple': true,
+        options,
+        'readonly': true,
+        'value': ['shanghai'],
+        onConfirm,
+        'onUpdate:value': onUpdate,
+      },
+    })
+    const trigger = wrapper.get('.varo-select__control')
+
+    expect(trigger.attributes('disabled')).toBeUndefined()
+    expect(trigger.attributes('aria-disabled')).toBeUndefined()
+    expect(trigger.attributes('aria-readonly')).toBe('true')
+    await trigger.trigger('click')
+    await wrapper.findAll('.varo-select__option')[1].trigger('click')
+    await wrapper.get('.varo-select__confirm').trigger('click')
+
+    expect(onUpdate).not.toHaveBeenCalled()
+    expect(onConfirm).not.toHaveBeenCalled()
+    expect(wrapper.find('.varo-select__clear').exists()).toBe(false)
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(true)
+
+    await wrapper.get('.varo-select__cancel').trigger('click')
+    expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
   })
 })

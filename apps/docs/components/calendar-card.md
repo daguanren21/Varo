@@ -1,5 +1,7 @@
 # CalendarCard 日历卡片
 
+<RegistryInstallStrip item="components/calendar" :targets="['h5']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="calendar-card" locale="zh" />
@@ -10,16 +12,16 @@
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `string` | `undefined` | 当前选中日期 |
-| `month` | `string` | 当前月份 | 展示月份，格式 `YYYY-MM` |
-| `minDate` | `string` | `undefined` | 最小可选日期 |
-| `maxDate` | `string` | `undefined` | 最大可选日期 |
+| Prop      | 类型     | 默认值      | 描述                     |
+| --------- | -------- | ----------- | ------------------------ |
+| `value`   | `string` | `undefined` | 当前选中日期             |
+| `month`   | `string` | 当前月份    | 展示月份，格式 `YYYY-MM` |
+| `minDate` | `string` | `undefined` | 最小可选日期             |
+| `maxDate` | `string` | `undefined` | 最大可选日期             |
 
 ## Events
 
-| Event | Payload | 描述 |
-| --- | --- | --- |
+| Event          | Payload  | 描述         |
+| -------------- | -------- | ------------ |
 | `update:value` | `string` | 选中日期变化 |
-| `select` | `string` | 点击可选日期 |
+| `select`       | `string` | 点击可选日期 |

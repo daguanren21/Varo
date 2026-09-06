@@ -51,7 +51,7 @@ function lineClass(line: number) {
           {{ language }}
         </text>
       </view>
-      <button class="min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[11px] font-semibold text-[var(--varo-agent-muted)]" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
+      <button class="agent-native-button min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[11px] font-semibold text-[var(--varo-agent-muted)]" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
         Copy
       </button>
     </view>

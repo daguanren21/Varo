@@ -66,7 +66,7 @@ const displayItems = computed(() => props.items.map(item => ({
           </text>
           <button
             v-if="entry.canRetry"
-            class="agent-retrieval__action"
+            class="agent-native-button agent-retrieval__action"
             type="button"
             :aria-label="`重试${entry.item.title}`"
             hover-class="agent-retrieval__action--pressed"
@@ -127,11 +127,11 @@ const displayItems = computed(() => props.items.map(item => ({
   justify-content: center;
   min-width: 48px;
   height: 24px;
-  margin: 0;
   padding: 0 4px;
+  margin: 0;
   font-size: 11px;
-  line-height: 1;
   font-weight: 700;
+  line-height: 1;
   color: var(--varo-agent-primary);
   background: transparent;
   border: 0;

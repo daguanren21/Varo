@@ -67,7 +67,7 @@ const rememberBoxClass = computed(() => cn(
       </template>
     </view>
 
-    <button class="mx-3.5 mb-3 inline-flex min-h-9 items-center gap-2 border-0 bg-transparent p-0 text-[11px] text-[var(--varo-agent-text)]" type="button" role="checkbox" :aria-checked="remember" @click="emit('update:remember', !remember)">
+    <button class="agent-native-button mx-3.5 mb-3 inline-flex min-h-9 items-center gap-2 border-0 bg-transparent p-0 text-[11px] text-[var(--varo-agent-text)]" type="button" role="checkbox" :aria-checked="remember" @click="emit('update:remember', !remember)">
       <text :class="rememberBoxClass" aria-hidden="true">
         <image v-if="remember" class="h-3 w-3" :src="agentCheckIcon" mode="aspectFit" />
       </text>
@@ -75,10 +75,10 @@ const rememberBoxClass = computed(() => cn(
     </button>
 
     <view class="agent-tool-approval__actions flex min-h-12 items-center justify-end gap-2 border-t border-[var(--varo-agent-border)] px-3">
-      <button class="min-h-9 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('deny')">
+      <button class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" type="button" @click="emit('deny')">
         Deny
       </button>
-      <button class="min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-white" type="button" @click="emit('allow', { remember })">
+      <button class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]" type="button" @click="emit('allow', { remember })">
         Allow once
       </button>
     </view>

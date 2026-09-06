@@ -90,9 +90,10 @@ if (missing.length > 0) { throw new Error(`Unresolved mini-program components:\n
 
 const wxmlFiles = await collectFiles(outputRoot, '.wxml')
 const unsafeWxml = []
+const attributeTernary = /="\{\{[^"]*(?<!\?)\?(?![?.])[^":]*:[^"]*\}\}"/
 for (const path of wxmlFiles) {
   const source = await readFile(path, 'utf8')
-  if (/\?\.|\?\?|="(?!\{\{)[^"\n]*\n[^"]*"/.test(source)) {
+  if (/\?\.|\?\?|="(?!\{\{)[^"\n]*\n[^"]*"/.test(source) || attributeTernary.test(source)) {
     unsafeWxml.push(path.replace(`${outputRoot}/`, ''))
   }
 }

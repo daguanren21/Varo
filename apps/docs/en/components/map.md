@@ -2,11 +2,7 @@
 
 `VMap` is a typed Wevu wrapper around the native WeChat mini-program `<map>`. It normalizes sizing, capabilities, and event names. The component only supports the `weapp` target; application code still owns remote APIs, permission flows, and Map Context usage.
 
-## Install
-
-```bash
-pnpm dlx @varo-ui/cli add --target weapp map
-```
+<RegistryInstallStrip item="components/map" :targets="['weapp']" :wrapper-targets="[]" locale="en" />
 
 ## Usage
 

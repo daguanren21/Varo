@@ -69,6 +69,8 @@ pnpm add clsx @weapp-tailwindcss/merge
 
 copy-owned 小程序 Registry 组件使用真正的 Wevu SFC，并通过 `styleIsolation: apply-shared` 消费 Tailwind v4 utilities。渲染和生命周期保持 target-specific；纯 adapter 可重导出目标 primitives，跨端共享仅限类型、纯函数和 headless primitives。`cn()` 使用 `@weapp-tailwindcss/merge`，不会引入浏览器版 `tailwind-merge` 的转义差异。
 
+`@varo-ui/cli` 只复制 Registry 文件并输出 `Dependencies:` / `Dev dependencies:`，不会安装 npm 包；每次执行 `add` 后都要安装它报告且工程尚未包含的依赖。`src/styles.css`、Registry 主题 `src/styles/varo.css` 的托管注册和完整 Tailwind 选项见 [Wevu Registry 一次性接入](/guide/shadcn-mode)。
+
 ## 工程化建议
 
 - 文档站、playground 与组件包统一放在 monorepo 内维护

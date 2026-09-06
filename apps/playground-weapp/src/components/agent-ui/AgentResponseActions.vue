@@ -42,16 +42,16 @@ onBeforeUnmount(() => clearTimeout(timer))
 
 <template>
   <view class="agent-actions flex flex-wrap gap-1.5" role="toolbar" aria-label="回答操作">
-    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="copy">
+    <button class="agent-native-button min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="copy">
       {{ copied ? '已复制' : '复制' }}
     </button>
-    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('retry')">
+    <button class="agent-native-button min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('retry')">
       重试
     </button>
-    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('like')">
+    <button class="agent-native-button min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('like')">
       赞
     </button>
-    <button class="min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('dislike')">
+    <button class="agent-native-button min-h-9 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] font-semibold text-[var(--varo-agent-text)] disabled:opacity-45" :disabled="disabled" type="button" @click="emit('dislike')">
       踩
     </button>
   </view>

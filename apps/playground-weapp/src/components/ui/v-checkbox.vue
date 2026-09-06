@@ -4,6 +4,7 @@ import { useCheckboxRoot } from '@varo-ui/headless'
 import { computed, inject } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { checkboxGroupKey } from './selection-context'
+import VIcon from './v-icon.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -39,7 +40,6 @@ const checkbox = useCheckboxRoot({
 const checked = computed(() => checkbox.state.checked.value)
 const checkboxDisabled = computed(() => checkbox.state.disabled.value)
 const interactive = computed(() => checkbox.state.interactive.value)
-const checkmark = computed(() => checkbox.state.checked.value ? '✓' : '')
 
 function update(checked: boolean) {
   if (group) {
@@ -67,9 +67,9 @@ function toggle() {
     :data-disabled="String(checkboxDisabled)"
     @click="toggle"
   >
-    <text class="varo-checkbox__icon" aria-hidden="true">
-      {{ checkmark }}
-    </text>
+    <view class="varo-checkbox__icon" aria-hidden="true">
+      <VIcon v-if="checked" name="check" :size="14" />
+    </view>
     <text class="varo-checkbox__label">
       <slot>{{ props.label }}</slot>
     </text>

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { defineComponent, h } from 'vue'
 import {
   SelectContent,
   SelectGroup,
@@ -8,13 +8,13 @@ import {
   SelectLabel,
   SelectRoot,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '../src/select'
 
 const options = [
   { label: 'Apple', value: 'apple' },
   { label: 'Banana', value: 'banana' },
-  { disabled: true, label: 'Cherry', value: 'cherry' }
+  { disabled: true, label: 'Cherry', value: 'cherry' },
 ]
 
 const Harness = defineComponent({
@@ -23,22 +23,22 @@ const Harness = defineComponent({
       h(SelectRoot, { defaultValue: undefined, options }, {
         default: () => [
           h(SelectTrigger, { as: 'button' }, {
-            default: () => h(SelectValue, { as: 'text', placeholder: 'Pick fruit' })
+            default: () => h(SelectValue, { as: 'text', placeholder: 'Pick fruit' }),
           }),
           h(SelectContent, { as: 'view' }, {
             default: () =>
               h(SelectGroup, { as: 'view' }, {
                 default: () => [
                   h(SelectLabel, { as: 'text' }, { default: () => 'Fruit' }),
-                  ...options.map((option) =>
-                    h(SelectItem, { key: option.value, as: 'button', option }, { default: () => option.label })
-                  )
-                ]
-              })
-          })
-        ]
+                  ...options.map(option =>
+                    h(SelectItem, { key: option.value, as: 'button', option }, { default: () => option.label }),
+                  ),
+                ],
+              }),
+          }),
+        ],
       })
-  }
+  },
 })
 
 describe('primitives-weapp select', () => {
@@ -61,21 +61,21 @@ describe('primitives-weapp select', () => {
     const onUpdateValue = vi.fn()
     const wrapper = mount(SelectRoot, {
       props: {
-        value: 'apple',
+        'value': 'apple',
         options,
-        'onUpdate:value': onUpdateValue
+        'onUpdate:value': onUpdateValue,
       },
       slots: {
         default: () => [
           h(SelectTrigger, { as: 'button' }, { default: () => h(SelectValue, { as: 'text' }) }),
           h(SelectContent, { as: 'view' }, {
             default: () =>
-              options.map((option) =>
-                h(SelectItem, { as: 'button', option }, { default: () => option.label })
-              )
-          })
-        ]
-      }
+              options.map(option =>
+                h(SelectItem, { as: 'button', option }, { default: () => option.label }),
+              ),
+          }),
+        ],
+      },
     })
 
     await wrapper.get('button').trigger('click')
@@ -83,5 +83,41 @@ describe('primitives-weapp select', () => {
 
     expect(onUpdateValue).toHaveBeenCalledWith('banana')
     expect(wrapper.text()).toContain('Apple')
+  })
+
+  it('keeps a readonly trigger operable while its items cannot change value', async () => {
+    const onUpdateValue = vi.fn()
+    const wrapper = mount(SelectRoot, {
+      props: {
+        'defaultValue': 'apple',
+        options,
+        'readonly': true,
+        'onUpdate:value': onUpdateValue,
+      },
+      slots: {
+        default: () => [
+          h(SelectTrigger, { as: 'button' }, { default: () => h(SelectValue, { as: 'text' }) }),
+          h(SelectContent, { as: 'view' }, {
+            default: () =>
+              options.map(option =>
+                h(SelectItem, { as: 'button', option }, { default: () => option.label }),
+              ),
+          }),
+        ],
+      },
+    })
+    const trigger = wrapper.get('[aria-expanded]')
+
+    expect(trigger.attributes('disabled')).toBeUndefined()
+    expect(trigger.attributes('aria-disabled')).toBeUndefined()
+    await trigger.trigger('click')
+    expect(wrapper.get('[role="listbox"]').attributes('aria-readonly')).toBe('true')
+
+    await wrapper.findAll('[role="option"]')[1].trigger('click')
+    expect(onUpdateValue).not.toHaveBeenCalled()
+    expect(wrapper.find('[role="listbox"]').exists()).toBe(true)
+
+    await trigger.trigger('click')
+    expect(wrapper.find('[role="listbox"]').exists()).toBe(false)
   })
 })

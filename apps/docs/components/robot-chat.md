@@ -2,11 +2,7 @@
 
 `VRobotChat` 是 `chatbotwidget` 小程序插件的 Wevu 封装，仅支持 `weapp` target，提供初始化状态、事件转发和可编辑输入区。
 
-## 安装
-
-```bash
-pnpm dlx @varo-ui/cli add --target weapp robot-chat
-```
+<RegistryInstallStrip item="components/robot-chat" :targets="['weapp']" :wrapper-targets="[]" locale="zh" />
 
 ## 前置配置
 

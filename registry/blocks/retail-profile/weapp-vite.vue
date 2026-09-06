@@ -1,19 +1,28 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 import VAvatar from '../ui/avatar.vue'
 import VTag from '../ui/tag.vue'
 import VButton from '../ui/v-button.vue'
 import VCard from '../ui/v-card.vue'
 
-const props = defineProps({
-  addressCount: { type: null as unknown as PropType<number>, default: 0 },
-  couponCount: { type: null as unknown as PropType<number>, default: 0 },
-  level: { type: null as unknown as PropType<string>, default: 'PLUS' },
-  name: { type: null as unknown as PropType<string>, default: 'Varo 用户' },
-  orderCounts: { type: null as unknown as PropType<Record<string, number>>, default: () => ({}) },
-  points: { type: null as unknown as PropType<number>, default: 0 },
-})
+const props = withDefaults(
+  defineProps<{
+    addressCount?: number
+    couponCount?: number
+    level?: string
+    name?: string
+    orderCounts?: Record<string, number>
+    points?: number
+  }>(),
+  {
+    addressCount: 0,
+    couponCount: 0,
+    level: 'PLUS',
+    name: 'Varo 用户',
+    orderCounts: () => ({}),
+    points: 0,
+  },
+)
 const emit = defineEmits<{
   action: [actionId: string]
 }>()

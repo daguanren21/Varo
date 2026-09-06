@@ -52,7 +52,7 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
     :aria-busy="busy"
   >
     <header class="agent-chat__header flex min-h-16 items-center gap-3 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-4">
-      <span class="grid h-10 w-10 flex-none place-items-center rounded-2xl bg-[var(--varo-agent-primary)] text-sm font-black text-white" aria-hidden="true">V</span>
+      <span class="grid h-10 w-10 flex-none place-items-center rounded-2xl bg-[var(--varo-agent-primary)] text-sm font-black text-[var(--varo-agent-primary-foreground)]" aria-hidden="true">V</span>
       <span class="agent-chat__meta grid min-w-0 flex-1">
         <strong class="truncate text-sm text-[var(--varo-agent-foreground)]">{{ title }}</strong>
         <small class="truncate text-[12px] text-[var(--varo-agent-muted)]">{{ subtitle }}</small>
@@ -61,7 +61,7 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
         <i class="h-2 w-2 rounded-full" :class="statusClass" aria-hidden="true" />
         {{ statusLabel }}
       </span>
-      <VButton size="sm" shape="round" tone="default" variant="ghost" class="!h-10 !min-h-10 !px-3 !text-xs" :aria-label="closeLabel" @click="emit('close')">
+      <VButton size="sm" shape="round" tone="default" variant="ghost" class="!h-11 !min-h-11 !px-3 !text-xs" :aria-label="closeLabel" @click="emit('close')">
         关闭
       </VButton>
     </header>

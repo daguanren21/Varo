@@ -1,6 +1,12 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
+import type { Ref } from '../reactive'
+import type {
+  DialogOpenChangeDetails,
+  DialogOpenChangeReason,
+  DialogRootOptions,
+  UseDialogRootResult,
+} from './types'
+import { resolveReactiveRuntime } from '../reactive'
 import { useControllableState } from '../use-controllable-state'
-import type { DialogRootOptions, UseDialogRootResult } from './types'
 
 export function useDialogRoot(options: DialogRootOptions = {}): UseDialogRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,54 +15,93 @@ export function useDialogRoot(options: DialogRootOptions = {}): UseDialogRootRes
     runtime,
     defaultValue: options.defaultOpen ?? false,
     value: options.open,
-    onUpdate: options.onOpenChange
   })
 
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
-  const contentId = runtime.ref('varo-dialog-content')
-
-  function setOpen(value: boolean) {
-    if (disabled.value) {
+  const rootId = options.id ?? 'varo-dialog'
+  const triggerId = `${rootId}-trigger`
+  const contentId = `${rootId}-content`
+  function setOpen(value: boolean, reason: DialogOpenChangeReason = 'imperative-action') {
+    if (disabled.value || value === openState.current.value) {
       return
+    }
+
+    if (options.onOpenChange) {
+      let cancellable = true
+      let canceled = false
+      const details: DialogOpenChangeDetails = {
+        get reason() {
+          return reason
+        },
+        get canceled() {
+          return canceled
+        },
+        cancel() {
+          if (cancellable) {
+            canceled = true
+          }
+        },
+      }
+      try {
+        options.onOpenChange(value, details)
+      }
+      finally {
+        cancellable = false
+      }
+      if (details.canceled) {
+        return
+      }
     }
 
     openState.current.value = value
   }
 
-  function close() {
-    setOpen(false)
-  }
-
   return {
     state: {
       open: openState.current,
-      disabled
+      disabled,
     },
     attrs: {
       trigger: {
-        'aria-expanded': openState.current.value,
-        'aria-controls': contentId.value
+        'id': triggerId,
+        'aria-controls': contentId,
+        'aria-haspopup': 'dialog',
+        get 'aria-disabled'() {
+          return disabled.value || undefined
+        },
+        get 'aria-expanded'() {
+          return openState.current.value
+        },
+        get 'data-state'() {
+          return openState.current.value ? 'open' : 'closed'
+        },
       },
       overlay: {
-        'data-state': openState.current.value ? 'open' : 'closed',
-        'aria-hidden': true
+        'aria-hidden': true,
+        get 'data-state'() {
+          return openState.current.value ? 'open' : 'closed'
+        },
       },
       content: {
-        id: contentId.value,
-        role: 'dialog',
-        tabindex: -1,
-        'data-state': openState.current.value ? 'open' : 'closed'
-      }
+        'id': contentId,
+        'role': 'dialog',
+        'tabindex': -1,
+        'aria-labelledby': triggerId,
+        'aria-modal': true,
+        get 'data-state'() {
+          return openState.current.value ? 'open' : 'closed'
+        },
+      },
     },
     events: {
-      open: () => setOpen(true),
-      close,
-      toggle: () => setOpen(!openState.current.value),
-      onEscapeKeyDown: close,
-      onOverlayClick: close
+      open: () => setOpen(true, 'trigger-press'),
+      close: () => setOpen(false, 'close-press'),
+      toggle: () => setOpen(!openState.current.value, 'trigger-press'),
+      onEscapeKeyDown: () => setOpen(false, 'escape-key'),
+      onOverlayClick: () => setOpen(false, 'outside-press'),
     },
     api: {
-      setOpen
-    }
+      setOpen,
+    },
   }
 }

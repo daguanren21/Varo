@@ -1,7 +1,8 @@
-import { createSelectDisplay, toggleSelectValue } from '@varo/shared'
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '../reactive'
 import type { SelectOption, SelectRootOptions, SelectValue, UseSelectRootResult } from './types'
+import { createSelectDisplay, toggleSelectValue } from '@varo/shared'
+import { resolveReactiveRuntime } from '../reactive'
+import { useControllableState } from '../use-controllable-state'
 
 export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -10,14 +11,14 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
     runtime,
     defaultValue: options.defaultOpen ?? false,
     value: options.open,
-    onUpdate: options.onOpenChange
+    onUpdate: options.onOpenChange,
   })
   const valueState = useControllableState<SelectValue>({
     controlled: options.valueControlled,
     runtime,
     defaultValue: options.defaultValue,
     value: options.value,
-    onUpdate: options.onValueChange
+    onUpdate: options.onValueChange,
   })
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
   const multiple = runtime.computed(() => options.multiple?.value ?? false) as Ref<boolean>
@@ -26,11 +27,11 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
   const selectOptions = runtime.computed(() => options.options?.value ?? []) as Ref<readonly SelectOption[]>
   const placeholder = runtime.computed(() => options.placeholder?.value ?? '请选择') as Ref<string>
   const displayValue = runtime.computed(() =>
-    createSelectDisplay([...selectOptions.value], valueState.current.value, placeholder.value)
+    createSelectDisplay([...selectOptions.value], valueState.current.value, placeholder.value),
   ) as Ref<string>
 
   function setOpen(open: boolean) {
-    if (!interactive.value) {
+    if (disabled.value) {
       return
     }
 
@@ -59,24 +60,28 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
     const selected = getItemSelected(option)
 
     return {
-      role: 'option',
+      'role': 'option',
       'aria-disabled': option.disabled || undefined,
       'aria-selected': selected,
       'data-disabled': String(Boolean(option.disabled)),
       'data-state': selected ? 'checked' : 'unchecked',
-      'data-value': String(option.value)
+      'data-value': String(option.value),
     }
   }
 
   function getGroupAttrs() {
     return {
-      role: 'group'
+      role: 'group',
     }
   }
 
   function select(option: SelectOption) {
+    if (!interactive.value) {
+      return false
+    }
+
     const result = toggleSelectValue(valueState.current.value, option, {
-      multiple: multiple.value
+      multiple: multiple.value,
     })
 
     if (!result.changed || result.limited) {
@@ -101,10 +106,13 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
       options: selectOptions,
       placeholder,
       readonly,
-      value: valueState.current
+      value: valueState.current,
     },
     attrs: {
       trigger: {
+        get 'aria-disabled'() {
+          return disabled.value || undefined
+        },
         get 'aria-expanded'() {
           return openState.current.value
         },
@@ -116,37 +124,40 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
         },
         get 'data-state'() {
           return openState.current.value ? 'open' : 'closed'
-        }
+        },
       },
       value: {
         get 'data-placeholder'() {
           return String(!hasValue(valueState.current.value))
-        }
+        },
       },
       content: {
-        role: 'listbox',
+        'role': 'listbox',
+        get 'aria-readonly'() {
+          return readonly.value || undefined
+        },
         get 'data-state'() {
           return openState.current.value ? 'open' : 'closed'
-        }
+        },
       },
       group: {
-        role: 'group'
+        role: 'group',
       },
       label: {
-        'data-part': 'label'
-      }
+        'data-part': 'label',
+      },
     },
     events: {
       close: () => setOpen(false),
       open: () => setOpen(true),
       select,
-      toggle: () => setOpen(!openState.current.value)
+      toggle: () => setOpen(!openState.current.value),
     },
     api: {
       getItemAttrs,
       getGroupAttrs,
       setOpen,
-      setValue
-    }
+      setValue,
+    },
   }
 }

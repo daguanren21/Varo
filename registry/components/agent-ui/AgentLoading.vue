@@ -21,6 +21,12 @@ let timer: ReturnType<typeof setInterval> | undefined
 const effectiveStartedAt = props.startedAt ?? Date.now()
 const elapsedLabel = computed(() => `${elapsed.value.toFixed(1)}s`)
 const pixelCount = computed(() => (props.variant === 'dots' ? 3 : 9))
+const indicatorClass = computed(() => {
+  if (props.variant === 'dots') {
+    return 'flex h-5 w-[30px] items-center gap-1 bg-transparent'
+  }
+  return 'grid h-[30px] w-[30px] grid-cols-3 gap-[3px] rounded-[10px] bg-[var(--varo-agent-fill)] p-1'
+})
 
 function updateElapsed() {
   elapsed.value = Math.max(0, (Date.now() - effectiveStartedAt) / 1000)
@@ -45,7 +51,7 @@ onBeforeUnmount(stop)
   <view class="agent-loading flex min-h-12 items-center gap-3 text-[var(--varo-agent-foreground)]" :data-active="String(active)" role="status">
     <view
       v-if="variant !== 'orbit'"
-      :class="variant === 'dots' ? 'flex h-5 w-[30px] items-center gap-1 bg-transparent' : 'grid h-[30px] w-[30px] grid-cols-3 gap-[3px] rounded-[10px] bg-[var(--varo-agent-fill)] p-1'"
+      :class="indicatorClass"
       aria-hidden="true"
     >
       <text

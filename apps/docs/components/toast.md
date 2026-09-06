@@ -2,6 +2,8 @@
 
 `VToast` 是 Base Kit 的受控轻提示组件。业务中的队列、全局调用和请求集成应在二次封装层实现。
 
+<RegistryInstallStrip item="components/toast" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="toast" locale="zh" />

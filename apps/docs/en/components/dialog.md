@@ -2,6 +2,8 @@
 
 Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `VDialogOverlay`, `VDialogContent`, and `VDialogClose`.
 
+<RegistryInstallStrip item="components/dialog" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="dialog" locale="en" />
@@ -25,9 +27,9 @@ Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `
   </ul>
 </div>
 
-## Mini-program guidance
+## Mini-program runtime notes
 
-For mini-programs, it is usually better to wrap `@varo-ui/headless` into an internal modal component because platform container differences tend to be larger around overlays and portals. The tabbed example focuses on the shared interaction contract and parts composition.
+The native WeChat mini-program runtime has no browser `document` keyboard events and does not provide DOM focus trapping, `inert`, or portal semantics, so native Weapp uses `VDialogClose` and overlay presses as close paths. The repository's current Vue-modeled Weapp adapter maps `Escape` to `escape-key` when it runs on a browser/test surface with `document`; that modeled behavior does not promise keyboard or DOM focus capabilities in native WeChat. The reason/cancel state contract remains the same on both surfaces.
 
 ## Root Props
 
@@ -39,10 +41,59 @@ For mini-programs, it is usually better to wrap `@varo-ui/headless` into an inte
 
 ## Root Events
 
-| Event         | Payload   | Description                   |
-| ------------- | --------- | ----------------------------- |
-| `update:open` | `boolean` | Sync controlled open state    |
-| `openChange`  | `boolean` | Fires when open state changes |
+| Event         | Payload                                             | Description                                                      |
+| ------------- | --------------------------------------------------- | ---------------------------------------------------------------- |
+| `openChange`  | `(open: boolean, details: DialogOpenChangeDetails)` | Synchronous pre-change request; the handler may cancel it        |
+| `update:open` | `boolean`                                           | Emitted after `openChange` only when the request is not canceled |
+
+```ts
+type DialogOpenChangeReason
+  = | 'trigger-press'
+    | 'outside-press'
+    | 'escape-key'
+    | 'close-press'
+    | 'imperative-action'
+
+interface DialogOpenChangeDetails {
+  readonly reason: DialogOpenChangeReason
+  readonly canceled: boolean
+  cancel: () => void
+}
+```
+
+| `reason`            | Source                                         |
+| ------------------- | ---------------------------------------------- |
+| `trigger-press`     | Trigger and the core `open` / `toggle` events  |
+| `outside-press`     | Overlay press                                  |
+| `escape-key`        | H5 `Escape` key or the core Escape event       |
+| `close-press`       | `VDialogClose`                                 |
+| `imperative-action` | Default for `useDialogRoot().api.setOpen(...)` |
+
+Call `cancel()` synchronously before the `openChange` handler returns:
+
+```vue
+<script setup lang="ts">
+import type { DialogOpenChangeDetails } from '@varo-ui/headless'
+import { shallowRef } from 'vue'
+
+const open = shallowRef(false)
+const hasUnsavedChanges = shallowRef(true)
+
+function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
+  if (!nextOpen && hasUnsavedChanges.value) {
+    details.cancel()
+  }
+}
+</script>
+
+<template>
+  <VDialogRoot v-model:open="open" @open-change="handleOpenChange">
+    <!-- Trigger / Overlay / Content / Close -->
+  </VDialogRoot>
+</template>
+```
+
+When `open` is provided, that controlled prop remains authoritative. An allowed request emits `openChange` and then `update:open`, but visibility changes only after the parent applies the new prop. Cancellation prevents uncontrolled state mutation and suppresses `update:open`. If the parent changes `open` independently afterward, the component still follows that prop.
 
 ## Parts
 
@@ -55,9 +106,10 @@ For mini-programs, it is usually better to wrap `@varo-ui/headless` into an inte
 
 ## Behavior
 
-- supports both controlled and uncontrolled mode
-- supports overlay click close
-- supports `Escape` close
+- supports controlled and uncontrolled modes
+- writes state and emits `update:open` exactly once for each allowed transition
+- H5 supports overlay close, `Escape`, focus trapping, background `inert`, and Trigger focus restoration
+- Weapp uses explicit Close/overlay paths and does not promise unavailable native DOM keyboard or focus behavior
 - the parts model is a better base for an enterprise modal API than a single rigid component
 
 ## Composition Guidance
@@ -73,9 +125,10 @@ For mini-programs, it is usually better to wrap `@varo-ui/headless` into an inte
 
 ## Accessibility and Close Contracts
 
-- overlay click and `Escape` close follow the same behavioral contract
-- explicit closing should go through `VDialogClose`
-- in controlled mode, the parent still decides whether state actually changes
+- overlay, `Escape`, Close, and Trigger requests use the same pre-change reason/cancel contract
+- canceling a close preserves Dialog content, the H5 modal layer, and focus ownership
+- explicit close actions should go through `VDialogClose`
+- controlled visibility is ultimately determined by the `open` prop
 
 ## Related Docs
 

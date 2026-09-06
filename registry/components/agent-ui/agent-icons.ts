@@ -8,10 +8,21 @@ export const agentShieldAlertIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0ia
 
 export const agentSearchIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjY3MDg1IiBzdHJva2Utd2lkdGg9IjEuOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48Y2lyY2xlIGN4PSIxMSIgY3k9IjExIiByPSI2Ii8+PHBhdGggZD0ibTE2IDE2IDQgNCIvPjwvc3ZnPg=='
 
-export const agentSendIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNCAxMiAxNi04LTUgMTYtMy41LTYuNUw0IDEyWiIvPjxwYXRoIGQ9Ik0xMS41IDEzLjUgMjAgNCIvPjwvc3ZnPg=='
-
 export const agentCloseIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjY3MDg1IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0ibTcgNyAxMCAxME0xNyA3IDcgMTciLz48L3N2Zz4='
 
 export const agentCheckIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTNiMjQ4IiBzdHJva2Utd2lkdGg9IjIuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNSAxMiA0IDRMMTkgNiIvPjwvc3ZnPg=='
 
 export const agentPlusIcon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDdjMTYwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTEyIDV2MTRNNSAxMmgxNCIvPjwvc3ZnPg=='
+
+const agentSendMask = 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNCAxMiAxNi04LTUgMTYtMy41LTYuNUw0IDEyWiIvPjxwYXRoIGQ9Ik0xMS41IDEzLjUgMjAgNCIvPjwvc3ZnPg==")'
+
+export const agentSendIconStyle = {
+  '-webkit-mask-image': agentSendMask,
+  '-webkit-mask-position': 'center',
+  '-webkit-mask-repeat': 'no-repeat',
+  '-webkit-mask-size': 'contain',
+  'mask-image': agentSendMask,
+  'mask-position': 'center',
+  'mask-repeat': 'no-repeat',
+  'mask-size': 'contain',
+} as const

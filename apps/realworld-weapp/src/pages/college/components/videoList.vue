@@ -7,6 +7,11 @@ function handleTap() {
   return false
 }
 
+function likeIcon(active: unknown) {
+  if (active) { return 'like' }
+  return 'nolike'
+}
+
 const { handleReachBottom, videoList, loadingStatus, goToVideo } = listFn
 </script>
 
@@ -84,7 +89,7 @@ const { handleReachBottom, videoList, loadingStatus, goToVideo } = listFn
                 <VIcon
                   size="24"
                   color="#FF6216"
-                  :name="item.active ? 'like' : 'nolike'"
+                  :name="likeIcon(item.active)"
                 />
                 <text class="ml-10">
                   {{ item.likeCount }}

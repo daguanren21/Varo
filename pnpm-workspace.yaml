@@ -6,6 +6,8 @@ packages:
 autoInstallPeers: false
 
 minimumReleaseAge: 0
+overrides:
+  undici: 7.29.0
 
 versioning:
   fixed:

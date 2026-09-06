@@ -44,7 +44,7 @@ function sortMark(column: AgentTableColumn) {
     <view class="min-w-[560px]">
       <view class="grid border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)]" :style="gridStyle" role="row">
         <view v-for="column in columns" :key="column.key" class="min-w-0 px-3 py-2.5" role="columnheader">
-          <button v-if="column.sortable" class="inline-flex min-h-6 items-center gap-1 border-0 bg-transparent p-0 text-[10px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]" type="button" @click="emit('sort', column)">
+          <button v-if="column.sortable" class="agent-native-button inline-flex min-h-6 items-center gap-1 border-0 bg-transparent p-0 text-[10px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]" type="button" @click="emit('sort', column)">
             {{ column.label }} <text class="text-[var(--varo-agent-primary)]">
               {{ sortMark(column) }}
             </text>
@@ -54,7 +54,7 @@ function sortMark(column: AgentTableColumn) {
           </text>
         </view>
       </view>
-      <button v-for="row in rows" :key="row.id" class="grid min-h-11 w-full border-0 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-0 text-left last:border-b-0" hover-class="bg-[var(--varo-agent-surface-strong)]" :hover-start-time="20" :hover-stay-time="70" :style="gridStyle" type="button" role="row" @click="emit('select', row)">
+      <button v-for="row in rows" :key="row.id" class="agent-native-button agent-native-button--block grid min-h-11 border-0 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-0 text-left last:border-b-0" hover-class="bg-[var(--varo-agent-surface-strong)]" :hover-start-time="20" :hover-stay-time="70" :style="gridStyle" type="button" role="row" @click="emit('select', row)">
         <text v-for="column in columns" :key="column.key" class="truncate px-3 py-3 text-[12px] leading-4 text-[var(--varo-agent-foreground)]" role="cell">
           {{ agentTableCellValue(row, column.key) }}
         </text>

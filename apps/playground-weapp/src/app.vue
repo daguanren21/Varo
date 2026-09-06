@@ -8,10 +8,45 @@
 </template>
 
 <style>
-@import './styles.css';
-@import './styles/varo.css';
-
 page {
+  /* Retail accents keep white foregrounds above AA contrast in both press states. */
+  --varo-ui-primary: #0f766e;
+  --varo-ui-primary-dark: #0d645e;
+  --varo-ui-primary-hover: #115e59;
+  --varo-ui-primary-soft: #e7f1f1;
+  --varo-ui-primary-foreground: #fff;
+  --varo-ui-primary-hover-foreground: #fff;
+  --varo-ui-primary-text: #205451;
+  --varo-ui-success: #15803d;
+  --varo-ui-success-dark: #126d34;
+  --varo-ui-success-hover: #166534;
+  --varo-ui-success-soft: #e8f2ec;
+  --varo-ui-success-foreground: #fff;
+  --varo-ui-success-hover-foreground: #fff;
+  --varo-ui-success-text: #235938;
+  --varo-ui-warning: #a16207;
+  --varo-ui-warning-dark: #895306;
+  --varo-ui-warning-hover: #854d0e;
+  --varo-ui-warning-soft: #f6efe6;
+  --varo-ui-warning-foreground: #fff;
+  --varo-ui-warning-hover-foreground: #fff;
+  --varo-ui-warning-text: #694a1d;
+  --varo-ui-danger: #b91c1c;
+  --varo-ui-danger-dark: #9d1818;
+  --varo-ui-danger-hover: #991b1b;
+  --varo-ui-danger-soft: #f8e8e8;
+  --varo-ui-danger-foreground: #fff;
+  --varo-ui-danger-hover-foreground: #fff;
+  --varo-ui-danger-text: #752728;
+  --varo-ui-info: #475569;
+  --varo-ui-info-dark: #3c4859;
+  --varo-ui-info-hover: #334155;
+  --varo-ui-info-soft: #edeef0;
+  --varo-ui-info-foreground: #fff;
+  --varo-ui-info-hover-foreground: #fff;
+  --varo-ui-info-text: #3c434e;
+  --varo-ui-ring: rgb(15 118 110 / 16%);
+
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--varo-ui-text);
   background: var(--varo-ui-bg);
@@ -67,12 +102,10 @@ page {
 @keyframes retail-page-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -220,6 +253,8 @@ page {
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f4f6f8"
   },
+  "style": "v2",
+  "componentFramework": "glass-easel",
   "lazyCodeLoading": "requiredComponents"
 }
 </json>

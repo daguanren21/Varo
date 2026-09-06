@@ -1,5 +1,7 @@
 # Form
 
+<RegistryInstallStrip item="components/form" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <FormComponentDemo example="form" locale="en" />

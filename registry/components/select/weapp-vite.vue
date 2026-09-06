@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { useSelectRoot } from '@varo-ui/headless'
 import { computed, shallowRef, toRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
+import VIcon from './v-icon.vue'
 
 type SelectValue = number | string
 
@@ -12,18 +12,34 @@ interface SelectOption {
   value: SelectValue
 }
 
-const props = defineProps({
-  clearable: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  filterable: { type: Boolean, default: false },
-  multiple: { type: Boolean, default: false },
-  options: { type: Array as PropType<SelectOption[]>, default: () => [] },
-  placeholder: { type: String, default: '请选择' },
-  value: {
-    type: null as unknown as PropType<SelectValue | SelectValue[] | undefined>,
-    default: undefined,
+// WeChat validates union props against one native type before Wevu normalizes them.
+defineOptions({
+  properties: {
+    value: { type: null },
   },
 })
+
+const props = withDefaults(
+  defineProps<{
+    clearable?: boolean
+    disabled?: boolean
+    filterable?: boolean
+    multiple?: boolean
+    options?: SelectOption[]
+    placeholder?: string
+    readonly?: boolean
+    value?: SelectValue | SelectValue[]
+  }>(),
+  {
+    clearable: false,
+    disabled: false,
+    filterable: false,
+    multiple: false,
+    options: () => [],
+    placeholder: '请选择',
+    readonly: false,
+  },
+)
 
 const emit = defineEmits<{
   'change': [value: SelectValue | SelectValue[] | undefined]
@@ -44,6 +60,7 @@ const selectRoot = useSelectRoot({
   openControlled: controlled,
   options: toRef(props, 'options'),
   placeholder: toRef(props, 'placeholder'),
+  readonly: toRef(props, 'readonly'),
   value: normalizedValue,
   valueControlled: controlled,
   onOpenChange(value) {
@@ -66,13 +83,21 @@ const filteredOptions = computed(() => {
 })
 const valueClass = computed(() => selectedValues.value.length ? 'varo-select__value' : 'varo-select__placeholder')
 const filterInputValue = computed(() => {
-  if (selectOpen.value) return keyword.value
+  if (selectOpen.value) { return keyword.value }
   return selectedValues.value.length ? displayValue.value : ''
 })
+const showFilterInput = computed(() => props.filterable && !props.readonly)
 
 watch(selectOpen, (isOpen) => {
-  if (!isOpen) keyword.value = ''
+  if (!isOpen) { keyword.value = '' }
 })
+
+watch(
+  () => props.readonly,
+  (readonly) => {
+    if (readonly) { keyword.value = '' }
+  },
+)
 
 function update(value: SelectValue | SelectValue[] | undefined) {
   emit('update:value', value)
@@ -84,6 +109,8 @@ function openPanel() {
 }
 
 function search(event: Event) {
+  if (!interactive.value) { return }
+
   const miniEvent = event as Event & { detail?: { value?: string } }
   const target = event.target as HTMLInputElement | null
   keyword.value = miniEvent.detail?.value ?? target?.value ?? ''
@@ -92,6 +119,8 @@ function search(event: Event) {
 }
 
 function clear() {
+  if (!interactive.value) { return }
+
   selectRoot.api.setValue(props.multiple ? [] : undefined)
   emit('clear')
 }
@@ -110,9 +139,9 @@ function closePanel() {
 </script>
 
 <template>
-  <view class="varo-select" :data-disabled="String(selectDisabled)" :data-multiple="String(multiple)" :data-open="String(selectOpen)">
+  <view class="varo-select" :data-disabled="String(selectDisabled)" :data-readonly="String(props.readonly)" :data-multiple="String(multiple)" :data-open="String(selectOpen)">
     <view
-      v-if="props.filterable"
+      v-if="showFilterInput"
       class="varo-select__trigger"
       :data-open="String(selectOpen)"
       @click="openPanel"
@@ -121,7 +150,8 @@ function closePanel() {
         class="varo-select__filter-input"
         :value="filterInputValue"
         :placeholder="props.placeholder"
-        :disabled="!interactive"
+        :disabled="selectDisabled"
+        :aria-disabled="selectDisabled"
         :aria-expanded="selectOpen"
         aria-haspopup="listbox"
         role="combobox"
@@ -137,7 +167,7 @@ function closePanel() {
           aria-label="Clear selection"
           @click.stop="clear"
         >
-          ×
+          <VIcon name="close" :size="14" />
         </button>
         <text class="varo-select__arrow" aria-hidden="true" />
       </view>
@@ -152,9 +182,12 @@ function closePanel() {
       <button
         class="varo-select__control"
         type="button"
-        :disabled="!interactive"
+        :disabled="selectDisabled"
+        :aria-disabled="selectDisabled"
+        :aria-readonly="props.readonly"
         :aria-expanded="selectOpen"
         aria-haspopup="listbox"
+        role="combobox"
         @click.stop="togglePanel"
       >
         <text :class="valueClass">
@@ -169,14 +202,14 @@ function closePanel() {
           aria-label="Clear selection"
           @click.stop="clear"
         >
-          ×
+          <VIcon name="close" :size="14" />
         </button>
         <text class="varo-select__arrow" aria-hidden="true" />
       </view>
     </view>
 
     <view v-if="selectOpen" class="varo-select__panel">
-      <view class="varo-select__options" role="listbox" :aria-multiselectable="multiple">
+      <view class="varo-select__options" role="listbox" :aria-readonly="props.readonly" :aria-multiselectable="multiple">
         <button
           v-for="option in filteredOptions"
           :key="String(option.value)"
@@ -190,9 +223,12 @@ function closePanel() {
           @click="selectOption(option)"
         >
           <text>{{ option.label }}</text>
-          <text v-if="selectedValues.includes(option.value)" class="varo-select__check">
-            ✓
-          </text>
+          <VIcon
+            v-if="selectedValues.includes(option.value)"
+            class="varo-select__check"
+            name="check"
+            :size="14"
+          />
         </button>
         <text v-if="filteredOptions.length === 0" class="varo-select__empty">
           暂无匹配项

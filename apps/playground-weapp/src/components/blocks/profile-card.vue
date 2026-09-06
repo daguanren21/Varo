@@ -41,7 +41,7 @@ const emit = defineEmits<{
 }>()
 
 const rootClass = computed(() =>
-  cn('w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className),
+  cn('box-border w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className),
 )
 </script>
 
@@ -79,7 +79,7 @@ const rootClass = computed(() =>
         size="sm"
         variant="ghost"
         tone="default"
-        class-name="!grid !min-h-0 !gap-1 !rounded-none !bg-transparent !px-2 !text-center"
+        class-name="!grid !min-h-11 !gap-1 !rounded-none !bg-transparent !px-2 !text-center"
         @click="emit('selectStat', { index, stat })"
       >
         <text class="text-base font-bold text-slate-950">

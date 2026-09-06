@@ -2,12 +2,21 @@ export type BlockCategory = 'agent' | 'business' | 'retail'
 export type BlockGalleryLocale = 'en' | 'zh'
 export type BlockTarget = 'h5' | 'weapp'
 
+export interface BlockPreviewAsset {
+  source: string
+}
+
+export interface ResolvedBlockPreviewAsset extends BlockPreviewAsset {
+  target: BlockTarget
+}
+
 export interface BlockGalleryDefinition {
   category: BlockCategory
   componentName: string
   dependencies: string[]
   description: Record<BlockGalleryLocale, string>
   id: string
+  previewAssets?: Partial<Record<BlockTarget, BlockPreviewAsset>>
   setup?: string
   targets: BlockTarget[]
   title: Record<BlockGalleryLocale, string>
@@ -159,6 +168,26 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     setup: 'const orderCounts = {}',
   },
 ]
+
+export const blockGalleryCaptureDate = '2026-08-28'
+
+export function blockPreviewAsset(
+  block: BlockGalleryDefinition,
+  target: BlockTarget,
+): ResolvedBlockPreviewAsset {
+  const requestedAsset = block.previewAssets?.[target]
+  if (requestedAsset) {
+    return { ...requestedAsset, target }
+  }
+
+  const weappAsset = block.previewAssets?.weapp
+  return weappAsset
+    ? { ...weappAsset, target: 'weapp' }
+    : {
+        source: `/blocks/${block.id}.png`,
+        target: 'weapp',
+      }
+}
 
 export function blockInstallCommand(block: BlockGalleryDefinition, target: BlockTarget) {
   return `pnpm dlx @varo-ui/cli add --target ${target} blocks/${block.id}`

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import type { RetailProduct } from '../../lib/retail'
 import { computed } from 'wevu'
 import { formatRetailMoney, normalizeRetailProduct } from '../../lib/retail'
@@ -12,11 +11,18 @@ interface RetailCategory {
   label: string
 }
 
-const props = defineProps({
-  activeId: { type: null as unknown as PropType<string>, default: '' },
-  categories: { type: null as unknown as PropType<RetailCategory[]>, default: () => [] },
-  products: { type: null as unknown as PropType<RetailProduct[]>, default: () => [] },
-})
+const props = withDefaults(
+  defineProps<{
+    activeId?: string
+    categories?: RetailCategory[]
+    products?: RetailProduct[]
+  }>(),
+  {
+    activeId: '',
+    categories: () => [],
+    products: () => [],
+  },
+)
 
 const emit = defineEmits<{
   'add': [product: RetailProduct]
@@ -41,6 +47,11 @@ const activeProducts = computed(() => {
   const filtered = safeProducts.value.filter(product => !safeActiveId.value || product.category === safeActiveId.value)
   return filtered.length > 0 ? filtered : safeProducts.value
 })
+
+function categoryClass(categoryId: string) {
+  if (safeActiveId.value !== categoryId) { return '' }
+  return '!bg-white !font-black !text-teal-700'
+}
 </script>
 
 <template>
@@ -53,7 +64,7 @@ const activeProducts = computed(() => {
         variant="ghost"
         tone="default"
         class-name="relative !flex !min-h-14 !w-full !items-center !justify-center !rounded-none !px-2 !text-xs !text-slate-500"
-        :class="safeActiveId === category.id ? '!bg-white !font-black !text-teal-700' : ''"
+        :class="categoryClass(category.id)"
         @click="emit('update:activeId', category.id)"
       >
         <text v-if="safeActiveId === category.id" class="absolute inset-y-3 left-0 w-1 rounded-r-full bg-teal-600" />

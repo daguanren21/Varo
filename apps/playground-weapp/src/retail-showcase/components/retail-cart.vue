@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import type { RetailCartLine } from '../../lib/retail'
 import { computed } from 'wevu'
 import VEmpty from '../../components/ui/empty.vue'
@@ -10,11 +9,18 @@ import VCheckbox from '../../components/ui/v-checkbox.vue'
 import VImage from '../../components/ui/v-image.vue'
 import { formatRetailMoney, normalizeRetailProduct } from '../../lib/retail'
 
-const props = defineProps({
-  items: { type: null as unknown as PropType<RetailCartLine[]>, default: () => [] },
-  selectedCount: { type: null as unknown as PropType<number>, default: 0 },
-  total: { type: null as unknown as PropType<number>, default: 0 },
-})
+const props = withDefaults(
+  defineProps<{
+    items?: RetailCartLine[]
+    selectedCount?: number
+    total?: number
+  }>(),
+  {
+    items: () => [],
+    selectedCount: 0,
+    total: 0,
+  },
+)
 const emit = defineEmits<{
   checkout: []
   continue: []

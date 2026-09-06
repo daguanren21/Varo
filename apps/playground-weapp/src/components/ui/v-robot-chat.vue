@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import type { VaroRobotChatOptions, VaroRobotChatPlugin } from './robot-chat.types'
 import { computed, onMounted, onUnmounted, shallowRef } from 'wevu'
 
-const props = defineProps({
-  ariaLabel: { type: String, default: '机器人对话' },
-  className: { type: String, default: '' },
-  errorText: { type: String, default: '机器人连接失败' },
-  loadingText: { type: String, default: '正在连接机器人' },
-  options: { type: Object as PropType<VaroRobotChatOptions>, required: true },
-  retryText: { type: String, default: '重新连接' },
-})
+const props = withDefaults(
+  defineProps<{
+    ariaLabel?: string
+    className?: string
+    errorText?: string
+    loadingText?: string
+    options: VaroRobotChatOptions
+    retryText?: string
+  }>(),
+  {
+    ariaLabel: '机器人对话',
+    className: '',
+    errorText: '机器人连接失败',
+    loadingText: '正在连接机器人',
+    retryText: '重新连接',
+  },
+)
 
 const emit = defineEmits<{
   backHome: [event: unknown]
@@ -89,7 +97,7 @@ onUnmounted(() => {
     <wechat-robot-chat
       v-if="state === 'ready'"
       class="block h-full min-h-[480px] w-full"
-      generic:operateCard="varo-robot-operate-card"
+      generic:operate-card="varo-robot-operate-card"
       @query-callback="emit('queryCallback', $event)"
       @back-home="emit('backHome', $event)"
     />
@@ -97,7 +105,7 @@ onUnmounted(() => {
       <text class="text-sm text-[var(--varo-ui-text-regular)]">
         {{ props.errorText }}
       </text>
-      <button class="min-h-10 rounded-xl bg-[var(--varo-ui-primary)] px-4 text-sm font-semibold text-white" type="button" @click="initialize">
+      <button class="varo-robot-chat__retry rounded-xl bg-[var(--varo-ui-primary)] text-sm font-semibold text-[var(--varo-ui-primary-foreground)]" type="button" @click="initialize">
         {{ props.retryText }}
       </button>
     </view>

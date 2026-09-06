@@ -2,6 +2,8 @@
 
 `VElevator` 会在内容滚动时根据当前分组标题同步右侧索引；滚动到底部时固定到最后一组，点击索引只滚动组件内部列表，不移动浏览器页面。
 
+<RegistryInstallStrip item="components/elevator" :targets="['h5']" locale="zh" />
+
 ## 演示
 
 <PlatformTabsDemo example="elevator" locale="zh" />

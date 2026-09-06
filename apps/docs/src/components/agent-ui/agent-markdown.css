@@ -45,10 +45,10 @@
 .agent-markdown__admonition { padding: .7rem .8rem; margin: .8em 0; background: var(--varo-agent-primary-soft); border: 1px solid color-mix(in srgb, var(--varo-agent-primary) 48%, var(--varo-agent-border)); border-radius: .75rem; }
 .agent-markdown__admonition-title { display: block; margin-bottom: .25rem; color: var(--varo-agent-primary); }
 .agent-markdown__math-block { padding: .75rem; margin: .8em 0; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: var(--varo-agent-surface-strong); border: 1px solid var(--varo-agent-border); border-radius: .75rem; }
-.agent-message[data-role='user'] .agent-markdown { color: #fff; }
+.agent-message[data-role='user'] .agent-markdown { color: var(--varo-agent-primary-foreground); }
 
 .agent-message[data-role='user'] .agent-markdown__link,
-.agent-message[data-role='user'] .agent-markdown__footnote { color: #fff; text-decoration-color: rgb(255 255 255 / 70%); }
+.agent-message[data-role='user'] .agent-markdown__footnote { color: var(--varo-agent-primary-foreground); text-decoration-color: color-mix(in srgb, var(--varo-agent-primary-foreground) 70%, transparent); }
 
 .agent-message[data-role='user'] .agent-markdown__inline-code,
-.agent-message[data-role='user'] .agent-markdown__math-inline { color: #fff; background: rgb(255 255 255 / 14%); border-color: rgb(255 255 255 / 30%); }
+.agent-message[data-role='user'] .agent-markdown__math-inline { color: var(--varo-agent-primary-foreground); background: color-mix(in srgb, var(--varo-agent-primary-foreground) 14%, transparent); border-color: color-mix(in srgb, var(--varo-agent-primary-foreground) 30%, transparent); }

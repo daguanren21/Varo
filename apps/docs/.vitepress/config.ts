@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vitepress'
+import { createComponentSidebarGroups } from '../src/component-catalog.js'
 
 const workspacePath = (relativePath: string) => fileURLToPath(new URL(relativePath, import.meta.url))
 const docsBase = process.env.DOCS_BASE || '/'
@@ -8,7 +9,7 @@ const docsAsset = (path: string) => `${docsBase}${path.replace(/^\/+/, '')}`
 
 export default defineConfig({
   title: 'Varo',
-  description: '面向 H5 与小程序封装的 primitives-first Vue 组件体系。',
+  description: '面向 Vue 3 H5 与 Wevu 小程序的 Registry-first 双端移动 UI 系统。',
   base: docsBase,
   cleanUrls: true,
   lastUpdated: true,
@@ -86,7 +87,7 @@ export default defineConfig({
       label: '简体中文',
       lang: 'zh-CN',
       title: 'Varo',
-      description: '面向 H5 与小程序封装的 primitives-first Vue 组件体系。',
+      description: '面向 Vue 3 H5 与 Wevu 小程序的 Registry-first 双端移动 UI 系统。',
       themeConfig: {
         search: {
           provider: 'local',
@@ -109,14 +110,14 @@ export default defineConfig({
           },
         },
         nav: [
-          { text: '开始', link: '/guide/installation' },
+          { text: 'Registry', link: '/guide/installation' },
           { text: '组件', link: '/components/' },
-          { text: 'AI Agent', link: '/ai/' },
-          { text: 'Primitives', link: '/primitives/' },
           { text: 'Blocks', link: '/blocks/build-your-own' },
+          { text: 'AI Agent', link: '/ai/' },
           {
-            text: '资源',
+            text: '文档与资源',
             items: [
+              { text: 'Primitives', link: '/primitives/' },
               { text: '跨端示例', link: '/examples/' },
               { text: '主题配置', link: '/guide/theme' },
               { text: '色彩系统', link: '/guide/colors' },
@@ -140,89 +141,7 @@ export default defineConfig({
             text: '组件文档',
             items: [
               { text: '组件总览', link: '/components/' },
-              {
-                text: '基础组件',
-                collapsed: true,
-                items: [
-                  { text: 'Button 按钮', link: '/components/button' },
-                  { text: 'Badge 徽标', link: '/components/badge' },
-                  { text: 'Cell 单元格', link: '/components/cell' },
-                  { text: 'Image 图片', link: '/components/image' },
-                  { text: 'Input 输入框', link: '/components/input' },
-                ],
-              },
-              {
-                text: '表单组件',
-                collapsed: true,
-                items: [
-                  { text: 'Calendar 日历', link: '/components/calendar' },
-                  { text: 'CalendarCard 日历卡片', link: '/components/calendar-card' },
-                  { text: 'Cascader 级联选择器', link: '/components/cascader' },
-                  { text: 'Checkbox 复选按钮', link: '/components/checkbox' },
-                  { text: 'DatePicker 日期选择器', link: '/components/date-picker' },
-                  { text: 'Form 表单', link: '/components/form' },
-                  { text: 'InputNumber 数字输入框', link: '/components/input-number' },
-                  { text: 'NumberKeyboard 数字键盘', link: '/components/number-keyboard' },
-                  { text: 'Picker 选择器', link: '/components/picker' },
-                  { text: 'Radio 单选按钮', link: '/components/radio' },
-                  { text: 'Select 选择器', link: '/components/select' },
-                  { text: 'Switch 开关', link: '/components/switch' },
-                  { text: 'Range 区间选择器', link: '/components/range' },
-                  { text: 'Rate 评分', link: '/components/rate' },
-                  { text: 'Searchbar 搜索栏', link: '/components/searchbar' },
-                  { text: 'ShortPassword 短密码', link: '/components/short-password' },
-                  { text: 'Textarea 文本域', link: '/components/textarea' },
-                  { text: 'Uploader 上传', link: '/components/uploader' },
-                ],
-              },
-              {
-                text: '布局组件',
-                collapsed: true,
-                items: [
-                  { text: 'Divider 分割线', link: '/components/divider' },
-                  { text: 'Grid 宫格', link: '/components/grid' },
-                  { text: 'Layout 布局', link: '/components/layout' },
-                  { text: 'Space 间距', link: '/components/space' },
-                  { text: 'Sticky 粘性布局', link: '/components/sticky' },
-                ],
-              },
-              {
-                text: '导航组件',
-                collapsed: true,
-                items: [
-                  { text: 'Elevator 电梯楼层', link: '/components/elevator' },
-                  { text: 'FixedNav 悬浮导航', link: '/components/fixed-nav' },
-                  { text: 'Indicator 指示器', link: '/components/indicator' },
-                  { text: 'Menu 菜单', link: '/components/menu' },
-                  { text: 'Navbar 头部导航', link: '/components/navbar' },
-                  { text: 'Pagination 分页', link: '/components/pagination' },
-                  { text: 'SideNavbar 侧边栏导航', link: '/components/side-navbar' },
-                  { text: 'Tabbar 标签栏', link: '/components/tabbar' },
-                  { text: 'Tabs 选项卡切换', link: '/components/tabs' },
-                ],
-              },
-              {
-                text: '反馈组件',
-                collapsed: true,
-                items: [
-                  { text: 'Loading 加载', link: '/components/loading' },
-                  { text: 'Skeleton 骨架屏', link: '/components/skeleton' },
-                  { text: 'Overlay 遮罩层', link: '/components/overlay' },
-                  { text: 'Popup 弹出层', link: '/components/popup' },
-                  { text: 'Toast 轻提示', link: '/components/toast' },
-                ],
-              },
-              {
-                text: '高级组件',
-                collapsed: true,
-                items: [
-                  { text: 'Popover 气泡浮层', link: '/components/popover' },
-                  { text: 'Dialog 对话框', link: '/components/dialog' },
-                  { text: 'RegionPicker 地区选择', link: '/components/region-picker' },
-                  { text: 'Map 小程序地图', link: '/components/map' },
-                  { text: 'RobotChat 机器人对话', link: '/components/robot-chat' },
-                ],
-              },
+              ...createComponentSidebarGroups('zh'),
             ],
           },
           {
@@ -380,7 +299,7 @@ export default defineConfig({
       label: 'English',
       lang: 'en-US',
       title: 'Varo',
-      description: 'A primitives-first Vue component library for H5 and mini-program wrappers.',
+      description: 'A Registry-first mobile UI system for Vue 3 H5 and Wevu mini programs.',
       themeConfig: {
         search: {
           provider: 'local',
@@ -403,14 +322,14 @@ export default defineConfig({
           },
         },
         nav: [
-          { text: 'Start', link: '/en/guide/installation' },
+          { text: 'Registry', link: '/en/guide/installation' },
           { text: 'Components', link: '/en/components/' },
-          { text: 'AI Agent', link: '/en/ai/' },
-          { text: 'Primitives', link: '/en/primitives/' },
           { text: 'Blocks', link: '/en/blocks/build-your-own' },
+          { text: 'AI Agent', link: '/en/ai/' },
           {
-            text: 'Resources',
+            text: 'Docs & Resources',
             items: [
+              { text: 'Primitives', link: '/en/primitives/' },
               { text: 'Cross-platform Examples', link: '/en/examples/' },
               { text: 'Theme', link: '/en/guide/theme' },
               { text: 'Color System', link: '/en/guide/colors' },
@@ -434,89 +353,7 @@ export default defineConfig({
             text: 'Components',
             items: [
               { text: 'Overview', link: '/en/components/' },
-              {
-                text: 'Basic',
-                collapsed: true,
-                items: [
-                  { text: 'Button', link: '/en/components/button' },
-                  { text: 'Badge', link: '/en/components/badge' },
-                  { text: 'Cell', link: '/en/components/cell' },
-                  { text: 'Image', link: '/en/components/image' },
-                  { text: 'Input', link: '/en/components/input' },
-                ],
-              },
-              {
-                text: 'Form Components',
-                collapsed: true,
-                items: [
-                  { text: 'Calendar', link: '/en/components/calendar' },
-                  { text: 'CalendarCard', link: '/en/components/calendar-card' },
-                  { text: 'Cascader', link: '/en/components/cascader' },
-                  { text: 'Checkbox', link: '/en/components/checkbox' },
-                  { text: 'DatePicker', link: '/en/components/date-picker' },
-                  { text: 'Form', link: '/en/components/form' },
-                  { text: 'InputNumber', link: '/en/components/input-number' },
-                  { text: 'NumberKeyboard', link: '/en/components/number-keyboard' },
-                  { text: 'Picker', link: '/en/components/picker' },
-                  { text: 'Radio', link: '/en/components/radio' },
-                  { text: 'Select', link: '/en/components/select' },
-                  { text: 'Switch', link: '/en/components/switch' },
-                  { text: 'Range', link: '/en/components/range' },
-                  { text: 'Rate', link: '/en/components/rate' },
-                  { text: 'Searchbar', link: '/en/components/searchbar' },
-                  { text: 'ShortPassword', link: '/en/components/short-password' },
-                  { text: 'Textarea', link: '/en/components/textarea' },
-                  { text: 'Uploader', link: '/en/components/uploader' },
-                ],
-              },
-              {
-                text: 'Layout',
-                collapsed: true,
-                items: [
-                  { text: 'Divider', link: '/en/components/divider' },
-                  { text: 'Grid', link: '/en/components/grid' },
-                  { text: 'Layout', link: '/en/components/layout' },
-                  { text: 'Space', link: '/en/components/space' },
-                  { text: 'Sticky', link: '/en/components/sticky' },
-                ],
-              },
-              {
-                text: 'Navigation',
-                collapsed: true,
-                items: [
-                  { text: 'Elevator', link: '/en/components/elevator' },
-                  { text: 'FixedNav', link: '/en/components/fixed-nav' },
-                  { text: 'Indicator', link: '/en/components/indicator' },
-                  { text: 'Menu', link: '/en/components/menu' },
-                  { text: 'Navbar', link: '/en/components/navbar' },
-                  { text: 'Pagination', link: '/en/components/pagination' },
-                  { text: 'SideNavbar', link: '/en/components/side-navbar' },
-                  { text: 'Tabbar', link: '/en/components/tabbar' },
-                  { text: 'Tabs', link: '/en/components/tabs' },
-                ],
-              },
-              {
-                text: 'Feedback',
-                collapsed: true,
-                items: [
-                  { text: 'Loading', link: '/en/components/loading' },
-                  { text: 'Skeleton', link: '/en/components/skeleton' },
-                  { text: 'Overlay', link: '/en/components/overlay' },
-                  { text: 'Popup', link: '/en/components/popup' },
-                  { text: 'Toast', link: '/en/components/toast' },
-                ],
-              },
-              {
-                text: 'Advanced',
-                collapsed: true,
-                items: [
-                  { text: 'Popover', link: '/en/components/popover' },
-                  { text: 'Dialog', link: '/en/components/dialog' },
-                  { text: 'RegionPicker', link: '/en/components/region-picker' },
-                  { text: 'Map', link: '/en/components/map' },
-                  { text: 'RobotChat', link: '/en/components/robot-chat' },
-                ],
-              },
+              ...createComponentSidebarGroups('en'),
             ],
           },
           {

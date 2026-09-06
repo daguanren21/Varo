@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import type { BlockCategory, BlockGalleryLocale } from './block-gallery'
-import { computed, shallowRef } from 'vue'
+import type {
+  BlockCategory,
+  BlockGalleryDefinition,
+  BlockGalleryLocale,
+  BlockTarget,
+} from './block-gallery'
+import { computed, onMounted, shallowRef } from 'vue'
 import {
-
+  blockGalleryCaptureDate,
   blockGalleryDefinitions,
-
 } from './block-gallery'
 import BlockGalleryCard from './BlockGalleryCard.vue'
 
@@ -16,6 +20,8 @@ const { locale = 'zh' } = defineProps<{
 
 const query = shallowRef('')
 const category = shallowRef<CategoryFilter>('all')
+const selectedBlockId = shallowRef<string>()
+const selectedTarget = shallowRef<BlockTarget>()
 const categoryOptions = computed<{ id: CategoryFilter, label: string }[]>(() => [
   { id: 'all', label: locale === 'zh' ? '全部' : 'All' },
   { id: 'business', label: locale === 'zh' ? '业务基础' : 'Business' },
@@ -33,6 +39,76 @@ const visibleBlocks = computed(() => {
     return searchable.includes(keyword)
   })
 })
+
+function isCategoryFilter(value: string | null): value is CategoryFilter {
+  return categoryOptions.value.some(option => option.id === value)
+}
+
+function isBlockTarget(value: string | null): value is BlockTarget {
+  return value === 'h5' || value === 'weapp'
+}
+
+function syncGalleryQuery() {
+  const url = new URL(window.location.href)
+
+  if (query.value) {
+    url.searchParams.set('q', query.value)
+  }
+  else {
+    url.searchParams.delete('q')
+  }
+
+  if (category.value === 'all') {
+    url.searchParams.delete('category')
+  }
+  else {
+    url.searchParams.set('category', category.value)
+  }
+
+  if (selectedBlockId.value && selectedTarget.value) {
+    url.searchParams.set('block', selectedBlockId.value)
+    url.searchParams.set('target', selectedTarget.value)
+  }
+  else {
+    url.searchParams.delete('block')
+    url.searchParams.delete('target')
+  }
+
+  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
+}
+
+function restoreGalleryQuery() {
+  const params = new URL(window.location.href).searchParams
+  query.value = params.get('q') ?? ''
+
+  const requestedCategory = params.get('category')
+  category.value = isCategoryFilter(requestedCategory) ? requestedCategory : 'all'
+
+  const block = blockGalleryDefinitions.find(item => item.id === params.get('block'))
+  const target = params.get('target')
+  if (block && isBlockTarget(target) && block.targets.includes(target)) {
+    selectedBlockId.value = block.id
+    selectedTarget.value = target
+  }
+}
+
+function handleQueryInput(event: Event) {
+  query.value = (event.target as HTMLInputElement).value
+  syncGalleryQuery()
+}
+
+function selectCategory(nextCategory: CategoryFilter) {
+  category.value = nextCategory
+  syncGalleryQuery()
+}
+
+function selectBlockTarget(block: BlockGalleryDefinition, target: BlockTarget) {
+  selectedBlockId.value = block.id
+  selectedTarget.value = target
+  syncGalleryQuery()
+}
+
+onMounted(restoreGalleryQuery)
 </script>
 
 <template>
@@ -53,16 +129,15 @@ const visibleBlocks = computed(() => {
     <div class="varo-block-gallery__toolbar">
       <label class="varo-block-gallery__search">
         <span>{{ locale === 'zh' ? '搜索' : 'Search' }}</span>
-        <input v-model="query" type="search" :placeholder="locale === 'zh' ? '搜索 Block 名称或用途' : 'Search by name or use case'">
+        <input :value="query" type="search" :placeholder="locale === 'zh' ? '搜索 Block 名称或用途' : 'Search by name or use case'" @input="handleQueryInput">
       </label>
-      <div class="varo-block-gallery__filters" role="tablist" :aria-label="locale === 'zh' ? 'Block 分类' : 'Block categories'">
+      <div class="varo-block-gallery__filters" role="group" :aria-label="locale === 'zh' ? 'Block 分类' : 'Block categories'">
         <button
           v-for="option in categoryOptions"
           :key="option.id"
           type="button"
-          role="tab"
-          :aria-selected="category === option.id"
-          @click="category = option.id"
+          :aria-pressed="category === option.id"
+          @click="selectCategory(option.id)"
         >
           {{ option.label }}
         </button>
@@ -71,11 +146,18 @@ const visibleBlocks = computed(() => {
 
     <div class="varo-block-gallery__result">
       <span>{{ locale === 'zh' ? `显示 ${visibleBlocks.length} 个 Block` : `Showing ${visibleBlocks.length} Blocks` }}</span>
-      <small>{{ locale === 'zh' ? '预览图为 Weapp 实际运行界面' : 'Previews are captured from the running Weapp surface' }}</small>
+      <small>{{ locale === 'zh' ? `图片证据：Weapp DevTools Verified · ${blockGalleryCaptureDate}` : `Image evidence: Weapp DevTools Verified · ${blockGalleryCaptureDate}` }}</small>
     </div>
 
     <div v-if="visibleBlocks.length" class="varo-block-gallery__grid">
-      <BlockGalleryCard v-for="block in visibleBlocks" :key="block.id" :block="block" :locale="locale" />
+      <BlockGalleryCard
+        v-for="block in visibleBlocks"
+        :key="block.id"
+        :block="block"
+        :locale="locale"
+        :selected-target="selectedBlockId === block.id ? selectedTarget : undefined"
+        @select-target="selectBlockTarget(block, $event)"
+      />
     </div>
     <div v-else class="varo-block-gallery__empty" role="status">
       <strong>{{ locale === 'zh' ? '没有匹配的 Block' : 'No matching Blocks' }}</strong>
@@ -160,7 +242,7 @@ const visibleBlocks = computed(() => {
 
 .varo-block-gallery__search input {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 12px 0 58px;
   font: inherit;
   font-size: 13px;
@@ -189,7 +271,7 @@ const visibleBlocks = computed(() => {
   border-radius: 8px;
 }
 
-.varo-block-gallery__filters button[aria-selected='true'] {
+.varo-block-gallery__filters button[aria-pressed='true'] {
   color: var(--varo-primary-foreground);
   background: var(--varo-primary);
   border-color: var(--varo-primary);
@@ -245,9 +327,12 @@ input:focus-visible {
     align-items: start;
   }
 
-  .varo-block-gallery__intro > strong,
-  .varo-block-gallery__result small {
+  .varo-block-gallery__intro > strong {
     display: none;
+  }
+
+  .varo-block-gallery__result {
+    flex-wrap: wrap;
   }
 
   .varo-block-gallery__toolbar {
@@ -256,6 +341,10 @@ input:focus-visible {
 
   .varo-block-gallery__filters {
     width: 100%;
+  }
+
+  .varo-block-gallery__filters button {
+    min-height: 44px;
   }
 
   .varo-block-gallery__grid {

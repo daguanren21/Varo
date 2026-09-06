@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import { useJxFilter } from '../../hooks'
 import { useDeviceGuide } from '../../hooks/useImprove'
 
@@ -14,6 +15,14 @@ const filterFn = useJxFilter()
 const { activationStateFilter, deviceNetworkStateFilter } = filterFn
 
 const { actionType, brandIndex, brandList, cancelStandAlone, changeBrand, changeDeviceSn, changeModule, confirmStandAlone, device, globalTip, guideBindModule, improveDevice, isCanImprove, isHasRole, isJs, isNeddBindModule, isNeedModuleGuide, isOpenStandAloneTip, moduleIndex, moduleList, scanDeviceCode } = guideFn
+const associatedContainer = computed(() => {
+  if (!device.value.hasContainer) { return '---' }
+  return String(device.value.containerNumber || '---')
+})
+const brandName = computed(() => {
+  const brand = brandList.value[brandIndex.value]
+  return brand?.nameCh || '请选择'
+})
 </script>
 
 <template>
@@ -37,11 +46,8 @@ const { actionType, brandIndex, brandList, cancelStandAlone, changeBrand, change
             thumb="../../static/images/icon-activeState.svg"
           />
           <viewItem
-            has-border title="已关联久心联网机箱" :extra-text="
-              device.hasContainer
-                ? device.containerNumber
-                : '---'
-            " thumb="../../static/images/icon-controller.svg"
+            has-border title="已关联久心联网机箱" :extra-text="associatedContainer"
+            thumb="../../static/images/icon-controller.svg"
           />
           <!-- <viewItem
           hasBorder
@@ -61,9 +67,8 @@ const { actionType, brandIndex, brandList, cancelStandAlone, changeBrand, change
         /> -->
           <picker mode="selector" :range="brandList" range-key="nameCh" :value="brandIndex" @change="changeBrand">
             <viewItem
-              has-border title="品牌" :extra-text="
-                brandList[brandIndex] ? brandList[brandIndex].nameCh : '请选择'
-              " arrow="right" thumb="../../static/images/icon-brand.svg"
+              has-border title="品牌" :extra-text="brandName" arrow="right"
+              thumb="../../static/images/icon-brand.svg"
             />
           </picker>
           <picker

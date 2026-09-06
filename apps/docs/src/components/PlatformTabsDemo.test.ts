@@ -2,7 +2,7 @@ import type { ThemeConfig } from '@varo-ui/theme'
 import type { Plugin } from 'vue'
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { flushPromises, mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import PlatformTabsDemo from './PlatformTabsDemo.vue'
 
 const themeConfig: ThemeConfig = {
@@ -16,10 +16,18 @@ const themeConfig: ThemeConfig = {
 }
 const themePlugin: [Plugin, ThemeConfig] = [VaroConfigProvider, themeConfig]
 
+beforeEach(() => {
+  window.sessionStorage.clear()
+  window.history.replaceState(null, '', '/')
+})
+
 describe('PlatformTabsDemo', () => {
   afterEach(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+    window.sessionStorage.clear()
+    window.history.replaceState(null, '', '/')
   })
 
   it('renders a focused preview without runtime metadata or fake device chrome', async () => {
@@ -469,6 +477,53 @@ describe('PlatformTabsDemo', () => {
     expect(placementTriggers).toHaveLength(2)
     await placementTriggers[0]!.trigger('click')
     expect(placement.get('.platform-demo__popover-tip').attributes('data-side')).toBe('top')
+  })
+
+  it('restores shareable platform and code state, then carries the platform preference to another component page', async () => {
+    window.history.replaceState(null, '', '/components/button?platform=weapp&code=open')
+    const wrapper = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'button',
+        locale: 'en',
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
+    expect(wrapper.find('.platform-demo__code-shell').exists()).toBe(true)
+    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('Weapp Contract Preview')
+    expect(wrapper.get('.platform-demo__evidence a').text()).toContain('Weapp DevTools Verified · 2026-08-28')
+    expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('weapp')
+
+    await wrapper.findAll('.platform-demo__platform-tab')[0]!.trigger('click')
+    await wrapper.get('.platform-demo__code-toggle').trigger('click')
+
+    let params = new URL(window.location.href).searchParams
+    expect(params.get('platform')).toBe('h5')
+    expect(params.has('code')).toBe(false)
+    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('H5 Live')
+    expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('h5')
+
+    wrapper.unmount()
+    window.history.replaceState(null, '', '/components/badge')
+    const nextPage = mount(PlatformTabsDemo, {
+      global: {
+        plugins: [themePlugin],
+      },
+      props: {
+        example: 'badge',
+        locale: 'en',
+      },
+    })
+    await flushPromises()
+
+    params = new URL(window.location.href).searchParams
+    expect(nextPage.get('.platform-demo').attributes('data-platform')).toBe('h5')
+    expect(params.get('platform')).toBe('h5')
+    expect(nextPage.find('.platform-demo__code-shell').exists()).toBe(false)
   })
 
   it('supports roving keyboard selection for platform tabs', async () => {

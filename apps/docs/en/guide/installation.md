@@ -69,6 +69,8 @@ pnpm add clsx @weapp-tailwindcss/merge
 
 Copy-owned mini-program Registry components use native Wevu SFCs and consume Tailwind v4 utilities through `styleIsolation: apply-shared`. Rendering and lifecycle code remain target-specific; pure adapters may re-export target primitives, and cross-target sharing is limited to types, pure functions, and headless primitives. The `cn()` helper uses `@weapp-tailwindcss/merge`, preserving mini-program escaping behavior.
 
+`@varo-ui/cli` only copies Registry files and prints `Dependencies:` / `Dev dependencies:`; it does not install npm packages. After each `add`, install every reported dependency that the project does not already contain. See the [one-time Wevu Registry setup](/en/guide/shadcn-mode) for managed registration of `src/styles.css` and the Registry theme at `src/styles/varo.css`, plus the complete Tailwind options.
+
 ## Engineering notes
 
 - Keep docs, playgrounds, and packages in the monorepo

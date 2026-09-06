@@ -40,7 +40,7 @@ const rootClass = computed(() =>
     <div class="flex min-w-0 flex-col">
       <div class="flex items-start justify-between gap-2">
         <h3 class="m-0 line-clamp-2 text-sm font-bold leading-5 text-slate-950">
-          <VButton size="sm" variant="ghost" tone="default" class="!min-h-0 !bg-transparent !p-0 !text-left !text-inherit" @click="emit('select', item)">
+          <VButton size="sm" variant="ghost" tone="default" class="!min-h-11 !bg-transparent !px-2 !py-0 !text-left !text-inherit" @click="emit('select', item)">
             {{ item.name }}
           </VButton>
         </h3>

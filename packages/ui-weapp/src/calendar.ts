@@ -1,25 +1,27 @@
-import { computed, defineComponent, h, shallowRef, watch, type PropType } from 'vue'
+import type { PropType } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch } from 'vue'
 import { buildMonthDays, normalizeMonth, shiftMonth, shiftYear } from './date-utils'
+import { VIcon } from './icon'
 
 export const VCalendarCard = defineComponent({
   name: 'VCalendarCard',
   props: {
     maxDate: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     minDate: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     month: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     value: {
       type: String as PropType<string | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:month', 'update:value', 'select'],
   setup(props, { emit }) {
@@ -30,8 +32,8 @@ export const VCalendarCard = defineComponent({
     watch(
       () => props.month,
       (month) => {
-        if (month) currentMonth.value = normalizeMonth(month)
-      }
+        if (month) { currentMonth.value = normalizeMonth(month) }
+      },
     )
 
     function isDisabled(date: string) {
@@ -39,7 +41,7 @@ export const VCalendarCard = defineComponent({
     }
 
     function select(date: string) {
-      if (isDisabled(date)) return
+      if (isDisabled(date)) { return }
       emit('update:value', date)
       emit('select', date)
     }
@@ -52,32 +54,32 @@ export const VCalendarCard = defineComponent({
     return () =>
       h('div', { class: 'varo-calendar-card' }, [
         h('div', { class: 'varo-calendar-card__toolbar' }, [
-          h('button', { class: 'varo-calendar-card__nav', type: 'button', 'data-action': 'prev-year', onClick: () => updateMonth(shiftYear(currentMonth.value, -1)) }, '«'),
-          h('button', { class: 'varo-calendar-card__nav', type: 'button', 'data-action': 'prev-month', onClick: () => updateMonth(shiftMonth(currentMonth.value, -1)) }, '‹'),
+          h('button', { 'aria-label': 'Previous year', 'class': 'varo-calendar-card__nav', 'type': 'button', 'data-action': 'prev-year', 'onClick': () => updateMonth(shiftYear(currentMonth.value, -1)) }, h(VIcon, { name: 'chevronsLeft' })),
+          h('button', { 'aria-label': 'Previous month', 'class': 'varo-calendar-card__nav', 'type': 'button', 'data-action': 'prev-month', 'onClick': () => updateMonth(shiftMonth(currentMonth.value, -1)) }, h(VIcon, { name: 'chevronLeft' })),
           h('div', { class: 'varo-calendar-card__title' }, title.value),
-          h('button', { class: 'varo-calendar-card__nav', type: 'button', 'data-action': 'next-month', onClick: () => updateMonth(shiftMonth(currentMonth.value, 1)) }, '›'),
-          h('button', { class: 'varo-calendar-card__nav', type: 'button', 'data-action': 'next-year', onClick: () => updateMonth(shiftYear(currentMonth.value, 1)) }, '»')
+          h('button', { 'aria-label': 'Next month', 'class': 'varo-calendar-card__nav', 'type': 'button', 'data-action': 'next-month', 'onClick': () => updateMonth(shiftMonth(currentMonth.value, 1)) }, h(VIcon, { name: 'chevronRight' })),
+          h('button', { 'aria-label': 'Next year', 'class': 'varo-calendar-card__nav', 'type': 'button', 'data-action': 'next-year', 'onClick': () => updateMonth(shiftYear(currentMonth.value, 1)) }, h(VIcon, { name: 'chevronsRight' })),
         ]),
         h(
           'div',
           { class: 'varo-calendar-card__days' },
-          days.value.map((day) =>
+          days.value.map(day =>
             h(
               'button',
               {
-                class: 'varo-calendar-card__day',
-                type: 'button',
+                'class': 'varo-calendar-card__day',
+                'type': 'button',
                 'data-active': String(day.date === props.value),
                 'data-date': day.date,
-                disabled: isDisabled(day.date),
-                onClick: () => select(day.date)
+                'disabled': isDisabled(day.date),
+                'onClick': () => select(day.date),
               },
-              String(day.day)
-            )
-          )
-        )
+              String(day.day),
+            ),
+          ),
+        ),
       ])
-  }
+  },
 })
 
 export const VCalendar = defineComponent({
@@ -85,17 +87,17 @@ export const VCalendar = defineComponent({
   props: {
     confirmText: {
       type: String,
-      default: 'Confirm'
+      default: 'Confirm',
     },
     month: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     value: {
       type: String as PropType<string | undefined>,
-      default: undefined
+      default: undefined,
     },
-    visible: Boolean
+    visible: Boolean,
   },
   emits: ['update:value', 'update:visible', 'confirm', 'select'],
   setup(props, { emit }) {
@@ -106,13 +108,13 @@ export const VCalendar = defineComponent({
       () => props.value,
       (value) => {
         selected.value = value
-      }
+      },
     )
     watch(
       () => props.month,
       (month) => {
-        if (month) currentMonth.value = normalizeMonth(month)
-      }
+        if (month) { currentMonth.value = normalizeMonth(month) }
+      },
     )
 
     function select(date: string) {
@@ -125,12 +127,12 @@ export const VCalendar = defineComponent({
       props.visible
         ? h('div', { class: 'varo-calendar' }, [
             h(VCalendarCard, {
-              month: currentMonth.value,
-              value: selected.value,
+              'month': currentMonth.value,
+              'value': selected.value,
               'onUpdate:month': (month: string) => {
                 currentMonth.value = month
               },
-              'onUpdate:value': select
+              'onUpdate:value': select,
             }),
             h(
               'button',
@@ -140,11 +142,11 @@ export const VCalendar = defineComponent({
                 onClick: () => {
                   emit('confirm', selected.value)
                   emit('update:visible', false)
-                }
+                },
               },
-              props.confirmText
-            )
+              props.confirmText,
+            ),
           ])
         : null
-  }
+  },
 })

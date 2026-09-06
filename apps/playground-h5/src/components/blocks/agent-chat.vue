@@ -46,7 +46,7 @@ const prompt = defineModel<string>({ default: '' })
         <strong class="truncate text-sm text-slate-950">{{ title }}</strong>
         <small class="truncate text-[11px] text-slate-400">{{ subtitle }}</small>
       </span>
-      <VButton size="sm" shape="round" tone="default" variant="ghost" class="!h-10 !min-h-10 !px-3 !text-xs" aria-label="Close Agent" @click="emit('close')">
+      <VButton size="sm" shape="round" tone="default" variant="ghost" class="!h-11 !min-h-11 !px-3 !text-xs" aria-label="Close Agent" @click="emit('close')">
         Close
       </VButton>
     </header>

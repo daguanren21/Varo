@@ -12,6 +12,7 @@
   ],
   "registryDependencies": [
     "themes/base",
+    "components/icon",
     "utils/date-utils"
   ],
   "files": [

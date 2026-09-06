@@ -16,6 +16,7 @@ import {
 
   provide,
   toRef,
+  useId,
 } from 'vue'
 import { usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
@@ -48,15 +49,20 @@ export const DialogRoot = defineComponent({
   emits: ['update:open', 'openChange'],
   setup(props, { emit, slots }) {
     const openControlled = usePropPresence('open')
+    const dialogId = `varo-dialog-${useId().replaceAll(':', '')}`
     const dialog = useDialogRoot({
+      id: dialogId,
       openControlled,
       runtime: vueReactiveRuntime,
       defaultOpen: props.defaultOpen,
       open: toRef(props, 'open'),
       disabled: toRef(props, 'disabled'),
-      onOpenChange(open) {
+      onOpenChange(open, details) {
+        emit('openChange', open, details)
+        if (details.canceled) {
+          return
+        }
         emit('update:open', open)
-        emit('openChange', open)
       },
     })
 

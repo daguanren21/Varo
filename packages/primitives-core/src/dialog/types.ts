@@ -1,12 +1,26 @@
 import type { ReactiveRuntime, Ref } from '../reactive'
 
+export type DialogOpenChangeReason
+  = | 'trigger-press'
+    | 'outside-press'
+    | 'escape-key'
+    | 'close-press'
+    | 'imperative-action'
+
+export interface DialogOpenChangeDetails {
+  readonly reason: DialogOpenChangeReason
+  readonly canceled: boolean
+  cancel: () => void
+}
+
 export interface DialogRootOptions {
+  id?: string
   runtime?: ReactiveRuntime
   defaultOpen?: boolean
   open?: Ref<boolean | undefined>
   openControlled?: Ref<boolean | undefined>
   disabled?: Ref<boolean | undefined>
-  onOpenChange?: (open: boolean) => void
+  onOpenChange?: (open: boolean, details: DialogOpenChangeDetails) => void
 }
 
 export interface DialogRootState {
@@ -29,7 +43,7 @@ export interface DialogRootEvents {
 }
 
 export interface DialogRootApi {
-  setOpen: (value: boolean) => void
+  setOpen: (value: boolean, reason?: DialogOpenChangeReason) => void
 }
 
 export interface UseDialogRootResult {

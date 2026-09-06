@@ -26,32 +26,51 @@
   --varo-ui-primary-dark: #06ad56;
   --varo-ui-primary-hover: #38cd80;
   --varo-ui-primary-soft: #e6f9ef;
-  --varo-ui-primary-foreground: #fff;
+  --varo-ui-primary-foreground: #000;
+  --varo-ui-primary-hover-foreground: #000;
   --varo-ui-primary-text: #1c794a;
   --varo-ui-success: #13b248;
   --varo-ui-success-dark: #10973d;
   --varo-ui-success-hover: #42c16d;
   --varo-ui-success-soft: #e7f7ec;
+  --varo-ui-success-foreground: #000;
+  --varo-ui-success-hover-foreground: #000;
   --varo-ui-success-text: #22723e;
   --varo-ui-warning: #fa9200;
   --varo-ui-warning-dark: #d57c00;
   --varo-ui-warning-hover: #fba833;
   --varo-ui-warning-soft: #fef4e5;
+  --varo-ui-warning-foreground: #000;
+  --varo-ui-warning-hover-foreground: #000;
   --varo-ui-warning-text: #95621a;
   --varo-ui-danger: #eb3437;
   --varo-ui-danger-dark: #c82c2f;
   --varo-ui-danger-hover: #ef5d5f;
   --varo-ui-danger-soft: #fdeaeb;
+  --varo-ui-danger-foreground: #000;
+  --varo-ui-danger-hover-foreground: #000;
   --varo-ui-danger-text: #8e3335;
   --varo-ui-info: #73767a;
   --varo-ui-info-dark: #5c5e62;
   --varo-ui-info-hover: #8f9195;
   --varo-ui-info-soft: #f1f1f2;
-  --varo-ui-radius: 8px;
-  --varo-ui-radius-sm: 6px;
+  --varo-ui-info-foreground: #000;
+  --varo-ui-info-hover-foreground: #000;
+  --varo-ui-info-text: #525457;
+  --varo-ui-button-radius: 12px;
+  --varo-ui-button-height-sm: 36px;
+  --varo-ui-button-height-md: 44px;
+  --varo-ui-button-height-lg: 48px;
+  --varo-ui-input-radius: 12px;
+  --varo-ui-input-height-sm: 36px;
+  --varo-ui-input-height-md: 44px;
+  --varo-ui-input-height-lg: 48px;
+  --varo-ui-radius: var(--varo-ui-button-radius);
+  --varo-ui-radius-sm: var(--varo-ui-input-radius);
   --varo-ui-shadow-sm: 0 1px 2px rgb(48 49 51 / 6%);
   --varo-ui-shadow-md: 0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%);
-  --varo-ui-ring: rgb(0 125 255 / 16%);
+  --varo-ui-ring: rgb(7 193 96 / 16%);
+  --varo-ui-focus: #000;
   --varo-agent-surface: var(--varo-ui-surface);
   --varo-agent-surface-strong: var(--varo-ui-surface-muted);
   --varo-agent-fill: var(--varo-ui-fill-light);
@@ -80,20 +99,22 @@
 .varo-button {
   --varo-button-fill: var(--varo-ui-primary);
   --varo-button-hover-fill: var(--varo-ui-primary-hover);
+  --varo-button-foreground: var(--varo-ui-primary-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-primary-hover-foreground);
 
   display: inline-flex;
   gap: 8px;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
+  min-height: var(--varo-ui-button-height-md);
   padding: 0 16px;
   font-weight: 650;
   line-height: 1;
-  color: var(--varo-ui-primary-foreground);
+  color: var(--varo-button-foreground);
   cursor: pointer;
   background: var(--varo-button-fill);
   border: 1px solid transparent;
-  border-radius: var(--varo-ui-radius);
+  border-radius: var(--varo-ui-button-radius);
   box-shadow: var(--varo-ui-shadow-sm);
   transition:
     background 0.18s ease,
@@ -104,22 +125,31 @@
     transform 0.18s ease;
 }
 
+.varo-button:focus-visible {
+  outline: 2px solid var(--varo-ui-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--varo-ui-ring);
+}
+
 .varo-button[data-variant='solid'] {
   border: 0;
 }
 
 @media (hover: hover) {
   .varo-button[data-variant='solid']:not([data-disabled='true']):hover {
+    color: var(--varo-button-hover-foreground);
     background: var(--varo-button-hover-fill);
   }
 }
 
 .varo-button[data-variant='solid']:not([data-disabled='true'], [data-loading='true']):active {
+  color: var(--varo-button-hover-foreground);
   background: var(--varo-button-hover-fill);
 }
 
 .varo-button[data-variant='solid'][data-pressed='true'],
 .varo-button[data-variant='solid'].varo-button--pressed {
+  color: var(--varo-button-hover-foreground);
   background: var(--varo-button-hover-fill);
 }
 
@@ -133,17 +163,17 @@
 }
 
 .varo-button[data-size='sm'] {
-  min-height: 34px;
+  min-height: var(--varo-ui-button-height-sm);
   padding: 0 12px;
   font-size: 14px;
-  border-radius: var(--varo-ui-radius-sm);
+  border-radius: var(--varo-ui-button-radius);
 }
 
 .varo-button[data-size='lg'] {
-  min-height: 50px;
+  min-height: var(--varo-ui-button-height-lg);
   padding: 0 20px;
   font-size: 16px;
-  border-radius: var(--varo-ui-radius);
+  border-radius: var(--varo-ui-button-radius);
 }
 
 .varo-button[data-variant='outline'] {
@@ -191,6 +221,12 @@
   --varo-button-text-fill: var(--varo-ui-danger-soft);
 }
 
+.varo-button[data-tone='info'][data-variant='text'] {
+  color: var(--varo-ui-info-text);
+
+  --varo-button-text-fill: var(--varo-ui-info-soft);
+}
+
 @media (hover: hover) {
   .varo-button[data-variant='text']:not([data-disabled='true'], [data-loading='true']):hover {
     background: var(--varo-button-text-fill);
@@ -209,16 +245,29 @@
 .varo-button[data-tone='success'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-success);
   --varo-button-hover-fill: var(--varo-ui-success-hover);
+  --varo-button-foreground: var(--varo-ui-success-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-success-hover-foreground);
 }
 
 .varo-button[data-tone='warning'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-warning);
   --varo-button-hover-fill: var(--varo-ui-warning-hover);
+  --varo-button-foreground: var(--varo-ui-warning-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-warning-hover-foreground);
 }
 
 .varo-button[data-tone='danger'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-danger);
   --varo-button-hover-fill: var(--varo-ui-danger-hover);
+  --varo-button-foreground: var(--varo-ui-danger-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-danger-hover-foreground);
+}
+
+.varo-button[data-tone='info'][data-variant='solid'] {
+  --varo-button-fill: var(--varo-ui-info);
+  --varo-button-hover-fill: var(--varo-ui-info-hover);
+  --varo-button-foreground: var(--varo-ui-info-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-info-hover-foreground);
 }
 
 .varo-button[data-shape='square'] {
@@ -275,15 +324,23 @@
   gap: 8px;
   align-items: center;
   width: 100%;
-  min-height: 42px;
+  min-height: var(--varo-ui-input-height-md);
   padding: 0 12px;
   background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
-  border-radius: var(--varo-ui-radius);
+  border-radius: var(--varo-ui-input-radius);
   box-shadow: var(--varo-ui-shadow-sm);
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease;
+}
+
+.varo-input[data-size='sm'] .varo-input__body {
+  min-height: var(--varo-ui-input-height-sm);
+}
+
+.varo-input[data-size='lg'] .varo-input__body {
+  min-height: var(--varo-ui-input-height-lg);
 }
 
 .varo-input[data-focused='true'] .varo-input__body {
@@ -2129,6 +2186,7 @@ textarea.varo-input__control {
 .varo-badge {
   --varo-badge-tone: var(--varo-ui-danger);
   --varo-badge-soft: var(--varo-ui-danger-soft);
+  --varo-badge-foreground: var(--varo-ui-danger-foreground);
 
   display: inline-flex;
   align-items: center;
@@ -2139,7 +2197,7 @@ textarea.varo-input__control {
   font-size: 11px;
   font-weight: 750;
   line-height: 1;
-  color: var(--varo-ui-primary-foreground);
+  color: var(--varo-badge-foreground);
   white-space: nowrap;
   background: var(--varo-badge-tone);
   border: 1px solid transparent;
@@ -2156,21 +2214,25 @@ textarea.varo-input__control {
 
 .varo-badge[data-tone='default'] {
   --varo-badge-tone: var(--varo-ui-text-muted);
+  --varo-badge-foreground: var(--varo-ui-black);
   --varo-badge-soft: var(--varo-ui-surface-muted);
 }
 
 .varo-badge[data-tone='primary'] {
   --varo-badge-tone: var(--varo-ui-primary);
+  --varo-badge-foreground: var(--varo-ui-primary-foreground);
   --varo-badge-soft: var(--varo-ui-primary-soft);
 }
 
 .varo-badge[data-tone='success'] {
   --varo-badge-tone: var(--varo-ui-success);
+  --varo-badge-foreground: var(--varo-ui-success-foreground);
   --varo-badge-soft: var(--varo-ui-success-soft);
 }
 
 .varo-badge[data-tone='warning'] {
   --varo-badge-tone: var(--varo-ui-warning);
+  --varo-badge-foreground: var(--varo-ui-warning-foreground);
   --varo-badge-soft: var(--varo-ui-warning-soft);
 }
 
@@ -2218,22 +2280,22 @@ textarea.varo-input__control {
 
 .varo-tag[data-tone='primary'][data-variant='solid'],
 .varo-tag[data-checked='true'] {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-primary);
 }
 
 .varo-tag[data-tone='success'][data-variant='solid'] {
-  color: #fff;
+  color: var(--varo-ui-success-foreground);
   background: var(--varo-ui-success);
 }
 
 .varo-tag[data-tone='warning'][data-variant='solid'] {
-  color: #fff;
+  color: var(--varo-ui-warning-foreground);
   background: var(--varo-ui-warning);
 }
 
 .varo-tag[data-tone='danger'][data-variant='solid'] {
-  color: #fff;
+  color: var(--varo-ui-danger-foreground);
   background: var(--varo-ui-danger);
 }
 
@@ -2541,7 +2603,7 @@ textarea.varo-input__control {
 
 .varo-steps__item[data-status='current'] .varo-steps__marker,
 .varo-steps__item[data-status='completed'] .varo-steps__marker {
-  color: #fff;
+  color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-primary);
   border-color: var(--varo-ui-primary);
 }
@@ -3066,7 +3128,7 @@ textarea.varo-input__control {
   padding: 0;
   font-size: 0.65rem;
   line-height: 1;
-  color: var(--varo-ui-primary-foreground);
+  color: var(--varo-ui-danger-foreground);
   background: var(--varo-ui-danger);
   border: 2px solid var(--varo-ui-surface);
   border-radius: 999px;

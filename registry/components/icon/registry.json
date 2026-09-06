@@ -2,7 +2,7 @@
   "name": "icon",
   "type": "component",
   "title": "VIcon",
-  "description": "Cross-platform icon container with accessible labels, sizing, tones, and core glyphs.",
+  "description": "Cross-platform SVG icon container with accessible labels, sizing, tones, and deterministic core geometry.",
   "exportName": "VIcon",
   "targets": [
     "h5",

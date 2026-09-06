@@ -101,6 +101,9 @@ const isShanghaiInspection = computed(() => [
 
 // 设备基本信息（从上海巡检接口获取）
 const deviceDetail = ref<WechatMiniprogram.IAnyObject | null>(null)
+const deviceModel = computed(() => String(deviceDetail.value?.model ?? ''))
+const deviceBrandName = computed(() => String(deviceDetail.value?.brandNameCh ?? ''))
+const deviceAddress = computed(() => String(deviceDetail.value?.address ?? ''))
 
 // 如果是上海巡检，查询设备详情
 async function loadDeviceDetail() {
@@ -202,28 +205,28 @@ const { getDotFilter, noDataFilter, dateFilter } = filterFn
           <view class="section-title">
             基本信息
           </view>
-          <view v-if="deviceDetail?.model" class="info_item">
+          <view v-if="deviceModel" class="info_item">
             <text class="info_label">
               AED型号
             </text>
             <text class="info_value">
-              {{ deviceDetail?.model }}
+              {{ deviceModel }}
             </text>
           </view>
-          <view v-if="deviceDetail?.brandNameCh" class="info_item">
+          <view v-if="deviceBrandName" class="info_item">
             <text class="info_label">
               AED品牌
             </text>
             <text class="info_value">
-              {{ deviceDetail.brandNameCh }}
+              {{ deviceBrandName }}
             </text>
           </view>
-          <view v-if="deviceDetail?.address" class="info_item">
+          <view v-if="deviceAddress" class="info_item">
             <text class="info_label">
               安装位置
             </text>
             <text class="info_value">
-              {{ deviceDetail.address }}
+              {{ deviceAddress }}
             </text>
           </view>
           <view class="divider" />

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import { useVideoInfo, useVideoLike } from '../../pages/college'
 
 definePageJson({
@@ -9,6 +10,7 @@ const infoFn = useVideoInfo()
 const { handleLike } = useVideoLike()
 
 const { dateFilter, info } = infoFn
+const likeIcon = computed(() => info.value.active ? 'like' : 'nolike')
 </script>
 
 <template>
@@ -66,7 +68,7 @@ const { dateFilter, info } = infoFn
         <VIcon
           size="24"
           color="#FF6216"
-          :name="info.active ? 'like' : 'nolike'"
+          :name="likeIcon"
         />
         <text class="ml-10">
           {{ info.likeCount }}

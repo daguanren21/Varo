@@ -1,20 +1,57 @@
-# Mini-program Business Blocks
+# Cross-runtime Showcase
 
-This page is not a crowded gallery. It collects reusable business blocks with real mobile needs, component dependencies, H5 source, and mini-program source. Copy a block, replace fields, APIs, and local styles, then promote it inside your product codebase.
+This is Varo’s public cross-runtime showcase: choose an adoption path first, then distinguish live browser interaction, a browser-rendered Weapp contract preview, and compiled evidence from WeChat DevTools. Repository playgrounds remain maintainer QA surfaces, not the public installation path.
+
+## Choose an Adoption Path
+
+<div class="varo-adoption-grid">
+  <article>
+    <span>H5 REGISTRY</span>
+    <h3>H5 Product</h3>
+    <code>pnpm dlx @varo-ui/cli add --target h5 components/button</code>
+    <p>Installs editable Vue component source and dependencies into the product repository.</p>
+  </article>
+  <article>
+    <span>WEAPP REGISTRY</span>
+    <h3>Weapp Product</h3>
+    <code>pnpm dlx @varo-ui/cli add --target weapp components/button</code>
+    <p>Installs target-specific, WXML-safe Wevu SFC source and dependencies into the product repository.</p>
+  </article>
+  <article>
+    <span>RUNTIME PACKAGE</span>
+    <h3>Centralized H5 Runtime</h3>
+    <code>pnpm add @varo-ui/h5</code>
+    <p>Consumes the published package when coordinated upgrades are intentional.</p>
+  </article>
+</div>
+
+Registry installation is the default path. Start with the [installation guide](/en/guide/installation), then generate source for the selected target.
+
+## H5 Live & Weapp Contract Preview
+
+The components below are directly operable. H5 runs real `@varo-ui/h5` browser components; switching target is explicitly labelled **Weapp Contract Preview** so the browser-rendered API and visual contract is not mistaken for the mini-program runtime.
+
+<PlatformTabsDemo example="overview" locale="en" />
+
+## Weapp DevTools Verified: Compiled Blocks {#weapp-devtools-evidence}
+
+The images below were captured through WeChat DevTools automation from Block pages built by `weapp-vite`. The evidence snapshot is dated **2026-08-28**; inspect the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and a [representative original image](../../blocks/login-form.png). Every card also links directly to its original image.
+
+Selecting H5 changes the install command and usage code only. When the repository has no published H5 image for that Block, the card continues to identify the image as **Weapp DevTools Verified** instead of implying that the H5 selector changed it.
 
 <MiniProgramBlocksGallery locale="en" />
 
-## Mini-program Build Chain
+## Evidence and Implementation Boundaries
 
-- `weapp-vite` handles mini-program builds, component JSON, complex list keys, and generated types
-- `wevu` is the mini-program runtime peer for `@varo-ui/weapp`; `@varo-ui/headless` does not bind Vue or Wevu
-- `weapp-tailwindcss` plugs into the `weapp-vite` chain for class translation; current mini-program output removes unsupported interaction pseudo-classes, so components use native `hover-class` for pressed feedback
-- For internal design systems, build upward from `@varo-ui/headless`, then promote blocks into business templates
+- `H5 Live`: real browser components and interactions on this page
+- `Weapp Contract Preview`: a browser-rendered target contract, not the WeChat runtime
+- `Weapp DevTools Verified`: DevTools evidence from a compiled mini-program page
+- `weapp-vite` owns component JSON, complex list keys, generated types, and target output; `wevu` is the runtime peer for `@varo-ui/weapp`
+- `weapp-tailwindcss` translates classes in the build chain; native `hover-class` provides mini-program pressed feedback
 
-## Related Docs
+## Continue
 
+- [Installation](/en/guide/installation)
+- [Build Your Own Block](/en/blocks/build-your-own)
 - [Button Docs](/en/components/button)
-- [Input Docs](/en/components/input)
-- [Dialog Docs](/en/components/dialog)
-- [Color System](/en/guide/colors)
 - [Theme](/en/guide/theme)

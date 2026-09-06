@@ -63,6 +63,13 @@ describe('ui-h5 form', () => {
       }),
     )
     expect(wrapper.get('.varo-form-item__error').text()).toContain('Mobile')
+    const input = wrapper.get('input')
+    const label = wrapper.get('.varo-form-item__label')
+    const error = wrapper.get('.varo-form-item__error')
+    expect(label.attributes('for')).toBe(input.attributes('id'))
+    expect(input.attributes('aria-labelledby')).toContain(label.attributes('id'))
+    expect(input.attributes('aria-describedby')).toContain(error.attributes('id'))
+    expect(input.attributes('aria-invalid')).toBe('true')
 
     await wrapper.get('input').setValue('13800138000')
     await wrapper.get('form').trigger('submit')
@@ -441,5 +448,33 @@ describe('ui-h5 form', () => {
     finally {
       resetFormPreset()
     }
+  })
+
+  it('associates grouped custom controls with FormItem labels and errors', async () => {
+    const model = reactive({ interests: [] })
+    const wrapper = mount(VForm, {
+      props: {
+        model,
+        rules: { interests: { required: true } },
+      },
+      slots: {
+        default: () =>
+          h(VFormItem, { label: 'Interests', name: 'interests' }, {
+            default: () => h('button', { type: 'button' }, 'Design systems'),
+          }),
+      },
+    })
+
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    const label = wrapper.get('.varo-form-item__label')
+    const control = wrapper.get('.varo-form-item__control')
+    const error = wrapper.get('.varo-form-item__error')
+
+    expect(label.attributes('for')).toBeUndefined()
+    expect(control.attributes('role')).toBe('group')
+    expect(control.attributes('aria-labelledby')).toBe(label.attributes('id'))
+    expect(control.attributes('aria-describedby')).toBe(error.attributes('id'))
+    expect(control.attributes('aria-invalid')).toBe('true')
   })
 })

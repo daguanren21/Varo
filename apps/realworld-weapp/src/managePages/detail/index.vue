@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'wevu'
 import { useManageInfo } from '.'
 import JxDot from '../../components/jxDot/index.vue'
 import { useJxFilter, useMapNavigation } from '../../hooks'
@@ -34,6 +35,12 @@ function showMapNavigation(item: WechatMiniprogram.IAnyObject) {
 const { noDataFilter, investorTypeFilter, dateFilter, communicationModuleTypeFilter } = filterFn
 
 const { isControllerOrSingle, globalTip, info, goToRepair, goToImprove, goToModule, changeElectordeSheet, unregisterDevice, isExistExitLineBtn, handleCheck, handleClose, handleConfirm, isChecked } = manageFn
+const locationText = computed(() =>
+  noDataFilter(`${info.value.address}${info.value.detailedAddress || ''}`),
+)
+const positionState = computed(() =>
+  isControllerOrSingle.value ? info.value.devicePositionState : info.value.locationFenceState,
+)
 </script>
 
 <template>
@@ -130,7 +137,7 @@ const { isControllerOrSingle, globalTip, info, goToRepair, goToImprove, goToModu
                 has-border :icon-info="{
                   color: '#FF6216',
                   value: 'dingwei',
-                }" title="位置信息" :extra-text="noDataFilter(`${info.address}${info.detailedAddress ? info.detailedAddress : ''}`)"
+                }" title="位置信息" :extra-text="locationText"
               />
               <view class="item_loc_icon">
                 <VIcon class="icon" name="dh" color="#1890ff" @click="showMapNavigation(info)" />
@@ -181,7 +188,7 @@ const { isControllerOrSingle, globalTip, info, goToRepair, goToImprove, goToModu
                 }" title="位置状态"
               />
               <view class="item_dot">
-                <JxDot :state="isControllerOrSingle ? info.devicePositionState : info.locationFenceState" />
+                <JxDot :state="positionState" />
               </view>
             </view>
             <view class="item">

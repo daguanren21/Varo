@@ -1,5 +1,7 @@
 # InputNumber 数字输入框
 
+<RegistryInstallStrip item="components/input-number" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="input-number" locale="zh" />
@@ -10,12 +12,12 @@
 
 ## Props
 
-| Prop | 类型 | 默认值 | 描述 |
-| --- | --- | --- | --- |
-| `value` | `number` | `0` | 当前值 |
-| `min` | `number` | `-Infinity` | 最小值 |
-| `max` | `number` | `Infinity` | 最大值 |
-| `step` | `number` | `1` | 步进 |
-| `precision` | `number` | `undefined` | 小数精度 |
-| `disabled` | `boolean` | `false` | 禁用 |
-| `readonly` | `boolean` | `false` | 只读 |
+| Prop        | 类型      | 默认值      | 描述     |
+| ----------- | --------- | ----------- | -------- |
+| `value`     | `number`  | `0`         | 当前值   |
+| `min`       | `number`  | `-Infinity` | 最小值   |
+| `max`       | `number`  | `Infinity`  | 最大值   |
+| `step`      | `number`  | `1`         | 步进     |
+| `precision` | `number`  | `undefined` | 小数精度 |
+| `disabled`  | `boolean` | `false`     | 禁用     |
+| `readonly`  | `boolean` | `false`     | 只读     |

@@ -1,7 +1,7 @@
 import type { ReactiveRuntime } from '@varo-ui/headless'
 import type { FieldRule, FormRules, FormValues, StandardSchemaV1, UseFormReturn } from '@varo/hooks'
-import type { InjectionKey, PropType, StyleValue } from 'vue'
-import { useVaroTheme } from '@varo-ui/theme'
+import type { ComputedRef, InjectionKey, PropType, ShallowRef, StyleValue } from 'vue'
+
 import { useForm } from '@varo/hooks'
 import { createVariantClass } from '@varo/shared'
 import {
@@ -14,7 +14,8 @@ import {
 
   provide,
   ref,
-
+  shallowRef,
+  useId,
   watch,
 } from 'vue'
 
@@ -22,10 +23,21 @@ type FormSubmitPayload = Parameters<ReturnType<UseFormReturn['handleSubmit']>>[0
 type FormLabelAlign = 'left' | 'center' | 'right'
 type FormValidateTrigger = 'submit' | 'change' | 'blur'
 
+interface FormItemControlContext {
+  controlId: ShallowRef<string>
+  defaultControlId: string
+  errorId: string
+  errorVisible: ComputedRef<boolean>
+  invalid: ComputedRef<boolean>
+  labelId: string
+  labelVisible: ComputedRef<boolean>
+}
+
 const formContextKey: InjectionKey<{
   form: UseFormReturn
   showError: boolean
 }> = Symbol('varo-form')
+const formItemControlContextKey = 'varo-form-item-control' as unknown as InjectionKey<FormItemControlContext>
 
 const vueRuntime: ReactiveRuntime = {
   computed,
@@ -77,7 +89,6 @@ export const VForm = defineComponent({
   },
   emits: ['submit', 'failed', 'reset'],
   setup(props, { attrs, emit, expose, slots }) {
-    const theme = useVaroTheme()
     const localValues = ref<FormValues>({ ...(props.initialValues ?? {}) })
     const values = computed<FormValues>({
       get: () => props.model ?? localValues.value,
@@ -102,10 +113,7 @@ export const VForm = defineComponent({
       values,
     })
     const classes = computed(() =>
-      createVariantClass('varo-form', {
-        radius: theme.value.components.input.borderRadius,
-        disabled: props.disabled,
-      }),
+      createVariantClass('varo-form', { disabled: props.disabled }),
     )
     watch(
       () => props.validationSchema,
@@ -250,6 +258,23 @@ export const VFormItem = defineComponent({
     const invalid = computed(() => field.errorMessage.value.length > 0)
     const shouldShowError = computed(() => props.showError ?? formContext.showError)
     const labelBasis = computed(() => normalizeLabelWidth(props.labelWidth))
+    const itemId = `varo-form-item-${useId().replaceAll(':', '')}`
+    const defaultControlId = `${itemId}-control`
+    const controlId = shallowRef(defaultControlId)
+    const errorId = `${itemId}-error`
+    const labelId = `${itemId}-label`
+    const labelVisible = computed(() => Boolean(props.label || slots.label))
+    const errorVisible = computed(() => shouldShowError.value && invalid.value)
+
+    provide(formItemControlContextKey, {
+      controlId,
+      defaultControlId,
+      errorId,
+      errorVisible,
+      invalid,
+      labelId,
+      labelVisible,
+    })
 
     watch(mergedRules, rules => field.setRules(rules))
     onBeforeUnmount(() => field.unregister())
@@ -293,8 +318,12 @@ export const VFormItem = defineComponent({
           'data-validate-trigger': props.validateTrigger,
         },
         [
-          props.label || slots.label
-            ? h('label', { class: 'varo-form-item__label' }, [
+          labelVisible.value
+            ? h('label', {
+                class: 'varo-form-item__label',
+                for: controlId.value === defaultControlId ? undefined : controlId.value,
+                id: labelId,
+              }, [
                 slots.label?.() ?? props.label,
                 props.colon ? h('span', { class: 'varo-form-item__colon' }, ':') : null,
               ])
@@ -303,7 +332,11 @@ export const VFormItem = defineComponent({
             h(
               'div',
               {
-                class: 'varo-form-item__control',
+                'aria-describedby': errorVisible.value ? errorId : undefined,
+                'aria-invalid': invalid.value || undefined,
+                'aria-labelledby': labelVisible.value ? labelId : undefined,
+                'class': 'varo-form-item__control',
+                'role': 'group',
               },
               slots.default?.({
                 errorMessage: field.errorMessage,
@@ -314,8 +347,8 @@ export const VFormItem = defineComponent({
                 value: field.value,
               }) ?? [],
             ),
-            shouldShowError.value && invalid.value
-              ? h('div', { class: 'varo-form-item__error' }, field.errorMessage.value)
+            errorVisible.value
+              ? h('div', { class: 'varo-form-item__error', id: errorId }, field.errorMessage.value)
               : null,
           ]),
         ],

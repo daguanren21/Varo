@@ -28,12 +28,17 @@ describe('theme', () => {
     })
 
     expect(theme.semantic.primaryBase).toBe('#2563eb')
-    expect(theme.components.input.heightMd).toBe('40px')
+    expect(theme.components.input.heightMd).toBe('44px')
     expect(theme.palette.primary.dark).toBe('#1f54c8')
     expect(theme.palette.primary.light).toBe('#5182ef')
     expect(theme.palette.primary.soft).toBe('#e9effd')
     expect(theme.semantic.textRegular).toBe('#606266')
     expect(theme.semantic.infoBase).toBe('#73767a')
+    expect(theme.components.button).toMatchObject({
+      heightSm: '36px',
+      heightMd: '44px',
+      heightLg: '48px',
+    })
   })
 
   it('preserves the WeChat primary and reference semantic scales', () => {
@@ -73,10 +78,21 @@ describe('theme', () => {
       fillBase: '#f0f2f5',
     })
     expect(variables).toMatchObject({
+      '--varo-ui-primary-foreground': '#000000',
+      '--varo-ui-primary-hover-foreground': '#000000',
       '--varo-ui-primary-text': '#1c794a',
+      '--varo-ui-success-foreground': '#000000',
+      '--varo-ui-success-hover-foreground': '#000000',
       '--varo-ui-success-text': '#22723e',
+      '--varo-ui-warning-foreground': '#000000',
+      '--varo-ui-warning-hover-foreground': '#000000',
       '--varo-ui-warning-text': '#95621a',
+      '--varo-ui-danger-foreground': '#000000',
+      '--varo-ui-danger-hover-foreground': '#000000',
       '--varo-ui-danger-text': '#8e3335',
+      '--varo-ui-info-foreground': '#000000',
+      '--varo-ui-info-hover-foreground': '#000000',
+      '--varo-ui-info-text': '#525457',
     })
   })
 
@@ -120,6 +136,7 @@ describe('theme', () => {
       '--varo-ui-success-text': '#7cce9e',
       '--varo-ui-warning-text': '#f0be7a',
       '--varo-ui-danger-text': '#e88f95',
+      '--varo-ui-info-text': '#acb0b7',
     })
   })
 
@@ -139,12 +156,77 @@ describe('theme', () => {
       ['--varo-ui-success-text', '--varo-ui-success-soft'],
       ['--varo-ui-warning-text', '--varo-ui-warning-soft'],
       ['--varo-ui-danger-text', '--varo-ui-danger-soft'],
+      ['--varo-ui-info-text', '--varo-ui-info-soft'],
     ] as const
 
     for (const [textToken, pressedToken] of tonePairs) {
       expect(contrastRatio(variables[textToken], surface)).toBeGreaterThanOrEqual(4.5)
       expect(contrastRatio(variables[textToken], variables[pressedToken])).toBeGreaterThanOrEqual(4.5)
     }
+  })
+
+  it('keeps official solid tone foreground and background pairs WCAG AA', () => {
+    const variables = createThemeCssVariables(createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+      info: '#73767a',
+    }))
+    const tonePairs = [
+      ['--varo-ui-primary-foreground', '--varo-ui-primary', '--varo-ui-primary-hover-foreground', '--varo-ui-primary-hover'],
+      ['--varo-ui-success-foreground', '--varo-ui-success', '--varo-ui-success-hover-foreground', '--varo-ui-success-hover'],
+      ['--varo-ui-warning-foreground', '--varo-ui-warning', '--varo-ui-warning-hover-foreground', '--varo-ui-warning-hover'],
+      ['--varo-ui-danger-foreground', '--varo-ui-danger', '--varo-ui-danger-hover-foreground', '--varo-ui-danger-hover'],
+      ['--varo-ui-info-foreground', '--varo-ui-info', '--varo-ui-info-hover-foreground', '--varo-ui-info-hover'],
+    ] as const
+
+    for (const [foregroundToken, backgroundToken, hoverForegroundToken, hoverBackgroundToken] of tonePairs) {
+      expect(contrastRatio(
+        variables[foregroundToken],
+        variables[backgroundToken],
+      )).toBeGreaterThanOrEqual(4.5)
+      expect(contrastRatio(
+        variables[hoverForegroundToken],
+        variables[hoverBackgroundToken],
+      )).toBeGreaterThanOrEqual(4.5)
+    }
+  })
+
+  it.each(['#000000', '#ffffff', '#777777', '#2563eb', '#fef08a'])(
+    'selects a contrast-safe foreground for the arbitrary seed %s',
+    (seed) => {
+      const variables = createThemeCssVariables(createTheme({
+        primary: seed,
+        success: seed,
+        warning: seed,
+        error: seed,
+        neutral: '#303133',
+        info: seed,
+      }))
+
+      for (const tone of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
+        expect(contrastRatio(
+          variables[`--varo-ui-${tone}-foreground`],
+          variables[`--varo-ui-${tone}`],
+        )).toBeGreaterThanOrEqual(4.5)
+        expect(contrastRatio(
+          variables[`--varo-ui-${tone}-hover-foreground`],
+          variables[`--varo-ui-${tone}-hover`],
+        )).toBeGreaterThanOrEqual(4.5)
+      }
+    },
+  )
+
+  it('rejects color syntaxes whose contrast cannot be resolved', () => {
+    expect(() => createThemeCssVariables(createTheme({
+      primary: 'rgb(15, 23, 42)',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+    }))).toThrow('Contrast-safe foreground requires a hex color')
   })
 
   it('merges semantic and input overrides', () => {
@@ -192,8 +274,18 @@ describe('theme', () => {
       '--varo-ui-border': '#dcdfe6',
       '--varo-ui-fill': '#f0f2f5',
       '--varo-ui-info': '#73767a',
+      '--varo-ui-info-foreground': '#000000',
+      '--varo-ui-button-radius': '12px',
+      '--varo-ui-button-height-sm': '36px',
+      '--varo-ui-button-height-md': '44px',
+      '--varo-ui-button-height-lg': '48px',
+      '--varo-ui-input-radius': '12px',
+      '--varo-ui-input-height-sm': '36px',
+      '--varo-ui-input-height-md': '44px',
+      '--varo-ui-input-height-lg': '48px',
       '--varo-ui-radius': '20px',
       '--varo-ui-ring': 'rgb(37 99 235 / 16%)',
+      '--varo-ui-focus': '#000000',
       '--varo-ui-shadow-sm': '0 1px 2px rgb(48 49 51 / 6%)',
     })
   })

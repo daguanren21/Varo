@@ -2,6 +2,8 @@
 
 `VSkeleton` 默认延迟 `180ms` 再显示骨架，避免短请求闪烁；同时覆盖文章、图片和视频布局，内容就绪后淡入默认 slot。
 
+<RegistryInstallStrip item="components/skeleton" :targets="['h5', 'weapp']" locale="zh" />
+
 ## 演示
 
 <FormComponentDemo example="skeleton" locale="zh" />

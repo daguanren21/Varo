@@ -99,7 +99,7 @@ function addProduct(product: RetailProduct) {
               <text class="text-lg font-black text-white">
                 ¥{{ product.priceLabel }}
               </text>
-              <VButton size="sm" class-name="mt-2 w-fit !bg-teal-600 !px-4" @click="openProduct(product)">
+              <VButton size="sm" class-name="mt-2 w-fit !px-4" @click="openProduct(product)">
                 查看商品
               </VButton>
             </view>

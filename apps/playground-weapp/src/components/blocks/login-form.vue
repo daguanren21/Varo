@@ -40,7 +40,7 @@ const phone = shallowRef(props.initialPhone)
 const remember = shallowRef(true)
 const canSubmit = computed(() => phone.value.trim().length > 0 && password.value.length > 0 && !props.loading)
 const rootClass = computed(() =>
-  cn('w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className),
+  cn('box-border w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm', props.className),
 )
 
 function submit() {
@@ -84,7 +84,7 @@ function submit() {
           <VSwitch v-model="remember" />
           <text>记住我</text>
         </view>
-        <VButton size="sm" tone="default" variant="ghost" class-name="!min-h-8 !px-2 !font-semibold !text-teal-700" @click="emit('forgotPassword')">
+        <VButton size="sm" tone="default" variant="ghost" class-name="!min-h-11 !px-2 !font-semibold !text-teal-700" @click="emit('forgotPassword')">
           忘记密码？
         </VButton>
       </view>

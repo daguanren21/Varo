@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import type { RetailAddressSummary, RetailCartLine } from '../../lib/retail'
 import { computed } from 'wevu'
 import { formatRetailMoney, normalizeRetailProduct } from '../../lib/retail'
@@ -8,14 +7,23 @@ import VButton from '../ui/v-button.vue'
 import VCard from '../ui/v-card.vue'
 import VImage from '../ui/v-image.vue'
 
-const props = defineProps({
-  address: { type: null as unknown as PropType<RetailAddressSummary>, default: undefined },
-  couponCount: { type: null as unknown as PropType<number>, default: 0 },
-  discount: { type: null as unknown as PropType<number>, default: 0 },
-  items: { type: null as unknown as PropType<RetailCartLine[]>, default: () => [] },
-  shipping: { type: null as unknown as PropType<number>, default: 0 },
-  total: { type: null as unknown as PropType<number>, default: 0 },
-})
+const props = withDefaults(
+  defineProps<{
+    address?: RetailAddressSummary
+    couponCount?: number
+    discount?: number
+    items?: RetailCartLine[]
+    shipping?: number
+    total?: number
+  }>(),
+  {
+    couponCount: 0,
+    discount: 0,
+    items: () => [],
+    shipping: 0,
+    total: 0,
+  },
+)
 const emit = defineEmits<{
   address: []
   coupon: []

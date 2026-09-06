@@ -1,3 +1,5 @@
+export type { DialogOpenChangeDetails, DialogOpenChangeReason } from '@varo-ui/headless'
+
 export interface DialogPartProps {
   as?: string
 }

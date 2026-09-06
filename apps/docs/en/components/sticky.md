@@ -1,5 +1,7 @@
 # Sticky
 
+<RegistryInstallStrip item="components/sticky" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="sticky" locale="en" />
@@ -9,7 +11,9 @@
 ```vue
 <template>
   <VSticky>
-    <div class="sticky-bar">Sticky Area</div>
+    <div class="sticky-bar">
+      Sticky Area
+    </div>
   </VSticky>
 </template>
 ```
@@ -19,7 +23,9 @@
 ```vue
 <template>
   <VSticky :offset-top="12" :z-index="10">
-    <div class="sticky-bar">12px from top</div>
+    <div class="sticky-bar">
+      12px from top
+    </div>
   </VSticky>
 </template>
 ```
@@ -29,30 +35,32 @@
 ```vue
 <template>
   <VSticky @change="fixed => console.log(fixed)" @scroll="event => console.log(event)">
-    <div class="sticky-bar">Sticky Area</div>
+    <div class="sticky-bar">
+      Sticky Area
+    </div>
   </VSticky>
 </template>
 ```
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `offsetTop` | `number \| string` | `0` | Top offset |
-| `zIndex` | `number \| string` | `undefined` | Z-index |
-| `disabled` | `boolean` | `false` | Disable sticky behavior |
+| Prop        | Type               | Default     | Description             |
+| ----------- | ------------------ | ----------- | ----------------------- |
+| `offsetTop` | `number \| string` | `0`         | Top offset              |
+| `zIndex`    | `number \| string` | `undefined` | Z-index                 |
+| `disabled`  | `boolean`          | `false`     | Disable sticky behavior |
 
 ## Events
 
-| Event | Payload | Description |
-| --- | --- | --- |
-| `change` | `boolean` | Fixed state changed |
+| Event    | Payload                                   | Description          |
+| -------- | ----------------------------------------- | -------------------- |
+| `change` | `boolean`                                 | Fixed state changed  |
 | `scroll` | `{ isFixed: boolean; scrollTop: number }` | Fired on page scroll |
 
 ## Slots
 
-| Slot | Description |
-| --- | --- |
+| Slot      | Description                            |
+| --------- | -------------------------------------- |
 | `default` | Sticky content, with `fixed` slot prop |
 
 ## Primitives

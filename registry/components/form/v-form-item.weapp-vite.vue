@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import type { FieldRule } from '@varo-ui/headless'
-import type { VaroFormContext } from './form-context'
-import { computed, inject, onBeforeUnmount, watch } from 'wevu'
-import { formContextKey } from './form-context'
+import type { PublicRef, VaroFormContext } from './form-context'
+import { computed, inject, onBeforeUnmount, provide, shallowRef, useSlots, watch } from 'wevu'
+import { createFormItemId, formContextKey, formItemControlContextKey } from './form-context'
 
-interface PublicRef<T> {
-  value: T
-}
 type FormValidateTrigger = 'submit' | 'change' | 'blur'
 
 const props = withDefaults(
@@ -36,6 +33,7 @@ if (!context) {
   throw new Error('VFormItem must be used inside VForm')
 }
 const formContext = context
+const slots = useSlots()
 const mergedRules = computed<FieldRule | undefined>(() => {
   const baseRules = props.rules ?? formContext.form.rules.value[props.name]
   if (!props.required) { return baseRules }
@@ -55,6 +53,27 @@ const slotValidate = field.validate as (trigger?: FormValidateTrigger) => Promis
 const slotValue = field.value as PublicRef<unknown>
 const invalid = computed(() => field.errorMessage.value.length > 0)
 const shouldShowError = computed(() => props.showError ?? formContext.showError)
+const itemId = createFormItemId()
+const defaultControlId = `${itemId}-control`
+const controlId = shallowRef(defaultControlId)
+const errorId = `${itemId}-error`
+const labelId = `${itemId}-label`
+const labelVisible = computed(() => Boolean(props.label || slots.label))
+const errorVisible = computed(() => shouldShowError.value && invalid.value)
+const labelFor = computed(() => controlId.value === defaultControlId ? undefined : controlId.value)
+const controlAriaDescribedBy = computed(() => errorVisible.value ? errorId : undefined)
+const controlAriaInvalid = computed(() => invalid.value ? 'true' : undefined)
+const controlAriaLabelledBy = computed(() => labelVisible.value ? labelId : undefined)
+
+provide(formItemControlContextKey, {
+  controlId,
+  defaultControlId,
+  errorId,
+  errorVisible,
+  invalid,
+  labelId,
+  labelVisible,
+})
 const labelWidth = computed(() => {
   if (props.labelWidth === undefined || props.labelWidth === '') { return '' }
   return typeof props.labelWidth === 'number' ? `${props.labelWidth}px` : props.labelWidth
@@ -95,16 +114,27 @@ function onBlur(event?: unknown) {
     :data-required="String(props.required)"
     :data-validate-trigger="props.validateTrigger"
   >
-    <view v-if="props.label || $slots.label" class="varo-form-item__label">
+    <label
+      v-if="labelVisible"
+      :id="labelId"
+      class="varo-form-item__label"
+      :for="labelFor"
+    >
       <slot name="label">
         {{ props.label }}
       </slot>
       <text v-if="props.colon" class="varo-form-item__colon">
         :
       </text>
-    </view>
+    </label>
     <view class="varo-form-item__body">
-      <view class="varo-form-item__control">
+      <view
+        class="varo-form-item__control"
+        role="group"
+        :aria-describedby="controlAriaDescribedBy"
+        :aria-invalid="controlAriaInvalid"
+        :aria-labelledby="controlAriaLabelledBy"
+      >
         <slot
           :error-message="slotErrorMessage"
           :field="slotField"
@@ -114,7 +144,7 @@ function onBlur(event?: unknown) {
           :value="slotValue"
         />
       </view>
-      <view v-if="shouldShowError && invalid" class="varo-form-item__error">
+      <view v-if="errorVisible" :id="errorId" class="varo-form-item__error">
         {{ field.errorMessage.value }}
       </view>
     </view>

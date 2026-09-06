@@ -53,7 +53,7 @@ const rootClass = computed(() =>
           <text class="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--varo-agent-muted)]">
             {{ chunk.sourceType || 'Source' }}
           </text>
-          <button class="max-w-[65%] truncate border-0 bg-transparent p-0 text-[11px] font-semibold text-[var(--varo-agent-primary)]" type="button" @click="emit('open', chunk)">
+          <button class="agent-native-button max-w-[65%] truncate border-0 bg-transparent p-0 text-[11px] font-semibold text-[var(--varo-agent-primary)]" type="button" @click="emit('open', chunk)">
             {{ chunk.source || 'Open' }}
           </button>
         </view>

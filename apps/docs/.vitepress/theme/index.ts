@@ -25,7 +25,6 @@ import {
   VToast,
   VUploader,
 } from '@varo-ui/h5'
-import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import DefaultTheme from 'vitepress/theme'
 import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
 import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
@@ -38,26 +37,18 @@ import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import RegionPickerDemo from '../../src/components/RegionPickerDemo.vue'
+import RegistryCoverageEvidence from '../../src/components/RegistryCoverageEvidence.vue'
+import RegistryInstallStrip from '../../src/components/RegistryInstallStrip.vue'
 import DocsLayout from './DocsLayout.vue'
 import '@varo-ui/h5/source/style.css'
 import './tailwind.css'
 import './custom.css'
 import './agent-docs.css'
 
-const docsTheme = createTheme({
-  primary: '#07c160',
-  success: '#13b248',
-  warning: '#fa9200',
-  error: '#eb3437',
-  neutral: '#303133',
-  info: '#73767a',
-})
-
 const theme: Theme = {
   extends: DefaultTheme,
   Layout: DocsLayout,
   enhanceApp({ app }) {
-    VaroConfigProvider.install(app, { theme: docsTheme })
     app.component('AgentComponentsDemo', AgentComponentsDemo)
     app.component('AgentComponentDemo', AgentComponentDemo)
     app.component('FormComponentDemo', FormComponentDemo)
@@ -68,6 +59,8 @@ const theme: Theme = {
     app.component('RegionPickerDemo', RegionPickerDemo)
     app.component('PrimitiveCatalog', PrimitiveCatalog)
     app.component('PrimitiveExample', PrimitiveExample)
+    app.component('RegistryInstallStrip', RegistryInstallStrip)
+    app.component('RegistryCoverageEvidence', RegistryCoverageEvidence)
     app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)
     app.component('VCalendar', VCalendar)
     app.component('VCalendarCard', VCalendarCard)

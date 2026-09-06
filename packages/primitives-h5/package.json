@@ -59,7 +59,7 @@
     "test:e2e": "echo primitives-h5 has no e2e"
   },
   "dependencies": {
-    "vue": "^3.5.41"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@varo-ui/headless": "workspace:*",

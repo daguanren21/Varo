@@ -32,7 +32,7 @@ const rootClass = computed(() =>
       </text>
     </view>
     <view class="flex flex-wrap gap-2 p-2.5">
-      <button v-for="action in actions" :key="action.id" class="min-h-8 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" hover-class="border-[var(--varo-agent-primary)] text-[var(--varo-agent-primary)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', { action, text })">
+      <button v-for="action in actions" :key="action.id" class="agent-native-button min-h-8 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" hover-class="border-[var(--varo-agent-primary)] text-[var(--varo-agent-primary)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', { action, text })">
         {{ action.label }}
       </button>
     </view>

@@ -35,7 +35,7 @@ const fields = computed(() =>
         ...option,
         ariaChecked: selected,
         className: cn(
-          'flex min-h-10 items-center justify-between gap-2 rounded-[10px] border px-2.5 text-left text-[12px] font-semibold',
+          'agent-native-button flex min-h-10 items-center justify-between gap-2 rounded-[10px] border px-2.5 text-left text-[12px] font-semibold',
           selected
             ? 'border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]'
             : 'border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] text-[var(--varo-agent-text)]',
@@ -115,7 +115,7 @@ function update(index: number, value: string) {
     </view>
 
     <view class="flex min-h-12 items-center justify-end border-t border-[var(--varo-agent-border)] px-3">
-      <button class="min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-white" type="button" @click="emit('apply', controls)">
+      <button class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]" type="button" @click="emit('apply', controls)">
         Apply changes
       </button>
     </view>

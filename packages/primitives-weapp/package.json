@@ -59,10 +59,10 @@
     "test:e2e": "echo primitives-weapp has no e2e"
   },
   "peerDependencies": {
-    "wevu": ">=6.22.0 <7"
+    "wevu": ">=7.0.4 <8"
   },
   "dependencies": {
-    "vue": "^3.5.41"
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@varo-ui/headless": "workspace:*",

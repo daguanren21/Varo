@@ -1,5 +1,7 @@
 # Grid
 
+<RegistryInstallStrip item="components/grid" :targets="['h5', 'weapp']" locale="en" />
+
 ## Demo
 
 <PlatformTabsDemo example="grid" locale="en" />
@@ -42,25 +44,25 @@
 
 ## Grid Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `columnNum` | `number \| string` | `4` | Column count |
-| `gutter` | `number \| string` | `undefined` | Grid gutter |
-| `border` | `boolean` | `true` | Border marker |
-| `square` | `boolean` | `false` | Square item marker |
-| `center` | `boolean` | `true` | Center content |
-| `clickable` | `boolean` | `false` | Clickable state |
-| `direction` | `'vertical' \| 'horizontal'` | `'vertical'` | Content direction |
+| Prop        | Type                         | Default      | Description        |
+| ----------- | ---------------------------- | ------------ | ------------------ |
+| `columnNum` | `number \| string`           | `4`          | Column count       |
+| `gutter`    | `number \| string`           | `undefined`  | Grid gutter        |
+| `border`    | `boolean`                    | `true`       | Border marker      |
+| `square`    | `boolean`                    | `false`      | Square item marker |
+| `center`    | `boolean`                    | `true`       | Center content     |
+| `clickable` | `boolean`                    | `false`      | Clickable state    |
+| `direction` | `'vertical' \| 'horizontal'` | `'vertical'` | Content direction  |
 
 ## GridItem Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `string` | `undefined` | Text |
-| `icon` | `string` | `undefined` | Icon content |
-| `badge` | `number \| string` | `undefined` | Badge content |
-| `dot` | `boolean` | `false` | Red dot |
-| `url` | `string` | `undefined` | Link URL |
-| `to` | `string` | `undefined` | Route link |
-| `span` | `number \| string` | `1` | Column span |
+| Prop        | Type                   | Default     | Description                     |
+| ----------- | ---------------------- | ----------- | ------------------------------- |
+| `text`      | `string`               | `undefined` | Text                            |
+| `icon`      | `string`               | `undefined` | Icon content                    |
+| `badge`     | `number \| string`     | `undefined` | Badge content                   |
+| `dot`       | `boolean`              | `false`     | Red dot                         |
+| `url`       | `string`               | `undefined` | Link URL                        |
+| `to`        | `string`               | `undefined` | Route link                      |
+| `span`      | `number \| string`     | `1`         | Column span                     |
 | `clickable` | `boolean \| undefined` | `undefined` | Override parent clickable state |
