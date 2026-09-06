@@ -1,5 +1,11 @@
 # @varo-ui/theme
 
+## 1.3.0
+
+### Minor Changes
+
+- Expand the semantic color system with WeChat primary scales, complete status, neutral, fill, border, background, info, and dark-mode variables across theme, H5, Weapp, and Registry surfaces.
+
 ## 1.2.0
 
 ### Minor Changes
