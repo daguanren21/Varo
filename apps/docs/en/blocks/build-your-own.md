@@ -294,6 +294,8 @@ pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 
 The payload uses `registry:file`, inline `content`, and explicit `~/src/...` destinations. shadcn-vue and tools delegating installation to it can consume this JSON; compatibility was exercised with shadcn-vue 2.8.2. Varo's `add --registry` reads native Varo manifests; exported JSON is installed with shadcn-vue.
 
+Exports require valid UTF-8 contents; non-UTF-8 bytes fail explicitly instead of being silently replaced. `add` still copies binary assets byte-for-byte. Installation and export both reject destinations where a file is also another file's parent directory, including case-insensitive conflicts.
+
 Export H5 and Weapp separately. `meta.varo.target` records the target, but external installers do not enforce it or convert Vue to Wevu. Consumers still need matching runtime dependencies and theme setup. Programmatic CLI consumers must use `await resolveRegistryItems(...)`: both local and remote resolution now return a Promise.
 
 ## 10. Contribute to Varo

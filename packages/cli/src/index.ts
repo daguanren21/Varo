@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry/source'
 import type { Buffer } from 'node:buffer'
+import { isUtf8 } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
@@ -234,12 +235,24 @@ async function readRegistryFile(file: PlannedRegistryFile): Promise<Buffer> {
 }
 
 function assertUniqueTargets(targets: { file: RegistryFile, targetIdentity: string }[]) {
-  const seen = new Set<string>()
+  const filesByIdentity = new Map<string, RegistryFile>()
   for (const { file, targetIdentity } of targets) {
-    if (seen.has(targetIdentity)) {
+    if (filesByIdentity.has(targetIdentity)) {
       throw new Error(`Registry items target the same file: ${file.to}`)
     }
-    seen.add(targetIdentity)
+    filesByIdentity.set(targetIdentity, file)
+  }
+  for (const { file, targetIdentity } of targets) {
+    let ancestor = targetIdentity
+    while (true) {
+      const parent = dirname(ancestor)
+      if (parent === ancestor) { break }
+      const parentFile = filesByIdentity.get(parent)
+      if (parentFile) {
+        throw new Error(`Registry items target a file and its descendant: ${parentFile.to}, ${file.to}`)
+      }
+      ancestor = parent
+    }
   }
 }
 
@@ -273,12 +286,18 @@ export async function exportRegistryItem(name: string, options: ResolveRegistryO
     dependencies: plan.dependencies,
     devDependencies: plan.devDependencies,
     registryDependencies: [],
-    files: await Promise.all(plan.files.map(async file => ({
-      path: file.to,
-      type: 'registry:file' as const,
-      target: `~/${file.to}`,
-      content: (await readRegistryFile(file)).toString('utf8'),
-    }))),
+    files: await Promise.all(plan.files.map(async (file) => {
+      const bytes = await readRegistryFile(file)
+      if (!isUtf8(bytes)) {
+        throw new Error(`Cannot export non-UTF-8 registry file: ${file.to}`)
+      }
+      return {
+        path: file.to,
+        type: 'registry:file' as const,
+        target: `~/${file.to}`,
+        content: bytes.toString('utf8'),
+      }
+    })),
     meta: { varo: { target: plan.target } },
   }
 }

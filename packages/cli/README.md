@@ -37,6 +37,8 @@ pnpm dlx shadcn-vue@latest add https://ui.example.com/r/my-block.json
 
 The JSON uses `registry:file`, inline `content`, and explicit `~/src/...` targets so shadcn-vue preserves Varo's installation paths. Transitive files and npm dependencies are included; no Varo-specific dependency names remain for the external installer to resolve. Use separate exports for H5 and Weapp. The export records `meta.varo.target`, but external installers do not enforce Varo's runtime choice: use the matching project, runtime packages, and theme setup. This is registry-protocol compatibility, not Vue-to-Wevu conversion.
 
+Exports require valid UTF-8 file contents; non-UTF-8 bytes are rejected instead of silently replaced. `add` still copies binary assets byte-for-byte. Both installation and export reject destination trees where a file is also another file's parent directory, including case-insensitive conflicts.
+
 Compatibility was exercised with shadcn-vue 2.8.2 in a project with `components.json` and a TypeScript path alias configuration. Other tools that delegate to shadcn-vue can consume the same hosted JSON. Varo's own `add --registry` reads Varo manifests; use shadcn-vue to install the exported JSON.
 
 ## Programmatic API

@@ -1,6 +1,7 @@
 import type { Server } from 'node:http'
 // @vitest-environment node
 import type { RegistryItem } from '../src/index.ts'
+import { Buffer } from 'node:buffer'
 import { execFile } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
@@ -197,5 +198,69 @@ describe('third-party registries', () => {
       '/components/beta/registry.json': JSON.stringify(item('beta', { targets: ['h5'], files: [{ ...file, to: 'src/SHARED.ts' }] })),
     })
     await expect(exportRegistryItem('alpha', { registryRoot: url, target: 'h5' })).rejects.toThrow(/target the same file/)
+  })
+
+  it('rejects non-UTF8 exports without changing byte-preserving installs', async () => {
+    const root = temporaryProject()
+    const registryRoot = join(root, 'registry')
+    const directory = join(registryRoot, 'components/binary')
+    const bytes = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+    mkdirSync(directory, { recursive: true })
+    writeFileSync(join(directory, 'asset.png'), bytes)
+    writeFileSync(join(directory, 'registry.json'), JSON.stringify(item('binary', {
+      targets: ['h5'],
+      files: [{ target: 'h5', from: 'registry/components/binary/asset.png', to: 'src/assets/asset.png' }],
+    })))
+    const consumer = temporaryProject()
+
+    await installRegistryItems(['binary'], { registryRoot, projectRoot: consumer, target: 'h5' })
+    expect(readFileSync(join(consumer, 'src/assets/asset.png'))).toEqual(bytes)
+    await expect(exportRegistryItem('binary', { registryRoot, target: 'h5' })).rejects.toThrow(/UTF-8/)
+  })
+
+  it('preserves Unicode, BOM, line endings, and empty UTF8 files in exports', async () => {
+    const root = temporaryProject()
+    const registryRoot = join(root, 'registry')
+    const directory = join(registryRoot, 'components/text')
+    const bytes = Buffer.from('\uFEFFexport const 标题 = "你好";\r\n')
+    mkdirSync(directory, { recursive: true })
+    writeFileSync(join(directory, 'text.ts'), bytes)
+    writeFileSync(join(directory, 'empty.ts'), '')
+    writeFileSync(join(directory, 'registry.json'), JSON.stringify(item('text', {
+      targets: ['h5'],
+      files: ['text', 'empty'].map(name => ({
+        target: 'h5',
+        from: `registry/components/text/${name}.ts`,
+        to: `src/lib/${name}.ts`,
+      })),
+    })))
+
+    const exported = await exportRegistryItem('text', { registryRoot, target: 'h5' })
+    expect(Buffer.from(exported.files[0]!.content)).toEqual(bytes)
+    expect(exported.files[1]!.content).toBe('')
+  })
+
+  it.each([false, true])('rejects file/directory conflicts regardless of order (reversed: %s)', async (reverse) => {
+    const root = temporaryProject()
+    const registryRoot = join(root, 'registry')
+    const directory = join(registryRoot, 'components/tree')
+    const files = ['src/Shared.ts', 'src/shared.ts/child.ts'].map((to, index) => ({
+      target: 'h5' as const,
+      from: `registry/components/tree/file-${index}.ts`,
+      to,
+    }))
+    mkdirSync(directory, { recursive: true })
+    files.forEach(file => writeFileSync(join(root, file.from), 'export const value = true\n'))
+    if (reverse) { files.reverse() }
+    writeFileSync(join(directory, 'registry.json'), JSON.stringify(item('tree', { targets: ['h5'], files })))
+    const consumer = temporaryProject()
+
+    await expect(exportRegistryItem('tree', { registryRoot, target: 'h5' })).rejects.toThrow(/file and its descendant/)
+    await expect(installRegistryItems(['tree'], {
+      registryRoot,
+      projectRoot: consumer,
+      target: 'h5',
+    })).rejects.toThrow(/file and its descendant/)
+    expect(readdirSync(consumer)).toEqual([])
   })
 })

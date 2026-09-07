@@ -294,6 +294,8 @@ pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 
 输出采用 `registry:file`、内联 `content` 和显式 `~/src/...` 安装路径，可由 shadcn-vue 以及委托它安装的生态工具消费；已用 shadcn-vue 2.8.2 验证。Varo 的 `add --registry` 读取原生 Varo manifest，导出 JSON 则由 shadcn-vue 安装。
 
+导出要求文件内容为有效 UTF-8；非 UTF-8 字节会明确报错，不会被替换字符静默损坏。`add` 仍按原始字节复制二进制资源。安装与导出都会拒绝“同一路径既是文件又是其他文件的父目录”的冲突，包括仅大小写不同的路径冲突。
+
 H5 与 Weapp 必须分别导出。`meta.varo.target` 记录目标，但第三方安装器不会替你检查运行时，也不会把 Vue 转成 Wevu；消费工程仍需安装匹配的依赖并接入主题。CLI API 调用方须使用 `await resolveRegistryItems(...)`，现在本地与远端解析均返回 Promise。
 
 ## 10. 贡献回 Varo
