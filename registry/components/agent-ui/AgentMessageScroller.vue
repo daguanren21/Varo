@@ -51,12 +51,6 @@ function follow() {
   </view>
 </template>
 
-<style scoped>
-.agent-message-scroller button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

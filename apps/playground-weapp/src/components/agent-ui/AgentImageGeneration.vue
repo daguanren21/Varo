@@ -97,7 +97,7 @@ const hasAction = computed(() =>
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-image-generation__canvas {
   background:
     radial-gradient(circle at 50% 38%, rgb(45 212 191 / 16%), transparent 34%),
@@ -129,10 +129,6 @@ const hasAction = computed(() =>
 .agent-image-generation__track {
   box-shadow: 0 0 12px rgb(20 184 166 / 28%);
   transition: width 280ms ease;
-}
-
-.agent-image-generation button::after {
-  border: 0;
 }
 
 @keyframes agent-image-scan {

@@ -96,7 +96,7 @@ function messageContent(message: MallAgentMessage) {
 
 <template>
   <view v-if="open" class="fixed bottom-0 left-0 right-0 top-0 z-50 overflow-hidden bg-slate-950/45" @click.self="emit('close')">
-    <view class="absolute bottom-0 left-0 right-0 grid max-h-[92vh] min-h-[72vh] max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-t-[24px] bg-slate-50 shadow-[0_-20px_60px_rgba(15,23,42,.24)]">
+    <view class="absolute bottom-0 left-0 right-0 grid max-h-[92vh] min-h-[72vh] min-w-0 max-w-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-t-[24px] bg-slate-50 shadow-[0_-20px_60px_rgba(15,23,42,.24)]">
       <view class="box-border flex min-h-14 w-full min-w-0 items-center gap-3 overflow-hidden border-b border-slate-200 bg-white px-3.5">
         <view class="grid h-9 w-9 flex-none place-items-center rounded-xl bg-teal-700 text-sm font-black text-white">
           V
@@ -114,8 +114,8 @@ function messageContent(message: MallAgentMessage) {
             购买与退货始终需要人工确认
           </text>
         </view>
-        <VButton class="h-10 w-10 flex-none !p-0" variant="ghost" shape="round" aria-label="关闭 Agent" @click="emit('close')">
-          <VIcon name="close" size="18" />
+        <VButton class-name="!h-10 !min-h-10 !w-10 !flex-none !p-0" variant="ghost" shape="round" aria-label="关闭 Agent" @click="emit('close')">
+          <VIcon name="close" :size="18" />
         </VButton>
       </view>
 

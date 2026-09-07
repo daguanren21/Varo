@@ -85,12 +85,6 @@ const rememberBoxClass = computed(() => cn(
   </view>
 </template>
 
-<style scoped>
-.agent-tool-approval button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

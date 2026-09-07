@@ -122,12 +122,6 @@ function update(index: number, value: string) {
   </view>
 </template>
 
-<style scoped>
-.agent-fine-tune button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

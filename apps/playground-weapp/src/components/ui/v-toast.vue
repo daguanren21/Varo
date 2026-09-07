@@ -28,7 +28,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  close: []
+  'close': []
   'update:visible': [visible: boolean]
 }>()
 
@@ -163,7 +163,7 @@ function close() {
   </view>
 </template>
 
-<style scoped>
+<style>
 .varo-toast__spinner {
   position: relative;
   width: 20px;
@@ -175,7 +175,7 @@ function close() {
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  border: 2px solid currentColor;
+  border: 2px solid currentcolor;
   border-radius: 50%;
 }
 

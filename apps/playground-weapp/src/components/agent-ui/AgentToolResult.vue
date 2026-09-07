@@ -79,11 +79,7 @@ function dotClass() {
   </view>
 </template>
 
-<style scoped>
-.agent-tool-result button::after {
-  border: 0;
-}
-
+<style>
 .agent-tool-result__running {
   animation: agent-tool-result-pulse 1s ease-in-out infinite;
 }

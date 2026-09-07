@@ -29,6 +29,7 @@ const settledCount = computed(() => props.items.filter(item => item.status === '
 const displayItems = computed(() => props.items.map(item => ({
   canRetry: item.status === 'failed' && Boolean(item.retryable),
   item,
+  statusIconClass: `agent-retrieval__status-icon--${item.status}`,
   statusLabel: statusLabel(item.status),
 })))
 </script>
@@ -51,7 +52,7 @@ const displayItems = computed(() => props.items.map(item => ({
         class="flex min-h-[56px] items-center gap-2.5 rounded-xl px-2.5 py-2"
         :data-status="entry.item.status"
       >
-        <view class="agent-retrieval__status-icon" aria-hidden="true" />
+        <view class="agent-retrieval__status-icon" :class="entry.statusIconClass" aria-hidden="true" />
         <view class="grid min-w-0 flex-1 gap-0.5">
           <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
             {{ entry.item.title }}
@@ -85,7 +86,7 @@ const displayItems = computed(() => props.items.map(item => ({
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-retrieval__status-icon {
   box-sizing: border-box;
   flex: none;
@@ -96,25 +97,25 @@ const displayItems = computed(() => props.items.map(item => ({
   border-radius: 999px;
 }
 
-[data-status='reading'] .agent-retrieval__status-icon {
+.agent-retrieval__status-icon--reading {
   background: var(--varo-agent-primary);
   border-color: var(--varo-agent-primary);
   box-shadow: 0 0 0 3px var(--varo-agent-primary-soft);
 }
 
-[data-status='read'] .agent-retrieval__status-icon {
+.agent-retrieval__status-icon--read {
   background: var(--varo-agent-success);
   border-color: var(--varo-agent-success);
 }
 
-[data-status='skipped'] .agent-retrieval__status-icon {
+.agent-retrieval__status-icon--skipped {
   height: 4px;
   background: var(--varo-agent-border-strong);
   border: 0;
   border-radius: 2px;
 }
 
-[data-status='failed'] .agent-retrieval__status-icon {
+.agent-retrieval__status-icon--failed {
   background: var(--varo-agent-danger);
   border-color: var(--varo-agent-danger);
 }
@@ -142,10 +143,6 @@ const displayItems = computed(() => props.items.map(item => ({
   position: absolute;
   inset: -10px -4px;
   content: '';
-}
-
-.agent-retrieval__action::after {
-  border: 0;
 }
 
 .agent-retrieval__action--pressed {

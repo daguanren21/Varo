@@ -131,6 +131,7 @@ const props = withDefaults(
     holdKeyboard: false,
     ignoreCompositionEvent: true,
     invalid: false,
+    labelWidth: '',
     nickNameReview: false,
     randomNumber: false,
     readonly: false,

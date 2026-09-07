@@ -101,7 +101,7 @@ const canCancel = computed(() => props.busy || props.tasks.some(task => task.sta
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-task-runner__action {
   position: relative;
   box-sizing: border-box;
@@ -125,10 +125,6 @@ const canCancel = computed(() => props.busy || props.tasks.some(task => task.sta
   position: absolute;
   inset: -4px;
   content: '';
-}
-
-.agent-task-runner__action::after {
-  border: 0;
 }
 
 .agent-task-runner__action--primary {

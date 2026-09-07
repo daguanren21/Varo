@@ -71,12 +71,6 @@ function inputValue(event: Event) {
   </view>
 </template>
 
-<style scoped>
-.agent-command-search button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

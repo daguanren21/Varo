@@ -28,6 +28,9 @@ const clampedUsage = computed(() => {
 })
 const usageTransform = computed(() => `scaleX(${clampedUsage.value / 100})`)
 const enabledCount = computed(() => props.sources.filter(source => source.enabled).length)
+const disabledActionClass = computed(() =>
+  props.disabled ? 'agent-composer-scope__action--disabled' : '',
+)
 const displaySources = computed(() => props.sources.map((source) => {
   const status: AgentContextSourceStatus = source.status ?? 'available'
   const statusLabel = status === 'available' ? '可用' : status === 'connecting' ? '连接中' : '不可用'
@@ -38,6 +41,7 @@ const displaySources = computed(() => props.sources.map((source) => {
     source,
     status,
     statusLabel,
+    statusClass: `agent-composer-scope__status-dot--${status}`,
     toggleLabel: `${source.enabled ? '停用' : '启用'}${source.label}`,
   }
 }))
@@ -61,7 +65,7 @@ const displaySources = computed(() => props.sources.map((source) => {
         class="flex min-h-[58px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2"
         :data-status="item.status"
       >
-        <view class="agent-composer-scope__status-dot" aria-hidden="true" />
+        <view class="agent-composer-scope__status-dot" :class="item.statusClass" aria-hidden="true" />
         <view class="grid min-w-0 flex-1 gap-0.5">
           <view class="flex min-w-0 items-center gap-2">
             <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
@@ -81,6 +85,7 @@ const displaySources = computed(() => props.sources.map((source) => {
         <button
           v-if="item.canToggle"
           class="agent-native-button agent-composer-scope__action"
+          :class="disabledActionClass"
           type="button"
           :disabled="disabled"
           :aria-label="item.toggleLabel"
@@ -95,6 +100,7 @@ const displaySources = computed(() => props.sources.map((source) => {
         <button
           v-else-if="item.canConnect"
           class="agent-native-button agent-composer-scope__action agent-composer-scope__action--primary"
+          :class="disabledActionClass"
           type="button"
           :disabled="disabled"
           :aria-label="`连接${item.source.label}`"
@@ -134,7 +140,7 @@ const displaySources = computed(() => props.sources.map((source) => {
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-composer-scope__status-dot {
   flex: none;
   width: 8px;
@@ -143,12 +149,12 @@ const displaySources = computed(() => props.sources.map((source) => {
   border-radius: 999px;
 }
 
-[data-status='connecting'] .agent-composer-scope__status-dot {
+.agent-composer-scope__status-dot--connecting {
   background: var(--varo-agent-primary);
   box-shadow: 0 0 0 3px var(--varo-agent-primary-soft);
 }
 
-[data-status='unavailable'] .agent-composer-scope__status-dot {
+.agent-composer-scope__status-dot--unavailable {
   background: var(--varo-agent-danger);
 }
 
@@ -177,10 +183,6 @@ const displaySources = computed(() => props.sources.map((source) => {
   content: '';
 }
 
-.agent-composer-scope__action::after {
-  border: 0;
-}
-
 .agent-composer-scope__action--primary {
   color: var(--varo-agent-primary);
 }
@@ -189,7 +191,7 @@ const displaySources = computed(() => props.sources.map((source) => {
   background: var(--varo-agent-fill);
 }
 
-.agent-composer-scope__action[disabled] {
+.agent-composer-scope__action--disabled {
   opacity: 0.45;
 }
 

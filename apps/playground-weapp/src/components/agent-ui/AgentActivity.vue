@@ -74,7 +74,7 @@ function kindLabel(kind: AgentActivityItem['kind']) {
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-activity__running {
   animation: agent-activity-pulse 1s ease-in-out infinite;
 }

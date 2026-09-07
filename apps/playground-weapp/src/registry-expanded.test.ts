@@ -119,6 +119,7 @@ describe('expanded weapp registry components', () => {
   it('filters from the Select field without a duplicate panel search box', async () => {
     const wrapper = mount(VSelect, {
       props: {
+        clearable: true,
         filterable: true,
         options: [
           { label: 'Shanghai', value: 'shanghai' },
@@ -130,13 +131,77 @@ describe('expanded weapp registry components', () => {
     })
     const filterInput = wrapper.get('.varo-select__filter-input')
     expect(filterInput.attributes('value')).toBe('Shanghai')
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
 
     await filterInput.trigger('focus')
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(true)
     expect(wrapper.find('.varo-select__panel .varo-select__filter-input').exists()).toBe(false)
     await filterInput.setValue('zhou')
 
     expect(wrapper.emitted('search')?.at(-1)).toEqual(['zhou'])
     expect(wrapper.findAll('.varo-select__option').map(option => option.text())).toEqual(['Hangzhou', 'Suzhou'])
+    await wrapper.get('[aria-label="Clear selection"]').trigger('click')
+    expect(wrapper.emitted('update:value')?.at(-1)).toEqual([undefined])
+  })
+
+  it('preserves the selected label across search dismissal and reselection', async () => {
+    const wrapper = mount(VSelect, {
+      props: {
+        filterable: true,
+        options: [
+          { label: 'Shanghai', value: 'shanghai' },
+          { label: 'Hangzhou', value: 'hangzhou' },
+        ],
+        value: 'shanghai',
+      },
+    })
+    const input = wrapper.get<HTMLInputElement>('[role="combobox"]')
+
+    await input.trigger('focus')
+    expect(input.element.value).toBe('Shanghai')
+    await input.setValue('')
+    expect(input.element.value).toBe('')
+    expect(wrapper.findAll('[role="option"]').map(option => option.text())).toEqual(['Shanghai', 'Hangzhou'])
+    await wrapper.get('.varo-select__dismiss').trigger('click')
+    expect(wrapper.find('[role="listbox"]').exists()).toBe(false)
+    expect(input.element.value).toBe('Shanghai')
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+
+    await input.trigger('focus')
+    expect(input.element.value).toBe('Shanghai')
+    await wrapper.findAll('[role="option"]')[0].trigger('click')
+    expect(wrapper.find('[role="listbox"]').exists()).toBe(false)
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('hides the native Select clear action between interactions', async () => {
+    const wrapper = mount(VSelect, {
+      props: {
+        clearable: true,
+        options: [
+          { label: 'Shanghai', value: 'shanghai' },
+          { label: 'Hangzhou', value: 'hangzhou' },
+        ],
+        value: 'shanghai',
+      },
+    })
+
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
+    await wrapper.get('[role="combobox"]').trigger('click')
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(true)
+    await wrapper.findAll('[role="option"]')[1].trigger('click')
+    expect(wrapper.emitted('update:value')?.at(-1)).toEqual(['hangzhou'])
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
+
+    await wrapper.setProps({ value: 'hangzhou' })
+    await wrapper.get('[role="combobox"]').trigger('click')
+    await wrapper.get('[aria-label="Clear selection"]').trigger('click')
+    expect(wrapper.emitted('update:value')?.at(-1)).toEqual([undefined])
+    expect(wrapper.emitted('clear')).toHaveLength(1)
+    await wrapper.setProps({ value: undefined })
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
+    wrapper.unmount()
   })
 
   it('keeps readonly native Select values immutable while allowing browsing', async () => {

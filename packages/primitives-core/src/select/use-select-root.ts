@@ -76,7 +76,7 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
   }
 
   function select(option: SelectOption) {
-    if (!interactive.value) {
+    if (!interactive.value || option.disabled) {
       return false
     }
 
@@ -84,12 +84,12 @@ export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootRes
       multiple: multiple.value,
     })
 
-    if (!result.changed || result.limited) {
+    if (result.limited) {
       return false
     }
 
-    const changed = setValue(result.value)
-    if (changed && !multiple.value) {
+    const changed = result.changed && setValue(result.value)
+    if (!multiple.value) {
       setOpen(false)
     }
 

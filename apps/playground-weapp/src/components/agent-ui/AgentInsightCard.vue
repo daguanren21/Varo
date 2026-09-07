@@ -87,12 +87,6 @@ function move(delta: number) {
   </view>
 </template>
 
-<style scoped>
-.agent-insight-card button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

@@ -67,12 +67,6 @@ function toggle() {
   </view>
 </template>
 
-<style scoped>
-.agent-citations button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

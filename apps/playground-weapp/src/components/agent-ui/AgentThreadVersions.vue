@@ -26,12 +26,17 @@ const displayVersions = computed(() => {
   props.versions.forEach((version, index) => {
     labels.set(version.id, version.label || `版本 ${index + 1}`)
   })
-  return props.versions.map((version, index) => ({
-    active: version.id === props.activeId,
-    label: version.label || `版本 ${index + 1}`,
-    parentLabel: version.parentId ? labels.get(version.parentId) || version.parentId : '起始版本',
-    version,
-  }))
+  return props.versions.map((version, index) => {
+    const active = version.id === props.activeId
+    return {
+      active,
+      cardStateClass: active ? 'agent-thread-versions__card--active' : '',
+      label: version.label || `版本 ${index + 1}`,
+      parentLabel: version.parentId ? labels.get(version.parentId) || version.parentId : '起始版本',
+      statusDotStateClass: active ? 'agent-thread-versions__status-dot--active' : '',
+      version,
+    }
+  })
 })
 </script>
 
@@ -51,12 +56,13 @@ const displayVersions = computed(() => {
         v-for="entry in displayVersions"
         :key="entry.version.id"
         class="agent-thread-versions__card box-border grid w-full min-w-0 max-w-full gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3"
+        :class="entry.cardStateClass"
         :data-active="String(entry.active)"
         role="listitem"
       >
         <view class="flex min-w-0 items-center justify-between gap-2">
           <view class="flex min-w-0 items-center gap-2">
-            <view class="agent-thread-versions__status-dot" aria-hidden="true" />
+            <view class="agent-thread-versions__status-dot" :class="entry.statusDotStateClass" aria-hidden="true" />
             <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
               {{ entry.label }}
             </text>
@@ -130,12 +136,12 @@ const displayVersions = computed(() => {
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-thread-versions__card {
   border-color: var(--varo-agent-border);
 }
 
-.agent-thread-versions__card[data-active='true'] {
+.agent-thread-versions__card--active {
   border-color: var(--varo-agent-primary);
   box-shadow: 0 0 0 2px var(--varo-agent-primary-soft);
 }
@@ -148,7 +154,7 @@ const displayVersions = computed(() => {
   border-radius: 999px;
 }
 
-[data-active='true'] .agent-thread-versions__status-dot {
+.agent-thread-versions__status-dot--active {
   background: var(--varo-agent-primary);
 }
 
@@ -175,10 +181,6 @@ const displayVersions = computed(() => {
   position: absolute;
   inset: -4px;
   content: '';
-}
-
-.agent-thread-versions__action::after {
-  border: 0;
 }
 
 .agent-thread-versions__action--primary {

@@ -26,6 +26,7 @@ const displayItems = computed(() => props.items.map((item) => {
     canConnect: item.status === 'failed',
     canOpen: item.status === 'read',
     item,
+    statusIconClass: `agent-source-receipt__status-icon--${item.status}`,
     statusLabel,
   }
 }))
@@ -55,7 +56,7 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
         class="flex min-h-[56px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2"
         :data-status="entry.item.status"
       >
-        <view class="agent-source-receipt__status-icon" aria-hidden="true" />
+        <view class="agent-source-receipt__status-icon" :class="entry.statusIconClass" aria-hidden="true" />
         <view class="grid min-w-0 flex-1 gap-0.5">
           <view class="flex min-w-0 items-baseline gap-2">
             <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
@@ -104,7 +105,7 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-source-receipt__status-icon {
   box-sizing: border-box;
   flex: none;
@@ -115,14 +116,14 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
   border-radius: 999px;
 }
 
-[data-status='skipped'] .agent-source-receipt__status-icon {
+.agent-source-receipt__status-icon--skipped {
   height: 4px;
   background: var(--varo-agent-border-strong);
   border: 0;
   border-radius: 2px;
 }
 
-[data-status='failed'] .agent-source-receipt__status-icon {
+.agent-source-receipt__status-icon--failed {
   background: var(--varo-agent-danger);
   border-color: var(--varo-agent-danger);
 }
@@ -150,10 +151,6 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
   position: absolute;
   inset: -4px;
   content: '';
-}
-
-.agent-source-receipt__action::after {
-  border: 0;
 }
 
 .agent-source-receipt__action--primary {

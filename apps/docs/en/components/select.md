@@ -65,18 +65,22 @@ On H5, a readonly `filterable` field uses the native readonly input contract.
 
 Multiple selection has no draft or confirmation commit: every option click updates the value immediately. The bottom completion (`完成`) button only closes the panel; it does not commit again or emit a confirmation event.
 
+Reopening a filterable field keeps the selected label until typing starts; clearing the search does not clear the selection. Tapping outside closes the panel and restores the selected label. In single-selection mode, choosing any enabled option closes the panel, including the current option; an unchanged value does not emit a duplicate value update.
+
+While open, the selected label uses the muted text color until search input starts. Typing or closing the panel restores the normal text color; borders, icons, and focus indicators retain their opacity.
+
 ### Props
 
-| Prop          | Type                                                                    | Default     | Description                                                               |
-| ------------- | ----------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------- |
-| `value`       | `string \| number \| Array<string \| number>`                           | `undefined` | Selected value                                                            |
-| `options`     | `Array<{ label: string; value: string \| number; disabled?: boolean }>` | `[]`        | Native options                                                            |
-| `placeholder` | `string`                                                                | `'请选择'`  | Placeholder text                                                          |
-| `disabled`    | `boolean`                                                               | `false`     | Blocks opening and value changes                                          |
-| `readonly`    | `boolean`                                                               | `false`     | Allows browsing but blocks value changes, clearing, and filter input      |
-| `clearable`   | `boolean`                                                               | `false`     | Shows the clear action when a value exists and the control is interactive |
-| `multiple`    | `boolean`                                                               | `false`     | Enables multiple selection with immediate per-option commits              |
-| `filterable`  | `boolean`                                                               | `false`     | Performs a local label-contains match and emits search input              |
+| Prop          | Type                                                                    | Default     | Description                                                                                                      |
+| ------------- | ----------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `value`       | `string \| number \| Array<string \| number>`                           | `undefined` | Selected value                                                                                                   |
+| `options`     | `Array<{ label: string; value: string \| number; disabled?: boolean }>` | `[]`        | Native options                                                                                                   |
+| `placeholder` | `string`                                                                | `'请选择'`  | Placeholder text                                                                                                 |
+| `disabled`    | `boolean`                                                               | `false`     | Blocks opening and value changes                                                                                 |
+| `readonly`    | `boolean`                                                               | `false`     | Allows browsing but blocks value changes, clearing, and filter input                                             |
+| `clearable`   | `boolean`                                                               | `false`     | Shows the clear action for an editable selected value after click or focus opens the panel; hides it when closed |
+| `multiple`    | `boolean`                                                               | `false`     | Enables multiple selection with immediate per-option commits                                                     |
+| `filterable`  | `boolean`                                                               | `false`     | Performs a local label-contains match and emits search input                                                     |
 
 ### Events
 

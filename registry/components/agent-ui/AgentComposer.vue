@@ -55,7 +55,7 @@ function update(event: Event) {
 </script>
 
 <template>
-  <view class="agent-composer grid w-full min-w-0 gap-2.5 overflow-hidden">
+  <view class="agent-composer grid w-full min-w-0 grid-cols-1 gap-2.5 overflow-hidden">
     <AgentPromptSuggestions
       v-if="promptSuggestions.length"
       :suggestions="promptSuggestions"
@@ -87,7 +87,9 @@ function update(event: Event) {
         @click="submit()"
       >
         <view v-if="busy" class="agent-composer__busy flex items-center gap-0.5" aria-hidden="true">
-          <text v-for="index in 3" :key="index" class="h-1 w-1 rounded-full bg-current" />
+          <text class="agent-composer__busy-dot h-1 w-1 rounded-full bg-current" />
+          <text class="agent-composer__busy-dot agent-composer__busy-dot--delay-short h-1 w-1 rounded-full bg-current" />
+          <text class="agent-composer__busy-dot agent-composer__busy-dot--delay-long h-1 w-1 rounded-full bg-current" />
         </view>
         <view v-else class="agent-composer__send-icon" :style="agentSendIconStyle" aria-hidden="true" />
       </button>
@@ -95,16 +97,16 @@ function update(event: Event) {
   </view>
 </template>
 
-<style scoped>
-.agent-composer__busy > text {
+<style>
+.agent-composer__busy-dot {
   animation: agent-composer-pulse 900ms ease-in-out infinite;
 }
 
-.agent-composer__busy > text:nth-child(2) {
+.agent-composer__busy-dot--delay-short {
   animation-delay: 120ms;
 }
 
-.agent-composer__busy > text:nth-child(3) {
+.agent-composer__busy-dot--delay-long {
   animation-delay: 240ms;
 }
 
@@ -115,7 +117,7 @@ function update(event: Event) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agent-composer__busy > text {
+  .agent-composer__busy-dot {
     animation: none;
   }
 }

@@ -63,7 +63,7 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
         <text class="truncate text-sm font-bold text-[var(--varo-agent-foreground)]">
           {{ title }}
         </text>
-        <text class="truncate text-[12px] text-[var(--varo-agent-muted)]">
+        <text class="agent-chat__subtitle truncate text-[12px] text-[var(--varo-agent-muted)]">
           {{ subtitle }}
         </text>
       </view>
@@ -95,7 +95,7 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-chat__status-pulse {
   animation: agent-chat-status-pulse 1s ease-in-out infinite;
 }
@@ -119,7 +119,7 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
     padding-left: 12px;
   }
 
-  .agent-chat__meta > text:last-child {
+  .agent-chat__subtitle {
     display: none;
   }
 

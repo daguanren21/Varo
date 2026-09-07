@@ -131,6 +131,10 @@ page {
   width: auto;
 }
 
+.agent-native-button.agent-native-button::after {
+  border: 0;
+}
+
 .agent-native-button--block.agent-native-button--block {
   width: 100%;
 }
@@ -390,8 +394,10 @@ page {
 
 .varo-input {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   width: 100%;
+  min-width: 0;
   color: var(--varo-ui-text);
 }
 

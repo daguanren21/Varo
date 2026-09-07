@@ -99,7 +99,7 @@ function lockTouchMove() {
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-shell {
   box-sizing: border-box;
   width: 100%;
@@ -163,11 +163,6 @@ function lockTouchMove() {
   position: absolute;
   inset: -2px;
   content: '';
-}
-
-.agent-shell__close::after,
-.agent-shell__overlay::after {
-  border: 0;
 }
 
 .agent-shell__close-icon {

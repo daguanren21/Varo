@@ -74,11 +74,7 @@ function lineClass(line: number) {
   </view>
 </template>
 
-<style scoped>
-.agent-code-block button::after {
-  border: 0;
-}
-
+<style>
 .agent-code-block__cursor {
   animation: agent-code-cursor 0.75s steps(1) infinite;
 }

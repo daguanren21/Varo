@@ -65,18 +65,22 @@ H5 的 `filterable` 只读字段使用原生只读输入语义。
 
 多选没有草稿或确认提交阶段：每次点击选项都会立即触发值更新。底部“完成”按钮只关闭面板，不再次提交，也不触发确认事件。
 
+筛选框再次展开时保留已选标签，开始输入后才显示搜索词；清空搜索词不会清空选中值。点击面板外部会收起面板并恢复已选标签。单选时点击任一可用选项都会收起面板，包括再次点击当前选项；值未变化时不会重复触发值更新事件。
+
+展开时的已选标签使用次级文字色；开始输入搜索词或收起面板后恢复正常文字色。边框、图标和焦点提示不降低透明度。
+
 ### Props
 
-| Prop          | 类型                                                                    | 默认值      | 描述                                           |
-| ------------- | ----------------------------------------------------------------------- | ----------- | ---------------------------------------------- |
-| `value`       | `string \| number \| Array<string \| number>`                           | `undefined` | 当前选中值                                     |
-| `options`     | `Array<{ label: string; value: string \| number; disabled?: boolean }>` | `[]`        | 原生选项                                       |
-| `placeholder` | `string`                                                                | `'请选择'`  | 占位文本                                       |
-| `disabled`    | `boolean`                                                               | `false`     | 阻止打开和值变更                               |
-| `readonly`    | `boolean`                                                               | `false`     | 允许浏览，但阻止值变更、清空和筛选输入         |
-| `clearable`   | `boolean`                                                               | `false`     | 有选中值且可交互时显示清空按钮                 |
-| `multiple`    | `boolean`                                                               | `false`     | 多选；每个选项立即提交                         |
-| `filterable`  | `boolean`                                                               | `false`     | 按选项标签进行本地包含匹配，并触发搜索输入事件 |
+| Prop          | 类型                                                                    | 默认值      | 描述                                                           |
+| ------------- | ----------------------------------------------------------------------- | ----------- | -------------------------------------------------------------- |
+| `value`       | `string \| number \| Array<string \| number>`                           | `undefined` | 当前选中值                                                     |
+| `options`     | `Array<{ label: string; value: string \| number; disabled?: boolean }>` | `[]`        | 原生选项                                                       |
+| `placeholder` | `string`                                                                | `'请选择'`  | 占位文本                                                       |
+| `disabled`    | `boolean`                                                               | `false`     | 阻止打开和值变更                                               |
+| `readonly`    | `boolean`                                                               | `false`     | 允许浏览，但阻止值变更、清空和筛选输入                         |
+| `clearable`   | `boolean`                                                               | `false`     | 有选中值且可交互时，在点击或聚焦展开后显示清空按钮；收起后隐藏 |
+| `multiple`    | `boolean`                                                               | `false`     | 多选；每个选项立即提交                                         |
+| `filterable`  | `boolean`                                                               | `false`     | 按选项标签进行本地包含匹配，并触发搜索输入事件                 |
 
 ### Events
 

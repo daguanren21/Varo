@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import type { MallProduct } from '../../features/mall/useMallAgent'
 import VBadge from '../ui/badge.vue'
 import VButton from '../ui/v-button.vue'
-import type { MallProduct } from '../../features/mall/useMallAgent'
 
 withDefaults(
   defineProps<{
     products?: MallProduct[]
   }>(),
   {
-    products: () => []
-  }
+    products: () => [],
+  },
 )
 
 const emit = defineEmits<{
@@ -25,10 +25,12 @@ const emit = defineEmits<{
       :key="product.id"
       class="overflow-hidden rounded-2xl border border-white/80 bg-white shadow-[0_4px_16px_rgba(15,23,42,.06)]"
     >
-      <button class="m-0 block w-full bg-transparent p-0 text-left" type="button" @click="emit('select', product)">
+      <VButton block tone="default" variant="text" class-name="!m-0 !block !rounded-none !bg-transparent !p-0 !text-left !font-normal !leading-normal" @click="emit('select', product)">
         <view class="relative grid aspect-[4/3] place-items-center overflow-hidden" :style="{ background: product.accent }">
           <view class="absolute -right-6 -top-8 h-24 w-24 rounded-full border-[18px] border-white/10" />
-          <VBadge class="absolute left-2 top-2" tone="danger" variant="solid">{{ product.category }}</VBadge>
+          <VBadge class="absolute left-2 top-2" tone="danger" variant="solid">
+            {{ product.category }}
+          </VBadge>
 
           <view v-if="product.id === 'headphones'" class="relative flex items-center gap-5" aria-label="降噪耳机示意图">
             <view class="h-16 w-7 rotate-[-8deg] rounded-full bg-white shadow-[0_8px_18px_rgba(15,23,42,.3)]">
@@ -42,8 +44,12 @@ const emit = defineEmits<{
 
           <view v-else-if="product.id === 'milk'" class="relative h-[92px] w-[66px] rounded-b-lg bg-white shadow-[0_10px_22px_rgba(30,64,175,.22)]" aria-label="牛奶包装示意图">
             <view class="absolute -top-5 left-0 h-6 w-full bg-white [clip-path:polygon(18%_100%,38%_0,80%_0,100%_100%)]" />
-            <text class="mx-auto mt-7 block w-fit rounded-full bg-blue-600 px-2 py-1 text-[10px] font-black text-white">MILK</text>
-            <text class="mt-2 block text-center text-[9px] font-bold text-blue-700">鲜京采</text>
+            <text class="mx-auto mt-7 block w-fit rounded-full bg-blue-600 px-2 py-1 text-[10px] font-black text-white">
+              MILK
+            </text>
+            <text class="mt-2 block text-center text-[9px] font-bold text-blue-700">
+              鲜京采
+            </text>
           </view>
 
           <view v-else-if="product.id === 'rice-cooker'" class="relative mt-3 h-[68px] w-[92px] rounded-[28px_28px_18px_18px] bg-white shadow-[0_10px_22px_rgba(127,29,29,.2)]" aria-label="电饭煲示意图">
@@ -60,14 +66,22 @@ const emit = defineEmits<{
         </view>
 
         <view class="grid gap-1.5 p-2.5 pb-2">
-          <text class="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 text-slate-900">{{ product.name }}</text>
-          <text class="line-clamp-1 text-[10px] text-slate-400">{{ product.subtitle }}</text>
+          <text class="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 text-slate-900">
+            {{ product.name }}
+          </text>
+          <text class="line-clamp-1 text-[10px] text-slate-400">
+            {{ product.subtitle }}
+          </text>
           <view class="flex items-end justify-between gap-1">
-            <text class="text-base font-black text-[#e1251b]">¥{{ (product.price / 100).toFixed(2) }}</text>
-            <text class="text-[9px] text-slate-400">{{ product.rating }}</text>
+            <text class="text-base font-black text-[#e1251b]">
+              ¥{{ (product.price / 100).toFixed(2) }}
+            </text>
+            <text class="text-[9px] text-slate-400">
+              {{ product.rating }}
+            </text>
           </view>
         </view>
-      </button>
+      </VButton>
       <view class="px-2.5 pb-2.5">
         <VButton block size="sm" :disabled="product.stock === 0" @click="emit('buy', product)">
           {{ product.stock === 0 ? '已售罄' : '让 AI 帮我买' }}

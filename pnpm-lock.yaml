@@ -212,6 +212,9 @@ importers:
       '@weapp-vite/miniprogram-automator':
         specifier: 1.2.16
         version: 1.2.16(@types/node@26.1.0)
+      postcss-selector-parser:
+        specifier: 7.1.6
+        version: 7.1.6
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3

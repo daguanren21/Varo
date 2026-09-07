@@ -22,7 +22,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  change: [value: RadioValue]
+  'change': [value: RadioValue]
   'update:checked': [value: boolean]
 }>()
 
@@ -43,7 +43,7 @@ const checkedAttribute = computed(() => String(checked.value))
 const disabledAttribute = computed(() => String(disabled.value))
 
 function select() {
-  if (disabled.value) return
+  if (disabled.value) { return }
 
   if (group) {
     group.select(props.value)
@@ -76,16 +76,18 @@ function select() {
       <template v-if="$slots.label">
         <slot name="label" />
       </template>
-      <slot v-else>{{ props.label }}</slot>
+      <slot v-else>
+        {{ props.label }}
+      </slot>
     </text>
   </button>
 </template>
 
-<style scoped>
+<style>
 .varo-radio__dot {
   width: 6px;
   height: 6px;
-  background: currentColor;
+  background: currentcolor;
   border-radius: 50%;
 }
 </style>

@@ -1,6 +1,7 @@
 import { access, readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import selectorParser from 'postcss-selector-parser'
 import { postcss } from 'weapp-tailwindcss/core'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -97,6 +98,7 @@ if (missingCatalogComponents.length > 0) {
 const queue = [appJsonPath, ...pageJsonPaths(appJson)]
 const visited = new Set()
 const missing = []
+const styleQueue = [{ path: resolve(outputRoot, 'app.wxss'), component: false }]
 
 while (queue.length > 0) {
   const ownerPath = queue.shift()
@@ -108,6 +110,10 @@ while (queue.length > 0) {
   }
 
   const json = JSON.parse(await readFile(ownerPath, 'utf8'))
+  if (json.component === true) {
+    const stylePath = ownerPath.replace(/\.json$/, '.wxss')
+    if (await exists(stylePath)) { styleQueue.push({ path: stylePath, component: true }) }
+  }
   const componentReferences = [
     ...Object.entries(json.usingComponents ?? {}),
     ...Object.entries(json.componentGenerics ?? {}).flatMap(([name, options]) => {
@@ -150,24 +156,44 @@ for (const component of ['AgentEventRenderer', 'AgentMessage', 'AgentConversatio
   }
 }
 
-const styleQueue = [resolve(outputRoot, 'app.wxss')]
 const visitedStyles = new Set()
+const componentSelectorParser = selectorParser()
+const invalidComponentSelectors = []
 let hasFlexUtility = false
 while (styleQueue.length > 0) {
-  const stylePath = styleQueue.shift()
-  if (!stylePath || visitedStyles.has(stylePath)) { continue }
-  visitedStyles.add(stylePath)
+  const entry = styleQueue.shift()
+  if (!entry || !entry.path) { continue }
+  const { path: stylePath, component } = entry
+  const visitKey = `${component ? 'component' : 'app'}:${stylePath}`
+  if (visitedStyles.has(visitKey)) { continue }
+  visitedStyles.add(visitKey)
   const styles = postcss.parse(await readFile(stylePath, 'utf8'), { from: stylePath })
-  styles.walkRules('.flex', (rule) => {
-    hasFlexUtility ||= rule.nodes.some(node => node.type === 'decl' && node.prop === 'display' && node.value === 'flex')
-  })
+  if (!component) {
+    styles.walkRules('.flex', (rule) => {
+      hasFlexUtility ||= rule.nodes.some(node => node.type === 'decl' && node.prop === 'display' && node.value === 'flex')
+    })
+  }
+  else {
+    styles.walkRules((rule) => {
+      if (rule.parent.type === 'atrule' && /keyframes$/i.test(rule.parent.name)) { return }
+      componentSelectorParser.astSync(rule.selector).walk((node) => {
+        if (node.type !== 'tag' && node.type !== 'id' && node.type !== 'attribute') { return }
+        const { line, column } = rule.source.start
+        invalidComponentSelectors.push(`${stylePath}:${line}:${column} ${rule.selector}`)
+        return false
+      })
+    })
+  }
   styles.walkAtRules(/^(theme|tailwind)$/, (rule) => {
     throw new Error(`Compiled ${stylePath} still contains @${rule.name}; Tailwind CSS was not generated`)
   })
   styles.walkAtRules('import', (rule) => {
     const importedPath = rule.params.match(/^(['"])(.+)\1$/)?.[2]
-    if (importedPath) { styleQueue.push(componentBasePath(stylePath, importedPath)) }
+    if (importedPath) { styleQueue.push({ path: componentBasePath(stylePath, importedPath), component }) }
   })
+}
+if (invalidComponentSelectors.length > 0) {
+  throw new Error(`Compiled component WXSS contains unsupported selectors:\n${invalidComponentSelectors.join('\n')}`)
 }
 if (!hasFlexUtility) {
   throw new Error('Compiled app.wxss is missing the flex layout utility; check the Tailwind CSS entry import')

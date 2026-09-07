@@ -33,6 +33,7 @@
     "@varo/primitives-weapp": "workspace:*",
     "@vitejs/plugin-vue": "^6.0.8",
     "@weapp-vite/miniprogram-automator": "1.2.16",
+    "postcss-selector-parser": "7.1.6",
     "tailwindcss": "^4.3.3",
     "vite": "8.2.2",
     "vue": "^3.5.42",

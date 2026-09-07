@@ -32,7 +32,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  change: [value: number]
+  'change': [value: number]
   'update:value': [value: number]
 }>()
 
@@ -98,7 +98,7 @@ function update(next: number) {
   </view>
 </template>
 
-<style scoped>
+<style>
 .varo-rate__star {
   position: relative;
   display: block;

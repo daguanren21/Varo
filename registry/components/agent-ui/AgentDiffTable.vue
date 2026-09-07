@@ -102,12 +102,6 @@ function changeMarkerClass(change: DiffTableRow['change']) {
   </view>
 </template>
 
-<style scoped>
-.agent-diff-table button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

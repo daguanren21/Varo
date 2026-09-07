@@ -83,11 +83,7 @@ function statusClass(status?: AgentAdvancedStatus) {
   </view>
 </template>
 
-<style scoped>
-.agent-flowchart button::after {
-  border: 0;
-}
-
+<style>
 .agent-flowchart__connector {
   background: linear-gradient(#cbd5e1, #cbd5e1) center / 1px 100% no-repeat;
 }

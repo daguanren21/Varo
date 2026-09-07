@@ -48,7 +48,7 @@ const emit = defineEmits<{
   'update:value': [value: SelectValue | SelectValue[] | undefined]
 }>()
 
-const keyword = shallowRef('')
+const keyword = shallowRef<string | null>(null)
 const open = shallowRef(false)
 const controlled = computed(() => true)
 const normalizedValue = computed<SelectValue | SelectValue[] | undefined>(() => props.value ?? undefined)
@@ -73,29 +73,36 @@ const interactive = computed(() => selectRoot.state.interactive.value)
 const multiple = computed(() => selectRoot.state.multiple.value)
 const selectDisabled = computed(() => selectRoot.state.disabled.value)
 const selectOpen = computed(() => selectRoot.state.open.value)
+const rootClass = computed(() => selectOpen.value ? 'varo-select z-40' : 'varo-select')
 const selectedValues = computed<SelectValue[]>(() => {
   const value = selectRoot.state.value.value
   return Array.isArray(value) ? value : value === undefined ? [] : [value]
 })
 const filteredOptions = computed(() => {
-  const query = keyword.value.trim().toLocaleLowerCase()
+  const query = (keyword.value ?? '').trim().toLocaleLowerCase()
   return query ? props.options.filter(option => option.label.toLocaleLowerCase().includes(query)) : props.options
 })
 const valueClass = computed(() => selectedValues.value.length ? 'varo-select__value' : 'varo-select__placeholder')
 const filterInputValue = computed(() => {
-  if (selectOpen.value) { return keyword.value }
+  if (selectOpen.value && keyword.value !== null) { return keyword.value }
   return selectedValues.value.length ? displayValue.value : ''
 })
+const selectedPreviewStyle = computed(() =>
+  selectOpen.value && keyword.value === null && selectedValues.value.length > 0
+    ? 'color: var(--varo-ui-text-muted, #64748b)'
+    : '',
+)
 const showFilterInput = computed(() => props.filterable && !props.readonly)
+const showClear = computed(() => props.clearable && selectedValues.value.length > 0 && interactive.value && selectOpen.value)
 
 watch(selectOpen, (isOpen) => {
-  if (!isOpen) { keyword.value = '' }
+  if (!isOpen) { keyword.value = null }
 })
 
 watch(
   () => props.readonly,
   (readonly) => {
-    if (readonly) { keyword.value = '' }
+    if (readonly) { keyword.value = null }
   },
 )
 
@@ -139,7 +146,8 @@ function closePanel() {
 </script>
 
 <template>
-  <view class="varo-select" :data-disabled="String(selectDisabled)" :data-readonly="String(props.readonly)" :data-multiple="String(multiple)" :data-open="String(selectOpen)">
+  <view :class="rootClass" :data-disabled="String(selectDisabled)" :data-readonly="String(props.readonly)" :data-multiple="String(multiple)" :data-open="String(selectOpen)">
+    <view v-if="selectOpen" class="varo-select__dismiss fixed inset-0 -z-10" aria-hidden="true" @click="closePanel" />
     <view
       v-if="showFilterInput"
       class="varo-select__trigger"
@@ -149,6 +157,7 @@ function closePanel() {
       <input
         class="varo-select__filter-input"
         :value="filterInputValue"
+        :style="selectedPreviewStyle"
         :placeholder="props.placeholder"
         :disabled="selectDisabled"
         :aria-disabled="selectDisabled"
@@ -161,7 +170,7 @@ function closePanel() {
       >
       <view class="varo-select__suffix">
         <button
-          v-if="props.clearable && selectedValues.length && interactive"
+          v-if="showClear"
           class="varo-select__clear"
           type="button"
           aria-label="Clear selection"
@@ -190,13 +199,13 @@ function closePanel() {
         role="combobox"
         @click.stop="togglePanel"
       >
-        <text :class="valueClass">
+        <text :class="valueClass" :style="selectedPreviewStyle">
           {{ displayValue }}
         </text>
       </button>
       <view class="varo-select__suffix">
         <button
-          v-if="props.clearable && selectedValues.length && interactive"
+          v-if="showClear"
           class="varo-select__clear"
           type="button"
           aria-label="Clear selection"

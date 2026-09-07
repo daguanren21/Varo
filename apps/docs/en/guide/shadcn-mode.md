@@ -70,6 +70,14 @@ export default defineConfig({
 
 Each `styles` source is relative to `srcRoot`. The component dependency on `themes/base` installs `src/styles/varo.css`; `weapp.styles` injects both stylesheet entries into `app.vue` once, so do not import them again in individual pages or components.
 
+### Supplemental Native Component Styles
+
+Prefer Tailwind utilities. Use ordinary `<style>` blocks with component-specific classes for keyframes, complex grids, and other supplemental styles, while retaining `styleIsolation: apply-shared` in component JSON.
+
+Do not use Vue `<style scoped>` in native components: the current build pipeline emits `[data-v-*]` attribute selectors, which component WXSS does not allow. Component styles must also avoid tag, ID, and attribute selectors. Express selected, disabled, and similar visual states with classes precomputed in script instead of selectors such as `[data-selected]`.
+
+The repository's mini-program build recursively checks component WXSS and its stylesheet imports, failing on unsupported selectors. This component-only restriction does not require removing the `button` rules in the global application entry above.
+
 ## Install Components
 
 ```bash

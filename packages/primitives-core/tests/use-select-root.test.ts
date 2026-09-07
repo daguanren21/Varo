@@ -42,6 +42,21 @@ describe('useSelectRoot', () => {
     expect(select.state.value.value).toBe('apple')
   })
 
+  it('closes a single-select reselection without emitting a duplicate value', () => {
+    const onValueChange = vi.fn()
+    const select = useSelectRoot({
+      defaultOpen: true,
+      defaultValue: 'apple',
+      options: ref(options),
+      onValueChange,
+    })
+
+    expect(select.events.select(options[0])).toBe(false)
+    expect(select.state.open.value).toBe(false)
+    expect(select.state.value.value).toBe('apple')
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
   it('keeps readonly single selection browsable without changing its value', () => {
     const onOpenChange = vi.fn()
     const onValueChange = vi.fn()
@@ -99,6 +114,7 @@ describe('useSelectRoot', () => {
   it('keeps disabled options from changing value', () => {
     const onValueChange = vi.fn()
     const select = useSelectRoot({
+      defaultOpen: true,
       options: ref(options),
       onValueChange,
     })
@@ -107,6 +123,7 @@ describe('useSelectRoot', () => {
 
     expect(onValueChange).not.toHaveBeenCalled()
     expect(select.state.value.value).toBeUndefined()
+    expect(select.state.open.value).toBe(true)
   })
 
   it('supports grouped item metadata for reka-style item parts', () => {

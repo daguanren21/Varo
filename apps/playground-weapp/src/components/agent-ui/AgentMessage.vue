@@ -95,7 +95,7 @@ const bubbleClass = computed(() => {
   </view>
 </template>
 
-<style scoped>
+<style>
 .agent-message__plain-text {
   display: block;
   max-width: 100%;

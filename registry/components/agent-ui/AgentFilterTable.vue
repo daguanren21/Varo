@@ -107,12 +107,6 @@ function filterClass(value: string) {
   </view>
 </template>
 
-<style scoped>
-.agent-filter-table button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

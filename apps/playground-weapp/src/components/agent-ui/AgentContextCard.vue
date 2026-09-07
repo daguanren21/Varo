@@ -62,12 +62,6 @@ const rootClass = computed(() =>
   </view>
 </template>
 
-<style scoped>
-.agent-context-card button::after {
-  border: 0;
-}
-</style>
-
 <json lang="jsonc">
 {
   "component": true,

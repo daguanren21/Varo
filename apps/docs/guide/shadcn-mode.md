@@ -70,6 +70,14 @@ export default defineConfig({
 
 `styles` 中的 `source` 相对于 `srcRoot`。组件依赖的 `themes/base` 会把 `src/styles/varo.css` 安装到业务工程；`weapp.styles` 统一把两个样式入口注入 `app.vue`，不要再在各页面或组件中手动重复导入。
 
+### 原生组件的补充样式
+
+优先使用 Tailwind utilities。关键帧、复杂网格等补充样式使用普通 `<style>` 和组件专属 class，并保留组件 JSON 中的 `styleIsolation: apply-shared`。
+
+原生组件不要使用 Vue `<style scoped>`：当前构建链会生成小程序组件 WXSS 不允许的 `[data-v-*]` 属性选择器。组件 WXSS 同样不能使用标签、ID 或属性选择器；选中、禁用等视觉状态应通过脚本中预计算的 class 表达，而不是依赖 `[data-selected]` 等选择器。
+
+仓库的小程序构建会递归检查组件 WXSS 及其样式导入，发现非法选择器时直接失败。这个限制针对组件样式，不要求删除上方应用全局入口中的 `button` 规则。
+
 ## 安装组件
 
 ```bash

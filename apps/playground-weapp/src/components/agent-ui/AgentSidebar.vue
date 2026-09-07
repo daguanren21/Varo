@@ -105,11 +105,7 @@ function select(item: AgentSidebarItem) {
   </view>
 </template>
 
-<style scoped>
-.agent-sidebar button::after {
-  border: 0;
-}
-
+<style>
 @media (prefers-reduced-motion: reduce) {
   .agent-sidebar {
     transition: none;
