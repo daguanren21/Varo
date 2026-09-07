@@ -1,0 +1,10 @@
+{
+  "extends": "./.weapp-vite/tsconfig.app.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "weapp-vite/typed-components": ["./.weapp-vite/typed-components.d.ts"],
+      "@varo-ui/theme/weapp": ["../../packages/theme/src/weapp.ts"]
+    }
+  }
+}
