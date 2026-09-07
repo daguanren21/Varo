@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry'
-import { validateRegistryItem } from '@varo/registry/source'
+import type { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs'
-import { mkdir, open, readFile, rename, rm, rmdir } from './file-system.ts'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { validateRegistryItem } from '@varo/registry/source'
+import { mkdir, open, readFile, rename, rm, rmdir } from './file-system.ts'
+import { fetchRegistryFile, getRemoteRegistryRoot, registryUrl } from './remote-registry.ts'
 
 export type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry'
 
@@ -58,29 +60,35 @@ function normalizeRegistryName(name: string): string {
   return normalized
 }
 
-function resolveRegistryItem(name: string, registryRoot: string): RegistryItem {
+async function resolveRegistryItem(name: string, registryRoot: string, remoteRoot?: URL): Promise<RegistryItem> {
   const normalizedName = normalizeRegistryName(name)
-  const unresolvedPath = resolve(registryRoot, normalizedName, 'registry.json')
-  if (!existsSync(unresolvedPath)) {
+  const unresolvedPath = remoteRoot
+    ? registryUrl(remoteRoot, `${normalizedName}/registry.json`)
+    : resolve(registryRoot, normalizedName, 'registry.json')
+  if (!remoteRoot && !existsSync(unresolvedPath)) {
     throw new Error(`Unknown registry item: ${name}`)
   }
 
-  const canonicalRegistryRoot = realpathSync(registryRoot)
-  const path = realpathSync(unresolvedPath)
-  if (!isWithinRoot(canonicalRegistryRoot, path)) {
-    throw new Error(
-      `Invalid registry item ${normalizedName} at ${unresolvedPath}: manifest is outside the registry root`,
-    )
-  }
-  if (!lstatSync(path).isFile()) {
-    throw new Error(
-      `Invalid registry item ${normalizedName} at ${unresolvedPath}: manifest must be a regular file`,
-    )
+  let path = unresolvedPath
+  if (!remoteRoot) {
+    const canonicalRegistryRoot = realpathSync(registryRoot)
+    path = realpathSync(unresolvedPath)
+    if (!isWithinRoot(canonicalRegistryRoot, path)) {
+      throw new Error(
+        `Invalid registry item ${normalizedName} at ${unresolvedPath}: manifest is outside the registry root`,
+      )
+    }
+    if (!lstatSync(path).isFile()) {
+      throw new Error(
+        `Invalid registry item ${normalizedName} at ${unresolvedPath}: manifest must be a regular file`,
+      )
+    }
   }
 
+  const bytes = remoteRoot ? await fetchRegistryFile(path) : readFileSync(path)
   let input: unknown
   try {
-    input = JSON.parse(readFileSync(path, 'utf8')) as unknown
+    input = JSON.parse(bytes.toString('utf8')) as unknown
   }
   catch (error) {
     const reason = error instanceof Error ? error.message : String(error)
@@ -155,15 +163,16 @@ function resolveProjectTarget(canonicalRoot: string, to: string): string {
   return targetPath
 }
 
-export function resolveRegistryItems(names: string[], options: ResolveRegistryOptions = {}): RegistryInstallPlan {
+export async function resolveRegistryItems(names: string[], options: ResolveRegistryOptions = {}): Promise<RegistryInstallPlan> {
   const registryRoot = options.registryRoot ?? defaultRegistryRoot
+  const remoteRoot = getRemoteRegistryRoot(registryRoot)
   const target = options.target ?? 'weapp'
   const items: RegistryItem[] = []
   const seen = new Set<string>()
   const visiting = new Set<string>()
   const dependencyStack: string[] = []
 
-  function visit(requestName: string) {
+  async function visit(requestName: string) {
     const itemPathName = normalizeRegistryName(requestName)
     if (seen.has(itemPathName)) { return }
     if (visiting.has(itemPathName)) {
@@ -174,12 +183,14 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
 
     visiting.add(itemPathName)
     dependencyStack.push(itemPathName)
-    const item = resolveRegistryItem(requestName, registryRoot)
+    const item = await resolveRegistryItem(requestName, registryRoot, remoteRoot)
     try {
       if (!item.targets.includes(target)) {
         throw new Error(`Registry item ${itemPathName} does not support target ${target}`)
       }
-      [...item.registryDependencies, ...(item.targetRegistryDependencies?.[target] ?? [])].forEach(visit)
+      for (const dependency of [...item.registryDependencies, ...(item.targetRegistryDependencies?.[target] ?? [])]) {
+        await visit(dependency)
+      }
     }
     finally {
       dependencyStack.pop()
@@ -190,7 +201,9 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
     items.push(item)
   }
 
-  names.forEach(visit)
+  for (const name of names) {
+    await visit(name)
+  }
 
   const dependencies = Array.from(
     new Set(items.flatMap(item => [...(item.dependencies ?? []), ...(item.targetDependencies?.[target] ?? [])])),
@@ -204,7 +217,9 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
       .map(file => ({
         ...file,
         item: item.name,
-        sourcePath: resolveRegistrySource(registryRoot, file.from),
+        sourcePath: remoteRoot
+          ? registryUrl(remoteRoot, file.from.slice('registry/'.length))
+          : resolveRegistrySource(registryRoot, file.from),
         targetPath: file.to,
       })),
   )
@@ -212,8 +227,64 @@ export function resolveRegistryItems(names: string[], options: ResolveRegistryOp
   return { dependencies, devDependencies, files, items, target }
 }
 
+async function readRegistryFile(file: PlannedRegistryFile): Promise<Buffer> {
+  return /^https?:\/\//.test(file.sourcePath)
+    ? fetchRegistryFile(file.sourcePath)
+    : readFile(file.sourcePath)
+}
+
+function assertUniqueTargets(targets: { file: RegistryFile, targetIdentity: string }[]) {
+  const seen = new Set<string>()
+  for (const { file, targetIdentity } of targets) {
+    if (seen.has(targetIdentity)) {
+      throw new Error(`Registry items target the same file: ${file.to}`)
+    }
+    seen.add(targetIdentity)
+  }
+}
+
+export interface ShadcnRegistryItem {
+  $schema: string
+  name: string
+  type: 'registry:file'
+  title: string
+  description: string
+  dependencies: string[]
+  devDependencies: string[]
+  registryDependencies: string[]
+  files: { path: string, type: 'registry:file', target: string, content: string }[]
+  meta: { varo: { target: RegistryTarget } }
+}
+
+export async function exportRegistryItem(name: string, options: ResolveRegistryOptions = {}): Promise<ShadcnRegistryItem> {
+  const plan = await resolveRegistryItems([name], options)
+  const item = plan.items[plan.items.length - 1]!
+  assertUniqueTargets(plan.files.map(file => ({
+    file,
+    targetIdentity: file.to.normalize('NFC').toLowerCase().normalize('NFC'),
+  })))
+  return {
+    $schema: 'https://shadcn-vue.com/schema/registry-item.json',
+    name: item.name,
+    // Universal files preserve Varo's destinations without a shadcn style or framework preset.
+    type: 'registry:file',
+    title: item.title,
+    description: item.description,
+    dependencies: plan.dependencies,
+    devDependencies: plan.devDependencies,
+    registryDependencies: [],
+    files: await Promise.all(plan.files.map(async file => ({
+      path: file.to,
+      type: 'registry:file' as const,
+      target: `~/${file.to}`,
+      content: (await readRegistryFile(file)).toString('utf8'),
+    }))),
+    meta: { varo: { target: plan.target } },
+  }
+}
+
 export async function installRegistryItems(names: string[], options: InstallRegistryOptions): Promise<RegistryInstallPlan> {
-  const plan = resolveRegistryItems(names, options)
+  const plan = await resolveRegistryItems(names, options)
   const canonicalProjectRoot = realpathSync(options.projectRoot)
   const plannedTargets = plan.files.map((file) => {
     const targetPath = resolveProjectTarget(canonicalProjectRoot, file.to)
@@ -226,20 +297,14 @@ export async function installRegistryItems(names: string[], options: InstallRegi
       targetPath,
     }
   })
-  const seenTargetIdentities = new Set<string>()
-  for (const plannedTarget of plannedTargets) {
-    const { file, hadOriginal, targetIdentity } = plannedTarget
-    if (seenTargetIdentities.has(targetIdentity)) {
-      throw new Error(`Registry items target the same file: ${file.to}`)
-    }
-    seenTargetIdentities.add(targetIdentity)
-
+  assertUniqueTargets(plannedTargets)
+  for (const { file, hadOriginal } of plannedTargets) {
     if (hadOriginal && !options.force) {
       throw new Error(`Refusing to overwrite existing file: ${file.to}`)
     }
   }
 
-  const sourceBytes = await Promise.all(plannedTargets.map(({ file }) => readFile(file.sourcePath)))
+  const sourceBytes = await Promise.all(plannedTargets.map(({ file }) => readRegistryFile(file)))
   const commitStates = plannedTargets.map((plannedTarget, index) => ({
     ...plannedTarget,
     backupPath: plannedTarget.hadOriginal
@@ -367,6 +432,7 @@ async function runCli(argv: string[]) {
   const [command, ...args] = argv
   let force = false
   let target: RegistryTarget = 'weapp'
+  let registryRoot: string | undefined
   const items: string[] = []
 
   for (let index = 0; index < args.length; index += 1) {
@@ -395,6 +461,15 @@ async function runCli(argv: string[]) {
       continue
     }
 
+    if (arg === '--registry' || arg.startsWith('--registry=')) {
+      const value = arg === '--registry' ? args[++index] : arg.slice('--registry='.length)
+      if (!value || value.startsWith('--')) {
+        throw new Error('Missing registry directory or URL')
+      }
+      registryRoot = value
+      continue
+    }
+
     if (arg.startsWith('--')) {
       throw new Error(`Unknown option: ${arg}`)
     }
@@ -402,17 +477,28 @@ async function runCli(argv: string[]) {
     items.push(arg)
   }
 
-  if (command !== 'add' || items.length === 0) {
+  if ((command !== 'add' && command !== 'export') || items.length === 0) {
     process.stderr.write(
-      'Usage: varo add [--target h5|weapp] [--force] <component|blocks/name> [...items]\n',
+      'Usage: varo add [--registry directory|url] [--target h5|weapp] [--force] <component|blocks/name> [...items]\n'
+      + '       varo export [--registry directory|url] [--target h5|weapp] <component|blocks/name>\n',
     )
     process.exitCode = 1
+    return
+  }
+
+  if (command === 'export') {
+    if (items.length !== 1 || force) {
+      throw new Error('Export requires exactly one registry item and does not accept --force')
+    }
+    const item = await exportRegistryItem(items[0]!, { registryRoot, target })
+    process.stdout.write(`${JSON.stringify(item, null, 2)}\n`)
     return
   }
 
   const plan = await installRegistryItems(items, {
     force,
     projectRoot: process.cwd(),
+    registryRoot,
     target,
   })
   const output = [`Installed ${plan.items.map(item => item.name).join(', ')} for ${plan.target}`]

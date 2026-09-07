@@ -259,7 +259,7 @@ pnpm test
 
 # pack the CLI and install into a temporary fixture
 pnpm --filter @varo-ui/cli build
-pnpm dlx @varo-ui/cli add --target weapp blocks/status-filter
+pnpm dlx @varo-ui/cli add --registry ./registry --target weapp blocks/status-filter
 ```
 
 Confirm:
@@ -269,7 +269,36 @@ Confirm:
 - overwrite requires an explicit force path
 - installed files contain no private domains, tokens, or internal IDs
 
+### Publish an independent registry
+
+No upstream contribution is required. Host the `registry/` directory, including manifests and source for every transitive dependency, on your own static site:
+
+```bash
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target weapp blocks/status-filter
+```
+
+The CLI loads `blocks/status-filter/registry.json` below that URL. Source URLs use `files.from` with the leading `registry/` removed. Both ordinary and target-specific `registryDependencies` resolve within the selected registry; missing dependencies fail rather than falling back to Varo's bundled registry. Use `--registry ./registry` to verify a local directory.
+
+Only install sources you trust. Remote roots use HTTP(S), cannot contain credentials, queries, or fragments, and do not follow redirects. Each response is limited to 10 MiB and 30 seconds. Installs retain `src/` confinement, symlink checks, collision checks, and rollback. npm dependencies are reported, not installed.
+
+### Install through the shadcn-vue ecosystem
+
+Exporting one item inlines its selected target's complete dependency closure and source into a [shadcn-vue registry item](https://www.shadcn-vue.com/docs/registry/registry-item-json):
+
+```bash
+mkdir -p public/r
+pnpm dlx @varo-ui/cli export --registry ./registry --target weapp blocks/status-filter > public/r/status-filter.json
+# Host public/, then run in a consumer configured with components.json and TypeScript path aliases:
+pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
+```
+
+The payload uses `registry:file`, inline `content`, and explicit `~/src/...` destinations. shadcn-vue and tools delegating installation to it can consume this JSON; compatibility was exercised with shadcn-vue 2.8.2. Varo's `add --registry` reads native Varo manifests; exported JSON is installed with shadcn-vue.
+
+Export H5 and Weapp separately. `meta.varo.target` records the target, but external installers do not enforce it or convert Vue to Wevu. Consumers still need matching runtime dependencies and theme setup. Programmatic CLI consumers must use `await resolveRegistryItems(...)`: both local and remote resolution now return a Promise.
+
 ## 10. Contribute to Varo
+
+Upstream contribution is optional, not a prerequisite for publishing a third-party registry.
 
 Privacy and portability checklist:
 
