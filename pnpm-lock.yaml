@@ -298,6 +298,13 @@ importers:
   packages/build: {}
 
   packages/cli:
+    dependencies:
+      '@vue/compiler-sfc':
+        specifier: 3.5.42
+        version: 3.5.42
+      get-tsconfig:
+        specifier: 4.14.3
+        version: 4.14.3
     devDependencies:
       '@varo/registry':
         specifier: workspace:*

@@ -281,6 +281,21 @@ The CLI loads `blocks/status-filter/registry.json` below that URL. Source URLs u
 
 Only install sources you trust. Remote roots use HTTP(S), cannot contain credentials, queries, or fragments, and do not follow redirects. Each response is limited to 10 MiB and 30 seconds. Installs retain `src/` confinement, symlink checks, collision checks, and rollback. npm dependencies are reported, not installed.
 
+### Use standard shadcn-vue manifests directly
+
+Standard `registry.json` catalogs (`name`, `homepage`, `items`) and individual `registry-item.json` definitions are accepted without adding Varo `from/to/targets` fields:
+
+```bash
+pnpm dlx @varo-ui/cli add --registry ./registry.json hello-world
+pnpm dlx @varo-ui/cli add --registry ./hello-world.json hello-world
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/r/registry.json hello-world
+pnpm dlx @varo-ui/cli export --registry ./registry.json hello-world > hello-world.json
+```
+
+`files.path` is relative to the manifest directory; published files with inline `content` need no backing source file. Components, UI, hooks, and libs default to `src/components`, `src/components/ui`, `src/composables`, and `src/lib`, preserving nested component directories. Explicit `target` wins but must stay inside `src/`. Consumer `components.json` and TypeScript/JSONC aliases are honored, and JS/TS/Vue script imports between relocated files are rewritten through AST parsing.
+
+Standard manifests default to H5; Weapp items must declare `meta.varo.target: "weapp"`. Catalog dependencies resolve by name, individual items can load sibling `<name>.json` files, and cross-registry dependencies use explicit HTTP(S) item URLs. Supported file semantics cover `registry:block/component/ui/hook/composable/lib/page/file/theme/style`; `page/file` entries require an explicit target. `registry:base/font`, framework conversion, and npm auto-install are unsupported. `css`, `cssVars`, `tailwind`, `envVars`, and style inheritance through `extends` fail explicitly rather than being silently ignored. There is no implicit public-registry fallback.
+
 ### Install through the shadcn-vue ecosystem
 
 Exporting one item inlines its selected target's complete dependency closure and source into a [shadcn-vue registry item](https://www.shadcn-vue.com/docs/registry/registry-item-json):
@@ -292,7 +307,7 @@ pnpm dlx @varo-ui/cli export --registry ./registry --target weapp blocks/status-
 pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 ```
 
-The payload uses `registry:file`, inline `content`, and explicit `~/src/...` destinations. shadcn-vue and tools delegating installation to it can consume this JSON; compatibility was exercised with shadcn-vue 2.8.2. Varo's `add --registry` reads native Varo manifests; exported JSON is installed with shadcn-vue.
+The payload uses `registry:file`, inline `content`, and explicit `~/src/...` destinations. shadcn-vue and tools delegating installation to it can consume this JSON; compatibility was exercised with shadcn-vue 2.8.2. Varo's `add --registry` can also read the exported single-item JSON directly.
 
 Exports require valid UTF-8 contents; non-UTF-8 bytes fail explicitly instead of being silently replaced. `add` still copies binary assets byte-for-byte. Installation and export both reject destinations where a file is also another file's parent directory, including case-insensitive conflicts.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry/source'
-import type { Buffer } from 'node:buffer'
-import { isUtf8 } from 'node:buffer'
+import type { StandardFileOrigin } from './standard-types.ts'
+import { Buffer, isUtf8 } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url'
 import { validateRegistryItem } from '@varo/registry/source'
 import { mkdir, open, readFile, rename, rm, rmdir } from './file-system.ts'
 import { fetchRegistryFile, getRemoteRegistryRoot, registryUrl } from './remote-registry.ts'
+import { rewriteStandardFileImports } from './standard-files.ts'
+import { resolveStandardRegistryItems } from './standard-registry.ts'
 
 export type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry/source'
 
@@ -17,6 +19,8 @@ export interface PlannedRegistryFile extends RegistryFile {
   item: string
   sourcePath: string
   targetPath: string
+  content?: string
+  standard?: StandardFileOrigin
 }
 
 export interface RegistryInstallPlan {
@@ -31,6 +35,7 @@ export interface RegistryInstallPlan {
 export interface ResolveRegistryOptions {
   registryRoot?: string
   target?: RegistryTarget
+  projectRoot?: string
 }
 
 export interface InstallRegistryOptions extends ResolveRegistryOptions {
@@ -165,6 +170,13 @@ function resolveProjectTarget(canonicalRoot: string, to: string): string {
 }
 
 export async function resolveRegistryItems(names: string[], options: ResolveRegistryOptions = {}): Promise<RegistryInstallPlan> {
+  if (options.registryRoot !== undefined) {
+    const standardPlan = await resolveStandardRegistryItems(names, options)
+    if (standardPlan !== undefined) {
+      return standardPlan
+    }
+  }
+
   const registryRoot = options.registryRoot ?? defaultRegistryRoot
   const remoteRoot = getRemoteRegistryRoot(registryRoot)
   const target = options.target ?? 'weapp'
@@ -216,7 +228,9 @@ export async function resolveRegistryItems(names: string[], options: ResolveRegi
     item.files
       .filter(file => file.target === target)
       .map(file => ({
-        ...file,
+        target: file.target,
+        from: file.from,
+        to: file.to,
         item: item.name,
         sourcePath: remoteRoot
           ? registryUrl(remoteRoot, file.from.slice('registry/'.length))
@@ -229,6 +243,9 @@ export async function resolveRegistryItems(names: string[], options: ResolveRegi
 }
 
 async function readRegistryFile(file: PlannedRegistryFile): Promise<Buffer> {
+  if (file.content !== undefined) {
+    return Buffer.from(file.content)
+  }
   return /^https?:\/\//.test(file.sourcePath)
     ? fetchRegistryFile(file.sourcePath)
     : readFile(file.sourcePath)
@@ -276,6 +293,21 @@ export async function exportRegistryItem(name: string, options: ResolveRegistryO
     file,
     targetIdentity: file.to.normalize('NFC').toLowerCase().normalize('NFC'),
   })))
+  const sourceBytes = await Promise.all(plan.files.map(file => readRegistryFile(file)))
+  const rewrittenBytes = rewriteStandardFileImports(plan.files, sourceBytes)
+  const files = plan.files.map((file, index) => {
+    const bytes = rewrittenBytes[index]!
+    if (!isUtf8(bytes)) {
+      throw new Error(`Cannot export non-UTF-8 registry file: ${file.to}`)
+    }
+    return {
+      path: file.to,
+      type: 'registry:file' as const,
+      target: `~/${file.to}`,
+      content: bytes.toString('utf8'),
+    }
+  })
+
   return {
     $schema: 'https://shadcn-vue.com/schema/registry-item.json',
     name: item.name,
@@ -286,18 +318,7 @@ export async function exportRegistryItem(name: string, options: ResolveRegistryO
     dependencies: plan.dependencies,
     devDependencies: plan.devDependencies,
     registryDependencies: [],
-    files: await Promise.all(plan.files.map(async (file) => {
-      const bytes = await readRegistryFile(file)
-      if (!isUtf8(bytes)) {
-        throw new Error(`Cannot export non-UTF-8 registry file: ${file.to}`)
-      }
-      return {
-        path: file.to,
-        type: 'registry:file' as const,
-        target: `~/${file.to}`,
-        content: bytes.toString('utf8'),
-      }
-    })),
+    files,
     meta: { varo: { target: plan.target } },
   }
 }
@@ -323,7 +344,10 @@ export async function installRegistryItems(names: string[], options: InstallRegi
     }
   }
 
-  const sourceBytes = await Promise.all(plannedTargets.map(({ file }) => readRegistryFile(file)))
+  const sourceBytes = rewriteStandardFileImports(
+    plan.files,
+    await Promise.all(plannedTargets.map(({ file }) => readRegistryFile(file))),
+  )
   const commitStates = plannedTargets.map((plannedTarget, index) => ({
     ...plannedTarget,
     backupPath: plannedTarget.hadOriginal
@@ -450,7 +474,7 @@ export async function installRegistryItems(names: string[], options: InstallRegi
 async function runCli(argv: string[]) {
   const [command, ...args] = argv
   let force = false
-  let target: RegistryTarget = 'weapp'
+  let target: RegistryTarget | undefined
   let registryRoot: string | undefined
   const items: string[] = []
 
@@ -483,7 +507,7 @@ async function runCli(argv: string[]) {
     if (arg === '--registry' || arg.startsWith('--registry=')) {
       const value = arg === '--registry' ? args[++index] : arg.slice('--registry='.length)
       if (!value || value.startsWith('--')) {
-        throw new Error('Missing registry directory or URL')
+        throw new Error('Missing registry path or URL')
       }
       registryRoot = value
       continue
@@ -498,8 +522,8 @@ async function runCli(argv: string[]) {
 
   if ((command !== 'add' && command !== 'export') || items.length === 0) {
     process.stderr.write(
-      'Usage: varo add [--registry directory|url] [--target h5|weapp] [--force] <component|blocks/name> [...items]\n'
-      + '       varo export [--registry directory|url] [--target h5|weapp] <component|blocks/name>\n',
+      'Usage: varo add [--registry directory|json|url] [--target h5|weapp] [--force] <component|blocks/name> [...items]\n'
+      + '       varo export [--registry directory|json|url] [--target h5|weapp] <component|blocks/name>\n',
     )
     process.exitCode = 1
     return
@@ -509,7 +533,7 @@ async function runCli(argv: string[]) {
     if (items.length !== 1 || force) {
       throw new Error('Export requires exactly one registry item and does not accept --force')
     }
-    const item = await exportRegistryItem(items[0]!, { registryRoot, target })
+    const item = await exportRegistryItem(items[0]!, { projectRoot: process.cwd(), registryRoot, target })
     process.stdout.write(`${JSON.stringify(item, null, 2)}\n`)
     return
   }

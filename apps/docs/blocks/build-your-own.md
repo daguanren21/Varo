@@ -281,6 +281,21 @@ CLI 从该地址下的 `blocks/status-filter/registry.json` 读取元数据，�
 
 只安装信任的源码。远端地址只支持 HTTP(S)，不能携带凭证、查询参数或 fragment，不跟随重定向；单个响应上限为 10 MiB、30 秒。安装保留 `src/` 路径限制、符号链接检查、文件冲突检查和失败回滚，不自动安装 npm 依赖。
 
+### 直接使用标准 shadcn-vue 清单
+
+也支持标准 `registry.json` 目录（`name`、`homepage`、`items`）和独立 `registry-item.json`，无需改写成 Varo 的 `from/to/targets`：
+
+```bash
+pnpm dlx @varo-ui/cli add --registry ./registry.json hello-world
+pnpm dlx @varo-ui/cli add --registry ./hello-world.json hello-world
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/r/registry.json hello-world
+pnpm dlx @varo-ui/cli export --registry ./registry.json hello-world > hello-world.json
+```
+
+`files.path` 相对清单目录读取；已包含 `content` 的发布条目无需源文件。组件、UI、hook、lib 默认分别进入 `src/components`、`src/components/ui`、`src/composables`、`src/lib`，保留组件子目录；显式 `target` 优先，但必须留在 `src/`。也会读取消费项目的 `components.json` 和 TypeScript/JSONC 别名配置，并用 AST 重写随文件移动而变化的 JS/TS/Vue script 导入。
+
+标准清单默认 H5；Weapp 条目需明确声明 `meta.varo.target: "weapp"`。目录内依赖按名称解析，独立条目可读取同目录的 `<name>.json`，跨 Registry 依赖使用明确的 HTTP(S) 条目 URL。支持 `registry:block/component/ui/hook/composable/lib/page/file/theme/style` 的文件语义；`page/file` 文件必须提供明确目标。不支持 `registry:base/font`、框架转换或 npm 自动安装；`css`、`cssVars`、`tailwind`、`envVars` 与样式继承 `extends` 会明确报错，不会静默忽略，也不会自动回退到公共 Registry。
+
 ### 供 shadcn-vue 生态安装
 
 导出一个条目时会内联当前 target 的全部传递依赖和源码，生成符合 [shadcn-vue Registry 协议](https://www.shadcn-vue.com/docs/registry/registry-item-json) 的 JSON：
@@ -292,7 +307,7 @@ pnpm dlx @varo-ui/cli export --registry ./registry --target weapp blocks/status-
 pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 ```
 
-输出采用 `registry:file`、内联 `content` 和显式 `~/src/...` 安装路径，可由 shadcn-vue 以及委托它安装的生态工具消费；已用 shadcn-vue 2.8.2 验证。Varo 的 `add --registry` 读取原生 Varo manifest，导出 JSON 则由 shadcn-vue 安装。
+输出采用 `registry:file`、内联 `content` 和显式 `~/src/...` 安装路径，可由 shadcn-vue 以及委托它安装的生态工具消费；已用 shadcn-vue 2.8.2 验证。Varo 的 `add --registry` 也可以直接读取导出的单项 JSON。
 
 导出要求文件内容为有效 UTF-8；非 UTF-8 字节会明确报错，不会被替换字符静默损坏。`add` 仍按原始字节复制二进制资源。安装与导出都会拒绝“同一路径既是文件又是其他文件的父目录”的冲突，包括仅大小写不同的路径冲突。
 
