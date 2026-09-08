@@ -44,6 +44,8 @@ pnpm dlx @varo-ui/cli add --target h5 button select card components/agent-ui
 
 H5 Registry 覆盖 56 个 runtime 组件族；小程序 Registry 覆盖 45 个高共识组件族。copy-owned 小程序 renderer 均以 target-specific 原生 Wevu SFC 交付并直接编译为 WXML/WXSS/JSON；纯 adapter 可重导出目标 primitives，双端只共享类型、纯函数和 headless primitives。
 
+第三方组件无需先合并到 Varo：用 `add --registry <本地目录或 HTTP(S) 地址>` 安装独立 Registry。作者也可以用 `export --target h5|weapp <条目>` 生成供 shadcn-vue 安装的 JSON。完整目录约定、发布命令和运行时边界见 [独立发布第三方 Registry](/blocks/build-your-own#独立发布第三方-registry)。
+
 ## Agent 流式接入
 
 `@varo-ui/ai` 不绑定模型厂商。服务端只需输出 `message.start`、`text.delta`、`reasoning.*`、`tool.*`、`approval.*`、`message.end` 与 `done` 事件；H5 可接 Fetch/SSE，小程序可把 `wx.request({ enableChunked: true })` 的分块交给 `createAgentSseEventSource()`。

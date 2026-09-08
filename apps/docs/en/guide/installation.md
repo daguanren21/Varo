@@ -44,6 +44,8 @@ Components land in `src/components/ui/*`; blocks land in `src/components/blocks/
 
 The H5 registry covers all 56 runtime component families. The mini-program registry covers 45 high-consensus families. Copy-owned mini-program renderers ship as target-specific native Wevu SFCs that compile directly to WXML/WXSS/JSON; pure adapters may re-export target primitives, and only types, pure functions, and headless primitives are shared across targets.
 
+Third-party components do not need to be merged upstream: use `add --registry <local-directory-or-http(s)-url>` to install an independent registry. Authors can also use `export --target h5|weapp <item>` to generate JSON for shadcn-vue. See [Publish an independent registry](/en/blocks/build-your-own#publish-an-independent-registry) for layouts, publishing commands, and runtime boundaries.
+
 ## Agent streaming
 
 `@varo-ui/ai` is model-provider neutral. A backend emits `message.start`, `text.delta`, `reasoning.*`, `tool.*`, `approval.*`, `message.end`, and `done` events. H5 can connect Fetch/SSE; a mini program can feed `wx.request({ enableChunked: true })` chunks into `createAgentSseEventSource()`.
