@@ -6,6 +6,11 @@
   dir: packages/agent-core
   intents:
     - modern-bottles-smile
+"@varo-ui/ai@2.0.0":
+  dir: packages/agent-core
+  intents:
+    - agent-workspace
+    - safe-streams-install
 "@varo-ui/cli@1.0.0":
   dir: packages/cli
   intents:
@@ -22,6 +27,29 @@
   dir: packages/cli
   intents:
     - warm-themes-flow
+"@varo-ui/cli@2.0.0":
+  dir: packages/cli
+  intents:
+    - agent-workspace
+    - brave-robots-chat
+    - bright-forms-unify
+    - bright-navigation-speaks
+    - calm-demos-fit
+    - calm-layouts-flow
+    - filterable-select-field
+    - fresh-forms-bloom
+    - long-ads-enjoy
+    - native-wevu-renderers
+    - neat-cities-rise
+    - purple-shirts-lead
+    - quiet-maps-fit
+    - safe-streams-install
+    - steady-registry-themes
+    - text-button-variant
+    - upset-pugs-reply
+    - wevu-seven-components
+    - wise-sticky-measures
+    - yummy-adults-hope
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -34,6 +62,25 @@
   dir: packages/ui-h5
   intents:
     - upset-bees-invite
+"@varo-ui/h5@2.0.0":
+  dir: packages/ui-h5
+  intents:
+    - bright-navigation-speaks
+    - calm-demos-fit
+    - calm-layouts-flow
+    - famous-pumas-slide
+    - fancy-comics-sin
+    - filterable-select-field
+    - flat-weeks-juggle
+    - fresh-forms-bloom
+    - long-ads-enjoy
+    - neat-cities-rise
+    - purple-shirts-lead
+    - quiet-maps-fit
+    - steady-registry-themes
+    - text-button-variant
+    - upset-pugs-reply
+    - wise-sticky-measures
 "@varo-ui/headless@1.0.0":
   dir: packages/primitives-core
   intents:
@@ -46,6 +93,12 @@
   dir: packages/primitives-core
   intents:
     - upset-bees-invite
+"@varo-ui/headless@2.0.0":
+  dir: packages/primitives-core
+  intents:
+    - purple-shirts-lead
+    - steady-registry-themes
+    - text-button-variant
 "@varo-ui/theme@1.0.0":
   dir: packages/theme
   intents:
@@ -62,6 +115,12 @@
   dir: packages/theme
   intents:
     - warm-themes-flow
+"@varo-ui/theme@2.0.0":
+  dir: packages/theme
+  intents:
+    - flat-weeks-juggle
+    - steady-registry-themes
+    - text-button-variant
 "@varo-ui/weapp@1.0.0":
   dir: packages/ui-weapp
   intents:
@@ -75,3 +134,23 @@
   intents:
     - calm-trees-resolve
     - upset-bees-invite
+"@varo-ui/weapp@2.0.0":
+  dir: packages/ui-weapp
+  intents:
+    - bright-navigation-speaks
+    - calm-demos-fit
+    - calm-layouts-flow
+    - famous-pumas-slide
+    - fancy-comics-sin
+    - filterable-select-field
+    - flat-weeks-juggle
+    - fresh-forms-bloom
+    - long-ads-enjoy
+    - neat-cities-rise
+    - purple-shirts-lead
+    - quiet-maps-fit
+    - steady-registry-themes
+    - text-button-variant
+    - upset-pugs-reply
+    - wevu-seven-components
+    - wise-sticky-measures
