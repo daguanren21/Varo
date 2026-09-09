@@ -259,7 +259,7 @@ pnpm test
 
 # 打包 CLI 后在临时目录验证安装
 pnpm --filter @varo-ui/cli build
-pnpm dlx @varo-ui/cli add --target weapp blocks/status-filter
+pnpm dlx @varo-ui/cli add --registry ./registry --target weapp blocks/status-filter
 ```
 
 确认：
@@ -269,7 +269,53 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/status-filter
 - 需要覆盖时使用显式 force 流程
 - 安装结果不带私有域名、token、内部任务号
 
+### 独立发布第三方 Registry
+
+不必先贡献回 Varo。把 `registry/` 目录及其所有传递依赖的 manifest 和源码部署到自己的静态站点，即可从业务项目安装：
+
+```bash
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target weapp blocks/status-filter
+```
+
+CLI 从该地址下的 `blocks/status-filter/registry.json` 读取元数据，按 `files.from` 去掉 `registry/` 前缀后的路径下载源码。普通和 target-specific 的 `registryDependencies` 都在同一个 Registry 内解析；缺失依赖会报错，不会回退到官方 Registry。也可以用 `--registry ./registry` 验证本地目录。
+
+只安装信任的源码。远端地址只支持 HTTP(S)，不能携带凭证、查询参数或 fragment，不跟随重定向；单个响应上限为 10 MiB、30 秒。安装保留 `src/` 路径限制、符号链接检查、文件冲突检查和失败回滚，不自动安装 npm 依赖。
+
+### 直接使用标准 shadcn-vue 清单
+
+也支持标准 `registry.json` 目录（`name`、`homepage`、`items`）和独立 `registry-item.json`，无需改写成 Varo 的 `from/to/targets`：
+
+```bash
+pnpm dlx @varo-ui/cli add --registry ./registry.json hello-world
+pnpm dlx @varo-ui/cli add --registry ./hello-world.json hello-world
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/r/registry.json hello-world
+pnpm dlx @varo-ui/cli export --registry ./registry.json hello-world > hello-world.json
+```
+
+`files.path` 相对清单目录读取；已包含 `content` 的发布条目无需源文件。组件、UI、hook、lib 默认分别进入 `src/components`、`src/components/ui`、`src/composables`、`src/lib`，保留组件子目录；显式 `target` 优先，但必须留在 `src/`。也会读取消费项目的 `components.json` 和 TypeScript/JSONC 别名配置，并用 AST 重写随文件移动而变化的 JS/TS/Vue script 导入。
+
+标准清单默认 H5；Weapp 条目需明确声明 `meta.varo.target: "weapp"`。目录内依赖按名称解析，独立条目可读取同目录的 `<name>.json`，跨 Registry 依赖使用明确的 HTTP(S) 条目 URL。支持 `registry:block/component/ui/hook/composable/lib/page/file/theme/style` 的文件语义；`page/file` 文件必须提供明确目标。不支持 `registry:base/font`、框架转换或 npm 自动安装；`css`、`cssVars`、`tailwind`、`envVars` 与样式继承 `extends` 会明确报错，不会静默忽略，也不会自动回退到公共 Registry。
+
+### 供 shadcn-vue 生态安装
+
+导出一个条目时会内联当前 target 的全部传递依赖和源码，生成符合 [shadcn-vue Registry 协议](https://www.shadcn-vue.com/docs/registry/registry-item-json) 的 JSON：
+
+```bash
+mkdir -p public/r
+pnpm dlx @varo-ui/cli export --registry ./registry --target weapp blocks/status-filter > public/r/status-filter.json
+# 部署 public/ 后，在已配置 components.json 和 TypeScript 路径别名的消费项目执行：
+pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
+```
+
+输出采用 `registry:file`、内联 `content` 和显式 `~/src/...` 安装路径，可由 shadcn-vue 以及委托它安装的生态工具消费；已用 shadcn-vue 2.8.2 验证。Varo 的 `add --registry` 也可以直接读取导出的单项 JSON。
+
+导出要求文件内容为有效 UTF-8；非 UTF-8 字节会明确报错，不会被替换字符静默损坏。`add` 仍按原始字节复制二进制资源。安装与导出都会拒绝“同一路径既是文件又是其他文件的父目录”的冲突，包括仅大小写不同的路径冲突。
+
+H5 与 Weapp 必须分别导出。`meta.varo.target` 记录目标，但第三方安装器不会替你检查运行时，也不会把 Vue 转成 Wevu；消费工程仍需安装匹配的依赖并接入主题。CLI API 调用方须使用 `await resolveRegistryItems(...)`，现在本地与远端解析均返回 Promise。
+
 ## 10. 贡献回 Varo
+
+这是可选的上游贡献流程，不是发布第三方 Registry 的前置条件。
 
 提交前过一遍隐私与可移植清单：
 

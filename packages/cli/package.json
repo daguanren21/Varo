@@ -50,6 +50,10 @@
     "test": "vitest run --passWithNoTests",
     "test:e2e": "echo cli has no e2e"
   },
+  "dependencies": {
+    "@vue/compiler-sfc": "3.5.42",
+    "get-tsconfig": "4.14.3"
+  },
   "devDependencies": {
     "@varo/registry": "workspace:*"
   }

@@ -12,7 +12,7 @@
     "postinstall": "wv prepare -p weapp",
     "prepare:weapp": "wv prepare -p weapp",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "vue-tsc --noEmit -p .weapp-vite/tsconfig.app.json",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.typecheck.json",
     "verify:migration": "node scripts/verify-migration.mjs"
   },
   "dependencies": {

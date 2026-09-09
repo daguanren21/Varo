@@ -121,8 +121,8 @@ function writeRegistryItem(
 }
 
 describe('varo add targets', () => {
-  it('resolves H5 dependencies and files before the requested component', () => {
-    const plan = resolveRegistryItems(['button'], { registryRoot, target: 'h5' })
+  it('resolves H5 dependencies and files before the requested component', async () => {
+    const plan = await resolveRegistryItems(['button'], { registryRoot, target: 'h5' })
 
     expect(plan.target).toBe('h5')
     expect(plan.items.map(item => item.name)).toEqual(['base', 'cn', 'primitives', 'button'])
@@ -138,8 +138,8 @@ describe('varo add targets', () => {
     expect(plan.dependencies).not.toContain('@weapp-tailwindcss/merge')
   })
 
-  it('resolves mini-program-specific runtime and merge packages by default', () => {
-    const plan = resolveRegistryItems(['button'], { registryRoot })
+  it('resolves mini-program-specific runtime and merge packages by default', async () => {
+    const plan = await resolveRegistryItems(['button'], { registryRoot })
 
     expect(plan.target).toBe('weapp')
     expect(plan.dependencies).toEqual(
@@ -156,18 +156,18 @@ describe('varo add targets', () => {
     expect(plan.dependencies).not.toContain('vue')
   })
 
-  it('resolves target-specific registry dependencies without copying H5 helpers into weapp', () => {
-    const h5 = resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
-    const weapp = resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp' })
+  it('resolves target-specific registry dependencies without copying H5 helpers into weapp', async () => {
+    const h5 = await resolveRegistryItems(['checkbox'], { registryRoot, target: 'h5' })
+    const weapp = await resolveRegistryItems(['checkbox'], { registryRoot, target: 'weapp' })
 
     expect(h5.items.map(item => item.name)).toEqual(['base', 'icon', 'primitives', 'selection', 'checkbox'])
     expect(weapp.items.map(item => item.name)).toEqual(['base', 'cn', 'icon', 'primitives', 'checkbox'])
     expect(weapp.files.map(file => file.to)).toContain('src/components/ui/v-checkbox.vue')
     expect(weapp.files.map(file => file.to)).not.toContain('src/components/ui/selection.ts')
   })
-  it('installs one shadcn Form entry with target-owned renderers', () => {
-    const h5 = resolveRegistryItems(['form'], { registryRoot, target: 'h5' })
-    const weapp = resolveRegistryItems(['form'], { registryRoot, target: 'weapp' })
+  it('installs one shadcn Form entry with target-owned renderers', async () => {
+    const h5 = await resolveRegistryItems(['form'], { registryRoot, target: 'h5' })
+    const weapp = await resolveRegistryItems(['form'], { registryRoot, target: 'weapp' })
 
     expect(h5.files.map(file => file.to)).toEqual([
       'src/styles/varo.css',
@@ -257,7 +257,7 @@ describe('varo add targets', () => {
     expect(existsSync(join(projectRoot, 'src/components/agent-ui/AgentShell.vue'))).toBe(true)
   })
 
-  it('reports unsupported CLI and registry targets clearly', () => {
+  it('reports unsupported CLI and registry targets clearly', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const binPath = join(projectRoot, 'varo-cli.ts')
     symlinkSync(resolve(workspaceRoot, 'packages/cli/src/index.ts'), binPath)
@@ -279,15 +279,15 @@ describe('varo add targets', () => {
     ).toThrow(/Unsupported registry target: weapp-vite/)
 
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/weapp-only', { targets: ['weapp'] })
-    expect(() => resolveRegistryItems(['weapp-only'], { registryRoot: fixtureRegistry, target: 'h5' })).toThrow(
+    await expect(resolveRegistryItems(['weapp-only'], { registryRoot: fixtureRegistry, target: 'h5' })).rejects.toThrow(
       'Registry item components/weapp-only does not support target h5',
     )
   })
 })
 
 describe('varo add safety', () => {
-  it('reports unknown registry items with the original request name', () => {
-    expect(() => resolveRegistryItems(['components/not-found'], { registryRoot })).toThrow(
+  it('reports unknown registry items with the original request name', async () => {
+    await expect(resolveRegistryItems(['components/not-found'], { registryRoot })).rejects.toThrow(
       'Unknown registry item: components/not-found',
     )
   })
@@ -324,10 +324,10 @@ describe('varo add safety', () => {
     const consumerRoot = join(projectRoot, 'consumer')
     mkdirSync(consumerRoot)
 
-    expect(() => resolveRegistryItems(['blocks/../../outside'], { registryRoot: fixtureRegistry })).toThrow(
+    await expect(resolveRegistryItems(['blocks/../../outside'], { registryRoot: fixtureRegistry })).rejects.toThrow(
       'Invalid registry item name: blocks/../../outside',
     )
-    expect(() => resolveRegistryItems(['source-escape'], { registryRoot: fixtureRegistry })).toThrow(
+    await expect(resolveRegistryItems(['source-escape'], { registryRoot: fixtureRegistry })).rejects.toThrow(
       'file.from must start with registry/: ../outside.ts',
     )
     await expect(
@@ -336,7 +336,7 @@ describe('varo add safety', () => {
     expect(existsSync(join(projectRoot, 'outside.ts'))).toBe(false)
   })
 
-  it('reports cyclic registry dependencies with their chain', () => {
+  it('reports cyclic registry dependencies with their chain', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', {
       registryDependencies: ['components/beta'],
@@ -345,7 +345,7 @@ describe('varo add safety', () => {
       registryDependencies: ['components/alpha'],
     })
 
-    expect(() => resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).toThrow(
+    await expect(resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).rejects.toThrow(
       'Cyclic registry dependency: components/alpha -> components/beta -> components/alpha',
     )
   })
@@ -427,11 +427,11 @@ describe('varo add safety', () => {
     'src/components/ui /alpha.ts',
     'src/components/ui/victim.ts:stream',
     'src/components/ui/CON.txt',
-  ])('rejects non-portable target path %s', (target) => {
+  ])('rejects non-portable target path %s', async (target) => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/alpha', { to: target })
 
-    expect(() => resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).toThrow(
+    await expect(resolveRegistryItems(['alpha'], { registryRoot: fixtureRegistry })).rejects.toThrow(
       `file.to must use portable path segments: ${target}`,
     )
   })
@@ -465,7 +465,7 @@ describe('varo add safety', () => {
     expect(readFileSync(packagePath, 'utf8')).toBe('{ "name": "consumer" }\n')
   })
 
-  it('validates malformed custom registry manifests with item and path context', () => {
+  it('validates malformed custom registry manifests with item and path context', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/malformed')
     writeFileSync(
@@ -473,12 +473,12 @@ describe('varo add safety', () => {
       JSON.stringify({ files: 'malformed', name: 'malformed' }),
     )
 
-    expect(() => resolveRegistryItems(['malformed'], { registryRoot: fixtureRegistry })).toThrow(
+    await expect(resolveRegistryItems(['malformed'], { registryRoot: fixtureRegistry })).rejects.toThrow(
       /Invalid registry item components\/malformed at .*registry\.json: .*files must be an array/,
     )
   })
 
-  it('rejects registry manifests that resolve outside the registry root before parsing them', () => {
+  it('rejects registry manifests that resolve outside the registry root before parsing them', async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-'))
     const fixtureRegistry = writeRegistryItem(projectRoot, 'components/escape')
     const outsideManifest = join(projectRoot, 'outside-registry.json')
@@ -487,7 +487,7 @@ describe('varo add safety', () => {
     rmSync(manifestPath)
     symlinkSync(outsideManifest, manifestPath)
 
-    expect(() => resolveRegistryItems(['escape'], { registryRoot: fixtureRegistry })).toThrow(
+    await expect(resolveRegistryItems(['escape'], { registryRoot: fixtureRegistry })).rejects.toThrow(
       `Invalid registry item components/escape at ${manifestPath}: manifest is outside the registry root`,
     )
   })
