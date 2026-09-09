@@ -116,23 +116,25 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
           @pin="emit('pinVersion', $event)"
           @select="emit('selectVersion', $event)"
         />
-        <AgentConversation :messages="messages" />
-        <AgentRetrievalProgress
-          :items="retrieval"
-          @retry="emit('retryRetrieval', $event)"
-        />
-        <AgentTaskRunner
-          :busy="busy"
-          :tasks="tasks"
-          @approve="emit('approveTask', $event)"
-          @cancel="emit('cancelTask')"
-          @retry="emit('retryTask', $event)"
-        />
-        <AgentSourceReceipt
-          :items="receipts"
-          @connect="emit('connectReceipt', $event)"
-          @open="emit('openReceipt', $event)"
-        />
+        <slot name="execution">
+          <AgentConversation :messages="messages" />
+          <AgentRetrievalProgress
+            :items="retrieval"
+            @retry="emit('retryRetrieval', $event)"
+          />
+          <AgentTaskRunner
+            :busy="busy"
+            :tasks="tasks"
+            @approve="emit('approveTask', $event)"
+            @cancel="emit('cancelTask')"
+            @retry="emit('retryTask', $event)"
+          />
+          <AgentSourceReceipt
+            :items="receipts"
+            @connect="emit('connectReceipt', $event)"
+            @open="emit('openReceipt', $event)"
+          />
+        </slot>
       </div>
 
       <footer class="border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-3">

@@ -64,18 +64,19 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 
 ## 上下文、引用与产物
 
-| 组件                                       | 用途                       |
-| ------------------------------------------ | -------------------------- |
-| [AgentArtifact](./artifact)                | 代码、文档、文件和图片产物 |
-| [AgentAttachmentList](./attachments)       | 附件预览与移除             |
-| [AgentSourceList](./sources)               | 来源列表                   |
-| [AgentCitations](./citations)              | 可折叠引用集合             |
-| `AgentRetrievalProgress`                   | 可见检索队列与失败重试     |
-| `AgentSourceReceipt`                       | 回答完成后的来源读取回执   |
-| [AgentContextCard](./context-card)         | 检索知识块                 |
-| [AgentCodeBlock](./code-block)             | 独立流式代码块             |
-| [AgentFileDiff](./file-diff)               | 文件级差异                 |
-| [AgentImageGeneration](./image-generation) | 图片生成生命周期           |
+| 组件                                       | 用途                                 |
+| ------------------------------------------ | ------------------------------------ |
+| [AgentArtifact](./artifact)                | 代码、文档、文件和图片产物           |
+| [AgentAttachmentList](./attachments)       | 附件预览与移除                       |
+| [AgentSourceList](./sources)               | 来源列表                             |
+| [AgentCitations](./citations)              | 可折叠引用集合                       |
+| `AgentRetrievalProgress`                   | 可见检索队列与失败重试               |
+| `AgentRagPipeline`                         | 五阶段 RAG、上下文组装与流式引用联动 |
+| `AgentSourceReceipt`                       | 回答完成后的来源读取回执             |
+| [AgentContextCard](./context-card)         | 检索知识块                           |
+| [AgentCodeBlock](./code-block)             | 独立流式代码块                       |
+| [AgentFileDiff](./file-diff)               | 文件级差异                           |
+| [AgentImageGeneration](./image-generation) | 图片生成生命周期                     |
 
 ## 结构化数据与工作区
 
@@ -97,12 +98,28 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 | ------------------------ | ------------------------------------- | ---------------------------------------------------- |
 | `AgentComposerScope`     | `sources`、`usagePercent`、`disabled` | `toggle(source, enabled)`、`connect(source)`         |
 | `AgentRetrievalProgress` | `items`                               | `retry(item)`                                        |
+| `AgentRagPipeline`       | `query`、`steps`、`sources`、`answer` | `run`、`cancel`、`selectSource(source)`              |
 | `AgentSourceReceipt`     | `items`、`summary`                    | `open(item)`、`connect(item)`                        |
 | `AgentTaskRunner`        | `tasks`、`busy`                       | `retry(task)`、`approve(task)`、`cancel`             |
 | `AgentThreadVersions`    | `versions`、`activeId`                | `select(version)`、`branch(version)`、`pin(version)` |
 | `AgentShell`             | `placement`、`open`、`title`          | `close`                                              |
 
 `createAgentThreadController()` 在 `@varo-ui/ai` 中拥有不可变、无环的版本图；组件只渲染 snapshot 并转发决策。`AgentWorkspace` 使用 `toggleSource`、`retryRetrieval`、`retryTask`、`selectVersion` 等 qualified events，避免不同 surface 的 `retry` / `connect` 冲突。
+
+### RAG 流程与动效
+
+`AgentRagPipeline` 随 `components/agent-ui` 安装。它只投影受控快照，不执行检索、模型请求或来源授权。业务层按实际进度替换输入：
+
+- `steps`：固定 `query`、`embed`、`retrieve`、`assemble`、`generate` 五个阶段；状态为 `waiting`、`running`、`completed` 或 `failed`。可提供 `detail` 与 `durationMs`。仍有阶段运行时，整体保持运行状态并允许停止；没有运行阶段后再呈现失败结果。
+- `sources`：稳定 `id` 与 `title`，可附带 `excerpt`、0–1 的 `score`、上下文 `tokens` 和 `blue/violet/rose` 色调。仅当所有来源都有有限正数 `tokens` 时按权重分配片段，否则等分；片段保留可读的最小宽度。
+- `answer`：带稳定 `id` 的文本片段 `{ type: 'text', text }` 或引用 `{ type: 'citation', sourceId }`。引用通过来源 ID 关联，不依赖数组位置。删除或更换引用映射会清理已失效的来源反馈，不重播未变化的引用。
+- `title`、`elapsedMs`、`className` 控制标题、总耗时与容器；`reducedMotion` 关闭非必要动效。
+
+新引用出现时，对应来源与上下文片段短暂高亮；H5 的悬停、键盘聚焦及点击均能联动来源，小程序使用点击选择。来源缺失时，H5 显示禁用引用按钮，小程序显示不可交互的 `[?]` 文本，并通过可访问标签说明来源不可用；正文仍可阅读。停止、重播与卸载会清理演示定时器；重播沿用当前查询，组件的业务状态不等待动画结束。
+
+H5 自动遵循 `prefers-reduced-motion`，小程序同时提供 `reducedMotion` 属性与媒体查询样式。动效使用主题中的 `--varo-agent-motion-*` 变量以及 transform/opacity，不引入动画运行时依赖。
+
+`AgentWorkspace` 的 `execution` 插槽可放入此组件，替换默认的对话、检索、任务与回执区域；来源授权、版本与输入区仍由 Workspace 组合。Weapp 的 `weapp-vite` 配置应设置 `weapp.vue.template.scopedSlotsRequireProps: true`，让没有插槽参数的 `#execution` 保持普通命名插槽，避免 7.0.4 的泛型插槽自动 `setData.pick` 遗漏父级状态。两端 playground 提供可取消、重播的演示数据流程。
 
 ## 完整 Block
 

@@ -1275,4 +1275,13 @@ export const AgentEventRenderer = defineComponent({
 
 export { AgentMarkdown }
 export * from './advanced'
+export { default as AgentRagPipeline } from './AgentRagPipeline.vue'
+export type {
+  AgentRagAnswerPart,
+  AgentRagPipelineProps,
+  AgentRagSource,
+  AgentRagSourceTone,
+  AgentRagStageId,
+  AgentRagStep,
+} from './rag-pipeline'
 export type { AgentStreamSnapshot, AgentStreamStatus, AgentToolPart } from '@varo-ui/ai'
