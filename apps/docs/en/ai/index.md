@@ -64,18 +64,19 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 
 ## Context, Citations, and Artifacts
 
-| Component                                  | Responsibility                                |
-| ------------------------------------------ | --------------------------------------------- |
-| [AgentArtifact](./artifact)                | Code, document, file, and image artifacts     |
-| [AgentAttachmentList](./attachments)       | Attachment preview and removal                |
-| [AgentSourceList](./sources)               | Source list                                   |
-| [AgentCitations](./citations)              | Collapsible citations                         |
-| `AgentRetrievalProgress`                   | Visible retrieval queue and failed-item retry |
-| `AgentSourceReceipt`                       | Post-answer source read receipt               |
-| [AgentContextCard](./context-card)         | Retrieved knowledge chunks                    |
-| [AgentCodeBlock](./code-block)             | Standalone streaming code block               |
-| [AgentFileDiff](./file-diff)               | File-level diff                               |
-| [AgentImageGeneration](./image-generation) | Image generation lifecycle                    |
+| Component                                  | Responsibility                                                   |
+| ------------------------------------------ | ---------------------------------------------------------------- |
+| [AgentArtifact](./artifact)                | Code, document, file, and image artifacts                        |
+| [AgentAttachmentList](./attachments)       | Attachment preview and removal                                   |
+| [AgentSourceList](./sources)               | Source list                                                      |
+| [AgentCitations](./citations)              | Collapsible citations                                            |
+| `AgentRetrievalProgress`                   | Visible retrieval queue and failed-item retry                    |
+| `AgentRagPipeline`                         | Five-stage RAG, context assembly, and linked streaming citations |
+| `AgentSourceReceipt`                       | Post-answer source read receipt                                  |
+| [AgentContextCard](./context-card)         | Retrieved knowledge chunks                                       |
+| [AgentCodeBlock](./code-block)             | Standalone streaming code block                                  |
+| [AgentFileDiff](./file-diff)               | File-level diff                                                  |
+| [AgentImageGeneration](./image-generation) | Image generation lifecycle                                       |
 
 ## Structured Data and Workspace
 
@@ -97,12 +98,28 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 | ------------------------ | ------------------------------------- | ---------------------------------------------------- |
 | `AgentComposerScope`     | `sources`, `usagePercent`, `disabled` | `toggle(source, enabled)`, `connect(source)`         |
 | `AgentRetrievalProgress` | `items`                               | `retry(item)`                                        |
+| `AgentRagPipeline`       | `query`, `steps`, `sources`, `answer` | `run`, `cancel`, `selectSource(source)`              |
 | `AgentSourceReceipt`     | `items`, `summary`                    | `open(item)`, `connect(item)`                        |
 | `AgentTaskRunner`        | `tasks`, `busy`                       | `retry(task)`, `approve(task)`, `cancel`             |
 | `AgentThreadVersions`    | `versions`, `activeId`                | `select(version)`, `branch(version)`, `pin(version)` |
 | `AgentShell`             | `placement`, `open`, `title`          | `close`                                              |
 
 `createAgentThreadController()` in `@varo-ui/ai` owns the immutable acyclic version graph; components only render its snapshot and forward decisions. `AgentWorkspace` exposes qualified events such as `toggleSource`, `retryRetrieval`, `retryTask`, and `selectVersion` so unrelated `retry` and `connect` surfaces never collide.
+
+### RAG Pipeline and Motion
+
+`AgentRagPipeline` is installed with `components/agent-ui`. It projects controlled snapshots; it does not perform retrieval, model requests, or source authorization. Replace its inputs as real work progresses:
+
+- `steps`: the fixed `query`, `embed`, `retrieve`, `assemble`, and `generate` stages, each with `waiting`, `running`, `completed`, or `failed` status. Optional `detail` and `durationMs` describe progress. While any stage is running, the overall flow remains active and cancellable; failure takes precedence once no stage remains active.
+- `sources`: stable `id` and `title`, with optional `excerpt`, a 0–1 `score`, context `tokens`, and a `blue/violet/rose` tone. Segments use token weights only when every source has a finite positive token count; otherwise they share space equally and retain a readable minimum width.
+- `answer`: text parts `{ type: 'text', text }` or citations `{ type: 'citation', sourceId }`, each carrying a stable `id`. Citations resolve by source ID, not array position. Removing or remapping citations clears obsolete source feedback without replaying unchanged citations.
+- `title`, `elapsedMs`, and `className` control the heading, total elapsed time, and container; `reducedMotion` disables nonessential motion.
+
+A newly arriving citation briefly highlights its source and context segment. H5 links pointer hover, keyboard focus, and selection; Weapp uses tap selection. Missing sources produce a disabled citation button on H5 and noninteractive `[?]` text on Weapp, with an accessible label describing the unavailable source; readable answer text is preserved. Cancellation, replay, and unmount clean up demo timers. Replay retains the current query, and business state never waits for an animation to finish.
+
+H5 follows `prefers-reduced-motion` automatically. Weapp provides the `reducedMotion` prop and media-query styles. Motion uses theme `--varo-agent-motion-*` variables with transform/opacity and adds no animation runtime dependency.
+
+Place the component in the `AgentWorkspace` `execution` slot to replace its default conversation, retrieval, task, and receipt region while retaining source permissions, thread versions, and input. In Weapp, set `weapp.vue.template.scopedSlotsRequireProps: true` in the `weapp-vite` configuration so a `#execution` slot without scope parameters remains an ordinary named slot. This avoids version 7.0.4's generic-slot automatic `setData.pick` omitting parent state. Both playgrounds provide a cancellable, replayable demo-data flow.
 
 ## Complete Block
 

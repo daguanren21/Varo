@@ -145,7 +145,8 @@ function lockTouchMove() {
   white-space: nowrap;
 }
 
-.agent-shell__close {
+/* Native button selectors otherwise restore auto margins on both sides. */
+.agent-shell__close.agent-shell__close {
   position: relative;
   box-sizing: border-box;
   display: grid;

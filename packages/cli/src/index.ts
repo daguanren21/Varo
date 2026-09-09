@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-import type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry'
-import { validateRegistryItem } from '@varo/registry/source'
+import type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry/source'
 import { randomUUID } from 'node:crypto'
 import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs'
-import { mkdir, open, readFile, rename, rm, rmdir } from './file-system.ts'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import { validateRegistryItem } from '@varo/registry/source'
+import { mkdir, open, readFile, rename, rm, rmdir } from './file-system.ts'
 
-export type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry'
+export type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry/source'
 
 export interface PlannedRegistryFile extends RegistryFile {
   item: string

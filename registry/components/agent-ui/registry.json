@@ -77,6 +77,36 @@
     },
     {
       "target": "h5",
+      "from": "registry/components/agent-ui/h5/AgentRagPipeline.vue",
+      "to": "src/components/agent-ui/AgentRagPipeline.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/components/agent-ui/rag-pipeline.ts",
+      "to": "src/components/agent-ui/rag-pipeline.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/components/agent-ui/rag-icons.ts",
+      "to": "src/components/agent-ui/rag-icons.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/AgentRagPipeline.vue",
+      "to": "src/components/agent-ui/AgentRagPipeline.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/rag-pipeline.ts",
+      "to": "src/components/agent-ui/rag-pipeline.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/agent-ui/rag-icons.ts",
+      "to": "src/components/agent-ui/rag-icons.ts"
+    },
+    {
+      "target": "h5",
       "from": "registry/components/agent-ui/h5/agent-markdown.css",
       "to": "src/components/agent-ui/agent-markdown.css"
     },

@@ -90,6 +90,16 @@ page {
   --varo-agent-danger-soft: var(--varo-ui-danger-soft);
   --varo-agent-radius: 14px;
   --varo-agent-shadow: var(--varo-ui-shadow-md);
+  --varo-agent-motion-enter: 280ms;
+  --varo-agent-motion-feedback: 160ms;
+  --varo-agent-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --varo-agent-motion-loop: 1200ms;
+  --varo-agent-source-blue: #2563eb;
+  --varo-agent-source-blue-soft: #eff6ff;
+  --varo-agent-source-violet: #7c3aed;
+  --varo-agent-source-violet-soft: #f5f3ff;
+  --varo-agent-source-rose: #db2777;
+  --varo-agent-source-rose-soft: #fdf2f8;
 }
 
 .varo-button,

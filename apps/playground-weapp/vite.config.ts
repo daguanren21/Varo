@@ -86,6 +86,7 @@ export default defineConfig({
       template: {
         htmlTagToWxml: true,
         htmlTagToWxmlTagClass: true,
+        scopedSlotsRequireProps: true,
       },
     },
   },

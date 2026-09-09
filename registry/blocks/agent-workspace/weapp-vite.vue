@@ -125,32 +125,34 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
           @pin="emit('pinVersion', $event)"
           @select="emit('selectVersion', $event)"
         />
-        <AgentConversation class="block w-full min-w-0 max-w-full overflow-hidden" :messages="messages" />
-        <AgentRetrievalProgress
-          class="block w-full min-w-0 max-w-full overflow-hidden"
-          :items="retrieval"
-          @retry="emit('retryRetrieval', $event)"
-        />
-        <AgentTaskRunner
-          class="block w-full min-w-0 max-w-full overflow-hidden"
-          :busy="busy"
-          :tasks="tasks"
-          @approve="emit('approveTask', $event)"
-          @cancel="emit('cancelTask')"
-          @retry="emit('retryTask', $event)"
-        />
-        <AgentSourceReceipt
-          class="block w-full min-w-0 max-w-full overflow-hidden"
-          :items="receipts"
-          @connect="emit('connectReceipt', $event)"
-          @open="emit('openReceipt', $event)"
-        />
+        <slot name="execution">
+          <AgentConversation class="block w-full min-w-0 max-w-full overflow-hidden" :messages="messages" />
+          <AgentRetrievalProgress
+            class="block w-full min-w-0 max-w-full overflow-hidden"
+            :items="retrieval"
+            @retry="emit('retryRetrieval', $event)"
+          />
+          <AgentTaskRunner
+            class="block w-full min-w-0 max-w-full overflow-hidden"
+            :busy="busy"
+            :tasks="tasks"
+            @approve="emit('approveTask', $event)"
+            @cancel="emit('cancelTask')"
+            @retry="emit('retryTask', $event)"
+          />
+          <AgentSourceReceipt
+            class="block w-full min-w-0 max-w-full overflow-hidden"
+            :items="receipts"
+            @connect="emit('connectReceipt', $event)"
+            @open="emit('openReceipt', $event)"
+          />
+        </slot>
       </view>
 
       <view class="box-border w-full min-w-0 max-w-full overflow-hidden border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <AgentComposer
-          class="block w-full min-w-0 max-w-full overflow-hidden"
           v-model="prompt"
+          class="block w-full min-w-0 max-w-full overflow-hidden"
           :busy="busy"
           @submit="emit('submit', $event)"
         />
