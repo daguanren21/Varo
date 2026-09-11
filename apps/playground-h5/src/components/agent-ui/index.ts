@@ -625,16 +625,16 @@ export const AgentThreadVersions = defineComponent({
         version,
       }))
     })
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
+    return () => h('section', { 'class': 'min-w-0 max-w-full overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
       h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
-        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
-        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${props.versions.length} 个版本`),
+        h('strong', { class: 'min-w-0 truncate text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
+        h('span', { class: 'flex-none text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${props.versions.length} 个版本`),
       ]),
       displayVersions.value.length
-        ? h('div', { 'class': 'flex max-w-full gap-2 overflow-x-auto p-2.5', 'role': 'list', 'aria-label': '会话版本列表' }, displayVersions.value.map(entry =>
+        ? h('div', { 'class': 'flex min-w-0 w-full max-w-full gap-2 overflow-x-auto overscroll-x-contain p-2.5', 'role': 'list', 'aria-label': '会话版本列表' }, displayVersions.value.map(entry =>
             h('article', {
               'class': [
-                'grid w-[252px] flex-none gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3',
+                'grid w-[min(252px,100%)] min-w-0 flex-none gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3',
                 entry.active
                   ? 'border-[var(--varo-agent-primary)] shadow-[0_0_0_2px_var(--varo-agent-primary-soft)]'
                   : 'border-[var(--varo-agent-border)]',

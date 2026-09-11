@@ -1,11 +1,12 @@
-import { readMaybeRef, resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '../reactive'
 import type {
   AccordionRootOptions,
   AccordionType,
   AccordionValue,
-  UseAccordionRootResult
+  UseAccordionRootResult,
 } from './types'
+import { readMaybeRef, resolveReactiveRuntime } from '../reactive'
+import { useControllableState } from '../use-controllable-state'
 
 function encodeId(value: string) {
   return encodeURIComponent(value)
@@ -21,13 +22,13 @@ function createAccordionRootId() {
 export function useAccordionRoot(options: AccordionRootOptions = {}): UseAccordionRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
   const rootId = encodeId(
-    (options.id === undefined ? undefined : readMaybeRef(options.id)) || createAccordionRootId()
+    (options.id === undefined ? undefined : readMaybeRef(options.id)) || createAccordionRootId(),
   )
   const type = runtime.computed(() =>
-    options.type === undefined ? 'single' : readMaybeRef(options.type) ?? 'single'
+    options.type === undefined ? 'single' : readMaybeRef(options.type) ?? 'single',
   ) as Ref<AccordionType>
   const collapsible = runtime.computed(() =>
-    options.collapsible === undefined ? false : readMaybeRef(options.collapsible) ?? false
+    options.collapsible === undefined ? false : readMaybeRef(options.collapsible) ?? false,
   ) as Ref<boolean>
   const initialValue = options.defaultValue ?? (type.value === 'multiple' ? [] : undefined)
   const valueState = useControllableState<AccordionValue>({
@@ -35,7 +36,7 @@ export function useAccordionRoot(options: AccordionRootOptions = {}): UseAccordi
     runtime,
     defaultValue: initialValue,
     value: options.value,
-    onUpdate: options.onValueChange
+    onUpdate: options.onValueChange,
   })
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
   const interactive = runtime.computed(() => !disabled.value) as Ref<boolean>
@@ -55,7 +56,7 @@ export function useAccordionRoot(options: AccordionRootOptions = {}): UseAccordi
     if (type.value === 'multiple') {
       const current = Array.isArray(valueState.current.value) ? valueState.current.value : []
       valueState.current.value = current.includes(value)
-        ? current.filter((item) => item !== value)
+        ? current.filter(item => item !== value)
         : [...current, value]
       return true
     }
@@ -91,7 +92,7 @@ export function useAccordionRoot(options: AccordionRootOptions = {}): UseAccordi
     return {
       'data-disabled': String(disabledValue),
       'data-state': getState(value),
-      'data-value': value
+      'data-value': value,
     }
   }
 
@@ -99,23 +100,27 @@ export function useAccordionRoot(options: AccordionRootOptions = {}): UseAccordi
     const disabledValue = disabled.value || itemDisabled
 
     return {
-      id: getTriggerId(value),
+      'id': getTriggerId(value),
       'aria-controls': getContentId(value),
       'aria-disabled': disabledValue || undefined,
       'aria-expanded': isOpen(value),
       'data-disabled': String(disabledValue),
       'data-state': getState(value),
-      'data-value': value
+      'data-value': value,
     }
   }
 
   function getContentAttrs(value: string) {
+    const open = isOpen(value)
+
     return {
-      id: getContentId(value),
-      role: 'region',
+      'id': getContentId(value),
+      'role': 'region',
+      'inert': open ? undefined : true,
+      'aria-hidden': open ? undefined : true,
       'aria-labelledby': getTriggerId(value),
       'data-state': getState(value),
-      'data-value': value
+      'data-value': value,
     }
   }
 
@@ -125,28 +130,28 @@ export function useAccordionRoot(options: AccordionRootOptions = {}): UseAccordi
       disabled,
       interactive,
       type,
-      value: valueState.current
+      value: valueState.current,
     },
     attrs: {
       root: {
-        id: rootId,
+        'id': rootId,
         get 'data-disabled'() {
           return String(disabled.value)
         },
         get 'data-type'() {
           return type.value
-        }
-      }
+        },
+      },
     },
     events: {
-      toggle
+      toggle,
     },
     api: {
       getContentAttrs,
       getItemAttrs,
       getTriggerAttrs,
       isOpen,
-      toggle
-    }
+      toggle,
+    },
   }
 }

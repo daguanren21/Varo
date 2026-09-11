@@ -101,7 +101,7 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
         </span>
       </header>
 
-      <div class="grid min-h-0 content-start gap-3 p-3 sm:p-4">
+      <div class="grid min-h-0 min-w-0 content-start gap-3 p-3 sm:p-4">
         <AgentComposerScope
           :disabled="busy"
           :sources="sources"

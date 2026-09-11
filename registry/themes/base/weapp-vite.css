@@ -26,29 +26,29 @@ page {
   --varo-ui-primary-dark: #06ad56;
   --varo-ui-primary-hover: #38cd80;
   --varo-ui-primary-soft: #e6f9ef;
-  --varo-ui-primary-foreground: #000;
-  --varo-ui-primary-hover-foreground: #000;
+  --varo-ui-primary-foreground: #fff;
+  --varo-ui-primary-hover-foreground: #fff;
   --varo-ui-primary-text: #1c794a;
   --varo-ui-success: #13b248;
   --varo-ui-success-dark: #10973d;
   --varo-ui-success-hover: #42c16d;
   --varo-ui-success-soft: #e7f7ec;
-  --varo-ui-success-foreground: #000;
-  --varo-ui-success-hover-foreground: #000;
+  --varo-ui-success-foreground: #fff;
+  --varo-ui-success-hover-foreground: #fff;
   --varo-ui-success-text: #22723e;
   --varo-ui-warning: #fa9200;
   --varo-ui-warning-dark: #d57c00;
   --varo-ui-warning-hover: #fba833;
   --varo-ui-warning-soft: #fef4e5;
-  --varo-ui-warning-foreground: #000;
-  --varo-ui-warning-hover-foreground: #000;
+  --varo-ui-warning-foreground: #fff;
+  --varo-ui-warning-hover-foreground: #fff;
   --varo-ui-warning-text: #95621a;
   --varo-ui-danger: #eb3437;
   --varo-ui-danger-dark: #c82c2f;
   --varo-ui-danger-hover: #ef5d5f;
   --varo-ui-danger-soft: #fdeaeb;
-  --varo-ui-danger-foreground: #000;
-  --varo-ui-danger-hover-foreground: #000;
+  --varo-ui-danger-foreground: #fff;
+  --varo-ui-danger-hover-foreground: #fff;
   --varo-ui-danger-text: #8e3335;
   --varo-ui-info: #73767a;
   --varo-ui-info-dark: #5c5e62;
@@ -569,23 +569,41 @@ textarea.varo-input__control {
 
 .varo-checkbox__icon,
 .varo-radio__icon {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
+  overflow: hidden;
   font-size: 13px;
   color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-surface);
   border: 1px solid #cbd5e1;
   transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
+    background-color 180ms ease-out,
+    border-color 180ms ease-out,
+    color 180ms ease-out;
 }
 
 .varo-checkbox__icon {
   border-radius: 6px;
+}
+
+.varo-checkbox__icon::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: '';
+  background: var(--varo-ui-primary);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.7);
+  transform-origin: center;
+  transition:
+    opacity 180ms linear,
+    transform 100ms linear;
 }
 
 .varo-radio__icon {
@@ -594,10 +612,23 @@ textarea.varo-input__control {
 }
 
 .varo-checkbox[data-checked='true'] .varo-checkbox__icon,
+.varo-checkbox[data-state='checked'] .varo-checkbox__icon,
 .varo-radio[data-checked='true'] .varo-radio__icon {
   color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-primary);
   border-color: var(--varo-ui-primary);
+}
+
+.varo-checkbox[data-checked='true'] .varo-checkbox__icon::before,
+.varo-checkbox[data-state='checked'] .varo-checkbox__icon::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.varo-checkbox[data-checked='true'] .varo-checkbox__icon .varo-icon,
+.varo-checkbox[data-state='checked'] .varo-checkbox__icon .varo-icon {
+  position: relative;
+  z-index: 1;
 }
 
 .varo-checkbox[data-disabled='true'],
@@ -911,11 +942,17 @@ textarea.varo-input__control {
 .varo-switch.varo-switch {
   box-sizing: border-box;
   display: inline-flex;
+  flex: none;
   align-items: center;
   width: 44px;
+  min-width: 44px;
+  max-width: 44px;
   height: 24px;
+  min-height: 24px;
+  max-height: 24px;
   padding: 2px;
   margin: 0;
+  overflow: hidden;
   cursor: pointer;
   background: var(--varo-ui-fill-darker);
   border: 0;
@@ -938,10 +975,13 @@ textarea.varo-input__control {
 
 .varo-switch__track {
   display: flex;
+  align-items: center;
   width: 100%;
+  height: 20px;
 }
 
 .varo-switch__thumb {
+  flex: none;
   width: 20px;
   height: 20px;
   background: var(--varo-ui-white);
@@ -952,6 +992,13 @@ textarea.varo-input__control {
 
 .varo-switch[data-state='checked'] .varo-switch__thumb {
   transform: translateX(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-switch,
+  .varo-switch__thumb {
+    transition: none;
+  }
 }
 
 .varo-loading {
@@ -1267,6 +1314,17 @@ textarea.varo-input__control {
 .varo-form-item__error {
   font-size: 12px;
   color: var(--varo-ui-danger);
+  animation: varo-form-error-in 150ms ease-out both;
+}
+
+@keyframes varo-form-error-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .varo-calendar,
@@ -2450,7 +2508,11 @@ textarea.varo-input__control {
   color: var(--varo-ui-text);
   background: var(--varo-ui-surface-muted);
   border: 1px solid transparent;
-  border-radius: var(--varo-ui-radius-sm);
+  border-radius: 999px;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out;
 }
 
 .varo-tag[data-size='sm'] {
@@ -2973,8 +3035,9 @@ textarea.varo-input__control {
 }
 
 .varo-collapse-item__chevron {
+  flex: none;
   color: var(--varo-ui-text-muted);
-  transition: transform 0.18s ease;
+  transition: transform 180ms ease-out;
 }
 
 .varo-collapse-item[data-state='open'] .varo-collapse-item__chevron {
@@ -3697,6 +3760,67 @@ textarea.varo-input__control {
   .varo-region-picker__panel {
     animation: none;
   }
+
+  .varo-checkbox__icon,
+  .varo-radio__icon,
+  .varo-checkbox__icon::before,
+  .varo-tag,
+  .varo-form-item__error,
+  .varo-collapse-item__chevron {
+    transition: none;
+  }
+
+  .varo-form-item__error {
+    animation: none;
+  }
+}
+
+.varo-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.varo-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.varo-breadcrumb__item {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  align-items: center;
+}
+
+.varo-breadcrumb__link.varo-breadcrumb__link,
+.varo-breadcrumb__current {
+  box-sizing: border-box;
+  padding: 0 2px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 20px;
+  color: var(--varo-ui-text-muted);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+}
+
+.varo-breadcrumb__current {
+  color: var(--varo-ui-text);
+}
+
+.varo-breadcrumb__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-map {

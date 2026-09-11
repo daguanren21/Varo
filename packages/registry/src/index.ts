@@ -46,6 +46,7 @@ export const componentCatalogV01 = [
   'action-sheet',
   'avatar',
   'badge',
+  'breadcrumb',
   'button',
   'calendar',
   'card',
@@ -105,6 +106,7 @@ export const weappComponentCatalogV01 = [
   'action-sheet',
   'avatar',
   'badge',
+  'breadcrumb',
   'button',
   'card',
   'cell',
@@ -182,7 +184,16 @@ function isSafeRegistryPath(value: string, root: 'registry' | 'src'): boolean {
     .every(segment => segment !== '' && segment !== '.' && segment !== '..')
 }
 
-const windowsInvalidPathCharacterPattern = /[<>:"|?*\u0000-\u001F]/
+function hasWindowsInvalidPathCharacter(value: string): boolean {
+  for (const character of value) {
+    const code = character.charCodeAt(0)
+    if (code <= 0x1F || '<>:"|?*'.includes(character)) {
+      return true
+    }
+  }
+  return false
+}
+
 const windowsReservedPathNamePattern = /^(?:aux|com[1-9¹²³]|con|conin\$|conout\$|lpt[1-9¹²³]|nul|prn)$/i
 
 function hasPortablePathSegments(value: string): boolean {
@@ -190,7 +201,7 @@ function hasPortablePathSegments(value: string): boolean {
     if (
       segment.endsWith('.')
       || segment.endsWith(' ')
-      || windowsInvalidPathCharacterPattern.test(segment)
+      || hasWindowsInvalidPathCharacter(segment)
     ) {
       return false
     }

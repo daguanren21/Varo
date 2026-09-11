@@ -92,7 +92,7 @@ describe('registry catalog', () => {
 
   it('publishes every maintained runtime component through the v0.1 registry catalog', () => {
     expect([...componentCatalogV01].sort()).toEqual(runtimeComponentNames())
-    expect(componentCatalogV01).toHaveLength(56)
+    expect(componentCatalogV01).toHaveLength(57)
   })
 
   it('partitions the mini-program registry into high-consensus and specialized tiers', () => {
@@ -105,8 +105,8 @@ describe('registry catalog', () => {
       weappSpecializedPendingRegistry: string[]
     }>('registry/component-tiers.v0.1.json')
 
-    expect(tiers.runtimeCatalog).toEqual({ h5: 56, weappVite: 56 })
-    expect(tiers.registryCatalog).toEqual({ h5: 57, weappSfc: 46, weappSfcBaseKit: 15, weappVite: 47 })
+    expect(tiers.runtimeCatalog).toEqual({ h5: 57, weappVite: 57 })
+    expect(tiers.registryCatalog).toEqual({ h5: 58, weappSfc: 47, weappSfcBaseKit: 15, weappVite: 48 })
     expect(tiers.registryExtensions).toEqual(['map', 'region-picker'])
     expect(tiers.weappHighConsensus).toEqual(weappComponentCatalogV01)
     expect(
@@ -354,7 +354,7 @@ describe('registry catalog', () => {
   })
 
   it('keeps the full H5 catalog, high-consensus weapp catalog, and executable SFC Base Kit aligned', () => {
-    expect(weappComponentCatalogV01).toHaveLength(45)
+    expect(weappComponentCatalogV01).toHaveLength(46)
     const baseKitNames = new Set<string>(baseKitPhase1)
     const weappComponentNames = new Set<string>(weappComponentCatalogV01)
 

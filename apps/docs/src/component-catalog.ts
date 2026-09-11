@@ -79,6 +79,7 @@ export const componentCatalog: readonly ComponentCatalogGroup[] = [
     title: { zh: '导航组件', en: 'Navigation' },
     summary: { zh: '处理页面层级、局部切换与移动端路径。', en: 'Support page hierarchy, local switching, and mobile journeys.' },
     items: [
+      { id: 'breadcrumb', name: 'Breadcrumb', label: { zh: '面包屑', en: 'Breadcrumb' }, targets: dualTarget },
       { id: 'elevator', name: 'Elevator', label: { zh: '电梯楼层', en: 'Elevator' }, targets: h5Only },
       { id: 'fixed-nav', name: 'FixedNav', label: { zh: '悬浮导航', en: 'Fixed Navigation' }, targets: h5Only },
       { id: 'indicator', name: 'Indicator', label: { zh: '指示器', en: 'Indicator' }, targets: dualTarget },

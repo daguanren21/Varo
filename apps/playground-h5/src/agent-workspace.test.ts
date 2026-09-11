@@ -3,8 +3,8 @@
 import type { AgentThreadVersion } from '@varo-ui/ai'
 import type { VueWrapper } from '@vue/test-utils'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
 import { AgentShell } from './components/agent-ui'
 import AgentWorkspace from './components/blocks/agent-workspace.vue'
 
@@ -15,7 +15,7 @@ const versions: AgentThreadVersion[] = [
 
 function buttonByText(wrapper: VueWrapper, text: string) {
   const button = wrapper.findAll('button').find(item => item.text() === text)
-  if (!button) throw new Error(`Missing button: ${text}`)
+  if (!button) { throw new Error(`Missing button: ${text}`) }
   return button
 }
 
@@ -77,6 +77,23 @@ describe('AgentWorkspace H5 block', () => {
     expect(closeButtons).toHaveLength(2)
     await closeButtons[1].trigger('click')
     expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
+  it('keeps thread version cards inside a clipped horizontal scroller', () => {
+    const wrapper = mount(AgentWorkspace, {
+      props: {
+        activeVersionId: 'root',
+        open: true,
+        placement: 'page',
+        versions,
+      },
+    })
+    const scroller = wrapper.get('[aria-label="会话版本列表"]')
+    const card = wrapper.get('[role="listitem"]')
+
+    expect(wrapper.get('[aria-label="会话版本"]').classes()).toEqual(expect.arrayContaining(['min-w-0', 'max-w-full', 'overflow-hidden']))
+    expect(scroller.classes()).toEqual(expect.arrayContaining(['min-w-0', 'w-full', 'overflow-x-auto']))
+    expect(card.classes().some(name => name.includes('w-[min(252px,100%)]'))).toBe(true)
   })
 
   it.each(['page', 'docked'] as const)('hides the %s placement when closed', (placement) => {

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, h } from 'vue'
 import { describe, expect, it } from 'vitest'
+import { defineComponent, h } from 'vue'
 import {
   AccordionContent,
   AccordionItem,
@@ -12,7 +12,7 @@ import {
   PopoverClose,
   PopoverContent,
   PopoverRoot,
-  PopoverTrigger
+  PopoverTrigger,
 } from '../src'
 
 describe('primitives-h5 p1 disclosure and floating parts', () => {
@@ -22,9 +22,9 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
       slots: {
         default: () => [
           h(CollapsibleTrigger, null, { default: () => 'Toggle' }),
-          h(CollapsibleContent, null, { default: () => 'Details' })
-        ]
-      }
+          h(CollapsibleContent, null, { default: () => 'Details' }),
+        ],
+      },
     })
 
     expect(wrapper.text()).not.toContain('Details')
@@ -44,31 +44,32 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
               h(AccordionItem, { value: 'account' }, {
                 default: () => [
                   h(AccordionTrigger, null, { default: () => 'Account' }),
-                  h(AccordionContent, null, { default: () => 'Account panel' })
-                ]
+                  h(AccordionContent, null, { default: () => 'Account panel' }),
+                ],
               }),
               h(AccordionItem, { value: 'security' }, {
                 default: () => [
                   h(AccordionTrigger, null, { default: () => 'Security' }),
-                  h(AccordionContent, null, { default: () => 'Security panel' })
-                ]
-              })
-            ]
+                  h(AccordionContent, null, { default: () => 'Security panel' }),
+                ],
+              }),
+            ],
           })
-      }
+      },
     })
     const wrapper = mount(Harness)
 
-    expect(wrapper.text()).toContain('Account panel')
-    expect(wrapper.text()).not.toContain('Security panel')
+    expect(wrapper.findAll('[role="region"]')).toHaveLength(2)
+    expect(wrapper.findAll('[role="region"]')[0]!.attributes('aria-hidden')).toBeUndefined()
+    expect(wrapper.findAll('[role="region"]')[1]!.attributes('aria-hidden')).toBe('true')
 
-    await wrapper.findAll('[aria-expanded]')[1].trigger('click')
+    await wrapper.findAll('[aria-expanded]')[1]!.trigger('click')
 
-    expect(wrapper.text()).not.toContain('Account panel')
-    expect(wrapper.text()).toContain('Security panel')
+    expect(wrapper.findAll('[role="region"]')[0]!.attributes('aria-hidden')).toBe('true')
+    expect(wrapper.findAll('[role="region"]')[1]!.attributes('aria-hidden')).toBeUndefined()
 
-    await wrapper.findAll('[aria-expanded]')[1].trigger('click')
-    expect(wrapper.text()).not.toContain('Security panel')
+    await wrapper.findAll('[aria-expanded]')[1]!.trigger('click')
+    expect(wrapper.findAll('[role="region"]')[1]!.attributes('aria-hidden')).toBe('true')
   })
 
   it('opens popover and closes it through close, escape, and outside interaction', async () => {
@@ -82,14 +83,14 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
                 h(PopoverContent, null, {
                   default: () => [
                     h('span', 'Popover panel'),
-                    h(PopoverClose, null, { default: () => 'Close' })
-                  ]
-                })
-              ]
+                    h(PopoverClose, null, { default: () => 'Close' }),
+                  ],
+                }),
+              ],
             }),
-            h('button', { class: 'outside' }, 'Outside')
+            h('button', { class: 'outside' }, 'Outside'),
           ])
-      }
+      },
     })
     const wrapper = mount(Harness, { attachTo: document.body })
 
