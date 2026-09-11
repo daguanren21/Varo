@@ -16,7 +16,7 @@
 | `message`    | `string`                                                    | `''`         | 提示文案             |
 | `type`       | `'text' \| 'success' \| 'warning' \| 'danger' \| 'loading'` | `'text'`     | 类型                 |
 | `position`   | `'top' \| 'middle' \| 'bottom'`                             | `'middle'`   | 位置                 |
-| `closeable`  | `boolean`                                                   | `true`       | 是否显示关闭按钮     |
+| `closeable`  | `boolean`                                                   | `false`      | 是否显示关闭按钮     |
 | `closeLabel` | `string`                                                    | `'关闭通知'` | 关闭按钮的无障碍名称 |
 
 ## 动效与无障碍

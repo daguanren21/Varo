@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VBreadcrumb, VCollapse, VCollapseItem } from '@varo-ui/h5'
+import { VBreadcrumb, VCollapse, VCollapseItem, VToast } from '@varo-ui/h5'
 import { shallowRef } from 'vue'
 import {
   AgentArtifact,
@@ -27,6 +27,9 @@ const clicks = shallowRef(0)
 const termsAccepted = shallowRef(false)
 const breadcrumbPath = shallowRef('等待选择')
 const lastEvent = shallowRef('等待交互')
+const toastVisible = shallowRef(false)
+const toastType = shallowRef<'text' | 'success' | 'loading'>('success')
+const toastMessage = shallowRef('保存成功')
 const {
   approve: approveAgent,
   busy: agentBusy,
@@ -95,9 +98,26 @@ const agentSources = [
 function onPrimaryClick() {
   clicks.value += 1
   loading.value = true
+  toastType.value = 'loading'
+  toastMessage.value = '保存中'
+  toastVisible.value = true
   window.setTimeout(() => {
     loading.value = false
+    toastType.value = 'success'
+    toastMessage.value = '保存成功'
+    window.setTimeout(() => {
+      toastVisible.value = false
+    }, 1400)
   }, 900)
+}
+
+function showTextToast() {
+  toastType.value = 'text'
+  toastMessage.value = '信息已更新'
+  toastVisible.value = true
+  window.setTimeout(() => {
+    toastVisible.value = false
+  }, 1600)
 }
 
 function record(message: string) {
@@ -251,14 +271,15 @@ function record(message: string) {
               <VButton variant="ghost" :disabled="!enabled">
                 Ghost
               </VButton>
-              <VButton variant="text">
-                文字按钮
+              <VButton variant="text" @click="showTextToast">
+                文字提示
               </VButton>
             </div>
             <label class="pg__switch">
               <span>启用 Ghost 按钮</span>
               <VSwitch v-model="enabled" />
             </label>
+            <VToast :visible="toastVisible" :type="toastType" :message="toastMessage" />
           </section>
 
           <section class="pg__card">

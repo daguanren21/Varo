@@ -12,23 +12,30 @@ interface IconPath {
 
 type IconPaths = readonly IconPath[]
 
-// WeChat validates union props against one native type before Wevu normalizes them.
+// WeChat validates union props and initial String bindings before Wevu
+// applies setup defaults. Empty native strings avoid `null` type warnings.
 defineOptions({
   properties: {
+    color: { type: null, value: '' },
+    label: { type: null, value: '' },
+    name: { type: null, value: '' },
     size: { type: null, value: 16 },
   },
 })
 const props = withDefaults(
   defineProps<{
     className?: ClassValue
-    color?: string
-    label?: string
-    name: string
+    color?: string | null
+    label?: string | null
+    name?: string | null
     size?: number | string
     spin?: boolean
     tone?: IconTone
   }>(),
   {
+    color: '',
+    label: '',
+    name: '',
     size: 16,
     spin: false,
     tone: 'default',
@@ -95,7 +102,7 @@ const classes = computed(() => cn('varo-icon', props.className))
 const dimension = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
 const iconRole = computed(() => (props.label ? 'img' : undefined))
 const iconSource = computed(() => {
-  const paths = ICON_PATHS_BY_NAME[props.name as IconName]
+  const paths = ICON_PATHS_BY_NAME[(props.name || '') as IconName]
   if (!paths) {
     return undefined
   }
@@ -128,7 +135,7 @@ const assetStyle = computed(() => {
   }
 })
 const rootStyle = computed(() => ({
-  color: props.color,
+  color: props.color || undefined,
   fontSize: dimension.value,
   height: dimension.value,
   width: dimension.value,
@@ -143,7 +150,7 @@ const spinData = computed(() => String(props.spin))
     :style="rootStyle"
     :aria-hidden="ariaHidden"
     :aria-label="accessibleLabel"
-    :data-name="props.name"
+    :data-name="props.name || ''"
     :data-spin="spinData"
     :data-tone="props.tone"
   >

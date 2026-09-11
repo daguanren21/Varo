@@ -12,6 +12,7 @@ import VButton from './components/ui/v-button.vue'
 import VCard from './components/ui/v-card.vue'
 import VCollapseItem from './components/ui/v-collapse-item.vue'
 import VCollapse from './components/ui/v-collapse.vue'
+import VIcon from './components/ui/v-icon.vue'
 import VInput from './components/ui/v-input.vue'
 import VList from './components/ui/v-list.vue'
 import VNoticeBar from './components/ui/v-notice-bar.vue'
@@ -19,6 +20,7 @@ import VSteps from './components/ui/v-steps.vue'
 import VSwipeCell from './components/ui/v-swipe-cell.vue'
 import VSwitch from './components/ui/v-switch.vue'
 import VTextarea from './components/ui/v-textarea.vue'
+import VToast from './components/ui/v-toast.vue'
 
 describe('expanded weapp registry components', () => {
   it('moves the Switch thumb with controlled checked state', async () => {
@@ -274,6 +276,29 @@ describe('expanded weapp registry components', () => {
       props: { defaultValue: 'memo' },
     })
     expect(textarea.get('textarea').attributes('value')).toBe('memo')
+  })
+
+  it('gives WeChat empty native strings for VIcon and class-only toast states', async () => {
+    expect(VIcon).toMatchObject({
+      properties: {
+        color: { type: null, value: '' },
+        label: { type: null, value: '' },
+        name: { type: null, value: '' },
+      },
+    })
+
+    const toast = mount(VToast, {
+      props: {
+        message: '保存成功',
+        position: 'top',
+        type: 'success',
+        visible: true,
+      },
+    })
+    const root = toast.get('.varo-toast')
+    expect(root.classes()).toContain('varo-toast--success')
+    expect(root.classes()).toContain('varo-toast--top')
+    expect(toast.get('.varo-toast__icon .varo-icon').attributes('data-name')).toBe('success')
   })
 
   it('renders the mini-program Agent Chat block and forwards prompts', async () => {

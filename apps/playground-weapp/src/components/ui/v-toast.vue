@@ -18,7 +18,7 @@ const props = withDefaults(
     visible?: boolean
   }>(),
   {
-    closeable: true,
+    closeable: false,
     closeLabel: '关闭通知',
     message: '',
     position: 'middle',
@@ -114,7 +114,13 @@ const transitionClasses = computed(() => {
   }
   return undefined
 })
-const classes = computed(() => cn('varo-toast', transitionClasses.value, props.className))
+const classes = computed(() => cn(
+  'varo-toast',
+  `varo-toast--${props.type}`,
+  `varo-toast--${props.position}`,
+  transitionClasses.value,
+  props.className,
+))
 const role = computed(() => props.type === 'danger' || props.type === 'warning' ? 'alert' : 'status')
 const ariaBusy = computed(() => props.type === 'loading' ? 'true' : undefined)
 const ariaLive = computed(() => props.type === 'danger' || props.type === 'warning' ? 'assertive' : 'polite')
@@ -142,12 +148,12 @@ function close() {
     :data-type="props.type"
     :data-position="props.position"
   >
-    <view class="varo-toast__icon" aria-hidden="true">
+    <view v-if="props.type !== 'text'" class="varo-toast__icon" aria-hidden="true">
       <view v-if="props.type === 'loading'" class="varo-toast__spinner">
         <view class="varo-toast__spinner-track" />
         <view class="varo-toast__spinner-arc" />
       </view>
-      <VIcon v-else :name="iconName" :size="20" />
+      <VIcon v-else :name="iconName" :size="24" />
     </view>
     <text class="varo-toast__message">
       <slot>{{ props.message }}</slot>
@@ -166,8 +172,8 @@ function close() {
 <style>
 .varo-toast__spinner {
   position: relative;
-  width: 20px;
-  height: 20px;
+  width: 36px;
+  height: 36px;
 }
 
 .varo-toast__spinner-track,
