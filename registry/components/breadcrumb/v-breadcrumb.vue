@@ -82,7 +82,9 @@ function select(crumb: RenderedBreadcrumb) {
         :data-disabled="crumb.disabledData"
       >
         <text v-if="crumb.current" class="varo-breadcrumb__current" aria-current="page">
-          {{ crumb.label }}
+          <slot name="item" :current="crumb.current" :index="crumb.index" :item="crumb.item">
+            {{ crumb.label }}
+          </slot>
         </text>
         <button
           v-else
@@ -91,7 +93,9 @@ function select(crumb: RenderedBreadcrumb) {
           :disabled="crumb.disabled"
           @click="select(crumb)"
         >
-          {{ crumb.label }}
+          <slot name="item" :current="crumb.current" :index="crumb.index" :item="crumb.item">
+            {{ crumb.label }}
+          </slot>
         </button>
         <view v-if="crumb.showSeparator" class="varo-breadcrumb__separator" aria-hidden="true">
           <slot name="separator">

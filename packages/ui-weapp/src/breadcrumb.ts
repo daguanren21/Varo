@@ -4,6 +4,7 @@ import { VIcon } from './icon'
 
 export interface BreadcrumbItem {
   disabled?: boolean
+  /** Present for shared item arrays. Weapp emits it on `select` and does not auto-navigate. */
   href?: string
   label: string
   value?: string

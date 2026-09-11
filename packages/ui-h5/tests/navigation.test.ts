@@ -25,13 +25,18 @@ describe('ui-h5 navigation components', () => {
         label: 'Page path',
         onSelect,
       },
+      slots: {
+        item: ({ current, item }: { current: boolean, item: { label: string } }) =>
+          current ? `Now ${item.label}` : item.label,
+      },
     })
 
     expect(wrapper.get('nav').attributes('aria-label')).toBe('Page path')
     expect(wrapper.findAll('.varo-breadcrumb__item')).toHaveLength(3)
     expect(wrapper.findAll('.varo-breadcrumb__separator .varo-icon[data-name="chevronRight"]')).toHaveLength(2)
     expect(wrapper.get('.varo-breadcrumb__current').attributes('aria-current')).toBe('page')
-    expect(wrapper.get('.varo-breadcrumb__current').text()).toBe('Detail')
+    expect(wrapper.get('.varo-breadcrumb__current').text()).toBe('Now Detail')
+    expect(wrapper.get('a.varo-breadcrumb__link').attributes('href')).toBe('/')
 
     await wrapper.findAll('.varo-breadcrumb__link')[1]!.trigger('click')
     expect(onSelect).toHaveBeenCalledWith({

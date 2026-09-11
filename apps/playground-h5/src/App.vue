@@ -30,6 +30,8 @@ const lastEvent = shallowRef('等待交互')
 const toastVisible = shallowRef(false)
 const toastType = shallowRef<'text' | 'success' | 'loading'>('success')
 const toastMessage = shallowRef('保存成功')
+let toastDismissTimer: number | undefined
+let toastSuccessTimer: number | undefined
 const {
   approve: approveAgent,
   busy: agentBusy,
@@ -95,29 +97,43 @@ const agentSources = [
   },
 ]
 
+function clearToastTimers() {
+  if (toastDismissTimer !== undefined) {
+    window.clearTimeout(toastDismissTimer)
+    toastDismissTimer = undefined
+  }
+  if (toastSuccessTimer !== undefined) {
+    window.clearTimeout(toastSuccessTimer)
+    toastSuccessTimer = undefined
+  }
+}
+
+function showToast(type: 'text' | 'success' | 'loading', message: string, duration?: number) {
+  clearToastTimers()
+  toastType.value = type
+  toastMessage.value = message
+  toastVisible.value = true
+  if (duration) {
+    toastDismissTimer = window.setTimeout(() => {
+      toastVisible.value = false
+      toastDismissTimer = undefined
+    }, duration)
+  }
+}
+
 function onPrimaryClick() {
   clicks.value += 1
   loading.value = true
-  toastType.value = 'loading'
-  toastMessage.value = '保存中'
-  toastVisible.value = true
-  window.setTimeout(() => {
+  showToast('loading', '保存中')
+  toastSuccessTimer = window.setTimeout(() => {
     loading.value = false
-    toastType.value = 'success'
-    toastMessage.value = '保存成功'
-    window.setTimeout(() => {
-      toastVisible.value = false
-    }, 1400)
+    showToast('success', '保存成功', 1400)
+    toastSuccessTimer = undefined
   }, 900)
 }
 
 function showTextToast() {
-  toastType.value = 'text'
-  toastMessage.value = '信息已更新'
-  toastVisible.value = true
-  window.setTimeout(() => {
-    toastVisible.value = false
-  }, 1600)
+  showToast('text', '信息已更新', 1600)
 }
 
 function record(message: string) {

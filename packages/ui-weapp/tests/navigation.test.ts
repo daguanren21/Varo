@@ -17,18 +17,27 @@ describe('ui-weapp navigation components', () => {
     const onSelect = vi.fn()
     const wrapper = mount(VBreadcrumb, {
       props: {
-        items: ['Home', 'Orders', 'Detail'],
+        items: [
+          { href: '/', label: 'Home' },
+          { href: '/orders', label: 'Orders' },
+          { label: 'Detail' },
+        ],
         label: 'Page path',
         onSelect,
+      },
+      slots: {
+        item: ({ current, item }: { current: boolean, item: { label: string } }) =>
+          current ? `Now ${item.label}` : item.label,
       },
     })
 
     expect(wrapper.get('nav').attributes('aria-label')).toBe('Page path')
-    expect(wrapper.get('.varo-breadcrumb__current').text()).toBe('Detail')
+    expect(wrapper.get('.varo-breadcrumb__current').text()).toBe('Now Detail')
+    expect(wrapper.find('a').exists()).toBe(false)
     await wrapper.findAll('.varo-breadcrumb__link')[0]!.trigger('click')
     expect(onSelect).toHaveBeenCalledWith({
       index: 0,
-      item: { label: 'Home' },
+      item: { href: '/', label: 'Home' },
     })
   })
 
