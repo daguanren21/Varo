@@ -3,7 +3,7 @@ import type { ClassValue } from '../../lib/cn'
 import type { AgentSidebarGroup, AgentSidebarItem } from './advanced-types'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
-import { agentChevronDownIcon } from './agent-icons'
+import { agentChatIcon, agentChevronDownIcon, agentPlusIcon } from './agent-icons'
 
 const props = withDefaults(
   defineProps<{
@@ -29,21 +29,14 @@ const emit = defineEmits<{
 }>()
 
 const rootClass = computed(() =>
-  cn(
-    'agent-sidebar overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm transition-[width] duration-200',
-    props.collapsed ? 'w-16' : 'w-60',
-    props.className,
-  ),
+  cn('agent-sidebar', props.collapsed && 'is-collapsed', props.className),
 )
-const headerTitle = computed(() => props.collapsed ? 'AI' : props.title)
 const toggleIconClass = computed(() => props.collapsed ? '-rotate-90' : 'rotate-90')
 
 function itemClass(item: AgentSidebarItem) {
-  const active = item.id === props.activeId
   return cn(
-    'flex min-h-10 items-center gap-2 rounded-xl border-0 px-2 text-left',
-    active && 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-primary)]',
-    !active && 'bg-transparent text-[var(--varo-agent-text)]',
+    'agent-native-button agent-native-button--block agent-sidebar__item',
+    item.id === props.activeId && 'is-active',
   )
 }
 
@@ -55,46 +48,51 @@ function select(item: AgentSidebarItem) {
 
 <template>
   <view :class="rootClass" :data-collapsed="String(collapsed)">
-    <view class="flex min-h-12 items-center justify-between gap-2 border-b border-[var(--varo-agent-border)] px-3">
-      <text class="truncate text-xs font-bold text-[var(--varo-agent-foreground)]">
-        {{ headerTitle }}
-      </text>
-      <button class="agent-native-button agent-sidebar__toggle grid flex-none place-items-center rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" type="button" aria-label="Toggle sidebar" @click="emit('update:collapsed', !collapsed)">
-        <image class="h-3.5 w-3.5" :class="toggleIconClass" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
+    <view class="agent-sidebar__header">
+      <view class="agent-sidebar__heading">
+        <view class="agent-sidebar__brand" aria-hidden="true">
+          <image class="agent-sidebar__icon" :src="agentChatIcon" mode="aspectFit" />
+        </view>
+        <text v-if="!collapsed" class="agent-sidebar__title">
+          {{ title }}
+        </text>
+      </view>
+      <button class="agent-native-button agent-sidebar__toggle" type="button" aria-label="Toggle sidebar" @click="emit('update:collapsed', !collapsed)">
+        <image class="agent-sidebar__toggle-icon" :class="toggleIconClass" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
       </button>
     </view>
 
-    <button v-if="!collapsed" class="agent-native-button agent-sidebar__create mx-2.5 mt-2.5 flex min-h-9 items-center justify-center rounded-xl border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-success-soft)] text-[12px] font-bold text-[var(--varo-agent-primary)]" type="button" @click="emit('create')">
-      + New chat
+    <button v-if="!collapsed" class="agent-native-button agent-sidebar__create" type="button" @click="emit('create')">
+      <image class="agent-sidebar__create-icon" :src="agentPlusIcon" mode="aspectFit" aria-hidden="true" />
+      <text>New chat</text>
     </button>
 
-    <view class="grid gap-3 p-2.5" role="navigation">
-      <view v-for="group in groups" :key="group.id" class="grid gap-1">
-        <text v-if="!collapsed" class="px-2 text-[10px] font-bold uppercase tracking-[.1em] text-[var(--varo-agent-muted)]">
+    <view class="agent-sidebar__nav" role="navigation">
+      <view v-for="group in groups" :key="group.id" class="agent-sidebar__group">
+        <text v-if="!collapsed" class="agent-sidebar__group-label">
           {{ group.label }}
         </text>
         <button
           v-for="item in group.items"
           :key="item.id"
           :class="itemClass(item)"
-          class="agent-native-button agent-native-button--block"
           type="button"
           :title="item.label"
           :data-active="String(item.id === activeId)"
           @click="select(item)"
         >
-          <text class="grid h-7 w-7 flex-none place-items-center rounded-lg bg-[var(--varo-agent-fill)] text-[10px] font-bold text-[var(--varo-agent-text)]" aria-hidden="true">
-            {{ item.label.charAt(0).toUpperCase() }}
-          </text>
-          <view v-if="!collapsed" class="grid min-w-0 flex-1 gap-px">
-            <text class="truncate text-[12px] font-semibold">
+          <view class="agent-sidebar__mark" aria-hidden="true">
+            <image class="agent-sidebar__icon" :src="agentChatIcon" mode="aspectFit" />
+          </view>
+          <view v-if="!collapsed" class="agent-sidebar__copy">
+            <text class="agent-sidebar__name">
               {{ item.label }}
             </text>
-            <text v-if="item.meta" class="truncate text-[10px] text-[var(--varo-agent-muted)]">
+            <text v-if="item.meta" class="agent-sidebar__meta">
               {{ item.meta }}
             </text>
           </view>
-          <text v-if="!collapsed && item.badge !== undefined" class="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--varo-agent-surface)] px-1 text-[10px] leading-none tabular-nums text-[var(--varo-agent-text)]">
+          <text v-if="!collapsed && item.badge !== undefined" class="agent-sidebar__badge">
             {{ item.badge }}
           </text>
         </button>
@@ -106,6 +104,168 @@ function select(item: AgentSidebarItem) {
 </template>
 
 <style>
+.agent-sidebar {
+  display: grid;
+  align-content: start;
+  width: 248px;
+  min-height: 360px;
+  overflow: hidden;
+  background: var(--varo-agent-surface-strong, #f8fafc);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 18px;
+}
+
+.agent-sidebar.is-collapsed {
+  width: 64px;
+}
+
+.agent-sidebar__header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 0 12px;
+  background: var(--varo-agent-surface, #fff);
+  border-bottom: 1px solid var(--varo-agent-border, #dbe3ea);
+}
+
+.agent-sidebar__heading {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.agent-sidebar__brand,
+.agent-sidebar__mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--varo-agent-primary-soft, #ccfbf1);
+  border-radius: 8px;
+}
+
+.agent-sidebar__icon,
+.agent-sidebar__create-icon,
+.agent-sidebar__toggle-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.agent-sidebar__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 760;
+  color: var(--varo-agent-foreground, #172033);
+  white-space: nowrap;
+}
+
+.agent-sidebar__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--varo-agent-fill, #f1f5f9);
+  border: 0;
+  border-radius: 9px;
+}
+
+.agent-sidebar__create {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin: 10px 10px 5px;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--varo-agent-primary, #0f766e);
+  background: var(--varo-agent-primary-soft, #ccfbf1);
+  border: 1px solid var(--varo-agent-primary, #0f766e);
+  border-radius: 10px;
+}
+
+.agent-sidebar__nav {
+  display: grid;
+  gap: 10px;
+  padding: 7px;
+}
+
+.agent-sidebar__group {
+  display: grid;
+  gap: 3px;
+}
+
+.agent-sidebar__group-label {
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--varo-agent-muted, #667085);
+}
+
+.agent-sidebar__item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 7px;
+  color: var(--varo-agent-muted, #667085);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+}
+
+.agent-sidebar__item.is-active {
+  color: var(--varo-agent-primary, #0f766e);
+  background: var(--varo-agent-surface, #fff);
+}
+
+.agent-sidebar__copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-sidebar__name,
+.agent-sidebar__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agent-sidebar__name {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.agent-sidebar__meta {
+  font-size: 10px;
+  color: var(--varo-agent-muted, #667085);
+}
+
+.agent-sidebar__badge {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--varo-agent-text, #475569);
+  background: var(--varo-agent-fill, #f1f5f9);
+  border-radius: 999px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .agent-sidebar {
     transition: none;

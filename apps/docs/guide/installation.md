@@ -73,6 +73,31 @@ copy-owned 小程序 Registry 组件使用真正的 Wevu SFC，并通过 `styleI
 
 `@varo-ui/cli` 只复制 Registry 文件并输出 `Dependencies:` / `Dev dependencies:`，不会安装 npm 包；每次执行 `add` 后都要安装它报告且工程尚未包含的依赖。`src/styles.css`、Registry 主题 `src/styles/varo.css` 的托管注册和完整 Tailwind 选项见 [Wevu Registry 一次性接入](/guide/shadcn-mode)。
 
+## 在浏览器预览小程序产物
+
+在 Varo 仓库根目录启动独立的 Web 兼容预览：
+
+```bash
+pnpm --filter @varo/playground-weapp-preview dev
+```
+
+开发服务先构建小程序，再在 `http://127.0.0.1:5182` 提供按钮、受控输入、插槽生命周期和 Agent 内容场景。修改原生示例后，可运行 `pnpm --filter @varo/playground-weapp-preview prepare:artifacts` 更新编译产物。
+
+wx 运行时已抽到私有包 `@varo/weapp-web`：Vite 插件负责把 Wevu 产物编进 `virtual:varo-native-artifacts`，运行时 harness 可替换 `wx` API 和原生元素。当前 playground 只是这个包的沙盒消费者；包暂不对外发布。该宿主使用 glass-easel 的 DOM 后端运行 Wevu 生成的 JS、JSON、WXML 和 WXSS，不会换成 H5 业务组件。窄窗口会缩放预览画面，但保留选定的原生视口宽度。**这不是微信客户端或真机模拟器**；登录、支付等未支持能力会失败，不会伪造成功结果。
+
+生产构建与真实浏览器回归：
+
+```bash
+pnpm exec turbo run build --filter=@varo/playground-weapp-preview
+pnpm --filter @varo/playground-weapp-preview preview
+# 在另一个终端运行；需要本机安装 Chrome
+pnpm --filter @varo/playground-weapp-preview smoke:browser
+```
+
+生产预览默认使用 `http://127.0.0.1:4182`，可部署产物位于 `apps/playground-weapp-preview/dist`。浏览器回归覆盖原生交互、事件次数、上下文、流式取消/继续、样式边界与错误恢复，并将截图写入临时目录。可用 `PREVIEW_URL` 指定其他已启动的预览地址。
+
+仓库 lockfile 记录该运行链需要的 SDK 版本；CLI 不会把这些依赖安装到外部业务项目。微信专属能力、真机性能与最终视觉仍需在微信环境验收。
+
 ## 工程化建议
 
 - 文档站、playground 与组件包统一放在 monorepo 内维护

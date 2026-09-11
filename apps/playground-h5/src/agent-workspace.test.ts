@@ -79,7 +79,7 @@ describe('AgentWorkspace H5 block', () => {
     expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
-  it('keeps thread version cards inside a clipped horizontal scroller', () => {
+  it('keeps thread version cards inside a clipped workspace card', () => {
     const wrapper = mount(AgentWorkspace, {
       props: {
         activeVersionId: 'root',
@@ -88,12 +88,12 @@ describe('AgentWorkspace H5 block', () => {
         versions,
       },
     })
-    const scroller = wrapper.get('[aria-label="会话版本列表"]')
+    const list = wrapper.get('[aria-label="会话版本列表"]')
     const card = wrapper.get('[role="listitem"]')
 
-    expect(wrapper.get('[aria-label="会话版本"]').classes()).toEqual(expect.arrayContaining(['min-w-0', 'max-w-full', 'overflow-hidden']))
-    expect(scroller.classes()).toEqual(expect.arrayContaining(['min-w-0', 'w-full', 'overflow-x-auto']))
-    expect(card.classes().some(name => name.includes('w-[min(252px,100%)]'))).toBe(true)
+    expect(wrapper.get('[aria-label="会话版本"]').classes()).toContain('agent-thread-versions')
+    expect(list.classes()).toContain('agent-thread-versions__list')
+    expect(card.classes()).toContain('agent-thread-versions__card')
   })
 
   it.each(['page', 'docked'] as const)('hides the %s placement when closed', (placement) => {

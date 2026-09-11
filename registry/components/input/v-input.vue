@@ -132,6 +132,7 @@ const props = withDefaults(
     ignoreCompositionEvent: true,
     invalid: false,
     labelWidth: '',
+    maxLength: -1,
     nickNameReview: false,
     randomNumber: false,
     readonly: false,
@@ -251,6 +252,15 @@ const nativeType = computed(() => {
 
   return 'text'
 })
+
+function normalizeRows(value: number | string | undefined) {
+  if (value === undefined || value === '') {
+    return undefined
+  }
+
+  const rows = Number(value)
+  return Number.isFinite(rows) && rows > 0 ? Math.trunc(rows) : undefined
+}
 const autosizeEnabled = computed(() => Boolean(props.autosize))
 const controlStyle = computed(() => {
   const declarations = [`text-align:${props.align}`]
@@ -324,15 +334,6 @@ const dataFocused = computed(() => String(focused.value))
 const dataInvalid = computed(() => String(field.state.invalid.value))
 const dataReadonly = computed(() => String(props.readonly))
 const resolvedFocus = computed(() => focusRequested.value || props.focus)
-
-function normalizeRows(value: number | string | undefined) {
-  if (value === undefined || value === '') {
-    return undefined
-  }
-
-  const rows = Number(value)
-  return Number.isFinite(rows) && rows > 0 ? Math.trunc(rows) : undefined
-}
 
 function eventValue(event: unknown, fallback: string) {
   if (typeof event !== 'object' || event === null) {

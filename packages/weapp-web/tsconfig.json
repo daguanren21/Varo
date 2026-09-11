@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
+    "rootDir": ".",
+    "types": ["node", "vite/client", "vitest/globals"],
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
+}

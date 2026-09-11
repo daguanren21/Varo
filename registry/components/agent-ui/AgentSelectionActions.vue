@@ -19,25 +19,71 @@ const emit = defineEmits<{
   select: [payload: { action: AgentSelectionAction, text: string }]
 }>()
 
-const rootClass = computed(() =>
-  cn('agent-selection-actions overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
-)
+const rootClass = computed(() => cn('agent-selection-actions', props.className))
+
+function selectAction(id: string) {
+  const action = props.actions.find(entry => entry.id === id)
+  if (action) {
+    emit('select', { action, text: props.text })
+  }
+}
 </script>
 
 <template>
   <view :class="rootClass">
-    <view class="border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-3.5 py-3">
-      <text class="block border-l-[3px] border-[var(--varo-agent-primary)] pl-3 text-[12px] leading-5 text-[var(--varo-agent-text)]">
-        {{ text }}
-      </text>
-    </view>
-    <view class="flex flex-wrap gap-2 p-2.5">
-      <button v-for="action in actions" :key="action.id" class="agent-native-button min-h-8 rounded-lg border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[11px] font-bold text-[var(--varo-agent-text)]" hover-class="border-[var(--varo-agent-primary)] text-[var(--varo-agent-primary)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', { action, text })">
+    <text class="agent-selection-actions__quote">
+      {{ text }}
+    </text>
+    <view class="agent-selection-actions__toolbar">
+      <button
+        v-for="action in actions"
+        :key="action.id"
+        class="agent-native-button agent-selection-actions__action"
+        type="button"
+        @click="selectAction(action.id)"
+      >
         {{ action.label }}
       </button>
     </view>
   </view>
 </template>
+
+<style>
+.agent-selection-actions {
+  overflow: hidden;
+  background: var(--varo-agent-surface, #fff);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 16px;
+}
+
+.agent-selection-actions__quote {
+  display: block;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--varo-agent-text, #475569);
+  background: var(--varo-agent-surface-strong, #f8fafc);
+  border-left: 3px solid var(--varo-agent-primary, #0f766e);
+}
+
+.agent-selection-actions__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 10px 12px 12px;
+}
+
+.agent-selection-actions__action {
+  min-height: 32px;
+  padding: 0 11px;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--varo-agent-text, #475569);
+  background: var(--varo-agent-surface, #fff);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 999px;
+}
+</style>
 
 <json lang="jsonc">
 {

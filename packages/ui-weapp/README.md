@@ -1,11 +1,11 @@
 # @varo-ui/weapp
 
-Tree-shakeable component wrappers for Varo mini-program projects. The supported build chain is `weapp-vite@7.0.4` with `wevu@7.0.4`.
+Tree-shakeable component wrappers for Varo mini-program projects. The supported build chain is `weapp-vite` 7.x with `wevu` 7.x.
 
 ## Install
 
 ```bash
-pnpm add @varo-ui/weapp wevu@7.0.4
+pnpm add @varo-ui/weapp wevu
 ```
 
 ## Usage

@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { agentDemoCatalog } from '../agent-component-catalog'
 import AgentComponentDemo from './AgentComponentDemo.vue'
@@ -20,6 +20,7 @@ const components = [
   'response-actions',
   'artifact',
   'sources',
+  'rag-pipeline',
   'attachments',
   'event-renderer',
   'message-scroller',
@@ -88,6 +89,19 @@ describe('AgentComponentDemo', () => {
     await wrapper.get('[data-demo-tab="code"]').trigger('click')
     expect(wrapper.get('.agent-component-demo__source').text()).toContain('AgentPromptSuggestions')
     expect(wrapper.get('.agent-component-demo__source').text()).toContain(':suggestions=\"suggestions\"')
+  })
+
+  it('reruns a completed RAG pipeline from the footer action', async () => {
+    const wrapper = mount(AgentComponentDemo, { props: { component: 'rag-pipeline' } })
+    expect(wrapper.get('[data-rag-stage="generate"]').attributes('data-status')).toBe('completed')
+    expect(wrapper.get('[data-rag-source="support"]').text()).toContain('客服工单')
+    await wrapper.get('[data-rag-citation="support"]').trigger('click')
+    expect(wrapper.get('output').text()).toBe('客服工单')
+
+    await wrapper.get('.agent-rag__action').trigger('click')
+    await flushPromises()
+    expect(wrapper.get('[data-rag-stage="query"]').attributes('data-status')).not.toBe('completed')
+    expect(wrapper.get('.agent-rag__action').text()).not.toBe('重新运行')
   })
 
   it('renders a neutral approval surface with explicit selected and decision states', async () => {

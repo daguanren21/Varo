@@ -1,0 +1,65 @@
+{
+  "name": "@varo/weapp-web",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pluggable WeChat mini-program Web runtime: Vite artifact plugin and replaceable wx harness.",
+  "author": "daguanren21 <1363917353@qq.com>",
+  "license": "MIT",
+  "homepage": "https://daguanren21.github.io/Varo/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daguanren21/Varo.git",
+    "directory": "packages/weapp-web"
+  },
+  "bugs": {
+    "url": "https://github.com/daguanren21/Varo/issues"
+  },
+  "sideEffects": [
+    "./src/runtime/native-elements.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./plugin": {
+      "types": "./src/plugin/index.ts",
+      "import": "./src/plugin/index.ts"
+    },
+    "./runtime": {
+      "types": "./src/runtime/index.ts",
+      "import": "./src/runtime/index.ts"
+    },
+    "./runtime/native-elements.css": "./src/runtime/native-elements.css",
+    "./source": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "echo @varo/weapp-web ships source until a public release",
+    "clean": "echo @varo/weapp-web has no generated dist",
+    "dev": "echo @varo/weapp-web ships source until a public release",
+    "lint": "echo weapp-web lint pending",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "echo weapp-web has no e2e"
+  },
+  "peerDependencies": {
+    "vite": "^8.2.2"
+  },
+  "dependencies": {
+    "glass-easel": "1.1.0",
+    "glass-easel-miniprogram-adapter": "1.1.0",
+    "glass-easel-stylesheet-compiler": "1.1.0",
+    "glass-easel-template-compiler": "1.1.0",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  }
+}

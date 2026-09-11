@@ -3,6 +3,10 @@ import type { AgentMarkdownViewNode } from '@varo-ui/ai'
 import { toAgentRichTextNodes } from '@varo-ui/ai'
 import { computed } from 'wevu'
 
+defineOptions({
+  options: { virtualHost: true },
+})
+
 const props = defineProps<{
   node: AgentMarkdownViewNode
 }>()
@@ -72,11 +76,11 @@ function headingClass(level?: number) {
     </scroll-view>
   </view>
 
-  <text v-else-if="node.kind === 'inline-code' || node.kind === 'math-inline'" class="rounded-md border border-current/25 bg-current/10 px-1 py-0.5 font-mono text-[12px] text-inherit">
+  <text v-else-if="node.kind === 'inline-code' || node.kind === 'math-inline'" class="rounded-md border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-1 py-0.5 font-mono text-[12px] text-inherit">
     {{ node.text }}
   </text>
 
-  <text v-else-if="node.kind === 'link'" class="font-semibold text-inherit underline" role="link" @click="node.href && emit('link', node.href)">
+  <text v-else-if="node.kind === 'link'" class="font-semibold text-inherit underline" role="link" tabindex="0" @click="node.href && emit('link', node.href)">
     <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
     <text v-if="!hasChildren">
       {{ node.text }}
@@ -86,7 +90,7 @@ function headingClass(level?: number) {
   <image v-else-if="node.kind === 'image' && node.href" class="my-2 h-48 w-full rounded-xl bg-[var(--varo-agent-fill)]" :src="node.href" :alt="node.alt" mode="aspectFit" />
   <view v-else-if="node.kind === 'thematic-break'" class="my-3 h-px bg-[var(--varo-agent-border)]" />
 
-  <view v-else-if="node.kind === 'blockquote'" class="my-2 border-l-[3px] border-current/50 pl-3 text-inherit">
+  <view v-else-if="node.kind === 'blockquote'" class="my-2 border-l-[3px] border-[var(--varo-agent-border-strong)] pl-3 text-inherit">
     <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
   </view>
 
@@ -100,7 +104,7 @@ function headingClass(level?: number) {
     <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
   </view>
 
-  <view v-else-if="node.kind === 'table-cell'" class="min-w-32 flex-1 border-r border-current/20 px-2.5 py-2 text-xs last:border-0" :class="[node.header && 'bg-current/5 font-bold text-inherit']">
+  <view v-else-if="node.kind === 'table-cell'" class="min-w-32 flex-1 border-r border-[var(--varo-agent-border)] px-2.5 py-2 text-xs last:border-0" :class="[node.header && 'bg-[var(--varo-agent-surface-strong)] font-bold text-inherit']">
     <rich-text v-if="richTextNodes" :nodes="richTextNodes" />
     <template v-else>
       <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
@@ -152,6 +156,9 @@ function headingClass(level?: number) {
 <json lang="jsonc">
 {
   "component": true,
-  "styleIsolation": "apply-shared"
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "agent-markdown-node": "./AgentMarkdownNode"
+  }
 }
 </json>

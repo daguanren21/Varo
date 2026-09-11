@@ -4,6 +4,12 @@
 
 <RegistryInstallStrip item="components/robot-chat" :targets="['weapp']" :wrapper-targets="[]" locale="zh" />
 
+## 演示
+
+<RobotChatDemo locale="zh" />
+
+文档站不能加载 chatbotwidget。演示画出欢迎语、operateCard、发送和 `queryCallback`。这是 Web Preview 的可见宿主，不是微信对话开放平台。
+
 ## 前置配置
 
 小程序需先开通插件，并在 `app.json` 中使用固定别名 `varoRobot`：

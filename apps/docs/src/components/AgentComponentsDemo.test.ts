@@ -27,6 +27,9 @@ describe('AgentComponentsDemo', () => {
     await wrapper.get('.ai-docs-demo__follow').trigger('click')
     await vi.advanceTimersByTimeAsync(20)
     expect(transcriptElement.scrollTop).toBe(900)
+    expect(wrapper.get('[data-rag-stage="generate"]').attributes('data-status')).toBe('completed')
+    expect(wrapper.get('[data-rag-source="support"]').text()).toContain('客服工单')
+
     wrapper.unmount()
   })
 })

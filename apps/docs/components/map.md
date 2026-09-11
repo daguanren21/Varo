@@ -2,7 +2,11 @@
 
 `VMap` 是微信小程序原生 `<map>` 的类型化 Wevu 封装，统一尺寸、地图能力和事件命名。该组件仅支持 `weapp` target；业务接口、位置权限和地图 Context 仍由页面负责。
 
-<RegistryInstallStrip item="components/map" :targets="['weapp']" :wrapper-targets="[]" locale="zh" />
+## 演示
+
+<MapDemo locale="zh" />
+
+文档站不能跑微信客户端同层地图。演示用腾讯地图 JS API GL 展示同一套 VMap 契约：中心点、标记和 `regionchange`。定位权限和 Map Context 仍只在小程序运行时可用。
 
 ## 使用
 
