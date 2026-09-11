@@ -29,7 +29,7 @@ Varo 的 Dialog 采用 parts 暴露方式：`VDialogRoot`、`VDialogTrigger`、`
 
 ## 小程序运行时说明
 
-微信小程序原生运行时没有浏览器 `document` 键盘事件，也不提供 DOM 焦点陷阱、`inert` 或 portal 语义。因此原生 Weapp 使用 `VDialogClose` 与 overlay 点击作为关闭入口。仓库当前 Vue-modeled Weapp adapter 在存在 `document` 的 browser/test surface 会把 `Escape` 映射为 `escape-key`，但这不代表原生微信运行时具备键盘或 DOM 焦点能力。reason/cancel 状态契约在两种 surface 保持一致。
+微信小程序原生运行时没有浏览器 `document` 键盘事件，也不提供 DOM 焦点陷阱、`inert` 或 portal 语义。因此 Weapp 使用 `VDialogClose` 与 overlay 点击作为关闭入口。weapp Registry 安装的是 wevu SFC parts（`v-dialog-root.vue` 等），不依赖 `document`。reason/cancel 状态契约与 H5 保持一致。
 
 ## Root Props
 
@@ -109,7 +109,7 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 - 支持受控与非受控两种模式
 - 未取消的状态转换只写入并发出一次 `update:open`
 - H5 支持 overlay、`Escape`、焦点陷阱、背景 `inert` 与关闭后的 Trigger 焦点恢复
-- Weapp 使用显式 Close/overlay；不承诺原生运行时不存在的 DOM 键盘或焦点行为
+- Weapp 使用 wevu SFC parts 与显式 Close/overlay；不绑定 `document`，也不承诺原生运行时不存在的 DOM 键盘或焦点行为
 - parts 设计更适合企业内部继续收敛成统一 Modal API
 
 ## 组合建议

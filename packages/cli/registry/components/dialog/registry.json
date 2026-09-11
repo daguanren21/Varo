@@ -9,10 +9,24 @@
     "weapp"
   ],
   "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "@varo-ui/headless",
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/primitives"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -21,8 +35,33 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/dialog/dialog.ts",
-      "to": "src/components/ui/dialog.ts"
+      "from": "registry/components/dialog/v-dialog-root.vue",
+      "to": "src/components/ui/v-dialog-root.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/dialog/v-dialog-trigger.vue",
+      "to": "src/components/ui/v-dialog-trigger.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/dialog/v-dialog-overlay.vue",
+      "to": "src/components/ui/v-dialog-overlay.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/dialog/v-dialog-content.vue",
+      "to": "src/components/ui/v-dialog-content.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/dialog/v-dialog-close.vue",
+      "to": "src/components/ui/v-dialog-close.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/dialog/dialog-context.ts",
+      "to": "src/components/ui/dialog-context.ts"
     }
   ],
   "docs": "/components/dialog"

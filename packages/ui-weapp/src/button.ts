@@ -4,7 +4,6 @@ import { contrastSafeForeground } from '@varo-ui/theme'
 
 import {
   ButtonRoot,
-
 } from '@varo/primitives-weapp'
 import { createVariantClass } from '@varo/shared'
 import { computed, defineComponent, h } from 'vue'
@@ -116,10 +115,11 @@ export const VButton = defineComponent({
 
     function renderContent() {
       const content = props.loading && props.loadingText ? [props.loadingText] : slots.default?.() ?? []
+      const label = h('span', { class: 'varo-button__label' }, content)
 
       if (!props.loading) {
         const icon = renderIcon()
-        return props.iconPosition === 'right' ? [...content, ...icon] : [...icon, ...content]
+        return props.iconPosition === 'right' ? [label, ...icon] : [...icon, label]
       }
 
       return [
@@ -127,7 +127,7 @@ export const VButton = defineComponent({
           'class': 'varo-button__loading-icon',
           'aria-hidden': 'true',
         }),
-        ...content,
+        label,
       ]
     }
 

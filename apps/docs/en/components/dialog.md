@@ -29,7 +29,7 @@ Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `
 
 ## Mini-program runtime notes
 
-The native WeChat mini-program runtime has no browser `document` keyboard events and does not provide DOM focus trapping, `inert`, or portal semantics, so native Weapp uses `VDialogClose` and overlay presses as close paths. The repository's current Vue-modeled Weapp adapter maps `Escape` to `escape-key` when it runs on a browser/test surface with `document`; that modeled behavior does not promise keyboard or DOM focus capabilities in native WeChat. The reason/cancel state contract remains the same on both surfaces.
+The native WeChat mini-program runtime has no browser `document` keyboard events and does not provide DOM focus trapping, `inert`, or portal semantics. Weapp therefore uses `VDialogClose` and overlay presses as close paths. The weapp Registry installs wevu SFC parts (`v-dialog-root.vue` and siblings) and does not bind `document`. The reason/cancel state contract remains the same as H5.
 
 ## Root Props
 
@@ -109,7 +109,7 @@ When `open` is provided, that controlled prop remains authoritative. An allowed 
 - supports controlled and uncontrolled modes
 - writes state and emits `update:open` exactly once for each allowed transition
 - H5 supports overlay close, `Escape`, focus trapping, background `inert`, and Trigger focus restoration
-- Weapp uses explicit Close/overlay paths and does not promise unavailable native DOM keyboard or focus behavior
+- Weapp uses wevu SFC parts with explicit Close/overlay paths and does not bind `document` or promise unavailable native DOM keyboard or focus behavior
 - the parts model is a better base for an enterprise modal API than a single rigid component
 
 ## Composition Guidance

@@ -86,6 +86,27 @@ describe('ui-weapp button', () => {
     expect(style).toContain('background: var(--varo-button-hover-fill)')
     expect(style).toContain('data-loading=\'true\'')
     expect(style).toContain('cursor: progress')
+    expect(style).toContain('.varo-button::after')
+    expect(style).toContain('.varo-button__label')
+    expect(style).toContain('justify-content: center')
+    expect(style).toContain('box-sizing: border-box')
+  })
+
+  it('keeps the default label centered when an icon is present', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        icon: '✓',
+        block: true,
+      },
+      slots: {
+        default: () => '抖音一键登录',
+      },
+    })
+
+    expect(wrapper.get('.varo-button__icon').attributes('data-position')).toBe('left')
+    expect(wrapper.get('.varo-button__label').text()).toBe('抖音一键登录')
+    expect(wrapper.attributes('data-block')).toBe('true')
   })
 
   it('renders a borderless text variant with a custom color', () => {

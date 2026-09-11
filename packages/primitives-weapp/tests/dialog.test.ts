@@ -98,7 +98,8 @@ describe('primitives-weapp dialog', () => {
     expect(wrapper.text()).not.toContain('Dialog body')
   })
 
-  it('closes when escape is pressed in the modeled adapter runtime', async () => {
+  it('does not bind document Escape listeners on the weapp adapter', async () => {
+    const addEventListener = vi.spyOn(document, 'addEventListener')
     const onOpenChange = vi.fn()
     const wrapper = mount(DialogRoot, {
       props: {
@@ -111,10 +112,12 @@ describe('primitives-weapp dialog', () => {
     })
 
     expect(wrapper.text()).toContain('Dialog body')
+    expect(addEventListener.mock.calls.some(call => call[0] === 'keydown')).toBe(false)
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await wrapper.vm.$nextTick()
-    expect((onOpenChange.mock.calls[0]?.[1] as DialogOpenChangeDetails).reason).toBe('escape-key')
-    expect(wrapper.text()).not.toContain('Dialog body')
+    expect(onOpenChange).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('Dialog body')
+    addEventListener.mockRestore()
   })
 
   it('keeps an uncontrolled dialog open and suppresses updates when close is canceled', async () => {
