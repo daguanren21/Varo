@@ -149,6 +149,11 @@ page {
     "pages/form-showcase/index",
     "pages/robot-chat-showcase/index",
     "pages/agent-workspace/index",
+    "pages/web-preview/index",
+    "pages/web-preview-agent/index",
+    "pages/web-preview-map/index",
+    "pages/web-preview-robot-chat/index",
+    "pages/web-preview-rag/index",
     "pages/index/index"
   ],
   "subPackages": [

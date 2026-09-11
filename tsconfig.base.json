@@ -9,6 +9,9 @@
     "paths": {
       "@varo/shared": ["packages/shared/src/index.ts"],
       "@varo/utils": ["packages/utils/src/index.ts"],
+      "@varo/weapp-web": ["packages/weapp-web/src/index.ts"],
+      "@varo/weapp-web/plugin": ["packages/weapp-web/src/plugin/index.ts"],
+      "@varo/weapp-web/runtime": ["packages/weapp-web/src/runtime/index.ts"],
       "@varo-ui/theme": ["packages/theme/src/index.ts"],
       "@varo-ui/theme/weapp": ["packages/theme/src/weapp.ts"],
       "@varo-ui/theme/weapp-vite": ["packages/theme/src/weapp-vite.ts"],

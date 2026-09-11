@@ -3,7 +3,6 @@ import type { ClassValue } from '../../lib/cn'
 import type { AgentAdvancedStatus } from './advanced-types'
 import { computed, shallowRef } from 'wevu'
 import { cn } from '../../lib/cn'
-import { agentChevronDownIcon } from './agent-icons'
 
 const props = withDefaults(
   defineProps<{
@@ -28,58 +27,211 @@ const emit = defineEmits<{
 }>()
 
 const open = shallowRef(props.defaultOpen || props.status === 'running' || props.status === 'failed')
-const rootClass = computed(() =>
-  cn('agent-tool-result overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
+const meta = computed(() => [props.duration, props.summary].filter(Boolean).join(' · '))
+const openAttr = computed(() => String(open.value))
+const statusText = computed(() => {
+  if (props.status === 'completed') {
+    return 'Completed'
+  }
+  if (props.status === 'failed') {
+    return 'Failed'
+  }
+  if (props.status === 'running') {
+    return 'Running'
+  }
+  return 'Waiting'
+})
+const rootClass = computed(() => cn('agent-tool-result', !open.value && 'is-closed', props.className))
+const headerClass = computed(() =>
+  cn('agent-native-button agent-native-button--block agent-tool-result__header'),
+)
+const statusChipClass = computed(() =>
+  cn('agent-tool-result__status', `is-${props.status}`),
+)
+const dotClass = computed(() =>
+  cn(
+    'agent-tool-result__status-dot',
+    props.status === 'running' && 'agent-tool-result__running',
+  ),
 )
 
 function toggle() {
   open.value = !open.value
   emit('update:open', open.value)
 }
-
-function dotClass() {
-  return cn(
-    'h-2 w-2 flex-none rounded-full',
-    props.status === 'completed' && 'bg-[var(--varo-agent-success)]',
-    props.status === 'running' && 'agent-tool-result__running bg-[var(--varo-agent-primary)] shadow-[0_0_0_3px_#ccfbf1]',
-    props.status === 'failed' && 'bg-[var(--varo-agent-danger)]',
-    props.status === 'waiting' && 'bg-[var(--varo-agent-border-strong)]',
-  )
-}
 </script>
 
 <template>
-  <view :class="rootClass" :data-status="status">
-    <button class="agent-native-button agent-native-button--block flex min-h-12 items-center justify-between gap-3 border-0 bg-[var(--varo-agent-surface)] px-[13px] text-left" type="button" :aria-expanded="open" @click="toggle">
-      <view class="flex min-w-0 items-center gap-2.5">
-        <text :class="dotClass()" aria-hidden="true" />
-        <text class="truncate text-xs font-bold text-[var(--varo-agent-foreground)]">
+  <view :class="rootClass" :data-open="openAttr" :data-status="status">
+    <button :class="headerClass" type="button" :aria-expanded="open" @click="toggle">
+      <view class="agent-tool-result__command">
+        <text class="agent-tool-result__prompt" aria-hidden="true">
+          $
+        </text>
+        <text class="agent-tool-result__name">
           {{ name }}
         </text>
       </view>
-      <view class="flex flex-none items-center gap-2">
-        <text class="text-[11px] text-[var(--varo-agent-muted)]">
-          {{ duration || summary }}
+      <view class="agent-tool-result__meta">
+        <view :class="statusChipClass">
+          <view :class="dotClass" aria-hidden="true" />
+          <text>{{ statusText }}</text>
+        </view>
+        <text v-if="meta" class="agent-tool-result__duration">
+          {{ meta }}
         </text>
-        <image class="h-4 w-4 transition-transform" :class="[open && 'rotate-180']" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
       </view>
     </button>
 
-    <view v-if="open" class="border-t border-slate-800 bg-slate-950 p-3 text-slate-300">
+    <view v-if="open" class="agent-tool-result__body">
       <slot>
-        <text class="block whitespace-pre-wrap font-mono text-[11px] leading-[17px]">
+        <text class="agent-tool-result__output">
           {{ output }}
         </text>
       </slot>
     </view>
 
-    <button v-if="status === 'failed' && open" class="agent-native-button m-3 min-h-8 rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-[11px] font-bold text-[var(--varo-agent-danger)]" type="button" @click="emit('retry')">
+    <button v-if="status === 'failed' && open" class="agent-native-button agent-tool-result__retry" type="button" @click="emit('retry')">
       Retry
     </button>
   </view>
 </template>
 
 <style>
+.agent-tool-result {
+  overflow: hidden;
+  color: #dbeafe;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+}
+
+.agent-tool-result__header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  color: inherit;
+  text-align: left;
+  background: #111c30;
+  border: 0;
+  border-bottom: 1px solid #26334a;
+}
+
+.agent-tool-result.is-closed .agent-tool-result__header {
+  border-bottom-color: transparent;
+}
+
+.agent-tool-result__command {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.agent-tool-result__prompt {
+  flex: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2dd4bf;
+}
+
+.agent-tool-result__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 650;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.agent-tool-result__meta {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+}
+
+.agent-tool-result__status {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 750;
+  color: #cbd5e1;
+  background: rgb(148 163 184 / 12%);
+  border: 1px solid rgb(148 163 184 / 18%);
+  border-radius: 999px;
+}
+
+.agent-tool-result__status.is-completed,
+.agent-tool-result__status.is-running {
+  color: #5eead4;
+  background: rgb(45 212 191 / 12%);
+  border-color: rgb(45 212 191 / 24%);
+}
+
+.agent-tool-result__status.is-failed {
+  color: #fca5a5;
+  background: rgb(248 113 113 / 12%);
+  border-color: rgb(248 113 113 / 24%);
+}
+
+.agent-tool-result__status-dot {
+  width: 7px;
+  height: 7px;
+  background: #94a3b8;
+  border-radius: 999px;
+}
+
+.agent-tool-result__status.is-completed .agent-tool-result__status-dot,
+.agent-tool-result__status.is-running .agent-tool-result__status-dot {
+  background: #2dd4bf;
+}
+
+.agent-tool-result__status.is-failed .agent-tool-result__status-dot {
+  background: #f87171;
+}
+
+.agent-tool-result__duration {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #94a3b8;
+}
+
+.agent-tool-result__body {
+  padding: 12px;
+  color: #cbd5e1;
+  background: #0f172a;
+}
+
+.agent-tool-result__output {
+  display: block;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.agent-tool-result__retry {
+  min-height: 32px;
+  padding: 0 10px;
+  margin: 0 12px 12px;
+  font-size: 11px;
+  font-weight: 750;
+  color: #fecaca;
+  background: rgb(248 113 113 / 10%);
+  border: 1px solid rgb(248 113 113 / 28%);
+  border-radius: 9px;
+}
+
 .agent-tool-result__running {
   animation: agent-tool-result-pulse 1s ease-in-out infinite;
 }

@@ -35,6 +35,23 @@ const emit = defineEmits<{
 
 const internalValue = shallowRef(props.value ?? props.defaultValue)
 const currentValue = computed(() => props.value ?? internalValue.value)
+const renderedChoices = computed(() =>
+  props.choices.map((choice) => {
+    const disabled = Boolean(choice.disabled)
+    const selected = choice.value === currentValue.value
+    let stateClass = ''
+    if (selected) { stateClass = 'agent-approval__choice--selected' }
+    if (disabled) { stateClass += `${stateClass ? ' ' : ''}agent-approval__choice--disabled` }
+    return {
+      ...choice,
+      ariaChecked: selected,
+      stateClass,
+      disabled,
+      disabledData: String(disabled),
+      selectedData: String(selected),
+    }
+  }),
+)
 
 function select(value: string) {
   internalValue.value = value
@@ -51,7 +68,7 @@ function approve() {
     <view class="agent-approval__body">
       <view class="agent-approval__header">
         <view class="agent-approval__icon" aria-hidden="true">
-          <image :src="agentShieldAlertIcon" mode="aspectFit" />
+          <image class="agent-approval__icon-image" :src="agentShieldAlertIcon" mode="aspectFit" />
         </view>
         <view class="agent-approval__heading">
           <text class="agent-approval__eyebrow">
@@ -68,15 +85,16 @@ function approve() {
 
       <view v-if="choices.length" class="agent-approval__choices" role="radiogroup">
         <button
-          v-for="choice in choices"
+          v-for="choice in renderedChoices"
           :key="choice.value"
-          class="agent-approval__choice"
+          class="agent-native-button agent-approval__choice"
+          :class="choice.stateClass"
           type="button"
           role="radio"
           :disabled="choice.disabled"
-          :aria-checked="choice.value === currentValue"
-          :data-disabled="String(Boolean(choice.disabled))"
-          :data-selected="String(choice.value === currentValue)"
+          :aria-checked="choice.ariaChecked"
+          :data-disabled="choice.disabledData"
+          :data-selected="choice.selectedData"
           hover-class="agent-approval__choice--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
@@ -111,7 +129,7 @@ function approve() {
   </VCard>
 </template>
 
-<style scoped>
+<style>
 .agent-approval {
   color: var(--varo-ui-text);
   background: var(--varo-ui-surface);
@@ -143,7 +161,7 @@ function approve() {
   border-radius: 9px;
 }
 
-.agent-approval__icon image {
+.agent-approval__icon-image {
   width: 20px;
   height: 20px;
 }
@@ -196,12 +214,12 @@ function approve() {
   border-radius: 10px;
 }
 
-.agent-approval__choice[data-selected='true'] {
+.agent-approval__choice--selected {
   background: var(--varo-ui-primary-soft);
   border-color: var(--varo-ui-primary);
 }
 
-.agent-approval__choice[data-disabled='true'] {
+.agent-approval__choice--disabled {
   opacity: 0.5;
 }
 
@@ -218,7 +236,7 @@ function approve() {
   border-radius: 999px;
 }
 
-.agent-approval__choice[data-selected='true'] .agent-approval__radio {
+.agent-approval__choice--selected .agent-approval__radio {
   background: var(--varo-ui-primary);
   border: 4px solid var(--varo-ui-surface);
   box-shadow: 0 0 0 1px var(--varo-ui-primary);

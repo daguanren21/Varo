@@ -71,7 +71,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 | [AgentSourceList](./sources)               | 来源列表                             |
 | [AgentCitations](./citations)              | 可折叠引用集合                       |
 | `AgentRetrievalProgress`                   | 可见检索队列与失败重试               |
-| `AgentRagPipeline`                         | 五阶段 RAG、上下文组装与流式引用联动 |
+| [AgentRagPipeline](./rag-pipeline)         | 五阶段 RAG、上下文组装与流式引用联动 |
 | `AgentSourceReceipt`                       | 回答完成后的来源读取回执             |
 | [AgentContextCard](./context-card)         | 检索知识块                           |
 | [AgentCodeBlock](./code-block)             | 独立流式代码块                       |
@@ -119,7 +119,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 
 H5 自动遵循 `prefers-reduced-motion`，小程序同时提供 `reducedMotion` 属性与媒体查询样式。动效使用主题中的 `--varo-agent-motion-*` 变量以及 transform/opacity，不引入动画运行时依赖。
 
-`AgentWorkspace` 的 `execution` 插槽可放入此组件，替换默认的对话、检索、任务与回执区域；来源授权、版本与输入区仍由 Workspace 组合。Weapp 的 `weapp-vite` 配置应设置 `weapp.vue.template.scopedSlotsRequireProps: true`，让没有插槽参数的 `#execution` 保持普通命名插槽，避免 7.0.4 的泛型插槽自动 `setData.pick` 遗漏父级状态。两端 playground 提供可取消、重播的演示数据流程。
+`AgentWorkspace` 的 `execution` 插槽可放入此组件，替换默认的对话、检索、任务与回执区域；来源授权、版本与输入区仍由 Workspace 组合。Weapp 的 `weapp-vite` 配置应设置 `weapp.vue.template.scopedSlotsRequireProps: true`，让没有插槽参数的 `#execution` 保持普通命名插槽，避免泛型插槽自动 `setData.pick` 遗漏父级状态。两端 playground 提供可取消、重播的演示数据流程。
 
 ## 完整 Block
 

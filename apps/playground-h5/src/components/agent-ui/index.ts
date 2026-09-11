@@ -102,6 +102,30 @@ function partMark(status: AgentPartStatus) {
   return 'bg-[var(--varo-agent-border-strong)]'
 }
 
+function taskStatusLabel(status: AgentPartStatus) {
+  if (status === 'completed') { return '已完成' }
+  if (status === 'failed') { return '失败' }
+  if (status === 'running') { return '进行中' }
+  if (status === 'waiting') { return '等待中' }
+  return '待开始'
+}
+
+function renderCloseMiniIcon() {
+  return h('svg', {
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 2.2,
+    'viewBox': '0 0 24 24',
+    'width': 12,
+    'height': 12,
+    'aria-hidden': 'true',
+  }, [
+    h('path', { d: 'M6 6l12 12M18 6 6 18' }),
+  ])
+}
+
 function renderCheckIcon() {
   return h('svg', {
     'fill': 'none',
@@ -292,36 +316,100 @@ export const AgentTaskList = defineComponent({
   },
   setup(props) {
     const completed = computed(() => props.tasks.filter(task => task.status === 'completed').length)
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-live': 'polite' }, [
-      h('header', { class: 'flex min-h-11 items-center justify-between border-b border-[var(--varo-agent-border)] px-3.5' }, [
-        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
-        h('span', { class: 'text-[12px] tabular-nums text-[var(--varo-agent-muted)]' }, `${completed.value}/${props.tasks.length}`),
-      ]),
-      ...props.tasks.map((task, index) => h('div', { class: 'flex min-h-[50px] items-center gap-2.5 border-b border-[var(--varo-agent-border)] px-3.5 py-2 last:border-0', key: task.id }, [
-        h('span', { class: ['grid h-6 w-6 flex-none place-items-center rounded-full border text-[11px] font-bold', task.status === 'completed' ? 'border-[var(--varo-agent-success)] bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]' : 'border-[var(--varo-agent-border)] text-[var(--varo-agent-text)]'] }, task.status === 'completed' ? renderCheckIcon() : String(index + 1)),
-        h('span', { class: 'grid min-w-0 flex-1 gap-1' }, [
-          h('span', { class: 'flex justify-between gap-2 text-xs font-semibold text-[var(--varo-agent-foreground)]' }, [task.title, task.meta ? h('small', { class: 'text-[var(--varo-agent-muted)]' }, task.meta) : null]),
-          task.progress === undefined ? null : h('span', { class: 'h-1 overflow-hidden rounded-full bg-[var(--varo-agent-fill)]' }, [h('i', { class: 'block h-full bg-[var(--varo-agent-primary)]', style: { width: `${Math.min(100, Math.max(0, task.progress))}%` } })]),
+    const current = computed(() => props.tasks.find(task => task.status === 'running' || task.status === 'failed'))
+    return () => h('section', { 'class': 'agent-task-list', 'aria-live': 'polite' }, [
+      h('header', { class: 'agent-task-list__header' }, [
+        h('span', { class: 'agent-task-list__heading' }, [
+          h('strong', props.title),
+          current.value
+            ? h('small', current.value.status === 'failed' ? `阻塞于 ${current.value.title}` : `正在执行 ${current.value.title}`)
+            : h('small', completed.value === props.tasks.length && props.tasks.length ? '全部完成' : '等待开始'),
         ]),
-      ])),
+        h('span', { class: 'agent-task-list__count' }, `${completed.value}/${props.tasks.length}`),
+      ]),
+      h('ol', { class: 'agent-task-list__body' }, props.tasks.map((task, index) => {
+        const progress = task.progress === undefined ? undefined : Math.min(100, Math.max(0, task.progress))
+        return h('li', {
+          'class': 'agent-task-list__item',
+          'data-status': task.status,
+          'aria-current': task.status === 'running' ? 'step' : undefined,
+          'key': task.id,
+        }, [
+          h('span', { 'class': 'agent-task-list__marker', 'aria-hidden': 'true' }, [
+            task.status === 'completed'
+              ? renderCheckIcon()
+              : task.status === 'failed'
+                ? renderCloseMiniIcon()
+                : task.status === 'running'
+                  ? h('i')
+                  : String(index + 1),
+          ]),
+          h('span', { class: 'agent-task-list__copy' }, [
+            h('span', { class: 'agent-task-list__row' }, [
+              h('strong', task.title),
+              h('span', { class: 'agent-task-list__meta' }, [
+                h('small', { class: 'agent-task-list__chip' }, taskStatusLabel(task.status)),
+                task.meta ? h('small', task.meta) : null,
+              ]),
+            ]),
+            task.description ? h('p', task.description) : null,
+            progress === undefined
+              ? null
+              : h('span', { 'class': 'agent-task-list__track', 'aria-hidden': 'true' }, [
+                  h('i', { style: { width: `${progress}%` } }),
+                ]),
+          ]),
+        ])
+      })),
     ])
   },
 })
 
-const workspaceActionButton = 'relative m-0 inline-flex min-h-9 min-w-12 items-center justify-center rounded-lg px-2.5 text-[11px] font-bold transition-colors before:absolute before:-inset-1 before:content-[\'\'] motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-45'
-const workspacePrimaryTextButton = `${workspaceActionButton} border border-transparent bg-transparent text-[var(--varo-agent-primary)] hover:bg-[var(--varo-agent-primary-soft)]`
-const workspaceQuietButton = `${workspaceActionButton} border border-transparent bg-transparent text-[var(--varo-agent-foreground)] hover:bg-[var(--varo-agent-fill)]`
-const workspaceDangerTextButton = `${workspaceActionButton} border border-transparent bg-transparent text-[var(--varo-agent-danger)] hover:bg-[var(--varo-agent-danger-soft)]`
+function renderWorkspaceIcon(kind: 'plug' | 'receipt' | 'branch') {
+  const common = {
+    'aria-hidden': 'true' as const,
+    'fill': 'none',
+    'height': 14,
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 1.8,
+    'viewBox': '0 0 24 24',
+    'width': 14,
+  }
+  if (kind === 'receipt') {
+    return h('svg', common, [
+      h('path', { d: 'M7 3h8l4 4v14H7V3Z' }),
+      h('path', { d: 'M15 3v4h4M9 12h6M9 16h4' }),
+    ])
+  }
+  if (kind === 'branch') {
+    return h('svg', common, [
+      h('circle', { cx: '6', cy: '6', r: '2.2' }),
+      h('circle', { cx: '18', cy: '12', r: '2.2' }),
+      h('circle', { cx: '6', cy: '18', r: '2.2' }),
+      h('path', { d: 'M8.1 7.6v8.8M8.2 12H16' }),
+    ])
+  }
+  return h('svg', common, [
+    h('path', { d: 'M9 7V3M15 7V3' }),
+    h('path', { d: 'M8 7h8v4a4 4 0 0 1-4 4h0a4 4 0 0 1-4-4V7Z' }),
+    h('path', { d: 'M12 15v6' }),
+  ])
+}
+
+function workspaceActionClass(kind: 'quiet' | 'primary' | 'danger' = 'quiet') {
+  return cn(
+    'agent-workspace-card__action',
+    kind === 'primary' && 'agent-workspace-card__action--primary',
+    kind === 'danger' && 'agent-workspace-card__action--danger',
+  )
+}
 
 const contextSourceStatusLabels = {
   available: '可用',
   connecting: '连接中',
   unavailable: '不可用',
-} as const
-const contextSourceStatusClasses = {
-  available: 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]',
-  connecting: 'bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]',
-  unavailable: 'bg-[var(--varo-agent-danger-soft)] text-[var(--varo-agent-danger)]',
 } as const
 const retrievalStatusLabels = {
   failed: '读取失败',
@@ -330,22 +418,10 @@ const retrievalStatusLabels = {
   reading: '读取中',
   skipped: '已跳过',
 } as const
-const retrievalStatusClasses = {
-  failed: 'bg-[var(--varo-agent-danger-soft)] text-[var(--varo-agent-danger)]',
-  queued: 'bg-[var(--varo-agent-fill)] text-[var(--varo-agent-muted)]',
-  read: 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]',
-  reading: 'bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]',
-  skipped: 'bg-[var(--varo-agent-warning-soft)] text-[var(--varo-agent-warning)]',
-} as const
 const receiptStatusLabels = {
   failed: '读取失败',
   read: '已读取',
   skipped: '已跳过',
-} as const
-const receiptStatusClasses = {
-  failed: 'bg-[var(--varo-agent-danger-soft)] text-[var(--varo-agent-danger)]',
-  read: 'bg-[var(--varo-agent-success-soft)] text-[var(--varo-agent-success)]',
-  skipped: 'bg-[var(--varo-agent-warning-soft)] text-[var(--varo-agent-warning)]',
 } as const
 
 function renderCloseIcon() {
@@ -381,30 +457,38 @@ export const AgentComposerScope = defineComponent({
       return Math.min(100, Math.max(0, value))
     })
     const enabledCount = computed(() => props.sources.filter(source => source.enabled).length)
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
-      h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
-        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
-        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${enabledCount.value} 个已启用`),
+    const headingHint = computed(() => {
+      if (!props.sources.length) { return '暂无可用来源' }
+      if (enabledCount.value === 0) { return '尚未授权任何来源' }
+      return `${enabledCount.value} 个来源已加入上下文`
+    })
+    return () => h('section', { 'class': 'agent-composer-scope', 'aria-label': props.title }, [
+      h('header', { class: 'agent-workspace-card__header' }, [
+        h('span', { class: 'agent-workspace-card__heading' }, [
+          h('strong', props.title),
+          h('small', headingHint.value),
+        ]),
+        h('span', { class: 'agent-workspace-card__count' }, `${enabledCount.value}/${props.sources.length}`),
       ]),
       props.sources.length
-        ? h('div', { class: 'grid gap-1 p-2' }, props.sources.map((source) => {
+        ? h('div', { class: 'agent-workspace-card__body' }, props.sources.map((source) => {
             const status = source.status ?? 'available'
-            return h('div', { 'class': 'flex min-h-[58px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', 'data-status': status, 'key': source.id }, [
-              h('i', { 'class': ['h-3 w-3 flex-none rounded-full', contextSourceStatusClasses[status]], 'aria-hidden': 'true' }),
-              h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-                h('span', { class: 'flex min-w-0 items-center gap-2' }, [
-                  h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, source.label),
-                  h('small', { class: 'flex-none text-[10px] font-semibold text-[var(--varo-agent-muted)]' }, contextSourceStatusLabels[status]),
+            return h('article', { 'class': 'agent-workspace-card__row', 'data-status': status, 'data-enabled': String(source.enabled), 'key': source.id }, [
+              h('span', { 'class': 'agent-workspace-card__mark', 'aria-hidden': 'true' }, renderWorkspaceIcon('plug')),
+              h('span', { class: 'agent-workspace-card__copy' }, [
+                h('span', { class: 'agent-workspace-card__row-main' }, [
+                  h('strong', source.label),
+                  h('small', { class: 'agent-workspace-card__chip' }, contextSourceStatusLabels[status]),
                 ]),
                 source.description || source.meta
-                  ? h('small', { class: 'truncate text-[11px] text-[var(--varo-agent-muted)]' }, source.description || source.meta)
+                  ? h('small', { class: 'agent-workspace-card__detail' }, source.description || source.meta)
                   : null,
               ]),
               status === 'available'
                 ? h('button', {
                     'aria-label': `${source.enabled ? '停用' : '启用'}${source.label}`,
                     'aria-pressed': source.enabled,
-                    'class': workspaceQuietButton,
+                    'class': workspaceActionClass(source.enabled ? 'quiet' : 'primary'),
                     'disabled': props.disabled,
                     'type': 'button',
                     'onClick': () => emit('toggle', source, !source.enabled),
@@ -412,29 +496,29 @@ export const AgentComposerScope = defineComponent({
                 : status === 'unavailable'
                   ? h('button', {
                       'aria-label': `连接${source.label}`,
-                      'class': workspacePrimaryTextButton,
+                      'class': workspaceActionClass('primary'),
                       'disabled': props.disabled,
                       'type': 'button',
                       'onClick': () => emit('connect', source),
                     }, '连接')
-                  : null,
+                  : h('small', { class: 'agent-workspace-card__chip' }, '连接中'),
             ])
           }))
-        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无来源'),
-      h('footer', { class: 'grid gap-2 border-t border-[var(--varo-agent-border)] px-3.5 py-3' }, [
-        h('span', { class: 'flex items-center justify-between gap-3' }, [
-          h('span', { class: 'text-[11px] font-semibold text-[var(--varo-agent-text)]' }, '上下文使用'),
-          h('strong', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-primary)]' }, `${usage.value}%`),
+        : h('p', { class: 'agent-workspace-card__empty' }, '暂无来源'),
+      h('footer', { class: 'agent-composer-scope__meter' }, [
+        h('span', { class: 'agent-workspace-card__row-main' }, [
+          h('span', '上下文使用'),
+          h('strong', `${usage.value}%`),
         ]),
         h('span', {
-          'class': 'block h-1.5 overflow-hidden rounded-full bg-[var(--varo-agent-fill)]',
+          'class': 'agent-composer-scope__track',
           'role': 'progressbar',
           'aria-label': '上下文使用量',
           'aria-valuemax': 100,
           'aria-valuemin': 0,
           'aria-valuenow': usage.value,
         }, [
-          h('i', { class: 'block h-full rounded-full bg-[var(--varo-agent-primary)]', style: { width: `${usage.value}%` } }),
+          h('i', { style: { width: `${usage.value}%` } }),
         ]),
       ]),
     ])
@@ -452,31 +536,41 @@ export const AgentRetrievalProgress = defineComponent({
   },
   setup(props, { emit }) {
     const settled = computed(() => props.items.filter(item => item.status === 'read' || item.status === 'skipped' || item.status === 'failed').length)
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-atomic': 'false', 'aria-live': 'polite' }, [
-      h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
-        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
-        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${settled.value}/${props.items.length} 已处理`),
+    const current = computed(() => props.items.find(item => item.status === 'reading' || item.status === 'failed'))
+    const headingHint = computed(() => {
+      if (current.value?.status === 'failed') { return `阻塞于 ${current.value.title}` }
+      if (current.value) { return `正在读取 ${current.value.title}` }
+      if (props.items.length && settled.value === props.items.length) { return '检索已完成' }
+      return '等待检索'
+    })
+    return () => h('section', { 'class': 'agent-retrieval', 'aria-atomic': 'false', 'aria-live': 'polite' }, [
+      h('header', { class: 'agent-workspace-card__header' }, [
+        h('span', { class: 'agent-workspace-card__heading' }, [
+          h('strong', props.title),
+          h('small', headingHint.value),
+        ]),
+        h('span', { class: 'agent-workspace-card__count' }, `${settled.value}/${props.items.length}`),
       ]),
       props.items.length
-        ? h('div', { class: 'grid gap-1 p-2' }, props.items.map(item => h('div', { 'class': 'flex min-h-[56px] items-center gap-2.5 rounded-xl px-2.5 py-2', 'data-status': item.status, 'key': item.id }, [
-            h('i', { 'class': ['h-3 w-3 flex-none rounded-full', retrievalStatusClasses[item.status]], 'aria-hidden': 'true' }),
-            h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-              h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, item.title),
-              item.detail ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, item.detail) : null,
+        ? h('div', { class: 'agent-workspace-card__body' }, props.items.map((item, index) => h('article', { 'class': 'agent-workspace-card__row', 'data-status': item.status, 'key': item.id }, [
+            h('span', { 'class': 'agent-workspace-card__mark', 'aria-hidden': 'true' }, item.status === 'reading' ? h('i') : String(index + 1).padStart(2, '0')),
+            h('span', { class: 'agent-workspace-card__copy' }, [
+              h('span', { class: 'agent-workspace-card__row-main' }, [
+                h('strong', item.title),
+                h('small', { class: 'agent-workspace-card__chip' }, retrievalStatusLabels[item.status]),
+              ]),
+              item.detail ? h('small', { class: 'agent-workspace-card__detail' }, item.detail) : null,
             ]),
-            h('span', { class: 'flex flex-none items-center gap-2' }, [
-              h('small', { class: 'text-[10px] font-semibold text-[var(--varo-agent-text)]' }, retrievalStatusLabels[item.status]),
-              item.status === 'failed' && item.retryable
-                ? h('button', {
-                    'aria-label': `重试${item.title}`,
-                    'class': workspaceQuietButton,
-                    'type': 'button',
-                    'onClick': () => emit('retry', item),
-                  }, '重试')
-                : null,
-            ]),
+            item.status === 'failed' && item.retryable
+              ? h('button', {
+                  'aria-label': `重试${item.title}`,
+                  'class': workspaceActionClass('primary'),
+                  'type': 'button',
+                  'onClick': () => emit('retry', item),
+                }, '重试')
+              : null,
           ])))
-        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无检索项'),
+        : h('p', { class: 'agent-workspace-card__empty' }, '暂无检索项'),
     ])
   },
 })
@@ -494,44 +588,49 @@ export const AgentSourceReceipt = defineComponent({
   },
   setup(props, { emit }) {
     const readCount = computed(() => props.items.filter(item => item.status === 'read').length)
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
-      h('header', { class: 'grid min-h-12 gap-0.5 border-b border-[var(--varo-agent-border)] px-3.5 py-2.5' }, [
-        h('span', { class: 'flex items-center justify-between gap-3' }, [
-          h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
-          h('small', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${readCount.value}/${props.items.length} 已读取`),
+    const failedCount = computed(() => props.items.filter(item => item.status === 'failed').length)
+    const headingHint = computed(() => {
+      if (failedCount.value) { return `${failedCount.value} 个来源读取失败` }
+      if (props.summary) { return props.summary }
+      if (props.items.length && readCount.value === props.items.length) { return '全部来源已核对' }
+      return '回答完成后核对来源'
+    })
+    return () => h('section', { 'class': 'agent-source-receipt', 'aria-label': props.title }, [
+      h('header', { class: 'agent-workspace-card__header' }, [
+        h('span', { class: 'agent-workspace-card__heading' }, [
+          h('strong', props.title),
+          h('small', headingHint.value),
         ]),
-        props.summary ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, props.summary) : null,
+        h('span', { class: 'agent-workspace-card__count' }, `${readCount.value}/${props.items.length}`),
       ]),
       props.items.length
-        ? h('div', { class: 'grid gap-1 p-2' }, props.items.map(item => h('div', { 'class': 'flex min-h-[56px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', 'data-status': item.status, 'key': item.id }, [
-            h('i', { 'class': ['h-3 w-3 flex-none rounded-full', receiptStatusClasses[item.status]], 'aria-hidden': 'true' }),
-            h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-              h('span', { class: 'flex min-w-0 items-baseline gap-2' }, [
-                h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, item.label),
-                item.itemCount === undefined
-                  ? null
-                  : h('small', { class: 'flex-none text-[10px] tabular-nums text-[var(--varo-agent-muted)]' }, `${item.itemCount} 项`),
+        ? h('div', { class: 'agent-workspace-card__body' }, props.items.map(item => h('article', { 'class': 'agent-workspace-card__row', 'data-status': item.status, 'key': item.id }, [
+            h('span', { 'class': 'agent-workspace-card__mark', 'aria-hidden': 'true' }, renderWorkspaceIcon('receipt')),
+            h('span', { class: 'agent-workspace-card__copy' }, [
+              h('span', { class: 'agent-workspace-card__row-main' }, [
+                h('strong', item.label),
+                item.itemCount === undefined ? null : h('small', { class: 'agent-workspace-card__meta' }, `${item.itemCount} 项`),
               ]),
-              item.detail ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, item.detail) : null,
-              h('small', { class: 'text-[10px] font-semibold text-[var(--varo-agent-text)]' }, receiptStatusLabels[item.status]),
+              item.detail ? h('small', { class: 'agent-workspace-card__detail' }, item.detail) : null,
+              h('small', { class: 'agent-workspace-card__chip' }, receiptStatusLabels[item.status]),
             ]),
             item.status === 'read'
               ? h('button', {
                   'aria-label': `查看${item.label}`,
-                  'class': workspaceQuietButton,
+                  'class': workspaceActionClass(),
                   'type': 'button',
                   'onClick': () => emit('open', item),
                 }, '查看')
               : item.status === 'failed'
                 ? h('button', {
                     'aria-label': `连接${item.label}`,
-                    'class': workspacePrimaryTextButton,
+                    'class': workspaceActionClass('primary'),
                     'type': 'button',
                     'onClick': () => emit('connect', item),
                   }, '连接')
                 : null,
           ])))
-        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无来源回执'),
+        : h('p', { class: 'agent-workspace-card__empty' }, '暂无来源回执'),
     ])
   },
 })
@@ -557,38 +656,38 @@ export const AgentTaskRunner = defineComponent({
       )
     })
     const canCancel = computed(() => props.busy || props.tasks.some(task => task.status === 'running'))
-    return () => h('section', { class: 'grid gap-2.5' }, [
+    return () => h('section', { class: 'agent-task-runner' }, [
       h(AgentTaskList, { tasks: props.tasks, title: props.title }),
       actionableTasks.value.length || canCancel.value
-        ? h('div', { class: 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]' }, [
+        ? h('div', { class: 'agent-task-runner__controls' }, [
             actionableTasks.value.length
-              ? h('div', { class: 'grid gap-1 p-2' }, actionableTasks.value.map(task => h('div', { class: 'flex min-h-[56px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2', key: task.id }, [
-                  h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-                    h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, task.title),
-                    task.description ? h('small', { class: 'text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, task.description) : null,
-                    h('small', { class: 'text-[10px] font-semibold text-[var(--varo-agent-text)]' }, task.status === 'failed' ? '执行失败' : '等待确认'),
+              ? h('div', { class: 'agent-workspace-card__body' }, actionableTasks.value.map(task => h('article', { 'class': 'agent-workspace-card__row', 'data-status': task.status, 'key': task.id }, [
+                  h('span', { class: 'agent-workspace-card__copy' }, [
+                    h('strong', task.title),
+                    task.description ? h('small', { class: 'agent-workspace-card__detail' }, task.description) : null,
+                    h('small', { class: 'agent-workspace-card__chip' }, task.status === 'failed' ? '执行失败' : '等待确认'),
                   ]),
                   task.status === 'failed'
                     ? h('button', {
                         'aria-label': `重试${task.title}`,
-                        'class': workspaceQuietButton,
+                        'class': workspaceActionClass('primary'),
                         'type': 'button',
                         'onClick': () => emit('retry', task),
                       }, '重试')
                     : h('button', {
                         'aria-label': `批准${task.title}`,
-                        'class': workspacePrimaryTextButton,
+                        'class': workspaceActionClass('primary'),
                         'type': 'button',
                         'onClick': () => emit('approve', task),
                       }, '批准'),
                 ])))
               : null,
             canCancel.value
-              ? h('div', { class: 'flex min-h-[60px] items-center justify-between gap-3 border-t border-[var(--varo-agent-border)] px-3.5 py-2' }, [
-                  h('span', { class: 'text-[11px] text-[var(--varo-agent-muted)]' }, '任务正在执行'),
+              ? h('div', { class: 'agent-task-runner__cancel' }, [
+                  h('span', '任务正在执行'),
                   h('button', {
                     'aria-label': '取消当前任务',
-                    'class': workspaceDangerTextButton,
+                    'class': workspaceActionClass('danger'),
                     'type': 'button',
                     'onClick': () => emit('cancel'),
                   }, '取消'),
@@ -625,52 +724,49 @@ export const AgentThreadVersions = defineComponent({
         version,
       }))
     })
-    return () => h('section', { 'class': 'overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]', 'aria-label': props.title }, [
-      h('header', { class: 'flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-3.5' }, [
-        h('strong', { class: 'text-[13px] text-[var(--varo-agent-foreground)]' }, props.title),
-        h('span', { class: 'text-[11px] tabular-nums text-[var(--varo-agent-muted)]' }, `${props.versions.length} 个版本`),
+    const active = computed(() => displayVersions.value.find(entry => entry.active))
+    return () => h('section', { 'class': 'agent-thread-versions', 'aria-label': props.title }, [
+      h('header', { class: 'agent-workspace-card__header' }, [
+        h('span', { class: 'agent-workspace-card__heading' }, [
+          h('strong', props.title),
+          h('small', active.value ? `当前 ${active.value.label}` : '选择一个会话版本'),
+        ]),
+        h('span', { class: 'agent-workspace-card__count' }, `${props.versions.length} 个版本`),
       ]),
       displayVersions.value.length
-        ? h('div', { 'class': 'flex max-w-full gap-2 overflow-x-auto p-2.5', 'role': 'list', 'aria-label': '会话版本列表' }, displayVersions.value.map(entry =>
+        ? h('div', { 'class': 'agent-thread-versions__list', 'role': 'list', 'aria-label': '会话版本列表' }, displayVersions.value.map(entry =>
             h('article', {
-              'class': [
-                'grid w-[252px] flex-none gap-2 rounded-xl border bg-[var(--varo-agent-surface-strong)] p-3',
-                entry.active
-                  ? 'border-[var(--varo-agent-primary)] shadow-[0_0_0_2px_var(--varo-agent-primary-soft)]'
-                  : 'border-[var(--varo-agent-border)]',
-              ],
+              'class': 'agent-thread-versions__card',
               'data-active': String(entry.active),
               'key': entry.version.id,
               'role': 'listitem',
             }, [
-              h('span', { class: 'flex min-w-0 items-center justify-between gap-2' }, [
-                h('span', { class: 'flex min-w-0 items-center gap-2' }, [
-                  h('i', { 'class': ['h-2 w-2 flex-none rounded-full', entry.active ? 'bg-[var(--varo-agent-primary)]' : 'bg-[var(--varo-agent-border-strong)]'], 'aria-hidden': 'true' }),
-                  h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, entry.label),
-                ]),
+              h('span', { class: 'agent-workspace-card__row-main' }, [
+                h('span', { 'class': 'agent-workspace-card__mark', 'aria-hidden': 'true' }, renderWorkspaceIcon('branch')),
+                h('strong', entry.label),
                 entry.active
-                  ? h('small', { class: 'flex-none text-[10px] font-bold text-[var(--varo-agent-primary)]' }, '当前')
+                  ? h('small', { class: 'agent-workspace-card__chip' }, '当前')
                   : entry.version.pinned
-                    ? h('small', { class: 'flex-none text-[10px] font-bold text-[var(--varo-agent-text)]' }, '已固定')
+                    ? h('small', { class: 'agent-workspace-card__chip' }, '已固定')
                     : null,
               ]),
-              h('p', { class: 'm-0 min-h-8 text-[11px] leading-4 text-[var(--varo-agent-muted)]' }, entry.version.summary || '暂无版本摘要'),
-              h('span', { class: 'grid gap-0.5 text-[10px] text-[var(--varo-agent-muted)]' }, [
-                h('small', { class: 'truncate' }, `来源：${entry.parentLabel}`),
-                entry.version.createdAt ? h('time', { class: 'truncate' }, `创建：${entry.version.createdAt}`) : null,
+              h('p', { class: 'agent-workspace-card__detail' }, entry.version.summary || '暂无版本摘要'),
+              h('span', { class: 'agent-thread-versions__meta' }, [
+                h('small', `来源：${entry.parentLabel}`),
+                entry.version.createdAt ? h('time', `创建：${entry.version.createdAt}`) : null,
               ]),
-              h('footer', { class: 'flex flex-wrap gap-2 border-t border-[var(--varo-agent-border)] pt-2' }, [
+              h('footer', { class: 'agent-thread-versions__actions' }, [
                 entry.active
                   ? null
                   : h('button', {
                       'aria-label': `选择${entry.label}`,
-                      'class': workspacePrimaryTextButton,
+                      'class': workspaceActionClass('primary'),
                       'type': 'button',
                       'onClick': () => emit('select', entry.version),
                     }, '选择'),
                 h('button', {
                   'aria-label': `从${entry.label}创建分支`,
-                  'class': workspaceQuietButton,
+                  'class': workspaceActionClass(),
                   'type': 'button',
                   'onClick': () => emit('branch', entry.version),
                 }, '分支'),
@@ -678,14 +774,14 @@ export const AgentThreadVersions = defineComponent({
                   ? null
                   : h('button', {
                       'aria-label': `固定${entry.label}`,
-                      'class': workspaceQuietButton,
+                      'class': workspaceActionClass(),
                       'type': 'button',
                       'onClick': () => emit('pin', entry.version),
                     }, '固定'),
               ]),
             ]),
           ))
-        : h('p', { class: 'm-0 grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]' }, '暂无会话版本'),
+        : h('p', { class: 'agent-workspace-card__empty' }, '暂无会话版本'),
     ])
   },
 })
@@ -949,11 +1045,19 @@ export const AgentRecommendation = defineComponent({
   emits: { accept: () => true },
   setup(props, { emit, slots }) {
     const confidence = computed(() => Math.min(100, Math.max(0, props.confidence)))
+    const confidenceLabel = computed(() => (
+      confidence.value >= 80 ? '高置信度' : confidence.value >= 55 ? '中等置信度' : '需要复核'
+    ))
     return () => h('section', { class: 'agent-recommendation grid gap-3 rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-4 shadow-[var(--varo-agent-shadow)]' }, [
-      h('header', { class: 'flex justify-between text-[11px] font-extrabold tracking-widest text-[var(--varo-agent-primary)]' }, [h('span', 'AGENT 建议'), h('span', `${confidence.value}%`)]),
+      h('header', { class: 'flex justify-between gap-3 text-[11px] font-extrabold tracking-widest text-[var(--varo-agent-primary)]' }, [
+        h('span', 'AGENT 建议'),
+        h('span', { class: 'tabular-nums' }, `${confidenceLabel.value} · ${confidence.value}%`),
+      ]),
       h('strong', { class: 'text-[15px] text-[var(--varo-agent-foreground)]' }, props.title),
       props.description ? h('p', { class: 'm-0 text-xs leading-5 text-[var(--varo-agent-text)]' }, props.description) : null,
-      h('span', { class: 'h-1.5 overflow-hidden rounded-full bg-blue-100' }, [h('i', { class: 'block h-full rounded-full bg-blue-600', style: { width: `${confidence.value}%` } })]),
+      h('span', { 'class': 'h-1.5 overflow-hidden rounded-full bg-[var(--varo-agent-primary-soft)]', 'aria-hidden': 'true' }, [
+        h('i', { class: 'block h-full rounded-full bg-[var(--varo-agent-primary)]', style: { width: `${confidence.value}%` } }),
+      ]),
       slots.default?.(),
       h('footer', { class: 'flex justify-end gap-2' }, [slots.secondary?.(), h('button', { class: primaryButton, type: 'button', onClick: () => emit('accept') }, props.acceptText)]),
     ])
@@ -1105,32 +1209,31 @@ export const AgentArtifact = defineComponent({
   props: { artifact: { type: Object as PropType<AgentArtifactItem>, required: true } },
   emits: { open: (_artifact: AgentArtifactItem) => true },
   setup(props, { emit }) {
+    const kindLabel = computed(() => {
+      if (props.artifact.kind === 'code') { return '代码产物' }
+      if (props.artifact.kind === 'image') { return '图像产物' }
+      if (props.artifact.kind === 'file') { return '文件产物' }
+      return '文档产物'
+    })
     return () =>
-      h('article', { class: 'overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-lg' }, [
-        h('header', { class: 'flex min-h-14 items-center justify-between gap-3 border-b border-slate-800 bg-slate-900 px-4' }, [
-          h('span', { class: 'grid min-w-0 gap-0.5' }, [
-            h('small', { class: 'text-[10px] font-black uppercase tracking-[0.16em] text-teal-300' }, props.artifact.kind || 'artifact'),
-            h('strong', { class: 'truncate text-xs text-slate-100' }, props.artifact.title),
+      h('article', { 'class': 'agent-artifact', 'data-kind': props.artifact.kind || 'document' }, [
+        h('header', { class: 'agent-artifact__header' }, [
+          h('span', { class: 'agent-artifact__heading' }, [
+            h('small', { class: 'agent-artifact__kind' }, kindLabel.value),
+            h('strong', { class: 'agent-artifact__title' }, props.artifact.title),
+            props.artifact.language ? h('span', { class: 'agent-artifact__lang' }, props.artifact.language) : null,
           ]),
-          h(
-            'button',
-            {
-              class: 'min-h-8 flex-none rounded-lg border border-slate-700 bg-slate-800 px-3 text-[11px] font-bold text-slate-200 transition-colors hover:border-teal-500 hover:text-white',
-              type: 'button',
-              onClick: () => emit('open', props.artifact),
-            },
-            '打开',
-          ),
+          h('button', {
+            class: 'agent-artifact__open',
+            type: 'button',
+            onClick: () => emit('open', props.artifact),
+          }, '打开'),
         ]),
         props.artifact.content
-          ? h(
-              'pre',
-              { class: 'm-0 max-h-72 overflow-auto whitespace-pre-wrap break-words bg-slate-950 px-4 py-3.5 font-mono text-[12px] leading-5 text-slate-200' },
-              props.artifact.content,
-            )
+          ? h('pre', { class: 'agent-artifact__body' }, props.artifact.content)
           : null,
         props.artifact.previewUrl
-          ? h('img', { alt: props.artifact.title, class: 'block max-h-80 w-full bg-slate-950 object-contain', src: props.artifact.previewUrl })
+          ? h('img', { alt: props.artifact.title, class: 'agent-artifact__preview', src: props.artifact.previewUrl })
           : null,
       ])
   },

@@ -71,7 +71,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-workspace
 | [AgentSourceList](./sources)               | Source list                                                      |
 | [AgentCitations](./citations)              | Collapsible citations                                            |
 | `AgentRetrievalProgress`                   | Visible retrieval queue and failed-item retry                    |
-| `AgentRagPipeline`                         | Five-stage RAG, context assembly, and linked streaming citations |
+| [AgentRagPipeline](./rag-pipeline)         | Five-stage RAG, context assembly, and linked streaming citations |
 | `AgentSourceReceipt`                       | Post-answer source read receipt                                  |
 | [AgentContextCard](./context-card)         | Retrieved knowledge chunks                                       |
 | [AgentCodeBlock](./code-block)             | Standalone streaming code block                                  |
@@ -119,7 +119,7 @@ A newly arriving citation briefly highlights its source and context segment. H5 
 
 H5 follows `prefers-reduced-motion` automatically. Weapp provides the `reducedMotion` prop and media-query styles. Motion uses theme `--varo-agent-motion-*` variables with transform/opacity and adds no animation runtime dependency.
 
-Place the component in the `AgentWorkspace` `execution` slot to replace its default conversation, retrieval, task, and receipt region while retaining source permissions, thread versions, and input. In Weapp, set `weapp.vue.template.scopedSlotsRequireProps: true` in the `weapp-vite` configuration so a `#execution` slot without scope parameters remains an ordinary named slot. This avoids version 7.0.4's generic-slot automatic `setData.pick` omitting parent state. Both playgrounds provide a cancellable, replayable demo-data flow.
+Place the component in the `AgentWorkspace` `execution` slot to replace its default conversation, retrieval, task, and receipt region while retaining source permissions, thread versions, and input. In Weapp, set `weapp.vue.template.scopedSlotsRequireProps: true` in the `weapp-vite` configuration so a `#execution` slot without scope parameters remains an ordinary named slot. This avoids generic-slot automatic `setData.pick` omitting parent state. Both playgrounds provide a cancellable, replayable demo-data flow.
 
 ## Complete Block
 

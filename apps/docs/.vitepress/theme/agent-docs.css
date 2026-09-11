@@ -28,11 +28,9 @@
 
 .dark .agent-component-demo .agent-message-scroller,
 .dark .agent-component-demo .agent-file-diff,
-.dark .agent-component-demo .agent-tool-result,
 .dark .agent-component-demo .agent-citations,
 .dark .agent-component-demo .agent-activity,
 .dark .agent-component-demo .agent-context-card,
-.dark .agent-component-demo .agent-insight-card,
 .dark .agent-component-demo .agent-tool-approval,
 .dark .agent-component-demo .agent-fine-tune,
 .dark .agent-component-demo .agent-sidebar,
@@ -45,13 +43,13 @@
   border-color: var(--varo-border) !important;
 }
 
-.dark .agent-component-demo .agent-sidebar > header,
-.dark .agent-component-demo .agent-flowchart > header,
-.dark .agent-component-demo .agent-command-search > label,
+.dark .agent-component-demo .agent-sidebar__header,
+.dark .agent-component-demo .agent-flowchart__header,
+.dark .agent-component-demo .agent-command-search__field,
 .dark .agent-component-demo .agent-activity > header,
 .dark .agent-component-demo .agent-context-card > header,
 .dark .agent-component-demo .agent-insight-card > header,
-.dark .agent-component-demo .agent-fine-tune > header {
+.dark .agent-component-demo .agent-fine-tune__header {
   color: var(--varo-foreground) !important;
   background: var(--varo-surface-strong) !important;
   border-color: var(--varo-border) !important;
@@ -77,12 +75,10 @@
 
 .dark .agent-component-demo .agent-radio-group__item,
 .dark .agent-component-demo .agent-file-diff__header,
-.dark .agent-component-demo .agent-tool-result__header,
 .dark .agent-component-demo .agent-citations__trigger,
-.dark .agent-component-demo .agent-context-card article,
 .dark .agent-component-demo .agent-sidebar__item[data-active='true'],
 .dark .agent-component-demo .agent-flowchart__node,
-.dark .agent-component-demo .agent-command-search > div button:hover {
+.dark .agent-component-demo .agent-command-search__item:hover {
   color: var(--varo-foreground);
   background: var(--varo-surface-strong);
   border-color: var(--varo-border);

@@ -54,8 +54,8 @@
     "vitest": "^4.1.11",
     "vue": "^3.5.42",
     "vue-tsc": "^3.3.11",
-    "weapp-tailwindcss": "^5.5.1",
-    "weapp-vite": "7.0.4",
-    "wevu": "7.0.4"
+    "weapp-tailwindcss": "^5.5.3",
+    "weapp-vite": "^7.1.0",
+    "wevu": "^7.1.0"
   }
 }

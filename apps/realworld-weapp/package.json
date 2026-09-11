@@ -22,7 +22,7 @@
     "dayjs": "^1.11.23",
     "es-toolkit": "^1.51.0",
     "mitt": "^3.0.0",
-    "wevu": "7.0.4"
+    "wevu": "^7.1.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
@@ -33,7 +33,7 @@
     "vite": "8.2.2",
     "vitest": "^4.1.11",
     "vue-tsc": "^3.3.11",
-    "weapp-tailwindcss": "^5.5.1",
-    "weapp-vite": "7.0.4"
+    "weapp-tailwindcss": "^5.5.3",
+    "weapp-vite": "^7.1.0"
   }
 }

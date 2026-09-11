@@ -90,6 +90,7 @@ const props = withDefaults(
     holdKeyboard: false,
     ignoreCompositionEvent: true,
     invalid: false,
+    maxLength: -1,
     readonly: false,
     selectionEnd: -1,
     selectionStart: -1,

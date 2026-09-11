@@ -500,7 +500,7 @@ onBeforeUnmount(clearAllPings)
                     <span class="agent-rag__source-number">{{ entry.number }}</span>
                     <span class="grid min-w-0 gap-1">
                       <span class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
-                        <strong class="agent-rag__source-title min-w-0 flex-1 text-[12px] font-semibold leading-[18px] text-[var(--varo-agent-foreground)]">
+                        <strong class="agent-rag__source-title min-w-0 flex-1 text-[12px] font-semibold leading-[18px]">
                           {{ entry.source.title }}
                         </strong>
                         <small
@@ -512,7 +512,7 @@ onBeforeUnmount(clearAllPings)
                       </span>
                       <span
                         v-if="entry.source.excerpt"
-                        class="agent-rag__source-excerpt text-[11px] leading-4 text-[var(--varo-agent-muted)]"
+                        class="agent-rag__source-excerpt text-[11px] leading-4"
                       >
                         {{ entry.source.excerpt }}
                       </span>
@@ -708,10 +708,7 @@ onBeforeUnmount(clearAllPings)
   height: 16px;
   background: currentcolor;
   mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
   mask-position: center;
-  mask-position: center;
-  mask-size: contain;
   mask-size: contain;
 }
 
@@ -816,9 +813,28 @@ onBeforeUnmount(clearAllPings)
 
 .agent-rag__source.is-highlighted,
 .agent-rag__source.is-pinging {
+  color: #172033;
   background: var(--agent-rag-tone-soft);
   border-color: var(--agent-rag-tone);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--agent-rag-tone) 18%, transparent);
+}
+
+.agent-rag__source-title {
+  color: var(--varo-agent-foreground);
+}
+
+.agent-rag__source-excerpt {
+  color: var(--varo-agent-muted);
+}
+
+.agent-rag__source.is-highlighted strong.agent-rag__source-title,
+.agent-rag__source.is-pinging strong.agent-rag__source-title {
+  color: #172033;
+}
+
+.agent-rag__source.is-highlighted .agent-rag__source-excerpt,
+.agent-rag__source.is-pinging .agent-rag__source-excerpt {
+  color: #475569;
 }
 
 .agent-rag__source:focus-visible,
