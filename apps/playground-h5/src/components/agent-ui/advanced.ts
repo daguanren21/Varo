@@ -78,6 +78,75 @@ function renderStatus(status: AgentAdvancedStatus) {
   ])
 }
 
+function activityKindLabel(kind: AgentActivityItem['kind']) {
+  if (kind === 'reasoning') { return '推理' }
+  if (kind === 'search') { return '检索' }
+  if (kind === 'tool') { return '工具' }
+  return '轨迹'
+}
+
+function renderActivityKindIcon(kind: AgentActivityItem['kind']) {
+  const children = kind === 'search'
+    ? [h('circle', { cx: '11', cy: '11', r: '6' }), h('path', { d: 'm16 16 4 4' })]
+    : [h('path', {
+        d: kind === 'reasoning'
+          ? 'M12 3.5 13.4 8 18 9.2 13.4 10.5 12 15l-1.4-4.5L6 9.2 10.6 8 12 3.5zM18 13.5l.8 2.4 2.4.8-2.4.8-.8 2.4-.8-2.4-2.4-.8 2.4-.8.8-2.4z'
+          : kind === 'tool'
+            ? 'M8 7h8M8 12h8M8 17h5'
+            : 'M7 7h10M7 12h10M7 17h6',
+      })]
+  return h('svg', {
+    'aria-hidden': 'true',
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 1.8,
+    'viewBox': '0 0 24 24',
+  }, children)
+}
+
+function citationMark(item: AgentCitationItem) {
+  const source = item.domain || item.title
+  return source.trim().charAt(0).toUpperCase() || '#'
+}
+
+function renderPlusIcon() {
+  return h('svg', {
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-width': 2,
+    'viewBox': '0 0 24 24',
+    'width': 15,
+    'height': 15,
+    'aria-hidden': 'true',
+  }, [h('path', { d: 'M12 5v14M5 12h14' })])
+}
+function renderChatIcon() {
+  return h('svg', {
+    'aria-hidden': 'true',
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 1.8,
+    'viewBox': '0 0 24 24',
+  }, [h('path', { d: 'M5 6h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z' })])
+}
+
+function renderSearchIcon() {
+  return h('svg', {
+    'aria-hidden': 'true',
+    'fill': 'none',
+    'stroke': 'currentColor',
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+    'stroke-width': 1.8,
+    'viewBox': '0 0 24 24',
+  }, [h('circle', { cx: '11', cy: '11', r: '6' }), h('path', { d: 'm16 16 4 4' })])
+}
+
 export const AgentRadioGroup = defineComponent({
   name: 'AgentRadioGroup',
   props: {
@@ -475,7 +544,8 @@ export const AgentToolResult = defineComponent({
   emits: { 'retry': () => true, 'update:open': (_value: boolean) => true },
   setup(props, { emit, slots }) {
     const open = shallowRef(props.defaultOpen || props.status === 'running' || props.status === 'failed')
-    return () => h('section', { 'class': 'agent-tool-result', 'data-status': props.status }, [
+    const meta = computed(() => [props.duration, props.summary].filter(Boolean).join(' · '))
+    return () => h('section', { 'class': 'agent-tool-result', 'data-open': String(open.value), 'data-status': props.status }, [
       h('button', {
         'class': 'agent-tool-result__header',
         'type': 'button',
@@ -485,8 +555,14 @@ export const AgentToolResult = defineComponent({
           emit('update:open', open.value)
         },
       }, [
-        h('span', [renderStatus(props.status), h('strong', props.name)]),
-        h('small', props.duration || props.summary),
+        h('span', { class: 'agent-tool-result__command' }, [
+          h('span', { 'class': 'agent-tool-result__prompt', 'aria-hidden': 'true' }, '$'),
+          h('strong', props.name),
+        ]),
+        h('span', { class: 'agent-tool-result__meta' }, [
+          renderStatus(props.status),
+          meta.value ? h('small', meta.value) : null,
+        ]),
       ]),
       open.value
         ? h('div', { class: 'agent-tool-result__body' }, slots.default?.() ?? [h('pre', props.output)])
@@ -658,12 +734,22 @@ export const AgentCitations = defineComponent({
           open.value = !open.value
           emit('update:open', open.value)
         },
-      }, [h('strong', props.title), h('span', `${props.items.length}`)]),
+      }, [
+        h('span', { class: 'agent-citations__heading' }, [
+          h('strong', props.title),
+          h('small', open.value ? '点击来源打开原文' : '展开查看引用来源'),
+        ]),
+        h('span', { class: 'agent-citations__count' }, `${props.items.length}`),
+      ]),
       open.value
-        ? h('ol', props.items.map((item, index) => h('li', { key: item.id }, [
-            h('button', { type: 'button', onClick: () => emit('open', item) }, [
-              h('span', String(index + 1)),
-              h('span', [h('strong', item.title), h('small', item.domain || item.description || item.url)]),
+        ? h('ol', { class: 'agent-citations__list' }, props.items.map(item => h('li', { key: item.id }, [
+            h('button', { class: 'agent-citations__item', type: 'button', onClick: () => emit('open', item) }, [
+              h('span', { 'class': 'agent-citations__mark', 'aria-hidden': 'true' }, citationMark(item)),
+              h('span', { class: 'agent-citations__copy' }, [
+                h('strong', item.title),
+                h('small', item.domain || item.url || ''),
+                item.description ? h('p', item.description) : null,
+              ]),
             ]),
           ])))
         : null,
@@ -678,12 +764,39 @@ export const AgentActivity = defineComponent({
     title: { type: String, default: 'Agent activity' },
   },
   setup(props) {
+    const completed = computed(() => props.items.filter(item => item.status === 'completed').length)
+    const current = computed(() => props.items.find(item => item.status === 'running' || item.status === 'failed'))
     return () => h('section', { 'class': 'agent-activity', 'aria-live': 'polite' }, [
-      h('header', [h('strong', props.title), h('span', `${props.items.filter(item => item.status === 'completed').length}/${props.items.length}`)]),
-      h('ol', props.items.map(item => h('li', { 'data-kind': item.kind, 'data-status': item.status, 'key': item.id }, [
-        h('i', { 'aria-hidden': 'true' }),
-        h('div', [h('span', [h('strong', item.title), item.duration ? h('small', item.duration) : null]), item.detail ? h('p', item.detail) : null]),
-        renderStatus(item.status),
+      h('header', { class: 'agent-activity__header' }, [
+        h('span', { class: 'agent-activity__heading' }, [
+          h('strong', props.title),
+          current.value
+            ? h('small', current.value.status === 'failed' ? `阻塞于 ${current.value.title}` : `正在执行 ${current.value.title}`)
+            : h('small', completed.value === props.items.length && props.items.length ? '全部完成' : '等待开始'),
+        ]),
+        h('span', { class: 'agent-activity__count' }, `${completed.value}/${props.items.length}`),
+      ]),
+      h('ol', { class: 'agent-activity__body' }, props.items.map(item => h('li', {
+        'class': 'agent-activity__item',
+        'data-kind': item.kind,
+        'data-status': item.status,
+        'aria-current': item.status === 'running' ? 'step' : undefined,
+        'key': item.id,
+      }, [
+        h('span', { 'class': 'agent-activity__kind', 'aria-hidden': 'true' }, [
+          renderActivityKindIcon(item.kind),
+        ]),
+        h('span', { class: 'agent-activity__copy' }, [
+          h('span', { class: 'agent-activity__row' }, [
+            h('strong', item.title),
+            renderStatus(item.status),
+          ]),
+          h('span', { class: 'agent-activity__meta' }, [
+            h('small', { class: 'agent-activity__kind-label' }, activityKindLabel(item.kind)),
+            item.duration ? h('small', item.duration) : null,
+          ]),
+          item.detail ? h('p', item.detail) : null,
+        ]),
       ]))),
     ])
   },
@@ -705,13 +818,26 @@ export const AgentSidebar = defineComponent({
   },
   setup(props, { emit, slots }) {
     return () => h('aside', { 'class': 'agent-sidebar', 'data-collapsed': String(props.collapsed) }, [
-      h('header', [
-        h('strong', props.collapsed ? 'AI' : props.title),
-        h('button', { 'type': 'button', 'aria-label': 'Toggle sidebar', 'onClick': () => emit('update:collapsed', !props.collapsed) }, props.collapsed ? '›' : '‹'),
+      h('header', { class: 'agent-sidebar__header' }, [
+        h('span', { class: 'agent-sidebar__heading' }, [
+          h('span', { 'class': 'agent-sidebar__brand', 'aria-hidden': 'true' }, [renderChatIcon()]),
+          !props.collapsed ? h('strong', props.title) : null,
+        ]),
+        h('button', {
+          'class': 'agent-sidebar__toggle',
+          'type': 'button',
+          'aria-label': 'Toggle sidebar',
+          'onClick': () => emit('update:collapsed', !props.collapsed),
+        }, props.collapsed ? '›' : '‹'),
       ]),
-      !props.collapsed ? h('button', { class: 'agent-sidebar__create', type: 'button', onClick: () => emit('create') }, '+ New chat') : null,
-      h('nav', props.groups.map(group => h('section', { key: group.id }, [
-        !props.collapsed ? h('small', group.label) : null,
+      !props.collapsed
+        ? h('button', { class: 'agent-sidebar__create', type: 'button', onClick: () => emit('create') }, [
+            renderPlusIcon(),
+            'New chat',
+          ])
+        : null,
+      h('nav', { class: 'agent-sidebar__nav', role: 'navigation' }, props.groups.map(group => h('section', { class: 'agent-sidebar__group', key: group.id }, [
+        !props.collapsed ? h('small', { class: 'agent-sidebar__group-label' }, group.label) : null,
         ...group.items.map(item => h('button', {
           'class': 'agent-sidebar__item',
           'data-active': String(item.id === props.activeId),
@@ -723,9 +849,14 @@ export const AgentSidebar = defineComponent({
             emit('select', item)
           },
         }, [
-          h('i', { 'aria-hidden': 'true' }, item.label.charAt(0).toUpperCase()),
-          !props.collapsed ? h('span', [h('strong', item.label), item.meta ? h('small', item.meta) : null]) : null,
-          !props.collapsed && item.badge !== undefined ? h('b', String(item.badge)) : null,
+          h('span', { 'class': 'agent-sidebar__mark', 'aria-hidden': 'true' }, [renderChatIcon()]),
+          !props.collapsed
+            ? h('span', { class: 'agent-sidebar__copy' }, [
+                h('strong', item.label),
+                item.meta ? h('small', item.meta) : null,
+              ])
+            : null,
+          !props.collapsed && item.badge !== undefined ? h('b', { class: 'agent-sidebar__badge' }, String(item.badge)) : null,
         ])),
       ]))),
       slots.footer?.(),
@@ -742,11 +873,28 @@ export const AgentContextCard = defineComponent({
   emits: { open: (_chunk: AgentContextChunk) => true },
   setup(props, { emit }) {
     return () => h('section', { class: 'agent-context-card' }, [
-      h('header', [h('strong', props.title), h('span', `${props.chunks.length} chunks`)]),
-      h('div', props.chunks.map(chunk => h('article', { key: chunk.id }, [
-        h('header', [h('strong', chunk.label || chunk.source || 'Context'), chunk.content.length ? h('small', `${chunk.content.length} chars`) : null]),
-        h('p', chunk.content),
-        h('footer', [h('span', chunk.sourceType || 'Source'), h('button', { type: 'button', onClick: () => emit('open', chunk) }, chunk.source || 'Open')]),
+      h('header', { class: 'agent-context-card__header' }, [
+        h('span', { class: 'agent-context-card__heading' }, [
+          h('strong', props.title),
+          h('small', props.chunks.length ? '来自检索结果的上下文片段' : '暂无检索上下文'),
+        ]),
+        h('span', { class: 'agent-context-card__count' }, `${props.chunks.length}`),
+      ]),
+      h('ol', { class: 'agent-context-card__list' }, props.chunks.map((chunk, index) => h('li', { key: chunk.id }, [
+        h('article', { class: 'agent-context-card__chunk' }, [
+          h('header', { class: 'agent-context-card__chunk-head' }, [
+            h('span', { 'class': 'agent-context-card__index', 'aria-hidden': 'true' }, String(index + 1).padStart(2, '0')),
+            h('span', { class: 'agent-context-card__chunk-copy' }, [
+              h('strong', chunk.label || chunk.source || 'Context'),
+              chunk.sourceType ? h('small', { class: 'agent-context-card__type' }, chunk.sourceType) : null,
+            ]),
+          ]),
+          h('p', { class: 'agent-context-card__quote' }, chunk.content),
+          h('footer', { class: 'agent-context-card__chunk-foot' }, [
+            h('small', chunk.source || 'Source'),
+            h('button', { class: 'agent-context-card__open', type: 'button', onClick: () => emit('open', chunk) }, '打开'),
+          ]),
+        ]),
       ]))),
     ])
   },
@@ -767,11 +915,27 @@ export const AgentInsightCard = defineComponent({
       emit('update:current', (props.current + delta + props.insights.length) % props.insights.length)
     }
     return () => h('article', { 'class': 'agent-insight-card', 'data-tone': active.value?.tone || 'default' }, [
-      h('header', [h('strong', props.title), h('span', `${props.current + 1}/${props.insights.length}`)]),
-      active.value ? h('div', [active.value.label ? h('small', active.value.label) : null, h('h3', active.value.description), active.value.value ? h('b', active.value.value) : null]) : h('p', 'No insights'),
-      h('footer', [
-        h('span', [h('button', { type: 'button', onClick: () => move(-1) }, '‹'), h('button', { type: 'button', onClick: () => move(1) }, '›')]),
-        active.value?.action ? h('button', { type: 'button', onClick: () => emit('action', active.value!) }, active.value.action) : null,
+      h('header', { class: 'agent-insight-card__header' }, [
+        h('span', { class: 'agent-insight-card__heading' }, [
+          h('strong', props.title),
+          h('small', active.value?.label || '运行指标'),
+        ]),
+        h('span', { class: 'agent-insight-card__count' }, `${props.insights.length ? props.current + 1 : 0}/${props.insights.length}`),
+      ]),
+      active.value
+        ? h('div', { class: 'agent-insight-card__body' }, [
+            active.value.value ? h('b', { class: 'agent-insight-card__value' }, active.value.value) : null,
+            h('p', { class: 'agent-insight-card__copy' }, active.value.description),
+          ])
+        : h('p', { class: 'agent-insight-card__empty' }, '暂无洞察'),
+      h('footer', { class: 'agent-insight-card__footer' }, [
+        h('span', { class: 'agent-insight-card__nav' }, [
+          h('button', { 'class': 'agent-insight-card__nav-btn', 'type': 'button', 'aria-label': 'Previous insight', 'onClick': () => move(-1) }, '‹'),
+          h('button', { 'class': 'agent-insight-card__nav-btn', 'type': 'button', 'aria-label': 'Next insight', 'onClick': () => move(1) }, '›'),
+        ]),
+        active.value?.action
+          ? h('button', { class: 'agent-insight-card__action', type: 'button', onClick: () => emit('action', active.value!) }, active.value.action)
+          : null,
       ]),
     ])
   },
@@ -786,8 +950,9 @@ export const AgentSelectionActions = defineComponent({
   emits: { select: (_payload: { action: AgentSelectionAction, text: string }) => true },
   setup(props, { emit }) {
     return () => h('section', { class: 'agent-selection-actions' }, [
-      h('blockquote', props.text),
-      h('div', props.actions.map(action => h('button', {
+      h('p', { class: 'agent-selection-actions__quote' }, props.text),
+      h('div', { class: 'agent-selection-actions__toolbar' }, props.actions.map(action => h('button', {
+        class: 'agent-selection-actions__action',
         key: action.id,
         type: 'button',
         onClick: () => emit('select', { action, text: props.text }),
@@ -907,14 +1072,38 @@ export const AgentCommandSearch = defineComponent({
       const query = props.modelValue.trim().toLowerCase()
       return query ? props.items.filter(item => `${item.label} ${item.description ?? ''} ${item.group ?? ''}`.toLowerCase().includes(query)) : props.items
     })
+    const groupedItems = computed(() => {
+      const groups = new Map<string, AgentSearchItem[]>()
+      for (const item of visibleItems.value) {
+        const key = item.group || 'Commands'
+        const list = groups.get(key)
+        if (list) { list.push(item) }
+        else { groups.set(key, [item]) }
+      }
+      return [...groups.entries()].map(([label, items]) => ({ label, items }))
+    })
     return () => h('section', { class: 'agent-command-search' }, [
-      h('label', [h('span', '⌕'), h('input', { value: props.modelValue, placeholder: props.placeholder, onInput: (event: Event) => emit('update:modelValue', eventValue(event)) })]),
-      visibleItems.value.length
-        ? h('div', visibleItems.value.map(item => h('button', { key: item.id, type: 'button', onClick: () => emit('select', item) }, [
-            h('span', [h('strong', item.label), item.description ? h('small', item.description) : null]),
-            item.shortcut ? h('kbd', item.shortcut) : null,
-          ])))
-        : h('p', props.emptyText),
+      h('label', { class: 'agent-command-search__field' }, [
+        h('span', { 'class': 'agent-command-search__icon', 'aria-hidden': 'true' }, [renderSearchIcon()]),
+        h('input', { value: props.modelValue, placeholder: props.placeholder, onInput: (event: Event) => emit('update:modelValue', eventValue(event)) }),
+      ]),
+      groupedItems.value.length
+        ? h('div', { class: 'agent-command-search__list' }, groupedItems.value.flatMap(group => [
+            h('small', { class: 'agent-command-search__group', key: `group-${group.label}` }, group.label),
+            ...group.items.map(item => h('button', {
+              class: 'agent-command-search__item',
+              key: item.id,
+              type: 'button',
+              onClick: () => emit('select', item),
+            }, [
+              h('span', { class: 'agent-command-search__copy' }, [
+                h('strong', item.label),
+                item.description ? h('small', item.description) : null,
+              ]),
+              item.shortcut ? h('kbd', item.shortcut) : null,
+            ])),
+          ]))
+        : h('p', { class: 'agent-command-search__empty' }, props.emptyText),
     ])
   },
 })
@@ -927,16 +1116,46 @@ export const AgentFlowchart = defineComponent({
   },
   emits: { add: (_afterId?: string) => true, select: (_node: AgentFlowNode) => true },
   setup(props, { emit }) {
+    const typeLabel = (type: AgentFlowNode['type']) => {
+      if (type === 'trigger') { return '触发' }
+      if (type === 'condition') { return '条件' }
+      if (type === 'action') { return '动作' }
+      return '结果'
+    }
     return () => h('section', { class: 'agent-flowchart' }, [
-      h('header', [h('strong', props.title), h('button', { type: 'button', onClick: () => emit('add', undefined) }, '+ Step')]),
-      h('div', props.nodes.flatMap((node, index): VNodeChild[] => [
-        h('button', { 'class': 'agent-flowchart__node', 'data-type': node.type, 'key': node.id, 'type': 'button', 'onClick': () => emit('select', node) }, [
-          h('small', node.type),
-          h('strong', node.label),
-          node.detail ? h('span', node.detail) : null,
-          node.status ? renderStatus(node.status) : null,
+      h('header', { class: 'agent-flowchart__header' }, [
+        h('span', { class: 'agent-flowchart__heading' }, [
+          h('strong', props.title),
+          h('small', `${props.nodes.length} 个步骤`),
         ]),
-        index < props.nodes.length - 1 ? h('button', { 'class': 'agent-flowchart__connector', 'key': `${node.id}-connector`, 'type': 'button', 'aria-label': `Add after ${node.label}`, 'onClick': () => emit('add', node.id) }, '+') : null,
+        h('button', { class: 'agent-flowchart__add', type: 'button', onClick: () => emit('add', undefined) }, [renderPlusIcon(), 'Step']),
+      ]),
+      h('div', { class: 'agent-flowchart__canvas' }, props.nodes.flatMap((node, index): VNodeChild[] => [
+        h('button', {
+          'class': 'agent-flowchart__node',
+          'data-type': node.type,
+          'data-status': node.status || 'waiting',
+          'key': node.id,
+          'type': 'button',
+          'onClick': () => emit('select', node),
+        }, [
+          h('span', { class: 'agent-flowchart__node-head' }, [
+            h('span', { 'class': 'agent-flowchart__index', 'aria-hidden': 'true' }, String(index + 1).padStart(2, '0')),
+            h('small', { class: 'agent-flowchart__type' }, typeLabel(node.type)),
+            node.status ? renderStatus(node.status) : null,
+          ]),
+          h('strong', node.label),
+          node.detail ? h('span', { class: 'agent-flowchart__detail' }, node.detail) : null,
+        ]),
+        index < props.nodes.length - 1
+          ? h('button', {
+              'class': 'agent-flowchart__connector',
+              'key': `${node.id}-connector`,
+              'type': 'button',
+              'aria-label': `Add after ${node.label}`,
+              'onClick': () => emit('add', node.id),
+            }, renderPlusIcon())
+          : null,
       ])),
     ])
   },
@@ -998,9 +1217,17 @@ export const AgentFineTune = defineComponent({
     }
 
     return () => h('section', { class: 'agent-fine-tune' }, [
-      h('header', [h('strong', props.title), h('span', 'Adjust')]),
-      h('div', props.controls.map(renderControl)),
-      h('footer', [h('button', { type: 'button', onClick: () => emit('apply', props.controls) }, 'Apply changes')]),
+      h('header', { class: 'agent-fine-tune__header' }, [
+        h('span', { class: 'agent-fine-tune__heading' }, [
+          h('strong', props.title),
+          h('small', '调整生成参数后立即生效'),
+        ]),
+        h('span', { class: 'agent-fine-tune__count' }, `${props.controls.length} 项`),
+      ]),
+      h('div', { class: 'agent-fine-tune__grid' }, props.controls.map(renderControl)),
+      h('footer', { class: 'agent-fine-tune__footer' }, [
+        h('button', { class: 'agent-fine-tune__apply', type: 'button', onClick: () => emit('apply', props.controls) }, 'Apply changes'),
+      ]),
     ])
   },
 })

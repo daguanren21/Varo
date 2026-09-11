@@ -73,6 +73,31 @@ Copy-owned mini-program Registry components use native Wevu SFCs and consume Tai
 
 `@varo-ui/cli` only copies Registry files and prints `Dependencies:` / `Dev dependencies:`; it does not install npm packages. After each `add`, install every reported dependency that the project does not already contain. See the [one-time Wevu Registry setup](/en/guide/shadcn-mode) for managed registration of `src/styles.css` and the Registry theme at `src/styles/varo.css`, plus the complete Tailwind options.
 
+## Preview mini-program artifacts in a browser
+
+Start the standalone Web compatibility preview from the Varo repository root:
+
+```bash
+pnpm --filter @varo/playground-weapp-preview dev
+```
+
+The development command builds the mini program first, then serves button, controlled-input, slot/lifecycle, and Agent scenarios at `http://127.0.0.1:5182`. After changing native examples, run `pnpm --filter @varo/playground-weapp-preview prepare:artifacts` to refresh their compiled artifacts.
+
+The wx runtime now lives in the private `@varo/weapp-web` package: a Vite plugin compiles Wevu artifacts into `virtual:varo-native-artifacts`, and a replaceable harness owns `wx` APIs and native elements. The playground is only a sandbox consumer; the package is not published yet. The host runs Wevu-generated JS, JSON, WXML, and WXSS through glass-easel's DOM backend rather than substituting H5 business components. Narrow windows scale the presentation while preserving the selected native viewport width. **This is not a WeChat-client or device emulator.** Unsupported capabilities such as login and payment fail explicitly instead of returning fabricated success.
+
+Build and verify the production surface:
+
+```bash
+pnpm exec turbo run build --filter=@varo/playground-weapp-preview
+pnpm --filter @varo/playground-weapp-preview preview
+# Run in another terminal; a local Chrome installation is required
+pnpm --filter @varo/playground-weapp-preview smoke:browser
+```
+
+The production preview defaults to `http://127.0.0.1:4182`; deployable files are in `apps/playground-weapp-preview/dist`. The browser smoke exercises native interaction, event counts, context, stream stop/resume, layout boundaries, and error recovery, and writes screenshots to a temporary directory. Set `PREVIEW_URL` to test another running preview.
+
+The repository lockfile records the SDK versions required by this pipeline. The CLI does not automatically install those dependencies into external consumer projects. WeChat-specific capabilities, device performance, and final native visuals still require validation in WeChat.
+
 ## Engineering notes
 
 - Keep docs, playgrounds, and packages in the monorepo

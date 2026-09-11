@@ -114,6 +114,12 @@ const markdownContent = '## Result\\n\\n**Ready**'
     example: '<AgentSourceList title="来源" :sources="sources" />',
     code: '<script setup lang="ts">\nimport { AgentSourceList } from \'@/components/agent-ui\'\n</script>\n\n<template>\n  <AgentSourceList title="来源" :sources="sources" />\n</template>',
   },
+  'rag-pipeline': {
+    name: 'AgentRagPipeline',
+    importPath: '@/components/agent-ui',
+    example: '<AgentRagPipeline :query="query" :steps="steps" :sources="sources" :answer="answer" @run="run" @cancel="cancel" @select-source="selectSource" />',
+    code: '<script setup lang="ts">\nimport { AgentRagPipeline } from \'@/components/agent-ui\'\n</script>\n\n<template>\n  <AgentRagPipeline :query="query" :steps="steps" :sources="sources" :answer="answer" @run="run" @cancel="cancel" @select-source="selectSource" />\n</template>',
+  },
   'attachments': {
     name: 'AgentAttachmentList',
     importPath: '@/components/agent-ui',

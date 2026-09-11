@@ -2,12 +2,14 @@
 import { nextTick, onBeforeUnmount, shallowRef, useTemplateRef, watch } from 'vue'
 import { agentInventory } from '../agent-component-catalog'
 import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
+import { useRagPipelineDemo } from '../composables/useRagPipelineDemo'
 import {
   AgentArtifact,
   AgentAttachmentList,
   AgentComposer,
   AgentConversation,
   AgentEventRenderer,
+  AgentRagPipeline,
   AgentRecommendation,
   AgentResponseActions,
   AgentSourceList,
@@ -18,6 +20,7 @@ type Locale = 'en' | 'zh'
 
 const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'zh' })
 const { approve, busy, messages, prompt, reject, retry, run, snapshot } = useAgentDocsDemo()
+const { snapshot: ragSnapshot, run: runRag, cancel: cancelRag } = useRagPipelineDemo(props.locale)
 
 const transcript = useTemplateRef<HTMLElement>('transcript')
 const followsLatest = shallowRef(true)
@@ -75,9 +78,9 @@ onBeforeUnmount(() => {
 })
 
 const tasks = [
-  { id: 'protocol', title: '统一事件协议', status: 'completed' as const, progress: 100 },
-  { id: 'renderer', title: '双端增量渲染', status: 'completed' as const, progress: 100 },
-  { id: 'approval', title: '人工审批门禁', status: 'running' as const, progress: 72 },
+  { id: 'protocol', title: '统一事件协议', status: 'completed' as const, progress: 100, description: '业务只提供事件来源。' },
+  { id: 'renderer', title: '双端增量渲染', status: 'completed' as const, progress: 100, description: 'H5 与 Weapp 共用状态投影。' },
+  { id: 'approval', title: '人工审批门禁', status: 'running' as const, progress: 72, description: '等待发布动作确认。' },
 ]
 const artifact = {
   content: `const controller = createAgentStreamController()\nawait controller.connect(events)`,
@@ -175,6 +178,16 @@ function t(zh: string, en: string) {
         <AgentTaskList :tasks="tasks" :title="t('实现进度', 'Implementation progress')" />
         <AgentArtifact :artifact="artifact" />
         <AgentSourceList :sources="sources" :title="t('参考来源', 'Sources')" />
+        <AgentRagPipeline
+          :query="ragSnapshot.query"
+          :steps="ragSnapshot.steps"
+          :sources="ragSnapshot.sources"
+          :answer="ragSnapshot.answer"
+          :elapsed-ms="ragSnapshot.elapsedMs"
+          reduced-motion
+          @run="runRag"
+          @cancel="cancelRag"
+        />
         <AgentAttachmentList :attachments="attachments" />
       </aside>
     </div>

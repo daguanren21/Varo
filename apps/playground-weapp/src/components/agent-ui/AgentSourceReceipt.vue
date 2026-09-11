@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AgentSourceReceiptItem } from './advanced-types'
 import { computed } from 'wevu'
+import { agentReceiptIcon } from './agent-icons'
 
 const props = withDefaults(
   defineProps<{
@@ -20,65 +21,78 @@ const emit = defineEmits<{
   open: [item: AgentSourceReceiptItem]
 }>()
 
+const readCount = computed(() => props.items.filter(item => item.status === 'read').length)
+const failedCount = computed(() => props.items.filter(item => item.status === 'failed').length)
+const headingHint = computed(() => {
+  if (failedCount.value) { return `${failedCount.value} 个来源读取失败` }
+  if (props.summary) { return props.summary }
+  if (props.items.length && readCount.value === props.items.length) { return '全部来源已核对' }
+  return '回答完成后核对来源'
+})
+const countLabel = computed(() => `${readCount.value}/${props.items.length}`)
 const displayItems = computed(() => props.items.map((item) => {
   const statusLabel = item.status === 'read' ? '已读取' : item.status === 'skipped' ? '已跳过' : '读取失败'
   return {
     canConnect: item.status === 'failed',
     canOpen: item.status === 'read',
+    connectLabel: `连接${item.label}`,
+    countLabel: item.itemCount === undefined ? '' : `${item.itemCount} 项`,
     item,
-    statusIconClass: `agent-source-receipt__status-icon--${item.status}`,
+    openLabel: `查看${item.label}`,
+    rowClass: `agent-workspace-card__row is-${item.status}`,
     statusLabel,
   }
 }))
-const readCount = computed(() => props.items.filter(item => item.status === 'read').length)
 </script>
 
 <template>
-  <view class="agent-source-receipt box-border w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]">
-    <view class="grid min-h-12 gap-0.5 border-b border-[var(--varo-agent-border)] px-[13px] py-2.5">
-      <view class="flex items-center justify-between gap-3">
-        <text class="text-xs font-bold text-[var(--varo-agent-foreground)]">
+  <view class="agent-source-receipt" :aria-label="title">
+    <view class="agent-workspace-card__header">
+      <view class="agent-workspace-card__heading">
+        <text class="agent-workspace-card__title">
           {{ title }}
         </text>
-        <text class="text-[11px] tabular-nums text-[var(--varo-agent-muted)]">
-          {{ readCount }}/{{ items.length }} 已读取
+        <text class="agent-workspace-card__hint">
+          {{ headingHint }}
         </text>
       </view>
-      <text v-if="summary" class="text-[11px] leading-4 text-[var(--varo-agent-muted)]">
-        {{ summary }}
+      <text class="agent-workspace-card__count">
+        {{ countLabel }}
       </text>
     </view>
 
-    <view v-if="displayItems.length" class="grid gap-1 p-2">
+    <view v-if="displayItems.length" class="agent-workspace-card__body">
       <view
         v-for="entry in displayItems"
         :key="entry.item.id"
-        class="flex min-h-[56px] items-center gap-2.5 rounded-xl bg-[var(--varo-agent-surface-strong)] px-2.5 py-2"
+        :class="entry.rowClass"
         :data-status="entry.item.status"
       >
-        <view class="agent-source-receipt__status-icon" :class="entry.statusIconClass" aria-hidden="true" />
-        <view class="grid min-w-0 flex-1 gap-0.5">
-          <view class="flex min-w-0 items-baseline gap-2">
-            <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
+        <view class="agent-workspace-card__mark" aria-hidden="true">
+          <image class="agent-workspace-card__icon" :src="agentReceiptIcon" mode="aspectFit" />
+        </view>
+        <view class="agent-workspace-card__copy">
+          <view class="agent-workspace-card__row-main">
+            <text class="agent-workspace-card__name">
               {{ entry.item.label }}
             </text>
-            <text v-if="entry.item.itemCount !== undefined" class="flex-none text-[10px] tabular-nums text-[var(--varo-agent-muted)]">
-              {{ entry.item.itemCount }} 项
+            <text v-if="entry.countLabel" class="agent-workspace-card__meta">
+              {{ entry.countLabel }}
             </text>
           </view>
-          <text v-if="entry.item.detail" class="text-[11px] leading-4 text-[var(--varo-agent-muted)]">
+          <text v-if="entry.item.detail" class="agent-workspace-card__detail">
             {{ entry.item.detail }}
           </text>
-          <text class="text-[10px] font-semibold text-[var(--varo-agent-text)]">
+          <text class="agent-workspace-card__chip">
             {{ entry.statusLabel }}
           </text>
         </view>
         <button
           v-if="entry.canOpen"
-          class="agent-native-button agent-source-receipt__action"
+          class="agent-native-button agent-workspace-card__action"
           type="button"
-          :aria-label="`查看${entry.item.label}`"
-          hover-class="agent-source-receipt__action--pressed"
+          :aria-label="entry.openLabel"
+          hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
           @click="emit('open', entry.item)"
@@ -87,10 +101,10 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
         </button>
         <button
           v-else-if="entry.canConnect"
-          class="agent-native-button agent-source-receipt__action agent-source-receipt__action--primary"
+          class="agent-native-button agent-workspace-card__action agent-workspace-card__action--primary"
           type="button"
-          :aria-label="`连接${entry.item.label}`"
-          hover-class="agent-source-receipt__action--pressed"
+          :aria-label="entry.connectLabel"
+          hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
           @click="emit('connect', entry.item)"
@@ -99,39 +113,167 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
         </button>
       </view>
     </view>
-    <view v-else class="grid min-h-20 place-items-center px-3 text-[12px] text-[var(--varo-agent-muted)]">
+    <view v-else class="agent-workspace-card__empty">
       <text>暂无来源回执</text>
     </view>
   </view>
 </template>
 
 <style>
-.agent-source-receipt__status-icon {
-  box-sizing: border-box;
+.agent-source-receipt {
+  overflow: hidden;
+  color: var(--varo-agent-foreground, #172033);
+  background: var(--varo-agent-surface, #fff);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 16px;
+}
+
+.agent-workspace-card__header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 12px 14px 11px;
+  border-bottom: 1px solid var(--varo-agent-border, #dbe3ea);
+}
+
+.agent-workspace-card__heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.agent-workspace-card__title {
+  font-size: 13px;
+  font-weight: 760;
+  line-height: 18px;
+}
+
+.agent-workspace-card__hint,
+.agent-workspace-card__count,
+.agent-workspace-card__detail,
+.agent-workspace-card__meta,
+.agent-workspace-card__empty {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--varo-agent-muted, #667085);
+}
+
+.agent-workspace-card__count,
+.agent-workspace-card__meta {
   flex: none;
-  width: 12px;
-  height: 12px;
-  background: var(--varo-agent-success);
-  border: 2px solid var(--varo-agent-success);
+  font-variant-numeric: tabular-nums;
+}
+
+.agent-workspace-card__body {
+  display: grid;
+  padding: 8px 10px 10px;
+}
+
+.agent-workspace-card__row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  padding: 9px 10px;
+  border-radius: 12px;
+}
+
+.agent-workspace-card__row.is-failed {
+  background: var(--varo-agent-danger-soft, #fee2e2);
+}
+
+.agent-workspace-card__mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--varo-agent-fill, #f1f5f9);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 9px;
+}
+
+.agent-workspace-card__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.agent-workspace-card__row.is-read .agent-workspace-card__mark {
+  background: var(--varo-agent-success-soft, #dcfce7);
+  border-color: var(--varo-agent-success, #16a34a);
+}
+
+.agent-workspace-card__row.is-failed .agent-workspace-card__mark {
+  background: var(--varo-agent-danger-soft, #fee2e2);
+  border-color: var(--varo-agent-danger, #dc2626);
+}
+
+.agent-workspace-card__copy {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+  min-width: 0;
+}
+
+.agent-workspace-card__row-main {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.agent-workspace-card__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.agent-workspace-card__chip {
+  width: fit-content;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 14px;
+  color: var(--varo-agent-muted, #667085);
+  background: var(--varo-agent-fill, #f1f5f9);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
   border-radius: 999px;
 }
 
-.agent-source-receipt__status-icon--skipped {
-  height: 4px;
-  background: var(--varo-agent-border-strong);
-  border: 0;
-  border-radius: 2px;
+.agent-workspace-card__row.is-read .agent-workspace-card__chip {
+  color: var(--varo-agent-success, #16a34a);
+  background: var(--varo-agent-success-soft, #dcfce7);
 }
 
-.agent-source-receipt__status-icon--failed {
-  background: var(--varo-agent-danger);
-  border-color: var(--varo-agent-danger);
+.agent-workspace-card__row.is-failed .agent-workspace-card__chip {
+  color: var(--varo-agent-danger, #dc2626);
+  background: var(--varo-agent-danger-soft, #fee2e2);
 }
 
-.agent-source-receipt__action {
+.agent-workspace-card__row.is-skipped .agent-workspace-card__chip {
+  color: var(--varo-agent-warning, #b45309);
+  background: var(--varo-agent-warning-soft, #fef3c7);
+}
+
+.agent-workspace-card__empty {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  padding: 12px;
+}
+
+.agent-workspace-card__action {
   position: relative;
   box-sizing: border-box;
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   min-width: 48px;
@@ -139,26 +281,26 @@ const readCount = computed(() => props.items.filter(item => item.status === 'rea
   padding: 0 10px;
   margin: 0;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 750;
   line-height: 1;
-  color: var(--varo-agent-text);
+  color: var(--varo-agent-foreground, #172033);
   background: transparent;
   border: 0;
-  border-radius: 8px;
+  border-radius: 9px;
 }
 
-.agent-source-receipt__action::before {
+.agent-workspace-card__action::before {
   position: absolute;
   inset: -4px;
   content: '';
 }
 
-.agent-source-receipt__action--primary {
-  color: var(--varo-agent-primary);
+.agent-workspace-card__action--primary {
+  color: var(--varo-agent-primary, #0f766e);
 }
 
-.agent-source-receipt__action--pressed {
-  background: var(--varo-agent-fill);
+.agent-workspace-card__action--pressed {
+  background: var(--varo-agent-fill, #f1f5f9);
 }
 </style>
 

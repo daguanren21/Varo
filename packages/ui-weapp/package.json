@@ -70,6 +70,6 @@
     "@varo/hooks": "workspace:*",
     "@varo/primitives-weapp": "workspace:*",
     "@varo/shared": "workspace:*",
-    "weapp-vite": "7.0.4"
+    "weapp-vite": "^7.1.0"
   }
 }

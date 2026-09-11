@@ -31,14 +31,15 @@ import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
 import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
+import MapDemo from '../../src/components/MapDemo.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
-import RegionPickerDemo from '../../src/components/RegionPickerDemo.vue'
 import RegistryCoverageEvidence from '../../src/components/RegistryCoverageEvidence.vue'
 import RegistryInstallStrip from '../../src/components/RegistryInstallStrip.vue'
+import RobotChatDemo from '../../src/components/RobotChatDemo.vue'
 import DocsLayout from './DocsLayout.vue'
 import '@varo-ui/h5/source/style.css'
 import './tailwind.css'
@@ -55,8 +56,9 @@ const theme: Theme = {
     app.component('InteractivePreview', InteractivePreview)
     app.component('ComponentCatalog', ComponentCatalog)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
+    app.component('MapDemo', MapDemo)
+    app.component('RobotChatDemo', RobotChatDemo)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
-    app.component('RegionPickerDemo', RegionPickerDemo)
     app.component('PrimitiveCatalog', PrimitiveCatalog)
     app.component('PrimitiveExample', PrimitiveExample)
     app.component('RegistryInstallStrip', RegistryInstallStrip)

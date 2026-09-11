@@ -21,9 +21,8 @@ const emit = defineEmits<{
   'update:controls': [value: AgentFineTuneControl[]]
 }>()
 
-const rootClass = computed(() =>
-  cn('agent-fine-tune overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
-)
+const rootClass = computed(() => cn('agent-fine-tune', props.className))
+const countLabel = computed(() => `${props.controls.length} 项`)
 const fields = computed(() =>
   props.controls.map((control, index) => ({
     control,
@@ -35,10 +34,8 @@ const fields = computed(() =>
         ...option,
         ariaChecked: selected,
         className: cn(
-          'agent-native-button flex min-h-10 items-center justify-between gap-2 rounded-[10px] border px-2.5 text-left text-[12px] font-semibold',
-          selected
-            ? 'border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]'
-            : 'border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] text-[var(--varo-agent-text)]',
+          'agent-native-button agent-fine-tune__choice',
+          selected && 'is-selected',
         ),
         selected,
       }
@@ -64,21 +61,28 @@ function update(index: number, value: string) {
 
 <template>
   <view :class="rootClass">
-    <view class="flex min-h-12 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-[13px]">
-      <text class="text-xs font-bold text-[var(--varo-agent-foreground)]">
-        {{ title }}
-      </text>
-      <text class="text-[10px] font-bold uppercase tracking-[.08em] text-[var(--varo-agent-muted)]">
-        Adjust
+    <view class="agent-fine-tune__header">
+      <view class="agent-fine-tune__heading">
+        <text class="agent-fine-tune__title">
+          {{ title }}
+        </text>
+        <text class="agent-fine-tune__hint">
+          调整生成参数后立即生效
+        </text>
+      </view>
+      <text class="agent-fine-tune__count">
+        {{ countLabel }}
       </text>
     </view>
 
-    <view class="grid grid-cols-2 gap-2.5 p-3 max-[600px]:grid-cols-1">
-      <view v-for="field in fields" :key="field.control.label" class="grid gap-1.5 text-[10px] font-semibold text-[var(--varo-agent-text)]">
-        <text>{{ field.control.label }}</text>
+    <view class="agent-fine-tune__grid">
+      <view v-for="field in fields" :key="field.control.label" class="agent-fine-tune__field">
+        <text class="agent-fine-tune__label">
+          {{ field.control.label }}
+        </text>
         <view
           v-if="field.control.type === 'select'"
-          class="grid grid-cols-2 gap-1.5"
+          class="agent-fine-tune__choices"
           role="radiogroup"
           :aria-label="field.control.label"
         >
@@ -95,14 +99,14 @@ function update(index: number, value: string) {
             @click="update(field.index, option.value)"
           >
             <text>{{ option.label }}</text>
-            <text v-if="option.selected" class="text-[12px] font-black" aria-hidden="true">
+            <text v-if="option.selected" class="agent-fine-tune__choice-check" aria-hidden="true">
               ✓
             </text>
           </button>
         </view>
         <input
           v-else
-          class="box-border min-h-10 w-full rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 text-[12px] text-[var(--varo-agent-foreground)]"
+          class="agent-fine-tune__input"
           :aria-label="field.control.label"
           :max="field.control.max"
           :min="field.control.min"
@@ -114,13 +118,142 @@ function update(index: number, value: string) {
       </view>
     </view>
 
-    <view class="flex min-h-12 items-center justify-end border-t border-[var(--varo-agent-border)] px-3">
-      <button class="agent-native-button min-h-9 rounded-[10px] border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]" type="button" @click="emit('apply', controls)">
+    <view class="agent-fine-tune__footer">
+      <button class="agent-native-button agent-fine-tune__apply" type="button" @click="emit('apply', controls)">
         Apply changes
       </button>
     </view>
   </view>
 </template>
+
+<style>
+.agent-fine-tune {
+  overflow: hidden;
+  background: var(--varo-agent-surface, #fff);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 16px;
+}
+
+.agent-fine-tune__header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 12px 14px 11px;
+  border-bottom: 1px solid var(--varo-agent-border, #dbe3ea);
+}
+
+.agent-fine-tune__heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.agent-fine-tune__title {
+  font-size: 13px;
+  font-weight: 760;
+  line-height: 18px;
+  color: var(--varo-agent-foreground, #172033);
+}
+
+.agent-fine-tune__hint,
+.agent-fine-tune__count,
+.agent-fine-tune__label {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--varo-agent-muted, #667085);
+}
+
+.agent-fine-tune__count {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.agent-fine-tune__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+
+.agent-fine-tune__field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.agent-fine-tune__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--varo-agent-foreground, #172033);
+  background: var(--varo-agent-surface, #fff);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 10px;
+}
+
+.agent-fine-tune__choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.agent-fine-tune__choice {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  padding: 0 11px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--varo-agent-text, #475569);
+  text-align: left;
+  background: var(--varo-agent-surface-strong, #f8fafc);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 10px;
+}
+
+.agent-fine-tune__choice.is-selected {
+  color: var(--varo-agent-primary, #0f766e);
+  background: var(--varo-agent-primary-soft, #ccfbf1);
+  border-color: var(--varo-agent-primary, #0f766e);
+}
+
+.agent-fine-tune__choice-check {
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.agent-fine-tune__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 48px;
+  padding: 0 12px;
+  border-top: 1px solid var(--varo-agent-border, #dbe3ea);
+}
+
+.agent-fine-tune__apply {
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--varo-agent-primary-foreground, #fff);
+  background: var(--varo-agent-primary, #0f766e);
+  border: 1px solid var(--varo-agent-primary, #0f766e);
+  border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+  .agent-fine-tune__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+</style>
 
 <json lang="jsonc">
 {

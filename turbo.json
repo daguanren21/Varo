@@ -5,6 +5,13 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@varo/playground-weapp#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["devtools/build/mp-weixin/**"]
+    },
+    "@varo/weapp-web#build": {
+      "cache": false
+    },
     "clean": {
       "cache": false
     },

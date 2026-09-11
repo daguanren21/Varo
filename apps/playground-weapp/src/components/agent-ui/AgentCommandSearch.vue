@@ -26,14 +26,26 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
-const rootClass = computed(() =>
-  cn('agent-command-search overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-xl', props.className),
-)
+const rootClass = computed(() => cn('agent-command-search', props.className))
 const visibleItems = computed(() => {
   const query = props.modelValue.trim().toLowerCase()
   return query
     ? props.items.filter(item => `${item.label} ${item.description ?? ''} ${item.group ?? ''}`.toLowerCase().includes(query))
     : props.items
+})
+const groupedItems = computed(() => {
+  const groups = new Map<string, AgentSearchItem[]>()
+  for (const item of visibleItems.value) {
+    const key = item.group || 'Commands'
+    const list = groups.get(key)
+    if (list) {
+      list.push(item)
+    }
+    else {
+      groups.set(key, [item])
+    }
+  }
+  return [...groups.entries()].map(([label, items]) => ({ label, items }))
 })
 
 function inputValue(event: Event) {
@@ -41,35 +53,164 @@ function inputValue(event: Event) {
   const target = event.target as HTMLInputElement | null
   emit('update:modelValue', miniEvent.detail?.value ?? target?.value ?? '')
 }
+
+function selectItem(id: string) {
+  const item = props.items.find(entry => entry.id === id)
+  if (item) {
+    emit('select', item)
+  }
+}
 </script>
 
 <template>
   <view :class="rootClass">
-    <view class="flex min-h-[50px] items-center gap-2.5 border-b border-[var(--varo-agent-border)] px-[13px]">
-      <image class="h-[18px] w-[18px] flex-none" :src="agentSearchIcon" mode="aspectFit" aria-hidden="true" />
-      <input class="min-w-0 flex-1 border-0 bg-transparent text-[12px] text-[var(--varo-agent-foreground)] outline-none" :value="modelValue" :placeholder="placeholder" @input="inputValue">
+    <view class="agent-command-search__field">
+      <image class="agent-command-search__icon" :src="agentSearchIcon" mode="aspectFit" aria-hidden="true" />
+      <input class="agent-command-search__input" :value="modelValue" :placeholder="placeholder" @input="inputValue">
     </view>
 
-    <scroll-view v-if="visibleItems.length" class="max-h-[280px] p-2" scroll-y :show-scrollbar="false">
-      <button v-for="item in visibleItems" :key="item.id" class="agent-native-button agent-native-button--block flex min-h-12 items-center justify-between gap-3 rounded-xl border-0 bg-[var(--varo-agent-surface)] px-2.5 py-2 text-left" hover-class="bg-[var(--varo-agent-surface-strong)]" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('select', item)">
-        <view class="grid min-w-0 flex-1 gap-0.5">
-          <text class="truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
-            {{ item.label }}
-          </text>
-          <text v-if="item.description" class="truncate text-[11px] text-[var(--varo-agent-muted)]">
-            {{ item.description }}
-          </text>
-        </view>
-        <text v-if="item.shortcut" class="rounded-md border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-1.5 py-1 font-mono text-[10px] text-[var(--varo-agent-muted)]">
-          {{ item.shortcut }}
+    <scroll-view v-if="groupedItems.length" class="agent-command-search__list" scroll-y :show-scrollbar="false">
+      <view v-for="group in groupedItems" :key="group.label">
+        <text class="agent-command-search__group">
+          {{ group.label }}
         </text>
-      </button>
+        <button
+          v-for="item in group.items"
+          :key="item.id"
+          class="agent-native-button agent-native-button--block agent-command-search__item"
+          hover-class="bg-[var(--varo-agent-surface-strong)]"
+          :hover-start-time="20"
+          :hover-stay-time="70"
+          type="button"
+          @click="selectItem(item.id)"
+        >
+          <view class="agent-command-search__copy">
+            <text class="agent-command-search__label">
+              {{ item.label }}
+            </text>
+            <text v-if="item.description" class="agent-command-search__description">
+              {{ item.description }}
+            </text>
+          </view>
+          <text v-if="item.shortcut" class="agent-command-search__shortcut">
+            {{ item.shortcut }}
+          </text>
+        </button>
+      </view>
     </scroll-view>
-    <view v-else class="grid min-h-24 place-items-center text-[12px] text-[var(--varo-agent-muted)]">
+    <view v-else class="agent-command-search__empty">
       {{ emptyText }}
     </view>
   </view>
 </template>
+
+<style>
+.agent-command-search {
+  overflow: hidden;
+  background: var(--varo-agent-surface, #fff);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 16px;
+}
+
+.agent-command-search__field {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-height: 50px;
+  padding: 0 13px;
+  border-bottom: 1px solid var(--varo-agent-border, #dbe3ea);
+}
+
+.agent-command-search__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.agent-command-search__input {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--varo-agent-foreground, #172033);
+  background: transparent;
+  border: 0;
+}
+
+.agent-command-search__list {
+  max-height: 280px;
+  padding: 8px;
+}
+
+.agent-command-search__section {
+  display: grid;
+  gap: 2px;
+}
+
+.agent-command-search__group {
+  padding: 8px 8px 4px;
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--varo-agent-muted, #667085);
+}
+
+.agent-command-search__item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 6px 8px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+}
+
+.agent-command-search__item--hover {
+  background: var(--varo-agent-fill, #f1f5f9);
+}
+
+.agent-command-search__copy {
+  display: grid;
+  min-width: 0;
+}
+
+.agent-command-search__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--varo-agent-foreground, #172033);
+  white-space: nowrap;
+}
+
+.agent-command-search__description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  color: var(--varo-agent-muted, #667085);
+  white-space: nowrap;
+}
+
+.agent-command-search__shortcut {
+  flex: none;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: var(--varo-agent-muted, #667085);
+  background: var(--varo-agent-surface-strong, #f8fafc);
+  border: 1px solid var(--varo-agent-border, #dbe3ea);
+  border-radius: 6px;
+}
+
+.agent-command-search__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96px;
+  font-size: 12px;
+  color: var(--varo-agent-muted, #667085);
+}
+</style>
 
 <json lang="jsonc">
 {

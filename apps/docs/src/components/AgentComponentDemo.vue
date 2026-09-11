@@ -2,6 +2,7 @@
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
 import { computed, nextTick, shallowRef } from 'vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
+import { useRagPipelineDemo } from '../composables/useRagPipelineDemo'
 import {
   AgentActivity,
   AgentApproval,
@@ -27,6 +28,7 @@ import {
   AgentMessageScroller,
   AgentPromptSuggestions,
   AgentRadioGroup,
+  AgentRagPipeline,
   AgentRecommendation,
   AgentRecordsTable,
   AgentResponseActions,
@@ -89,6 +91,7 @@ const radioValue = shallowRef('balanced')
 const approvalValue = shallowRef('verify')
 const prompt = shallowRef('')
 const feedback = shallowRef('')
+const { snapshot: ragSnapshot, run: runRag, cancel: cancelRag } = useRagPipelineDemo(props.locale)
 const sidebarActive = shallowRef('release')
 const sidebarCollapsed = shallowRef(false)
 const insightCurrent = shallowRef(0)
@@ -115,9 +118,9 @@ const tools = [
   { id: 'publish', name: 'npm.publish', status: 'waiting' as const, summary: '等待审批' },
 ]
 const tasks = [
-  { id: 'typecheck', title: '类型检查', status: 'completed' as const, progress: 100, meta: '16/16' },
-  { id: 'test', title: '行为测试', status: 'completed' as const, progress: 100, meta: 'passed' },
-  { id: 'build', title: '双端构建', status: 'running' as const, progress: 72, meta: '2 targets' },
+  { id: 'typecheck', title: '类型检查', status: 'completed' as const, progress: 100, meta: '16/16', description: 'workspace typecheck 已通过。' },
+  { id: 'test', title: '行为测试', status: 'completed' as const, progress: 100, meta: 'passed', description: 'Vitest 覆盖双端组件行为。' },
+  { id: 'build', title: '双端构建', status: 'running' as const, progress: 72, meta: '2 targets', description: 'H5 与 Weapp 产物正在打包。' },
 ]
 const choices = [
   { label: '仅验证', value: 'verify', description: '不产生外部副作用' },
@@ -186,6 +189,7 @@ const contextChunks = [
   { content: 'Cold-chain certification must be verified before a new supplier can be approved.', id: 'policy', label: 'Supplier policy', source: 'Onboarding SOP.pdf', sourceType: 'PDF' },
   { content: 'H5 and weapp-vite builds both completed successfully.', id: 'build', label: 'Build report', source: 'CI report.json', sourceType: 'JSON' },
 ]
+
 const insights = [
   { action: 'Rebalance', description: '小程序首屏包体比上次降低 6%。', id: 'bundle', label: 'Bundle insight', tone: 'success' as const, value: '−6%' },
   { action: 'Inspect', description: '两个工具调用仍在等待用户审批。', id: 'approval', label: 'Workflow insight', tone: 'warning' as const, value: '2' },
@@ -319,6 +323,7 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentResponseActions v-else-if="component === 'response-actions'" content="双端组件已经通过。" @copy="done('已复制')" @retry="done('重新生成')" @like="done('有帮助')" @dislike="done('需改进')" />
         <AgentArtifact v-else-if="component === 'artifact'" :artifact="artifact" @open="done('打开产物')" />
         <AgentSourceList v-else-if="component === 'sources'" :sources="sources" title="参考来源" @open="done($event.title)" />
+        <AgentRagPipeline v-else-if="component === 'rag-pipeline'" :query="ragSnapshot.query" :steps="ragSnapshot.steps" :sources="ragSnapshot.sources" :answer="ragSnapshot.answer" :elapsed-ms="ragSnapshot.elapsedMs" reduced-motion @run="runRag" @cancel="cancelRag" @select-source="done($event.title)" />
         <AgentAttachmentList v-else-if="component === 'attachments'" :attachments="attachments" @remove="done(`移除 ${$event.name}`)" />
         <AgentEventRenderer v-else-if="component === 'event-renderer'" :snapshot="eventSnapshot" @approve="done(`批准 ${$event}`)" @reject="done('拒绝')" @retry="done('重试')" />
         <AgentMessageScroller v-else-if="component === 'message-scroller'" :at-live-edge="false" @follow="done('跳到最新消息')">
@@ -637,11 +642,9 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
   :deep(
     .agent-message-scroller,
     .agent-file-diff,
-    .agent-tool-result,
     .agent-citations,
     .agent-activity,
     .agent-context-card,
-    .agent-insight-card,
     .agent-tool-approval,
     .agent-fine-tune,
     .agent-sidebar,
@@ -659,19 +662,20 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
   .agent-component-demo__stage
   :deep(
     .agent-file-diff__header,
-    .agent-tool-result__header,
     .agent-citations__trigger,
-    .agent-sidebar > header,
-    .agent-command-search > label,
-    .agent-table th,
-    .agent-context-card article
+    .agent-sidebar__header,
+    .agent-command-search__field,
+    .agent-table th
   ) {
   color: var(--varo-foreground);
   background: var(--varo-surface-strong);
   border-color: var(--varo-border);
 }
 
-:global(.dark) .agent-component-demo__stage :deep(button:not(.agent-code-block button)) {
+:global(.dark)
+  .agent-component-demo__stage
+  :deep(
+    button:not(.agent-code-block button, .agent-rag__source, .agent-tool-result__header, .agent-tool-result__retry, .agent-artifact__open, .agent-insight-card__action, .agent-insight-card__nav-btn, .agent-selection-actions__action, .agent-sidebar__item, .agent-sidebar__create, .agent-command-search__item)) {
   color: inherit;
 }
 

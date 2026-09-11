@@ -2,7 +2,11 @@
 
 `VMap` is a typed Wevu wrapper around the native WeChat mini-program `<map>`. It normalizes sizing, capabilities, and event names. The component only supports the `weapp` target; application code still owns remote APIs, permission flows, and Map Context usage.
 
-<RegistryInstallStrip item="components/map" :targets="['weapp']" :wrapper-targets="[]" locale="en" />
+## Demo
+
+<MapDemo locale="en" />
+
+The docs site cannot run WeChat's native map view. This demo uses Tencent Map JS API GL to show the same VMap contract: center, marker count, and `regionchange`. Location permission and Map Context remain mini-program-only.
 
 ## Usage
 

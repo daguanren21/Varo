@@ -4,6 +4,12 @@
 
 <RegistryInstallStrip item="components/robot-chat" :targets="['weapp']" :wrapper-targets="[]" locale="en" />
 
+## Demo
+
+<RobotChatDemo locale="en" />
+
+The docs site cannot load chatbotwidget. This demo shows welcome text, the operate card, send, and `queryCallback`. It is the Web Preview host, not WeChat Dialog Open Platform.
+
 ## App configuration
 
 Enable the plugin for the Mini Program, then declare it under the fixed `varoRobot` alias in `app.json`:
