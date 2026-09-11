@@ -1,5 +1,15 @@
 # @varo-ui/theme
 
+## 2.0.0
+
+### Minor Changes
+
+- Expand the semantic color system with WeChat primary scales, complete status, neutral, fill, border, background, info, and dark-mode variables across theme, H5, Weapp, and Registry surfaces.
+
+- Apply reactive H5 theme variables, contrast-safe action colors, accessible dialog/form/select behavior, SVG icon geometry, and Registry-first documentation and demo paths across H5 and Weapp targets.
+
+- Add a first-class `text` Button variant with semantic tone colors, pressed feedback, custom-color support, and H5/Weapp examples.
+
 ## 1.2.0
 
 ### Minor Changes
