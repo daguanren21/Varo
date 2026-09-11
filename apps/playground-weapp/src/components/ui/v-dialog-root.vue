@@ -27,10 +27,14 @@ const emit = defineEmits<{
   'update:open': [open: boolean]
 }>()
 
+let dialogRootSeq = 0
+
 const disabled = computed(() => props.disabled)
 const open = computed(() => props.open)
 const openControlled = computed(() => props.open !== undefined)
+const dialogId = `varo-dialog-${++dialogRootSeq}`
 const dialog = useDialogRoot({
+  id: dialogId,
   runtime: varoReactiveRuntime,
   defaultOpen: props.defaultOpen,
   disabled,

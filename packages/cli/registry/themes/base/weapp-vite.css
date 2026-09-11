@@ -96,7 +96,7 @@ page {
 
   position: relative;
   box-sizing: border-box;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 42px;
@@ -228,11 +228,15 @@ page {
 }
 
 .varo-button__loading-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
   width: 1em;
   height: 1em;
   border: 2px solid currentcolor;
   border-right-color: transparent;
   border-radius: 999px;
+  transform: translateY(-50%);
   animation: varo-spin 0.75s linear infinite;
 }
 

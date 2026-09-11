@@ -20,6 +20,9 @@ const emit = defineEmits<{
 
 const dialog = useDialogContext()
 const classes = computed(() => cn('varo-dialog__trigger', props.className))
+const triggerAttrs = computed(() => dialog.attrs.trigger)
+const triggerId = computed(() => String(triggerAttrs.value.id ?? ''))
+const triggerControls = computed(() => String(triggerAttrs.value['aria-controls'] ?? ''))
 const expanded = computed(() => dialog.state.open.value)
 const disabled = computed(() => dialog.state.disabled.value)
 const ariaDisabled = computed(() => disabled.value || undefined)
@@ -40,8 +43,10 @@ function toggle(event: unknown) {
 <template>
   <button
     v-if="renderAsButton"
+    :id="triggerId"
     :class="classes"
     aria-haspopup="dialog"
+    :aria-controls="triggerControls"
     :aria-expanded="expanded"
     :aria-disabled="ariaDisabled"
     :data-disabled="dataDisabled"
@@ -53,8 +58,10 @@ function toggle(event: unknown) {
   </button>
   <text
     v-else-if="renderAsText"
+    :id="triggerId"
     :class="classes"
     aria-haspopup="dialog"
+    :aria-controls="triggerControls"
     :aria-expanded="expanded"
     :aria-disabled="ariaDisabled"
     :data-disabled="dataDisabled"
@@ -65,8 +72,10 @@ function toggle(event: unknown) {
   </text>
   <view
     v-else
+    :id="triggerId"
     :class="classes"
     aria-haspopup="dialog"
+    :aria-controls="triggerControls"
     :aria-expanded="expanded"
     :aria-disabled="ariaDisabled"
     :data-disabled="dataDisabled"

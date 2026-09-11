@@ -13,6 +13,18 @@ type ButtonShape = 'default' | 'square' | 'round'
 type ButtonIconPosition = 'left' | 'right'
 type ButtonNativeType = 'button' | 'submit' | 'reset'
 
+function solidForeground(color: string, foregroundColor?: string) {
+  if (foregroundColor) {
+    return foregroundColor
+  }
+  try {
+    return contrastSafeForeground(color)
+  }
+  catch {
+    return '#fff'
+  }
+}
+
 export const VButton = defineComponent({
   name: 'VButton',
   inheritAttrs: false,
@@ -82,7 +94,7 @@ export const VButton = defineComponent({
           ...base,
           background: props.color,
           borderColor: props.color,
-          color: props.foregroundColor ?? contrastSafeForeground(props.color),
+          color: solidForeground(props.color, props.foregroundColor),
         }
       }
 

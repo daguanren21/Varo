@@ -51,6 +51,18 @@ const emit = defineEmits<{
   click: [event: unknown]
 }>()
 
+function solidForeground(color: string, foregroundColor?: string) {
+  if (foregroundColor) {
+    return foregroundColor
+  }
+  try {
+    return contrastSafeForeground(color)
+  }
+  catch {
+    return '#fff'
+  }
+}
+
 const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
 const customStyle = computed(() => {
   if (!props.color) {
@@ -60,7 +72,7 @@ const customStyle = computed(() => {
     return {
       backgroundColor: props.color,
       borderColor: props.color,
-      color: props.foregroundColor ?? contrastSafeForeground(props.color),
+      color: solidForeground(props.color, props.foregroundColor),
     }
   }
   return {

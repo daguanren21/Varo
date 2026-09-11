@@ -109,6 +109,37 @@ describe('ui-weapp button', () => {
     expect(wrapper.attributes('data-block')).toBe('true')
   })
 
+  it('keeps a non-hex solid color without throwing', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        color: 'rgb(22, 163, 74)',
+      },
+      slots: {
+        default: () => '保存',
+      },
+    })
+
+    expect(wrapper.attributes('style')).toContain('background: rgb(22, 163, 74)')
+    expect(wrapper.attributes('style')).toContain('color: rgb(255, 255, 255)')
+  })
+
+  it('keeps loading text centered with an absolute loading icon', () => {
+    const wrapper = mount(VButton, {
+      global,
+      props: {
+        loading: true,
+        loadingText: '加载中',
+      },
+    })
+    const style = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8')
+
+    expect(wrapper.get('.varo-button__label').text()).toBe('加载中')
+    expect(style).toContain('.varo-button__loading-icon')
+    expect(style).toContain('position: absolute')
+    expect(style).toContain('display: inline-flex')
+  })
+
   it('renders a borderless text variant with a custom color', () => {
     const wrapper = mount(VButton, {
       global,
