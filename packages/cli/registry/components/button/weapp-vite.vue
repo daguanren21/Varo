@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import { usePressableRoot } from '@varo-ui/headless'
+import { contrastSafeForeground } from '@varo-ui/theme/weapp'
 import { computed, toRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
-type ButtonVariant = 'solid' | 'outline' | 'ghost'
+type ButtonVariant = 'solid' | 'outline' | 'ghost' | 'text'
 type ButtonSize = 'sm' | 'md' | 'lg'
 type ButtonShape = 'default' | 'square' | 'round'
 
@@ -14,8 +15,10 @@ const props = withDefaults(
   defineProps<{
     block?: boolean
     className?: ClassValue
+    color?: string
     disabled?: boolean
     hairline?: boolean
+    foregroundColor?: string
     icon?: string
     iconPosition?: 'left' | 'right'
     loading?: boolean
@@ -48,7 +51,35 @@ const emit = defineEmits<{
   click: [event: unknown]
 }>()
 
+function solidForeground(color: string, foregroundColor?: string) {
+  if (foregroundColor) {
+    return foregroundColor
+  }
+  try {
+    return contrastSafeForeground(color)
+  }
+  catch {
+    return '#fff'
+  }
+}
+
 const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
+const customStyle = computed(() => {
+  if (!props.color) {
+    return undefined
+  }
+  if (visualVariant.value === 'solid') {
+    return {
+      backgroundColor: props.color,
+      borderColor: props.color,
+      color: solidForeground(props.color, props.foregroundColor),
+    }
+  }
+  return {
+    borderColor: visualVariant.value === 'text' ? 'transparent' : props.color,
+    color: props.color,
+  }
+})
 const pressable = usePressableRoot({
   runtime: varoReactiveRuntime,
   disabled: toRef(props, 'disabled'),
@@ -95,6 +126,7 @@ function pressCancel() {
 <template>
   <button
     :class="classes"
+    :style="customStyle"
     :disabled="!interactive"
     :form-type="formType"
     :hover-class="hoverClass"
@@ -117,7 +149,9 @@ function pressCancel() {
   >
     <template v-if="loading">
       <text class="varo-button__loading-icon" aria-hidden="true" />
-      <text>{{ props.loadingText || '加载中...' }}</text>
+      <text class="varo-button__label">
+        {{ props.loadingText || '加载中...' }}
+      </text>
     </template>
     <template v-else>
       <text v-if="$slots.icon || (props.icon && props.iconPosition === 'left')" class="varo-button__icon" data-position="left">
@@ -125,7 +159,9 @@ function pressCancel() {
           {{ props.icon }}
         </slot>
       </text>
-      <slot />
+      <text class="varo-button__label">
+        <slot />
+      </text>
       <text v-if="props.icon && props.iconPosition === 'right'" class="varo-button__icon" data-position="right">
         {{ props.icon }}
       </text>

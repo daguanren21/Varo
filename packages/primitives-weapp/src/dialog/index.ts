@@ -11,9 +11,6 @@ import {
   Fragment,
   h,
   inject,
-  onBeforeUnmount,
-  onMounted,
-
   provide,
   toRef,
   useId,
@@ -64,22 +61,6 @@ export const DialogRoot = defineComponent({
         }
         emit('update:open', open)
       },
-    })
-
-    function handleDocumentKeydown(event: KeyboardEvent) {
-      if (!dialog.state.open.value || event.key !== 'Escape') {
-        return
-      }
-
-      dialog.events.onEscapeKeyDown()
-    }
-
-    onMounted(() => {
-      document.addEventListener('keydown', handleDocumentKeydown)
-    })
-
-    onBeforeUnmount(() => {
-      document.removeEventListener('keydown', handleDocumentKeydown)
     })
 
     provideRuntimeDialogRootContext(provideDialogRootContext(dialog))

@@ -51,6 +51,18 @@ const emit = defineEmits<{
   click: [event: unknown]
 }>()
 
+function solidForeground(color: string, foregroundColor?: string) {
+  if (foregroundColor) {
+    return foregroundColor
+  }
+  try {
+    return contrastSafeForeground(color)
+  }
+  catch {
+    return '#fff'
+  }
+}
+
 const visualVariant = computed(() => (props.plain ? 'outline' : props.variant))
 const customStyle = computed(() => {
   if (!props.color) {
@@ -60,7 +72,7 @@ const customStyle = computed(() => {
     return {
       backgroundColor: props.color,
       borderColor: props.color,
-      color: props.foregroundColor ?? contrastSafeForeground(props.color),
+      color: solidForeground(props.color, props.foregroundColor),
     }
   }
   return {
@@ -137,7 +149,9 @@ function pressCancel() {
   >
     <template v-if="loading">
       <text class="varo-button__loading-icon" aria-hidden="true" />
-      <text>{{ props.loadingText || '加载中...' }}</text>
+      <text class="varo-button__label">
+        {{ props.loadingText || '加载中...' }}
+      </text>
     </template>
     <template v-else>
       <text v-if="$slots.icon || (props.icon && props.iconPosition === 'left')" class="varo-button__icon" data-position="left">
@@ -145,7 +159,9 @@ function pressCancel() {
           {{ props.icon }}
         </slot>
       </text>
-      <slot />
+      <text class="varo-button__label">
+        <slot />
+      </text>
       <text v-if="props.icon && props.iconPosition === 'right'" class="varo-button__icon" data-position="right">
         {{ props.icon }}
       </text>

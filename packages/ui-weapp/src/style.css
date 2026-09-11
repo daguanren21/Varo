@@ -215,15 +215,20 @@ page {
   --varo-button-foreground: var(--varo-ui-primary-foreground);
   --varo-button-hover-foreground: var(--varo-ui-primary-hover-foreground);
 
+  position: relative;
+  box-sizing: border-box;
   display: inline-flex;
-  gap: 8px;
   align-items: center;
   justify-content: center;
   min-height: var(--varo-ui-button-height-md);
   padding: 0 16px;
+  margin: 0;
+  overflow: hidden;
   font-weight: 650;
   line-height: 1;
+  vertical-align: middle;
   color: var(--varo-button-foreground);
+  text-align: center;
   cursor: pointer;
   background: var(--varo-button-fill);
   border: 1px solid transparent;
@@ -236,6 +241,36 @@ page {
     opacity 0.18s ease,
     box-shadow 0.18s ease,
     transform 0.18s ease;
+}
+
+.varo-button::after {
+  border: 0;
+}
+
+.varo-button__label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 1em;
+  line-height: 1;
+}
+
+.varo-button__icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+}
+
+.varo-button__icon[data-position='right'] {
+  right: 16px;
+  left: auto;
 }
 
 .varo-button:focus-visible {
@@ -388,11 +423,15 @@ page {
 }
 
 .varo-button__loading-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
   width: 1em;
   height: 1em;
   border: 2px solid currentcolor;
   border-right-color: transparent;
   border-radius: 999px;
+  transform: translateY(-50%);
   animation: varo-spin 0.75s linear infinite;
 }
 
@@ -3670,4 +3709,47 @@ textarea.varo-input__control {
   background: var(--varo-ui-fill-light);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius);
+}
+
+.varo-dialog {
+  position: relative;
+}
+
+.varo-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgb(0 0 0 / 45%);
+}
+
+.varo-dialog__content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1101;
+  box-sizing: border-box;
+  width: calc(100% - 144rpx);
+  max-width: 560rpx;
+  overflow: hidden;
+  color: var(--varo-ui-text);
+  text-align: center;
+  background: var(--varo-ui-surface);
+  border-radius: 28rpx;
+  transform: translate(-50%, -50%);
+}
+
+.varo-dialog__close {
+  box-sizing: border-box;
+  min-height: 88rpx;
+  padding: 0 16rpx;
+  margin: 0;
+  font: inherit;
+  line-height: 88rpx;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+
+.varo-dialog__close::after {
+  border: 0;
 }
