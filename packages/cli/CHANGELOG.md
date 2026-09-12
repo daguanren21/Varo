@@ -1,5 +1,19 @@
 # @varo-ui/cli
 
+## 2.1.0
+
+### Patch Changes
+
+- Absorb HeroUI-inspired checkbox, collapse, tag, and breadcrumb motion, and use white foregrounds on WeChat green action fills.
+
+- Upgrade Wevu 7 and weapp-vite 7 without pinning patch versions, restyle Weapp Agent UI status variants with class modifiers, add a private Web preview for compiled mini-program artifacts, and keep Weapp theme variables out of weapp-vite sidecar JavaScript wrappers.
+
+- Ship wevu SFC Dialog parts without document listeners, keep the reason/cancel contract, and center Weapp Button labels when an icon is present.
+
+- Give VIcon empty native string defaults, restyle toast as a dark mobile capsule, let input-number fill stretched parents without overflowing narrow tracks, animate collapse row tracks, and document Weapp breadcrumb href as select-only.
+
+- Fix native input length defaults and recursive Markdown layout and accessibility.
+
 ## 2.0.0
 
 ### Major Changes

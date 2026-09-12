@@ -1,5 +1,15 @@
 # @varo-ui/theme
 
+## 2.1.0
+
+### Minor Changes
+
+- Absorb HeroUI-inspired checkbox, collapse, tag, and breadcrumb motion, and use white foregrounds on WeChat green action fills.
+
+### Patch Changes
+
+- Upgrade Wevu 7 and weapp-vite 7 without pinning patch versions, restyle Weapp Agent UI status variants with class modifiers, add a private Web preview for compiled mini-program artifacts, and keep Weapp theme variables out of weapp-vite sidecar JavaScript wrappers.
+
 ## 2.0.0
 
 ### Minor Changes
