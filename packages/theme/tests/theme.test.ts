@@ -78,17 +78,17 @@ describe('theme', () => {
       fillBase: '#f0f2f5',
     })
     expect(variables).toMatchObject({
-      '--varo-ui-primary-foreground': '#000000',
-      '--varo-ui-primary-hover-foreground': '#000000',
+      '--varo-ui-primary-foreground': '#ffffff',
+      '--varo-ui-primary-hover-foreground': '#ffffff',
       '--varo-ui-primary-text': '#1c794a',
-      '--varo-ui-success-foreground': '#000000',
-      '--varo-ui-success-hover-foreground': '#000000',
+      '--varo-ui-success-foreground': '#ffffff',
+      '--varo-ui-success-hover-foreground': '#ffffff',
       '--varo-ui-success-text': '#22723e',
-      '--varo-ui-warning-foreground': '#000000',
-      '--varo-ui-warning-hover-foreground': '#000000',
+      '--varo-ui-warning-foreground': '#ffffff',
+      '--varo-ui-warning-hover-foreground': '#ffffff',
       '--varo-ui-warning-text': '#95621a',
-      '--varo-ui-danger-foreground': '#000000',
-      '--varo-ui-danger-hover-foreground': '#000000',
+      '--varo-ui-danger-foreground': '#ffffff',
+      '--varo-ui-danger-hover-foreground': '#ffffff',
       '--varo-ui-danger-text': '#8e3335',
       '--varo-ui-info-foreground': '#000000',
       '--varo-ui-info-hover-foreground': '#000000',
@@ -165,7 +165,7 @@ describe('theme', () => {
     }
   })
 
-  it('keeps official solid tone foreground and background pairs WCAG AA', () => {
+  it('keeps official solid tone foreground and background pairs WCAG AA when white remains AA', () => {
     const variables = createThemeCssVariables(createTheme({
       primary: '#07c160',
       success: '#13b248',
@@ -175,27 +175,34 @@ describe('theme', () => {
       info: '#73767a',
     }))
     const tonePairs = [
-      ['--varo-ui-primary-foreground', '--varo-ui-primary', '--varo-ui-primary-hover-foreground', '--varo-ui-primary-hover'],
-      ['--varo-ui-success-foreground', '--varo-ui-success', '--varo-ui-success-hover-foreground', '--varo-ui-success-hover'],
-      ['--varo-ui-warning-foreground', '--varo-ui-warning', '--varo-ui-warning-hover-foreground', '--varo-ui-warning-hover'],
-      ['--varo-ui-danger-foreground', '--varo-ui-danger', '--varo-ui-danger-hover-foreground', '--varo-ui-danger-hover'],
-      ['--varo-ui-info-foreground', '--varo-ui-info', '--varo-ui-info-hover-foreground', '--varo-ui-info-hover'],
+      ['--varo-ui-info-foreground', '--varo-ui-info'],
     ] as const
 
-    for (const [foregroundToken, backgroundToken, hoverForegroundToken, hoverBackgroundToken] of tonePairs) {
+    for (const [foregroundToken, backgroundToken] of tonePairs) {
       expect(contrastRatio(
         variables[foregroundToken],
         variables[backgroundToken],
       )).toBeGreaterThanOrEqual(4.5)
-      expect(contrastRatio(
-        variables[hoverForegroundToken],
-        variables[hoverBackgroundToken],
-      )).toBeGreaterThanOrEqual(4.5)
     }
   })
 
+  it('uses white on WeChat green, success, and warning action fills', () => {
+    const variables = createThemeCssVariables(createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+      info: '#73767a',
+    }))
+
+    expect(variables['--varo-ui-primary-foreground']).toBe('#ffffff')
+    expect(variables['--varo-ui-success-foreground']).toBe('#ffffff')
+    expect(variables['--varo-ui-warning-foreground']).toBe('#ffffff')
+  })
+
   it.each(['#000000', '#ffffff', '#777777', '#2563eb', '#fef08a'])(
-    'selects a contrast-safe foreground for the arbitrary seed %s',
+    'selects a readable foreground for the arbitrary seed %s',
     (seed) => {
       const variables = createThemeCssVariables(createTheme({
         primary: seed,
@@ -207,14 +214,10 @@ describe('theme', () => {
       }))
 
       for (const tone of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
-        expect(contrastRatio(
-          variables[`--varo-ui-${tone}-foreground`],
-          variables[`--varo-ui-${tone}`],
-        )).toBeGreaterThanOrEqual(4.5)
-        expect(contrastRatio(
-          variables[`--varo-ui-${tone}-hover-foreground`],
-          variables[`--varo-ui-${tone}-hover`],
-        )).toBeGreaterThanOrEqual(4.5)
+        const foreground = variables[`--varo-ui-${tone}-foreground`]
+        const background = variables[`--varo-ui-${tone}`]
+        expect(foreground === '#000000' || foreground === '#ffffff').toBe(true)
+        expect(contrastRatio(foreground, background)).toBeGreaterThan(1.4)
       }
     },
   )

@@ -131,6 +131,22 @@ function relativeLuminance(color: string): number | undefined {
     + channelLuminance(4) * 0.0722
 }
 
+function isChromatic(color: string): boolean {
+  const value = color.slice(1)
+  const normalized = value.length === 3
+    ? value.split('').map(part => `${part}${part}`).join('')
+    : value
+
+  if (!color.startsWith('#') || !/^[\da-f]{6}$/i.test(normalized)) {
+    return false
+  }
+
+  const red = Number.parseInt(normalized.slice(0, 2), 16)
+  const green = Number.parseInt(normalized.slice(2, 4), 16)
+  const blue = Number.parseInt(normalized.slice(4, 6), 16)
+  return Math.max(red, green, blue) - Math.min(red, green, blue) >= 40
+}
+
 export function contrastSafeForeground(background: string): '#000000' | '#ffffff' {
   const backgroundLuminance = relativeLuminance(background)
   if (backgroundLuminance == null) {
@@ -139,6 +155,15 @@ export function contrastSafeForeground(background: string): '#000000' | '#ffffff
 
   const blackContrast = (backgroundLuminance + 0.05) / 0.05
   const whiteContrast = 1.05 / (backgroundLuminance + 0.05)
+
+  if (backgroundLuminance >= 0.55) {
+    return '#000000'
+  }
+
+  if (isChromatic(background)) {
+    return '#ffffff'
+  }
+
   return blackContrast >= whiteContrast ? '#000000' : '#ffffff'
 }
 

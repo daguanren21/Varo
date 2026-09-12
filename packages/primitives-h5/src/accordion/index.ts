@@ -157,8 +157,6 @@ export const AccordionContent = defineComponent({
     const item = useAccordionItemContext()
 
     return () =>
-      accordion.api.isOpen(item.value)
-        ? h(props.as, { ...attrs, ...accordion.api.getContentAttrs(item.value) }, slots.default?.())
-        : null
+      h(props.as, { ...attrs, ...accordion.api.getContentAttrs(item.value) }, slots.default?.())
   },
 })

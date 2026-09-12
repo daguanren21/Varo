@@ -46,12 +46,15 @@ describe('ui-weapp missing base kit components', () => {
         'message': '保存成功',
         'type': 'success',
         'position': 'top',
+        'closeable': true,
         'closeLabel': '关闭保存通知',
         'onUpdate:visible': onUpdate,
       },
     })
     const toast = wrapper.get('.varo-toast')
     expect(toast.classes()).toContain('varo-toast')
+    expect(toast.classes()).toContain('varo-toast--success')
+    expect(toast.classes()).toContain('varo-toast--top')
     expect(toast.attributes('data-type')).toBe('success')
     expect(toast.attributes('data-position')).toBe('top')
     expect(toast.text()).toContain('保存成功')

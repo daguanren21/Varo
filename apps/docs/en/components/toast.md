@@ -16,7 +16,7 @@
 | `message`    | `string`                                                    | `''`         | Message text                         |
 | `type`       | `'text' \| 'success' \| 'warning' \| 'danger' \| 'loading'` | `'text'`     | Toast type                           |
 | `position`   | `'top' \| 'middle' \| 'bottom'`                             | `'middle'`   | Position                             |
-| `closeable`  | `boolean`                                                   | `true`       | Show close button                    |
+| `closeable`  | `boolean`                                                   | `false`      | Show close button                    |
 | `closeLabel` | `string`                                                    | `'关闭通知'` | Accessible name for the close button |
 
 ## Motion and accessibility

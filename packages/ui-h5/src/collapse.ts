@@ -1,12 +1,13 @@
-import { defineComponent, h, type PropType } from 'vue'
+import type { AccordionType, AccordionValue } from '@varo/primitives-h5'
+import type { PropType } from 'vue'
 import {
   AccordionContent,
   AccordionItem,
   AccordionRoot,
   AccordionTrigger,
-  type AccordionType,
-  type AccordionValue
+
 } from '@varo/primitives-h5'
+import { defineComponent, h } from 'vue'
 import { VIcon } from './icon'
 
 export const VCollapse = defineComponent({
@@ -15,17 +16,17 @@ export const VCollapse = defineComponent({
     accordion: Boolean,
     collapsible: {
       type: Boolean,
-      default: true
+      default: true,
     },
     defaultValue: {
       type: [String, Array] as PropType<AccordionValue>,
-      default: undefined
+      default: undefined,
     },
     disabled: Boolean,
     value: {
       type: [String, Array] as PropType<AccordionValue>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['change', 'update:value'],
   setup(props, { attrs, emit, slots }) {
@@ -34,18 +35,18 @@ export const VCollapse = defineComponent({
         AccordionRoot,
         {
           ...attrs,
-          class: ['varo-collapse', attrs.class],
-          collapsible: props.collapsible,
-          defaultValue: props.defaultValue,
-          disabled: props.disabled,
-          type: (props.accordion ? 'single' : 'multiple') as AccordionType,
+          'class': ['varo-collapse', attrs.class],
+          'collapsible': props.collapsible,
+          'defaultValue': props.defaultValue,
+          'disabled': props.disabled,
+          'type': (props.accordion ? 'single' : 'multiple') as AccordionType,
           ...(props.value === undefined ? {} : { value: props.value }),
           'onUpdate:value': (value: AccordionValue) => emit('update:value', value),
-          onValueChange: (value: AccordionValue) => emit('change', value)
+          'onValueChange': (value: AccordionValue) => emit('change', value),
         },
-        slots
+        slots,
       )
-  }
+  },
 })
 
 export const VCollapseItem = defineComponent({
@@ -55,8 +56,8 @@ export const VCollapseItem = defineComponent({
     title: String,
     value: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { attrs, slots }) {
     return () =>
@@ -66,7 +67,7 @@ export const VCollapseItem = defineComponent({
           ...attrs,
           class: ['varo-collapse-item', attrs.class],
           disabled: props.disabled,
-          value: props.value
+          value: props.value,
         },
         {
           default: () => [
@@ -76,17 +77,17 @@ export const VCollapseItem = defineComponent({
               {
                 default: () => [
                   h('span', { class: 'varo-collapse-item__title' }, slots.title?.() ?? props.title),
-                  h(VIcon, { class: 'varo-collapse-item__chevron', name: 'chevronDown', size: 16 })
-                ]
-              }
+                  h(VIcon, { class: 'varo-collapse-item__chevron', name: 'chevronDown', size: 16 }),
+                ],
+              },
             ),
             h(
               AccordionContent,
               { class: 'varo-collapse-item__content' },
-              { default: () => slots.default?.() }
-            )
-          ]
-        }
+              { default: () => h('div', { class: 'varo-collapse-item__content-inner' }, slots.default?.()) },
+            ),
+          ],
+        },
       )
-  }
+  },
 })

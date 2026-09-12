@@ -26,29 +26,29 @@ page {
   --varo-ui-primary-dark: #06ad56;
   --varo-ui-primary-hover: #38cd80;
   --varo-ui-primary-soft: #e6f9ef;
-  --varo-ui-primary-foreground: #000;
-  --varo-ui-primary-hover-foreground: #000;
+  --varo-ui-primary-foreground: #fff;
+  --varo-ui-primary-hover-foreground: #fff;
   --varo-ui-primary-text: #1c794a;
   --varo-ui-success: #13b248;
   --varo-ui-success-dark: #10973d;
   --varo-ui-success-hover: #42c16d;
   --varo-ui-success-soft: #e7f7ec;
-  --varo-ui-success-foreground: #000;
-  --varo-ui-success-hover-foreground: #000;
+  --varo-ui-success-foreground: #fff;
+  --varo-ui-success-hover-foreground: #fff;
   --varo-ui-success-text: #22723e;
   --varo-ui-warning: #fa9200;
   --varo-ui-warning-dark: #d57c00;
   --varo-ui-warning-hover: #fba833;
   --varo-ui-warning-soft: #fef4e5;
-  --varo-ui-warning-foreground: #000;
-  --varo-ui-warning-hover-foreground: #000;
+  --varo-ui-warning-foreground: #fff;
+  --varo-ui-warning-hover-foreground: #fff;
   --varo-ui-warning-text: #95621a;
   --varo-ui-danger: #eb3437;
   --varo-ui-danger-dark: #c82c2f;
   --varo-ui-danger-hover: #ef5d5f;
   --varo-ui-danger-soft: #fdeaeb;
-  --varo-ui-danger-foreground: #000;
-  --varo-ui-danger-hover-foreground: #000;
+  --varo-ui-danger-foreground: #fff;
+  --varo-ui-danger-hover-foreground: #fff;
   --varo-ui-danger-text: #8e3335;
   --varo-ui-info: #73767a;
   --varo-ui-info-dark: #5c5e62;
@@ -108,7 +108,7 @@ page {
 .varo-input-number button,
 .varo-select button,
 .varo-switch,
-.varo-toast button,
+.varo-toast__close,
 .varo-rate__item,
 .varo-picker button,
 .varo-cascader button,
@@ -569,23 +569,41 @@ textarea.varo-input__control {
 
 .varo-checkbox__icon,
 .varo-radio__icon {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
+  overflow: hidden;
   font-size: 13px;
   color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-surface);
   border: 1px solid #cbd5e1;
   transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
+    background-color 180ms ease-out,
+    border-color 180ms ease-out,
+    color 180ms ease-out;
 }
 
 .varo-checkbox__icon {
   border-radius: 6px;
+}
+
+.varo-checkbox__icon::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: '';
+  background: var(--varo-ui-primary);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.7);
+  transform-origin: center;
+  transition:
+    opacity 180ms linear,
+    transform 100ms linear;
 }
 
 .varo-radio__icon {
@@ -594,10 +612,23 @@ textarea.varo-input__control {
 }
 
 .varo-checkbox[data-checked='true'] .varo-checkbox__icon,
+.varo-checkbox[data-state='checked'] .varo-checkbox__icon,
 .varo-radio[data-checked='true'] .varo-radio__icon {
   color: var(--varo-ui-primary-foreground);
   background: var(--varo-ui-primary);
   border-color: var(--varo-ui-primary);
+}
+
+.varo-checkbox[data-checked='true'] .varo-checkbox__icon::before,
+.varo-checkbox[data-state='checked'] .varo-checkbox__icon::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.varo-checkbox[data-checked='true'] .varo-checkbox__icon .varo-icon,
+.varo-checkbox[data-state='checked'] .varo-checkbox__icon .varo-icon {
+  position: relative;
+  z-index: 1;
 }
 
 .varo-checkbox[data-disabled='true'],
@@ -610,6 +641,9 @@ textarea.varo-input__control {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
+  width: 100%;
+  min-width: min(128px, 100%);
+  max-width: 100%;
   overflow: hidden;
   background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
@@ -621,11 +655,11 @@ textarea.varo-input__control {
 .varo-input-number .varo-input-number__plus {
   box-sizing: border-box;
   display: inline-flex;
-  flex: 0 0 36px;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 36px;
-  min-width: 0;
+  min-width: 36px;
   height: 36px;
   padding: 0;
   margin: 0;
@@ -647,7 +681,7 @@ textarea.varo-input__control {
 
 .varo-input-number .varo-input-number__input {
   box-sizing: border-box;
-  flex: 0 0 56px;
+  flex: 1 1 auto;
   width: 56px;
   min-width: 0;
   height: 36px;
@@ -911,11 +945,17 @@ textarea.varo-input__control {
 .varo-switch.varo-switch {
   box-sizing: border-box;
   display: inline-flex;
+  flex: none;
   align-items: center;
   width: 44px;
+  min-width: 44px;
+  max-width: 44px;
   height: 24px;
+  min-height: 24px;
+  max-height: 24px;
   padding: 2px;
   margin: 0;
+  overflow: hidden;
   cursor: pointer;
   background: var(--varo-ui-fill-darker);
   border: 0;
@@ -938,10 +978,13 @@ textarea.varo-input__control {
 
 .varo-switch__track {
   display: flex;
+  align-items: center;
   width: 100%;
+  height: 20px;
 }
 
 .varo-switch__thumb {
+  flex: none;
   width: 20px;
   height: 20px;
   background: var(--varo-ui-white);
@@ -952,6 +995,13 @@ textarea.varo-input__control {
 
 .varo-switch[data-state='checked'] .varo-switch__thumb {
   transform: translateX(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-switch,
+  .varo-switch__thumb {
+    transition: none;
+  }
 }
 
 .varo-loading {
@@ -983,116 +1033,121 @@ textarea.varo-input__control {
 }
 
 .varo-toast {
-  --varo-toast-tone: var(--varo-ui-info);
-  --varo-toast-soft: var(--varo-ui-info-soft);
-
   position: fixed;
   left: 50%;
   z-index: 1000;
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) 32px;
-  gap: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   align-items: center;
+  justify-content: center;
   width: max-content;
-  min-width: min(260px, calc(100vw - 32px));
-  max-width: min(360px, calc(100vw - 32px));
-  padding: 10px 10px 10px 12px;
-  color: var(--varo-ui-text);
-  background: var(--varo-ui-surface-overlay);
-  border: 1px solid color-mix(in srgb, var(--varo-toast-tone) 28%, var(--varo-ui-border));
-  border-radius: 14px;
-  box-shadow: var(--varo-ui-shadow-md);
+  min-width: 96px;
+  max-width: min(70vw, 240px);
+  padding: 8px 16px;
+  color: var(--varo-ui-white);
+  text-align: center;
+  pointer-events: none;
+  background: rgb(0 0 0 / 72%);
+  border: 0;
+  border-radius: 12px;
   transform: translateX(-50%);
 }
 
-.varo-toast[data-type='success'] {
-  --varo-toast-tone: var(--varo-ui-success);
-  --varo-toast-soft: var(--varo-ui-success-soft);
+.varo-toast--success,
+.varo-toast--warning,
+.varo-toast--danger,
+.varo-toast--loading {
+  min-width: 88px;
+  min-height: 88px;
+  padding: 16px;
 }
 
-.varo-toast[data-type='warning'] {
-  --varo-toast-tone: var(--varo-ui-warning);
-  --varo-toast-soft: var(--varo-ui-warning-soft);
+.varo-toast--text {
+  min-height: 0;
+  padding: 8px 16px;
 }
 
-.varo-toast[data-type='danger'] {
-  --varo-toast-tone: var(--varo-ui-danger);
-  --varo-toast-soft: var(--varo-ui-danger-soft);
+.varo-toast--top {
+  top: 20%;
 }
 
-.varo-toast[data-type='loading'] {
-  --varo-toast-tone: var(--varo-ui-primary);
-  --varo-toast-soft: var(--varo-ui-primary-soft);
-}
-
-.varo-toast[data-position='top'] {
-  top: calc(env(safe-area-inset-top, 0px) + 16px);
-}
-
-.varo-toast[data-position='middle'] {
+.varo-toast--middle {
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
-.varo-toast[data-position='bottom'] {
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+.varo-toast--bottom {
+  top: auto;
+  bottom: 20%;
 }
 
 .varo-toast__icon {
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  color: var(--varo-toast-tone);
-  background: var(--varo-toast-soft);
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  color: var(--varo-ui-white);
+  background: transparent;
 }
 
-.varo-toast__icon svg {
-  width: 20px;
-  height: 20px;
+.varo-toast__icon .varo-icon {
+  width: 36px;
+  height: 36px;
 }
 
 .varo-toast__message {
   min-width: 0;
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 500;
   line-height: 1.4;
+  color: var(--varo-ui-white);
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.varo-toast--success .varo-toast__message,
+.varo-toast--warning .varo-toast__message,
+.varo-toast--danger .varo-toast__message,
+.varo-toast--loading .varo-toast__message {
+  margin-top: 2px;
 }
 
 .varo-toast__close.varo-toast__close {
   box-sizing: border-box;
   display: inline-grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   margin: 0;
-  color: var(--varo-ui-text-muted);
+  color: rgb(255 255 255 / 72%);
+  pointer-events: auto;
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: 9px;
-  transition: color 0.16s ease, background 0.16s ease;
+  border-radius: 999px;
 }
 
 .varo-toast__close:hover {
-  color: var(--varo-ui-text);
-  background: var(--varo-ui-fill-light);
+  color: var(--varo-ui-white);
+  background: rgb(255 255 255 / 12%);
 }
 
 .varo-toast__close:focus-visible {
-  outline: 2px solid var(--varo-toast-tone);
+  outline: 2px solid var(--varo-ui-white);
   outline-offset: 1px;
 }
 
-.varo-toast__close svg {
-  width: 18px;
-  height: 18px;
+.varo-toast__close .varo-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .varo-toast__spinner {
+  width: 36px;
+  height: 36px;
   animation: varo-toast-spin 0.9s linear infinite;
 }
 
@@ -1117,18 +1172,18 @@ textarea.varo-input__control {
   opacity: 0;
 }
 
-.varo-toast[data-position='top'].varo-toast-enter-from,
-.varo-toast[data-position='top'].varo-toast-leave-to {
+.varo-toast--top.varo-toast-enter-from,
+.varo-toast--top.varo-toast-leave-to {
   transform: translate(-50%, -10px) scale(0.98);
 }
 
-.varo-toast[data-position='middle'].varo-toast-enter-from,
-.varo-toast[data-position='middle'].varo-toast-leave-to {
+.varo-toast--middle.varo-toast-enter-from,
+.varo-toast--middle.varo-toast-leave-to {
   transform: translate(-50%, calc(-50% + 8px)) scale(0.98);
 }
 
-.varo-toast[data-position='bottom'].varo-toast-enter-from,
-.varo-toast[data-position='bottom'].varo-toast-leave-to {
+.varo-toast--bottom.varo-toast-enter-from,
+.varo-toast--bottom.varo-toast-leave-to {
   transform: translate(-50%, 10px) scale(0.98);
 }
 
@@ -1149,8 +1204,8 @@ textarea.varo-input__control {
     transform: translateX(-50%);
   }
 
-  .varo-toast[data-position='middle'].varo-toast-enter-from,
-  .varo-toast[data-position='middle'].varo-toast-leave-to {
+  .varo-toast--middle.varo-toast-enter-from,
+  .varo-toast--middle.varo-toast-leave-to {
     transform: translate(-50%, -50%);
   }
 
@@ -1267,6 +1322,17 @@ textarea.varo-input__control {
 .varo-form-item__error {
   font-size: 12px;
   color: var(--varo-ui-danger);
+  animation: varo-form-error-in 150ms ease-out both;
+}
+
+@keyframes varo-form-error-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .varo-calendar,
@@ -2450,7 +2516,11 @@ textarea.varo-input__control {
   color: var(--varo-ui-text);
   background: var(--varo-ui-surface-muted);
   border: 1px solid transparent;
-  border-radius: var(--varo-ui-radius-sm);
+  border-radius: 999px;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out;
 }
 
 .varo-tag[data-size='sm'] {
@@ -2973,8 +3043,9 @@ textarea.varo-input__control {
 }
 
 .varo-collapse-item__chevron {
+  flex: none;
   color: var(--varo-ui-text-muted);
-  transition: transform 0.18s ease;
+  transition: transform 180ms ease-out;
 }
 
 .varo-collapse-item[data-state='open'] .varo-collapse-item__chevron {
@@ -3697,6 +3768,67 @@ textarea.varo-input__control {
   .varo-region-picker__panel {
     animation: none;
   }
+
+  .varo-checkbox__icon,
+  .varo-radio__icon,
+  .varo-checkbox__icon::before,
+  .varo-tag,
+  .varo-form-item__error,
+  .varo-collapse-item__chevron {
+    transition: none;
+  }
+
+  .varo-form-item__error {
+    animation: none;
+  }
+}
+
+.varo-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.varo-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.varo-breadcrumb__item {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  align-items: center;
+}
+
+.varo-breadcrumb__link.varo-breadcrumb__link,
+.varo-breadcrumb__current {
+  box-sizing: border-box;
+  padding: 0 2px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 20px;
+  color: var(--varo-ui-text-muted);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+}
+
+.varo-breadcrumb__current {
+  color: var(--varo-ui-text);
+}
+
+.varo-breadcrumb__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-map {

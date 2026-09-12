@@ -3003,17 +3003,16 @@ function onFormArrayFailed() {
 }
 
 .form-demo__toast-grid {
-  display: grid;
-  gap: 10px;
-  width: min(100%, 420px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  justify-content: center;
 }
 
 .form-demo__toast-grid :deep(.varo-toast) {
   position: relative;
   inset: auto;
-  width: 100%;
-  min-width: 0;
-  max-width: none;
   transform: none;
 }
 

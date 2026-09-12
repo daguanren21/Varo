@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h } from 'vue'
+import { VBreadcrumb } from '../src/breadcrumb'
 import { VElevator } from '../src/elevator'
 import { VFixedNav } from '../src/fixed-nav'
 import { VIndicator } from '../src/indicator'
@@ -12,6 +13,34 @@ import { VTabbar, VTabbarItem } from '../src/tabbar'
 import { VTab, VTabs } from '../src/tabs'
 
 describe('ui-weapp navigation components', () => {
+  it('marks the last breadcrumb as current and emits ancestor selection', async () => {
+    const onSelect = vi.fn()
+    const wrapper = mount(VBreadcrumb, {
+      props: {
+        items: [
+          { href: '/', label: 'Home' },
+          { href: '/orders', label: 'Orders' },
+          { label: 'Detail' },
+        ],
+        label: 'Page path',
+        onSelect,
+      },
+      slots: {
+        item: ({ current, item }: { current: boolean, item: { label: string } }) =>
+          current ? `Now ${item.label}` : item.label,
+      },
+    })
+
+    expect(wrapper.get('nav').attributes('aria-label')).toBe('Page path')
+    expect(wrapper.get('.varo-breadcrumb__current').text()).toBe('Now Detail')
+    expect(wrapper.find('a').exists()).toBe(false)
+    await wrapper.findAll('.varo-breadcrumb__link')[0]!.trigger('click')
+    expect(onSelect).toHaveBeenCalledWith({
+      index: 0,
+      item: { href: '/', label: 'Home' },
+    })
+  })
+
   it('scrolls only the Elevator content when an index is selected', async () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VElevator, {

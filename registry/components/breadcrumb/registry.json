@@ -1,0 +1,42 @@
+{
+  "name": "breadcrumb",
+  "type": "component",
+  "title": "VBreadcrumb",
+  "description": "Hierarchical navigation trail with current page, links, and a customizable separator.",
+  "exportName": "VBreadcrumb",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base",
+    "components/icon"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/breadcrumb/breadcrumb.ts",
+      "to": "src/components/ui/breadcrumb.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/breadcrumb/v-breadcrumb.vue",
+      "to": "src/components/ui/v-breadcrumb.vue"
+    }
+  ],
+  "docs": "/components/breadcrumb"
+}

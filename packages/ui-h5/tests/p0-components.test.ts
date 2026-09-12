@@ -126,8 +126,11 @@ describe('P0 interaction components', () => {
           default: () => h(VCollapseItem, { title: 'Details', value: 'details' }, { default: () => 'Body' }),
         }),
     })
-    expect(collapse.text()).not.toContain('Body')
+    expect(collapse.get('.varo-collapse-item__content').attributes('aria-hidden')).toBe('true')
+    expect(collapse.get('.varo-collapse-item__content').attributes('data-state')).toBe('closed')
     await collapse.get('.varo-collapse-item__trigger').trigger('click')
+    expect(collapse.get('.varo-collapse-item__content').attributes('aria-hidden')).toBeUndefined()
+    expect(collapse.get('.varo-collapse-item__content').attributes('data-state')).toBe('open')
     expect(collapse.text()).toContain('Body')
 
     const popover = mount({

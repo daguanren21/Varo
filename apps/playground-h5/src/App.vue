@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { VBreadcrumb, VCollapse, VCollapseItem, VToast } from '@varo-ui/h5'
 import { shallowRef } from 'vue'
 import {
   AgentArtifact,
@@ -13,15 +14,24 @@ import ProductList from './components/blocks/product-list.vue'
 import ProfileCard from './components/blocks/profile-card.vue'
 import ProfileEdit from './components/blocks/profile-edit.vue'
 import { VButton } from './components/ui/button'
+import { VCheckbox } from './components/ui/checkbox'
 import { VInput } from './components/ui/input'
 import { VSwitch } from './components/ui/switch'
+import { VTag } from './components/ui/tag'
 import { useAgentDemo } from './features/useAgentDemo'
 
 const name = shallowRef('Varo')
 const loading = shallowRef(false)
 const enabled = shallowRef(true)
 const clicks = shallowRef(0)
+const termsAccepted = shallowRef(false)
+const breadcrumbPath = shallowRef('等待选择')
 const lastEvent = shallowRef('等待交互')
+const toastVisible = shallowRef(false)
+const toastType = shallowRef<'text' | 'success' | 'loading'>('success')
+const toastMessage = shallowRef('保存成功')
+let toastDismissTimer: number | undefined
+let toastSuccessTimer: number | undefined
 const {
   approve: approveAgent,
   busy: agentBusy,
@@ -87,12 +97,43 @@ const agentSources = [
   },
 ]
 
+function clearToastTimers() {
+  if (toastDismissTimer !== undefined) {
+    window.clearTimeout(toastDismissTimer)
+    toastDismissTimer = undefined
+  }
+  if (toastSuccessTimer !== undefined) {
+    window.clearTimeout(toastSuccessTimer)
+    toastSuccessTimer = undefined
+  }
+}
+
+function showToast(type: 'text' | 'success' | 'loading', message: string, duration?: number) {
+  clearToastTimers()
+  toastType.value = type
+  toastMessage.value = message
+  toastVisible.value = true
+  if (duration) {
+    toastDismissTimer = window.setTimeout(() => {
+      toastVisible.value = false
+      toastDismissTimer = undefined
+    }, duration)
+  }
+}
+
 function onPrimaryClick() {
   clicks.value += 1
   loading.value = true
-  window.setTimeout(() => {
+  showToast('loading', '保存中')
+  toastSuccessTimer = window.setTimeout(() => {
     loading.value = false
+    showToast('success', '保存成功', 1400)
+    toastSuccessTimer = undefined
   }, 900)
+}
+
+function showTextToast() {
+  showToast('text', '信息已更新', 1600)
 }
 
 function record(message: string) {
@@ -230,7 +271,7 @@ function record(message: string) {
           <h2 id="base-qa-heading">
             Installed base-component QA
           </h2>
-          <p>Button, Input, and Switch remain available for quick interaction checks after the primary Blocks.</p>
+          <p>Button, Input, Switch, Checkbox, Tag, Collapse, and Breadcrumb remain available for quick interaction checks after the primary Blocks.</p>
         </header>
 
         <div class="pg__qa-grid">
@@ -246,14 +287,15 @@ function record(message: string) {
               <VButton variant="ghost" :disabled="!enabled">
                 Ghost
               </VButton>
-              <VButton variant="text">
-                文字按钮
+              <VButton variant="text" @click="showTextToast">
+                文字提示
               </VButton>
             </div>
             <label class="pg__switch">
               <span>启用 Ghost 按钮</span>
               <VSwitch v-model="enabled" />
             </label>
+            <VToast :visible="toastVisible" :type="toastType" :message="toastMessage" />
           </section>
 
           <section class="pg__card">
@@ -262,6 +304,48 @@ function record(message: string) {
             <p class="pg__meta">
               当前值：{{ name || '空' }}
             </p>
+          </section>
+
+          <section class="pg__card">
+            <h3>Checkbox / Tag</h3>
+            <VCheckbox v-model:checked="termsAccepted" label="同意服务条款" />
+            <div class="pg__row">
+              <VTag tone="primary">
+                默认
+              </VTag>
+              <VTag tone="success" variant="solid">
+                成功
+              </VTag>
+              <VTag tone="warning">
+                待处理
+              </VTag>
+              <VTag tone="danger" variant="outline">
+                危险
+              </VTag>
+            </div>
+            <p class="pg__meta">
+              条款：{{ termsAccepted ? '已同意' : '未同意' }}
+            </p>
+          </section>
+
+          <section class="pg__card">
+            <h3>Collapse / Breadcrumb</h3>
+            <VBreadcrumb
+              :items="['首页', '订单', '详情']"
+              label="页面路径"
+              @select="breadcrumbPath = $event.item.label"
+            />
+            <p class="pg__meta">
+              面包屑：{{ breadcrumbPath }}
+            </p>
+            <VCollapse collapsible>
+              <VCollapseItem title="配送说明" value="shipping">
+                订单确认后 24 小时内发货，支持普通和加急配送。
+              </VCollapseItem>
+              <VCollapseItem title="售后政策" value="support">
+                收货 7 天内可申请退换，不影响二次销售即可办理。
+              </VCollapseItem>
+            </VCollapse>
           </section>
         </div>
       </section>
@@ -592,7 +676,7 @@ function record(message: string) {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .pg :deep(button),
+  .pg :deep(button:not(.varo-switch)),
   .pg :deep(a) {
     min-height: 44px !important;
   }

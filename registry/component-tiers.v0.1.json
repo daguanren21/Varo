@@ -1,13 +1,13 @@
 {
   "version": "0.2",
   "runtimeCatalog": {
-    "h5": 56,
-    "weappVite": 56
+    "h5": 57,
+    "weappVite": 57
   },
   "registryCatalog": {
-    "h5": 57,
-    "weappVite": 47,
-    "weappSfc": 46,
+    "h5": 58,
+    "weappVite": 48,
+    "weappSfc": 47,
     "weappSfcBaseKit": 15
   },
   "registryExtensions": [
@@ -18,6 +18,7 @@
     "action-sheet",
     "avatar",
     "badge",
+    "breadcrumb",
     "button",
     "card",
     "cell",

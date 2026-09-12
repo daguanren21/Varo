@@ -57,7 +57,7 @@ export const VToast = defineComponent({
     },
     closeable: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     closeLabel: {
       type: String,
@@ -81,7 +81,7 @@ export const VToast = defineComponent({
                 'div',
                 {
                   ...attrs,
-                  'class': ['varo-toast', attrs.class],
+                  'class': ['varo-toast', `varo-toast--${props.type}`, `varo-toast--${props.position}`, attrs.class],
                   'role': props.type === 'danger' || props.type === 'warning' ? 'alert' : 'status',
                   'aria-atomic': 'true',
                   'aria-busy': props.type === 'loading' || undefined,
@@ -90,7 +90,7 @@ export const VToast = defineComponent({
                   'data-position': props.position,
                 },
                 [
-                  renderToastIcon(props.type),
+                  props.type === 'text' ? null : renderToastIcon(props.type),
                   h('span', { class: 'varo-toast__message' }, slots.default?.() ?? props.message),
                   props.closeable
                     ? h('button', {

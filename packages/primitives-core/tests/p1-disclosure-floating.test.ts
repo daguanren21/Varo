@@ -1,5 +1,5 @@
-import { ref } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
 import { useAccordionRoot } from '../src/accordion'
 import { useCollapsibleRoot } from '../src/collapsible'
 import { usePopoverRoot } from '../src/popover'
@@ -32,12 +32,12 @@ describe('p1 disclosure and floating primitives', () => {
     const accordion = useAccordionRoot({
       collapsible: true,
       defaultValue: 'details',
-      type: 'single'
+      type: 'single',
     })
 
     expect(accordion.api.getTriggerAttrs('details')).toMatchObject({
       'aria-expanded': true,
-      'data-state': 'open'
+      'data-state': 'open',
     })
 
     expect(accordion.events.toggle('details')).toBe(true)
@@ -45,13 +45,21 @@ describe('p1 disclosure and floating primitives', () => {
 
     expect(accordion.events.toggle('advanced')).toBe(true)
     expect(accordion.state.value.value).toBe('advanced')
-    expect(accordion.api.getContentAttrs('advanced')['data-state']).toBe('open')
+    expect(accordion.api.getContentAttrs('advanced')).toMatchObject({
+      'data-state': 'open',
+      'inert': undefined,
+    })
+    expect(accordion.api.getContentAttrs('details')).toMatchObject({
+      'data-state': 'closed',
+      'inert': true,
+      'aria-hidden': true,
+    })
   })
 
   it('supports multiple accordion values and item disabled state', () => {
     const accordion = useAccordionRoot({
       defaultValue: ['account'],
-      type: 'multiple'
+      type: 'multiple',
     })
 
     expect(accordion.events.toggle('security')).toBe(true)
@@ -63,7 +71,7 @@ describe('p1 disclosure and floating primitives', () => {
     expect(accordion.api.toggle('blocked', true)).toBe(false)
     expect(accordion.api.getItemAttrs('blocked', true)).toMatchObject({
       'data-disabled': 'true',
-      'data-state': 'closed'
+      'data-state': 'closed',
     })
   })
 
@@ -83,7 +91,7 @@ describe('p1 disclosure and floating primitives', () => {
     const accordion = useAccordionRoot({ id: 'settings' })
 
     expect(accordion.api.getTriggerAttrs('a b').id).not.toBe(
-      accordion.api.getTriggerAttrs('a@b').id
+      accordion.api.getTriggerAttrs('a@b').id,
     )
   })
 

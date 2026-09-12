@@ -411,7 +411,7 @@ describe('docs navigation', () => {
     })
     expect(phase1Manifest.targets).toEqual(['h5', 'weapp'])
     expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
-    expect(componentTiers.registryCatalog).toEqual({ h5: 57, weappSfc: 46, weappSfcBaseKit: 15, weappVite: 47 })
+    expect(componentTiers.registryCatalog).toEqual({ h5: 58, weappSfc: 47, weappSfcBaseKit: 15, weappVite: 48 })
     expect(componentTiers.agentUi).toHaveLength(42)
   })
 

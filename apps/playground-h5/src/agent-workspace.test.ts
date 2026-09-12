@@ -3,8 +3,8 @@
 import type { AgentThreadVersion } from '@varo-ui/ai'
 import type { VueWrapper } from '@vue/test-utils'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
 import { AgentShell } from './components/agent-ui'
 import AgentWorkspace from './components/blocks/agent-workspace.vue'
 
@@ -15,7 +15,7 @@ const versions: AgentThreadVersion[] = [
 
 function buttonByText(wrapper: VueWrapper, text: string) {
   const button = wrapper.findAll('button').find(item => item.text() === text)
-  if (!button) throw new Error(`Missing button: ${text}`)
+  if (!button) { throw new Error(`Missing button: ${text}`) }
   return button
 }
 
@@ -77,6 +77,23 @@ describe('AgentWorkspace H5 block', () => {
     expect(closeButtons).toHaveLength(2)
     await closeButtons[1].trigger('click')
     expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
+  it('keeps thread version cards inside a clipped workspace card', () => {
+    const wrapper = mount(AgentWorkspace, {
+      props: {
+        activeVersionId: 'root',
+        open: true,
+        placement: 'page',
+        versions,
+      },
+    })
+    const list = wrapper.get('[aria-label="会话版本列表"]')
+    const card = wrapper.get('[role="listitem"]')
+
+    expect(wrapper.get('[aria-label="会话版本"]').classes()).toContain('agent-thread-versions')
+    expect(list.classes()).toContain('agent-thread-versions__list')
+    expect(card.classes()).toContain('agent-thread-versions__card')
   })
 
   it.each(['page', 'docked'] as const)('hides the %s placement when closed', (placement) => {
