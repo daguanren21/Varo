@@ -50,6 +50,14 @@
     - wevu-seven-components
     - wise-sticky-measures
     - yummy-adults-hope
+"@varo-ui/cli@2.1.0":
+  dir: packages/cli
+  intents:
+    - calm-heroui-ui-motion
+    - clear-weapp-preview
+    - deep-cars-dress
+    - quiet-weapp-icon-toast
+    - spotty-geckos-flow
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -81,6 +89,11 @@
     - text-button-variant
     - upset-pugs-reply
     - wise-sticky-measures
+"@varo-ui/h5@2.1.0":
+  dir: packages/ui-h5
+  intents:
+    - calm-heroui-ui-motion
+    - quiet-weapp-icon-toast
 "@varo-ui/headless@1.0.0":
   dir: packages/primitives-core
   intents:
@@ -99,6 +112,10 @@
     - purple-shirts-lead
     - steady-registry-themes
     - text-button-variant
+"@varo-ui/headless@2.1.0":
+  dir: packages/primitives-core
+  intents:
+    - calm-heroui-ui-motion
 "@varo-ui/theme@1.0.0":
   dir: packages/theme
   intents:
@@ -121,6 +138,11 @@
     - flat-weeks-juggle
     - steady-registry-themes
     - text-button-variant
+"@varo-ui/theme@2.1.0":
+  dir: packages/theme
+  intents:
+    - calm-heroui-ui-motion
+    - clear-weapp-preview
 "@varo-ui/weapp@1.0.0":
   dir: packages/ui-weapp
   intents:
@@ -154,3 +176,15 @@
     - upset-pugs-reply
     - wevu-seven-components
     - wise-sticky-measures
+"@varo-ui/weapp@2.1.0":
+  dir: packages/ui-weapp
+  intents:
+    - calm-heroui-ui-motion
+    - clear-weapp-preview
+    - deep-cars-dress
+    - quiet-weapp-icon-toast
+"@varo/registry@0.0.1":
+  dir: packages/registry
+  intents:
+    - calm-heroui-ui-motion
+    - quiet-weapp-icon-toast

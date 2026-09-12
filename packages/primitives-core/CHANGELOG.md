@@ -1,5 +1,11 @@
 # @varo-ui/headless
 
+## 2.1.0
+
+### Patch Changes
+
+- Absorb HeroUI-inspired checkbox, collapse, tag, and breadcrumb motion, and use white foregrounds on WeChat green action fills.
+
 ## 2.0.0
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "@varo-ui/theme",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Token-driven themes and providers for Varo H5 and mini-program components.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",
