@@ -314,14 +314,14 @@ const answerParts = computed<AnswerPartView[]>(() => {
   })
 })
 
-const footerActionLabel = computed(() => {
+const actionLabel = computed(() => {
   if (anyRunning.value) { return '停止' }
   if (hasFailure.value) { return '重试流程' }
   if (allCompleted.value) { return '重新运行' }
   return '运行流程'
 })
 
-const footerStatusLabel = computed(() => {
+const statusLabel = computed(() => {
   if (anyRunning.value) { return `流程运行中，已完成 ${completedCount.value}/5` }
   if (hasFailure.value) { return `流程失败，已完成 ${completedCount.value}/5` }
   if (allCompleted.value) { return '流程已完成，5/5' }
@@ -394,16 +394,39 @@ onBeforeUnmount(clearPing)
 
 <template>
   <view :class="rootClass" :data-status="overallStatus">
-    <view class="flex min-h-12 min-w-0 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-[13px]">
-      <text class="min-w-0 break-words text-xs font-bold text-[var(--varo-agent-foreground)]">
-        {{ title }}
-      </text>
-      <text v-if="showElapsed" class="flex-none text-[11px] tabular-nums text-[var(--varo-agent-muted)]">
-        {{ elapsedLabel }}
-      </text>
+    <view class="agent-rag__header flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-[13px] py-2">
+      <view class="grid min-w-[140px] flex-1 gap-1">
+        <text class="min-w-0 break-words text-xs font-bold text-[var(--varo-agent-foreground)]">
+          {{ title }}
+        </text>
+        <text
+          class="break-words text-[11px] text-[var(--varo-agent-muted)]"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{ statusLabel }}
+        </text>
+      </view>
+      <view class="flex flex-none items-center gap-2">
+        <text v-if="showElapsed" class="text-[11px] tabular-nums text-[var(--varo-agent-muted)]">
+          {{ elapsedLabel }}
+        </text>
+        <button
+          class="agent-native-button agent-rag__action inline-flex min-h-10 flex-none items-center justify-center rounded-lg border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]"
+          type="button"
+          :aria-label="actionLabel"
+          hover-class="agent-rag__action--pressed"
+          :hover-start-time="20"
+          :hover-stay-time="70"
+          @click="handleAction"
+        >
+          {{ actionLabel }}
+        </button>
+      </view>
     </view>
 
-    <view class="grid min-w-0 p-3">
+    <view class="agent-rag__progress grid min-w-0 p-3" :aria-busy="anyRunning">
       <view
         v-for="stage in stageRows"
         :key="stage.id"
@@ -562,25 +585,6 @@ onBeforeUnmount(clearPing)
           </view>
         </view>
       </view>
-    </view>
-
-    <view class="flex min-h-14 min-w-0 items-center justify-between gap-3 border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-[13px] py-2">
-      <view class="min-w-0" role="status" aria-live="polite" aria-atomic="true">
-        <text class="break-words text-[11px] text-[var(--varo-agent-muted)]">
-          {{ footerStatusLabel }}
-        </text>
-      </view>
-      <button
-        class="agent-native-button agent-rag__action inline-flex min-h-9 flex-none items-center justify-center rounded-lg border border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] px-3 text-[11px] font-bold text-[var(--varo-agent-primary-foreground)]"
-        type="button"
-        :aria-label="footerActionLabel"
-        hover-class="agent-rag__action--pressed"
-        :hover-start-time="20"
-        :hover-stay-time="70"
-        @click="handleAction"
-      >
-        {{ footerActionLabel }}
-      </button>
     </view>
   </view>
 </template>

@@ -469,15 +469,15 @@ describe('docs navigation', () => {
     expect(aiZh).toContain('[AgentWorkspace](./agent-workspace)')
     expect(aiEn).toContain('[AgentWorkspace](./agent-workspace)')
     for (const content of [workspaceZh, workspaceEn]) {
-      expect(content).toContain('| `prompt` |')
+      expect(content).toMatch(/^\|\s*`prompt`\s*\|/m)
       expect(content).toContain('`readonly AgentThreadVersion[]`')
       expect(content).toContain('`\'先确认可访问来源，再提交任务\'`')
       expect(content).toContain('`(AgentContextSource, boolean)`')
-      expect(content).toContain('| `update:prompt` |')
+      expect(content).toMatch(/^\|\s*`update:prompt`\s*\|/m)
       expect(content).toContain('`wevu`')
     }
     for (const content of [ragZh, ragEn]) {
-      expect(content).toContain('| `className` | `ClassValue` | `undefined` |')
+      expect(content).toMatch(/^\|\s*`className`\s*\|\s*`ClassValue`\s*\|\s*`undefined`\s*\|/m)
       expect(content).toContain('`readonly AgentRagStep[]`')
       expect(content).toContain('`readonly AgentRagSource[]`')
       expect(content).toContain('`readonly AgentRagAnswerPart[]`')

@@ -202,7 +202,7 @@ const actionClass = computed(() =>
   ),
 )
 
-const footerStatusLabel = computed(() => {
+const statusLabel = computed(() => {
   if (isRunning.value) { return `处理中，${completedCount.value}/5 已完成` }
   if (hasFailed.value) { return '流程失败，可重试' }
   if (isCompleted.value) { return '流程已完成' }
@@ -218,7 +218,7 @@ const liveStatus = computed(() => {
   return '检索增强生成流程等待运行'
 })
 
-const footerDotClass = computed(() => {
+const statusDotClass = computed(() => {
   if (overallStatus.value === 'running') { return 'bg-[var(--varo-agent-primary)]' }
   if (overallStatus.value === 'failed') { return 'bg-[var(--varo-agent-danger)]' }
   if (overallStatus.value === 'completed') { return 'bg-[var(--varo-agent-success)]' }
@@ -393,26 +393,39 @@ onBeforeUnmount(clearAllPings)
   <section
     :class="rootClass"
     :data-status="overallStatus"
-    :aria-busy="isRunning"
     :aria-label="title"
   >
-    <header class="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-4 py-3">
-      <h3 class="m-0 min-w-0 text-[13px] font-bold leading-5 text-[var(--varo-agent-foreground)]">
-        {{ title }}
-      </h3>
-      <span
-        v-if="elapsedLabel"
-        class="flex-none text-[11px] font-semibold tabular-nums text-[var(--varo-agent-muted)]"
-        :aria-label="`总耗时 ${elapsedLabel}`"
-      >
-        {{ elapsedLabel }}
-      </span>
-      <p class="sr-only" aria-atomic="true" aria-live="polite">
-        {{ liveStatus }}
-      </p>
+    <header class="agent-rag__header flex min-h-16 flex-wrap items-center justify-between gap-3 border-b border-[var(--varo-agent-border)] px-4 py-3">
+      <div class="grid min-w-[140px] flex-1 gap-1">
+        <h3 class="m-0 min-w-0 text-[13px] font-bold leading-5 text-[var(--varo-agent-foreground)]">
+          {{ title }}
+        </h3>
+        <span
+          class="inline-flex min-w-0 items-center gap-2 text-[11px] font-semibold text-[var(--varo-agent-text)]"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          :aria-label="liveStatus"
+        >
+          <span class="h-2 w-2 flex-none rounded-full" :class="statusDotClass" aria-hidden="true" />
+          <span>{{ statusLabel }}</span>
+        </span>
+      </div>
+      <div class="flex flex-none items-center gap-2">
+        <span
+          v-if="elapsedLabel"
+          class="text-[11px] font-semibold tabular-nums text-[var(--varo-agent-muted)]"
+          :aria-label="`总耗时 ${elapsedLabel}`"
+        >
+          {{ elapsedLabel }}
+        </span>
+        <button :class="actionClass" type="button" @click="handleAction">
+          {{ actionLabel }}
+        </button>
+      </div>
     </header>
 
-    <ol class="m-0 grid list-none p-4">
+    <ol class="agent-rag__progress m-0 grid list-none p-4" :aria-busy="isRunning">
       <li
         v-for="stage in stageEntries"
         :key="stage.id"
@@ -609,16 +622,6 @@ onBeforeUnmount(clearAllPings)
         </section>
       </li>
     </ol>
-
-    <footer class="flex min-h-14 flex-wrap items-center justify-between gap-3 border-t border-[var(--varo-agent-border)] px-4 py-2.5">
-      <span class="inline-flex min-w-0 items-center gap-2 text-[11px] font-semibold text-[var(--varo-agent-text)]">
-        <span class="h-2 w-2 flex-none rounded-full" :class="footerDotClass" aria-hidden="true" />
-        <span>{{ footerStatusLabel }}</span>
-      </span>
-      <button :class="actionClass" type="button" @click="handleAction">
-        {{ actionLabel }}
-      </button>
-    </footer>
   </section>
 </template>
 
