@@ -23,3 +23,7 @@ See [Wevu Registry](/en/guide/shadcn-mode) for global styles and Tailwind config
 | `@varo-ui/headless`         | Platform-neutral state and events |
 | `@varo-ui/h5/primitives`    | DOM, keyboard, and ARIA           |
 | `@varo-ui/weapp/primitives` | WXML, touch, and native events    |
+
+## Catalog
+
+<PrimitiveCatalog locale="en" />
