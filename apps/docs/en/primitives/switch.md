@@ -10,14 +10,6 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 <PrimitiveExample name="switch" locale="en" />
 
-## Installation
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## Basic usage
 
 Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
@@ -55,13 +47,8 @@ Both `loading` and `disabled` close interaction; loading fits short async locks.
 - Root defaults to button semantics.
 - Loading/disabled states are not toggleable.
 
-## Platform notes
+::: info Platform notes
 
 - Both runtimes share checked/loading contracts.
 - Track visuals and motion belong to UI wrappers.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Components](/en/components/button)
-- [Blocks](/en/blocks/profile-edit)
+  :::

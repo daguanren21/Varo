@@ -8,8 +8,7 @@
 
 The docs site cannot load chatbotwidget. This demo shows welcome text, the operate card, send, and `queryCallback`. It is the Web Preview host, not WeChat Dialog Open Platform.
 
-## App configuration
-
+::: warning Mini-program configuration
 Enable the plugin for the Mini Program, then declare it under the fixed `varoRobot` alias in `app.json`:
 
 ```json
@@ -24,6 +23,7 @@ Enable the plugin for the Mini Program, then declare it under the fixed `varoRob
 ```
 
 Use the plugin version enabled for the Mini Program. See the [chatbotwidget plugin documentation](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1) for configuration details.
+:::
 
 ## Usage
 

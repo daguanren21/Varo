@@ -64,6 +64,6 @@ const visible = ref(false)
 | --------- | ---------------- |
 | `default` | 自定义遮罩层内容 |
 
-## Primitives
-
+::: info Primitives
 `OverlayRoot` 使用 `useOverlayRoot` 处理受控/非受控显隐和点击关闭；H5 与 Weapp primitives 都会复用 `useBodyScrollLock`。
+:::

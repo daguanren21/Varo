@@ -29,7 +29,6 @@ import {
 import DefaultTheme from 'vitepress/theme'
 import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
 import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
-import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
 import DateFieldDemo from '../../src/components/DateFieldDemo.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
@@ -37,12 +36,10 @@ import ListDemo from '../../src/components/ListDemo.vue'
 import MapDemo from '../../src/components/MapDemo.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
-import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import PullRefreshDemo from '../../src/components/PullRefreshDemo.vue'
 import RegistryCoverageEvidence from '../../src/components/RegistryCoverageEvidence.vue'
-import RegistryInstallStrip from '../../src/components/RegistryInstallStrip.vue'
 import RobotChatDemo from '../../src/components/RobotChatDemo.vue'
 import SignatureDemo from '../../src/components/SignatureDemo.vue'
 import ToastDemo from '../../src/components/ToastDemo.vue'
@@ -63,18 +60,15 @@ const theme: Theme = {
     app.component('FormComponentDemo', FormComponentDemo)
     app.component('InteractivePreview', InteractivePreview)
     app.component('ListDemo', ListDemo)
-    app.component('ComponentCatalog', ComponentCatalog)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
     app.component('MapDemo', MapDemo)
     app.component('RobotChatDemo', RobotChatDemo)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
     app.component('PullRefreshDemo', PullRefreshDemo)
-    app.component('PrimitiveCatalog', PrimitiveCatalog)
     app.component('PrimitiveExample', PrimitiveExample)
     app.component('SignatureDemo', SignatureDemo)
     app.component('WatermarkDemo', WatermarkDemo)
     app.component('ToastDemo', ToastDemo)
-    app.component('RegistryInstallStrip', RegistryInstallStrip)
     app.component('RegistryCoverageEvidence', RegistryCoverageEvidence)
     app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)
     app.component('VCalendar', VCalendar)

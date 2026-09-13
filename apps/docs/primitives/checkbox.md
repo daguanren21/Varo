@@ -10,14 +10,6 @@
 
 <PrimitiveExample name="checkbox" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## 基础用法
 
 通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
@@ -55,13 +47,8 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - Indicator 不单独承接点击。
 - disabled 时不应触发 checked 变化。
 
-## 平台说明
+::: info 平台差异
 
 - H5 可在文档中实时预览。
 - 小程序保持相同 `v-model:checked` 与 part 组合；焦点细节由页面容器处理。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
-- [Blocks](/blocks/profile-edit)
+  :::

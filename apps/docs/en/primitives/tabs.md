@@ -10,14 +10,6 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 <PrimitiveExample name="tabs" locale="en" />
 
-## Installation
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## Basic usage
 
 Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
@@ -68,13 +60,8 @@ Trigger/Content values must stay unique inside one `TabsRoot`; H5 automatic mode
 - H5 supports arrows/Home/End.
 - Weapp keeps ARIA and value association without browser focus simulation.
 
-## Platform notes
+::: info Platform notes
 
 - H5 can demonstrate keyboard behavior.
 - The mini-program tab uses the Weapp primitive runtime to render the current Tabs entry.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Components](/en/components/button)
-- [Blocks](/en/blocks/profile-edit)
+  :::

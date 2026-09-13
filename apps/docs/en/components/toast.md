@@ -27,9 +27,9 @@
 | `position` | `'top' \| 'middle' \| 'bottom'` | `'top'` | Fixed-region position          |
 | `inline`   | `boolean`                       | `false` | Render in normal document flow |
 
-## Motion and accessibility
-
+::: info Motion and accessibility
 Toast motion resolves through theme tokens: 220ms enter, 160ms exit, and 180ms status changes. Updating `type`, `title`, and `message` on the same instance changes its status in place; product state never depends on animation completion. Under `prefers-reduced-motion: reduce`, spatial movement is removed. Success and neutral feedback use `status`; warning and danger use `alert`.
+:::
 
 ## Events
 

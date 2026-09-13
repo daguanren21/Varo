@@ -10,14 +10,6 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 <PrimitiveExample name="radio-group" locale="en" />
 
-## Installation
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## Basic usage
 
 Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
@@ -66,13 +58,8 @@ Set `disabled` on `RadioItem` to keep the group value contract while blocking on
 - Disabled items cannot be selected.
 - Indicator reflects state only.
 
-## Platform notes
+::: info Platform notes
 
 - H5 and mini-program share the value/disabled contract.
 - Mini-program keyboard focus stays page-owned.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Components](/en/components/button)
-- [Blocks](/en/blocks/profile-edit)
+  :::

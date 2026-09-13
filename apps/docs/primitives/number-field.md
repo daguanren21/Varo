@@ -10,19 +10,6 @@
 
 <PrimitiveExample name="number-field" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
-## 为什么是基础能力
-
-- 数量、金额和评分调节都依赖可靠的 min/max/step。
-- 拆分 Parts 后可以自由替换布局和图标。
-
 ## Parts
 
 | Part                   | 作用           |
@@ -37,11 +24,6 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - 状态：`value`、`min`、`max`、`step`、`precision`、`readonly`
 - 事件：`update:value`、`valueChange`。
 
-## 平台说明
-
+::: info 平台差异
 边界和精度跨端一致；原生输入事件由各目标适配。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
+:::

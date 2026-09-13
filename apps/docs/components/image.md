@@ -72,6 +72,6 @@
 | `loading` | 自定义加载占位 |
 | `error`   | 自定义失败占位 |
 
-## Primitives
-
+::: info Primitives
 `ImageRoot` 分别由 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives` 提供；`@varo-ui/headless` 只承载共享状态契约，UI 包的 `VImage` 负责 Varo 类名和 API 包装。
+:::

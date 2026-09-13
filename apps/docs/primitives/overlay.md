@@ -10,19 +10,6 @@
 
 <PrimitiveExample name="overlay" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
-## 为什么是基础能力
-
-- Popup、抽屉和模态层都需要同一遮罩行为。
-- 独立 Overlay 可避免每个浮层重复关闭逻辑。
-
 ## Parts
 
 | Part          | 作用                       |
@@ -34,11 +21,6 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - 状态：`visible`、`defaultVisible`、`lockScroll`、`closeOnClickOverlay`
 - 事件：`update:visible`、`visibleChange`、`close`、`click`。
 
-## 平台说明
-
+::: info 平台差异
 H5 锁定 body；小程序按页面能力处理滚动。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
+:::

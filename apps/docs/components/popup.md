@@ -89,6 +89,6 @@ const visible = ref(false)
 | `default`   | 弹层主体内容                          |
 | `closeIcon` | 替换默认 `VIcon` 的自定义关闭图标内容 |
 
-## Primitives
-
+::: info Primitives
 `PopupRoot` 使用 `usePopupRoot` 管理显隐、遮罩点击和 `Escape` 关闭；UI 包只保留 Varo 风格组件入口。
+:::

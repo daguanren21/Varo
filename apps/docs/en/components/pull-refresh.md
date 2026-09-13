@@ -24,7 +24,8 @@
 | --------- | ------- | --------------------------------------- |
 | `refresh` | `void`  | Released after threshold or native pull |
 
-## Platform behavior
+::: info Platform behavior
 
 - H5 responds to downward drag only at the scroll container's top edge.
 - Mini-program uses native `scroll-view` `refresher-*` behavior; `loading` controls completion.
+  :::

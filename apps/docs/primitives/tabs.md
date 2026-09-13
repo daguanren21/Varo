@@ -10,14 +10,6 @@
 
 <PrimitiveExample name="tabs" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## 基础用法
 
 通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
@@ -68,13 +60,8 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - H5 支持方向键/Home/End。
 - 小程序保留 ARIA 与 value 关联，不模拟浏览器焦点。
 
-## 平台说明
+::: info 平台差异
 
 - H5 可演示键盘行为。
 - 小程序页签使用 Weapp primitive 运行时渲染当前 Tabs 条目。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
-- [Blocks](/blocks/profile-edit)
+  :::

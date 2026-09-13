@@ -50,11 +50,10 @@ describe('docs navigation', () => {
     expect(skeletonEn).toContain('VSkeleton')
   })
 
-  it('adds a primitives catalog and dedicated pages for interactive behavior primitives', () => {
+  it('keeps primitive installation on the overview and detail pages focused on APIs', () => {
     const config = readFileSync(configPath, 'utf8')
     const primitiveZh = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
     const primitiveEn = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
-    const catalog = readFileSync(resolve(docsRoot, 'src/components/PrimitiveCatalog.vue'), 'utf8')
     const dedicatedPages = [
       'button',
       'input',
@@ -77,55 +76,26 @@ describe('docs navigation', () => {
 
     expect(config).toContain('{ text: \'Primitives\', link: \'/primitives/\' }')
     expect(config).toContain('{ text: \'Primitives\', link: \'/en/primitives/\' }')
-    expect(config).toContain('{ text: \'总览\', link: \'/primitives/\' }')
-    expect(config).toContain('{ text: \'Overview\', link: \'/en/primitives/\' }')
-    expect(primitiveZh).toContain('<PrimitiveCatalog locale="zh" />')
-    expect(primitiveEn).toContain('<PrimitiveCatalog locale="en" />')
-    expect(primitiveZh).not.toContain('<PrimitiveInteractionDemo')
-    expect(primitiveEn).not.toContain('<PrimitiveInteractionDemo')
-    expect(primitiveZh).not.toContain('Reka-style anatomy')
-    expect(primitiveEn).not.toContain('Reka-style anatomy')
-    expect(catalog).toContain('title: \'Button\'')
-    expect(catalog).toContain('title: \'Dialog\'')
-    expect(catalog).toContain('const routePrefix = props.locale === \'en\' ? \'/en\' : \'\'')
-    expect(config).toContain('text: \'内容与布局\'')
-    expect(config).toContain('text: \'Content & Layout\'')
-    expect(catalog).toMatch(/id: 'number-field'[\s\S]*?category: 'controls'/)
-    expect(catalog).toMatch(/id: 'image'[\s\S]*?category: 'content'/)
+    expect(primitiveZh).toContain('pnpm add @varo-ui/headless @varo-ui/h5')
+    expect(primitiveZh).toContain('pnpm add @varo-ui/headless @varo-ui/weapp')
+    expect(primitiveEn).toContain('pnpm add @varo-ui/headless @varo-ui/h5')
+    expect(primitiveEn).toContain('pnpm add @varo-ui/headless @varo-ui/weapp')
+    expect(primitiveZh).not.toContain('<PrimitiveCatalog')
+    expect(primitiveEn).not.toContain('<PrimitiveCatalog')
+    expect(primitiveZh).not.toContain('<RegistryInstallStrip')
+    expect(primitiveEn).not.toContain('<RegistryInstallStrip')
 
     dedicatedPages.forEach((page) => {
       expect(config).toContain(`/primitives/${page}`)
       expect(config).toContain(`/en/primitives/${page}`)
-      expect(existsSync(resolve(docsRoot, `primitives/${page}.md`))).toBe(true)
-      expect(existsSync(resolve(docsRoot, `en/primitives/${page}.md`))).toBe(true)
-      expect(readFileSync(resolve(docsRoot, `primitives/${page}.md`), 'utf8')).toContain(
-        `<PrimitiveExample name="${page}" locale="zh" />`,
-      )
-      expect(readFileSync(resolve(docsRoot, `en/primitives/${page}.md`), 'utf8')).toContain(
-        `<PrimitiveExample name="${page}" locale="en" />`,
-      )
-    })
-
-    ;[
-      'ButtonRoot / usePressableRoot',
-      'InputRoot / useFieldRoot',
-      'NumberFieldRoot / Decrement / Input / Increment',
-      'ImageRoot / useImageRoot',
-      'CellGroupRoot / CellRoot',
-      'StickyRoot',
-      'CheckboxRoot / CheckboxIndicator',
-      'RadioGroup / RadioItem / RadioIndicator',
-      'SwitchRoot / SwitchThumb',
-      'TabsRoot / TabsList / TabsTrigger / TabsContent',
-      'SelectRoot / Trigger / Value / Content / Item',
-      'CollapsibleRoot / Trigger / Content',
-      'AccordionRoot / Item / Trigger / Content',
-      'PopoverRoot / Trigger / Content / Close',
-      'DialogRoot / Trigger / Overlay / Content / Close',
-      'OverlayRoot',
-      'PopupRoot',
-    ].forEach((parts) => {
-      expect(catalog).toContain(parts)
+      const zhPage = readFileSync(resolve(docsRoot, `primitives/${page}.md`), 'utf8')
+      const enPage = readFileSync(resolve(docsRoot, `en/primitives/${page}.md`), 'utf8')
+      expect(zhPage).toContain(`<PrimitiveExample name="${page}" locale="zh" />`)
+      expect(enPage).toContain(`<PrimitiveExample name="${page}" locale="en" />`)
+      expect(zhPage).not.toMatch(/^## (?:安装|相关文档)$/m)
+      expect(enPage).not.toMatch(/^## (?:Install|Installation|Related docs)$/m)
+      expect(zhPage).toContain('::: info 平台差异')
+      expect(enPage).toContain('::: info Platform notes')
     })
 
     const checkboxZh = readFileSync(resolve(docsRoot, 'primitives/checkbox.md'), 'utf8')
@@ -134,25 +104,6 @@ describe('docs navigation', () => {
     expect(checkboxZh).toContain('CheckboxIndicator')
     expect(selectZh).toContain('SelectTrigger')
     expect(selectZh).toContain('SelectValue')
-
-    expect(primitiveZh).toContain('当前 17 个公开 primitives')
-    expect(primitiveZh).toContain('## 下一批基础候选')
-    expect(primitiveZh).toContain('`Menu` / `DropdownMenu`')
-    expect(primitiveEn).toContain('current 17 public primitives')
-    expect(primitiveEn).toContain('## Next foundational candidates')
-    expect(primitiveZh).toContain('## 产品边界')
-    expect(primitiveZh).toContain('**primitive** 管行为契约')
-    expect(primitiveZh).toContain('**UI wrapper** 管视觉与定位')
-    expect(primitiveZh).toContain('同一 `TabsRoot` / `AccordionRoot` 内的 value 必须唯一')
-    expect(primitiveEn).toContain('## Product boundaries')
-    expect(primitiveEn).toContain('**Primitives** own behavior contracts')
-    expect(primitiveEn).toContain('**UI wrappers** own visuals and positioning')
-    expect(primitiveEn).toContain('Values inside one `TabsRoot` / `AccordionRoot` must stay unique')
-    expect(primitiveZh).not.toContain('Divider')
-    expect(primitiveZh).not.toContain('Grid')
-    expect(primitiveZh).not.toContain('Layout')
-    expect(primitiveZh).not.toContain('Space')
-    expect(primitiveEn).toContain('behavior building blocks')
   })
 
   it('lists form components and has matching zh/en pages', () => {
@@ -354,22 +305,11 @@ describe('docs navigation', () => {
     })
   })
 
-  it('explains primitives as runtime contracts instead of a flat component list', () => {
-    const zhPrimitive = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
-    const enPrimitive = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
-
-    expect(zhPrimitive).toContain('运行时契约')
-    expect(zhPrimitive).toContain('组合顺序')
-    expect(zhPrimitive).toContain('受控与非受控')
-    expect(zhPrimitive).toContain('class="varo-primitive-stack"')
-    expect(zhPrimitive).toContain('<RegistryInstallStrip locale="zh" />')
-    expect(enPrimitive).toContain('Runtime contract')
-    expect(enPrimitive).toContain('Composition order')
-    expect(enPrimitive).toContain('Controlled and uncontrolled')
-    expect(enPrimitive).toContain('class="varo-primitive-stack"')
-    expect(enPrimitive).toContain('<RegistryInstallStrip locale="en" />')
-    expect(readFileSync(resolve(docsRoot, 'components/textarea.md'), 'utf8')).not.toContain('<RegistryInstallStrip')
-    expect(readFileSync(resolve(docsRoot, 'en/components/textarea.md'), 'utf8')).not.toContain('<RegistryInstallStrip')
+  it('keeps the removed Registry install strip out of styled component pages', () => {
+    const theme = readFileSync(resolve(docsRoot, '.vitepress/theme/index.ts'), 'utf8')
+    expect(theme).not.toContain('RegistryInstallStrip')
+    expect(readFileSync(resolve(docsRoot, 'components/textarea.md'), 'utf8')).not.toContain('RegistryInstallStrip')
+    expect(readFileSync(resolve(docsRoot, 'en/components/textarea.md'), 'utf8')).not.toContain('RegistryInstallStrip')
   })
 
   it('documents the dual-target component tiers', () => {
@@ -480,6 +420,10 @@ describe('docs navigation', () => {
     const aiEn = readFileSync(resolve(docsRoot, 'en/ai/index.md'), 'utf8')
     const loadingZh = readFileSync(resolve(docsRoot, 'ai/loading.md'), 'utf8')
     const loadingEn = readFileSync(resolve(docsRoot, 'en/ai/loading.md'), 'utf8')
+    const workspaceZh = readFileSync(resolve(docsRoot, 'ai/agent-workspace.md'), 'utf8')
+    const workspaceEn = readFileSync(resolve(docsRoot, 'en/ai/agent-workspace.md'), 'utf8')
+    const ragZh = readFileSync(resolve(docsRoot, 'ai/rag-pipeline.md'), 'utf8')
+    const ragEn = readFileSync(resolve(docsRoot, 'en/ai/rag-pipeline.md'), 'utf8')
     const packageJson = JSON.parse(readFileSync(resolve(docsRoot, 'package.json'), 'utf8')) as {
       dependencies: Record<string, string>
     }
@@ -487,6 +431,8 @@ describe('docs navigation', () => {
     expect(packageJson.dependencies.vitepress).toBe('2.0.0-alpha.19')
     expect(config).toContain('{ text: \'AI Agent\', link: \'/ai/\' }')
     expect(config).toContain('{ text: \'AI Agent\', link: \'/en/ai/\' }')
+    expect(config).toContain('{ text: \'AgentWorkspace Block\', link: \'/ai/agent-workspace\' }')
+    expect(config).toContain('{ text: \'AgentWorkspace Block\', link: \'/en/ai/agent-workspace\' }')
     expect(theme).toContain('app.component(\'AgentComponentsDemo\', AgentComponentsDemo)')
     expect(tailwind).toContain('@import "tailwindcss/utilities.css";')
     expect(tailwind).not.toContain('@import "tailwindcss/utilities.css" layer(utilities);')
@@ -495,25 +441,61 @@ describe('docs navigation', () => {
     expect(aiEn).toContain('<AgentComponentsDemo locale=\"en\" />')
     expect(aiZh).toContain('components/agent-ui')
     expect(aiEn).toContain('components/agent-ui')
-    expect(aiZh).toContain('Beautiful UI / beUI / ReUI 对标')
-    expect(aiEn).toContain('Beautiful UI / beUI / ReUI Coverage')
-    expect(aiZh).toContain('AgentWorkspace')
-    expect(aiEn).toContain('AgentWorkspace')
+    expect(aiZh).not.toContain('Beautiful UI / beUI / ReUI')
+    expect(aiEn).not.toContain('Beautiful UI / beUI / ReUI')
+    expect(aiZh).not.toContain('agent-component-inventory')
+    expect(aiEn).not.toContain('agent-component-inventory')
     expect(demo).toContain('AgentEventRenderer')
-    expect(demo).toContain('AgentArtifact')
-    expect(demo).toContain('AgentAttachmentList')
+    expect(demo).toContain('AgentRagPipeline')
+    expect(demo).toContain('Chat 模式')
+    expect(demo).toContain('RAG 模式')
+    expect(demo).not.toContain('ai-docs-demo__ledger')
+    expect(demo).not.toContain('AgentArtifact')
+    expect(demo).not.toContain('AgentAttachmentList')
     expect(demo).toContain('--ai-demo-card: var(--varo-surface)')
     expect(demo).not.toMatch(/background:\s*#(?:fff|f8fafc|eef2f6)\b/)
     expect(agentIndex).toContain('bg-[var(--varo-agent-surface)]')
     expect(agentIndex).not.toContain('from-white')
     expect(agentMarkdown).toContain('background: var(--varo-agent-surface-strong)')
     expect(agentMarkdown).not.toContain('background: #f8fafc')
-    expect(loadingZh).toContain('pnpm add @varo-ui/ai')
-    expect(loadingEn).toContain('pnpm add @varo-ui/ai')
+    expect(aiZh).toContain('pnpm add @varo-ui/ai')
+    expect(aiEn).toContain('pnpm add @varo-ui/ai')
+    for (const content of [aiZh, aiEn]) {
+      for (const target of ['h5', 'weapp']) {
+        expect(content).toContain(`pnpm dlx @varo-ui/cli add --target ${target} blocks/agent-chat`)
+        expect(content).toContain(`pnpm dlx @varo-ui/cli add --target ${target} blocks/agent-workspace`)
+      }
+    }
+    expect(aiZh).toContain('[AgentWorkspace](./agent-workspace)')
+    expect(aiEn).toContain('[AgentWorkspace](./agent-workspace)')
+    for (const content of [workspaceZh, workspaceEn]) {
+      expect(content).toContain('| `prompt` |')
+      expect(content).toContain('`readonly AgentThreadVersion[]`')
+      expect(content).toContain('`\'先确认可访问来源，再提交任务\'`')
+      expect(content).toContain('`(AgentContextSource, boolean)`')
+      expect(content).toContain('| `update:prompt` |')
+      expect(content).toContain('`wevu`')
+    }
+    for (const content of [ragZh, ragEn]) {
+      expect(content).toContain('| `className` | `ClassValue` | `undefined` |')
+      expect(content).toContain('`readonly AgentRagStep[]`')
+      expect(content).toContain('`readonly AgentRagSource[]`')
+      expect(content).toContain('`readonly AgentRagAnswerPart[]`')
+    }
+    expect(workspaceZh).toContain('## Props')
+    expect(workspaceZh).toContain('## Events')
+    expect(workspaceZh).toContain('`execution`')
+    expect(workspaceZh).toContain('scopedSlotsRequireProps: true')
+    expect(workspaceEn).toContain('## Props')
+    expect(workspaceEn).toContain('## Events')
+    expect(workspaceEn).toContain('`execution`')
+    expect(workspaceEn).toContain('scopedSlotsRequireProps: true')
+    expect(workspaceZh).not.toMatch(/^## 安装$/m)
+    expect(workspaceEn).not.toMatch(/^## Install$/m)
+    expect(loadingZh).not.toMatch(/^## 安装$/m)
+    expect(loadingEn).not.toMatch(/^## Install$/m)
     expect(loadingZh).toContain('import { AgentLoading } from \'@/components/agent-ui\'')
     expect(loadingEn).toContain('import { AgentLoading } from \'@/components/agent-ui\'')
-    expect(loadingZh).toContain('`@varo-ui/ai` 只提供事件协议、流控制和 Markdown 能力')
-    expect(loadingEn).toContain('`@varo-ui/ai` provides the event protocol, stream controller, and Markdown primitives')
     expect(loadingZh).not.toContain('import { AgentLoading } from \'@varo-ui/ai\'')
     expect(loadingEn).not.toContain('import { AgentLoading } from \'@varo-ui/ai\'')
 
@@ -535,6 +517,7 @@ describe('docs navigation', () => {
       'artifact',
       'sources',
       'attachments',
+      'rag-pipeline',
       'event-renderer',
       'message-scroller',
       'code-block',
@@ -565,10 +548,8 @@ describe('docs navigation', () => {
       expect(enPage).toContain('## Props')
       expect(zhPage).not.toContain('@/components/agent-ui/advanced')
       expect(enPage).not.toContain('@/components/agent-ui/advanced')
-      expect(zhPage).toContain('pnpm add @varo-ui/ai')
-      expect(enPage).toContain('pnpm add @varo-ui/ai')
-      expect(zhPage).toContain('不导出 Vue/Wevu UI 组件')
-      expect(enPage).toContain('not Vue/Wevu UI components')
+      expect(zhPage).not.toMatch(/^## 安装$/m)
+      expect(enPage).not.toMatch(/^## Install$/m)
     })
   })
 

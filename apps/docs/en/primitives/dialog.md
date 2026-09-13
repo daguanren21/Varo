@@ -10,19 +10,6 @@ Modal interaction foundation composed from Root, Trigger, Overlay, Content, and 
 
 <PrimitiveExample name="dialog" locale="en" />
 
-## Install
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
-## Why this is foundational
-
-- Confirmation, approval, and high-risk actions need explicit entry and exit.
-- Separate Overlay and Content adapt cleanly to each runtime.
-
 ## Parts
 
 | Part            | Role                   |
@@ -82,11 +69,6 @@ const dialog = useDialogRoot({
 
 After cancellation, uncontrolled state is not written and adapters do not emit `update:open`. When `open` is provided, that prop remains authoritative: an allowed request changes visibility only after the parent applies the next prop. If the parent changes the prop independently after a canceled request, the component still follows the prop.
 
-## Platform notes
-
+::: info Platform notes
 The H5 adapter supports overlay close, Escape, focus trapping, background `inert`, and Trigger focus restoration. The native WeChat mini-program runtime has no browser `document` keyboard events or DOM focus/inert/portal semantics, so native Weapp uses explicit Close and overlay paths. The repository's current Vue-modeled Weapp adapter maps Escape to `escape-key` when it runs on a browser/test surface with `document`; that modeled behavior does not promise keyboard or DOM focus capabilities in native WeChat. The reason/cancel state contract remains the same on both surfaces.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Component docs](/en/components/button)
+:::

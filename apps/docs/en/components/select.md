@@ -91,6 +91,6 @@ While open, the selected label uses the muted text color until search input star
 
 Native Registry Weapp does not provide `mode`, `max`, `confirmable`, `filterOption`, `loading`, or `emptyText`, and it does not emit `valueChange`, `open`, `close`, `confirm`, `cancel`, or `limit`.
 
-## Wrapper Boundary
-
+::: info Wrapper boundary
 Grouped options, remote search, and async paging belong in secondary wrappers. Business components should wrap `VSelect` to create `UserSelect`, `DepartmentSelect`, `CitySelect`, and `ProductSelect`.
+:::

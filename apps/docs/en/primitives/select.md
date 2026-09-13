@@ -10,14 +10,6 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 <PrimitiveExample name="select" locale="en" />
 
-## Installation
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## Basic usage
 
 Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
@@ -75,13 +67,8 @@ Use `SelectGroup/SelectLabel` for grouping. In `readonly`, the component can sti
 - Item performs selection; readonly/disabled must not change value.
 - The role owner exposes `aria-readonly` without reporting readonly as disabled.
 
-## Platform notes
+::: info Platform notes
 
 - H5 can preview open/select live.
 - Mini-program placement and portal strategy stay in the wrapper layer.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Components](/en/components/button)
-- [Blocks](/en/blocks/profile-edit)
+  :::

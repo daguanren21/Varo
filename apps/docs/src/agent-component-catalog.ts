@@ -1,7 +1,3 @@
-import agentChatManifest from '../../../registry/blocks/agent-chat/registry.json'
-import agentWorkspaceManifest from '../../../registry/blocks/agent-workspace/registry.json'
-import componentTiers from '../../../registry/component-tiers.v0.1.json'
-
 export interface AgentDemoDefinition {
   code: string
   example: string
@@ -263,29 +259,4 @@ const lines = [
     example: '<AgentChat v-model="prompt" :messages="messages" :snapshot="snapshot" @submit="send" />',
     code: '<script setup lang="ts">\nimport AgentChat from \'@/components/blocks/agent-chat.vue\'\n</script>\n\n<template>\n  <AgentChat v-model="prompt" :messages="messages" :snapshot="snapshot" @submit="send" />\n</template>',
   },
-}
-
-function componentLabel(id: string) {
-  const catalogEntry = agentDemoCatalog[id]
-  if (catalogEntry) {
-    return catalogEntry.name
-  }
-  return `Agent${id.split('-').map(part => `${part.charAt(0).toUpperCase()}${part.slice(1)}`).join('')}`
-}
-
-const components = componentTiers.agentUi.map(id => ({
-  id,
-  label: componentLabel(id),
-  type: 'component' as const,
-}))
-const blocks = [agentChatManifest, agentWorkspaceManifest].map(manifest => ({
-  id: manifest.name,
-  label: manifest.title,
-  type: 'block' as const,
-}))
-
-export const agentInventory = {
-  blocks,
-  components,
-  surfaces: [...components, ...blocks],
 }

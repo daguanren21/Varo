@@ -61,6 +61,6 @@
 | --------- | -------------------------------------- |
 | `default` | Sticky content, with `fixed` slot prop |
 
-## Primitives
-
+::: info Primitives
 `Sticky` has scroll state and events, so H5 and Weapp expose a `StickyRoot` primitive. `Divider`, `Grid`, `Layout`, and `Space` are static display/layout components implemented directly in the UI packages.
+:::

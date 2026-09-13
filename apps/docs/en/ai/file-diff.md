@@ -6,16 +6,6 @@ A dual-target review surface for Agent changes: unified/split layouts, inline ch
 
 <AgentComponentDemo component="file-diff" locale="en" />
 
-## Install
-
-```bash
-pnpm add @varo-ui/ai
-pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
-```
-
-Registry installs the UI component into your project, so import it from `@/components/agent-ui`; `@varo-ui/ai` provides the event protocol, stream controller, and Markdown primitives—not Vue/Wevu UI components.
-
 ## Basic Usage
 
 ```vue
@@ -89,17 +79,11 @@ const lines: AgentDiffLine[] = [
 | ------ | ----------------------- | ------------------------------------------------------------------ |
 | `line` | `{ line, index, side }` | Overrides code-content rendering for an existing token highlighter |
 
-## Design Boundary
-
-The visual and interaction model draws from [@pierre/diffs](https://github.com/pierrecomputer/pierre/tree/main/packages/diffs): a neutral code surface, restrained addition/deletion layers, gutter indicators, unified/split layouts, inline changes, and expandable hunks.
-
-Varo is not a port. `@pierre/diffs` uses Shadow DOM, Shiki, worker pools, and large-scale virtualization for browser code review; those systems cannot run directly in a mini program. `AgentFileDiff` keeps the lighter data contract and consistent interactions appropriate for Agent output on both targets. For H5-only products needing huge diffs, syntax highlighting, annotations, or editing, use `@pierre/diffs` directly.
-
-## Target Notes
+::: info Target notes
 
 | Target | Import                                                                                                      |
 | ------ | ----------------------------------------------------------------------------------------------------------- |
 | H5     | Named export from `@/components/agent-ui`                                                                   |
 | weapp  | Default export from `@/components/agent-ui/AgentFileDiff.vue`; types from `@/components/agent-ui/file-diff` |
 
-The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.
+:::

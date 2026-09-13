@@ -72,6 +72,6 @@
 | `loading` | Custom loading placeholder |
 | `error`   | Custom error placeholder   |
 
-## Primitives
-
+::: info Primitives
 `ImageRoot` comes from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`; `@varo-ui/headless` only carries shared state contracts, while `VImage` adds the Varo API wrapper and classes.
+:::

@@ -6,16 +6,6 @@
 
 <AgentComponentDemo component="agent-chat" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/ai
-pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
-pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
-```
-
-UI 组件由 Registry 安装到项目本地，因此从 `@/components/agent-ui` 导入；`@varo-ui/ai` 只提供事件协议、流控制和 Markdown 能力，不导出 Vue/Wevu UI 组件。
-
 ## 基础用法
 
 ```vue
@@ -52,11 +42,11 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 | `submit`            | `string` | 提交       |
 | `update:modelValue` | `string` | 更新提示词 |
 
-## 平台差异
+::: info 平台差异
 
 | Target | Import                               |
 | ------ | ------------------------------------ |
 | H5     | `@/components/blocks/agent-chat.vue` |
 | weapp  | `@/components/blocks/agent-chat.vue` |
 
-组件 API 在两个目标保持一致；DOM/WXML、调度和原生事件由目标实现负责。
+:::

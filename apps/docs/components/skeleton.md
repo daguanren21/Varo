@@ -40,8 +40,9 @@ const loading = shallowRef(true)
 | `rows`        | `number`                       | `3`        | 内容占位行数，负数按 `0` 处理                    |
 | `round`       | `boolean`                      | `false`    | 标题与内容行是否使用胶囊圆角                     |
 
-## 无障碍与动效
+::: info 无障碍与动效
 
 - 加载时输出 `aria-busy="true"` 和 Loading 名称。
 - `loading=false` 时移除占位节点，并按 `contentFade` 淡入真实内容。
 - 全局 `prefers-reduced-motion` 会关闭扫光和内容淡入动画。
+  :::

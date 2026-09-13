@@ -27,9 +27,9 @@
 | `position` | `'top' \| 'middle' \| 'bottom'` | `'top'` | 固定区域的位置         |
 | `inline`   | `boolean`                       | `false` | 作为普通文档流区域展示 |
 
-## 动效与无障碍
-
+::: info 动效与无障碍
 Toast 使用主题 motion token：220ms 进入、160ms 退出、180ms 状态变化。更新同一实例的 `type`、`title` 和 `message` 会在原位置改变状态，不依赖动画结束更新业务状态。`prefers-reduced-motion: reduce` 下移除空间位移。成功和普通反馈使用 `status`，警告和错误使用 `alert`。
+:::
 
 ## Events
 

@@ -10,14 +10,6 @@
 
 <PrimitiveExample name="popover" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## 基础用法
 
 通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
@@ -56,13 +48,8 @@ H5 可处理 Escape/外部点击；小程序没有浏览器 `document`，应优�
 - Close 提供显式退出。
 - disabled 时不打开。
 
-## 平台说明
+::: info 平台差异
 
 - H5 与小程序共享 open/close 契约。
 - 定位、碰撞检测与 portal 留给 UI wrapper。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
-- [Blocks](/blocks/profile-edit)
+  :::

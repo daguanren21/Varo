@@ -6,16 +6,6 @@ Alignment, avatar, and metadata container for user, assistant, and system messag
 
 <AgentComponentDemo component="message" locale="en" />
 
-## Install
-
-```bash
-pnpm add @varo-ui/ai
-pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
-```
-
-Registry installs the UI component into your project, so import it from `@/components/agent-ui`; `@varo-ui/ai` provides the event protocol, stream controller, and Markdown primitives—not Vue/Wevu UI components.
-
 ## Basic Usage
 
 ```vue
@@ -48,11 +38,11 @@ None.
 | --------- | --------------- |
 | `default` | Message content |
 
-## Target Notes
+::: info Target notes
 
 | Target | Import                                    |
 | ------ | ----------------------------------------- |
 | H5     | Named export from `@/components/agent-ui` |
 | weapp  | `@/components/agent-ui/AgentMessage.vue`  |
 
-The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.
+:::

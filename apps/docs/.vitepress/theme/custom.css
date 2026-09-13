@@ -1645,8 +1645,7 @@ html:not(.dark) .VPFeature:hover {
 .varo-color-token-card,
 .varo-role-card,
 .varo-color-component-system,
-.varo-token-grid div,
-.varo-primitive-stack section {
+.varo-token-grid div {
   background: var(--varo-card);
   border: 1px solid var(--varo-border);
   border-radius: var(--varo-radius-lg);
@@ -1663,16 +1662,14 @@ html:not(.dark) .VPFeature:hover {
 
 .varo-color-intro h2,
 .varo-color-scale h2,
-.varo-color-component-system h2,
-.varo-primitive-stack h2 {
+.varo-color-component-system h2 {
   margin: 0 0 8px;
   letter-spacing: 0;
 }
 
 .varo-color-intro p,
 .varo-color-scale p,
-.varo-color-component-system p,
-.varo-primitive-stack p {
+.varo-color-component-system p {
   margin: 0;
   color: var(--varo-muted);
 }
@@ -1885,30 +1882,6 @@ html:not(.dark) .VPFeature:hover {
   overflow-wrap: anywhere;
 }
 
-.varo-primitive-stack {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin: 22px 0 30px;
-}
-
-.varo-primitive-stack section {
-  padding: 18px;
-}
-
-.varo-primitive-stack span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--varo-bg);
-  background: var(--varo-foreground);
-  border-radius: var(--varo-radius);
-}
-
 @media (max-width: 960px) {
   .varo-package-grid,
   .varo-stat-grid,
@@ -1916,8 +1889,7 @@ html:not(.dark) .VPFeature:hover {
   .varo-color-matrix,
   .varo-color-roles,
   .varo-color-state-strip,
-  .varo-token-grid,
-  .varo-primitive-stack {
+  .varo-token-grid {
     grid-template-columns: 1fr;
   }
 

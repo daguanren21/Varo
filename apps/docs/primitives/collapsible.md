@@ -10,14 +10,6 @@
 
 <PrimitiveExample name="collapsible" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## 基础用法
 
 通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
@@ -55,13 +47,8 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - Trigger 控制 open。
 - disabled 时不切换。
 
-## 平台说明
+::: info 平台差异
 
 - 双端共享 open 契约。
 - 动画与过渡不进入 primitive。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
-- [Blocks](/blocks/profile-edit)
+  :::

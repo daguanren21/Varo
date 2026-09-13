@@ -1,66 +1,25 @@
 # Primitives
 
-Primitives are not another UI kit inventory. They are Varo runtime contracts for state, triggers, overlays, positioning, and dismiss behavior so H5 and mini-program wrappers share the same interaction semantics. Presentation components stay in the component docs; this section keeps the behavior building blocks.
+Cross-target unstyled interaction contracts: `@varo-ui/headless` owns state; target primitives own rendering.
 
-<RegistryInstallStrip locale="en" />
+## Install
 
-<div class="varo-primitive-stack">
-  <section>
-    <span>01</span>
-    <h2>Runtime contract</h2>
-    <p>Root owns state and context, Trigger owns entry, Content/Overlay owns the visible layer, and Close owns exit. Platforms may change rendering details, not the contract.</p>
-  </section>
-  <section>
-    <span>02</span>
-    <h2>Composition order</h2>
-    <p>Place Root first, then Trigger, then Overlay and Content. Stable composition keeps business blocks consistent across H5 and mini-programs.</p>
-  </section>
-  <section>
-    <span>03</span>
-    <h2>Controlled and uncontrolled</h2>
-    <p>Use internal state for local UI. Switch to controlled mode when routing, analytics, or form coordination needs an external source of truth.</p>
-  </section>
-</div>
+```bash
+# H5
+pnpm add @varo-ui/headless @varo-ui/h5
 
-## Catalog
+# Mini Program
+pnpm add @varo-ui/headless @varo-ui/weapp
+```
 
-Browse the current 17 public primitives by capability. Every page includes H5 and Weapp primitive previews, copyable code, and an API reference.
+::: info Mini Program setup
+See [Wevu Registry](/en/guide/shadcn-mode) for global styles and Tailwind configuration.
+:::
 
-<PrimitiveCatalog locale="en" />
+## Runtime
 
-## Next foundational candidates
-
-More primitives are not automatically better. A behavior moves down only when state, keyboard/touch interaction, or dismiss logic would otherwise be repeated by several components.
-
-| Candidate               | Enables                                       | Why it belongs below UI                        |
-| ----------------------- | --------------------------------------------- | ---------------------------------------------- |
-| `Tooltip`               | Tooltips, chart hints, truncated-copy help    | Delayed open, hover/focus, and dismiss policy  |
-| `Menu` / `DropdownMenu` | Dropdown, context, and action menus           | Roving focus, arrow keys, and item activation  |
-| `ToggleGroup`           | Segmented controls, formatting bars, filters  | Single/multiple selection and roving focus     |
-| `Slider`                | Volume, range, and parameter controls         | Bounds, step, keyboard, and drag state         |
-| `Combobox` / `Listbox`  | Search select, remote select, command palette | Input, filtering, active option, and selection |
-| `Toast`                 | Global feedback, async results, undo          | Queue, lifecycle, pause, and dismiss behavior  |
-
-Prioritize `Menu`, `Tooltip`, `ToggleGroup`, and `Slider`, then evaluate `Combobox` and `Toast`; their cross-runtime input models need explicit H5 and mini-program boundaries first.
-
-## Product boundaries
-
-- **Primitives** own behavior contracts: controlled/uncontrolled state, disabled rules, ARIA, `data-*` attributes, and dismiss events.
-- **UI wrappers** own visuals and positioning: tokens, motion, icons, floating placement, and platform rendering details.
-- **Business wrappers** own data and product policy: remote search, permissions, pagination, domain models, and copy.
-
-This split keeps Base Kit source readable and editable. Teams can build their own UI packages on the same primitives without forking state machines.
-
-## Authoring rules
-
-- H5 and mini-program share the same part names and state model.
-- Values inside one `TabsRoot` / `AccordionRoot` must stay unique.
-- The mini-program tab uses the Weapp primitive runtime and renders only the current documentation entry.
-- Build custom product UI upward from primitives, or continue with the [component docs](/en/components/button) and the upcoming Blocks authoring guide.
-
-## Related docs
-
-- [Installation](/en/guide/installation)
-- [Theme](/en/guide/theme)
-- [Components](/en/components/button)
-- [Examples](/en/examples/)
+| Package                     | Responsibility                    |
+| --------------------------- | --------------------------------- |
+| `@varo-ui/headless`         | Platform-neutral state and events |
+| `@varo-ui/h5/primitives`    | DOM, keyboard, and ARIA           |
+| `@varo-ui/weapp/primitives` | WXML, touch, and native events    |

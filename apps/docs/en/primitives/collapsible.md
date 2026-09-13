@@ -10,14 +10,6 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 <PrimitiveExample name="collapsible" locale="en" />
 
-## Installation
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## Basic usage
 
 Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
@@ -55,13 +47,8 @@ Use `v-model:open` when routing/analytics need ownership; height animation stays
 - Trigger controls open.
 - Disabled state does not toggle.
 
-## Platform notes
+::: info Platform notes
 
 - Both runtimes share the open contract.
 - Motion stays outside the primitive.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Components](/en/components/button)
-- [Blocks](/en/blocks/profile-edit)
+  :::

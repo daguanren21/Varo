@@ -4,9 +4,9 @@
 
 <PlatformTabsDemo example="button" locale="en" />
 
-## Interaction design
-
+::: info Interaction
 Buttons retain the 44px default target and existing semantic colors. Press feedback uses a short 140ms scale plus inset shadow; Ghost stays transparent until hover or press. Spatial scaling is removed under reduced motion.
+:::
 
 ## Basic Usage
 

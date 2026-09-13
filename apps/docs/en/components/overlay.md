@@ -64,6 +64,6 @@ const visible = ref(false)
 | --------- | ---------------------- |
 | `default` | Custom overlay content |
 
-## Primitives
-
+::: info Primitives
 `OverlayRoot` uses `useOverlayRoot` for controlled/uncontrolled state and click-close behavior. H5 and Weapp primitives both reuse `useBodyScrollLock`.
+:::
