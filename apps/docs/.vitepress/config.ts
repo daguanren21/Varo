@@ -21,7 +21,7 @@ export default defineConfig({
     ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0b1016' }],
   ],
   vite: {
-    server: { host: '127.0.0.1', port: 5191, strictPort: true },
+    server: { strictPort: true },
     plugins: [tailwindcss()],
     resolve: {
       alias: {
