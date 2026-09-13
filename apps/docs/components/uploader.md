@@ -1,7 +1,5 @@
 # Uploader 上传
 
-<RegistryInstallStrip item="components/uploader" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="uploader" locale="zh" />

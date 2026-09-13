@@ -71,6 +71,11 @@ export interface ThemeCssVariables {
   '--varo-ui-input-height-lg': string
   '--varo-ui-shadow-sm': string
   '--varo-ui-shadow-md': string
+  '--varo-ui-motion-feedback': string
+  '--varo-ui-motion-state': string
+  '--varo-ui-motion-enter': string
+  '--varo-ui-motion-exit': string
+  '--varo-ui-motion-ease': string
   '--varo-ui-ring': string
   '--varo-ui-focus': string
   [name: `--${string}`]: string
@@ -246,6 +251,11 @@ export function createThemeCssVariables(
     '--varo-ui-shadow-md': theme.seed.mode === 'dark'
       ? '0 12px 32px 4px rgb(0 0 0 / 36%), 0 8px 20px rgb(0 0 0 / 72%)'
       : '0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%)',
+    '--varo-ui-motion-feedback': '140ms',
+    '--varo-ui-motion-state': '180ms',
+    '--varo-ui-motion-enter': '220ms',
+    '--varo-ui-motion-exit': '160ms',
+    '--varo-ui-motion-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
     '--varo-ui-ring': colorWithAlpha(theme.semantic.primaryBase, 16),
     '--varo-ui-focus': contrastSafeForeground(theme.semantic.surfaceBase),
     ...overrides,

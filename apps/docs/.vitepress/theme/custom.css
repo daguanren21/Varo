@@ -580,6 +580,14 @@ html:not(.dark) .VPFeature:hover {
   width: 100%;
   overflow: hidden;
   table-layout: fixed;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+
+.vp-doc > table th,
+.vp-doc > table td {
+  padding: 12px 16px;
+  vertical-align: top;
 }
 
 .vp-doc > table th {

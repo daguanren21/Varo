@@ -1,7 +1,5 @@
 # NumberKeyboard
 
-<RegistryInstallStrip item="components/number-keyboard" :targets="['h5']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="number-keyboard" locale="en" />

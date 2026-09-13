@@ -13,6 +13,7 @@ type ButtonShape = 'default' | 'square' | 'round'
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     block?: boolean
     className?: ClassValue
     color?: string
@@ -31,6 +32,7 @@ const props = withDefaults(
     variant?: ButtonVariant
   }>(),
   {
+    ariaLabel: '',
     block: false,
     disabled: false,
     hairline: false,
@@ -127,6 +129,7 @@ function pressCancel() {
   <button
     :class="classes"
     :style="customStyle"
+    :aria-label="props.ariaLabel"
     :disabled="!interactive"
     :form-type="formType"
     :hover-class="hoverClass"

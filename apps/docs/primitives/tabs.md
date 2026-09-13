@@ -20,7 +20,7 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 
 ## 基础用法
 
-通过上方演示面板切换 H5 实时预览，以及小程序运行时契约/代码。
+通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
 
 ## 受控与唯一 value
 
@@ -71,7 +71,7 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 ## 平台说明
 
 - H5 可演示键盘行为。
-- 小程序文档展示运行时契约，不伪装成真机预览。
+- 小程序页签使用 Weapp primitive 运行时渲染当前 Tabs 条目。
 
 ## 相关文档
 

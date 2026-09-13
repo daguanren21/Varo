@@ -1,31 +1,40 @@
 # Toast
 
-`VToast` is a controlled low-level toast component. Queues, global APIs, and request integration belong in secondary wrappers.
-
-<RegistryInstallStrip item="components/toast" :targets="['h5', 'weapp']" locale="en" />
+`VToast` owns one controlled status message. `VToastRegion` lays out multiple notifications in a fixed or inline region. The caller still owns queue state, auto-dismiss timers, and request integration.
 
 ## Demo
 
-<FormComponentDemo example="toast" locale="en" />
+<ToastDemo locale="en" />
 
-## Props
+## VToast Props
 
-| Prop         | Type                                                        | Default      | Description                          |
-| ------------ | ----------------------------------------------------------- | ------------ | ------------------------------------ |
-| `visible`    | `boolean`                                                   | `false`      | Visibility                           |
-| `message`    | `string`                                                    | `''`         | Message text                         |
-| `type`       | `'text' \| 'success' \| 'warning' \| 'danger' \| 'loading'` | `'text'`     | Toast type                           |
-| `position`   | `'top' \| 'middle' \| 'bottom'`                             | `'middle'`   | Position                             |
-| `closeable`  | `boolean`                                                   | `false`      | Show close button                    |
-| `closeLabel` | `string`                                                    | `'关闭通知'` | Accessible name for the close button |
+| Prop          | Type                                                        | Default      | Description                   |
+| ------------- | ----------------------------------------------------------- | ------------ | ----------------------------- |
+| `visible`     | `boolean`                                                   | `false`      | Whether the toast is visible  |
+| `message`     | `string`                                                    | `''`         | Supporting message            |
+| `title`       | `string`                                                    | —            | Optional title                |
+| `type`        | `'text' \| 'success' \| 'warning' \| 'danger' \| 'loading'` | `'text'`     | Status type                   |
+| `position`    | `'top' \| 'middle' \| 'bottom'`                             | `'middle'`   | Position when used standalone |
+| `actionText`  | `string`                                                    | —            | Optional action label         |
+| `actionLabel` | `string`                                                    | action text  | Accessible action name        |
+| `closeable`   | `boolean`                                                   | `false`      | Show the close button         |
+| `closeLabel`  | `string`                                                    | `'关闭通知'` | Accessible close name         |
+
+## VToastRegion Props
+
+| Prop       | Type                            | Default | Description                    |
+| ---------- | ------------------------------- | ------- | ------------------------------ |
+| `position` | `'top' \| 'middle' \| 'bottom'` | `'top'` | Fixed-region position          |
+| `inline`   | `boolean`                       | `false` | Render in normal document flow |
 
 ## Motion and accessibility
 
-Toast uses a 220ms entrance and 160ms exit transition with position-aware movement. Under `prefers-reduced-motion: reduce`, it falls back to an immediate opacity change. Success and neutral feedback use `status`; warnings and errors use `alert`.
+Toast motion resolves through theme tokens: 220ms enter, 160ms exit, and 180ms status changes. Updating `type`, `title`, and `message` on the same instance changes its status in place; product state never depends on animation completion. Under `prefers-reduced-motion: reduce`, spatial movement is removed. Success and neutral feedback use `status`; warning and danger use `alert`.
 
 ## Events
 
-| Event            | Payload   | Description        |
-| ---------------- | --------- | ------------------ |
-| `update:visible` | `boolean` | Visibility updated |
-| `close`          | `void`    | Closed             |
+| Event            | Payload   | Description               |
+| ---------------- | --------- | ------------------------- |
+| `update:visible` | `boolean` | Visibility update         |
+| `close`          | `void`    | Dismissed                 |
+| `action`         | `void`    | Optional action activated |

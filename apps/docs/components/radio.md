@@ -1,10 +1,12 @@
 # Radio 单选按钮
 
-<RegistryInstallStrip item="components/radio" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="radio" locale="zh" />
+
+## 选中反馈
+
+Radio 始终保留内点节点，选中时使用 180ms scale/fade 显示 Varo 主色内点，避免切换时布局重建。按压仅提供短促缩放；减少动态效果时状态即时切换。
 
 ## Props
 

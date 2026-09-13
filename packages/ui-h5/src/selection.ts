@@ -227,7 +227,9 @@ export const VRadio = defineComponent({
           'onClick': select,
         },
         [
-          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, isChecked.value ? [h(VIcon, { name: 'dot', size: 10 })] : []),
+          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, [
+            h('span', { class: 'varo-radio__dot' }),
+          ]),
           h('span', { class: 'varo-radio__label' }, slots.default?.() ?? props.label),
         ],
       )

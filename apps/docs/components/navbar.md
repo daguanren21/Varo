@@ -1,7 +1,5 @@
 # Navbar 头部导航
 
-<RegistryInstallStrip item="components/navbar" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="navbar" locale="zh" />

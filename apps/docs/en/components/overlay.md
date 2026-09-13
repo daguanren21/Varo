@@ -1,7 +1,5 @@
 # Overlay
 
-<RegistryInstallStrip item="components/overlay" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="overlay" locale="en" />

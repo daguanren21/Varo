@@ -8,8 +8,8 @@ describe('ui-weapp input', () => {
       props: {
         size: 'sm',
         invalid: true,
-        defaultValue: 'hello'
-      }
+        defaultValue: 'hello',
+      },
     })
 
     expect(wrapper.attributes('data-invalid')).toBe('true')
@@ -22,21 +22,22 @@ describe('ui-weapp input', () => {
     const onUpdateValue = vi.fn()
     const wrapper = mount(VInput, {
       props: {
-        defaultValue: 'Varo',
-        maxLength: 6,
-        showWordLimit: true,
-        clearable: true,
-        clearTrigger: 'always',
-        prefixIcon: '#',
-        suffixIcon: 'ok',
-        'onUpdate:value': onUpdateValue
-      }
+        'defaultValue': 'Varo',
+        'maxLength': 6,
+        'showWordLimit': true,
+        'clearable': true,
+        'clearTrigger': 'always',
+        'prefixIcon': '#',
+        'suffixIcon': 'ok',
+        'onUpdate:value': onUpdateValue,
+      },
     })
 
     expect(wrapper.get('.varo-input__prefix').text()).toBe('#')
     expect(wrapper.get('.varo-input__suffix').text()).toBe('ok')
     expect(wrapper.get('.varo-input__word-limit').text()).toBe('4/6')
-
+    expect(wrapper.attributes('data-type')).toBe('text')
+    expect(wrapper.get('.varo-input__clear .varo-icon').attributes('data-name')).toBe('danger')
     await wrapper.get('.varo-input__clear').trigger('click')
 
     expect(onUpdateValue).toHaveBeenCalledWith('')

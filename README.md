@@ -70,6 +70,14 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 `dev:ai` prepares the WeChat DevTools project, starts the MCP HTTP service, and forwards DevTools console output and uncaught errors to the active terminal.
 
+## Documentation development
+
+```bash
+pnpm run docs:dev
+```
+
+This starts VitePress at `http://127.0.0.1:5191` with in-page H5 and Weapp component previews.
+
 ## Verification
 
 ```bash

@@ -22,7 +22,8 @@
   },
   "registryDependencies": [
     "themes/base",
-    "utils/primitives"
+    "utils/primitives",
+    "components/icon"
   ],
   "files": [
     {

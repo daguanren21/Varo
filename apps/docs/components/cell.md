@@ -1,7 +1,5 @@
 # Cell
 
-<RegistryInstallStrip item="components/cell" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="cell" locale="zh" />

@@ -2,8 +2,6 @@
 
 `VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. The H5 / full Vue wrapper and the native Registry component installed by `--target weapp` target different runtimes; use the API section for the version you consume.
 
-<RegistryInstallStrip item="components/select" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="select" locale="en" />

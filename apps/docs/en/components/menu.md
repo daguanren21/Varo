@@ -1,7 +1,5 @@
 # Menu
 
-<RegistryInstallStrip item="components/menu" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="menu" locale="en" />

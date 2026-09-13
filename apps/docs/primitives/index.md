@@ -2,6 +2,8 @@
 
 Primitives 不是另一套 UI 组件清单，而是 Varo 的运行时契约：它们定义状态、触发器、遮罩、定位与关闭行为，让 H5 与小程序封装共享同一套交互语义。展示类组件继续留在组件文档；这里只保留会影响行为组合的底层能力。
 
+<RegistryInstallStrip locale="zh" />
+
 <div class="varo-primitive-stack">
   <section>
     <span>01</span>
@@ -22,7 +24,7 @@ Primitives 不是另一套 UI 组件清单，而是 Varo 的运行时契约：�
 
 ## 目录
 
-当前 17 个公开 primitives 按能力分组。每个页面都包含 H5 实时预览、小程序运行时契约、可复制代码与 API。
+当前 17 个公开 primitives 按能力分组。每个页面都包含 H5 与 Weapp primitive 预览、可复制代码与 API。
 
 <PrimitiveCatalog locale="zh" />
 
@@ -53,7 +55,7 @@ Primitives 不是另一套 UI 组件清单，而是 Varo 的运行时契约：�
 
 - H5 与小程序使用同一套 part 名称与状态模型。
 - 同一 `TabsRoot` / `AccordionRoot` 内的 value 必须唯一。
-- 小程序页不把浏览器渲染伪装成真实小程序预览；文档用「运行时契约」说明差异。
+- 小程序页签使用 Weapp primitive 运行时，并且只渲染当前文档条目。
 - 自定义业务 UI 请从 primitives 向上封装，或参考 [组件文档](/components/button) 与后续 Blocks 作者指南。
 
 ## 相关文档

@@ -1,10 +1,12 @@
 # Button
 
-<RegistryInstallStrip item="components/button" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="button" locale="zh" />
+
+## 交互设计
+
+按钮保留 44px 默认命中高度和现有语义色。按压使用 140ms 的轻量缩放与内阴影反馈；Ghost 默认透明，仅在 hover 或按压时出现弱背景。减少动态效果时不执行空间缩放。
 
 ## 基础用法
 

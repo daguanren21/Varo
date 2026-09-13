@@ -75,14 +75,6 @@ Copy-owned mini-program Registry components use native Wevu SFCs and consume Tai
 
 ## Preview mini-program artifacts in a browser
 
-Start the standalone Web compatibility preview from the Varo repository root:
-
-```bash
-pnpm --filter @varo/playground-weapp-preview dev
-```
-
-The development command builds the mini program first, then serves button, controlled-input, slot/lifecycle, and Agent scenarios at `http://127.0.0.1:5182`. After changing native examples, run `pnpm --filter @varo/playground-weapp-preview prepare:artifacts` to refresh their compiled artifacts.
-
 The wx runtime now lives in the private `@varo/weapp-web` package: a Vite plugin compiles Wevu artifacts into `virtual:varo-native-artifacts`, and a replaceable harness owns `wx` APIs and native elements. The playground is only a sandbox consumer; the package is not published yet. The host runs Wevu-generated JS, JSON, WXML, and WXSS through glass-easel's DOM backend rather than substituting H5 business components. Narrow windows scale the presentation while preserving the selected native viewport width. **This is not a WeChat-client or device emulator.** Unsupported capabilities such as login and payment fail explicitly instead of returning fabricated success.
 
 Build and verify the production surface:

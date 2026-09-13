@@ -2,8 +2,6 @@
 
 `VLoading` 是 Base Kit 的低层加载指示器。
 
-<RegistryInstallStrip item="components/loading" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="loading" locale="zh" />

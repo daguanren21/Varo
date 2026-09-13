@@ -1,7 +1,5 @@
 # CalendarCard
 
-<RegistryInstallStrip item="components/calendar" :targets="['h5']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="calendar-card" locale="en" />

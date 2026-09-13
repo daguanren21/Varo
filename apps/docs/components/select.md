@@ -2,8 +2,6 @@
 
 `VSelect` 是 Base Kit 的低层选择组件，用于表单、筛选和业务组件二次封装。H5 / 完整 Vue 封装与 `--target weapp` 安装的原生 Registry 组件面向不同运行时，API 以各自章节为准。
 
-<RegistryInstallStrip item="components/select" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="select" locale="zh" />

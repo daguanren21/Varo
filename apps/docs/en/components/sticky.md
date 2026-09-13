@@ -1,7 +1,5 @@
 # Sticky
 
-<RegistryInstallStrip item="components/sticky" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="sticky" locale="en" />

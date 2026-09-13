@@ -1,7 +1,5 @@
 # DatePicker 日期选择器
 
-<RegistryInstallStrip item="components/date-picker" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="date-picker" locale="zh" />

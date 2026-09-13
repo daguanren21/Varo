@@ -2,6 +2,7 @@
 import { useNumberFieldRoot } from '@varo-ui/headless'
 import { computed, shallowRef, toRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
+import VIcon from './v-icon.vue'
 
 // WeChat validates initial child bindings before Wevu applies setup defaults.
 defineOptions({
@@ -13,7 +14,10 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<{
+    decreaseAriaLabel?: string
     disabled?: boolean
+    increaseAriaLabel?: string
+    inputAriaLabel?: string
     max?: number
     min?: number
     precision?: number
@@ -22,7 +26,10 @@ const props = withDefaults(
     value?: number
   }>(),
   {
+    decreaseAriaLabel: 'Decrease value',
     disabled: false,
+    increaseAriaLabel: 'Increase value',
+    inputAriaLabel: 'Numeric value',
     max: Number.POSITIVE_INFINITY,
     min: Number.NEGATIVE_INFINITY,
     readonly: false,
@@ -96,25 +103,26 @@ function increment() {
 
 <template>
   <view class="varo-input-number" :data-disabled="String(fieldDisabled)" :data-readonly="String(readonly)">
-    <button v-if="canDecrease" class="varo-input-number__minus" @tap="decrement">
-      −
+    <button v-if="canDecrease" class="varo-input-number__minus" :aria-label="props.decreaseAriaLabel" @tap="decrement">
+      <VIcon name="minus" :size="14" />
     </button>
-    <view v-else class="varo-input-number__minus varo-input-number__control--disabled" aria-disabled="true">
-      −
-    </view>
+    <button v-else class="varo-input-number__minus varo-input-number__control--disabled" :aria-label="props.decreaseAriaLabel" aria-disabled="true" disabled>
+      <VIcon name="minus" :size="14" />
+    </button>
     <input
       class="varo-input-number__input"
+      :aria-label="props.inputAriaLabel"
       type="digit"
       :value="String(value)"
       :disabled="!interactive"
       @blur="input"
     >
-    <button v-if="canIncrease" class="varo-input-number__plus" @tap="increment">
-      +
+    <button v-if="canIncrease" class="varo-input-number__plus" :aria-label="props.increaseAriaLabel" @tap="increment">
+      <VIcon name="plus" :size="14" />
     </button>
-    <view v-else class="varo-input-number__plus varo-input-number__control--disabled" aria-disabled="true">
-      +
-    </view>
+    <button v-else class="varo-input-number__plus varo-input-number__control--disabled" :aria-label="props.increaseAriaLabel" aria-disabled="true" disabled>
+      <VIcon name="plus" :size="14" />
+    </button>
   </view>
 </template>
 

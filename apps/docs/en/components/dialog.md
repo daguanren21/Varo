@@ -2,8 +2,6 @@
 
 Varo exposes Dialog through composable parts: `VDialogRoot`, `VDialogTrigger`, `VDialogOverlay`, `VDialogContent`, and `VDialogClose`.
 
-<RegistryInstallStrip item="components/dialog" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="dialog" locale="en" />

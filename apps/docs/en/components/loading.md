@@ -2,8 +2,6 @@
 
 `VLoading` is a low-level loading indicator.
 
-<RegistryInstallStrip item="components/loading" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="loading" locale="en" />

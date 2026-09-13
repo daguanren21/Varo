@@ -1,7 +1,5 @@
 # Divider
 
-<RegistryInstallStrip item="components/divider" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="divider" locale="zh" />

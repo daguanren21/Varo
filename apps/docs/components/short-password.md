@@ -1,7 +1,5 @@
 # ShortPassword 短密码
 
-<RegistryInstallStrip item="components/short-password" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="short-password" locale="zh" />

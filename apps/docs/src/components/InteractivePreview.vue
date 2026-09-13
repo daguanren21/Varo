@@ -643,23 +643,10 @@ const copy = computed(() => {
 
 :deep(.varo-input__prefix),
 :deep(.varo-input__suffix),
-:deep(.varo-input__clear),
 :deep(.varo-input__word-limit) {
   flex: none;
   font-size: 0.82rem;
   color: var(--vp-c-text-2);
-}
-
-:deep(.varo-input__clear) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  background: color-mix(in srgb, var(--varo-muted) 14%, transparent);
-  border: 0;
-  border-radius: 999px;
 }
 
 :deep(.varo-input[data-invalid='true'] .varo-input__body) {

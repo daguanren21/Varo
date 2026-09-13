@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { VSelect } from '../src/select'
@@ -153,6 +155,7 @@ describe('ui-h5 select', () => {
     expect(wrapper.get('.varo-select__control').element.tagName).toBe('BUTTON')
     expect(wrapper.get('.varo-select__control').find('.varo-select__clear').exists()).toBe(false)
     expect(wrapper.get('.varo-select__clear').element.tagName).toBe('BUTTON')
+    expect(wrapper.get('.varo-select__clear .varo-icon').attributes('data-name')).toBe('danger')
 
     await wrapper.get('.varo-select__trigger').trigger('click')
     expect(wrapper.findAll('.varo-select__option').every(option => option.attributes('role') === 'option')).toBe(true)
@@ -372,6 +375,31 @@ describe('ui-h5 select', () => {
 
     expect(wrapper.find('.varo-select__panel').exists()).toBe(false)
     expect(document.activeElement).toBe(trigger.element)
+    wrapper.unmount()
+  })
+
+  it('keeps the trigger height stable when the clear action appears on focus', async () => {
+    const wrapper = mount(VSelect, {
+      props: {
+        clearable: true,
+        filterable: true,
+        options,
+        value: 'shanghai',
+      },
+    })
+
+    const stylesheet = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8')
+
+    expect(wrapper.find('.varo-select__clear').exists()).toBe(true)
+    expect(stylesheet).toMatch(/\.varo-select__trigger \{[\s\S]*?height: 42px;/)
+    expect(stylesheet).toMatch(/\.varo-select__clear \{[\s\S]*?display: inline-flex;[\s\S]*?opacity: 0;/)
+    expect(stylesheet).toContain('.varo-select:focus-within .varo-select__clear')
+    expect(stylesheet).toMatch(/\.varo-select:focus-within \.varo-select__clear,[\s\S]*?opacity: 1;/)
+    expect(stylesheet).not.toMatch(/\.varo-select:focus-within \.varo-select__clear \{[\s\S]*?display: inline-flex;/)
+
+    await wrapper.get('.varo-select__filter-input').trigger('focus')
+    expect(wrapper.find('.varo-select__clear').exists()).toBe(true)
+    expect(wrapper.attributes('data-open')).toBe('true')
     wrapper.unmount()
   })
 })

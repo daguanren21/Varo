@@ -1,0 +1,41 @@
+{
+  "name": "watermark",
+  "type": "component",
+  "title": "VWatermark",
+  "description": "Non-interactive repeated text watermark overlay with responsive spacing and target-native H5 and mini-program rendering.",
+  "exportName": "VWatermark",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/watermark/h5.ts",
+      "to": "src/components/ui/watermark.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/watermark/v-watermark.vue",
+      "to": "src/components/ui/v-watermark.vue"
+    }
+  ],
+  "docs": "/components/watermark"
+}

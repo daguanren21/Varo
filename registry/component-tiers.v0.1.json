@@ -1,13 +1,13 @@
 {
   "version": "0.2",
   "runtimeCatalog": {
-    "h5": 57,
-    "weappVite": 57
+    "h5": 61,
+    "weappVite": 60
   },
   "registryCatalog": {
-    "h5": 58,
-    "weappVite": 48,
-    "weappSfc": 47,
+    "h5": 62,
+    "weappVite": 53,
+    "weappSfc": 52,
     "weappSfcBaseKit": 15
   },
   "registryExtensions": [
@@ -24,6 +24,7 @@
     "cell",
     "checkbox",
     "collapse",
+    "date-field",
     "dialog",
     "divider",
     "empty",
@@ -42,14 +43,17 @@
     "notice-bar",
     "overlay",
     "pagination",
+    "picker",
     "popover",
     "popup",
     "progress",
+    "pull-refresh",
     "radio",
     "rate",
     "safe-area",
     "searchbar",
     "select",
+    "signature",
     "skeleton",
     "space",
     "steps",
@@ -60,7 +64,8 @@
     "tabs",
     "tag",
     "textarea",
-    "toast"
+    "toast",
+    "watermark"
   ],
   "weappSpecializedPendingRegistry": [
     "calendar",
@@ -69,7 +74,6 @@
     "elevator",
     "fixed-nav",
     "number-keyboard",
-    "picker",
     "range",
     "short-password",
     "side-navbar",

@@ -512,19 +512,6 @@ describe('FormComponentDemo', () => {
     await switches[0]!.trigger('click')
     expect(switchDemo.get('.form-demo__control-head output').text()).toBe('已关闭')
 
-    const toast = mount(FormComponentDemo, {
-      global: { plugins: [themePlugin] },
-      props: { example: 'toast', locale: 'zh' },
-    })
-    const toasts = toast.findAll('.varo-toast')
-    expect(toasts).toHaveLength(4)
-    expect(toasts.map(item => item.attributes('data-type'))).toEqual(['text', 'warning', 'danger', 'success'])
-    expect(toast.text()).toContain('信息已更新')
-    expect(toast.text()).toContain('请检查必填项')
-    expect(toast.text()).toContain('请求失败')
-    expect(toast.text()).toContain('保存成功')
-    expect(toast.find('.varo-toast__close').exists()).toBe(false)
-
     const loading = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },
       props: { example: 'loading', locale: 'en' },

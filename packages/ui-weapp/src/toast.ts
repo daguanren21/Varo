@@ -43,67 +43,66 @@ export const VToast = defineComponent({
   name: 'VToast',
   props: {
     visible: Boolean,
-    message: {
-      type: String,
-      default: '',
-    },
-    type: {
-      type: String as PropType<VToastType>,
-      default: 'text',
-    },
-    position: {
-      type: String as PropType<VToastPosition>,
-      default: 'middle',
-    },
-    closeable: {
-      type: Boolean,
-      default: false,
-    },
-    closeLabel: {
-      type: String,
-      default: '关闭通知',
-    },
+    message: { type: String, default: '' },
+    title: { type: String, default: undefined },
+    type: { type: String as PropType<VToastType>, default: 'text' },
+    position: { type: String as PropType<VToastPosition>, default: 'middle' },
+    actionText: { type: String, default: undefined },
+    actionLabel: { type: String, default: undefined },
+    closeable: { type: Boolean, default: false },
+    closeLabel: { type: String, default: '关闭通知' },
   },
-  emits: ['update:visible', 'close'],
+  emits: ['update:visible', 'close', 'action'],
   setup(props, { attrs, emit, slots }) {
     function close() {
       emit('update:visible', false)
       emit('close')
     }
+    function action() {
+      emit('action')
+    }
 
-    return () =>
-      h(
-        Transition,
-        { appear: true, name: 'varo-toast' },
-        {
-          default: () => props.visible
-            ? h(
-                'div',
-                {
-                  ...attrs,
-                  'class': ['varo-toast', `varo-toast--${props.type}`, `varo-toast--${props.position}`, attrs.class],
-                  'role': props.type === 'danger' || props.type === 'warning' ? 'alert' : 'status',
-                  'aria-atomic': 'true',
-                  'aria-busy': props.type === 'loading' || undefined,
-                  'aria-live': props.type === 'danger' || props.type === 'warning' ? 'assertive' : 'polite',
-                  'data-type': props.type,
-                  'data-position': props.position,
-                },
-                [
-                  props.type === 'text' ? null : renderToastIcon(props.type),
-                  h('span', { class: 'varo-toast__message' }, slots.default?.() ?? props.message),
-                  props.closeable
-                    ? h('button', {
-                        'aria-label': props.closeLabel,
-                        'class': 'varo-toast__close',
-                        'type': 'button',
-                        'onClick': close,
-                      }, renderCloseIcon())
-                    : null,
-                ],
-              )
-            : null,
-        },
-      )
+    return () => h(Transition, { appear: true, name: 'varo-toast' }, {
+      default: () => props.visible
+        ? h('div', {
+            ...attrs,
+            'class': ['varo-toast', `varo-toast--${props.type}`, `varo-toast--${props.position}`, attrs.class],
+            'role': props.type === 'danger' || props.type === 'warning' ? 'alert' : 'status',
+            'aria-atomic': 'true',
+            'aria-busy': props.type === 'loading' || undefined,
+            'aria-live': props.type === 'danger' || props.type === 'warning' ? 'assertive' : 'polite',
+            'data-type': props.type,
+            'data-position': props.position,
+          }, [
+            props.type === 'text' ? null : renderToastIcon(props.type),
+            h('span', { class: 'varo-toast__body' }, [
+              props.title ? h('strong', { class: 'varo-toast__title' }, props.title) : null,
+              h('span', { class: 'varo-toast__message' }, slots.default?.() ?? props.message),
+            ]),
+            props.actionText
+              ? h('button', { 'aria-label': props.actionLabel ?? props.actionText, 'class': 'varo-toast__action', 'type': 'button', 'onClick': action }, props.actionText)
+              : null,
+            props.closeable
+              ? h('button', { 'aria-label': props.closeLabel, 'class': 'varo-toast__close', 'type': 'button', 'onClick': close }, renderCloseIcon())
+              : null,
+          ])
+        : null,
+    })
+  },
+})
+
+export const VToastRegion = defineComponent({
+  name: 'VToastRegion',
+  props: {
+    inline: Boolean,
+    position: { type: String as PropType<VToastPosition>, default: 'top' },
+  },
+  setup(props, { attrs, slots }) {
+    return () => h('div', {
+      ...attrs,
+      'class': ['varo-toast-region', attrs.class],
+      'data-inline': String(props.inline),
+      'data-position': props.position,
+    }, slots.default?.() ?? [])
   },
 })

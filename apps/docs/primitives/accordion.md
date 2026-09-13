@@ -20,7 +20,7 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 
 ## 基础用法
 
-通过上方演示面板切换 H5 实时预览，以及小程序运行时契约/代码。
+通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
 
 ## multiple 模式
 

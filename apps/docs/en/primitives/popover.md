@@ -20,7 +20,7 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 
 ## Basic usage
 
-Use the Demo panel above to switch H5 live preview and mini-program runtime contract/code.
+Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
 
 ## Dismiss contract
 

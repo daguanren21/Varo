@@ -1,7 +1,5 @@
 # Layout
 
-<RegistryInstallStrip item="components/layout" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="layout" locale="zh" />

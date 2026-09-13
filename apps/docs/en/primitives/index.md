@@ -2,6 +2,8 @@
 
 Primitives are not another UI kit inventory. They are Varo runtime contracts for state, triggers, overlays, positioning, and dismiss behavior so H5 and mini-program wrappers share the same interaction semantics. Presentation components stay in the component docs; this section keeps the behavior building blocks.
 
+<RegistryInstallStrip locale="en" />
+
 <div class="varo-primitive-stack">
   <section>
     <span>01</span>
@@ -22,7 +24,7 @@ Primitives are not another UI kit inventory. They are Varo runtime contracts for
 
 ## Catalog
 
-Browse the current 17 public primitives by capability. Every page includes an H5 live preview, a mini-program runtime contract, copyable code, and API reference.
+Browse the current 17 public primitives by capability. Every page includes H5 and Weapp primitive previews, copyable code, and an API reference.
 
 <PrimitiveCatalog locale="en" />
 
@@ -53,7 +55,7 @@ This split keeps Base Kit source readable and editable. Teams can build their ow
 
 - H5 and mini-program share the same part names and state model.
 - Values inside one `TabsRoot` / `AccordionRoot` must stay unique.
-- Mini-program docs never pretend a browser render is a real mini-program preview; they use a runtime contract table instead.
+- The mini-program tab uses the Weapp primitive runtime and renders only the current documentation entry.
 - Build custom product UI upward from primitives, or continue with the [component docs](/en/components/button) and the upcoming Blocks authoring guide.
 
 ## Related docs

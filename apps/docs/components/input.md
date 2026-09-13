@@ -1,7 +1,5 @@
 # Input
 
-<RegistryInstallStrip item="components/input" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="input" locale="zh" />

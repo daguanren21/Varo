@@ -1,8 +1,9 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { h } from 'vue'
 import { VLoading } from '../src/loading'
 import { VSwitch } from '../src/switch'
-import { VToast } from '../src/toast'
+import { VToast, VToastRegion } from '../src/toast'
 
 describe('ui-weapp missing base kit components', () => {
   it('toggles VSwitch values', async () => {
@@ -40,6 +41,7 @@ describe('ui-weapp missing base kit components', () => {
 
   it('renders controlled VToast feedback', async () => {
     const onUpdate = vi.fn()
+    const onAction = vi.fn()
     const wrapper = mount(VToast, {
       props: {
         'visible': true,
@@ -48,6 +50,10 @@ describe('ui-weapp missing base kit components', () => {
         'position': 'top',
         'closeable': true,
         'closeLabel': '关闭保存通知',
+        'title': '设置已保存',
+        'actionText': '查看',
+        'actionLabel': '查看保存结果',
+        'onAction': onAction,
         'onUpdate:visible': onUpdate,
       },
     })
@@ -62,9 +68,29 @@ describe('ui-weapp missing base kit components', () => {
     expect(toast.attributes('aria-live')).toBe('polite')
     expect(toast.get('.varo-toast__icon svg').attributes('viewBox')).toBe('0 0 24 24')
     expect(toast.get('.varo-toast__close').attributes('aria-label')).toBe('关闭保存通知')
+    expect(toast.get('.varo-toast__title').text()).toBe('设置已保存')
+    expect(toast.get('.varo-toast__action').attributes('aria-label')).toBe('查看保存结果')
 
+    await toast.get('.varo-toast__action').trigger('click')
+    expect(onAction).toHaveBeenCalledTimes(1)
     await wrapper.get('.varo-toast__close').trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith(false)
+  })
+
+  it('lays out controlled toasts inside an inline region', () => {
+    const wrapper = mount(VToastRegion, {
+      props: {
+        inline: true,
+        position: 'top',
+      },
+      slots: {
+        default: () => h(VToast, { message: '同步完成', type: 'success', visible: true }),
+      },
+    })
+
+    expect(wrapper.attributes('data-inline')).toBe('true')
+    expect(wrapper.attributes('data-position')).toBe('top')
+    expect(wrapper.get('.varo-toast').text()).toContain('同步完成')
   })
 })

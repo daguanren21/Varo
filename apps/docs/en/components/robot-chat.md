@@ -2,8 +2,6 @@
 
 `VRobotChat` is a Wevu wrapper for the `chatbotwidget` Mini Program plugin. It supports only the `weapp` target and provides initialization states, event forwarding, and an editable input area.
 
-<RegistryInstallStrip item="components/robot-chat" :targets="['weapp']" :wrapper-targets="[]" locale="en" />
-
 ## Demo
 
 <RobotChatDemo locale="en" />

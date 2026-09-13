@@ -55,7 +55,6 @@ describe('docs navigation', () => {
     const primitiveZh = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
     const primitiveEn = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
     const catalog = readFileSync(resolve(docsRoot, 'src/components/PrimitiveCatalog.vue'), 'utf8')
-    const example = readFileSync(resolve(docsRoot, 'src/components/PrimitiveExample.vue'), 'utf8')
     const dedicatedPages = [
       'button',
       'input',
@@ -93,8 +92,6 @@ describe('docs navigation', () => {
     expect(config).toContain('text: \'Content & Layout\'')
     expect(catalog).toMatch(/id: 'number-field'[\s\S]*?category: 'controls'/)
     expect(catalog).toMatch(/id: 'image'[\s\S]*?category: 'content'/)
-    expect(example).toContain('name: PrimitiveExampleName')
-    expect(example).toContain('resolvePrimitiveExample')
 
     dedicatedPages.forEach((page) => {
       expect(config).toContain(`/primitives/${page}`)
@@ -168,6 +165,7 @@ describe('docs navigation', () => {
       'calendar-card',
       'cascader',
       'checkbox',
+      'date-field',
       'date-picker',
       'form',
       'input-number',
@@ -254,6 +252,7 @@ describe('docs navigation', () => {
     expect(css).toContain('--vp-sidebar-width: 224px')
     expect(css).toContain('--vp-aside-width: 188px')
     expect(css).toContain('--vp-content-container: 960px')
+    expect(css).toContain('.vp-doc > table th,\n.vp-doc > table td {\n  padding: 12px 16px;')
   })
 
   it('uses a precision-lab light palette and preserves dark demo contrast', () => {
@@ -363,10 +362,14 @@ describe('docs navigation', () => {
     expect(zhPrimitive).toContain('组合顺序')
     expect(zhPrimitive).toContain('受控与非受控')
     expect(zhPrimitive).toContain('class="varo-primitive-stack"')
+    expect(zhPrimitive).toContain('<RegistryInstallStrip locale="zh" />')
     expect(enPrimitive).toContain('Runtime contract')
     expect(enPrimitive).toContain('Composition order')
     expect(enPrimitive).toContain('Controlled and uncontrolled')
     expect(enPrimitive).toContain('class="varo-primitive-stack"')
+    expect(enPrimitive).toContain('<RegistryInstallStrip locale="en" />')
+    expect(readFileSync(resolve(docsRoot, 'components/textarea.md'), 'utf8')).not.toContain('<RegistryInstallStrip')
+    expect(readFileSync(resolve(docsRoot, 'en/components/textarea.md'), 'utf8')).not.toContain('<RegistryInstallStrip')
   })
 
   it('documents the dual-target component tiers', () => {
@@ -383,9 +386,13 @@ describe('docs navigation', () => {
     const requiredComponentIds = [
       'select',
       'switch',
+      'list',
       'loading',
       'toast',
       'region-picker',
+      'pull-refresh',
+      'signature',
+      'watermark',
       'map',
       'robot-chat',
     ]
@@ -411,7 +418,7 @@ describe('docs navigation', () => {
     })
     expect(phase1Manifest.targets).toEqual(['h5', 'weapp'])
     expect(phase1Manifest.components).toEqual(baseKitPhase1Components)
-    expect(componentTiers.registryCatalog).toEqual({ h5: 58, weappSfc: 47, weappSfcBaseKit: 15, weappVite: 48 })
+    expect(componentTiers.registryCatalog).toEqual({ h5: 62, weappSfc: 52, weappSfcBaseKit: 15, weappVite: 53 })
     expect(componentTiers.agentUi).toHaveLength(42)
   })
 

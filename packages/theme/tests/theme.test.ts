@@ -290,6 +290,11 @@ describe('theme', () => {
       '--varo-ui-ring': 'rgb(37 99 235 / 16%)',
       '--varo-ui-focus': '#000000',
       '--varo-ui-shadow-sm': '0 1px 2px rgb(48 49 51 / 6%)',
+      '--varo-ui-motion-feedback': '140ms',
+      '--varo-ui-motion-state': '180ms',
+      '--varo-ui-motion-enter': '220ms',
+      '--varo-ui-motion-exit': '160ms',
+      '--varo-ui-motion-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
     })
   })
 

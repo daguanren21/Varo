@@ -92,7 +92,7 @@ describe('registry catalog', () => {
 
   it('publishes every maintained runtime component through the v0.1 registry catalog', () => {
     expect([...componentCatalogV01].sort()).toEqual(runtimeComponentNames())
-    expect(componentCatalogV01).toHaveLength(57)
+    expect(componentCatalogV01).toHaveLength(61)
   })
 
   it('partitions the mini-program registry into high-consensus and specialized tiers', () => {
@@ -105,8 +105,8 @@ describe('registry catalog', () => {
       weappSpecializedPendingRegistry: string[]
     }>('registry/component-tiers.v0.1.json')
 
-    expect(tiers.runtimeCatalog).toEqual({ h5: 57, weappVite: 57 })
-    expect(tiers.registryCatalog).toEqual({ h5: 58, weappSfc: 47, weappSfcBaseKit: 15, weappVite: 48 })
+    expect(tiers.runtimeCatalog).toEqual({ h5: 61, weappVite: 60 })
+    expect(tiers.registryCatalog).toEqual({ h5: 62, weappSfc: 52, weappSfcBaseKit: 15, weappVite: 53 })
     expect(tiers.registryExtensions).toEqual(['map', 'region-picker'])
     expect(tiers.weappHighConsensus).toEqual(weappComponentCatalogV01)
     expect(
@@ -354,7 +354,7 @@ describe('registry catalog', () => {
   })
 
   it('keeps the full H5 catalog, high-consensus weapp catalog, and executable SFC Base Kit aligned', () => {
-    expect(weappComponentCatalogV01).toHaveLength(46)
+    expect(weappComponentCatalogV01).toHaveLength(51)
     const baseKitNames = new Set<string>(baseKitPhase1)
     const weappComponentNames = new Set<string>(weappComponentCatalogV01)
 
@@ -498,6 +498,26 @@ describe('registry catalog', () => {
       weapp: ['@weapp-tailwindcss/merge'],
     })
     expect(readText('registry/utils/cn/weapp-vite.ts')).toContain('from \'@weapp-tailwindcss/merge\'')
+  })
+
+  it('publishes a native weapp picker SFC with confirm, cancel, and disabled option gates', () => {
+    const manifest = readJson<RegistryItem>('registry/components/picker/registry.json')
+    const weappFile = manifest.files.find(file => file.target === 'weapp')
+    const source = readText(weappFile!.from)
+
+    expect(manifest.targets).toEqual(['h5', 'weapp'])
+    expect(weappFile).toEqual({
+      target: 'weapp',
+      from: 'registry/components/picker/v-picker.vue',
+      to: 'src/components/ui/v-picker.vue',
+    })
+    expect(source).toContain('from \'wevu\'')
+    expect(source).toContain('value: { type: null }')
+    expect(source).toContain('if (option.disabled)')
+    expect(source).toContain('emit(\'confirm\'')
+    expect(source).toContain('emit(\'cancel\')')
+    expect(source).toContain('emit(\'update:visible\', false)')
+    expect(source).toContain('"styleIsolation": "apply-shared"')
   })
 })
 

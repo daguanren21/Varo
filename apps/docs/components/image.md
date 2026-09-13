@@ -1,7 +1,5 @@
 # Image
 
-<RegistryInstallStrip item="components/image" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="image" locale="zh" />

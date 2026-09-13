@@ -47,6 +47,10 @@ export const VToast = defineComponent({
       type: String,
       default: '',
     },
+    title: {
+      type: String,
+      default: undefined,
+    },
     type: {
       type: String as PropType<VToastType>,
       default: 'text',
@@ -54,6 +58,14 @@ export const VToast = defineComponent({
     position: {
       type: String as PropType<VToastPosition>,
       default: 'middle',
+    },
+    actionText: {
+      type: String,
+      default: undefined,
+    },
+    actionLabel: {
+      type: String,
+      default: undefined,
     },
     closeable: {
       type: Boolean,
@@ -64,11 +76,15 @@ export const VToast = defineComponent({
       default: '关闭通知',
     },
   },
-  emits: ['update:visible', 'close'],
+  emits: ['update:visible', 'close', 'action'],
   setup(props, { attrs, emit, slots }) {
     function close() {
       emit('update:visible', false)
       emit('close')
+    }
+
+    function action() {
+      emit('action')
     }
 
     return () =>
@@ -91,7 +107,18 @@ export const VToast = defineComponent({
                 },
                 [
                   props.type === 'text' ? null : renderToastIcon(props.type),
-                  h('span', { class: 'varo-toast__message' }, slots.default?.() ?? props.message),
+                  h('span', { class: 'varo-toast__body' }, [
+                    props.title ? h('strong', { class: 'varo-toast__title' }, props.title) : null,
+                    h('span', { class: 'varo-toast__message' }, slots.default?.() ?? props.message),
+                  ]),
+                  props.actionText
+                    ? h('button', {
+                        'aria-label': props.actionLabel ?? props.actionText,
+                        'class': 'varo-toast__action',
+                        'type': 'button',
+                        'onClick': action,
+                      }, props.actionText)
+                    : null,
                   props.closeable
                     ? h('button', {
                         'aria-label': props.closeLabel,
@@ -105,5 +132,24 @@ export const VToast = defineComponent({
             : null,
         },
       )
+  },
+})
+
+export const VToastRegion = defineComponent({
+  name: 'VToastRegion',
+  props: {
+    inline: Boolean,
+    position: {
+      type: String as PropType<VToastPosition>,
+      default: 'top',
+    },
+  },
+  setup(props, { attrs, slots }) {
+    return () => h('div', {
+      ...attrs,
+      'class': ['varo-toast-region', attrs.class],
+      'data-inline': String(props.inline),
+      'data-position': props.position,
+    }, slots.default?.() ?? [])
   },
 })

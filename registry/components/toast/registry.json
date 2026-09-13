@@ -1,8 +1,8 @@
 {
   "name": "toast",
   "type": "component",
-  "title": "VToast",
-  "description": "Controlled transient feedback for success, warning, error, and loading states.",
+  "title": "VToast and VToastRegion",
+  "description": "Controlled status-morphing toast cards plus a target-native region for stacked feedback.",
   "exportName": "VToast",
   "targets": [
     "h5",
@@ -36,6 +36,11 @@
       "target": "weapp",
       "from": "registry/components/toast/v-toast.vue",
       "to": "src/components/ui/v-toast.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/toast/v-toast-region.vue",
+      "to": "src/components/ui/v-toast-region.vue"
     }
   ],
   "docs": "/components/toast"

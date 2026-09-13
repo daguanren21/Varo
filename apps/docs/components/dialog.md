@@ -2,8 +2,6 @@
 
 Varo 的 Dialog 采用 parts 暴露方式：`VDialogRoot`、`VDialogTrigger`、`VDialogOverlay`、`VDialogContent` 与 `VDialogClose`。
 
-<RegistryInstallStrip item="components/dialog" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="dialog" locale="zh" />

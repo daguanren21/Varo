@@ -2,8 +2,6 @@
 
 `VRegionPicker` 是受控的多级地区选择器。组件负责层级导航、快捷地区、禁用态、确认结果，以及根节点/子节点的异步加载反馈；接口实现、缓存、权限和坐标解析仍由业务层处理。
 
-<RegistryInstallStrip item="components/region-picker" :targets="['h5', 'weapp']" :wrapper-targets="[]" locale="zh" />
-
 ## 演示
 
 <RegionPickerDemo />

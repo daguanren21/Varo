@@ -37,9 +37,13 @@ describe('ui-weapp form controls', () => {
         ],
       },
     })
+    const radios = radio.findAll('.varo-radio')
+    expect(radios[0].attributes('aria-checked')).toBe('true')
+    expect(radios[1].attributes('aria-checked')).toBe('false')
+    expect(radios.every(item => item.find('.varo-radio__dot').exists())).toBe(true)
 
     await checkbox.findAll('.varo-checkbox')[1].trigger('click')
-    await radio.findAll('.varo-radio')[1].trigger('click')
+    await radios[1].trigger('click')
 
     expect(checkboxUpdate).toHaveBeenCalledWith(['apple', 'pear'])
     expect(radioUpdate).toHaveBeenCalledWith('alipay')
@@ -51,6 +55,9 @@ describe('ui-weapp form controls', () => {
     const rangeUpdate = vi.fn()
     const number = mount(VInputNumber, {
       props: {
+        'decreaseAriaLabel': '减少数量',
+        'increaseAriaLabel': '增加数量',
+        'inputAriaLabel': '数量',
         'max': 5,
         'min': 1,
         'value': 4,
@@ -70,6 +77,12 @@ describe('ui-weapp form controls', () => {
         'onUpdate:value': rangeUpdate,
       },
     })
+
+    expect(number.get('.varo-input-number__minus .varo-icon').attributes('data-name')).toBe('minus')
+    expect(number.get('.varo-input-number__plus .varo-icon').attributes('data-name')).toBe('plus')
+    expect(number.get('.varo-input-number__minus').attributes('aria-label')).toBe('减少数量')
+    expect(number.get('.varo-input-number__input').attributes('aria-label')).toBe('数量')
+    expect(number.get('.varo-input-number__plus').attributes('aria-label')).toBe('增加数量')
 
     await number.get('.varo-input-number__plus').trigger('click')
     await rate.findAll('.varo-rate__item')[2].trigger('click')

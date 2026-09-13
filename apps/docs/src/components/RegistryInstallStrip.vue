@@ -8,13 +8,15 @@ type CopyState = 'copied' | 'idle' | 'unsupported'
 
 const props = withDefaults(
   defineProps<{
-    item: `components/${string}`
+    item?: `components/${string}`
     locale?: Locale
-    targets: RegistryTarget[]
+    targets?: RegistryTarget[]
     wrapperTargets?: RegistryTarget[]
   }>(),
   {
+    item: 'components/button',
     locale: 'zh',
+    targets: () => ['h5', 'weapp'],
     wrapperTargets: undefined,
   },
 )
@@ -28,27 +30,27 @@ const copy = computed(() => props.locale === 'zh'
       copied: '已复制',
       copy: '复制命令',
       copyManual: '请手动复制命令',
-      description: '在项目根目录执行。CLI 会把目标端源码和 Registry 依赖写入项目。',
+      description: '在项目根目录执行一次即可。CLI 会把目标端源码和 Registry 依赖写入项目；组件页不再重复这条命令。',
       h5: 'H5',
       title: 'Registry 优先安装',
       weapp: '小程序',
       weappSetup: '小程序 Registry 首次接入还需要一次性配置 Wevu 7 全局样式和 Tailwind。',
       weappSetupLink: '查看接入步骤',
       wrapper: '封装包导入（次选）',
-      wrapperDescription: '需要预构建封装时，再从对应运行时包导入。',
+      wrapperDescription: '需要预构建封装时，再从对应运行时包导入。Headless 状态机使用 @varo-ui/headless。',
     }
   : {
       copied: 'Copied',
       copy: 'Copy command',
       copyManual: 'Copy the command manually',
-      description: 'Run at the project root. The CLI writes target-specific source and Registry dependencies into your project.',
+      description: 'Run this once at the project root. The CLI writes target-specific source and Registry dependencies into your project; component demos no longer repeat this block.',
       h5: 'H5',
       title: 'Registry-first install',
       weapp: 'Mini Program',
       weappSetup: 'A first-time Mini Program Registry setup must configure the Wevu 7 global styles and Tailwind.',
       weappSetupLink: 'Open the setup guide',
       wrapper: 'Wrapper-package imports (secondary)',
-      wrapperDescription: 'Use the matching runtime package only when you prefer a prebuilt wrapper.',
+      wrapperDescription: 'Use the matching runtime package only when you prefer a prebuilt wrapper. Headless state machines live in @varo-ui/headless.',
     })
 
 const installCommands = computed(() => props.targets.map(target => ({

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Locale, PrimitiveExampleName } from './primitiveExamples'
-import { computed, onBeforeUnmount, ref, useSlots } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import PrimitiveExamplePreview from './PrimitiveExamplePreview.vue'
 import {
 
@@ -8,7 +8,7 @@ import {
 } from './primitiveExamples'
 
 type Platform = 'h5' | 'weapp'
-type ViewMode = 'preview' | 'code' | 'contract'
+type ViewMode = 'preview' | 'code'
 
 const props = withDefaults(
   defineProps<{
@@ -30,7 +30,6 @@ const props = withDefaults(
 
 const example = computed(() => resolvePrimitiveExample(props.name, props.locale))
 
-const slots = useSlots()
 const platform = ref<Platform>('h5')
 const view = ref<ViewMode>('preview')
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
@@ -44,15 +43,12 @@ const copy = computed(() =>
         weapp: 'Mini-program',
         preview: 'Preview',
         code: 'Code',
-        contract: 'Runtime Contract',
         package: 'Package',
         copy: 'Copy code',
         copied: 'Copied',
         manual: 'Manual copy',
         success: 'Copied to clipboard',
         unsupported: 'Copy the code manually',
-        contractNote: 'Documentation contract only — not a mini-program runtime preview.',
-        noPreview: 'This example does not include a live H5 preview slot.',
       }
     : {
         platform: '运行时',
@@ -60,22 +56,17 @@ const copy = computed(() =>
         weapp: '小程序',
         preview: '预览',
         code: '代码',
-        contract: '运行时契约',
         package: '安装包',
         copy: '复制代码',
         copied: '已复制',
         manual: '手动复制',
         success: '已复制到剪贴板',
         unsupported: '请手动复制代码',
-        contractNote: '仅文档契约说明，不是小程序运行时预览。',
-        noPreview: '当前示例未提供 H5 实时预览插槽。',
       },
 )
 
 const activePackage = computed(
-  () =>
-    props.packageName
-    || (platform.value === 'h5' ? '@varo-ui/headless' : '@varo-ui/headless'),
+  () => props.packageName || '@varo-ui/headless',
 )
 
 const activeCode = computed(
@@ -89,18 +80,10 @@ const activeContractRows = computed(() =>
   props.contractRows?.length ? props.contractRows : example.value.contractRows,
 )
 
-const viewOptions = computed(() => {
-  if (platform.value === 'h5') {
-    return [
-      { id: 'preview' as const, label: copy.value.preview },
-      { id: 'code' as const, label: copy.value.code },
-    ]
-  }
-  return [
-    { id: 'contract' as const, label: copy.value.contract },
-    { id: 'code' as const, label: copy.value.code },
-  ]
-})
+const viewOptions = computed(() => [
+  { id: 'preview' as const, label: copy.value.preview },
+  { id: 'code' as const, label: copy.value.code },
+])
 
 const copyLabel = computed(() => {
   if (copyState.value === 'copied') {
@@ -112,8 +95,7 @@ const copyLabel = computed(() => {
   return copy.value.copy
 })
 
-const showPreview = computed(() => platform.value === 'h5' && view.value === 'preview')
-const showContract = computed(() => platform.value === 'weapp' && view.value === 'contract')
+const showPreview = computed(() => view.value === 'preview')
 const showCode = computed(() => view.value === 'code')
 
 function resetCopy() {
@@ -126,7 +108,7 @@ function resetCopy() {
 
 function setPlatform(next: Platform) {
   platform.value = next
-  view.value = next === 'h5' ? 'preview' : 'contract'
+  view.value = 'preview'
   resetCopy()
 }
 
@@ -198,16 +180,9 @@ onBeforeUnmount(() => resetCopy())
       <strong>{{ activePackage }}</strong>
     </div>
 
-    <div v-if="showPreview" class="primitive-example__preview">
-      <slot v-if="slots.preview" name="preview" />
-      <PrimitiveExamplePreview v-else :name="name" />
-    </div>
-
-    <div v-else-if="showContract" class="primitive-example__contract">
-      <p class="primitive-example__contract-note">
-        {{ copy.contractNote }}
-      </p>
-      <table>
+    <div v-if="showPreview" class="primitive-example__preview" :data-platform="platform">
+      <PrimitiveExamplePreview :name="name" :platform="platform" />
+      <table v-if="platform === 'weapp'" class="primitive-example__contract-table">
         <tbody>
           <tr v-for="row in activeContractRows" :key="row.label">
             <th>{{ row.label }}</th>
@@ -344,16 +319,10 @@ onBeforeUnmount(() => resetCopy())
 }
 
 .primitive-example__preview,
-.primitive-example__contract,
 .primitive-example__code {
   background: color-mix(in srgb, var(--pe-surface-strong) 90%, transparent);
   border: 1px solid var(--pe-border);
   border-radius: 16px;
-}
-
-.primitive-example__contract,
-.primitive-example__code {
-  overflow: hidden;
 }
 
 .primitive-example__preview {
@@ -363,38 +332,26 @@ onBeforeUnmount(() => resetCopy())
   overflow: visible;
 }
 
-.primitive-example__empty {
-  margin: 0;
-  font-size: 13px;
-  color: var(--varo-muted);
+.primitive-example__preview[data-platform='weapp'] {
+  display: grid;
+  gap: 14px;
 }
 
-.primitive-example__contract {
-  padding: 12px 14px 14px;
-}
-
-.primitive-example__contract-note {
-  margin: 0 0 10px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--varo-muted);
-}
-
-.primitive-example__contract table {
+.primitive-example__contract-table {
   width: 100%;
   font-size: 13px;
   border-collapse: collapse;
 }
 
-.primitive-example__contract th,
-.primitive-example__contract td {
-  padding: 8px 0;
+.primitive-example__contract-table th,
+.primitive-example__contract-table td {
+  padding: 10px 12px;
   vertical-align: top;
   text-align: left;
   border-top: 1px solid var(--pe-border);
 }
 
-.primitive-example__contract th {
+.primitive-example__contract-table th {
   width: 34%;
   font-weight: 650;
   color: var(--varo-muted);

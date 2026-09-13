@@ -24,7 +24,6 @@ import {
   VSkeleton as H5Skeleton,
   VSwitch as H5Switch,
   VTextarea as H5Textarea,
-  VToast as H5Toast,
   VUploader as H5Uploader,
 } from '@varo-ui/h5'
 import {
@@ -52,7 +51,6 @@ import {
   VSkeleton as WeappSkeleton,
   VSwitch as WeappSwitch,
   VTextarea as WeappTextarea,
-  VToast as WeappToast,
   VUploader as WeappUploader,
 } from '@varo-ui/weapp'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
@@ -79,7 +77,6 @@ type FormDemoKind
     | 'short-password'
     | 'switch'
     | 'textarea'
-    | 'toast'
     | 'uploader'
 type Locale = 'zh' | 'en'
 type Platform = 'h5' | 'weapp'
@@ -120,7 +117,6 @@ const VSkeleton = computed(() => activePlatform.value === 'h5' ? H5Skeleton : We
 const VShortPassword = computed(() => activePlatform.value === 'h5' ? H5ShortPassword : WeappShortPassword)
 const VSwitch = computed(() => activePlatform.value === 'h5' ? H5Switch : WeappSwitch)
 const VTextarea = computed(() => activePlatform.value === 'h5' ? H5Textarea : WeappTextarea)
-const VToast = computed(() => activePlatform.value === 'h5' ? H5Toast : WeappToast)
 const VUploader = computed(() => activePlatform.value === 'h5' ? H5Uploader : WeappUploader)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 let copyFeedbackTimer: number | undefined
@@ -142,12 +138,6 @@ const componentSearchResults = computed(() => {
   )
 })
 const textareaValue = shallowRef(props.locale === 'en' ? 'The confirmation button does not respond after selecting a date.' : '选择日期后点击确认按钮没有响应。')
-const toastItems = computed(() => [
-  { id: 'info', message: props.locale === 'en' ? 'Information updated' : '信息已更新', type: 'text' as const },
-  { id: 'warning', message: props.locale === 'en' ? 'Check required fields' : '请检查必填项', type: 'warning' as const },
-  { id: 'error', message: props.locale === 'en' ? 'Request failed' : '请求失败', type: 'danger' as const },
-  { id: 'success', message: props.locale === 'en' ? 'Saved successfully' : '保存成功', type: 'success' as const },
-])
 const formModel = reactive({
   account: '',
   budget: 40,
@@ -1203,23 +1193,6 @@ const marketingEnabled = shallowRef(true)
   </section>
 </template>
       `.trim()
-    case 'toast':
-      return `
-<script setup lang="ts">
-import { VToast } from '${packageName}'
-
-const toasts = [
-  { message: '信息提示', type: 'text' },
-  { message: '警告提示', type: 'warning' },
-  { message: '错误提示', type: 'danger' },
-  { message: '成功提示', type: 'success' }
-] as const
-<\/script>
-
-<template>
-  <VToast v-for="toast in toasts" :key="toast.type" :visible="true" :type="toast.type" :message="toast.message" :closeable="false" />
-</template>
-      `.trim()
     case 'loading':
       return `
 <script setup lang="ts">
@@ -1706,16 +1679,6 @@ function onFormArrayFailed() {
           <VLoading size="sm" tone="primary" />
           <VLoading size="lg" tone="success" />
         </div>
-        <section v-else-if="example === 'toast'" class="form-demo__toast-grid">
-          <VToast
-            v-for="toast in toastItems"
-            :key="toast.id"
-            :visible="true"
-            :type="toast.type"
-            :message="toast.message"
-            :closeable="false"
-          />
-        </section>
         <section
           v-else-if="example === 'uploader'"
           class="form-demo__control-scenario"
@@ -2990,30 +2953,6 @@ function onFormArrayFailed() {
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--varo-card-solid) 18%, transparent),
     0 14px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
-}
-
-.form-demo__preview[data-example='toast'] {
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-}
-
-.form-demo__toast-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: end;
-  justify-content: center;
-}
-
-.form-demo__toast-grid :deep(.varo-toast) {
-  position: relative;
-  inset: auto;
-  transform: none;
 }
 
 .form-demo__preview[data-example='calendar'] :deep(.varo-calendar),

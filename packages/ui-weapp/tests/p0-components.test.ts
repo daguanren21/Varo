@@ -12,6 +12,7 @@ import { VList } from '../src/list'
 import { VNoticeBar } from '../src/notice-bar'
 import { VPopoverContent, VPopoverRoot, VPopoverTrigger } from '../src/popover'
 import { VProgress } from '../src/progress'
+import { VPullRefresh } from '../src/pull-refresh'
 import { VSafeArea } from '../src/safe-area'
 import { VSkeleton } from '../src/skeleton'
 import { VSteps } from '../src/steps'
@@ -167,6 +168,21 @@ describe('P0 interaction components', () => {
 
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['left'])
     expect(wrapper.attributes('data-open')).toBe('left')
+  })
+
+  it('requests native pull refresh only while idle and enabled', async () => {
+    const wrapper = mount(VPullRefresh, {
+      props: { loading: false },
+      slots: { default: () => h('view', 'Rows') },
+    })
+
+    await wrapper.trigger('refresherrefresh')
+    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    await wrapper.setProps({ loading: true })
+    await wrapper.trigger('refresherrefresh')
+    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    expect(wrapper.attributes('aria-busy')).toBe('true')
+    wrapper.unmount()
   })
 
   it('requests initial list data once and supports retry feedback', async () => {

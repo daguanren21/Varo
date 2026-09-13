@@ -1,7 +1,5 @@
 # Checkbox 复选按钮
 
-<RegistryInstallStrip item="components/checkbox" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="checkbox" locale="zh" />

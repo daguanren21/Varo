@@ -1,7 +1,5 @@
 # Popup
 
-<RegistryInstallStrip item="components/popup" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="popup" locale="zh" />

@@ -42,6 +42,7 @@ import VCell from './components/ui/v-cell.vue'
 import VCol from './components/ui/v-col.vue'
 import VCollapseItem from './components/ui/v-collapse-item.vue'
 import VCollapse from './components/ui/v-collapse.vue'
+import VDateField from './components/ui/v-date-field.vue'
 import VDialogClose from './components/ui/v-dialog-close.vue'
 import VDialogContent from './components/ui/v-dialog-content.vue'
 import VDialogOverlay from './components/ui/v-dialog-overlay.vue'
@@ -63,12 +64,14 @@ import VPopoverContent from './components/ui/v-popover-content.vue'
 import VPopoverRoot from './components/ui/v-popover-root.vue'
 import VPopoverTrigger from './components/ui/v-popover-trigger.vue'
 import VPopup from './components/ui/v-popup.vue'
+import VPullRefresh from './components/ui/v-pull-refresh.vue'
 import VRadioGroup from './components/ui/v-radio-group.vue'
 import VRadio from './components/ui/v-radio.vue'
 import VRate from './components/ui/v-rate.vue'
 import VRow from './components/ui/v-row.vue'
 import VSafeArea from './components/ui/v-safe-area.vue'
 import VSearchbar from './components/ui/v-searchbar.vue'
+import VSignature from './components/ui/v-signature.vue'
 import VSkeleton from './components/ui/v-skeleton.vue'
 import VSpace from './components/ui/v-space.vue'
 import VSteps from './components/ui/v-steps.vue'
@@ -79,7 +82,9 @@ import VTabbarItem from './components/ui/v-tabbar-item.vue'
 import VTabbar from './components/ui/v-tabbar.vue'
 import VTabs from './components/ui/v-tabs.vue'
 import VTextarea from './components/ui/v-textarea.vue'
+import VToastRegion from './components/ui/v-toast-region.vue'
 import VToast from './components/ui/v-toast.vue'
+import VWatermark from './components/ui/v-watermark.vue'
 
 export const extendedRegistryComponentCount = [
   AgentActivity,
@@ -127,6 +132,7 @@ export const extendedRegistryComponentCount = [
   VDialogContent,
   VDialogOverlay,
   VDialogRoot,
+  VDateField,
   VDialogTrigger,
   VDivider,
   VForm,
@@ -147,10 +153,13 @@ export const extendedRegistryComponentCount = [
   VPopoverRoot,
   VPopoverTrigger,
   VPopup,
+  VPullRefresh,
   VRadio,
   VRadioGroup,
   VRate,
   VSafeArea,
+  VSignature,
+  VWatermark,
   VSearchbar,
   VSkeleton,
   VSpace,
@@ -163,5 +172,6 @@ export const extendedRegistryComponentCount = [
   VTabs,
   VTextarea,
   VToast,
+  VToastRegion,
   AgentChat,
 ].length

@@ -8,12 +8,16 @@ import {
   NumberFieldInput,
   NumberFieldRoot,
 } from '../../lib/varo-primitives'
+import { VIcon } from './icon'
 import '../../styles/varo.css'
 
 export const VInputNumber = defineComponent({
   name: 'VInputNumber',
   props: {
+    decreaseAriaLabel: { type: String, default: 'Decrease value' },
     disabled: Boolean,
+    increaseAriaLabel: { type: String, default: 'Increase value' },
+    inputAriaLabel: { type: String, default: 'Numeric value' },
     max: { type: Number, default: Number.POSITIVE_INFINITY },
     min: { type: Number, default: Number.NEGATIVE_INFINITY },
     precision: { type: Number as PropType<number | undefined>, default: undefined },
@@ -45,13 +49,14 @@ export const VInputNumber = defineComponent({
         },
         {
           default: () => [
-            h(NumberFieldDecrement, { class: 'varo-input-number__minus' }, () => '-'),
+            h(NumberFieldDecrement, { 'aria-label': props.decreaseAriaLabel, 'class': 'varo-input-number__minus' }, () => h(VIcon, { name: 'minus', size: 14 })),
             h(NumberFieldInput, {
-              class: 'varo-input-number__input',
-              onBlur: (event: FocusEvent) => emit('blur', event),
-              onFocus: (event: FocusEvent) => emit('focus', event),
+              'class': 'varo-input-number__input',
+              'aria-label': props.inputAriaLabel,
+              'onBlur': (event: FocusEvent) => emit('blur', event),
+              'onFocus': (event: FocusEvent) => emit('focus', event),
             }),
-            h(NumberFieldIncrement, { class: 'varo-input-number__plus' }, () => '+'),
+            h(NumberFieldIncrement, { 'aria-label': props.increaseAriaLabel, 'class': 'varo-input-number__plus' }, () => h(VIcon, { name: 'plus', size: 14 })),
           ],
         },
       )

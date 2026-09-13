@@ -21,17 +21,21 @@ export default defineConfig({
     ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0b1016' }],
   ],
   vite: {
+    server: { host: '127.0.0.1', port: 5191, strictPort: true },
     plugins: [tailwindcss()],
     resolve: {
       alias: {
         '@varo-ui/ai': workspacePath('../../../packages/agent-core/src/index.ts'),
+        '@varo/hooks': workspacePath('../../../packages/hooks/src/index.ts'),
         '@varo/shared': workspacePath('../../../packages/shared/src/index.ts'),
         '@varo/utils': workspacePath('../../../packages/utils/src/index.ts'),
         '@varo-ui/theme': workspacePath('../../../packages/theme/src/index.ts'),
         '@varo-ui/headless': workspacePath('../../../packages/primitives-core/src/index.ts'),
         '@varo/primitives-h5': workspacePath('../../../packages/primitives-h5/src/index.ts'),
+        '@varo/primitives-weapp': workspacePath('../../../packages/primitives-weapp/src/index.ts'),
         '@varo-ui/h5/source/style.css': workspacePath('../../../packages/ui-h5/src/style.css'),
         '@varo-ui/h5': workspacePath('../../../packages/ui-h5/src/index.ts'),
+        '@varo-ui/weapp/primitives': workspacePath('../../../packages/ui-weapp/src/primitives.ts'),
         '@varo-ui/weapp': workspacePath('../../../packages/ui-weapp/src/index.ts'),
       },
     },

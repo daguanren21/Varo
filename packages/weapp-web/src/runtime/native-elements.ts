@@ -18,6 +18,7 @@ type NativeTag
     | 'input'
     | 'textarea'
     | 'label'
+    | 'canvas'
     | 'image'
     | 'scroll-view'
     | 'rich-text'
@@ -42,14 +43,19 @@ interface TextControlState extends ManagedState {
   composing: boolean
 }
 
+interface HoverState extends ManagedState {
+  component: NativeComponent
+  hoverActive: boolean
+  hoverStartTimer: number | undefined
+  hoverStayTimer: number | undefined
+  hoverTokens: string[]
+  isDisabled: () => boolean
+}
+
 interface ButtonState extends ManagedState {
   component: NativeComponent
   control: HTMLButtonElement
   host: HTMLElement
-  hoverActive: boolean
-  hoverTokens: string[]
-  hoverStartTimer: number | undefined
-  hoverStayTimer: number | undefined
 }
 
 interface LabelState extends ManagedState {
@@ -64,6 +70,15 @@ interface ImageState extends ManagedState {
   source: string | undefined
 }
 
+interface CanvasState extends ManagedState {
+  activePointerId: number | undefined
+  canvasId: string
+  component: NativeComponent
+  control: HTMLCanvasElement
+  host: HTMLElement
+  resizeObserver: ResizeObserver | undefined
+}
+
 interface ScrollState extends ManagedState {
   component: NativeComponent
   host: HTMLElement
@@ -71,6 +86,9 @@ interface ScrollState extends ManagedState {
   lastTop: number
   atLower: boolean
   atUpper: boolean
+  refreshDistance: number
+  refreshPointerId: number | undefined
+  refreshStartY: number | undefined
 }
 
 interface RichTextState extends ManagedState {
@@ -117,7 +135,11 @@ type RichTextTag = 'br' | 'code' | 'del' | 'em' | 'ins' | 'mark' | 'span' | 'str
 
 const textControlStates = new WeakMap<NativeComponent, TextControlState>()
 const buttonStates = new WeakMap<NativeComponent, ButtonState>()
+const hoverStates = new WeakMap<NativeComponent, HoverState>()
+const viewTransitionCleanups = new WeakMap<NativeComponent, () => void>()
 const labelStates = new WeakMap<NativeComponent, LabelState>()
+const canvasStates = new WeakMap<NativeComponent, CanvasState>()
+const canvasStatesById = new Map<string, Set<CanvasState>>()
 const imageStates = new WeakMap<NativeComponent, ImageState>()
 const scrollStates = new WeakMap<NativeComponent, ScrollState>()
 const richTextStates = new WeakMap<NativeComponent, RichTextState>()
@@ -127,27 +149,32 @@ const robotChatSessions = new Map<string, RobotChatState>()
 let activeRobotChat: RobotChatElementState | undefined
 
 const semanticProperties = {
-  ariaBusy: { type: String, value: '' },
-  ariaChecked: { type: String, value: '' },
-  ariaControls: { type: String, value: '' },
-  ariaDescribedby: { type: String, value: '' },
-  ariaExpanded: { type: String, value: '' },
-  ariaHidden: { type: String, value: '' },
-  ariaInvalid: { type: String, value: '' },
-  ariaLabel: { type: String, value: '' },
-  ariaLabelledby: { type: String, value: '' },
-  ariaLive: { type: String, value: '' },
-  ariaPressed: { type: String, value: '' },
+  ariaAtomic: { type: null, value: '' },
+  ariaBusy: { type: null, value: '' },
+  ariaChecked: { type: null, value: '' },
+  ariaControls: { type: null, value: '' },
+  ariaDisabled: { type: null, value: '' },
+  ariaDescribedby: { type: null, value: '' },
+  ariaExpanded: { type: null, value: '' },
+  ariaHidden: { type: null, value: '' },
+  ariaInvalid: { type: null, value: '' },
+  ariaLabel: { type: null, value: '' },
+  ariaLabelledby: { type: null, value: '' },
+  ariaLive: { type: null, value: '' },
+  ariaPressed: { type: null, value: '' },
+  ariaReadonly: { type: null, value: '' },
   hidden: { type: Boolean, value: false },
-  role: { type: String, value: '' },
-  tabindex: { type: String, value: '' },
-  title: { type: String, value: '' },
+  role: { type: null, value: '' },
+  tabindex: { type: null, value: '' },
+  title: { type: null, value: '' },
 }
 
 const semanticAttributes = [
+  ['ariaAtomic', 'aria-atomic'],
   ['ariaBusy', 'aria-busy'],
   ['ariaChecked', 'aria-checked'],
   ['ariaControls', 'aria-controls'],
+  ['ariaDisabled', 'aria-disabled'],
   ['ariaDescribedby', 'aria-describedby'],
   ['ariaExpanded', 'aria-expanded'],
   ['ariaHidden', 'aria-hidden'],
@@ -156,10 +183,17 @@ const semanticAttributes = [
   ['ariaLabelledby', 'aria-labelledby'],
   ['ariaLive', 'aria-live'],
   ['ariaPressed', 'aria-pressed'],
+  ['ariaReadonly', 'aria-readonly'],
   ['role', 'role'],
   ['tabindex', 'tabindex'],
   ['title', 'title'],
 ] as const
+
+const hoverProperties = {
+  hoverClass: { type: null, value: '' },
+  hoverStartTime: { type: null, value: 20 },
+  hoverStayTime: { type: null, value: 70 },
+}
 
 const inputProperties = {
   ...semanticProperties,
@@ -169,39 +203,39 @@ const inputProperties = {
   autoFocus: { type: Boolean, value: false },
   autoHeight: { type: Boolean, value: false },
   confirmHold: { type: Boolean, value: false },
-  confirmType: { type: String, value: '' },
+  confirmType: { type: null, value: '' },
   controlled: { type: Boolean, value: false },
-  cursor: { type: Number, value: -1 },
-  cursorSpacing: { type: Number, value: 0 },
+  cursor: { type: null, value: -1 },
+  cursorSpacing: { type: null, value: 0 },
   disableDefaultPadding: { type: Boolean, value: false },
   disabled: { type: Boolean, value: false },
   fixed: { type: Boolean, value: false },
   focus: { type: Boolean, value: false },
-  form: { type: String, value: '' },
+  form: { type: null, value: '' },
   holdKeyboard: { type: Boolean, value: false },
   ignoreCompositionEvent: { type: Boolean, value: true },
-  inputmode: { type: String, value: '' },
-  maxlength: { type: Number, value: -1 },
-  name: { type: String, value: '' },
+  inputmode: { type: null, value: '' },
+  maxlength: { type: null, value: -1 },
+  name: { type: null, value: '' },
   nickNameReview: { type: Boolean, value: false },
   password: { type: Boolean, value: false },
-  placeholder: { type: String, value: '' },
-  placeholderClass: { type: String, value: '' },
-  placeholderStyle: { type: String, value: '' },
+  placeholder: { type: null, value: '' },
+  placeholderClass: { type: null, value: '' },
+  placeholderStyle: { type: null, value: '' },
   randomNumber: { type: Boolean, value: false },
   readOnly: { type: Boolean, value: false },
   readonly: { type: Boolean, value: false },
-  safePasswordCertPath: { type: String, value: '' },
-  safePasswordCustomHash: { type: String, value: '' },
-  safePasswordLength: { type: Number, value: 0 },
-  safePasswordNonce: { type: String, value: '' },
-  safePasswordSalt: { type: String, value: '' },
-  safePasswordTimeStamp: { type: Number, value: 0 },
-  selectionEnd: { type: Number, value: -1 },
-  selectionStart: { type: Number, value: -1 },
+  safePasswordCertPath: { type: null, value: '' },
+  safePasswordCustomHash: { type: null, value: '' },
+  safePasswordLength: { type: null, value: 0 },
+  safePasswordNonce: { type: null, value: '' },
+  safePasswordSalt: { type: null, value: '' },
+  safePasswordTimeStamp: { type: null, value: 0 },
+  selectionEnd: { type: null, value: -1 },
+  selectionStart: { type: null, value: -1 },
   showConfirmBar: { type: Boolean, value: true },
-  type: { type: String, value: 'text' },
-  value: { type: String, value: '' },
+  type: { type: null, value: 'text' },
+  value: { type: null, value: '' },
 }
 
 const richTextTags: Record<RichTextTag, true> = {
@@ -248,12 +282,21 @@ function property(component: NativeComponent, name: string): unknown {
 
 function stringProperty(component: NativeComponent, name: string): string {
   const value = property(component, name)
-  return typeof value === 'string' ? value : ''
+  if (typeof value === 'string') { return value }
+  if (typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))) {
+    return String(value)
+  }
+  return ''
 }
 
 function numberProperty(component: NativeComponent, name: string, fallback = 0): number {
   const value = property(component, name)
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
+  if (typeof value === 'number') { return Number.isFinite(value) ? value : fallback }
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value)
+    if (Number.isFinite(parsed)) { return parsed }
+  }
+  return fallback
 }
 
 function booleanProperty(component: NativeComponent, name: string): boolean {
@@ -343,6 +386,13 @@ function imageElement(component: NativeComponent, options: NativeElementRegistra
   const backend = internalBackendElement(component)
   if (typeof HTMLImageElement !== 'undefined' && backend instanceof HTMLImageElement) { return backend }
   reportBackendError(options, 'image', 'image')
+  return undefined
+}
+
+function canvasElement(component: NativeComponent, options: NativeElementRegistrationOptions) {
+  const backend = internalBackendElement(component)
+  if (typeof HTMLCanvasElement !== 'undefined' && backend instanceof HTMLCanvasElement) { return backend }
+  reportBackendError(options, 'canvas', 'canvas')
   return undefined
 }
 
@@ -635,6 +685,7 @@ function syncTextControlConfig(
   if (!isTextControlStateCurrent(state)) { return }
   const { component, control, host } = state
   syncSemanticAttributes(component, control)
+  host.hidden = booleanProperty(component, 'hidden')
   setOptionalAttribute(control, 'name', stringProperty(component, 'name'))
   setOptionalAttribute(control, 'form', stringProperty(component, 'form'))
   control.placeholder = stringProperty(component, 'placeholder')
@@ -823,23 +874,23 @@ function isButtonStateCurrent(state: ButtonState) {
   return buttonStates.get(state.component) === state
 }
 
-function clearButtonTimer(state: ButtonState, timer: 'hoverStartTimer' | 'hoverStayTimer') {
+function clearHoverTimer(state: HoverState, timer: 'hoverStartTimer' | 'hoverStayTimer') {
   const handle = state[timer]
   if (handle !== undefined) { window.clearTimeout(handle) }
   state[timer] = undefined
 }
 
-function setButtonHover(state: ButtonState, active: boolean) {
-  if (!isButtonStateCurrent(state) || state.hoverActive === active) { return }
+function setHover(state: HoverState, active: boolean) {
+  if (hoverStates.get(state.component) !== state || state.hoverActive === active) { return }
   state.hoverActive = active
   for (const token of state.hoverTokens) {
     state.component.classList?.toggle(token, active, STYLE_SEGMENT_TEMP_EXTRA)
   }
 }
 
-function scheduleButtonHover(state: ButtonState, active: boolean) {
-  clearButtonTimer(state, 'hoverStartTimer')
-  clearButtonTimer(state, 'hoverStayTimer')
+function scheduleHover(state: HoverState, active: boolean) {
+  clearHoverTimer(state, 'hoverStartTimer')
+  clearHoverTimer(state, 'hoverStayTimer')
   const delay = Math.max(0, numberProperty(
     state.component,
     active ? 'hoverStartTime' : 'hoverStayTime',
@@ -848,8 +899,61 @@ function scheduleButtonHover(state: ButtonState, active: boolean) {
   const timer = active ? 'hoverStartTimer' : 'hoverStayTimer'
   state[timer] = window.setTimeout(() => {
     state[timer] = undefined
-    if (isButtonStateCurrent(state)) { setButtonHover(state, active) }
+    if (hoverStates.get(state.component) === state) { setHover(state, active) }
   }, delay)
+}
+
+function hoverTokens(component: NativeComponent) {
+  return stringProperty(component, 'hoverClass')
+    .split(/\s+/u)
+    .filter(token => token && token !== 'none')
+}
+
+function syncHover(component: NativeComponent) {
+  const state = hoverStates.get(component)
+  if (!state) { return }
+  const nextHoverTokens = hoverTokens(component)
+  if (nextHoverTokens.join('\0') !== state.hoverTokens.join('\0')) {
+    setHover(state, false)
+    state.hoverTokens = nextHoverTokens
+  }
+  if (state.isDisabled()) {
+    clearHoverTimer(state, 'hoverStartTimer')
+    clearHoverTimer(state, 'hoverStayTimer')
+    setHover(state, false)
+  }
+}
+
+function detachHover(component: NativeComponent) {
+  const state = hoverStates.get(component)
+  if (!state) { return }
+  clearHoverTimer(state, 'hoverStartTimer')
+  clearHoverTimer(state, 'hoverStayTimer')
+  setHover(state, false)
+  hoverStates.delete(component)
+  cleanState(state)
+}
+
+function attachHover(component: NativeComponent, target: HTMLElement, isDisabled: () => boolean) {
+  detachHover(component)
+  const state: HoverState = {
+    cleanups: [],
+    component,
+    hoverActive: false,
+    hoverStartTimer: undefined,
+    hoverStayTimer: undefined,
+    hoverTokens: [],
+    isDisabled,
+    reported: new Set(),
+  }
+  hoverStates.set(component, state)
+  addDomListener(state, target, 'pointerdown', () => {
+    if (!state.isDisabled()) { scheduleHover(state, true) }
+  }, true)
+  addDomListener(state, target, 'pointerup', () => scheduleHover(state, false), true)
+  addDomListener(state, target, 'pointercancel', () => scheduleHover(state, false), true)
+  addDomListener(state, target, 'pointerleave', () => scheduleHover(state, false), true)
+  syncHover(component)
 }
 
 function syncButton(state: ButtonState, options: NativeElementRegistrationOptions) {
@@ -874,26 +978,13 @@ function syncButton(state: ButtonState, options: NativeElementRegistrationOption
     )
   }
 
-  const nextHoverTokens = stringProperty(component, 'hoverClass')
-    .split(/\s+/u)
-    .filter(token => token && token !== 'none')
-  if (nextHoverTokens.join('\0') !== state.hoverTokens.join('\0')) {
-    setButtonHover(state, false)
-    state.hoverTokens = nextHoverTokens
-  }
-  if (control.disabled) {
-    clearButtonTimer(state, 'hoverStartTimer')
-    clearButtonTimer(state, 'hoverStayTimer')
-    setButtonHover(state, false)
-  }
+  syncHover(component)
 }
 
 function detachButton(component: NativeComponent) {
   const state = buttonStates.get(component)
   if (!state) { return }
-  clearButtonTimer(state, 'hoverStartTimer')
-  clearButtonTimer(state, 'hoverStayTimer')
-  setButtonHover(state, false)
+  detachHover(component)
   buttonStates.delete(component)
   cleanState(state)
 }
@@ -909,25 +1000,16 @@ function attachButton(component: NativeComponent, options: NativeElementRegistra
     component,
     control,
     host,
-    hoverActive: false,
-    hoverStartTimer: undefined,
-    hoverStayTimer: undefined,
-    hoverTokens: [],
     reported: new Set(),
   }
   buttonStates.set(component, state)
+  attachHover(component, control, () => control.disabled)
 
   addDomListener(state, control, 'click', (event) => {
     if (!isButtonStateCurrent(state) || !booleanProperty(component, 'disabled')) { return }
     event.preventDefault()
     event.stopImmediatePropagation()
   }, true)
-  addDomListener(state, control, 'pointerdown', () => {
-    if (isButtonStateCurrent(state) && !control.disabled) { scheduleButtonHover(state, true) }
-  }, true)
-  addDomListener(state, control, 'pointerup', () => scheduleButtonHover(state, false), true)
-  addDomListener(state, control, 'pointercancel', () => scheduleButtonHover(state, false), true)
-  addDomListener(state, control, 'pointerleave', () => scheduleButtonHover(state, false), true)
 
   syncButton(state, options)
 }
@@ -1068,6 +1150,210 @@ function detachImage(component: NativeComponent) {
   cleanState(state)
 }
 
+function addCanvasRegistration(state: CanvasState, canvasId: string) {
+  const states = canvasStatesById.get(canvasId) ?? new Set<CanvasState>()
+  states.add(state)
+  canvasStatesById.set(canvasId, states)
+}
+
+function removeCanvasRegistration(state: CanvasState, canvasId: string) {
+  const states = canvasStatesById.get(canvasId)
+  if (!states) { return }
+  states.delete(state)
+  if (states.size === 0) {
+    canvasStatesById.delete(canvasId)
+  }
+}
+
+function canvasOwnerMatches(state: CanvasState, owner: unknown) {
+  if (owner === null || (typeof owner !== 'object' && typeof owner !== 'function')) {
+    return false
+  }
+  const hostNode = state.component.ownerShadowRoot?.getHostNode()
+  const methodCaller = (hostNode as { getMethodCaller?: () => unknown } | undefined)?.getMethodCaller?.()
+  const ownerRecord = owner as Record<string, unknown>
+  return owner === hostNode || owner === methodCaller || ownerRecord._$ === hostNode
+}
+
+function resolveCanvasState(canvasId: string, owner?: unknown): CanvasState | undefined {
+  const states = canvasStatesById.get(canvasId)
+  if (!states || states.size === 0) { return undefined }
+  const matches = owner === undefined
+    ? [...states]
+    : [...states].filter(state => canvasOwnerMatches(state, owner))
+  if (matches.length > 1) {
+    throw new Error(`Web 兼容预览中的 canvas-id "${canvasId}" 在当前 owner 内不唯一`)
+  }
+  return matches[0]
+}
+
+function syncCanvas(state: CanvasState) {
+  const { component, control, host } = state
+  const nextCanvasId = stringProperty(component, 'canvasId')
+  if (state.canvasId && state.canvasId !== nextCanvasId) {
+    removeCanvasRegistration(state, state.canvasId)
+  }
+  state.canvasId = nextCanvasId
+  if (nextCanvasId) {
+    addCanvasRegistration(state, nextCanvasId)
+  }
+  syncSemanticAttributes(component, control)
+  const width = Math.max(1, Math.round(host.clientWidth || 300))
+  const height = Math.max(1, Math.round(host.clientHeight || 150))
+  const ratio = Math.max(1, window.devicePixelRatio || 1)
+  const pixelWidth = Math.round(width * ratio)
+  const pixelHeight = Math.round(height * ratio)
+  if (control.width !== pixelWidth || control.height !== pixelHeight) {
+    control.width = pixelWidth
+    control.height = pixelHeight
+    control.getContext('2d')?.setTransform(ratio, 0, 0, ratio, 0, 0)
+  }
+}
+
+function detachCanvas(component: NativeComponent) {
+  const state = canvasStates.get(component)
+  if (!state) { return }
+  canvasStates.delete(component)
+  if (state.canvasId) {
+    removeCanvasRegistration(state, state.canvasId)
+  }
+  state.resizeObserver?.disconnect()
+  cleanState(state)
+}
+
+function canvasTouch(state: CanvasState, event: PointerEvent) {
+  const rect = state.host.getBoundingClientRect()
+  return {
+    clientX: event.clientX,
+    clientY: event.clientY,
+    identifier: event.pointerId,
+    x: Math.min(rect.width, Math.max(0, event.clientX - rect.left)),
+    y: Math.min(rect.height, Math.max(0, event.clientY - rect.top)),
+  }
+}
+
+function setCanvasTouches(
+  event: PointerEvent,
+  touches: ReturnType<typeof canvasTouch>[],
+  changedTouches: ReturnType<typeof canvasTouch>[],
+) {
+  Object.defineProperties(event, {
+    changedTouches: { configurable: true, value: changedTouches },
+    touches: { configurable: true, value: touches },
+  })
+}
+
+function releaseCanvasPointer(state: CanvasState, event: PointerEvent, type: 'touchcancel' | 'touchend') {
+  if (state.activePointerId !== event.pointerId) { return }
+  const point = canvasTouch(state, event)
+  state.activePointerId = undefined
+  setCanvasTouches(event, [], [point])
+  try {
+    state.host.releasePointerCapture?.(event.pointerId)
+  }
+  catch {
+    // Synthetic and interrupted pointers may not own capture.
+  }
+  state.component.triggerEvent(type, { changedTouches: [point], touches: [] }, {
+    bubbles: false,
+    composed: false,
+    originalEvent: event,
+  })
+}
+
+function attachCanvas(component: NativeComponent, options: NativeElementRegistrationOptions) {
+  detachCanvas(component)
+  const host = hostElement(component, 'canvas', options)
+  const control = canvasElement(component, options)
+  if (!host || !control) { return }
+  const state: CanvasState = {
+    activePointerId: undefined,
+    canvasId: '',
+    cleanups: [],
+    component,
+    control,
+    host,
+    reported: new Set(),
+    resizeObserver: undefined,
+  }
+  canvasStates.set(component, state)
+  if (typeof ResizeObserver !== 'undefined') {
+    state.resizeObserver = new ResizeObserver(() => syncCanvas(state))
+    state.resizeObserver.observe(host)
+  }
+  addDomListener(state, host, 'pointerdown', (nativeEvent) => {
+    const event = nativeEvent as PointerEvent
+    if (state.activePointerId !== undefined) { return }
+    state.activePointerId = event.pointerId
+    const point = canvasTouch(state, event)
+    setCanvasTouches(event, [point], [point])
+    try {
+      host.setPointerCapture?.(event.pointerId)
+    }
+    catch {
+      // Synthetic pointer events do not own browser capture.
+    }
+    component.triggerEvent('touchstart', { changedTouches: [point], touches: [point] }, {
+      bubbles: false,
+      composed: false,
+      originalEvent: event,
+    })
+  }, true)
+  addDomListener(state, host, 'pointermove', (nativeEvent) => {
+    const event = nativeEvent as PointerEvent
+    if (state.activePointerId !== event.pointerId) { return }
+    if (booleanProperty(component, 'disableScroll')) { event.preventDefault() }
+    const point = canvasTouch(state, event)
+    setCanvasTouches(event, [point], [point])
+    component.triggerEvent('touchmove', { changedTouches: [point], touches: [point] }, {
+      bubbles: false,
+      composed: false,
+      originalEvent: event,
+    })
+  }, true)
+  addDomListener(state, host, 'pointerup', event => releaseCanvasPointer(state, event as PointerEvent, 'touchend'), true)
+  addDomListener(state, host, 'pointercancel', event => releaseCanvasPointer(state, event as PointerEvent, 'touchcancel'), true)
+  syncCanvas(state)
+}
+
+export function findPreviewSelectorElement(selector: string, owner?: unknown): HTMLElement | null {
+  const canvasId = /^#([\w-]+)$/.exec(selector)?.[1]
+  if (canvasId) {
+    const canvasState = resolveCanvasState(canvasId, owner)
+    if (canvasState) {
+      return canvasState.host
+    }
+  }
+  return document.querySelector<HTMLElement>(selector)
+}
+
+export function createPreviewCanvasContext(canvasId: string, owner?: unknown) {
+  const context = resolveCanvasState(canvasId, owner)?.control.getContext('2d')
+  if (!context) {
+    throw new Error(`Web 兼容预览找不到 canvas: ${canvasId}`)
+  }
+  const complete = (reserveOrCallback?: boolean | (() => void), callback?: () => void) => {
+    const handler = typeof reserveOrCallback === 'function' ? reserveOrCallback : callback
+    handler?.()
+  }
+  return {
+    arc: (x: number, y: number, radius: number, startAngle: number, endAngle: number) => context.arc(x, y, radius, startAngle, endAngle),
+    beginPath: () => context.beginPath(),
+    clearRect: (x: number, y: number, width: number, height: number) => context.clearRect(x, y, width, height),
+    draw: complete,
+    fill: () => context.fill(),
+    fillRect: (x: number, y: number, width: number, height: number) => context.fillRect(x, y, width, height),
+    lineTo: (x: number, y: number) => context.lineTo(x, y),
+    moveTo: (x: number, y: number) => context.moveTo(x, y),
+    setFillStyle: (value: string) => { context.fillStyle = value },
+    setLineCap: (value: CanvasLineCap) => { context.lineCap = value },
+    setLineJoin: (value: CanvasLineJoin) => { context.lineJoin = value },
+    setLineWidth: (value: number) => { context.lineWidth = value },
+    setStrokeStyle: (value: string) => { context.strokeStyle = value },
+    stroke: () => context.stroke(),
+  }
+}
+
 function attachImage(component: NativeComponent, options: NativeElementRegistrationOptions) {
   detachImage(component)
   const host = hostElement(component, 'image', options)
@@ -1108,9 +1394,20 @@ function isScrollStateCurrent(state: ScrollState) {
 function syncScrollConfig(state: ScrollState) {
   if (!isScrollStateCurrent(state)) { return }
   const { component, host } = state
+  const refresherEnabled = booleanProperty(component, 'refresherEnabled')
+  const refresherTriggered = booleanProperty(component, 'refresherTriggered')
   host.dataset.nativeScrollX = String(booleanProperty(component, 'scrollX'))
   host.dataset.nativeScrollY = String(booleanProperty(component, 'scrollY'))
   host.dataset.nativeScrollbar = booleanProperty(component, 'showScrollbar') ? 'visible' : 'hidden'
+  host.dataset.nativeRefresherEnabled = String(refresherEnabled)
+  host.dataset.nativeRefresherTriggered = String(refresherTriggered)
+  if (refresherTriggered) {
+    host.dataset.nativeRefresherState = 'loading'
+  }
+  else if (state.refreshPointerId === undefined) {
+    host.dataset.nativeRefresherState = 'idle'
+    host.dataset.nativeRefresherDistance = '0'
+  }
 }
 
 function syncScrollPosition(state: ScrollState) {
@@ -1121,6 +1418,46 @@ function syncScrollPosition(state: ScrollState) {
     left: numberProperty(state.component, 'scrollLeft'),
     top: numberProperty(state.component, 'scrollTop'),
   })
+}
+
+function resetScrollRefresh(state: ScrollState) {
+  state.refreshDistance = 0
+  state.refreshPointerId = undefined
+  state.refreshStartY = undefined
+  state.host.dataset.nativeRefresherDistance = '0'
+  state.host.dataset.nativeRefresherState = booleanProperty(state.component, 'refresherTriggered') ? 'loading' : 'idle'
+}
+
+function releaseScrollPointerCapture(state: ScrollState, pointerId: number) {
+  try {
+    state.host.releasePointerCapture?.(pointerId)
+  }
+  catch {
+    // The pointer may already have been released by the browser.
+  }
+}
+
+function cancelScrollRefresh(state: ScrollState, event: Event) {
+  const pointer = event as PointerEvent
+  if (state.refreshPointerId === undefined || state.refreshPointerId !== pointer.pointerId) { return }
+  const pointerId = state.refreshPointerId
+  resetScrollRefresh(state)
+  releaseScrollPointerCapture(state, pointerId)
+}
+
+function releaseScrollRefresh(state: ScrollState, event: Event) {
+  const pointer = event as PointerEvent
+  if (state.refreshPointerId === undefined || state.refreshPointerId !== pointer.pointerId) { return }
+  const shouldRefresh = booleanProperty(state.component, 'refresherEnabled')
+    && !booleanProperty(state.component, 'refresherTriggered')
+    && state.host.scrollTop <= 0
+    && state.refreshDistance >= numberProperty(state.component, 'refresherThreshold', 45)
+  const pointerId = state.refreshPointerId
+  resetScrollRefresh(state)
+  releaseScrollPointerCapture(state, pointerId)
+  if (shouldRefresh) {
+    state.component.triggerEvent('refresherrefresh', {}, { bubbles: false, composed: false, originalEvent: event })
+  }
 }
 
 function detachScroll(component: NativeComponent) {
@@ -1142,6 +1479,9 @@ function attachScroll(component: NativeComponent, options: NativeElementRegistra
     host,
     lastLeft: host.scrollLeft,
     lastTop: host.scrollTop,
+    refreshDistance: 0,
+    refreshPointerId: undefined,
+    refreshStartY: undefined,
     reported: new Set(),
   }
   scrollStates.set(component, state)
@@ -1177,6 +1517,55 @@ function attachScroll(component: NativeComponent, options: NativeElementRegistra
     state.atUpper = upper
     state.atLower = lower
   }, true)
+  addDomListener(state, host, 'pointerdown', (event) => {
+    const pointer = event as PointerEvent
+    if (
+      state.refreshPointerId !== undefined
+      || !booleanProperty(component, 'refresherEnabled')
+      || booleanProperty(component, 'refresherTriggered')
+      || host.scrollTop > 0
+      || pointer.button > 0
+    ) {
+      return
+    }
+    state.refreshPointerId = pointer.pointerId
+    state.refreshStartY = pointer.clientY
+    state.refreshDistance = 0
+    host.dataset.nativeRefresherDistance = '0'
+    host.dataset.nativeRefresherState = 'pulling'
+    try {
+      host.setPointerCapture?.(pointer.pointerId)
+    }
+    catch {
+      // Synthetic preview events do not own an active browser pointer.
+    }
+  }, true)
+  addDomListener(state, host, 'pointermove', (event) => {
+    const pointer = event as PointerEvent
+    if (state.refreshPointerId !== pointer.pointerId || state.refreshStartY === undefined) { return }
+    if (
+      !booleanProperty(component, 'refresherEnabled')
+      || booleanProperty(component, 'refresherTriggered')
+      || host.scrollTop > 0
+    ) {
+      cancelScrollRefresh(state, event)
+      return
+    }
+    const delta = pointer.clientY - state.refreshStartY
+    if (delta <= 0) {
+      state.refreshDistance = 0
+      host.dataset.nativeRefresherDistance = '0'
+      host.dataset.nativeRefresherState = 'pulling'
+      return
+    }
+    event.preventDefault()
+    const threshold = numberProperty(component, 'refresherThreshold', 45)
+    state.refreshDistance = Math.min(delta * 0.5, threshold * 1.5)
+    host.dataset.nativeRefresherDistance = String(Math.round(state.refreshDistance))
+    host.dataset.nativeRefresherState = state.refreshDistance >= threshold ? 'ready' : 'pulling'
+  }, true)
+  addDomListener(state, host, 'pointerup', event => releaseScrollRefresh(state, event), true)
+  addDomListener(state, host, 'pointercancel', event => cancelScrollRefresh(state, event), true)
   syncScrollConfig(state)
   syncScrollPosition(state)
 }
@@ -1575,6 +1964,70 @@ function registerSlotDefinition(
     .general()
 }
 
+function detachViewTransitionEvents(component: NativeComponent) {
+  viewTransitionCleanups.get(component)?.()
+  viewTransitionCleanups.delete(component)
+}
+
+function syncViewTransitionEvents(component: NativeComponent, host: HTMLElement) {
+  if (viewTransitionCleanups.has(component) || !host.hasAttribute('data-wi-transitionend')) { return }
+  const listener = (event: Event) => {
+    if (event.target !== host) { return }
+    const transitionEvent = event as TransitionEvent
+    component.triggerEvent('transitionend', {
+      elapsedTime: transitionEvent.elapsedTime,
+      propertyName: transitionEvent.propertyName,
+      pseudoElement: transitionEvent.pseudoElement,
+    }, { bubbles: false, composed: false, originalEvent: event })
+  }
+  host.addEventListener('transitionend', listener)
+  viewTransitionCleanups.set(component, () => host.removeEventListener('transitionend', listener))
+}
+
+function syncView(component: NativeComponent, options: NativeElementRegistrationOptions) {
+  const host = hostElement(component, 'view', options)
+  if (!host) { return }
+  syncSemanticAttributes(component, host)
+  syncViewTransitionEvents(component, host)
+  if (hoverTokens(component).length > 0) {
+    if (hoverStates.has(component)) { syncHover(component) }
+    else { attachHover(component, host, () => false) }
+  }
+  else {
+    detachHover(component)
+  }
+}
+
+function registerViewDefinition(
+  space: glassEasel.ComponentSpace,
+  template: glassEasel.template.ComponentTemplate,
+  options: NativeElementRegistrationOptions,
+) {
+  return space
+    .define('view')
+    .options(componentOptions())
+    .definition({
+      properties: {
+        ...semanticProperties,
+        ...hoverProperties,
+      },
+      attached() {
+        syncView(this.general(), options)
+      },
+      detached() {
+        const component = this.general()
+        detachHover(component)
+        detachViewTransitionEvents(component)
+      },
+    })
+    .observer('**', function () {
+      syncView(this.general(), options)
+    })
+    .template(template)
+    .registerComponent()
+    .general()
+}
+
 function registerButtonDefinition(
   space: glassEasel.ComponentSpace,
   template: glassEasel.template.ComponentTemplate,
@@ -1587,13 +2040,11 @@ function registerButtonDefinition(
       properties: {
         ...semanticProperties,
         disabled: { type: Boolean, value: false },
-        form: { type: String, value: '' },
-        formType: { type: String, value: '' },
-        hoverClass: { type: String, value: '' },
-        hoverStartTime: { type: Number, value: 20 },
-        hoverStayTime: { type: Number, value: 70 },
-        name: { type: String, value: '' },
-        type: { type: String, value: 'button' },
+        form: { type: null, value: '' },
+        formType: { type: null, value: '' },
+        ...hoverProperties,
+        name: { type: null, value: '' },
+        type: { type: null, value: 'button' },
       },
       attached() {
         attachButton(this.general(), options)
@@ -1619,7 +2070,7 @@ function registerTextControlDefinition(
 ) {
   return space
     .define(tag)
-    .options(componentOptions())
+    .options({ ...componentOptions(), reflectToAttributes: false })
     .definition({
       properties: inputProperties,
       attached() {
@@ -1671,6 +2122,37 @@ function registerLabelDefinition(
     .general()
 }
 
+function registerCanvasDefinition(
+  space: glassEasel.ComponentSpace,
+  template: glassEasel.template.ComponentTemplate,
+  options: NativeElementRegistrationOptions,
+) {
+  return space
+    .define('canvas')
+    .options(componentOptions())
+    .definition({
+      properties: {
+        ...semanticProperties,
+        canvasId: { type: null, value: '' },
+        disableScroll: { type: Boolean, value: false },
+        type: { type: null, value: '' },
+      },
+      attached() {
+        attachCanvas(this.general(), options)
+      },
+      detached() {
+        detachCanvas(this.general())
+      },
+    })
+    .observer('**', function () {
+      const state = canvasStates.get(this.general())
+      if (state) { syncCanvas(state) }
+    })
+    .template(template)
+    .registerComponent()
+    .general()
+}
+
 function registerImageDefinition(
   space: glassEasel.ComponentSpace,
   template: glassEasel.template.ComponentTemplate,
@@ -1682,12 +2164,12 @@ function registerImageDefinition(
     .definition({
       properties: {
         ...semanticProperties,
-        alt: { type: String, value: '' },
+        alt: { type: null, value: '' },
         draggable: { type: Boolean, value: false },
         lazyLoad: { type: Boolean, value: false },
-        mode: { type: String, value: 'scaleToFill' },
+        mode: { type: null, value: 'scaleToFill' },
         showMenuByLongpress: { type: Boolean, value: false },
-        src: { type: String, value: '' },
+        src: { type: null, value: '' },
       },
       attached() {
         attachImage(this.general(), options)
@@ -1721,14 +2203,18 @@ function registerScrollDefinition(
       properties: {
         ...semanticProperties,
         enableFlex: { type: Boolean, value: false },
-        lowerThreshold: { type: Number, value: 50 },
-        scrollLeft: { type: Number, value: 0 },
-        scrollTop: { type: Number, value: 0 },
+        lowerThreshold: { type: null, value: 50 },
+        refresherDefaultStyle: { type: null, value: 'black' },
+        refresherEnabled: { type: Boolean, value: false },
+        refresherThreshold: { type: null, value: 45 },
+        refresherTriggered: { type: Boolean, value: false },
+        scrollLeft: { type: null, value: 0 },
+        scrollTop: { type: null, value: 0 },
         scrollWithAnimation: { type: Boolean, value: false },
         scrollX: { type: Boolean, value: false },
         scrollY: { type: Boolean, value: false },
         showScrollbar: { type: Boolean, value: true },
-        upperThreshold: { type: Number, value: 50 },
+        upperThreshold: { type: null, value: 50 },
       },
       attached() {
         attachScroll(this.general(), options)
@@ -1797,22 +2283,22 @@ function registerMapDefinition(
         enableScroll: { type: Boolean, value: true },
         enableTraffic: { type: Boolean, value: false },
         enableZoom: { type: Boolean, value: true },
-        id: { type: String, value: '' },
+        id: { type: null, value: '' },
         includePoints: { type: Array, default: () => [] },
-        latitude: { type: Number, value: 0 },
-        longitude: { type: Number, value: 0 },
+        latitude: { type: null, value: 0 },
+        longitude: { type: null, value: 0 },
         markers: { type: Array, default: () => [] },
-        maxScale: { type: Number, value: 20 },
-        minScale: { type: Number, value: 3 },
+        maxScale: { type: null, value: 20 },
+        minScale: { type: null, value: 3 },
         polygons: { type: Array, default: () => [] },
         polyline: { type: Array, default: () => [] },
-        rotate: { type: Number, value: 0 },
-        scale: { type: Number, value: 16 },
+        rotate: { type: null, value: 0 },
+        scale: { type: null, value: 16 },
         showCompass: { type: Boolean, value: false },
         showLocation: { type: Boolean, value: false },
         showScale: { type: Boolean, value: false },
-        skew: { type: Number, value: 0 },
-        subkey: { type: String, value: '' },
+        skew: { type: null, value: 0 },
+        subkey: { type: null, value: '' },
       },
       attached() {
         attachMap(this.general(), options)
@@ -1842,7 +2328,7 @@ function registerRobotChatDefinition(
     .definition({
       properties: {
         ...semanticProperties,
-        appid: { type: String, value: '' },
+        appid: { type: null, value: '' },
       },
       attached() {
         attachRobotChat(this.general(), options)
@@ -1867,12 +2353,13 @@ export function registerNativeElements(
 ): NativeDefinitionMap {
   const space = env.getGlobalCodeSpace().getComponentSpace()
   return {
-    'view': registerSlotDefinition(space, 'view', templateFor(templates, 'view')),
+    'view': registerViewDefinition(space, templateFor(templates, 'view'), options),
     'text': registerSlotDefinition(space, 'text', templateFor(templates, 'text')),
     'button': registerButtonDefinition(space, templateFor(templates, 'button'), options),
     'input': registerTextControlDefinition(space, 'input', templateFor(templates, 'input'), options),
     'textarea': registerTextControlDefinition(space, 'textarea', templateFor(templates, 'textarea'), options),
     'label': registerLabelDefinition(space, templateFor(templates, 'label'), options),
+    'canvas': registerCanvasDefinition(space, templateFor(templates, 'canvas'), options),
     'image': registerImageDefinition(space, templateFor(templates, 'image'), options),
     'scroll-view': registerScrollDefinition(space, templateFor(templates, 'scroll-view'), options),
     'rich-text': registerRichTextDefinition(space, templateFor(templates, 'rich-text'), options),

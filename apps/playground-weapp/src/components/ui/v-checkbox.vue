@@ -8,12 +8,14 @@ import VIcon from './v-icon.vue'
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     checked?: boolean
     disabled?: boolean
     label?: string
     value?: CheckboxValue
   }>(),
   {
+    ariaLabel: '',
     checked: false,
     disabled: false,
     label: '',
@@ -58,6 +60,7 @@ function toggle() {
 <template>
   <button
     class="varo-checkbox"
+    :aria-label="props.ariaLabel"
     type="button"
     role="checkbox"
     :disabled="!interactive"

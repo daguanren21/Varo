@@ -1,10 +1,12 @@
 # Radio
 
-<RegistryInstallStrip item="components/radio" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="radio" locale="en" />
+
+## Selection feedback
+
+Radio keeps its inner indicator mounted and reveals the Varo-primary dot with a 180ms scale/fade, avoiding layout reconstruction between states. Press feedback is brief; reduced motion switches state immediately.
 
 ## Props
 

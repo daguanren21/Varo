@@ -1,7 +1,5 @@
 # FixedNav 悬浮导航
 
-<RegistryInstallStrip item="components/fixed-nav" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="fixed-nav" locale="zh" />

@@ -1,7 +1,5 @@
 # Breadcrumb
 
-<RegistryInstallStrip item="components/breadcrumb" :targets="['h5', 'weapp']" locale="en" />
-
 ## Basic Usage
 
 ```vue

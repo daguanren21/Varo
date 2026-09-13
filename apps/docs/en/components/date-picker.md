@@ -1,7 +1,5 @@
 # DatePicker
 
-<RegistryInstallStrip item="components/date-picker" :targets="['h5']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="date-picker" locale="en" />

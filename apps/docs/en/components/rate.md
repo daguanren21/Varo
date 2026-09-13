@@ -1,7 +1,5 @@
 # Rate
 
-<RegistryInstallStrip item="components/rate" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="rate" locale="en" />
