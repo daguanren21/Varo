@@ -624,23 +624,14 @@ const currentIndicatorItem = computed(
 const indicatorSlideStyle = computed(() => ({
   backgroundImage: `linear-gradient(135deg, rgb(5 8 10 / 92%), rgb(5 8 10 / 58%)), url("${currentIndicatorItem.value.image}")`,
 }))
-const codeExamples = computed(() => [
-  {
-    key: 'h5' as Platform,
-    title: copy.value.h5CodeTitle,
-    code: demo.value.platforms.h5.code,
-    packageName: demo.value.platforms.h5.packageName,
-  },
-  {
-    key: 'weapp' as Platform,
-    title: copy.value.weappCodeTitle,
-    code: demo.value.platforms.weapp.code,
-    packageName: demo.value.platforms.weapp.packageName,
-  },
-])
-const activeCodeExample = computed(
-  () => codeExamples.value.find(item => item.key === activePlatform.value) ?? codeExamples.value[0]!,
-)
+const activeCodeExample = computed(() => {
+  const platform = demo.value.platforms[activePlatform.value]
+  return {
+    code: platform.code,
+    packageName: platform.packageName,
+    title: activePlatform.value === 'h5' ? copy.value.h5CodeTitle : copy.value.weappCodeTitle,
+  }
+})
 const hasControls = computed(() => props.example === 'overview')
 const weappEvidenceHref = computed(() =>
   withDocsBase(`${props.locale === 'en' ? '/en' : ''}/examples/#weapp-devtools-evidence`),
@@ -738,10 +729,6 @@ function setPlatform(platform: Platform) {
   storePlatformPreference()
   syncDemoQuery()
   resetCopyState()
-}
-
-function codeTabId(platform: Platform) {
-  return `platform-${props.example}-code-tab-${platform}`
 }
 
 function platformTabId(platform: Platform) {
@@ -2253,25 +2240,6 @@ onBeforeUnmount(() => {
 
         <div v-if="codeExpanded" class="platform-demo__code-shell">
           <div class="platform-demo__code-head-row">
-            <div class="platform-demo__code-tabs" role="tablist" :aria-label="copy.codeTitle">
-              <button
-                v-for="codeExample in codeExamples"
-                :id="codeTabId(codeExample.key)"
-                :key="codeExample.key"
-                class="platform-demo__code-tab"
-                :data-platform="codeExample.key"
-                :data-active="activePlatform === codeExample.key"
-                type="button"
-                role="tab"
-                :aria-controls="codePanelId"
-                :aria-selected="activePlatform === codeExample.key"
-                :tabindex="activePlatform === codeExample.key ? 0 : -1"
-                @click="setPlatform(codeExample.key)"
-                @keydown="handlePlatformTabKeydown"
-              >
-                {{ codeExample.title }}
-              </button>
-            </div>
             <button
               class="platform-demo__code-copy"
               type="button"
@@ -2287,8 +2255,8 @@ onBeforeUnmount(() => {
           <section
             :id="codePanelId"
             class="platform-demo__code-section"
-            role="tabpanel"
-            :aria-labelledby="codeTabId(activePlatform)"
+            role="region"
+            :aria-label="activeCodeExample.title"
           >
             <div class="platform-demo__code-head">
               <strong>{{ activeCodeExample.title }}</strong>
@@ -2325,7 +2293,6 @@ onBeforeUnmount(() => {
   --demo-phone-card: var(--varo-demo-phone-card);
   --demo-shadow: var(--varo-demo-shadow);
   --demo-code-bg: #0f1722;
-  --demo-code-surface: #172231;
   --demo-code-border: #304056;
   --demo-code-text: #e8eef5;
   --demo-code-muted: #9eacc0;
@@ -2652,44 +2619,8 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 12px 12px 0;
-}
-
-.platform-demo__code-tabs {
-  display: inline-flex;
-  gap: 4px;
-  padding: 3px;
-  background: var(--demo-code-surface);
-  border: 1px solid var(--demo-code-border);
-  border-radius: 10px;
-}
-
-.platform-demo__code-tab {
-  min-height: 36px;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--demo-code-muted);
-  cursor: pointer;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  transition:
-    border-color var(--demo-duration-instant) var(--demo-ease-out),
-    background var(--demo-duration-instant) var(--demo-ease-out),
-    color var(--demo-duration-instant) var(--demo-ease-out);
-}
-
-.platform-demo__code-tab[data-active='true'] {
-  color: #0f1722;
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.platform-demo__code-tab:hover:not([data-active='true']) {
-  color: var(--demo-code-text);
-  background: color-mix(in srgb, var(--demo-brand) 10%, transparent);
 }
 
 .platform-demo__code-copy {
@@ -2835,7 +2766,6 @@ onBeforeUnmount(() => {
 
   .platform-demo__platform-tab,
   .platform-demo__code-toggle,
-  .platform-demo__code-tab,
   .platform-demo__code-copy,
   .platform-demo__chip,
   .platform-demo__evidence a {
@@ -2930,7 +2860,6 @@ onBeforeUnmount(() => {
   border-color: color-mix(in srgb, var(--demo-brand) 40%, var(--demo-border));
 }
 
-.platform-demo__code-tab:focus-visible,
 .platform-demo__code-toggle:focus-visible,
 .platform-demo__code-copy:focus-visible,
 .platform-demo__chip:focus-visible {
@@ -5314,7 +5243,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='button']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -5463,7 +5391,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='badge']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -5674,7 +5601,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='popover']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -5908,7 +5834,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='input']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);

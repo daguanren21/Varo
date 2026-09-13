@@ -76,7 +76,7 @@ pnpm --filter @varo/playground-weapp dev:ai
 pnpm run docs:dev
 ```
 
-该命令会在 `http://127.0.0.1:5191` 启动 VitePress，并在文档页内提供 H5 与 Weapp 组件预览。
+该命令会在 `http://localhost:5173` 启动 VitePress，并在文档页内提供 H5 与 Weapp 组件预览。
 
 ## 验证
 

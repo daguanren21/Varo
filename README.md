@@ -76,7 +76,7 @@ pnpm --filter @varo/playground-weapp dev:ai
 pnpm run docs:dev
 ```
 
-This starts VitePress at `http://127.0.0.1:5191` with in-page H5 and Weapp component previews.
+This starts VitePress at `http://localhost:5173` with in-page H5 and Weapp component previews.
 
 ## Verification
 

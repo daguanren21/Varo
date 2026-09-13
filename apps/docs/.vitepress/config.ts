@@ -1,3 +1,4 @@
+import type { DefaultTheme } from 'vitepress'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vitepress'
@@ -6,6 +7,48 @@ import { createComponentSidebarGroups } from '../src/component-catalog.js'
 const workspacePath = (relativePath: string) => fileURLToPath(new URL(relativePath, import.meta.url))
 const docsBase = process.env.DOCS_BASE || '/'
 const docsAsset = (path: string) => `${docsBase}${path.replace(/^\/+/, '')}`
+const docsPort = Number(process.env.DOCS_PORT || 5173)
+
+type LocalSearchRender = NonNullable<DefaultTheme.LocalSearchOptions['_render']>
+const searchRenderFlag = '__varoSearchRenderWithoutCode'
+const searchFilterInstalled = '__varoSearchCodeFilterInstalled'
+
+type SearchMarkdownEnvironment = Parameters<LocalSearchRender>[1] & {
+  [searchRenderFlag]?: boolean
+}
+
+type SearchMarkdownRenderer = Parameters<LocalSearchRender>[2] & {
+  [searchFilterInstalled]?: boolean
+}
+
+function installSearchCodeFilter(md: SearchMarkdownRenderer) {
+  if (md[searchFilterInstalled]) { return }
+
+  for (const ruleName of ['fence', 'code_block'] as const) {
+    const renderRule = md.renderer.rules[ruleName]
+    if (!renderRule) { continue }
+    md.renderer.rules[ruleName] = (tokens, index, options, env, self) => {
+      if ((env as SearchMarkdownEnvironment)[searchRenderFlag]) { return '' }
+      return renderRule(tokens, index, options, env, self)
+    }
+  }
+
+  // VitePress shares this renderer with page builds, so normal page envs must retain the original rules.
+  md[searchFilterInstalled] = true
+}
+
+export const renderSearchMarkdown: LocalSearchRender = async (source, env, md) => {
+  const searchEnvironment = env as SearchMarkdownEnvironment
+  installSearchCodeFilter(md)
+  searchEnvironment[searchRenderFlag] = true
+  try {
+    const html = await md.renderAsync(source, env)
+    return env.frontmatter?.search === false ? '' : html
+  }
+  finally {
+    delete searchEnvironment[searchRenderFlag]
+  }
+}
 
 export default defineConfig({
   title: 'Varo',
@@ -13,6 +56,9 @@ export default defineConfig({
   base: docsBase,
   cleanUrls: true,
   lastUpdated: true,
+  markdown: {
+    languages: ['bash', 'css', 'json', 'ts', 'vue'],
+  },
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: docsAsset('/brand-assets/varo-symbol.svg') }],
     ['link', { rel: 'alternate icon', href: docsAsset('/favicon.ico') }],
@@ -21,7 +67,7 @@ export default defineConfig({
     ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0b1016' }],
   ],
   vite: {
-    server: { strictPort: true },
+    server: { host: 'localhost', port: docsPort, strictPort: true },
     plugins: [tailwindcss()],
     resolve: {
       alias: {
@@ -50,6 +96,7 @@ export default defineConfig({
     search: {
       provider: 'local',
       options: {
+        _render: renderSearchMarkdown,
         detailedView: true,
         translations: {
           button: { buttonText: '搜索文档', buttonAriaLabel: '搜索文档' },
