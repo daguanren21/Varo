@@ -80,8 +80,8 @@ describe('docs navigation', () => {
     expect(primitiveZh).toContain('pnpm add @varo-ui/headless @varo-ui/weapp')
     expect(primitiveEn).toContain('pnpm add @varo-ui/headless @varo-ui/h5')
     expect(primitiveEn).toContain('pnpm add @varo-ui/headless @varo-ui/weapp')
-    expect(primitiveZh).not.toContain('<PrimitiveCatalog')
-    expect(primitiveEn).not.toContain('<PrimitiveCatalog')
+    expect(primitiveZh).toContain('<PrimitiveCatalog locale="zh" />')
+    expect(primitiveEn).toContain('<PrimitiveCatalog locale="en" />')
     expect(primitiveZh).not.toContain('<RegistryInstallStrip')
     expect(primitiveEn).not.toContain('<RegistryInstallStrip')
 

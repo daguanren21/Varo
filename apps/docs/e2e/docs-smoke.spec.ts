@@ -23,7 +23,7 @@ describe('docs smoke baseline', () => {
     }
   })
 
-  it('keeps one concise headless install surface and linked detail pages', () => {
+  it('keeps one headless install surface and restores the overview catalogs', () => {
     const config = readFileSync(resolve(docsRoot, '.vitepress/config.ts'), 'utf8')
     const zhOverview = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
     const enOverview = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
@@ -32,10 +32,10 @@ describe('docs smoke baseline', () => {
 
     expect(zhOverview).toContain('pnpm add @varo-ui/headless @varo-ui/h5')
     expect(enOverview).toContain('pnpm add @varo-ui/headless @varo-ui/weapp')
-    expect(zhOverview).not.toContain('<PrimitiveCatalog')
-    expect(enOverview).not.toContain('<PrimitiveCatalog')
-    expect(zhComponents).not.toContain('<ComponentCatalog')
-    expect(enComponents).not.toContain('<ComponentCatalog')
+    expect(zhOverview).toContain('<PrimitiveCatalog locale="zh" />')
+    expect(enOverview).toContain('<PrimitiveCatalog locale="en" />')
+    expect(zhComponents).toContain('<ComponentCatalog />')
+    expect(enComponents).toContain('<ComponentCatalog locale="en" />')
     expect(config).toContain('/blocks/build-your-own')
     expect(config).toContain('/en/blocks/build-your-own')
     expect(existsSync(resolve(docsRoot, 'blocks/build-your-own.md'))).toBe(true)

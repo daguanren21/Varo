@@ -23,3 +23,7 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 | `@varo-ui/headless`         | 平台中立状态与事件   |
 | `@varo-ui/h5/primitives`    | DOM、键盘与 ARIA     |
 | `@varo-ui/weapp/primitives` | WXML、触摸与原生事件 |
+
+## 目录
+
+<PrimitiveCatalog locale="zh" />

@@ -7,3 +7,5 @@ outline: false
 # Components
 
 Choose a component to view its demos, usage, and API.
+
+<ComponentCatalog locale="en" />
