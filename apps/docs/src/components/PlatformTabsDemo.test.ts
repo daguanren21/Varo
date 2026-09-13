@@ -486,8 +486,9 @@ describe('PlatformTabsDemo', () => {
 
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
     expect(wrapper.find('.platform-demo__code-shell').exists()).toBe(true)
-    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('Weapp Contract Preview')
-    expect(wrapper.get('.platform-demo__evidence a').text()).toContain('Weapp DevTools Verified · 2026-08-28')
+    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('Weapp Preview')
+    expect(wrapper.get('.platform-demo__evidence span').text()).toBe('Browser contract')
+    expect(wrapper.get('.platform-demo__evidence a').text()).toContain('DevTools · 2026-08-28')
     expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('weapp')
 
     await wrapper.findAll('.platform-demo__platform-tab')[0]!.trigger('click')

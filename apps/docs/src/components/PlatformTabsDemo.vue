@@ -859,14 +859,14 @@ onBeforeUnmount(() => {
 
       <section class="platform-demo__panel platform-demo__panel--preview">
         <div class="platform-demo__evidence" :data-level="activePlatform === 'h5' ? 'live' : 'contract-preview'">
-          <strong>{{ activePlatform === 'h5' ? 'H5 Live' : 'Weapp Contract Preview' }}</strong>
+          <strong>{{ activePlatform === 'h5' ? 'H5 Live' : 'Weapp Preview' }}</strong>
           <span>
             {{ activePlatform === 'h5'
               ? (locale === 'en' ? 'Interactive browser runtime' : '浏览器运行时实时交互')
-              : (locale === 'en' ? 'Browser-rendered contract, not a mini-program runtime' : '浏览器渲染的组件契约，并非小程序运行时') }}
+              : (locale === 'en' ? 'Browser contract' : '浏览器契约预览') }}
           </span>
           <a v-if="activePlatform === 'weapp'" :href="weappEvidenceHref">
-            Weapp DevTools Verified · <time :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
+            DevTools · <time :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
           </a>
         </div>
         <div class="platform-demo__phone-frame" :data-platform="activePlatform">
