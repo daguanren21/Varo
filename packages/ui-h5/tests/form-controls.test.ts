@@ -49,8 +49,12 @@ describe('ui-h5 form controls', () => {
         ],
       },
     })
+    const radios = wrapper.findAll('.varo-radio')
+    expect(radios[0].attributes('aria-checked')).toBe('true')
+    expect(radios[1].attributes('aria-checked')).toBe('false')
+    expect(radios.every(radio => radio.find('.varo-radio__dot').exists())).toBe(true)
 
-    await wrapper.findAll('.varo-radio')[1].trigger('click')
+    await radios[1].trigger('click')
 
     expect(onUpdate).toHaveBeenCalledWith('alipay')
   })
@@ -59,6 +63,9 @@ describe('ui-h5 form controls', () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VInputNumber, {
       props: {
+        'decreaseAriaLabel': '减少数量',
+        'increaseAriaLabel': '增加数量',
+        'inputAriaLabel': '数量',
         'max': 3,
         'min': 1,
         'step': 2,
@@ -66,6 +73,14 @@ describe('ui-h5 form controls', () => {
         'onUpdate:value': onUpdate,
       },
     })
+
+    expect(wrapper.get('.varo-input-number__minus .varo-icon').attributes('data-name')).toBe('minus')
+    expect(wrapper.get('.varo-input-number__plus .varo-icon').attributes('data-name')).toBe('plus')
+    expect(wrapper.get('.varo-input-number__minus').attributes('aria-label')).toBe('减少数量')
+    expect(wrapper.get('.varo-input-number__input').attributes('aria-label')).toBe('数量')
+    expect(wrapper.get('.varo-input-number__plus').attributes('aria-label')).toBe('增加数量')
+    expect(wrapper.get('.varo-input-number__input').attributes('type')).toBe('text')
+    expect(wrapper.get('.varo-input-number__input').attributes('inputmode')).toBe('decimal')
 
     await wrapper.get('.varo-input-number__plus').trigger('click')
     expect(onUpdate).toHaveBeenLastCalledWith(3)
@@ -141,6 +156,7 @@ describe('ui-h5 form controls', () => {
     })
 
     expect(wrapper.find('textarea').exists()).toBe(true)
+    expect(wrapper.attributes('data-type')).toBe('textarea')
     expect(wrapper.get('.varo-input__word-limit').text()).toBe('5/20')
   })
 })

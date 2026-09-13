@@ -23,6 +23,7 @@ export default defineConfig({
       '@varo/primitives-h5': resolve(import.meta.dirname, 'packages/primitives-h5/src/index.ts'),
       '@varo/primitives-weapp': resolve(import.meta.dirname, 'packages/primitives-weapp/src/index.ts'),
       '@varo-ui/h5': resolve(import.meta.dirname, 'packages/ui-h5/src/index.ts'),
+      '@varo-ui/weapp/primitives': resolve(import.meta.dirname, 'packages/ui-weapp/src/primitives.ts'),
       '@varo-ui/weapp': resolve(import.meta.dirname, 'packages/ui-weapp/src/index.ts'),
     },
   },

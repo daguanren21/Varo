@@ -38,5 +38,5 @@
       "to": "src/components/ui/v-list.vue"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/list"
 }

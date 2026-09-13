@@ -1,7 +1,5 @@
 # Checkbox
 
-<RegistryInstallStrip item="components/checkbox" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="checkbox" locale="en" />

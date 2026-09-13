@@ -54,6 +54,7 @@ export const componentCatalogV01 = [
   'cell',
   'checkbox',
   'collapse',
+  'date-field',
   'date-picker',
   'dialog',
   'divider',
@@ -80,6 +81,7 @@ export const componentCatalogV01 = [
   'popover',
   'popup',
   'progress',
+  'pull-refresh',
   'radio',
   'range',
   'rate',
@@ -88,6 +90,7 @@ export const componentCatalogV01 = [
   'select',
   'short-password',
   'side-navbar',
+  'signature',
   'skeleton',
   'space',
   'steps',
@@ -100,6 +103,7 @@ export const componentCatalogV01 = [
   'textarea',
   'toast',
   'uploader',
+  'watermark',
 ] as const
 
 export const weappComponentCatalogV01 = [
@@ -112,6 +116,7 @@ export const weappComponentCatalogV01 = [
   'cell',
   'checkbox',
   'collapse',
+  'date-field',
   'dialog',
   'divider',
   'empty',
@@ -130,14 +135,17 @@ export const weappComponentCatalogV01 = [
   'notice-bar',
   'overlay',
   'pagination',
+  'picker',
   'popover',
   'popup',
   'progress',
+  'pull-refresh',
   'radio',
   'rate',
   'safe-area',
   'searchbar',
   'select',
+  'signature',
   'skeleton',
   'space',
   'steps',
@@ -149,6 +157,7 @@ export const weappComponentCatalogV01 = [
   'tag',
   'textarea',
   'toast',
+  'watermark',
 ] as const
 
 const allowedTargets: readonly RegistryTarget[] = ['h5', 'weapp']

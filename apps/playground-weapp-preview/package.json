@@ -5,10 +5,12 @@
   "private": true,
   "scripts": {
     "prepare:artifacts": "pnpm exec turbo run build --filter=@varo/playground-weapp",
-    "dev": "pnpm run prepare:artifacts && vite --host 127.0.0.1",
+    "dev": "pnpm run prepare:artifacts && vite",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1",
+    "preview": "vite preview",
     "smoke:browser": "node scripts/smoke-preview.mjs",
+    "smoke:pull-refresh": "node scripts/smoke-pull-refresh.mjs",
+    "smoke:motion-controls": "node scripts/smoke-motion-controls.mjs",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests"
   },

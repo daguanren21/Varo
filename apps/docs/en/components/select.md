@@ -2,8 +2,6 @@
 
 `VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. The H5 / full Vue wrapper and the native Registry component installed by `--target weapp` target different runtimes; use the API section for the version you consume.
 
-<RegistryInstallStrip item="components/select" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="select" locale="en" />
@@ -93,6 +91,6 @@ While open, the selected label uses the muted text color until search input star
 
 Native Registry Weapp does not provide `mode`, `max`, `confirmable`, `filterOption`, `loading`, or `emptyText`, and it does not emit `valueChange`, `open`, `close`, `confirm`, `cancel`, or `limit`.
 
-## Wrapper Boundary
-
+::: info Wrapper boundary
 Grouped options, remote search, and async paging belong in secondary wrappers. Business components should wrap `VSelect` to create `UserSelect`, `DepartmentSelect`, `CitySelect`, and `ProductSelect`.
+:::

@@ -75,14 +75,6 @@ copy-owned 小程序 Registry 组件使用真正的 Wevu SFC，并通过 `styleI
 
 ## 在浏览器预览小程序产物
 
-在 Varo 仓库根目录启动独立的 Web 兼容预览：
-
-```bash
-pnpm --filter @varo/playground-weapp-preview dev
-```
-
-开发服务先构建小程序，再在 `http://127.0.0.1:5182` 提供按钮、受控输入、插槽生命周期和 Agent 内容场景。修改原生示例后，可运行 `pnpm --filter @varo/playground-weapp-preview prepare:artifacts` 更新编译产物。
-
 wx 运行时已抽到私有包 `@varo/weapp-web`：Vite 插件负责把 Wevu 产物编进 `virtual:varo-native-artifacts`，运行时 harness 可替换 `wx` API 和原生元素。当前 playground 只是这个包的沙盒消费者；包暂不对外发布。该宿主使用 glass-easel 的 DOM 后端运行 Wevu 生成的 JS、JSON、WXML 和 WXSS，不会换成 H5 业务组件。窄窗口会缩放预览画面，但保留选定的原生视口宽度。**这不是微信客户端或真机模拟器**；登录、支付等未支持能力会失败，不会伪造成功结果。
 
 生产构建与真实浏览器回归：

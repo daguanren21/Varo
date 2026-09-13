@@ -2,11 +2,13 @@
 
 `VSwitch` is a low-level boolean toggle for settings and form fields.
 
-<RegistryInstallStrip item="components/switch" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="switch" locale="en" />
+
+::: info Motion
+The thumb uses a reversible 180ms translation. Holding the control briefly stretches the thumb along its travel direction; release or rapid reversal retargets from the current visual state. Reduced motion keeps only the immediate position change.
+:::
 
 ## Props
 

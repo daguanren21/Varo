@@ -50,6 +50,7 @@ const emit = defineEmits<{
 
 const keyword = shallowRef<string | null>(null)
 const open = shallowRef(false)
+const clearActive = shallowRef(false)
 const controlled = computed(() => true)
 const normalizedValue = computed<SelectValue | SelectValue[] | undefined>(() => props.value ?? undefined)
 const selectRoot = useSelectRoot({
@@ -93,7 +94,7 @@ const selectedPreviewStyle = computed(() =>
     : '',
 )
 const showFilterInput = computed(() => props.filterable && !props.readonly)
-const showClear = computed(() => props.clearable && selectedValues.value.length > 0 && interactive.value && selectOpen.value)
+const showClear = computed(() => props.clearable && selectedValues.value.length > 0 && interactive.value)
 
 watch(selectOpen, (isOpen) => {
   if (!isOpen) { keyword.value = null }
@@ -146,7 +147,17 @@ function closePanel() {
 </script>
 
 <template>
-  <view :class="rootClass" :data-disabled="String(selectDisabled)" :data-readonly="String(props.readonly)" :data-multiple="String(multiple)" :data-open="String(selectOpen)">
+  <view
+    :class="rootClass"
+    :data-disabled="String(selectDisabled)"
+    :data-readonly="String(props.readonly)"
+    :data-multiple="String(multiple)"
+    :data-open="String(selectOpen)"
+    :data-clear-active="String(clearActive)"
+    @touchstart="clearActive = true"
+    @touchend="clearActive = selectOpen"
+    @touchcancel="clearActive = selectOpen"
+  >
     <view v-if="selectOpen" class="varo-select__dismiss fixed inset-0 -z-10" aria-hidden="true" @click="closePanel" />
     <view
       v-if="showFilterInput"
@@ -176,7 +187,7 @@ function closePanel() {
           aria-label="Clear selection"
           @click.stop="clear"
         >
-          <VIcon name="close" :size="14" />
+          <VIcon name="danger" :size="16" />
         </button>
         <text class="varo-select__arrow" aria-hidden="true" />
       </view>
@@ -211,7 +222,7 @@ function closePanel() {
           aria-label="Clear selection"
           @click.stop="clear"
         >
-          <VIcon name="close" :size="14" />
+          <VIcon name="danger" :size="16" />
         </button>
         <text class="varo-select__arrow" aria-hidden="true" />
       </view>

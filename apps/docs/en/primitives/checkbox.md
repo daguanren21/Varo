@@ -10,17 +10,9 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 <PrimitiveExample name="checkbox" locale="en" />
 
-## Installation
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## Basic usage
 
-Use the Demo panel above to switch H5 live preview and mini-program runtime contract/code.
+Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
 
 ## Disabled state
 
@@ -55,13 +47,8 @@ When `disabled` is set, `checkedChange` no longer fires. Indicator may still ref
 - Indicator is not the click target.
 - Disabled state must not emit checked changes.
 
-## Platform notes
+::: info Platform notes
 
 - H5 can be previewed live in docs.
 - Mini-program keeps the same `v-model:checked` and part composition; focus details stay page-owned.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Components](/en/components/button)
-- [Blocks](/en/blocks/profile-edit)
+  :::

@@ -6,16 +6,6 @@ Complete block composing header, history, events, approval, and prompt input.
 
 <AgentComponentDemo component="agent-chat" locale="en" />
 
-## Install
-
-```bash
-pnpm add @varo-ui/ai
-pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
-pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
-```
-
-Registry installs the UI component into your project, so import it from `@/components/agent-ui`; `@varo-ui/ai` provides the event protocol, stream controller, and Markdown primitives—not Vue/Wevu UI components.
-
 ## Basic Usage
 
 ```vue
@@ -52,11 +42,11 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 | `submit`            | `string` | Submit        |
 | `update:modelValue` | `string` | Update prompt |
 
-## Target Notes
+::: info Target notes
 
 | Target | Import                               |
 | ------ | ------------------------------------ |
 | H5     | `@/components/blocks/agent-chat.vue` |
 | weapp  | `@/components/blocks/agent-chat.vue` |
 
-The public API stays aligned across targets; DOM/WXML, scheduling, and native events are target-owned.
+:::

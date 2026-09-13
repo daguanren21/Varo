@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 const docsRoot = resolve(__dirname, '..')
 
 function firstH2(content: string) {
-  return content.split(/\n/).find((line) => line.startsWith('## '))
+  return content.split(/\n/).find(line => line.startsWith('## '))
 }
 
 describe('docs smoke baseline', () => {
@@ -23,13 +23,19 @@ describe('docs smoke baseline', () => {
     }
   })
 
-  it('keeps primitives catalog pages and authoring guide linked', () => {
+  it('keeps one concise headless install surface and linked detail pages', () => {
     const config = readFileSync(resolve(docsRoot, '.vitepress/config.ts'), 'utf8')
     const zhOverview = readFileSync(resolve(docsRoot, 'primitives/index.md'), 'utf8')
     const enOverview = readFileSync(resolve(docsRoot, 'en/primitives/index.md'), 'utf8')
+    const zhComponents = readFileSync(resolve(docsRoot, 'components/index.md'), 'utf8')
+    const enComponents = readFileSync(resolve(docsRoot, 'en/components/index.md'), 'utf8')
 
-    expect(zhOverview).toContain('<PrimitiveCatalog locale="zh" />')
-    expect(enOverview).toContain('<PrimitiveCatalog locale="en" />')
+    expect(zhOverview).toContain('pnpm add @varo-ui/headless @varo-ui/h5')
+    expect(enOverview).toContain('pnpm add @varo-ui/headless @varo-ui/weapp')
+    expect(zhOverview).not.toContain('<PrimitiveCatalog')
+    expect(enOverview).not.toContain('<PrimitiveCatalog')
+    expect(zhComponents).not.toContain('<ComponentCatalog')
+    expect(enComponents).not.toContain('<ComponentCatalog')
     expect(config).toContain('/blocks/build-your-own')
     expect(config).toContain('/en/blocks/build-your-own')
     expect(existsSync(resolve(docsRoot, 'blocks/build-your-own.md'))).toBe(true)

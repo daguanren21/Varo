@@ -384,7 +384,7 @@ function input(event: unknown) {
   return nextValue
 }
 
-function focus(event: unknown) {
+function handleFocus(event: unknown) {
   focused.value = true
   focusRequested.value = false
   emit('focus', event)
@@ -459,6 +459,7 @@ function touchstart(event: unknown) {
     :data-invalid="dataInvalid"
     :data-readonly="dataReadonly"
     :data-size="props.size"
+    :data-type="props.type"
   >
     <label
       v-if="labelVisible"
@@ -524,7 +525,7 @@ function touchstart(event: unknown) {
         :style="controlStyle"
         :value="currentValue"
         @input="input"
-        @focus="focus"
+        @focus="handleFocus"
         @blur="blur"
         @confirm="confirm"
         @keyboardheightchange="keyboardHeightChange"
@@ -586,7 +587,7 @@ function touchstart(event: unknown) {
         :type="nativeType"
         :value="currentValue"
         @input="input"
-        @focus="focus"
+        @focus="handleFocus"
         @blur="blur"
         @confirm="confirm"
         @keyboardheightchange="keyboardHeightChange"
@@ -604,7 +605,7 @@ function touchstart(event: unknown) {
         aria-label="Clear input"
         @click="clear"
       >
-        <VIcon name="close" :size="14" />
+        <VIcon name="danger" :size="16" />
       </button>
       <text v-if="props.showWordLimit" class="varo-input__word-limit">
         {{ wordLimit }}

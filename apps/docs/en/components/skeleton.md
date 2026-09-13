@@ -2,8 +2,6 @@
 
 `VSkeleton` waits `180ms` before showing placeholders by default, preventing flashes on short requests. It covers article, image, and video layouts, then fades loaded slot content in.
 
-<RegistryInstallStrip item="components/skeleton" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="skeleton" locale="en" />
@@ -42,8 +40,9 @@ For mini-programs, replace `vue` and `@varo-ui/h5` with `wevu` and `@varo-ui/wea
 | `rows`        | `number`                       | `3`        | Number of content rows; negative values normalize to `0`                     |
 | `round`       | `boolean`                      | `false`    | Uses pill radii for title and content rows                                   |
 
-## Accessibility and motion
+::: info Accessibility and motion
 
 - Loading state exposes `aria-busy="true"` and a Loading name.
 - `loading=false` removes placeholders and fades real content according to `contentFade`.
 - Global `prefers-reduced-motion` disables both shimmer and content-fade motion.
+  :::

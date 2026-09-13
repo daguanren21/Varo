@@ -11,9 +11,9 @@ interface ElementIntersectionObserverOptions<T> {
 }
 
 function resolveBoolean(value: MaybeReactiveBoolean | undefined): boolean {
-  if (value === undefined) return true
-  if (typeof value === 'function') return value()
-  if (typeof value === 'object') return value.value
+  if (value === undefined) { return true }
+  if (typeof value === 'function') { return value() }
+  if (typeof value === 'object') { return value.value }
   return value
 }
 
@@ -31,7 +31,7 @@ export function useElementIntersectionObserver<T = { intersectionRatio: number }
   options: ElementIntersectionObserverOptions<T>,
 ) {
   onMounted(() => {
-    if (!resolveBoolean(options.enabled)) return
+    if (!resolveBoolean(options.enabled)) { return }
     options.onObserve?.({ intersectionRatio: 1 } as T)
   })
 
@@ -39,5 +39,11 @@ export function useElementIntersectionObserver<T = { intersectionRatio: number }
     disconnect() {},
     observe: () => null,
     observer: null,
+  }
+}
+
+export function useNativeInstance() {
+  return {
+    createSelectorQuery: () => undefined,
   }
 }

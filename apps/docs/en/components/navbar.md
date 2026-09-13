@@ -1,7 +1,5 @@
 # Navbar
 
-<RegistryInstallStrip item="components/navbar" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="navbar" locale="en" />

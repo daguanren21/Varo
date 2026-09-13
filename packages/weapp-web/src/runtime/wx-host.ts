@@ -1,8 +1,28 @@
+import { createPreviewCanvasContext, findPreviewSelectorElement } from './native-elements.ts'
+
 export interface WxHostOptions {
   pagePath: string
   getPage: () => Record<string, unknown> | undefined
   enqueue: (callback: () => void) => void
   apis?: Record<string, unknown>
+}
+
+interface PreviewSelectorRect {
+  bottom: number
+  dataset: DOMStringMap
+  height: number
+  id: string
+  left: number
+  right: number
+  top: number
+  width: number
+}
+
+interface PreviewSelectorQuery {
+  boundingClientRect: (callback: (result: PreviewSelectorRect | null) => void) => PreviewSelectorQuery
+  exec: (callback?: (results: Array<PreviewSelectorRect | null>) => void) => void
+  in: (owner?: unknown) => PreviewSelectorQuery
+  select: (selector: string) => PreviewSelectorQuery
 }
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
@@ -45,11 +65,45 @@ export function createWxHost({ pagePath, getPage, enqueue, apis }: WxHostOptions
     },
   })
   const resize = listeners(resizeListeners)
-  const invokePage = (method: string, args: unknown[]) => {
-    const page = getPage()
-    const handler = page?.[method]
-    if (!page || typeof handler !== 'function') { throw new Error(`当前预览页面无法提供 wx.${method}`) }
-    return Reflect.apply(handler, page, args)
+  const createSelectorQuery = (): PreviewSelectorQuery => {
+    let selector = ''
+    let owner: unknown
+    let rectCallback: ((result: PreviewSelectorRect | null) => void) | undefined
+    const query: PreviewSelectorQuery = {
+      boundingClientRect(handler) {
+        rectCallback = handler
+        return query
+      },
+      exec(handler) {
+        enqueue(() => {
+          const element = selector ? findPreviewSelectorElement(selector, owner) : null
+          const bounds = element?.getBoundingClientRect()
+          const result = bounds && element
+            ? {
+                bottom: bounds.bottom,
+                dataset: element.dataset,
+                height: bounds.height,
+                id: element.id,
+                left: bounds.left,
+                right: bounds.right,
+                top: bounds.top,
+                width: bounds.width,
+              }
+            : null
+          rectCallback?.(result)
+          handler?.([result])
+        })
+      },
+      in(value) {
+        owner = value
+        return query
+      },
+      select(value) {
+        selector = value
+        return query
+      },
+    }
+    return query
   }
   const supported: Record<string, unknown> = {
     getWindowInfo: windowInfo,
@@ -74,7 +128,11 @@ export function createWxHost({ pagePath, getPage, enqueue, apis }: WxHostOptions
         callback(options, 'complete', result)
       })
     },
-    createSelectorQuery: () => invokePage('createSelectorQuery', []),
+    createCanvasContext: (canvasId: unknown, owner?: unknown) => {
+      if (typeof canvasId !== 'string' || !canvasId) { throw new TypeError('wx.createCanvasContext 需要 canvasId') }
+      return createPreviewCanvasContext(canvasId, owner)
+    },
+    createSelectorQuery,
     onWindowResize: resize.add,
     offWindowResize: resize.remove,
   }

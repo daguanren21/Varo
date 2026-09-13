@@ -2,8 +2,6 @@
 
 `VSelect` 是 Base Kit 的低层选择组件，用于表单、筛选和业务组件二次封装。H5 / 完整 Vue 封装与 `--target weapp` 安装的原生 Registry 组件面向不同运行时，API 以各自章节为准。
 
-<RegistryInstallStrip item="components/select" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="select" locale="zh" />
@@ -93,6 +91,6 @@ H5 的 `filterable` 只读字段使用原生只读输入语义。
 
 原生 Registry Weapp 不提供 `mode`、`max`、`confirmable`、`filterOption`、`loading` 或 `emptyText`，也不触发 `valueChange`、`open`、`close`、`confirm`、`cancel` 或 `limit`。
 
-## 二次封装边界
-
+::: info 二次封装
 分组、远程搜索、异步分页属于二次封装组件能力，不属于 Base Kit。业务组件应基于 `VSelect` 封装 `UserSelect`、`DepartmentSelect`、`CitySelect`、`ProductSelect`。
+:::

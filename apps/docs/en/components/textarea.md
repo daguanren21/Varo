@@ -1,7 +1,5 @@
 # Textarea
 
-<RegistryInstallStrip item="components/textarea" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="textarea" locale="en" />

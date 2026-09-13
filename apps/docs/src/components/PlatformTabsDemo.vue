@@ -624,23 +624,14 @@ const currentIndicatorItem = computed(
 const indicatorSlideStyle = computed(() => ({
   backgroundImage: `linear-gradient(135deg, rgb(5 8 10 / 92%), rgb(5 8 10 / 58%)), url("${currentIndicatorItem.value.image}")`,
 }))
-const codeExamples = computed(() => [
-  {
-    key: 'h5' as Platform,
-    title: copy.value.h5CodeTitle,
-    code: demo.value.platforms.h5.code,
-    packageName: demo.value.platforms.h5.packageName,
-  },
-  {
-    key: 'weapp' as Platform,
-    title: copy.value.weappCodeTitle,
-    code: demo.value.platforms.weapp.code,
-    packageName: demo.value.platforms.weapp.packageName,
-  },
-])
-const activeCodeExample = computed(
-  () => codeExamples.value.find(item => item.key === activePlatform.value) ?? codeExamples.value[0]!,
-)
+const activeCodeExample = computed(() => {
+  const platform = demo.value.platforms[activePlatform.value]
+  return {
+    code: platform.code,
+    packageName: platform.packageName,
+    title: activePlatform.value === 'h5' ? copy.value.h5CodeTitle : copy.value.weappCodeTitle,
+  }
+})
 const hasControls = computed(() => props.example === 'overview')
 const weappEvidenceHref = computed(() =>
   withDocsBase(`${props.locale === 'en' ? '/en' : ''}/examples/#weapp-devtools-evidence`),
@@ -738,10 +729,6 @@ function setPlatform(platform: Platform) {
   storePlatformPreference()
   syncDemoQuery()
   resetCopyState()
-}
-
-function codeTabId(platform: Platform) {
-  return `platform-${props.example}-code-tab-${platform}`
 }
 
 function platformTabId(platform: Platform) {
@@ -872,14 +859,14 @@ onBeforeUnmount(() => {
 
       <section class="platform-demo__panel platform-demo__panel--preview">
         <div class="platform-demo__evidence" :data-level="activePlatform === 'h5' ? 'live' : 'contract-preview'">
-          <strong>{{ activePlatform === 'h5' ? 'H5 Live' : 'Weapp Contract Preview' }}</strong>
+          <strong>{{ activePlatform === 'h5' ? 'H5 Live' : 'Weapp Preview' }}</strong>
           <span>
             {{ activePlatform === 'h5'
               ? (locale === 'en' ? 'Interactive browser runtime' : '浏览器运行时实时交互')
-              : (locale === 'en' ? 'Browser-rendered contract, not a mini-program runtime' : '浏览器渲染的组件契约，并非小程序运行时') }}
+              : (locale === 'en' ? 'Browser contract' : '浏览器契约预览') }}
           </span>
           <a v-if="activePlatform === 'weapp'" :href="weappEvidenceHref">
-            Weapp DevTools Verified · <time :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
+            DevTools · <time :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
           </a>
         </div>
         <div class="platform-demo__phone-frame" :data-platform="activePlatform">
@@ -2253,25 +2240,6 @@ onBeforeUnmount(() => {
 
         <div v-if="codeExpanded" class="platform-demo__code-shell">
           <div class="platform-demo__code-head-row">
-            <div class="platform-demo__code-tabs" role="tablist" :aria-label="copy.codeTitle">
-              <button
-                v-for="codeExample in codeExamples"
-                :id="codeTabId(codeExample.key)"
-                :key="codeExample.key"
-                class="platform-demo__code-tab"
-                :data-platform="codeExample.key"
-                :data-active="activePlatform === codeExample.key"
-                type="button"
-                role="tab"
-                :aria-controls="codePanelId"
-                :aria-selected="activePlatform === codeExample.key"
-                :tabindex="activePlatform === codeExample.key ? 0 : -1"
-                @click="setPlatform(codeExample.key)"
-                @keydown="handlePlatformTabKeydown"
-              >
-                {{ codeExample.title }}
-              </button>
-            </div>
             <button
               class="platform-demo__code-copy"
               type="button"
@@ -2287,8 +2255,8 @@ onBeforeUnmount(() => {
           <section
             :id="codePanelId"
             class="platform-demo__code-section"
-            role="tabpanel"
-            :aria-labelledby="codeTabId(activePlatform)"
+            role="region"
+            :aria-label="activeCodeExample.title"
           >
             <div class="platform-demo__code-head">
               <strong>{{ activeCodeExample.title }}</strong>
@@ -2325,7 +2293,6 @@ onBeforeUnmount(() => {
   --demo-phone-card: var(--varo-demo-phone-card);
   --demo-shadow: var(--varo-demo-shadow);
   --demo-code-bg: #0f1722;
-  --demo-code-surface: #172231;
   --demo-code-border: #304056;
   --demo-code-text: #e8eef5;
   --demo-code-muted: #9eacc0;
@@ -2652,44 +2619,8 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 12px 12px 0;
-}
-
-.platform-demo__code-tabs {
-  display: inline-flex;
-  gap: 4px;
-  padding: 3px;
-  background: var(--demo-code-surface);
-  border: 1px solid var(--demo-code-border);
-  border-radius: 10px;
-}
-
-.platform-demo__code-tab {
-  min-height: 36px;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--demo-code-muted);
-  cursor: pointer;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  transition:
-    border-color var(--demo-duration-instant) var(--demo-ease-out),
-    background var(--demo-duration-instant) var(--demo-ease-out),
-    color var(--demo-duration-instant) var(--demo-ease-out);
-}
-
-.platform-demo__code-tab[data-active='true'] {
-  color: #0f1722;
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.platform-demo__code-tab:hover:not([data-active='true']) {
-  color: var(--demo-code-text);
-  background: color-mix(in srgb, var(--demo-brand) 10%, transparent);
 }
 
 .platform-demo__code-copy {
@@ -2835,7 +2766,6 @@ onBeforeUnmount(() => {
 
   .platform-demo__platform-tab,
   .platform-demo__code-toggle,
-  .platform-demo__code-tab,
   .platform-demo__code-copy,
   .platform-demo__chip,
   .platform-demo__evidence a {
@@ -2930,7 +2860,6 @@ onBeforeUnmount(() => {
   border-color: color-mix(in srgb, var(--demo-brand) 40%, var(--demo-border));
 }
 
-.platform-demo__code-tab:focus-visible,
 .platform-demo__code-toggle:focus-visible,
 .platform-demo__code-copy:focus-visible,
 .platform-demo__chip:focus-visible {
@@ -4789,8 +4718,7 @@ onBeforeUnmount(() => {
 }
 
 .platform-demo__trigger,
-.platform-demo__dialog-close,
-:deep(.varo-button) {
+.platform-demo__dialog-close {
   display: inline-flex;
   gap: 8px;
   align-items: center;
@@ -4804,57 +4732,10 @@ onBeforeUnmount(() => {
   border-radius: 16px;
 }
 
-:deep(.varo-button[data-size='sm']) {
-  gap: 6px;
-  min-height: 36px;
-  padding: 0 12px;
-  font-size: 0.82rem;
-  border-radius: 12px;
-}
-
-:deep(.varo-button[data-size='md']) {
-  min-height: 44px;
-  padding: 0 16px;
-  font-size: 0.92rem;
-  border-radius: 16px;
-}
-
-:deep(.varo-button[data-size='lg']) {
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 20px;
-  font-size: 1rem;
-  border-radius: 18px;
-}
-
 .platform-demo__trigger,
 .platform-demo__dialog-close {
   color: var(--varo-primary-foreground);
   background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
-}
-
-:deep(.varo-button[data-disabled='true']) {
-  cursor: not-allowed;
-  opacity: 0.72;
-}
-
-:deep(.varo-button[data-variant='outline']) {
-  color: var(--vp-c-text-1);
-  background: transparent;
-  border-color: var(--vp-c-divider);
-}
-
-:deep(.varo-button[data-variant='ghost']) {
-  color: var(--varo-foreground, var(--demo-brand));
-  background: var(--varo-card-muted, color-mix(in srgb, var(--demo-brand) 10%, transparent));
-}
-
-:deep(.varo-button[data-shape='square']) {
-  border-radius: 6px;
-}
-
-:deep(.varo-button[data-shape='round']) {
-  border-radius: 999px;
 }
 
 :deep(.varo-button[data-hairline='true']) {
@@ -4918,23 +4799,10 @@ onBeforeUnmount(() => {
 
 :deep(.varo-input__prefix),
 :deep(.varo-input__suffix),
-:deep(.varo-input__clear),
 :deep(.varo-input__word-limit) {
   flex: none;
   font-size: 0.82rem;
   color: var(--vp-c-text-2);
-}
-
-:deep(.varo-input__clear) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  background: color-mix(in srgb, var(--varo-muted) 14%, transparent);
-  border: 0;
-  border-radius: 999px;
 }
 
 :deep(.varo-input[data-invalid='true'] .varo-input__body) {
@@ -5375,7 +5243,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='button']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -5524,7 +5391,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='badge']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -5735,7 +5601,6 @@ onBeforeUnmount(() => {
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='popover']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -5963,71 +5828,12 @@ onBeforeUnmount(() => {
   padding-block: 12px;
 }
 
-.platform-demo__input-case[data-case='textarea'] :deep(.varo-input__word-limit) {
-  align-self: flex-end;
-  margin-bottom: 14px;
-}
-
-.platform-demo__input-sample :deep(.varo-input__clear) {
-  position: relative;
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  font-size: 0;
-  color: transparent;
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  border-radius: 999px;
-}
-
-.platform-demo__input-sample :deep(.varo-input__clear::before) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--input-muted);
-  content: '×';
-  background: transparent;
-  border-radius: 999px;
-  transition:
-    color 120ms cubic-bezier(0.16, 1, 0.3, 1),
-    background 120ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 80ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.platform-demo__input-sample :deep(.varo-input__clear:hover::before) {
-  color: var(--input-text);
-  background: var(--input-field-hover);
-}
-
-.platform-demo__input-sample :deep(.varo-input__clear:focus-visible) {
-  outline: none;
-}
-
-.platform-demo__input-sample :deep(.varo-input__clear:focus-visible::before) {
-  color: var(--input-accent);
-  box-shadow: 0 0 0 2px var(--input-accent);
-}
-
-.platform-demo__input-sample :deep(.varo-input__clear:active::before) {
-  transform: scale(0.94);
-}
-
 .platform-demo__preview-content[data-example='input'] {
   display: block;
 }
 
 .platform-demo__stage:has(.platform-demo__preview-content[data-example='input']) .platform-demo__code-shell {
   --demo-code-bg: var(--demo-surface-strong);
-  --demo-code-surface: var(--demo-surface);
   --demo-code-border: var(--demo-border);
   --demo-code-text: var(--varo-foreground);
   --demo-code-muted: var(--demo-text-muted);
@@ -6098,7 +5904,7 @@ onBeforeUnmount(() => {
   }
 }
 
-.platform-demo button:active:not(:disabled) {
+.platform-demo button:not(.varo-button):active:not(:disabled) {
   transform: scale(0.97);
 }
 

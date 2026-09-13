@@ -1,7 +1,6 @@
 import type { Locale } from './types'
 
 export const zhCopy = {
-  codeTitle: '示例代码',
   codeExpand: '展开代码',
   codeCollapse: '收起代码',
   copyCode: '复制代码',
@@ -80,7 +79,6 @@ export const zhCopy = {
 }
 
 export const enCopy = {
-  codeTitle: 'Example Code',
   codeExpand: 'Show code',
   codeCollapse: 'Hide code',
   copyCode: 'Copy code',

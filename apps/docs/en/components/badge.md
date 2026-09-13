@@ -1,7 +1,5 @@
 # Badge
 
-<RegistryInstallStrip item="components/badge" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="badge" locale="en" />

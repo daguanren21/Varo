@@ -1,7 +1,5 @@
 # Indicator
 
-<RegistryInstallStrip item="components/indicator" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="indicator" locale="en" />

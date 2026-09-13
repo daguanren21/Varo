@@ -398,9 +398,9 @@ import { ImageRoot } from '__PACKAGE__'
 
 <template>
   <ImageRoot
-    src="/avatar.png"
+    src="/logo.svg"
     alt="Profile"
-    fit="cover"
+    fit="contain"
     :width="96"
     :height="96"
     :radius="16"

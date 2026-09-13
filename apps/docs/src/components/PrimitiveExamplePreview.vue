@@ -1,54 +1,70 @@
 <script setup lang="ts">
 import type { PrimitiveExampleName } from './primitiveExamples'
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionRoot,
-  AccordionTrigger,
-  ButtonRoot,
-  CellGroupRoot,
-  CellRoot,
-  CheckboxIndicator,
-  CheckboxRoot,
-  CollapsibleContent,
-  CollapsibleRoot,
-  CollapsibleTrigger,
-  DialogClose,
-  DialogContent,
-  DialogOverlay,
-  DialogRoot,
-  DialogTrigger,
-  ImageRoot,
-  InputRoot,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-  NumberFieldRoot,
-  OverlayRoot,
-  PopoverClose,
-  PopoverContent,
-  PopoverRoot,
-  PopoverTrigger,
-  PopupRoot,
-  RadioGroup,
-  RadioIndicator,
-  RadioItem,
-  SelectContent,
-  SelectItem,
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  StickyRoot,
-  SwitchRoot,
-  SwitchThumb,
-  TabsContent,
-  TabsList,
-  TabsRoot,
-  TabsTrigger,
-} from '@varo/primitives-h5'
-import { shallowRef } from 'vue'
+import * as WeappPrimitives from '@varo-ui/weapp/primitives'
+import * as H5Primitives from '@varo/primitives-h5'
+import { computed, shallowRef } from 'vue'
 
-defineProps<{ name: PrimitiveExampleName }>()
+type PreviewPlatform = 'h5' | 'weapp'
+type PrimitiveRuntime = typeof H5Primitives
+
+const props = withDefaults(defineProps<{
+  name: PrimitiveExampleName
+  platform?: PreviewPlatform
+}>(), {
+  platform: 'h5',
+})
+
+const primitiveRuntime = computed<PrimitiveRuntime>(() =>
+  props.platform === 'weapp' ? WeappPrimitives as PrimitiveRuntime : H5Primitives,
+)
+function primitive<Name extends keyof PrimitiveRuntime>(name: Name) {
+  return computed(() => primitiveRuntime.value[name])
+}
+
+const AccordionContent = primitive('AccordionContent')
+const AccordionItem = primitive('AccordionItem')
+const AccordionRoot = primitive('AccordionRoot')
+const AccordionTrigger = primitive('AccordionTrigger')
+const ButtonRoot = primitive('ButtonRoot')
+const CellGroupRoot = primitive('CellGroupRoot')
+const CellRoot = primitive('CellRoot')
+const CheckboxIndicator = primitive('CheckboxIndicator')
+const CheckboxRoot = primitive('CheckboxRoot')
+const CollapsibleContent = primitive('CollapsibleContent')
+const CollapsibleRoot = primitive('CollapsibleRoot')
+const CollapsibleTrigger = primitive('CollapsibleTrigger')
+const DialogClose = primitive('DialogClose')
+const DialogContent = primitive('DialogContent')
+const DialogOverlay = primitive('DialogOverlay')
+const DialogRoot = primitive('DialogRoot')
+const DialogTrigger = primitive('DialogTrigger')
+const ImageRoot = primitive('ImageRoot')
+const InputRoot = primitive('InputRoot')
+const NumberFieldDecrement = primitive('NumberFieldDecrement')
+const NumberFieldIncrement = primitive('NumberFieldIncrement')
+const NumberFieldInput = primitive('NumberFieldInput')
+const NumberFieldRoot = primitive('NumberFieldRoot')
+const OverlayRoot = primitive('OverlayRoot')
+const PopoverClose = primitive('PopoverClose')
+const PopoverContent = primitive('PopoverContent')
+const PopoverRoot = primitive('PopoverRoot')
+const PopoverTrigger = primitive('PopoverTrigger')
+const PopupRoot = primitive('PopupRoot')
+const RadioGroup = primitive('RadioGroup')
+const RadioIndicator = primitive('RadioIndicator')
+const RadioItem = primitive('RadioItem')
+const SelectContent = primitive('SelectContent')
+const SelectItem = primitive('SelectItem')
+const SelectRoot = primitive('SelectRoot')
+const SelectTrigger = primitive('SelectTrigger')
+const SelectValue = primitive('SelectValue')
+const StickyRoot = primitive('StickyRoot')
+const SwitchRoot = primitive('SwitchRoot')
+const SwitchThumb = primitive('SwitchThumb')
+const TabsContent = primitive('TabsContent')
+const TabsList = primitive('TabsList')
+const TabsRoot = primitive('TabsRoot')
+const TabsTrigger = primitive('TabsTrigger')
 
 const buttonClicks = shallowRef(0)
 const inputValue = shallowRef('Editable primitive')
@@ -69,11 +85,11 @@ const selectOptions = [
 const collapsibleOpen = shallowRef(false)
 const accordionValue = shallowRef<string | string[] | undefined>('one')
 const popoverOpen = shallowRef(false)
-const imageSource = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 96 96%22%3E%3Crect width=%2296%22 height=%2296%22 rx=%2220%22 fill=%22%2307c160%22/%3E%3Cpath d=%22M24 28h18l14 20-14 20H24l14-20-14-20Zm32 0h16L58 48l14 20H56L42 48l14-20Z%22 fill=%22white%22/%3E%3C/svg%3E'
+const imageSource = '/logo.svg'
 </script>
 
 <template>
-  <div class="primitive-example-preview">
+  <div class="primitive-example-preview" :data-name="props.name" :data-platform="props.platform">
     <ButtonRoot v-if="name === 'button'" class="pe-chip" @click="buttonClicks += 1">
       Pressed {{ buttonClicks }} times
     </ButtonRoot>
@@ -500,17 +516,19 @@ const imageSource = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/s
 
 .pe-image {
   position: relative;
+  box-sizing: border-box;
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--varo-demo-surface-strong, var(--varo-card-solid));
+  background: var(--varo-card-solid, #fbfdfc);
   border: 1px solid var(--varo-demo-border, var(--varo-border));
 }
 
 .pe-image :deep(.varo-image__img) {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
 }
 
 .pe-sticky {

@@ -1,7 +1,5 @@
 # Overlay
 
-<RegistryInstallStrip item="components/overlay" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="overlay" locale="zh" />
@@ -66,6 +64,6 @@ const visible = ref(false)
 | --------- | ---------------- |
 | `default` | 自定义遮罩层内容 |
 
-## Primitives
-
+::: info Primitives
 `OverlayRoot` 使用 `useOverlayRoot` 处理受控/非受控显隐和点击关闭；H5 与 Weapp primitives 都会复用 `useBodyScrollLock`。
+:::

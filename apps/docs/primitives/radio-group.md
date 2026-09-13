@@ -10,17 +10,9 @@
 
 <PrimitiveExample name="radio-group" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## 基础用法
 
-通过上方演示面板切换 H5 实时预览，以及小程序运行时契约/代码。
+通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
 
 ## 禁用选项
 
@@ -66,13 +58,8 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - 禁用 Item 不可被选中。
 - Indicator 只反映状态。
 
-## 平台说明
+::: info 平台差异
 
 - H5 与小程序共用 value/disabled 契约。
 - 小程序侧键盘焦点由页面管理。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
-- [Blocks](/blocks/profile-edit)
+  :::

@@ -1,7 +1,5 @@
 # Tabs
 
-<RegistryInstallStrip item="components/tabs" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="tabs" locale="en" />

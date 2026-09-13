@@ -66,6 +66,23 @@ describe('RAG source references', () => {
     expect(second.classes()).not.toContain('is-highlighted')
   })
 
+  it('keeps the run control in the header directly above progress', async () => {
+    const wrapper = mount(AgentRagPipeline)
+    const header = wrapper.get('.agent-rag__header')
+    expect(wrapper.findAll('.agent-rag__action')).toHaveLength(1)
+    const progress = wrapper.get('.agent-rag__progress')
+    expect(wrapper.attributes('aria-busy')).toBeUndefined()
+    expect(header.get('[role="status"]').attributes('aria-live')).toBe('polite')
+    expect(progress.attributes('aria-busy')).toBe('false')
+    expect(header.get('.agent-rag__action').text()).toBe('运行流程')
+    expect(wrapper.find('footer').exists()).toBe(false)
+
+    await header.get('.agent-rag__action').trigger('click')
+    await wrapper.setProps({ steps: [{ id: 'query', status: 'running' }] })
+    expect(progress.attributes('aria-busy')).toBe('true')
+    expect(wrapper.emitted('run')).toEqual([[]])
+  })
+
   it('preserves a submitted query across cancellation and completed replays', async () => {
     vi.useFakeTimers()
     let demo!: ReturnType<typeof useRagDemo>

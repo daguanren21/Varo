@@ -153,6 +153,7 @@ describe('ui-weapp select', () => {
     expect(wrapper.get('.varo-select__control').element.tagName).toBe('BUTTON')
     expect(wrapper.get('.varo-select__control').find('.varo-select__clear').exists()).toBe(false)
     expect(wrapper.get('.varo-select__clear').element.tagName).toBe('BUTTON')
+    expect(wrapper.get('.varo-select__clear .varo-icon').attributes('data-name')).toBe('danger')
 
     await wrapper.get('.varo-select__trigger').trigger('click')
     expect(wrapper.findAll('.varo-select__option').every(option => option.attributes('role') === 'option')).toBe(true)

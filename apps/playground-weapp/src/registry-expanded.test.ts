@@ -12,10 +12,12 @@ import VButton from './components/ui/v-button.vue'
 import VCard from './components/ui/v-card.vue'
 import VCollapseItem from './components/ui/v-collapse-item.vue'
 import VCollapse from './components/ui/v-collapse.vue'
+import VDateField from './components/ui/v-date-field.vue'
 import VIcon from './components/ui/v-icon.vue'
 import VInput from './components/ui/v-input.vue'
 import VList from './components/ui/v-list.vue'
 import VNoticeBar from './components/ui/v-notice-bar.vue'
+import VPullRefresh from './components/ui/v-pull-refresh.vue'
 import VSteps from './components/ui/v-steps.vue'
 import VSwipeCell from './components/ui/v-swipe-cell.vue'
 import VSwitch from './components/ui/v-switch.vue'
@@ -133,7 +135,7 @@ describe('expanded weapp registry components', () => {
     })
     const filterInput = wrapper.get('.varo-select__filter-input')
     expect(filterInput.attributes('value')).toBe('Shanghai')
-    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(true)
 
     await filterInput.trigger('focus')
     expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(true)
@@ -177,7 +179,7 @@ describe('expanded weapp registry components', () => {
     wrapper.unmount()
   })
 
-  it('hides the native Select clear action between interactions', async () => {
+  it('shows the native Select clear action while the field is open', async () => {
     const wrapper = mount(VSelect, {
       props: {
         clearable: true,
@@ -189,12 +191,13 @@ describe('expanded weapp registry components', () => {
       },
     })
 
-    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
+    expect(wrapper.get('.varo-select').attributes('data-open')).toBe('false')
+    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(true)
     await wrapper.get('[role="combobox"]').trigger('click')
+    expect(wrapper.get('.varo-select').attributes('data-open')).toBe('true')
     expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(true)
     await wrapper.findAll('[role="option"]')[1].trigger('click')
     expect(wrapper.emitted('update:value')?.at(-1)).toEqual(['hangzhou'])
-    expect(wrapper.find('[aria-label="Clear selection"]').exists()).toBe(false)
 
     await wrapper.setProps({ value: 'hangzhou' })
     await wrapper.get('[role="combobox"]').trigger('click')
@@ -299,6 +302,47 @@ describe('expanded weapp registry components', () => {
     expect(root.classes()).toContain('varo-toast--success')
     expect(root.classes()).toContain('varo-toast--top')
     expect(toast.get('.varo-toast__icon .varo-icon').attributes('data-name')).toBe('success')
+  })
+
+  it('runs the native DateField as a field plus three-column Picker', async () => {
+    const wrapper = mount(VDateField, {
+      props: {
+        value: '2026-01-31',
+        visible: false,
+        minYear: 2026,
+        maxYear: 2026,
+      },
+    })
+
+    expect(wrapper.get('.varo-date-field__control').text()).toContain('2026-01-31')
+    await wrapper.get('.varo-date-field__control').trigger('click')
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([true])
+
+    await wrapper.setProps({ visible: true })
+    expect(wrapper.findAll('.varo-picker__column')).toHaveLength(3)
+    await wrapper.findAll('.varo-picker__column')[1].findAll('.varo-picker__option')[1].trigger('click')
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    await wrapper.get('.varo-picker__confirm').trigger('click')
+    expect(wrapper.emitted('update:value')?.at(-1)).toEqual(['2026-02-28'])
+    expect(wrapper.emitted('confirm')?.at(-1)).toEqual(['2026-02-28'])
+    expect(wrapper.emitted('update:visible')?.at(-1)).toEqual([false])
+    wrapper.unmount()
+  })
+
+  it('uses the native mini-program refresher contract', async () => {
+    const wrapper = mount(VPullRefresh, {
+      props: { loading: false },
+      slots: { default: () => h('view', 'Rows') },
+    })
+
+    expect(wrapper.get('scroll-view').attributes('refresher-enabled')).toBe('true')
+    await wrapper.trigger('refresherrefresh')
+    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    await wrapper.setProps({ loading: true })
+    await wrapper.trigger('refresherrefresh')
+    expect(wrapper.emitted('refresh')).toHaveLength(1)
+    expect(wrapper.attributes('data-state')).toBe('loading')
+    wrapper.unmount()
   })
 
   it('renders the mini-program Agent Chat block and forwards prompts', async () => {

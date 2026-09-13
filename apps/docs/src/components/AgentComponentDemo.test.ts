@@ -91,13 +91,15 @@ describe('AgentComponentDemo', () => {
     expect(wrapper.get('.agent-component-demo__source').text()).toContain(':suggestions=\"suggestions\"')
   })
 
-  it('reruns a completed RAG pipeline from the footer action', async () => {
+  it('reruns a completed RAG pipeline from the header action', async () => {
     const wrapper = mount(AgentComponentDemo, { props: { component: 'rag-pipeline' } })
     expect(wrapper.get('[data-rag-stage="generate"]').attributes('data-status')).toBe('completed')
     expect(wrapper.get('[data-rag-source="support"]').text()).toContain('客服工单')
     await wrapper.get('[data-rag-citation="support"]').trigger('click')
     expect(wrapper.get('output').text()).toBe('客服工单')
 
+    expect(wrapper.findAll('.agent-rag__action')).toHaveLength(1)
+    expect(wrapper.get('.agent-rag__header').find('.agent-rag__action').exists()).toBe(true)
     await wrapper.get('.agent-rag__action').trigger('click')
     await flushPromises()
     expect(wrapper.get('[data-rag-stage="query"]').attributes('data-status')).not.toBe('completed')

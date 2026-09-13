@@ -1,7 +1,5 @@
 # Rate 评分
 
-<RegistryInstallStrip item="components/rate" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="rate" locale="zh" />

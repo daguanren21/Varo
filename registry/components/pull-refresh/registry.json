@@ -1,0 +1,41 @@
+{
+  "name": "pull-refresh",
+  "type": "component",
+  "title": "VPullRefresh",
+  "description": "Top-edge pull-to-refresh with controlled loading, H5 gesture handling, and native mini-program refresher semantics.",
+  "exportName": "VPullRefresh",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/pull-refresh/h5.ts",
+      "to": "src/components/ui/pull-refresh.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/pull-refresh/v-pull-refresh.vue",
+      "to": "src/components/ui/v-pull-refresh.vue"
+    }
+  ],
+  "docs": "/components/pull-refresh"
+}

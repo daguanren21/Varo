@@ -10,17 +10,9 @@
 
 <PrimitiveExample name="switch" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
 ## 基础用法
 
-通过上方演示面板切换 H5 实时预览，以及小程序运行时契约/代码。
+通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
 
 ## Loading
 
@@ -55,13 +47,8 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - Root 默认 button 语义。
 - loading/disabled 时不可切换。
 
-## 平台说明
+::: info 平台差异
 
 - 双端共享 checked/loading 契约。
 - 视觉轨道与动画由 UI wrapper 负责。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
-- [Blocks](/blocks/profile-edit)
+  :::

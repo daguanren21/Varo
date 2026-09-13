@@ -10,19 +10,6 @@ Text-input foundation for controlled values, formatting, readonly, invalid state
 
 <PrimitiveExample name="input" locale="en" />
 
-## Install
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# or
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
-## Why this is foundational
-
-- Every form field needs one value and invalid contract.
-- Business wrappers can reuse formatter timing without replacing the primitive.
-
 ## Parts
 
 | Part        | Role                                              |
@@ -34,11 +21,6 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - State：`value`, `defaultValue`, `disabled`, `readonly`, and `invalid`
 - Events：`update:value`, `valueChange`, `focus`, and `blur`.
 
-## Platform notes
-
+::: info Platform notes
 H5 supports textarea autosize; Weapp preserves the public contract on native inputs.
-
-## Related docs
-
-- [Primitives overview](/en/primitives/)
-- [Component docs](/en/components/button)
+:::

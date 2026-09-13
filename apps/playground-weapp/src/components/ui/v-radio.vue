@@ -58,6 +58,9 @@ function select() {
 <template>
   <button
     :class="classes"
+    hover-class="varo-radio--pressed"
+    :hover-start-time="20"
+    :hover-stay-time="70"
     type="button"
     role="radio"
     :aria-checked="checked"
@@ -69,7 +72,7 @@ function select() {
   >
     <view class="varo-radio__icon" aria-hidden="true">
       <slot name="icon">
-        <view v-if="checked" class="varo-radio__dot" />
+        <view class="varo-radio__dot" />
       </slot>
     </view>
     <text class="varo-radio__label">
@@ -82,15 +85,6 @@ function select() {
     </text>
   </button>
 </template>
-
-<style>
-.varo-radio__dot {
-  width: 6px;
-  height: 6px;
-  background: currentcolor;
-  border-radius: 50%;
-}
-</style>
 
 <json lang="jsonc">
 {

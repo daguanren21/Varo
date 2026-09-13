@@ -1,7 +1,5 @@
 # Textarea 文本域
 
-<RegistryInstallStrip item="components/textarea" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="textarea" locale="zh" />

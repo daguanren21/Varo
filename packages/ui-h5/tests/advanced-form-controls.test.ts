@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { h } from 'vue'
 import { VCalendar, VCalendarCard } from '../src/calendar'
 import { VCascader } from '../src/cascader'
+import { VDateField } from '../src/date-field'
 import { VDatePicker } from '../src/date-picker'
 import { VNumberKeyboard } from '../src/number-keyboard'
 import { VPicker } from '../src/picker'
@@ -47,6 +48,82 @@ describe('ui-h5 advanced form controls', () => {
       option: { label: 'Pear', value: 'pear' },
       value: 'pear',
     })
+  })
+
+  it('confirms multi-column picker values as an array', async () => {
+    const onConfirm = vi.fn()
+    const wrapper = mount(VPicker, {
+      props: {
+        columns: [
+          [
+            { label: '2026', value: 2026 },
+            { label: '2027', value: 2027 },
+          ],
+          [
+            { label: '05', value: 5 },
+            { label: '06', value: 6 },
+          ],
+        ],
+        value: [2026, 5],
+        visible: true,
+        onConfirm,
+      },
+    })
+
+    await wrapper.findAll('.varo-picker__column')[1].findAll('.varo-picker__option')[1].trigger('click')
+    await wrapper.get('.varo-picker__confirm').trigger('click')
+
+    expect(onConfirm).toHaveBeenCalledWith({
+      option: [
+        { label: '2026', value: 2026 },
+        { label: '06', value: 6 },
+      ],
+      value: [2026, 6],
+    })
+    wrapper.unmount()
+  })
+
+  it('composes DateField year-month-day columns from Picker', async () => {
+    const onConfirm = vi.fn()
+    const onChange = vi.fn()
+    const onCancel = vi.fn()
+    const onUpdateVisible = vi.fn()
+    const onUpdateValue = vi.fn()
+    const wrapper = mount(VDateField, {
+      props: {
+        'value': '2026-05-18',
+        'visible': true,
+        'minYear': 2025,
+        'maxYear': 2027,
+        onChange,
+        onConfirm,
+        onCancel,
+        'onUpdate:value': onUpdateValue,
+        'onUpdate:visible': onUpdateVisible,
+      },
+    })
+
+    expect(wrapper.get('.varo-date-field__control').text()).toContain('2026-05-18')
+    expect(wrapper.get('.varo-date-field__control').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.get('.varo-date-field__control').attributes('aria-haspopup')).toBeUndefined()
+    expect(wrapper.findAll('.varo-picker__column')).toHaveLength(3)
+    await wrapper.findAll('.varo-picker__column')[1].findAll('.varo-picker__option')[5].trigger('click')
+    expect(onChange).toHaveBeenCalledWith('2026-06-18')
+    expect(onUpdateValue).not.toHaveBeenCalled()
+    expect(wrapper.get('.varo-date-field__control').text()).toContain('2026-05-18')
+    await wrapper.get('.varo-picker__confirm').trigger('click')
+    expect(onUpdateValue).toHaveBeenCalledWith('2026-06-18')
+    expect(onConfirm).toHaveBeenCalledWith('2026-06-18')
+    expect(onUpdateVisible).toHaveBeenLastCalledWith(false)
+
+    await wrapper.setProps({ visible: false })
+    await wrapper.get('.varo-date-field__control').trigger('click')
+    expect(onUpdateVisible).toHaveBeenLastCalledWith(true)
+    await wrapper.setProps({ visible: true })
+    await wrapper.get('.varo-picker__cancel').trigger('click')
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(onUpdateVisible).toHaveBeenLastCalledWith(false)
+    wrapper.unmount()
   })
 
   it('walks cascader levels and confirms selected path', async () => {

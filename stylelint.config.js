@@ -17,7 +17,7 @@ export default await defineStylelintConfig({
         ],
         rules: {
           'selector-type-no-unknown': [true, {
-            ignoreTypes: ['wx-page', 'wx-view', 'wx-text', 'wx-button', 'wx-input', 'wx-textarea', 'wx-label', 'wx-image', 'wx-scroll-view', 'wx-rich-text', 'wx-map', 'wx-wechat-robot-chat'],
+            ignoreTypes: ['wx-page', 'wx-view', 'wx-text', 'wx-button', 'wx-input', 'wx-textarea', 'wx-label', 'wx-image', 'wx-canvas', 'wx-scroll-view', 'wx-rich-text', 'wx-map', 'wx-wechat-robot-chat'],
           }],
         },
       },

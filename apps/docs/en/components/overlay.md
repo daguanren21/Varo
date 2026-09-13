@@ -1,7 +1,5 @@
 # Overlay
 
-<RegistryInstallStrip item="components/overlay" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="overlay" locale="en" />
@@ -66,6 +64,6 @@ const visible = ref(false)
 | --------- | ---------------------- |
 | `default` | Custom overlay content |
 
-## Primitives
-
+::: info Primitives
 `OverlayRoot` uses `useOverlayRoot` for controlled/uncontrolled state and click-close behavior. H5 and Weapp primitives both reuse `useBodyScrollLock`.
+:::

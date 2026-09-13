@@ -1,7 +1,5 @@
 # Image
 
-<RegistryInstallStrip item="components/image" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="image" locale="en" />
@@ -74,6 +72,6 @@
 | `loading` | Custom loading placeholder |
 | `error`   | Custom error placeholder   |
 
-## Primitives
-
+::: info Primitives
 `ImageRoot` comes from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`; `@varo-ui/headless` only carries shared state contracts, while `VImage` adds the Varo API wrapper and classes.
+:::

@@ -1,7 +1,5 @@
 # Cascader
 
-<RegistryInstallStrip item="components/cascader" :targets="['h5']" locale="en" />
-
 ## Demo
 
 <FormComponentDemo example="cascader" locale="en" />

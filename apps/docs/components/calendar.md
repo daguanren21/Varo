@@ -1,7 +1,5 @@
 # Calendar 日历
 
-<RegistryInstallStrip item="components/calendar" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="calendar" locale="zh" />

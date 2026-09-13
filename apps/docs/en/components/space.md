@@ -1,7 +1,5 @@
 # Space
 
-<RegistryInstallStrip item="components/space" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="space" locale="en" />

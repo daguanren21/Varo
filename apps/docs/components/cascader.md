@@ -1,7 +1,5 @@
 # Cascader 级联选择器
 
-<RegistryInstallStrip item="components/cascader" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="cascader" locale="zh" />

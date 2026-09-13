@@ -10,19 +10,6 @@ H5 与小程序 adapters 保持相同公开 API；键盘和导航细节由目标
 
 <PrimitiveExample name="cell" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/headless @varo-ui/h5
-# 或
-pnpm add @varo-ui/headless @varo-ui/weapp
-```
-
-## 为什么是基础能力
-
-- 移动端业务大量依赖统一的信息行与设置项。
-- 标题、描述、图标和链接提示保持结构稳定。
-
 ## Parts
 
 | Part            | 作用                       |
@@ -35,11 +22,6 @@ pnpm add @varo-ui/headless @varo-ui/weapp
 - 状态：`clickable`、`isLink`、`to`、`size`、`center`
 - 事件：`click`。
 
-## 平台说明
-
+::: info 平台差异
 H5 为可点击非链接行补充 Enter/Space；小程序使用原生点击。
-
-## 相关文档
-
-- [Primitives 总览](/primitives/)
-- [组件文档](/components/button)
+:::

@@ -23,7 +23,7 @@ describe('FormComponentDemo', () => {
     vi.useRealTimers()
   })
 
-  it('expands one active code sample and switches between H5 and mini-program code', async () => {
+  it('keeps expanded code synchronized with the upper runtime tabs', async () => {
     const writeText = vi.fn((text: string) => Promise.resolve(text))
     vi.stubGlobal('navigator', { clipboard: { writeText } })
 
@@ -44,22 +44,34 @@ describe('FormComponentDemo', () => {
 
     await toggle.trigger('click')
     const code = wrapper.get('.form-demo__code')
-    const tabs = code.findAll('.form-demo__tab')
+    const platformTabs = wrapper.findAll('.form-demo__platform-switch button')
+    const preview = wrapper.get('.form-demo__preview')
+
+    expect(platformTabs).toHaveLength(2)
+    expect(code.findAll('[role="tab"]')).toHaveLength(0)
+    expect(preview.attributes('id')).toBe('form-picker-platform-panel')
+    expect(preview.attributes('role')).toBe('tabpanel')
+    expect(preview.attributes('aria-labelledby')).toBe('form-picker-platform-tab-h5')
+    expect(platformTabs[0]!.attributes('aria-controls')).toBe('form-picker-platform-panel')
+    expect(platformTabs[0]!.attributes('tabindex')).toBe('0')
+    expect(platformTabs[1]!.attributes('tabindex')).toBe('-1')
 
     expect(toggle.attributes('aria-label')).toBe('收起代码')
     expect(toggle.text()).toContain('收起代码')
-    expect(tabs).toHaveLength(2)
-    expect(tabs[0]!.attributes('data-active')).toBe('true')
+    expect(platformTabs[0]!.attributes('data-active')).toBe('true')
     expect(code.get('code').text()).toContain('from \'@varo-ui/h5\'')
     expect(code.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
 
     const copyButton = code.get('.form-demo__code-copy')
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
 
-    await tabs[1]!.trigger('click')
+    await platformTabs[0]!.trigger('keydown', { key: 'ArrowRight' })
 
-    expect(tabs[0]!.attributes('data-active')).toBe('false')
-    expect(tabs[1]!.attributes('data-active')).toBe('true')
+    expect(platformTabs[0]!.attributes('data-active')).toBe('false')
+    expect(platformTabs[1]!.attributes('data-active')).toBe('true')
+    expect(platformTabs[0]!.attributes('tabindex')).toBe('-1')
+    expect(platformTabs[1]!.attributes('tabindex')).toBe('0')
+    expect(preview.attributes('aria-labelledby')).toBe('form-picker-platform-tab-weapp')
     expect(code.get('code').text()).toContain('from \'@varo-ui/weapp\'')
     expect(code.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
     expect(code.get('code').text()).toContain('from \'wevu\'')
@@ -74,7 +86,9 @@ describe('FormComponentDemo', () => {
     expect(copyButton.attributes('aria-label')).toBe('已复制')
     expect(code.get('.form-demo__code-toast').text()).toContain('已复制到剪贴板')
 
-    await tabs[0]!.trigger('click')
+    await platformTabs[1]!.trigger('keydown', { key: 'Home' })
+    expect(code.get('code').text()).toContain('from \'@varo-ui/h5\'')
+    expect(code.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
     expect(code.find('.form-demo__code-toast').exists()).toBe(false)
   })
@@ -511,19 +525,6 @@ describe('FormComponentDemo', () => {
     expect(switches[1]!.attributes('aria-label')).toBe('订单状态通知')
     await switches[0]!.trigger('click')
     expect(switchDemo.get('.form-demo__control-head output').text()).toBe('已关闭')
-
-    const toast = mount(FormComponentDemo, {
-      global: { plugins: [themePlugin] },
-      props: { example: 'toast', locale: 'zh' },
-    })
-    const toasts = toast.findAll('.varo-toast')
-    expect(toasts).toHaveLength(4)
-    expect(toasts.map(item => item.attributes('data-type'))).toEqual(['text', 'warning', 'danger', 'success'])
-    expect(toast.text()).toContain('信息已更新')
-    expect(toast.text()).toContain('请检查必填项')
-    expect(toast.text()).toContain('请求失败')
-    expect(toast.text()).toContain('保存成功')
-    expect(toast.find('.varo-toast__close').exists()).toBe(false)
 
     const loading = mount(FormComponentDemo, {
       global: { plugins: [themePlugin] },

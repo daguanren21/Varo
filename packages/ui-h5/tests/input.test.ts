@@ -62,6 +62,7 @@ describe('ui-h5 input', () => {
     })
 
     expect(wrapper.find('.varo-input__clear').exists()).toBe(true)
+    expect(wrapper.get('.varo-input__clear .varo-icon').attributes('data-name')).toBe('danger')
 
     await wrapper.get('.varo-input__clear').trigger('click')
 
@@ -93,6 +94,7 @@ describe('ui-h5 input', () => {
     expect(textarea.attributes('rows')).toBe('2')
     expect(textarea.attributes('data-autosize')).toBe('true')
     expect(wrapper.attributes('data-readonly')).toBe('true')
+    expect(wrapper.attributes('data-type')).toBe('textarea')
     expect(wrapper.get('.varo-input__error').text()).toBe('Required')
   })
 

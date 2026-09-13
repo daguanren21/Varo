@@ -138,6 +138,18 @@ wx-image[data-native-image-mode='heightFix'] > .varo-native-image__control {
   width: auto;
 }
 
+wx-canvas {
+  box-sizing: border-box;
+  display: block;
+  min-width: 0;
+}
+
+wx-canvas > .varo-native-canvas__control {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 wx-scroll-view {
   box-sizing: border-box;
   display: block;

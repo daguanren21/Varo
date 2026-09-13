@@ -1,7 +1,5 @@
 # Sticky
 
-<RegistryInstallStrip item="components/sticky" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 演示
 
 <PlatformTabsDemo example="sticky" locale="zh" />
@@ -63,6 +61,6 @@
 | --------- | --------------------------------- |
 | `default` | 吸顶内容，slot props 包含 `fixed` |
 
-## Primitives
-
+::: info Primitives
 `Sticky` 有滚动状态和事件，因此 H5 / Weapp 均提供 `StickyRoot` primitive；`Divider`、`Grid`、`Layout`、`Space` 是静态布局展示组件，直接在 UI 层实现。
+:::

@@ -74,16 +74,8 @@ describe('PlatformTabsDemo', () => {
     expect(toggle.attributes('aria-label')).toBe('收起代码')
     expect(toggle.text()).toContain('收起代码')
 
-    const codeTabs = codeShell.findAll('.platform-demo__code-tab')
-    expect(codeTabs).toHaveLength(2)
-    expect(codeTabs[0]!.text()).toBe('H5 写法')
-    expect(codeTabs[1]!.text()).toBe('小程序写法')
-    expect(codeTabs[0]!.find('svg').exists()).toBe(false)
-    expect(codeTabs[1]!.find('svg').exists()).toBe(false)
-    expect(codeTabs[0]!.attributes('data-active')).toBe('true')
-    expect(codeTabs[1]!.attributes('data-active')).toBe('false')
-    expect(codeTabs[0]!.attributes('aria-selected')).toBe('true')
-    expect(codeTabs[1]!.attributes('aria-selected')).toBe('false')
+    expect(codeShell.findAll('[role="tab"]')).toHaveLength(0)
+    expect(wrapper.findAll('.platform-demo__platform-switch [role="tab"]')).toHaveLength(2)
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('H5 写法')
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/h5')
@@ -494,8 +486,9 @@ describe('PlatformTabsDemo', () => {
 
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
     expect(wrapper.find('.platform-demo__code-shell').exists()).toBe(true)
-    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('Weapp Contract Preview')
-    expect(wrapper.get('.platform-demo__evidence a').text()).toContain('Weapp DevTools Verified · 2026-08-28')
+    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('Weapp Preview')
+    expect(wrapper.get('.platform-demo__evidence span').text()).toBe('Browser contract')
+    expect(wrapper.get('.platform-demo__evidence a').text()).toContain('DevTools · 2026-08-28')
     expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('weapp')
 
     await wrapper.findAll('.platform-demo__platform-tab')[0]!.trigger('click')
@@ -558,7 +551,7 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('h5')
   })
 
-  it('expands and switches example code between H5 and mini-program snippets', async () => {
+  it('keeps expanded code synchronized with the upper runtime tabs', async () => {
     const writeText = vi.fn((text: string) => Promise.resolve(text))
     const clipboard = { writeText }
     vi.stubGlobal('navigator', { clipboard })
@@ -574,15 +567,11 @@ describe('PlatformTabsDemo', () => {
     })
 
     await wrapper.get('.platform-demo__code-toggle').trigger('click')
-    const codeShell = wrapper.get('.platform-demo__code-shell')
     const codeSection = wrapper.get('.platform-demo__code-section')
-    const codeTabs = codeShell.findAll('.platform-demo__code-tab')
-    await codeTabs[1]!.trigger('click')
-
-    expect(codeTabs[0]!.attributes('data-active')).toBe('false')
-    expect(codeTabs[1]!.attributes('data-active')).toBe('true')
-    expect(codeTabs[0]!.attributes('aria-selected')).toBe('false')
-    expect(codeTabs[1]!.attributes('aria-selected')).toBe('true')
+    const platformTabs = wrapper.findAll('.platform-demo__platform-tab')
+    expect(platformTabs).toHaveLength(2)
+    expect(codeSection.findAll('[role="tab"]')).toHaveLength(0)
+    await platformTabs[1]!.trigger('click')
     expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序写法')
     expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/weapp')
@@ -601,7 +590,9 @@ describe('PlatformTabsDemo', () => {
     expect(copyButton.attributes('aria-label')).toBe('已复制')
     expect(wrapper.get('.platform-demo__code-toast').text()).toContain('已复制到剪贴板')
 
-    await codeTabs[0]!.trigger('click')
+    await platformTabs[0]!.trigger('click')
+    expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
+    expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
     expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
     expect(wrapper.find('.platform-demo__code-toast').exists()).toBe(false)
 

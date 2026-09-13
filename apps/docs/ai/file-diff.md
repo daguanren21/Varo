@@ -6,16 +6,6 @@
 
 <AgentComponentDemo component="file-diff" locale="zh" />
 
-## 安装
-
-```bash
-pnpm add @varo-ui/ai
-pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
-pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
-```
-
-UI 组件由 Registry 安装到项目本地，因此从 `@/components/agent-ui` 导入；`@varo-ui/ai` 只提供事件协议、流控制和 Markdown 能力，不导出 Vue/Wevu UI 组件。
-
 ## 基础用法
 
 ```vue
@@ -89,17 +79,11 @@ const lines: AgentDiffLine[] = [
 | ------ | ----------------------- | ------------------------------------------- |
 | `line` | `{ line, index, side }` | 覆盖代码内容渲染；用于接入已有 token 高亮器 |
 
-## 设计边界
-
-视觉和交互参考 [@pierre/diffs](https://github.com/pierrecomputer/pierre/tree/main/packages/diffs)：中性代码面、低饱和新增/删除层、边栏指示、单栏/并排布局、行内变化和可展开 hunk。
-
-Varo 不是其移植版。`@pierre/diffs` 的 Shadow DOM、Shiki、Worker Pool 和大规模虚拟化针对浏览器代码审阅；这些能力不能直接运行在小程序。`AgentFileDiff` 保留适合 Agent 输出的轻量数据契约和双端一致交互。只做 H5 且需要超大 Diff、语法高亮、注释或编辑时，应直接使用 `@pierre/diffs`。
-
-## 平台差异
+::: info 平台差异
 
 | Target | Import                                                                                           |
 | ------ | ------------------------------------------------------------------------------------------------ |
 | H5     | Named export from `@/components/agent-ui`                                                        |
 | weapp  | 默认导出自 `@/components/agent-ui/AgentFileDiff.vue`；类型来自 `@/components/agent-ui/file-diff` |
 
-组件 API 在两个目标保持一致；DOM/WXML、调度和原生事件由目标实现负责。
+:::

@@ -253,6 +253,7 @@ export const VInput = defineComponent({
           'data-invalid': String(effectiveInvalid.value),
           'data-readonly': String(props.readonly),
           'data-size': props.size,
+          'data-type': props.type,
         },
         [
           labelVisible.value
@@ -309,7 +310,7 @@ export const VInput = defineComponent({
                     'onClick': clear,
                     'onMousedown': (event: MouseEvent) => event.preventDefault(),
                   },
-                  h(VIcon, { name: 'close', size: 14 }),
+                  h(VIcon, { name: 'danger', size: 16 }),
                 )
               : null,
             props.showWordLimit ? h('span', { class: 'varo-input__word-limit' }, wordLimit.value) : null,

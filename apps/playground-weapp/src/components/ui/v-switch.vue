@@ -5,11 +5,13 @@ import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     disabled?: boolean
     loading?: boolean
     modelValue?: boolean
   }>(),
   {
+    ariaLabel: 'Switch',
     disabled: false,
     loading: false,
     modelValue: false,
@@ -33,6 +35,7 @@ const checked = computed(() => switchRoot.state.checked.value)
 const interactive = computed(() => switchRoot.state.interactive.value)
 const loading = computed(() => switchRoot.state.loading.value)
 const thumbState = computed(() => switchRoot.state.checked.value ? 'checked' : 'unchecked')
+const interactiveAttribute = computed(() => String(interactive.value))
 
 function update(value: boolean) {
   emit('update:modelValue', value)
@@ -47,12 +50,17 @@ function toggle() {
 <template>
   <button
     class="varo-switch"
+    :aria-label="props.ariaLabel"
+    hover-class="varo-switch--pressed"
+    :hover-start-time="20"
+    :hover-stay-time="70"
     type="button"
     role="switch"
     :disabled="!interactive"
     :aria-checked="checked"
     :data-state="thumbState"
     :data-loading="String(loading)"
+    :data-interactive="interactiveAttribute"
     @click="toggle"
   >
     <view class="varo-switch__track">

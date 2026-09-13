@@ -70,6 +70,14 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 `dev:ai` 会准备微信开发者工具项目、启动 MCP HTTP 服务，并将 DevTools console 与未捕获异常转发到当前终端。
 
+## 文档开发
+
+```bash
+pnpm run docs:dev
+```
+
+该命令会在 `http://localhost:5173` 启动 VitePress，并在文档页内提供 H5 与 Weapp 组件预览。
+
 ## 验证
 
 ```bash

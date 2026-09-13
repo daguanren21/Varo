@@ -1,7 +1,5 @@
 # Sticky
 
-<RegistryInstallStrip item="components/sticky" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="sticky" locale="en" />
@@ -63,6 +61,6 @@
 | --------- | -------------------------------------- |
 | `default` | Sticky content, with `fixed` slot prop |
 
-## Primitives
-
+::: info Primitives
 `Sticky` has scroll state and events, so H5 and Weapp expose a `StickyRoot` primitive. `Divider`, `Grid`, `Layout`, and `Space` are static display/layout components implemented directly in the UI packages.
+:::

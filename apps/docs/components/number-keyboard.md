@@ -1,7 +1,5 @@
 # NumberKeyboard 数字键盘
 
-<RegistryInstallStrip item="components/number-keyboard" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="number-keyboard" locale="zh" />

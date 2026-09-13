@@ -364,7 +364,7 @@ export const VSelect = defineComponent({
                   'onClick': clear,
                   'onMousedown': (event: MouseEvent) => event.preventDefault(),
                 },
-                h(VIcon, { name: 'close', size: 14 }),
+                h(VIcon, { name: 'danger', size: 16 }),
               )
             : null,
           h('span', {

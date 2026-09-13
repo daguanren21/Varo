@@ -1,7 +1,5 @@
 # Input
 
-<RegistryInstallStrip item="components/input" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="input" locale="en" />
@@ -94,9 +92,13 @@ const digits = (value: string) => value.replace(/\D/g, '')
 | `suffixIcon`    | `string`                                            | `undefined` | Suffix content                            |
 | `errorMessage`  | `string`                                            | `undefined` | Error message                             |
 
-> Weapp properties cannot distinguish an omitted `value` from an explicit `:value="undefined"`; both use the uncontrolled `defaultValue`. Pass `value=""` for a controlled empty value. `VTextarea` follows the same rule.
+::: warning Controlled empty values on Weapp
+Weapp cannot distinguish an omitted `value` from `:value="undefined"`; both use `defaultValue`. Pass `value=""` for a controlled empty value.
+:::
 
-The Weapp native-control bridge uses explicit props: `name` participates in form submission, `inputId` sets the inner `<input>`/`<textarea>` id, and `className`/`customStyle` style the component wrapper. `ariaDescribedby`, `ariaLabelledby`, `form`, `focus`, `autoFocus`, `cursor`, `selectionStart`, `selectionEnd`, `adjustPosition`, and `holdKeyboard` are forwarded to the inner native control. H5 continues to accept native attrs directly.
+::: info Native Weapp props
+`name`, `inputId`, `className`, `customStyle`, ARIA, form, focus, cursor, and keyboard props are forwarded to the native control. H5 accepts native attrs directly.
+:::
 
 ## Events
 

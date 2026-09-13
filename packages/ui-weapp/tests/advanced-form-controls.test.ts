@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { VCalendarCard } from '../src/calendar'
 import { VCascader } from '../src/cascader'
+import { VDateField } from '../src/date-field'
 import { VDatePicker } from '../src/date-picker'
 import { VNumberKeyboard } from '../src/number-keyboard'
 import { VPicker } from '../src/picker'
@@ -49,6 +50,62 @@ describe('ui-weapp advanced form controls', () => {
     expect(pickerConfirm).toHaveBeenCalledWith(expect.objectContaining({ value: 'pear' }))
     expect(cascaderConfirm).toHaveBeenCalledWith(expect.objectContaining({ value: ['zhejiang', 'hangzhou'] }))
     expect(dateConfirm).toHaveBeenCalledWith('2026-05-20')
+  })
+
+  it('ignores disabled picker options and closes on cancel', async () => {
+    const onChange = vi.fn()
+    const onCancel = vi.fn()
+    const onUpdateVisible = vi.fn()
+    const wrapper = mount(VPicker, {
+      props: {
+        'columns': [
+          { label: 'Apple', value: 'apple' },
+          { disabled: true, label: 'Hidden', value: 'hidden' },
+        ],
+        'value': 'apple',
+        'visible': true,
+        onChange,
+        onCancel,
+        'onUpdate:visible': onUpdateVisible,
+      },
+    })
+
+    await wrapper.findAll('.varo-picker__option')[1].trigger('click')
+    expect(onChange).not.toHaveBeenCalled()
+    await wrapper.get('.varo-picker__cancel').trigger('click')
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(onUpdateVisible).toHaveBeenCalledWith(false)
+    wrapper.unmount()
+  })
+
+  it('confirms and cancels DateField year-month-day columns', async () => {
+    const onConfirm = vi.fn()
+    const onCancel = vi.fn()
+    const onUpdateVisible = vi.fn()
+    const onUpdateValue = vi.fn()
+    const wrapper = mount(VDateField, {
+      props: {
+        'value': '2026-01-31',
+        'visible': true,
+        'minYear': 2026,
+        'maxYear': 2026,
+        onConfirm,
+        onCancel,
+        'onUpdate:visible': onUpdateVisible,
+        'onUpdate:value': onUpdateValue,
+      },
+    })
+
+    await wrapper.findAll('.varo-picker__column')[1].findAll('.varo-picker__option')[1].trigger('click')
+    expect(onUpdateValue).not.toHaveBeenCalled()
+    await wrapper.get('.varo-picker__confirm').trigger('click')
+    expect(onUpdateValue).toHaveBeenCalledWith('2026-02-28')
+    expect(onConfirm).toHaveBeenCalledWith('2026-02-28')
+    expect(onUpdateVisible).toHaveBeenLastCalledWith(false)
+    await wrapper.get('.varo-picker__cancel').trigger('click')
+    expect(onCancel).toHaveBeenCalledTimes(1)
+    expect(onUpdateVisible).toHaveBeenLastCalledWith(false)
+    wrapper.unmount()
   })
 
   it('hydrates cascader selections from controlled values', async () => {

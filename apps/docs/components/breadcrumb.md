@@ -1,7 +1,5 @@
 # Breadcrumb 面包屑
 
-<RegistryInstallStrip item="components/breadcrumb" :targets="['h5', 'weapp']" locale="zh" />
-
 ## 基础用法
 
 ```vue

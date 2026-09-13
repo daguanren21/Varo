@@ -11,6 +11,7 @@
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev --parallel",
+    "docs:dev": "pnpm --dir apps/docs dev",
     "dev:playground-h5": "pnpm --filter @varo/playground-h5 dev",
     "dev:playground-weapp": "pnpm --filter @varo/playground-weapp dev",
     "lint": "turbo run lint",

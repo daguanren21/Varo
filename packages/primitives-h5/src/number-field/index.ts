@@ -87,8 +87,9 @@ export const NumberFieldInput = defineComponent({
         ...restAttrs,
         ...numberField.attrs.input,
         disabled: numberField.state.disabled.value || undefined,
+        inputmode: 'decimal',
         readonly: numberField.state.readonly.value || undefined,
-        type: 'number',
+        type: 'text',
         value: String(numberField.state.value.value),
         onBlur: (event: FocusEvent) => {
           numberField.events.input(eventValue(event))

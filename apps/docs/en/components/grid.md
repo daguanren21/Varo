@@ -1,7 +1,5 @@
 # Grid
 
-<RegistryInstallStrip item="components/grid" :targets="['h5', 'weapp']" locale="en" />
-
 ## Demo
 
 <PlatformTabsDemo example="grid" locale="en" />

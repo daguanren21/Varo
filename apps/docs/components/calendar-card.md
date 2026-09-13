@@ -1,7 +1,5 @@
 # CalendarCard 日历卡片
 
-<RegistryInstallStrip item="components/calendar" :targets="['h5']" locale="zh" />
-
 ## 演示
 
 <FormComponentDemo example="calendar-card" locale="zh" />

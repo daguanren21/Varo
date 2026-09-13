@@ -24,7 +24,6 @@ import {
   VSkeleton as H5Skeleton,
   VSwitch as H5Switch,
   VTextarea as H5Textarea,
-  VToast as H5Toast,
   VUploader as H5Uploader,
 } from '@varo-ui/h5'
 import {
@@ -52,7 +51,6 @@ import {
   VSkeleton as WeappSkeleton,
   VSwitch as WeappSwitch,
   VTextarea as WeappTextarea,
-  VToast as WeappToast,
   VUploader as WeappUploader,
 } from '@varo-ui/weapp'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
@@ -79,7 +77,6 @@ type FormDemoKind
     | 'short-password'
     | 'switch'
     | 'textarea'
-    | 'toast'
     | 'uploader'
 type Locale = 'zh' | 'en'
 type Platform = 'h5' | 'weapp'
@@ -96,6 +93,8 @@ const props = withDefaults(
 
 const codeExpanded = ref(false)
 const activePlatform = ref<Platform>('h5')
+const platforms: Platform[] = ['h5', 'weapp']
+const platformPanelId = computed(() => `form-${props.example}-platform-panel`)
 const VButton = computed(() => activePlatform.value === 'h5' ? H5Button : WeappButton)
 const VCalendar = computed(() => activePlatform.value === 'h5' ? H5Calendar : WeappCalendar)
 const VCalendarCard = computed(() => activePlatform.value === 'h5' ? H5CalendarCard : WeappCalendarCard)
@@ -120,7 +119,6 @@ const VSkeleton = computed(() => activePlatform.value === 'h5' ? H5Skeleton : We
 const VShortPassword = computed(() => activePlatform.value === 'h5' ? H5ShortPassword : WeappShortPassword)
 const VSwitch = computed(() => activePlatform.value === 'h5' ? H5Switch : WeappSwitch)
 const VTextarea = computed(() => activePlatform.value === 'h5' ? H5Textarea : WeappTextarea)
-const VToast = computed(() => activePlatform.value === 'h5' ? H5Toast : WeappToast)
 const VUploader = computed(() => activePlatform.value === 'h5' ? H5Uploader : WeappUploader)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 let copyFeedbackTimer: number | undefined
@@ -142,12 +140,6 @@ const componentSearchResults = computed(() => {
   )
 })
 const textareaValue = shallowRef(props.locale === 'en' ? 'The confirmation button does not respond after selecting a date.' : '选择日期后点击确认按钮没有响应。')
-const toastItems = computed(() => [
-  { id: 'info', message: props.locale === 'en' ? 'Information updated' : '信息已更新', type: 'text' as const },
-  { id: 'warning', message: props.locale === 'en' ? 'Check required fields' : '请检查必填项', type: 'warning' as const },
-  { id: 'error', message: props.locale === 'en' ? 'Request failed' : '请求失败', type: 'danger' as const },
-  { id: 'success', message: props.locale === 'en' ? 'Saved successfully' : '保存成功', type: 'success' as const },
-])
 const formModel = reactive({
   account: '',
   budget: 40,
@@ -237,7 +229,6 @@ const copy = computed(() =>
   props.locale === 'en'
     ? {
         preview: 'Live Preview',
-        code: 'Example Code',
         codeExpand: 'Show code',
         codeCollapse: 'Hide code',
         copyCode: 'Copy code',
@@ -388,7 +379,6 @@ const copy = computed(() =>
       }
     : {
         preview: '演示效果',
-        code: '示例代码',
         codeExpand: '展开代码',
         codeCollapse: '收起代码',
         copyCode: '复制代码',
@@ -1203,23 +1193,6 @@ const marketingEnabled = shallowRef(true)
   </section>
 </template>
       `.trim()
-    case 'toast':
-      return `
-<script setup lang="ts">
-import { VToast } from '${packageName}'
-
-const toasts = [
-  { message: '信息提示', type: 'text' },
-  { message: '警告提示', type: 'warning' },
-  { message: '错误提示', type: 'danger' },
-  { message: '成功提示', type: 'success' }
-] as const
-<\/script>
-
-<template>
-  <VToast v-for="toast in toasts" :key="toast.type" :visible="true" :type="toast.type" :message="toast.message" :closeable="false" />
-</template>
-      `.trim()
     case 'loading':
       return `
 <script setup lang="ts">
@@ -1305,6 +1278,37 @@ function setPlatform(platform: Platform) {
   resetCopyState()
 }
 
+function platformTabId(platform: Platform) {
+  return `form-${props.example}-platform-tab-${platform}`
+}
+
+function handlePlatformTabKeydown(event: KeyboardEvent) {
+  const currentIndex = platforms.indexOf(activePlatform.value)
+  let nextIndex = currentIndex
+  if (event.key === 'ArrowRight') {
+    nextIndex = (currentIndex + 1) % platforms.length
+  }
+  else if (event.key === 'ArrowLeft') {
+    nextIndex = (currentIndex - 1 + platforms.length) % platforms.length
+  }
+  else if (event.key === 'Home') {
+    nextIndex = 0
+  }
+  else if (event.key === 'End') {
+    nextIndex = platforms.length - 1
+  }
+  else {
+    return
+  }
+
+  event.preventDefault()
+  setPlatform(platforms[nextIndex]!)
+  const tabs = (event.currentTarget as HTMLElement)
+    .closest('[role="tablist"]')
+    ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+  tabs?.[nextIndex]?.focus()
+}
+
 function toggleCodeExpanded() {
   codeExpanded.value = !codeExpanded.value
   if (!codeExpanded.value) {
@@ -1387,26 +1391,40 @@ function onFormArrayFailed() {
     <div class="form-demo__stage" :data-platform="activePlatform">
       <div class="form-demo__platform-switch" role="tablist" :aria-label="copy.preview">
         <button
+          :id="platformTabId('h5')"
           type="button"
           role="tab"
+          :aria-controls="platformPanelId"
           :aria-selected="activePlatform === 'h5'"
           :data-active="activePlatform === 'h5'"
+          :tabindex="activePlatform === 'h5' ? 0 : -1"
           @click="setPlatform('h5')"
+          @keydown="handlePlatformTabKeydown"
         >
           H5
         </button>
         <button
+          :id="platformTabId('weapp')"
           type="button"
           role="tab"
+          :aria-controls="platformPanelId"
           :aria-selected="activePlatform === 'weapp'"
           :data-active="activePlatform === 'weapp'"
+          :tabindex="activePlatform === 'weapp' ? 0 : -1"
           @click="setPlatform('weapp')"
+          @keydown="handlePlatformTabKeydown"
         >
           {{ locale === 'en' ? 'Mini Program' : '小程序' }}
         </button>
       </div>
 
-      <div class="form-demo__preview" :data-example="example">
+      <div
+        :id="platformPanelId"
+        class="form-demo__preview"
+        :data-example="example"
+        role="tabpanel"
+        :aria-labelledby="platformTabId(activePlatform)"
+      >
         <section
           v-if="example === 'checkbox'"
           class="form-demo__control-scenario"
@@ -1706,16 +1724,6 @@ function onFormArrayFailed() {
           <VLoading size="sm" tone="primary" />
           <VLoading size="lg" tone="success" />
         </div>
-        <section v-else-if="example === 'toast'" class="form-demo__toast-grid">
-          <VToast
-            v-for="toast in toastItems"
-            :key="toast.id"
-            :visible="true"
-            :type="toast.type"
-            :message="toast.message"
-            :closeable="false"
-          />
-        </section>
         <section
           v-else-if="example === 'uploader'"
           class="form-demo__control-scenario"
@@ -2295,28 +2303,6 @@ function onFormArrayFailed() {
 
     <div v-if="codeExpanded" class="form-demo__code" :data-expanded="String(codeExpanded)">
       <div class="form-demo__code-toolbar">
-        <div class="form-demo__tabs" role="tablist" :aria-label="copy.code">
-          <button
-            class="form-demo__tab"
-            :data-active="activePlatform === 'h5'"
-            type="button"
-            role="tab"
-            :aria-selected="activePlatform === 'h5'"
-            @click="setPlatform('h5')"
-          >
-            {{ copy.h5 }}
-          </button>
-          <button
-            class="form-demo__tab"
-            :data-active="activePlatform === 'weapp'"
-            type="button"
-            role="tab"
-            :aria-selected="activePlatform === 'weapp'"
-            @click="setPlatform('weapp')"
-          >
-            {{ copy.weapp }}
-          </button>
-        </div>
         <button
           class="form-demo__code-copy"
           type="button"
@@ -2354,7 +2340,6 @@ function onFormArrayFailed() {
   --form-demo-border: var(--varo-demo-border);
   --form-demo-shadow: var(--varo-demo-shadow);
   --form-demo-code-bg: #0f1722;
-  --form-demo-code-surface: #172231;
   --form-demo-code-border: #304056;
   --form-demo-code-text: #e8eef5;
   --form-demo-code-muted: #9eacc0;
@@ -2992,30 +2977,6 @@ function onFormArrayFailed() {
     0 14px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
-.form-demo__preview[data-example='toast'] {
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-}
-
-.form-demo__toast-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: end;
-  justify-content: center;
-}
-
-.form-demo__toast-grid :deep(.varo-toast) {
-  position: relative;
-  inset: auto;
-  transform: none;
-}
-
 .form-demo__preview[data-example='calendar'] :deep(.varo-calendar),
 .form-demo__preview[data-example='date-picker'] :deep(.varo-date-picker),
 .form-demo__preview[data-example='cascader'] :deep(.varo-cascader),
@@ -3255,44 +3216,8 @@ function onFormArrayFailed() {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 12px 12px 0;
-}
-
-.form-demo__tabs {
-  display: inline-flex;
-  gap: 4px;
-  padding: 3px;
-  margin: 0;
-  background: var(--form-demo-code-surface);
-  border: 1px solid var(--form-demo-code-border);
-  border-radius: 10px;
-}
-
-.form-demo__tab {
-  min-height: 36px;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--form-demo-code-muted);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
-}
-
-.form-demo__tab[data-active='true'] {
-  color: var(--form-demo-code-text);
-  background: #243247;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--varo-primary) 24%, transparent);
-}
-
-.form-demo__tab:hover:not([data-active='true']) {
-  color: var(--form-demo-code-text);
-  background: color-mix(in srgb, var(--varo-primary) 8%, transparent);
 }
 
 .form-demo__code-copy {
@@ -3369,7 +3294,6 @@ function onFormArrayFailed() {
   line-height: 1;
 }
 
-.form-demo__tab:focus-visible,
 .form-demo__reopen:focus-visible,
 .form-demo__array-add:focus-visible,
 .form-demo__array-secondary:focus-visible,
@@ -3479,9 +3403,7 @@ function onFormArrayFailed() {
   border-radius: 999px;
 }
 
-.form-demo__code,
-.form-demo__tabs,
-.form-demo__tab {
+.form-demo__code {
   border-radius: var(--varo-radius);
 }
 
@@ -3521,15 +3443,6 @@ function onFormArrayFailed() {
   color: var(--varo-foreground);
   background: var(--varo-card-muted);
   border-color: var(--varo-border-strong);
-}
-
-.form-demo__tabs {
-  background: color-mix(in srgb, var(--varo-card-solid) 8%, transparent);
-}
-
-.form-demo__tab[data-active='true'] {
-  color: var(--varo-foreground);
-  background: var(--varo-card-solid);
 }
 
 :deep(.varo-input__body),

@@ -8,6 +8,12 @@ describe('AgentComponentsDemo', () => {
 
   it('streams output and lets readers resume live following', async () => {
     const wrapper = mount(AgentComponentsDemo, { props: { locale: 'zh' } })
+    const modes = wrapper.findAll('.ai-docs-demo__mode')
+    expect(modes).toHaveLength(2)
+    expect(modes[0]!.get('h3').text()).toBe('Chat 模式')
+    expect(modes[1]!.get('h3').text()).toBe('RAG 模式')
+    expect(wrapper.find('.ai-docs-demo__workspace').exists()).toBe(false)
+    expect(wrapper.find('.ai-docs-demo__ledger').exists()).toBe(false)
     const transcript = wrapper.get('.ai-docs-demo__transcript')
     const transcriptElement = transcript.element as HTMLElement
     Object.defineProperties(transcriptElement, {
@@ -18,7 +24,7 @@ describe('AgentComponentsDemo', () => {
 
     await vi.advanceTimersByTimeAsync(500)
     expect(wrapper.text()).toContain('varo.registry.inspect')
-    expect(wrapper.get('.ai-docs-demo__hero output').attributes('data-status')).toBe('streaming')
+    expect(wrapper.get('.ai-docs-demo__mode-head output').attributes('data-status')).toBe('streaming')
     expect(transcriptElement.scrollTop).toBe(900)
 
     transcriptElement.scrollTop = 100
