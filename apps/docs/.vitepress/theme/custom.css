@@ -327,6 +327,7 @@ html:not(.dark) .VPNavBar {
 .VPNavBarTitle img {
   width: auto;
   height: 28px;
+  background-color: transparent !important;
   border-radius: 0;
 }
 
