@@ -106,8 +106,7 @@ Manual recovery is available through the workflow's `publish-unpublished` mode.
 
 The Workers workflow builds VitePress with `DOCS_BASE=/` and deploys:
 
-Before the first run, add these GitHub Actions secrets:
-Add them in the repository `Settings -> Secrets and variables -> Actions`. If stored as environment secrets instead, use the `cloudflare-workers` environment.
+Before the first run, add these GitHub Actions secrets in the repository `Settings -> Secrets and variables -> Actions`. If stored as environment secrets instead, use the `cloudflare-workers` environment.
 
 - `CLOUDFLARE_API_TOKEN` — a scoped token with Account `Workers Scripts Edit` and, for the `weapp.dev` zone, `DNS Edit` and `Workers Routes Edit`.
 - `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account containing the active `weapp.dev` zone.
