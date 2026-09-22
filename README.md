@@ -2,7 +2,7 @@
 
 **English** | [简体中文](./README.zh-CN.md)
 
-[Documentation](https://daguanren21.github.io/Varo/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm organization](https://www.npmjs.com/org/varo-ui)
+[Documentation](https://varo.weapp.dev/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm organization](https://www.npmjs.com/org/varo-ui)
 
 Varo is a registry-first component system for Vue 3 mobile H5 applications and `weapp-vite` mini programs. Its primary product is editable, target-specific component and Block source code that becomes part of the consuming application—not an opaque cross-platform UI runtime.
 

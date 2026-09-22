@@ -2,7 +2,7 @@
 
 [English](./README.md) | **简体中文**
 
-[在线文档](https://daguanren21.github.io/Varo/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm 组织](https://www.npmjs.com/org/varo-ui)
+[在线文档](https://varo.weapp.dev/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm 组织](https://www.npmjs.com/org/varo-ui)
 
 Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组件系统。主要交付物是可复制、可修改并归业务项目所有的目标平台组件与 Blocks 源码，而不是黑盒跨端 UI 运行时。
 
