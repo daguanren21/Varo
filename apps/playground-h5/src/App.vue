@@ -153,8 +153,8 @@ function record(message: string) {
         component catalog live in the docs.
       </p>
       <nav class="pg__links" aria-label="Public Varo resources">
-        <a href="https://daguanren21.github.io/Varo/guide/installation">Public docs</a>
-        <a href="https://daguanren21.github.io/Varo/components/">Component catalog</a>
+        <a href="https://varo.weapp.dev/guide/installation">Public docs</a>
+        <a href="https://varo.weapp.dev/components/">Component catalog</a>
       </nav>
       <div class="pg__install">
         <span>Install the first H5 Registry Block</span>
