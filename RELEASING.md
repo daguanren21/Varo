@@ -8,7 +8,7 @@ Varo uses `repoctl` with pnpm native change intents and fixed package versioning
 - Stable releases are prepared from `main`.
 - The initial `1.0.0` publish is authenticated locally because npm trusted publishing cannot be configured before the package pages exist.
 - After that bootstrap publish, `.github/workflows/release.yml` publishes through GitHub Actions OIDC without `NPM_TOKEN`.
-- Documentation deploys to GitHub Pages through `.github/workflows/docs.yml`.
+- Documentation deploys to Cloudflare Workers through `.github/workflows/docs.yml`.
 
 ## Release commands
 
@@ -104,8 +104,13 @@ Manual recovery is available through the workflow's `publish-unpublished` mode.
 
 ## Documentation deployment
 
-The Pages workflow builds VitePress with `DOCS_BASE=/Varo/` and deploys:
+The Workers workflow builds VitePress with `DOCS_BASE=/` and deploys:
+
+Before the first run, add these GitHub Actions secrets in the repository `Settings -> Secrets and variables -> Actions`. If stored as environment secrets instead, use the `cloudflare-workers` environment.
+
+- `CLOUDFLARE_API_TOKEN` — a scoped token with Account `Workers Scripts Edit` and, for the `weapp.dev` zone, `DNS Edit` and `Workers Routes Edit`.
+- `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account containing the active `weapp.dev` zone.
 
 ```text
-https://daguanren21.github.io/Varo/
+https://varo.weapp.dev/
 ```

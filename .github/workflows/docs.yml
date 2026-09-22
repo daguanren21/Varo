@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - .github/workflows/docs.yml
+      - wrangler.jsonc
       - apps/docs/**
       - packages/**
       - package.json
@@ -15,11 +16,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: cloudflare-workers
   cancel-in-progress: true
 
 jobs:
@@ -27,8 +26,8 @@ jobs:
     name: Build and deploy VitePress
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: cloudflare-workers
+      url: https://varo.weapp.dev/
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -47,17 +46,13 @@ jobs:
 
       - name: Build documentation
         env:
-          DOCS_BASE: /Varo/
+          DOCS_BASE: /
         run: pnpm --filter @varo/docs build
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: Deploy Cloudflare Worker
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
-          path: apps/docs/.vitepress/dist
-
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4'
+          command: deploy

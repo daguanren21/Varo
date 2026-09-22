@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "varo-docs",
+  "compatibility_date": "2026-09-21",
+  "workers_dev": false,
+  "assets": {
+    "directory": "./apps/docs/.vitepress/dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    {
+      "pattern": "varo.weapp.dev",
+      "custom_domain": true
+    }
+  ]
+}
