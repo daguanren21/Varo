@@ -55,6 +55,7 @@ export const CollapsibleRoot = defineComponent({
 
 export const CollapsibleTrigger = defineComponent({
   name: 'CollapsibleTrigger',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

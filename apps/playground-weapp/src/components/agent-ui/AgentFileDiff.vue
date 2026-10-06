@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
 import type { AgentDiffIndicators, AgentDiffLine, AgentDiffSelection, AgentDiffView, AgentFileDiffLabels } from './file-diff'
 import { computed, shallowRef } from 'wevu'
@@ -13,7 +14,15 @@ import {
   splitAgentDiffContent,
 } from './file-diff'
 
-type AgentFileDiffStatus = 'waiting' | 'running' | 'completed' | 'failed'
+// Preserve absent controlled props instead of native false/empty-string defaults.
+defineOptions({
+  properties: {
+    open: { type: null, value: null },
+    view: { type: null, value: null },
+    lineNumbers: { type: null, value: null },
+    wrap: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -34,7 +43,7 @@ const props = withDefaults(
     open?: boolean
     showActions?: boolean
     showToolbar?: boolean
-    status?: AgentFileDiffStatus
+    status?: AgentPartStatus
     view?: AgentDiffView
     wrap?: boolean
   }>(),
@@ -59,7 +68,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   'accept': []
-  'expand': [line: AgentDiffLine, index: number]
+  'expand': [payload: [line: AgentDiffLine, index: number]]
   'reject': []
   'select': [selection: AgentDiffSelection]
   'update:lineNumbers': [value: boolean]
@@ -218,7 +227,7 @@ const splitRowStates = computed(() =>
   }),
 )
 
-function statusLabel(status: AgentFileDiffStatus) {
+function statusLabel(status: AgentPartStatus) {
   if (status === 'completed') { return 'Completed' }
   if (status === 'failed') { return 'Failed' }
   if (status === 'running') { return 'Running' }
@@ -226,22 +235,22 @@ function statusLabel(status: AgentFileDiffStatus) {
 }
 
 function updateOpen(value: boolean) {
-  if (props.open === undefined) { localOpen.value = value }
+  if (props.open == null) { localOpen.value = value }
   emit('update:open', value)
 }
 
 function updateView(value: AgentDiffView) {
-  if (props.view === undefined) { localView.value = value }
+  if (props.view == null) { localView.value = value }
   emit('update:view', value)
 }
 
 function updateWrap(value: boolean) {
-  if (props.wrap === undefined) { localWrap.value = value }
+  if (props.wrap == null) { localWrap.value = value }
   emit('update:wrap', value)
 }
 
 function updateLineNumbers(value: boolean) {
-  if (props.lineNumbers === undefined) { localLineNumbers.value = value }
+  if (props.lineNumbers == null) { localLineNumbers.value = value }
   emit('update:lineNumbers', value)
 }
 
@@ -252,10 +261,10 @@ function selectLine(index: number, line: AgentDiffLine, side: AgentDiffSelection
 
 function expandLine(line: AgentDiffLine, index: number) {
   if (!line.collapsedLines) { return }
-  emit('expand', line, index)
+  emit('expand', [line, index])
 }
 
-function statusDotClass(status: AgentFileDiffStatus) {
+function statusDotClass(status: AgentPartStatus) {
   return cn(
     'h-[7px] w-[7px] rounded-full',
     status === 'completed' && 'bg-[var(--varo-agent-success)]',

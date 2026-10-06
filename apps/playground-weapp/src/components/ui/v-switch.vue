@@ -9,12 +9,16 @@ const props = withDefaults(
     disabled?: boolean
     loading?: boolean
     modelValue?: boolean
+    readonly?: boolean
+    size?: 'sm' | 'md' | 'lg'
   }>(),
   {
     ariaLabel: 'Switch',
     disabled: false,
     loading: false,
     modelValue: false,
+    readonly: false,
+    size: 'md',
   },
 )
 
@@ -29,11 +33,13 @@ const switchRoot = useSwitchRoot({
   checkedControlled: controlled,
   disabled: toRef(props, 'disabled'),
   loading: toRef(props, 'loading'),
+  readonly: toRef(props, 'readonly'),
   onCheckedChange: update,
 })
 const checked = computed(() => switchRoot.state.checked.value)
 const interactive = computed(() => switchRoot.state.interactive.value)
 const loading = computed(() => switchRoot.state.loading.value)
+const readonly = computed(() => switchRoot.state.readonly.value)
 const thumbState = computed(() => switchRoot.state.checked.value ? 'checked' : 'unchecked')
 const interactiveAttribute = computed(() => String(interactive.value))
 
@@ -56,15 +62,22 @@ function toggle() {
     :hover-stay-time="70"
     type="button"
     role="switch"
-    :disabled="!interactive"
+    :disabled="props.disabled || loading"
     :aria-checked="checked"
+    :aria-disabled="props.disabled || loading || undefined"
+    :aria-readonly="readonly || undefined"
+    :aria-busy="loading || undefined"
+    :data-size="props.size"
     :data-state="thumbState"
     :data-loading="String(loading)"
+    :data-readonly="String(readonly)"
     :data-interactive="interactiveAttribute"
     @click="toggle"
   >
     <view class="varo-switch__track">
-      <view class="varo-switch__thumb" :data-state="thumbState" />
+      <view class="varo-switch__thumb" :data-state="thumbState">
+        <view v-if="loading" class="varo-switch__spinner" aria-hidden="true" />
+      </view>
     </view>
   </button>
 </template>

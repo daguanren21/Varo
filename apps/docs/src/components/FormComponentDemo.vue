@@ -26,35 +26,9 @@ import {
   VTextarea as H5Textarea,
   VUploader as H5Uploader,
 } from '@varo-ui/h5'
-import {
-  VButton as WeappButton,
-  VCalendar as WeappCalendar,
-  VCalendarCard as WeappCalendarCard,
-  VCascader as WeappCascader,
-  VCheckbox as WeappCheckbox,
-  VCheckboxGroup as WeappCheckboxGroup,
-  VDatePicker as WeappDatePicker,
-  VForm as WeappForm,
-  VFormItem as WeappFormItem,
-  VInput as WeappInput,
-  VInputNumber as WeappInputNumber,
-  VLoading as WeappLoading,
-  VNumberKeyboard as WeappNumberKeyboard,
-  VPicker as WeappPicker,
-  VRadio as WeappRadio,
-  VRadioGroup as WeappRadioGroup,
-  VRange as WeappRange,
-  VRate as WeappRate,
-  VSearchbar as WeappSearchbar,
-  VSelect as WeappSelect,
-  VShortPassword as WeappShortPassword,
-  VSkeleton as WeappSkeleton,
-  VSwitch as WeappSwitch,
-  VTextarea as WeappTextarea,
-  VUploader as WeappUploader,
-} from '@varo-ui/weapp'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
 import { z } from 'zod'
+import NativeSourcePreview from './NativeSourcePreview.vue'
 
 type FormDemoKind
   = | 'calendar'
@@ -95,31 +69,31 @@ const codeExpanded = ref(false)
 const activePlatform = ref<Platform>('h5')
 const platforms: Platform[] = ['h5', 'weapp']
 const platformPanelId = computed(() => `form-${props.example}-platform-panel`)
-const VButton = computed(() => activePlatform.value === 'h5' ? H5Button : WeappButton)
-const VCalendar = computed(() => activePlatform.value === 'h5' ? H5Calendar : WeappCalendar)
-const VCalendarCard = computed(() => activePlatform.value === 'h5' ? H5CalendarCard : WeappCalendarCard)
-const VCascader = computed(() => activePlatform.value === 'h5' ? H5Cascader : WeappCascader)
-const VCheckbox = computed(() => activePlatform.value === 'h5' ? H5Checkbox : WeappCheckbox)
-const VCheckboxGroup = computed(() => activePlatform.value === 'h5' ? H5CheckboxGroup : WeappCheckboxGroup)
-const VDatePicker = computed(() => activePlatform.value === 'h5' ? H5DatePicker : WeappDatePicker)
-const VForm = computed(() => activePlatform.value === 'h5' ? H5Form : WeappForm)
-const VFormItem = computed(() => activePlatform.value === 'h5' ? H5FormItem : WeappFormItem)
-const VInput = computed(() => activePlatform.value === 'h5' ? H5Input : WeappInput)
-const VInputNumber = computed(() => activePlatform.value === 'h5' ? H5InputNumber : WeappInputNumber)
-const VLoading = computed(() => activePlatform.value === 'h5' ? H5Loading : WeappLoading)
-const VNumberKeyboard = computed(() => activePlatform.value === 'h5' ? H5NumberKeyboard : WeappNumberKeyboard)
-const VPicker = computed(() => activePlatform.value === 'h5' ? H5Picker : WeappPicker)
-const VRadio = computed(() => activePlatform.value === 'h5' ? H5Radio : WeappRadio)
-const VRadioGroup = computed(() => activePlatform.value === 'h5' ? H5RadioGroup : WeappRadioGroup)
-const VRange = computed(() => activePlatform.value === 'h5' ? H5Range : WeappRange)
-const VRate = computed(() => activePlatform.value === 'h5' ? H5Rate : WeappRate)
-const VSearchbar = computed(() => activePlatform.value === 'h5' ? H5Searchbar : WeappSearchbar)
-const VSelect = computed(() => activePlatform.value === 'h5' ? H5Select : WeappSelect)
-const VSkeleton = computed(() => activePlatform.value === 'h5' ? H5Skeleton : WeappSkeleton)
-const VShortPassword = computed(() => activePlatform.value === 'h5' ? H5ShortPassword : WeappShortPassword)
-const VSwitch = computed(() => activePlatform.value === 'h5' ? H5Switch : WeappSwitch)
-const VTextarea = computed(() => activePlatform.value === 'h5' ? H5Textarea : WeappTextarea)
-const VUploader = computed(() => activePlatform.value === 'h5' ? H5Uploader : WeappUploader)
+const VButton = H5Button
+const VCalendar = H5Calendar
+const VCalendarCard = H5CalendarCard
+const VCascader = H5Cascader
+const VCheckbox = H5Checkbox
+const VCheckboxGroup = H5CheckboxGroup
+const VDatePicker = H5DatePicker
+const VForm = H5Form
+const VFormItem = H5FormItem
+const VInput = H5Input
+const VInputNumber = H5InputNumber
+const VLoading = H5Loading
+const VNumberKeyboard = H5NumberKeyboard
+const VPicker = H5Picker
+const VRadio = H5Radio
+const VRadioGroup = H5RadioGroup
+const VRange = H5Range
+const VRate = H5Rate
+const VSearchbar = H5Searchbar
+const VSelect = H5Select
+const VSkeleton = H5Skeleton
+const VShortPassword = H5ShortPassword
+const VSwitch = H5Switch
+const VTextarea = H5Textarea
+const VUploader = H5Uploader
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 let copyFeedbackTimer: number | undefined
 const checkboxValue = shallowRef(['wechat'])
@@ -616,8 +590,8 @@ const selectOptionLabel = computed(() =>
   selectOptions.value.find(option => option.value === selectValue.value)?.label ?? '',
 )
 
-const platformPackage = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
-const packageTag = computed(() => (activePlatform.value === 'h5' ? '@varo-ui/h5' : '@varo-ui/weapp'))
+const platformPackage = '@varo-ui/h5'
+const packageTag = '@varo-ui/h5'
 
 function codeFor(packageName: string) {
   const isEn = props.locale === 'en'
@@ -1234,7 +1208,7 @@ const loading = shallowRef(true)
   }
 }
 
-const activeCode = computed(() => codeFor(platformPackage.value))
+const activeCode = computed(() => codeFor(platformPackage))
 const codeToggleLabel = computed(() =>
   codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand,
 )
@@ -1425,849 +1399,853 @@ function onFormArrayFailed() {
         role="tabpanel"
         :aria-labelledby="platformTabId(activePlatform)"
       >
-        <section
-          v-if="example === 'checkbox'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.notifyTitle }}</strong>
-              <span>{{ copy.notifyHint }}</span>
-            </div>
-            <output>
-              {{ copy.selectedCount }} {{ checkboxValue.length }}/2
-            </output>
-          </header>
-          <VCheckboxGroup
-            v-model:value="checkboxValue"
-            class="form-demo__choice-grid"
-            direction="horizontal"
-            :max="2"
+        <NativeSourcePreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" />
+        <template v-else>
+          <section
+            v-if="example === 'checkbox'"
+            class="form-demo__control-scenario"
           >
-            <VCheckbox :label="copy.notifyWeChat" value="wechat" />
-            <VCheckbox :label="copy.notifySms" value="sms" />
-            <VCheckbox :label="copy.notifyEmail" value="email" />
-          </VCheckboxGroup>
-        </section>
-
-        <section
-          v-else-if="example === 'radio'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.paymentTitle }}</strong>
-              <span>{{ copy.paymentHint }}</span>
-            </div>
-            <output>{{ copy.orderAmount }}</output>
-          </header>
-          <VRadioGroup
-            v-model:value="radioValue"
-            class="form-demo__radio-grid"
-            direction="horizontal"
-          >
-            <VRadio value="wechat">
-              <span>
-                <strong>{{ copy.wechatPay }}</strong>
-                <small>{{ locale === 'en' ? 'Recommended' : '推荐' }}</small>
-              </span>
-            </VRadio>
-            <VRadio :label="copy.alipay" value="alipay" />
-            <VRadio :label="copy.cardPay" value="card" />
-          </VRadioGroup>
-          <p class="form-demo__inline-result" role="status">
-            {{ copy.selectedMethod }}：{{ paymentMethodLabel }}
-          </p>
-        </section>
-
-        <section
-          v-else-if="example === 'input-number'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.quantityTitle }}</strong>
-              <span>{{ copy.quantityHint }}</span>
-            </div>
-            <output>{{ copy.subtotal }} ¥{{ inputNumberValue * 39 }}</output>
-          </header>
-          <div class="form-demo__quantity-row">
-            <div class="form-demo__quantity-copy">
-              <strong>{{ copy.quantityProduct }}</strong>
-              <span>{{ copy.perSeat }}</span>
-            </div>
-            <VInputNumber v-model:value="inputNumberValue" :min="1" :max="5" />
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'rate'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.reviewTitle }}</strong>
-              <span>{{ copy.reviewHint }}</span>
-            </div>
-            <output>{{ rateValue }}/5</output>
-          </header>
-          <div class="form-demo__rate-field">
-            <VRate
-              v-model:value="rateValue"
-              :aria-label="copy.reviewTitle"
-            />
-            <p role="status">
-              {{ rateFeedback }}
-            </p>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'range'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.budgetTitle }}</strong>
-              <span>{{ copy.budgetHint }}</span>
-            </div>
-            <output>{{ copy.budgetAllocated }} ¥{{ rangeValue * 100 }}</output>
-          </header>
-          <div class="form-demo__range-field">
-            <VRange
-              v-model:value="rangeValue"
-              :aria-label="copy.budgetTitle"
-              :step="10"
-            />
-            <div aria-hidden="true">
-              <span>¥0</span>
-              <span>¥10,000</span>
-            </div>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'searchbar'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.componentSearchTitle }}</strong>
-              <span>{{ copy.componentSearchHint }}</span>
-            </div>
-            <output>{{ componentSearchResults.length }} {{ copy.searchResults }}</output>
-          </header>
-          <VSearchbar
-            v-model:value="searchValue"
-            :action-text="copy.cancel"
-            :input-aria-label="copy.componentSearchTitle"
-            :placeholder="copy.searchPlaceholder"
-            @cancel="searchValue = ''"
-          />
-          <div
-            v-if="componentSearchResults.length > 0"
-            class="form-demo__search-results"
-            aria-live="polite"
-          >
-            <span
-              v-for="name in componentSearchResults"
-              :key="name"
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.notifyTitle }}</strong>
+                <span>{{ copy.notifyHint }}</span>
+              </div>
+              <output>
+                {{ copy.selectedCount }} {{ checkboxValue.length }}/2
+              </output>
+            </header>
+            <VCheckboxGroup
+              v-model:value="checkboxValue"
+              class="form-demo__choice-grid"
+              direction="horizontal"
+              :max="2"
             >
-              <strong>{{ name }}</strong>
-              <small>{{ copy.formCategory }}</small>
-            </span>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'textarea'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.textareaTitle }}</strong>
-              <span>{{ copy.textareaHint }}</span>
+              <VCheckbox :label="copy.notifyWeChat" value="wechat" />
+              <VCheckbox :label="copy.notifySms" value="sms" />
+              <VCheckbox :label="copy.notifyEmail" value="email" />
+            </VCheckboxGroup>
+          </section>
+
+          <section
+            v-else-if="example === 'radio'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.paymentTitle }}</strong>
+                <span>{{ copy.paymentHint }}</span>
+              </div>
+              <output>{{ copy.orderAmount }}</output>
+            </header>
+            <VRadioGroup
+              v-model:value="radioValue"
+              class="form-demo__radio-grid"
+              direction="horizontal"
+            >
+              <VRadio value="wechat">
+                <span>
+                  <strong>{{ copy.wechatPay }}</strong>
+                  <small>{{ locale === 'en' ? 'Recommended' : '推荐' }}</small>
+                </span>
+              </VRadio>
+              <VRadio :label="copy.alipay" value="alipay" />
+              <VRadio :label="copy.cardPay" value="card" />
+            </VRadioGroup>
+            <p class="form-demo__inline-result" role="status">
+              {{ copy.selectedMethod }}：{{ paymentMethodLabel }}
+            </p>
+          </section>
+
+          <section
+            v-else-if="example === 'input-number'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.quantityTitle }}</strong>
+                <span>{{ copy.quantityHint }}</span>
+              </div>
+              <output>{{ copy.subtotal }} ¥{{ inputNumberValue * 39 }}</output>
+            </header>
+            <div class="form-demo__quantity-row">
+              <div class="form-demo__quantity-copy">
+                <strong>{{ copy.quantityProduct }}</strong>
+                <span>{{ copy.perSeat }}</span>
+              </div>
+              <VInputNumber v-model:value="inputNumberValue" :min="1" :max="5" />
             </div>
-          </header>
-          <VTextarea
-            v-model:value="textareaValue"
-            :aria-label="copy.textareaTitle"
-            :max-length="120"
-            :placeholder="copy.textareaPlaceholder"
-            :rows="4"
-            show-word-limit
-          />
-        </section>
-        <section
-          v-else-if="example === 'short-password'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.pinTitle }}</strong>
-              <span>{{ copy.pinHint }}</span>
+          </section>
+          <section
+            v-else-if="example === 'rate'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.reviewTitle }}</strong>
+                <span>{{ copy.reviewHint }}</span>
+              </div>
+              <output>{{ rateValue }}/5</output>
+            </header>
+            <div class="form-demo__rate-field">
+              <VRate
+                v-model:value="rateValue"
+                :aria-label="copy.reviewTitle"
+              />
+              <p role="status">
+                {{ rateFeedback }}
+              </p>
             </div>
-            <output>{{ passwordComplete ? copy.pinComplete : `${shortPasswordValue.length}/6` }}</output>
-          </header>
-          <VShortPassword
-            v-model:value="shortPasswordValue"
-            :input-aria-label="copy.pinTitle"
-          />
-          <p class="form-demo__security-note">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3 5.5 5.7v5.1c0 4.2 2.7 8.1 6.5 9.2 3.8-1.1 6.5-5 6.5-9.2V5.7L12 3Z" />
-              <path d="m9.2 11.7 1.8 1.8 3.8-4" />
-            </svg>
-            {{ copy.pinSecurity }}
-          </p>
-        </section>
-        <section
-          v-else-if="example === 'select'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.warehouseTitle }}</strong>
-              <span>{{ copy.warehouseHint }}</span>
+          </section>
+          <section
+            v-else-if="example === 'range'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.budgetTitle }}</strong>
+                <span>{{ copy.budgetHint }}</span>
+              </div>
+              <output>{{ copy.budgetAllocated }} ¥{{ rangeValue * 100 }}</output>
+            </header>
+            <div class="form-demo__range-field">
+              <VRange
+                v-model:value="rangeValue"
+                :aria-label="copy.budgetTitle"
+                :step="10"
+              />
+              <div aria-hidden="true">
+                <span>¥0</span>
+                <span>¥10,000</span>
+              </div>
             </div>
-            <output>{{ copy.warehouseSelected }}</output>
-          </header>
-          <div class="form-demo__select-row">
-            <VSelect
-              v-model:value="selectValue"
-              mode="dropdown"
-              :options="selectOptions"
-              :placeholder="copy.selectPlaceholder"
-              clearable
+          </section>
+          <section
+            v-else-if="example === 'searchbar'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.componentSearchTitle }}</strong>
+                <span>{{ copy.componentSearchHint }}</span>
+              </div>
+              <output>{{ componentSearchResults.length }} {{ copy.searchResults }}</output>
+            </header>
+            <VSearchbar
+              v-model:value="searchValue"
+              :action-text="copy.cancel"
+              :input-aria-label="copy.componentSearchTitle"
+              :placeholder="copy.searchPlaceholder"
+              @cancel="searchValue = ''"
             />
-            <span role="status">{{ selectOptionLabel }}</span>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'switch'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.notificationTitle }}</strong>
-              <span>{{ copy.notificationHint }}</span>
-            </div>
-            <output>{{ switchValue ? copy.switchOn : copy.switchOff }}</output>
-          </header>
-          <div class="form-demo__settings-list">
-            <label>
-              <span>
-                <strong>{{ copy.marketingNotice }}</strong>
-                <small>{{ copy.marketingNoticeDesc }}</small>
+            <div
+              v-if="componentSearchResults.length > 0"
+              class="form-demo__search-results"
+              aria-live="polite"
+            >
+              <span
+                v-for="name in componentSearchResults"
+                :key="name"
+              >
+                <strong>{{ name }}</strong>
+                <small>{{ copy.formCategory }}</small>
               </span>
-              <VSwitch
-                v-model="switchValue"
-                :aria-label="copy.marketingNotice"
-              />
-            </label>
-            <label>
-              <span>
-                <strong>{{ copy.orderNotice }}</strong>
-                <small>{{ copy.orderNoticeDesc }}</small>
-              </span>
-              <VSwitch
-                :model-value="true"
-                :aria-label="copy.orderNotice"
-                disabled
-              />
-            </label>
-          </div>
-        </section>
-        <section v-else-if="example === 'skeleton'" class="form-demo__skeleton-card">
-          <header>
-            <strong>{{ copy.skeletonTitle }}</strong>
-            <button type="button" @click="skeletonLoading = !skeletonLoading">
-              {{ skeletonLoading ? copy.skeletonShowContent : copy.skeletonShowLoading }}
-            </button>
-          </header>
-          <nav class="form-demo__skeleton-cases" aria-label="骨架屏案例">
-            <button type="button" data-case="article" :aria-pressed="skeletonCase === 'article'" @click="skeletonCase = 'article'">
-              {{ copy.skeletonArticle }}
-            </button>
-            <button type="button" data-case="image" :aria-pressed="skeletonCase === 'image'" @click="skeletonCase = 'image'">
-              {{ copy.skeletonImage }}
-            </button>
-            <button type="button" data-case="video" :aria-pressed="skeletonCase === 'video'" @click="skeletonCase = 'video'">
-              {{ copy.skeletonVideo }}
-            </button>
-          </nav>
-          <div class="form-demo__skeleton-preview">
-            <section v-if="skeletonCase === 'article'">
-              <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
-                <article class="form-demo__skeleton-content">
-                  <strong>{{ copy.skeletonContentTitle }}</strong>
-                  <p>{{ copy.skeletonContentBody }}</p>
-                </article>
-              </VSkeleton>
-            </section>
-            <section v-else-if="skeletonCase === 'image'">
-              <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="image" :rows="2">
-                <article class="form-demo__skeleton-media-content" data-kind="image">
-                  <span aria-hidden="true">IMG</span>
-                  <strong>{{ copy.skeletonImageContent }}</strong>
-                </article>
-              </VSkeleton>
-            </section>
-            <section v-else>
-              <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="video" :rows="2">
-                <article class="form-demo__skeleton-media-content" data-kind="video">
-                  <span aria-hidden="true">▶</span>
-                  <strong>{{ copy.skeletonVideoContent }}</strong>
-                </article>
-              </VSkeleton>
-            </section>
-          </div>
-        </section>
-        <div v-else-if="example === 'loading'" class="form-demo__loading-row">
-          <VLoading :text="copy.loadingText" />
-          <VLoading size="sm" tone="primary" />
-          <VLoading size="lg" tone="success" />
-        </div>
-        <section
-          v-else-if="example === 'uploader'"
-          class="form-demo__control-scenario"
-        >
-          <header class="form-demo__control-head">
-            <div>
-              <strong>{{ copy.uploaderTitle }}</strong>
-              <span>{{ copy.uploaderHint }}</span>
             </div>
-            <output>{{ uploaderFiles.length }}/3</output>
-          </header>
-          <VUploader
-            v-model:value="uploaderFiles"
-            accept=".jpg,.jpeg,.png,.pdf"
-            list-type="card"
-            :max-count="3"
-            multiple
-            :upload-text="copy.upload"
-          />
-          <p class="form-demo__inline-result" role="status">
-            {{ copy.uploaderProgress }}：brand-guide.pdf · 64%
-          </p>
-        </section>
-
-        <VForm
-          v-else-if="example === 'form'"
-          :id="formId"
-          class="form-demo__save form-demo__save--request"
-          :model="formModel"
-          :rules="formRules"
-          @failed="onFormFailed"
-          @submit="onFormSubmit"
-        >
-          <header class="form-demo__form-intro">
-            <div>
-              <strong>{{ copy.formTitle }}</strong>
-              <span>{{ copy.formHint }}</span>
+          </section>
+          <section
+            v-else-if="example === 'textarea'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.textareaTitle }}</strong>
+                <span>{{ copy.textareaHint }}</span>
+              </div>
+            </header>
+            <VTextarea
+              v-model:value="textareaValue"
+              :aria-label="copy.textareaTitle"
+              :max-length="120"
+              :placeholder="copy.textareaPlaceholder"
+              :rows="4"
+              show-word-limit
+            />
+          </section>
+          <section
+            v-else-if="example === 'short-password'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.pinTitle }}</strong>
+                <span>{{ copy.pinHint }}</span>
+              </div>
+              <output>{{ passwordComplete ? copy.pinComplete : `${shortPasswordValue.length}/6` }}</output>
+            </header>
+            <VShortPassword
+              v-model:value="shortPasswordValue"
+              :input-aria-label="copy.pinTitle"
+            />
+            <p class="form-demo__security-note">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 5.5 5.7v5.1c0 4.2 2.7 8.1 6.5 9.2 3.8-1.1 6.5-5 6.5-9.2V5.7L12 3Z" />
+                <path d="m9.2 11.7 1.8 1.8 3.8-4" />
+              </svg>
+              {{ copy.pinSecurity }}
+            </p>
+          </section>
+          <section
+            v-else-if="example === 'select'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.warehouseTitle }}</strong>
+                <span>{{ copy.warehouseHint }}</span>
+              </div>
+              <output>{{ copy.warehouseSelected }}</output>
+            </header>
+            <div class="form-demo__select-row">
+              <VSelect
+                v-model:value="selectValue"
+                mode="dropdown"
+                :options="selectOptions"
+                :placeholder="copy.selectPlaceholder"
+                clearable
+              />
+              <span role="status">{{ selectOptionLabel }}</span>
             </div>
-            <span class="form-demo__required-note">{{ locale === 'en' ? '* Required' : '* 必填' }}</span>
-          </header>
-          <h3 class="form-demo__form-section-title">
-            {{ copy.formSectionIdentity }}
-          </h3>
-          <VFormItem name="account" :label="copy.account" required>
-            <template #default="slotProps">
-              <VInput
-                clearable
-                clear-trigger="always"
-                :placeholder="copy.account"
-                :value="String(slotProps.value.value ?? '')"
-                @blur="slotProps.onBlur"
-                @update:value="slotProps.setValue"
-              />
-            </template>
-          </VFormItem>
-
-          <VFormItem name="contact" :label="copy.contact" required>
-            <template #default="slotProps">
-              <VInput
-                clearable
-                clear-trigger="always"
-                :placeholder="copy.mobilePlaceholder"
-                :value="String(slotProps.value.value ?? '')"
-                @blur="slotProps.onBlur"
-                @update:value="slotProps.setValue"
-              />
-            </template>
-          </VFormItem>
-
-          <VFormItem name="email" :label="copy.email" required>
-            <template #default="slotProps">
-              <VInput
-                clearable
-                clear-trigger="always"
-                placeholder="name@example.com"
-                :value="String(slotProps.value.value ?? '')"
-                @blur="slotProps.onBlur"
-                @update:value="slotProps.setValue"
-              />
-            </template>
-          </VFormItem>
-
-          <h3 class="form-demo__form-section-title">
-            {{ copy.formSectionNeeds }}
-          </h3>
-          <VFormItem name="gender" :label="copy.gender" required>
-            <template #default="{ setValue, value }">
-              <VRadioGroup :value="value.value as string" direction="horizontal" @update:value="setValue">
-                <VRadio :label="copy.male" value="male" />
-                <VRadio :label="copy.female" value="female" />
-              </VRadioGroup>
-            </template>
-          </VFormItem>
-
-          <VFormItem class="form-demo__form-field--wide" name="interests" :label="copy.interests" required>
-            <template #default="{ setValue, value }">
-              <VCheckboxGroup :value="value.value as string[]" direction="horizontal" @update:value="setValue">
-                <VCheckbox :label="copy.design" value="design" />
-                <VCheckbox :label="copy.develop" value="develop" />
-              </VCheckboxGroup>
-            </template>
-          </VFormItem>
-
-          <VFormItem name="quantity" :label="copy.quantity">
-            <template #default="{ setValue, value }">
-              <VInputNumber :value="value.value as number" :min="1" :max="9" @update:value="setValue" />
-            </template>
-          </VFormItem>
-
-          <VFormItem name="score" :label="copy.score" required>
-            <template #default="{ setValue, value }">
-              <VRate :value="value.value as number" @update:value="setValue" />
-            </template>
-          </VFormItem>
-
-          <VFormItem class="form-demo__form-field--wide" name="budget" :label="copy.budget" required>
-            <template #default="{ setValue, value }">
-              <VRange :value="value.value as number" :step="10" @update:value="setValue" />
-            </template>
-          </VFormItem>
-
-          <h3 class="form-demo__form-section-title">
-            {{ copy.formSectionConfirm }}
-          </h3>
-          <VFormItem class="form-demo__form-field--wide" name="password" :label="copy.password" required>
-            <template #default="{ setValue, value }">
-              <VShortPassword :value="value.value as string" @update:value="setValue" />
-            </template>
-          </VFormItem>
-
-          <VFormItem class="form-demo__form-field--wide" name="remark" :label="copy.remark" required>
-            <template #default="{ setValue, value }">
-              <VTextarea
-                :max-length="80"
-                :rows="3"
-                show-word-limit
-                :value="value.value as string"
-                @update:value="setValue"
-              />
-            </template>
-          </VFormItem>
-
-          <VFormItem class="form-demo__form-field--wide" name="files" :label="copy.qualification" required>
-            <template #default="{ setValue, value }">
-              <VUploader :value="value.value as []" :upload-text="copy.upload" @update:value="setValue" />
-            </template>
-          </VFormItem>
-        </VForm>
-
-        <div v-if="example === 'form'" class="form-demo__form-actions">
-          <VButton class="form-demo__submit" :form="formId" native-type="submit" tone="primary">
-            {{ copy.save }}
-          </VButton>
-          <span class="form-demo__form-status">{{ formStatus }}</span>
-        </div>
-
-        <template v-else-if="example === 'form-array'">
-          <div class="form-demo__array-toolbar">
-            <span class="form-demo__array-count">
-              {{ formArrayModel.companies.length }} {{ copy.companyCountSuffix }}
-            </span>
-            <button type="button" class="form-demo__array-add" @click="addFormArrayCompany">
-              {{ copy.addCompany }}
-            </button>
+          </section>
+          <section
+            v-else-if="example === 'switch'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.notificationTitle }}</strong>
+                <span>{{ copy.notificationHint }}</span>
+              </div>
+              <output>{{ switchValue ? copy.switchOn : copy.switchOff }}</output>
+            </header>
+            <div class="form-demo__settings-list">
+              <label>
+                <span>
+                  <strong>{{ copy.marketingNotice }}</strong>
+                  <small>{{ copy.marketingNoticeDesc }}</small>
+                </span>
+                <VSwitch
+                  v-model="switchValue"
+                  :aria-label="copy.marketingNotice"
+                />
+              </label>
+              <label>
+                <span>
+                  <strong>{{ copy.orderNotice }}</strong>
+                  <small>{{ copy.orderNoticeDesc }}</small>
+                </span>
+                <VSwitch
+                  :model-value="true"
+                  :aria-label="copy.orderNotice"
+                  disabled
+                />
+              </label>
+            </div>
+          </section>
+          <section v-else-if="example === 'skeleton'" class="form-demo__skeleton-card">
+            <header>
+              <strong>{{ copy.skeletonTitle }}</strong>
+              <button type="button" @click="skeletonLoading = !skeletonLoading">
+                {{ skeletonLoading ? copy.skeletonShowContent : copy.skeletonShowLoading }}
+              </button>
+            </header>
+            <nav class="form-demo__skeleton-cases" aria-label="骨架屏案例">
+              <button type="button" data-case="article" :aria-pressed="skeletonCase === 'article'" @click="skeletonCase = 'article'">
+                {{ copy.skeletonArticle }}
+              </button>
+              <button type="button" data-case="image" :aria-pressed="skeletonCase === 'image'" @click="skeletonCase = 'image'">
+                {{ copy.skeletonImage }}
+              </button>
+              <button type="button" data-case="video" :aria-pressed="skeletonCase === 'video'" @click="skeletonCase = 'video'">
+                {{ copy.skeletonVideo }}
+              </button>
+            </nav>
+            <div class="form-demo__skeleton-preview">
+              <section v-if="skeletonCase === 'article'">
+                <VSkeleton :loading="skeletonLoading" :delay="180" content-fade avatar title :rows="4" round>
+                  <article class="form-demo__skeleton-content">
+                    <strong>{{ copy.skeletonContentTitle }}</strong>
+                    <p>{{ copy.skeletonContentBody }}</p>
+                  </article>
+                </VSkeleton>
+              </section>
+              <section v-else-if="skeletonCase === 'image'">
+                <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="image" :rows="2">
+                  <article class="form-demo__skeleton-media-content" data-kind="image">
+                    <span aria-hidden="true">IMG</span>
+                    <strong>{{ copy.skeletonImageContent }}</strong>
+                  </article>
+                </VSkeleton>
+              </section>
+              <section v-else>
+                <VSkeleton :loading="skeletonLoading" :delay="180" content-fade media="video" :rows="2">
+                  <article class="form-demo__skeleton-media-content" data-kind="video">
+                    <span aria-hidden="true">▶</span>
+                    <strong>{{ copy.skeletonVideoContent }}</strong>
+                  </article>
+                </VSkeleton>
+              </section>
+            </div>
+          </section>
+          <div v-else-if="example === 'loading'" class="form-demo__loading-row">
+            <VLoading :text="copy.loadingText" />
+            <VLoading size="sm" tone="primary" />
+            <VLoading size="lg" tone="success" />
           </div>
+          <section
+            v-else-if="example === 'uploader'"
+            class="form-demo__control-scenario"
+          >
+            <header class="form-demo__control-head">
+              <div>
+                <strong>{{ copy.uploaderTitle }}</strong>
+                <span>{{ copy.uploaderHint }}</span>
+              </div>
+              <output>{{ uploaderFiles.length }}/3</output>
+            </header>
+            <VUploader
+              v-model:value="uploaderFiles"
+              accept=".jpg,.jpeg,.png,.pdf"
+              list-type="card"
+              :max-count="3"
+              multiple
+              :upload-text="copy.upload"
+            />
+            <p class="form-demo__inline-result" role="status">
+              {{ copy.uploaderProgress }}：brand-guide.pdf · 64%
+            </p>
+          </section>
 
           <VForm
-            :id="formArrayId"
-            class="form-demo__save"
-            :model="formArrayModel"
-            :validation-schema="formArraySchema"
-            @failed="onFormArrayFailed"
-            @submit="onFormArraySubmit"
+            v-else-if="example === 'form'"
+            :id="formId"
+            class="form-demo__save form-demo__save--request"
+            :model="formModel"
+            :rules="formRules"
+            @failed="onFormFailed"
+            @submit="onFormSubmit"
           >
-            <section
-              v-for="(company, index) in formArrayModel.companies"
-              :key="index"
-              class="form-demo__array-item"
-            >
-              <div class="form-demo__array-header">
-                <div class="form-demo__array-title">
-                  <strong>{{ `${copy.company} ${index + 1}` }}</strong>
-                  <span v-if="primaryCompanyIndex === index" class="form-demo__array-badge">
-                    {{ copy.primaryCompany }}
-                  </span>
-                </div>
-                <div class="form-demo__array-actions">
-                  <button
-                    v-if="primaryCompanyIndex !== index"
-                    type="button"
-                    class="form-demo__array-secondary"
-                    @click="setPrimaryCompany(index)"
-                  >
-                    {{ copy.setPrimaryCompany }}
-                  </button>
-                  <button
-                    v-if="formArrayModel.companies.length > 1"
-                    type="button"
-                    class="form-demo__array-remove"
-                    @click="removeFormArrayCompany(index)"
-                  >
-                    {{ copy.removeCompany }}
-                  </button>
-                </div>
+            <header class="form-demo__form-intro">
+              <div>
+                <strong>{{ copy.formTitle }}</strong>
+                <span>{{ copy.formHint }}</span>
               </div>
+              <span class="form-demo__required-note">{{ locale === 'en' ? '* Required' : '* 必填' }}</span>
+            </header>
+            <h3 class="form-demo__form-section-title">
+              {{ copy.formSectionIdentity }}
+            </h3>
+            <VFormItem name="account" :label="copy.account" required>
+              <template #default="slotProps">
+                <VInput
+                  clearable
+                  clear-trigger="always"
+                  :placeholder="copy.account"
+                  :value="String(slotProps.value.value ?? '')"
+                  @blur="slotProps.onBlur"
+                  @update:value="slotProps.setValue"
+                />
+              </template>
+            </VFormItem>
 
-              <VFormItem
-                :name="`companies.${index}.name`"
-                :label="`${copy.company} ${index + 1} ${copy.companyNameLabel}`"
-                required
-              >
-                <template #default="slotProps">
-                  <VInput
-                    clearable
-                    clear-trigger="always"
-                    :placeholder="copy.companyName"
-                    :value="String(slotProps.value.value ?? '')"
-                    @update:value="slotProps.setValue"
-                  />
-                </template>
-              </VFormItem>
+            <VFormItem name="contact" :label="copy.contact" required>
+              <template #default="slotProps">
+                <VInput
+                  clearable
+                  clear-trigger="always"
+                  :placeholder="copy.mobilePlaceholder"
+                  :value="String(slotProps.value.value ?? '')"
+                  @blur="slotProps.onBlur"
+                  @update:value="slotProps.setValue"
+                />
+              </template>
+            </VFormItem>
 
-              <div class="form-demo__array-grid">
-                <VFormItem
-                  :name="`companies.${index}.contact`"
-                  :label="`${copy.company} ${index + 1} ${copy.companyContactLabel}`"
-                  required
-                >
-                  <template #default="slotProps">
-                    <VInput
-                      clearable
-                      clear-trigger="always"
-                      :placeholder="copy.companyContact"
-                      :value="String(slotProps.value.value ?? '')"
-                      @update:value="slotProps.setValue"
-                    />
-                  </template>
-                </VFormItem>
+            <VFormItem name="email" :label="copy.email" required>
+              <template #default="slotProps">
+                <VInput
+                  clearable
+                  clear-trigger="always"
+                  placeholder="name@example.com"
+                  :value="String(slotProps.value.value ?? '')"
+                  @blur="slotProps.onBlur"
+                  @update:value="slotProps.setValue"
+                />
+              </template>
+            </VFormItem>
 
-                <VFormItem
-                  :name="`companies.${index}.phone`"
-                  :label="`${copy.company} ${index + 1} ${copy.companyPhoneLabel}`"
-                  required
-                >
-                  <template #default="slotProps">
-                    <VInput
-                      clearable
-                      clear-trigger="always"
-                      :placeholder="copy.mobilePlaceholder"
-                      :value="String(slotProps.value.value ?? '')"
-                      @blur="slotProps.onBlur"
-                      @update:value="slotProps.setValue"
-                    />
-                  </template>
-                </VFormItem>
+            <h3 class="form-demo__form-section-title">
+              {{ copy.formSectionNeeds }}
+            </h3>
+            <VFormItem name="gender" :label="copy.gender" required>
+              <template #default="{ setValue, value }">
+                <VRadioGroup :value="value.value as string" direction="horizontal" @update:value="setValue">
+                  <VRadio :label="copy.male" value="male" />
+                  <VRadio :label="copy.female" value="female" />
+                </VRadioGroup>
+              </template>
+            </VFormItem>
 
-                <VFormItem
-                  class="form-demo__array-field--wide"
-                  :name="`companies.${index}.type`"
-                  :label="`${copy.company} ${index + 1} ${copy.companyType}`"
-                  required
-                >
-                  <template #default="slotProps">
-                    <VRadioGroup
-                      :value="slotProps.value.value as string"
-                      direction="horizontal"
-                      @update:value="slotProps.setValue"
-                    >
-                      <VRadio :label="copy.headOffice" value="head" />
-                      <VRadio :label="copy.branchOffice" value="branch" />
-                    </VRadioGroup>
-                  </template>
-                </VFormItem>
-              </div>
-            </section>
+            <VFormItem class="form-demo__form-field--wide" name="interests" :label="copy.interests" required>
+              <template #default="{ setValue, value }">
+                <VCheckboxGroup :value="value.value as string[]" direction="horizontal" @update:value="setValue">
+                  <VCheckbox :label="copy.design" value="design" />
+                  <VCheckbox :label="copy.develop" value="develop" />
+                </VCheckboxGroup>
+              </template>
+            </VFormItem>
+
+            <VFormItem name="quantity" :label="copy.quantity">
+              <template #default="{ setValue, value }">
+                <VInputNumber :value="value.value as number" :min="1" :max="9" @update:value="setValue" />
+              </template>
+            </VFormItem>
+
+            <VFormItem name="score" :label="copy.score" required>
+              <template #default="{ setValue, value }">
+                <VRate :value="value.value as number" @update:value="setValue" />
+              </template>
+            </VFormItem>
+
+            <VFormItem class="form-demo__form-field--wide" name="budget" :label="copy.budget" required>
+              <template #default="{ setValue, value }">
+                <VRange :value="value.value as number" :step="10" @update:value="setValue" />
+              </template>
+            </VFormItem>
+
+            <h3 class="form-demo__form-section-title">
+              {{ copy.formSectionConfirm }}
+            </h3>
+            <VFormItem class="form-demo__form-field--wide" name="password" :label="copy.password" required>
+              <template #default="{ setValue, value }">
+                <VShortPassword :value="value.value as string" @update:value="setValue" />
+              </template>
+            </VFormItem>
+
+            <VFormItem class="form-demo__form-field--wide" name="remark" :label="copy.remark" required>
+              <template #default="{ setValue, value }">
+                <VTextarea
+                  :max-length="80"
+                  :rows="3"
+                  show-word-limit
+                  :value="value.value as string"
+                  @update:value="setValue"
+                />
+              </template>
+            </VFormItem>
+
+            <VFormItem class="form-demo__form-field--wide" name="files" :label="copy.qualification" required>
+              <template #default="{ setValue, value }">
+                <VUploader :value="value.value as []" :upload-text="copy.upload" @update:value="setValue" />
+              </template>
+            </VFormItem>
           </VForm>
 
-          <div class="form-demo__form-actions form-demo__form-actions--array">
-            <VButton class="form-demo__submit" :form="formArrayId" native-type="submit" tone="primary">
+          <div v-if="example === 'form'" class="form-demo__form-actions">
+            <VButton class="form-demo__submit" :form="formId" native-type="submit" tone="primary">
               {{ copy.save }}
             </VButton>
-            <span class="form-demo__form-status">{{ formArrayStatus }}</span>
+            <span class="form-demo__form-status">{{ formStatus }}</span>
           </div>
-        </template>
 
-        <section
-          v-else-if="example === 'calendar-card'"
-          class="form-demo__calendar-card-scenario"
-        >
-          <header class="form-demo__context-head">
-            <div>
-              <strong>{{ copy.deliveryTitle }}</strong>
-              <span>{{ copy.deliveryHint }}</span>
+          <template v-else-if="example === 'form-array'">
+            <div class="form-demo__array-toolbar">
+              <span class="form-demo__array-count">
+                {{ formArrayModel.companies.length }} {{ copy.companyCountSuffix }}
+              </span>
+              <button type="button" class="form-demo__array-add" @click="addFormArrayCompany">
+                {{ copy.addCompany }}
+              </button>
             </div>
-            <output>
-              <span>{{ copy.deliverySelected }}</span>
-              <strong>{{ calendarValue }}</strong>
-            </output>
-          </header>
-          <VCalendarCard
-            v-model:value="calendarValue"
-            month="2026-05"
-            min-date="2026-05-10"
-            max-date="2026-05-20"
-          />
-        </section>
-        <section
-          v-else-if="example === 'calendar'"
-          class="form-demo__calendar-scenario"
-        >
-          <header class="form-demo__context-head">
-            <div>
-              <strong>{{ copy.bookingTitle }}</strong>
-              <span>{{ copy.bookingHint }}</span>
-            </div>
-            <output>
-              <span>{{ copy.selectedDate }}</span>
-              <strong>{{ calendarValue }}</strong>
-            </output>
-          </header>
-          <VCalendar
-            v-model:visible="calendarVisible"
-            v-model:value="calendarValue"
-            month="2026-05"
-            min-date="2026-05-10"
-            max-date="2026-05-20"
-            :confirm-text="copy.confirm"
-            @confirm="onCalendarConfirm"
-          />
-          <div
-            v-if="!calendarVisible"
-            class="form-demo__selection-result"
-            role="status"
-          >
-            <span class="form-demo__result-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="m7 12 3.2 3.2L17.5 8" />
-              </svg>
-            </span>
-            <div>
-              <strong>{{ copy.bookingConfirmed }}</strong>
-              <span>{{ calendarConfirmed || calendarValue }}</span>
-            </div>
-            <VButton
-              size="sm"
-              tone="default"
-              variant="outline"
-              @click="calendarVisible = true"
+
+            <VForm
+              :id="formArrayId"
+              class="form-demo__save"
+              :model="formArrayModel"
+              :validation-schema="formArraySchema"
+              @failed="onFormArrayFailed"
+              @submit="onFormArraySubmit"
             >
-              {{ copy.changeDate }}
-            </VButton>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'date-picker'"
-          class="form-demo__popup-scenario"
-        >
-          <header class="form-demo__context-head">
-            <div>
-              <strong>{{ copy.invoiceDateTitle }}</strong>
-              <span>{{ copy.invoiceDateHint }}</span>
+              <section
+                v-for="(company, index) in formArrayModel.companies"
+                :key="index"
+                class="form-demo__array-item"
+              >
+                <div class="form-demo__array-header">
+                  <div class="form-demo__array-title">
+                    <strong>{{ `${copy.company} ${index + 1}` }}</strong>
+                    <span v-if="primaryCompanyIndex === index" class="form-demo__array-badge">
+                      {{ copy.primaryCompany }}
+                    </span>
+                  </div>
+                  <div class="form-demo__array-actions">
+                    <button
+                      v-if="primaryCompanyIndex !== index"
+                      type="button"
+                      class="form-demo__array-secondary"
+                      @click="setPrimaryCompany(index)"
+                    >
+                      {{ copy.setPrimaryCompany }}
+                    </button>
+                    <button
+                      v-if="formArrayModel.companies.length > 1"
+                      type="button"
+                      class="form-demo__array-remove"
+                      @click="removeFormArrayCompany(index)"
+                    >
+                      {{ copy.removeCompany }}
+                    </button>
+                  </div>
+                </div>
+
+                <VFormItem
+                  :name="`companies.${index}.name`"
+                  :label="`${copy.company} ${index + 1} ${copy.companyNameLabel}`"
+                  required
+                >
+                  <template #default="slotProps">
+                    <VInput
+                      clearable
+                      clear-trigger="always"
+                      :placeholder="copy.companyName"
+                      :value="String(slotProps.value.value ?? '')"
+                      @update:value="slotProps.setValue"
+                    />
+                  </template>
+                </VFormItem>
+
+                <div class="form-demo__array-grid">
+                  <VFormItem
+                    :name="`companies.${index}.contact`"
+                    :label="`${copy.company} ${index + 1} ${copy.companyContactLabel}`"
+                    required
+                  >
+                    <template #default="slotProps">
+                      <VInput
+                        clearable
+                        clear-trigger="always"
+                        :placeholder="copy.companyContact"
+                        :value="String(slotProps.value.value ?? '')"
+                        @update:value="slotProps.setValue"
+                      />
+                    </template>
+                  </VFormItem>
+
+                  <VFormItem
+                    :name="`companies.${index}.phone`"
+                    :label="`${copy.company} ${index + 1} ${copy.companyPhoneLabel}`"
+                    required
+                  >
+                    <template #default="slotProps">
+                      <VInput
+                        clearable
+                        clear-trigger="always"
+                        :placeholder="copy.mobilePlaceholder"
+                        :value="String(slotProps.value.value ?? '')"
+                        @blur="slotProps.onBlur"
+                        @update:value="slotProps.setValue"
+                      />
+                    </template>
+                  </VFormItem>
+
+                  <VFormItem
+                    class="form-demo__array-field--wide"
+                    :name="`companies.${index}.type`"
+                    :label="`${copy.company} ${index + 1} ${copy.companyType}`"
+                    required
+                  >
+                    <template #default="slotProps">
+                      <VRadioGroup
+                        :value="slotProps.value.value as string"
+                        direction="horizontal"
+                        @update:value="slotProps.setValue"
+                      >
+                        <VRadio :label="copy.headOffice" value="head" />
+                        <VRadio :label="copy.branchOffice" value="branch" />
+                      </VRadioGroup>
+                    </template>
+                  </VFormItem>
+                </div>
+              </section>
+            </VForm>
+
+            <div class="form-demo__form-actions form-demo__form-actions--array">
+              <VButton class="form-demo__submit" :form="formArrayId" native-type="submit" tone="primary">
+                {{ copy.save }}
+              </VButton>
+              <span class="form-demo__form-status">{{ formArrayStatus }}</span>
             </div>
-            <output>
-              <span>{{ copy.selectedDate }}</span>
-              <strong>{{ calendarValue }}</strong>
-            </output>
-          </header>
-          <VDatePicker
-            v-model:visible="datePickerVisible"
-            v-model:value="calendarValue"
-            month="2026-05"
-            :confirm-text="copy.confirm"
-            @confirm="onDatePickerConfirm"
-          />
-          <div
-            v-if="!datePickerVisible"
-            class="form-demo__selection-result"
-            role="status"
+          </template>
+
+          <section
+            v-else-if="example === 'calendar-card'"
+            class="form-demo__calendar-card-scenario"
           >
-            <span class="form-demo__result-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="m7 12 3.2 3.2L17.5 8" />
-              </svg>
-            </span>
-            <div>
-              <strong>{{ copy.invoiceDateSelected }}</strong>
-              <span>{{ datePickerConfirmed || calendarValue }}</span>
-            </div>
-            <VButton
-              size="sm"
-              tone="default"
-              variant="outline"
-              @click="datePickerVisible = true"
-            >
-              {{ copy.changeInvoiceDate }}
-            </VButton>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'cascader'"
-          class="form-demo__popup-scenario"
-        >
-          <header class="form-demo__context-head">
-            <div>
-              <strong>{{ copy.addressTitle }}</strong>
-              <span>{{ copy.addressHint }}</span>
-            </div>
-            <output v-if="cascaderConfirmed.length > 0">
-              <span>{{ copy.addressSelected }}</span>
-              <strong>{{ cascaderConfirmed.join(' / ') }}</strong>
-            </output>
-          </header>
-          <VCascader
-            v-model:visible="cascaderVisible"
-            v-model:value="cascaderValue"
-            :title="copy.cityTitle"
-            :confirm-text="copy.confirm"
-            :cancel-text="copy.cancel"
-            :options="cascaderOptions"
-            @cancel="cascaderVisible = false"
-            @confirm="onCascaderConfirm"
-          />
-          <div
-            v-if="!cascaderVisible"
-            class="form-demo__selection-result"
-            role="status"
+            <header class="form-demo__context-head">
+              <div>
+                <strong>{{ copy.deliveryTitle }}</strong>
+                <span>{{ copy.deliveryHint }}</span>
+              </div>
+              <output>
+                <span>{{ copy.deliverySelected }}</span>
+                <strong>{{ calendarValue }}</strong>
+              </output>
+            </header>
+            <VCalendarCard
+              v-model:value="calendarValue"
+              month="2026-05"
+              min-date="2026-05-10"
+              max-date="2026-05-20"
+            />
+          </section>
+          <section
+            v-else-if="example === 'calendar'"
+            class="form-demo__calendar-scenario"
           >
-            <span class="form-demo__result-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="m7 12 3.2 3.2L17.5 8" />
-              </svg>
-            </span>
-            <div>
-              <strong>{{ copy.addressSelected }}</strong>
-              <span>{{ cascaderConfirmed.join(' / ') }}</span>
-            </div>
-            <VButton
-              size="sm"
-              tone="default"
-              variant="outline"
-              @click="cascaderVisible = true"
+            <header class="form-demo__context-head">
+              <div>
+                <strong>{{ copy.bookingTitle }}</strong>
+                <span>{{ copy.bookingHint }}</span>
+              </div>
+              <output>
+                <span>{{ copy.selectedDate }}</span>
+                <strong>{{ calendarValue }}</strong>
+              </output>
+            </header>
+            <VCalendar
+              v-model:visible="calendarVisible"
+              v-model:value="calendarValue"
+              month="2026-05"
+              min-date="2026-05-10"
+              max-date="2026-05-20"
+              :confirm-text="copy.confirm"
+              @confirm="onCalendarConfirm"
+            />
+            <div
+              v-if="!calendarVisible"
+              class="form-demo__selection-result"
+              role="status"
             >
-              {{ copy.changeAddress }}
-            </VButton>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'picker'"
-          class="form-demo__popup-scenario"
-        >
-          <header class="form-demo__context-head">
-            <div>
-              <strong>{{ copy.deliveryTimeTitle }}</strong>
-              <span>{{ copy.deliveryTimeHint }}</span>
+              <span class="form-demo__result-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="m7 12 3.2 3.2L17.5 8" />
+                </svg>
+              </span>
+              <div>
+                <strong>{{ copy.bookingConfirmed }}</strong>
+                <span>{{ calendarConfirmed || calendarValue }}</span>
+              </div>
+              <VButton
+                size="sm"
+                tone="default"
+                variant="outline"
+                @click="calendarVisible = true"
+              >
+                {{ copy.changeDate }}
+              </VButton>
             </div>
-            <output v-if="pickerConfirmed">
-              <span>{{ copy.timeSelected }}</span>
-              <strong>{{ pickerConfirmed }}</strong>
-            </output>
-          </header>
-          <VPicker
-            v-model:visible="pickerVisible"
-            v-model:value="pickerValue"
-            :title="copy.deliveryTimeTitle"
-            :confirm-text="copy.confirm"
-            :cancel-text="copy.cancel"
-            :columns="pickerColumns"
-            @cancel="pickerVisible = false"
-            @confirm="onPickerConfirm"
-          />
-          <div
-            v-if="!pickerVisible"
-            class="form-demo__selection-result"
-            role="status"
+          </section>
+          <section
+            v-else-if="example === 'date-picker'"
+            class="form-demo__popup-scenario"
           >
-            <span class="form-demo__result-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="m7 12 3.2 3.2L17.5 8" />
-              </svg>
-            </span>
-            <div>
-              <strong>{{ copy.timeSelected }}</strong>
-              <span>{{ pickerConfirmed }}</span>
-            </div>
-            <VButton
-              size="sm"
-              tone="default"
-              variant="outline"
-              @click="pickerVisible = true"
+            <header class="form-demo__context-head">
+              <div>
+                <strong>{{ copy.invoiceDateTitle }}</strong>
+                <span>{{ copy.invoiceDateHint }}</span>
+              </div>
+              <output>
+                <span>{{ copy.selectedDate }}</span>
+                <strong>{{ calendarValue }}</strong>
+              </output>
+            </header>
+            <VDatePicker
+              v-model:visible="datePickerVisible"
+              v-model:value="calendarValue"
+              month="2026-05"
+              :confirm-text="copy.confirm"
+              @confirm="onDatePickerConfirm"
+            />
+            <div
+              v-if="!datePickerVisible"
+              class="form-demo__selection-result"
+              role="status"
             >
-              {{ copy.changeTime }}
-            </VButton>
-          </div>
-        </section>
-        <section
-          v-else-if="example === 'number-keyboard'"
-          class="form-demo__popup-scenario"
-        >
-          <header class="form-demo__context-head">
-            <div>
-              <strong>{{ copy.amountTitle }}</strong>
-              <span>{{ copy.amountHint }}</span>
+              <span class="form-demo__result-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="m7 12 3.2 3.2L17.5 8" />
+                </svg>
+              </span>
+              <div>
+                <strong>{{ copy.invoiceDateSelected }}</strong>
+                <span>{{ datePickerConfirmed || calendarValue }}</span>
+              </div>
+              <VButton
+                size="sm"
+                tone="default"
+                variant="outline"
+                @click="datePickerVisible = true"
+              >
+                {{ copy.changeInvoiceDate }}
+              </VButton>
             </div>
-            <output class="form-demo__amount-display">
-              <span>CNY</span>
-              <strong>¥{{ keyboardAmount || '0' }}</strong>
-            </output>
-          </header>
-          <VNumberKeyboard
-            :visible="numberKeyboardVisible"
-            extra-key="."
-            :close-text="copy.keyboardDone"
-            :delete-text="copy.keyboardDelete"
-            @close="onKeyboardClose"
-            @delete="onKeyboardDelete"
-            @input="onKeyboardInput"
-          />
-          <div
-            v-if="!numberKeyboardVisible"
-            class="form-demo__selection-result"
-            role="status"
+          </section>
+          <section
+            v-else-if="example === 'cascader'"
+            class="form-demo__popup-scenario"
           >
-            <span class="form-demo__result-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="m7 12 3.2 3.2L17.5 8" />
-              </svg>
-            </span>
-            <div>
-              <strong>{{ copy.amountEntered }}</strong>
-              <span>¥{{ keyboardConfirmed || keyboardAmount }}</span>
-            </div>
-            <VButton
-              size="sm"
-              tone="default"
-              variant="outline"
-              @click="numberKeyboardVisible = true"
+            <header class="form-demo__context-head">
+              <div>
+                <strong>{{ copy.addressTitle }}</strong>
+                <span>{{ copy.addressHint }}</span>
+              </div>
+              <output v-if="cascaderConfirmed.length > 0">
+                <span>{{ copy.addressSelected }}</span>
+                <strong>{{ cascaderConfirmed.join(' / ') }}</strong>
+              </output>
+            </header>
+            <VCascader
+              v-model:visible="cascaderVisible"
+              v-model:value="cascaderValue"
+              :title="copy.cityTitle"
+              :confirm-text="copy.confirm"
+              :cancel-text="copy.cancel"
+              :options="cascaderOptions"
+              @cancel="cascaderVisible = false"
+              @confirm="onCascaderConfirm"
+            />
+            <div
+              v-if="!cascaderVisible"
+              class="form-demo__selection-result"
+              role="status"
             >
-              {{ copy.changeAmount }}
-            </VButton>
-          </div>
-        </section>
+              <span class="form-demo__result-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="m7 12 3.2 3.2L17.5 8" />
+                </svg>
+              </span>
+              <div>
+                <strong>{{ copy.addressSelected }}</strong>
+                <span>{{ cascaderConfirmed.join(' / ') }}</span>
+              </div>
+              <VButton
+                size="sm"
+                tone="default"
+                variant="outline"
+                @click="cascaderVisible = true"
+              >
+                {{ copy.changeAddress }}
+              </VButton>
+            </div>
+          </section>
+          <section
+            v-else-if="example === 'picker'"
+            class="form-demo__popup-scenario"
+          >
+            <header class="form-demo__context-head">
+              <div>
+                <strong>{{ copy.deliveryTimeTitle }}</strong>
+                <span>{{ copy.deliveryTimeHint }}</span>
+              </div>
+              <output v-if="pickerConfirmed">
+                <span>{{ copy.timeSelected }}</span>
+                <strong>{{ pickerConfirmed }}</strong>
+              </output>
+            </header>
+            <VPicker
+              v-model:visible="pickerVisible"
+              v-model:value="pickerValue"
+              :title="copy.deliveryTimeTitle"
+              :confirm-text="copy.confirm"
+              :cancel-text="copy.cancel"
+              :columns="pickerColumns"
+              @cancel="pickerVisible = false"
+              @confirm="onPickerConfirm"
+            />
+            <div
+              v-if="!pickerVisible"
+              class="form-demo__selection-result"
+              role="status"
+            >
+              <span class="form-demo__result-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="m7 12 3.2 3.2L17.5 8" />
+                </svg>
+              </span>
+              <div>
+                <strong>{{ copy.timeSelected }}</strong>
+                <span>{{ pickerConfirmed }}</span>
+              </div>
+              <VButton
+                size="sm"
+                tone="default"
+                variant="outline"
+                @click="pickerVisible = true"
+              >
+                {{ copy.changeTime }}
+              </VButton>
+            </div>
+          </section>
+          <section
+            v-else-if="example === 'number-keyboard'"
+            class="form-demo__popup-scenario"
+          >
+            <header class="form-demo__context-head">
+              <div>
+                <strong>{{ copy.amountTitle }}</strong>
+                <span>{{ copy.amountHint }}</span>
+              </div>
+              <output class="form-demo__amount-display">
+                <span>CNY</span>
+                <strong>¥{{ keyboardAmount || '0' }}</strong>
+              </output>
+            </header>
+            <VNumberKeyboard
+              :visible="numberKeyboardVisible"
+              extra-key="."
+              :close-text="copy.keyboardDone"
+              :delete-text="copy.keyboardDelete"
+              @close="onKeyboardClose"
+              @delete="onKeyboardDelete"
+              @input="onKeyboardInput"
+            />
+            <div
+              v-if="!numberKeyboardVisible"
+              class="form-demo__selection-result"
+              role="status"
+            >
+              <span class="form-demo__result-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="m7 12 3.2 3.2L17.5 8" />
+                </svg>
+              </span>
+              <div>
+                <strong>{{ copy.amountEntered }}</strong>
+                <span>¥{{ keyboardConfirmed || keyboardAmount }}</span>
+              </div>
+              <VButton
+                size="sm"
+                tone="default"
+                variant="outline"
+                @click="numberKeyboardVisible = true"
+              >
+                {{ copy.changeAmount }}
+              </VButton>
+            </div>
+          </section>
+        </template>
       </div>
 
       <button
+        v-if="activePlatform === 'h5'"
         class="form-demo__code-toggle"
         :data-active="String(codeExpanded)"
         type="button"
@@ -2301,7 +2279,7 @@ function onFormArrayFailed() {
       </button>
     </div>
 
-    <div v-if="codeExpanded" class="form-demo__code" :data-expanded="String(codeExpanded)">
+    <div v-if="codeExpanded && activePlatform === 'h5'" class="form-demo__code" :data-expanded="String(codeExpanded)">
       <div class="form-demo__code-toolbar">
         <button
           class="form-demo__code-copy"

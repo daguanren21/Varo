@@ -1,0 +1,51 @@
+.varo-collapse {
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-collapse-item + .varo-collapse-item {
+  border-top: 1px solid var(--varo-ui-border);
+}
+
+.varo-collapse-item__trigger.varo-collapse-item__trigger {
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  margin: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--varo-ui-text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+}
+
+.varo-collapse-item__chevron {
+  flex: none;
+  color: var(--varo-ui-text-muted);
+  transition: transform 180ms ease-out;
+}
+
+.varo-collapse-item[data-state='open'] .varo-collapse-item__chevron {
+  transform: rotate(180deg);
+}
+
+.varo-collapse-item__content {
+  padding: 0 14px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--varo-ui-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-collapse-item__chevron {
+    transition: none;
+  }
+}

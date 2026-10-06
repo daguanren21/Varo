@@ -1,6 +1,6 @@
 # Build Your Own Block
 
-This guide shows how to turn Base Kit components into a maintainable, installable, and optionally contributable business block. The running example is an anonymized filter bar with no real APIs, credentials, private URLs, or internal ticket IDs.
+This guide shows how to turn Base Kit components into a maintainable, installable, and optionally contributable business block. The anonymized filter bar below is an **H5 Vue example**, with no real APIs, credentials, private URLs, or internal ticket IDs. A native version needs its own Wevu SFC, native nodes, and component JSON; changing the manifest target alone is not a port.
 
 ## Installable Blocks
 
@@ -8,12 +8,12 @@ This guide shows how to turn Base Kit components into a maintainable, installabl
 
 ## 1. Understand the layers
 
-| Layer                 | Owns                                                 | Does not own                               |
-| --------------------- | ---------------------------------------------------- | ------------------------------------------ |
-| **Primitives**        | State, events, parts, cross-runtime semantics        | Visual tokens, product copy                |
-| **Base Kit / UI**     | Copied low-level component source and default styles | Remote data, permissions, domain models    |
-| **Business wrappers** | APIs, authz, field mapping, product copy             | Generic interaction state machines         |
-| **Blocks**            | Reusable screen sections and local composition       | Private backend details, one-off page glue |
+| Layer                   | Owns                                                 | Does not own                                       |
+| ----------------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| **Headless / H5 Parts** | Neutral state/events; H5 Parts own DOM interaction   | Visual tokens, product copy, a native Vue renderer |
+| **Base Kit / UI**       | Copied low-level component source and default styles | Remote data, permissions, domain models            |
+| **Business wrappers**   | APIs, authz, field mapping, product copy             | Generic interaction state machines                 |
+| **Blocks**              | Reusable screen sections and local composition       | Private backend details, one-off page glue         |
 
 Rule of thumb: a block should feel like a portable page slice, not a page locked to one product API.
 
@@ -65,7 +65,7 @@ Do not import registry source paths directly from the block. Keep remote data an
 Install the base component:
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp components/select
+pnpm dlx @varo-ui/cli add --target h5 components/select
 ```
 
 ## 4. Create the local block
@@ -211,12 +211,12 @@ Example `registry.json`:
   "type": "block",
   "title": "Status Filter",
   "description": "A local filter bar for selecting multiple anonymized statuses with VSelect.",
-  "targets": ["weapp"],
+  "targets": ["h5"],
   "dependencies": ["vue"],
   "registryDependencies": ["components/select"],
   "files": [
     {
-      "target": "weapp",
+      "target": "h5",
       "from": "registry/blocks/status-filter/status-filter.vue",
       "to": "src/components/blocks/status-filter.vue"
     }
@@ -228,10 +228,13 @@ Example `registry.json`:
 Key fields:
 
 - `type`: `block`
-- `targets`: for example `weapp`
+- `targets` / `files.target`: renderer family `h5` or `weapp`; this example provides H5 source only
 - `registryDependencies`: recursive base components
 - `files`: from/to mappings
 - `docs`: documentation route
+- `platforms`: explicit admission of additional profiles; the item and every transitive dependency must admit the profile, otherwise installation fails before writes without falling back to `weapp`
+
+Install profiles are `h5`, `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos`. The six additions remain experimental; see [support boundaries](/en/guide/installation#install-profiles-and-support-boundaries). Do not add admission without a target implementation and evidence. Native SFC consumers must globally load all installed `src/styles/*.css`, foundation first, following [Wevu Registry](/en/guide/shadcn-mode), not import global CSS locally.
 
 ## 8. Add bilingual documentation
 
@@ -259,7 +262,7 @@ pnpm test
 
 # pack the CLI and install into a temporary fixture
 pnpm --filter @varo-ui/cli build
-pnpm dlx @varo-ui/cli add --registry ./registry --target weapp blocks/status-filter
+pnpm dlx @varo-ui/cli add --registry ./registry --target h5 blocks/status-filter
 ```
 
 Confirm:
@@ -274,7 +277,7 @@ Confirm:
 No upstream contribution is required. Host the `registry/` directory, including manifests and source for every transitive dependency, on your own static site:
 
 ```bash
-pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target weapp blocks/status-filter
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target h5 blocks/status-filter
 ```
 
 The CLI loads `blocks/status-filter/registry.json` below that URL. Source URLs use `files.from` with the leading `registry/` removed. Both ordinary and target-specific `registryDependencies` resolve within the selected registry; missing dependencies fail rather than falling back to Varo's bundled registry. Use `--registry ./registry` to verify a local directory.
@@ -294,7 +297,7 @@ pnpm dlx @varo-ui/cli export --registry ./registry.json hello-world > hello-worl
 
 `files.path` is relative to the manifest directory; published files with inline `content` need no backing source file. Components, UI, hooks, and libs default to `src/components`, `src/components/ui`, `src/composables`, and `src/lib`, preserving nested component directories. Explicit `target` wins but must stay inside `src/`. Consumer `components.json` and TypeScript/JSONC aliases are honored, and JS/TS/Vue script imports between relocated files are rewritten through AST parsing.
 
-Standard manifests default to H5; Weapp items must declare `meta.varo.target: "weapp"`. Catalog dependencies resolve by name, individual items can load sibling `<name>.json` files, and cross-registry dependencies use explicit HTTP(S) item URLs. Supported file semantics cover `registry:block/component/ui/hook/composable/lib/page/file/theme/style`; `page/file` entries require an explicit target. `registry:base/font`, framework conversion, and npm auto-install are unsupported. `css`, `cssVars`, `tailwind`, `envVars`, and style inheritance through `extends` fail explicitly rather than being silently ignored. There is no implicit public-registry fallback.
+Standard manifests default to H5. Non-H5 items declare the exact install profile in `meta.varo.target`, such as `"weapp"` or an admitted `"alipay"`; a renderer is not blanket admission for other profiles. The complete dependency closure must match the requested profile. Catalog dependencies resolve by name, individual items can load sibling `<name>.json` files, and cross-registry dependencies use explicit HTTP(S) item URLs. Supported file semantics cover `registry:block/component/ui/hook/composable/lib/page/file/theme/style`; `page/file` entries require an explicit target. `registry:base/font`, framework conversion, and npm auto-install are unsupported. `css`, `cssVars`, `tailwind`, `envVars`, and style inheritance through `extends` fail explicitly rather than being silently ignored. There is no implicit public-registry fallback.
 
 ### Install through the shadcn-vue ecosystem
 
@@ -302,7 +305,7 @@ Exporting one item inlines its selected target's complete dependency closure and
 
 ```bash
 mkdir -p public/r
-pnpm dlx @varo-ui/cli export --registry ./registry --target weapp blocks/status-filter > public/r/status-filter.json
+pnpm dlx @varo-ui/cli export --registry ./registry --target h5 blocks/status-filter > public/r/status-filter.json
 # Host public/, then run in a consumer configured with components.json and TypeScript path aliases:
 pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 ```
@@ -311,7 +314,7 @@ The payload uses `registry:file`, inline `content`, and explicit `~/src/...` des
 
 Exports require valid UTF-8 contents; non-UTF-8 bytes fail explicitly instead of being silently replaced. `add` still copies binary assets byte-for-byte. Installation and export both reject destinations where a file is also another file's parent directory, including case-insensitive conflicts.
 
-Export H5 and Weapp separately. `meta.varo.target` records the target, but external installers do not enforce it or convert Vue to Wevu. Consumers still need matching runtime dependencies and theme setup. Programmatic CLI consumers must use `await resolveRegistryItems(...)`: both local and remote resolution now return a Promise.
+Export each exact profile separately. `meta.varo.target` preserves the selected profile while files are selected by its renderer. External installers do not enforce the runtime or convert Vue to Wevu; consumers must separately install matching dependencies and the complete style setup. Programmatic CLI consumers must use `await resolveRegistryItems(...)`: both local and remote resolution return a Promise. Native compilation proves compiler/artifact behavior, not device or Donut host capability.
 
 ## 10. Contribute to Varo
 
@@ -330,13 +333,13 @@ A contribution usually includes source, `registry.json`, tests, and bilingual do
 
 ## Troubleshooting
 
-| Symptom                           | Fix                                                                   |
-| --------------------------------- | --------------------------------------------------------------------- |
-| Missing dependency install        | Check `registryDependencies` spelling such as `components/select`     |
-| Destination conflict              | Review the `to` path; default is no-clobber, force only when explicit |
-| Hard to reuse                     | Move remote data/auth/analytics into a business wrapper               |
-| Breaks on mini-program            | Remove H5-only APIs and keep the shared contract                      |
-| Unit tests pass but install fails | Reproduce with packed CLI + temp fixture; verify file mappings        |
+| Symptom                           | Fix                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Missing dependency install        | Check `registryDependencies` spelling such as `components/select`                                                   |
+| Destination conflict              | Review the `to` path; default is no-clobber, force only when explicit                                               |
+| Hard to reuse                     | Move remote data/auth/analytics into a business wrapper                                                             |
+| Breaks on mini-program            | Provide real Wevu SFCs and native dependencies; check profile admission and global styles, not just the target name |
+| Unit tests pass but install fails | Reproduce with packed CLI + temp fixture; verify file mappings                                                      |
 
 ## Install existing blocks
 

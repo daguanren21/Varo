@@ -1,3 +1,4 @@
+// Generated from registry/components/tabs/tabs.ts; edit the Registry source.
 import type { InjectionKey, PropType, StyleValue, VNode } from 'vue'
 import {
   computed,
@@ -11,6 +12,8 @@ import {
   useId,
 
 } from 'vue'
+import './styles/varo.css'
+import './styles/varo-tabs.css'
 
 type TabName = string | number
 interface TabsContext {

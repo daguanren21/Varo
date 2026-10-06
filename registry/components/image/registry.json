@@ -33,6 +33,16 @@
       "target": "weapp",
       "from": "registry/components/image/weapp-vite.vue",
       "to": "src/components/ui/v-image.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/image/h5.css",
+      "to": "src/styles/varo-image.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/image/weapp-vite.css",
+      "to": "src/styles/varo-image.css"
     }
   ],
   "docs": "/components/image"

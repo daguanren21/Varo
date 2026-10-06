@@ -46,6 +46,16 @@
       "target": "weapp",
       "from": "registry/components/menu/v-menu-item.vue",
       "to": "src/components/ui/v-menu-item.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/menu/h5.css",
+      "to": "src/styles/varo-menu.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/menu/weapp-vite.css",
+      "to": "src/styles/varo-menu.css"
     }
   ],
   "docs": "/components/menu"

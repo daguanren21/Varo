@@ -3,7 +3,16 @@ import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    {
+      name: 'varo-native-json-test',
+      enforce: 'post',
+      transform(code, id) {
+        if (id.includes('vue&type=json')) { return { code: `export default ${code.trim()}`, map: null } }
+      },
+    },
+  ],
   test: {
     environment: 'jsdom',
     passWithNoTests: true,
@@ -21,10 +30,8 @@ export default defineConfig({
       '@varo/hooks': resolve(import.meta.dirname, 'packages/hooks/src/index.ts'),
       '@varo-ui/headless': resolve(import.meta.dirname, 'packages/primitives-core/src/index.ts'),
       '@varo/primitives-h5': resolve(import.meta.dirname, 'packages/primitives-h5/src/index.ts'),
-      '@varo/primitives-weapp': resolve(import.meta.dirname, 'packages/primitives-weapp/src/index.ts'),
+      '@varo-ui/h5/primitives': resolve(import.meta.dirname, 'packages/ui-h5/src/primitives.ts'),
       '@varo-ui/h5': resolve(import.meta.dirname, 'packages/ui-h5/src/index.ts'),
-      '@varo-ui/weapp/primitives': resolve(import.meta.dirname, 'packages/ui-weapp/src/primitives.ts'),
-      '@varo-ui/weapp': resolve(import.meta.dirname, 'packages/ui-weapp/src/index.ts'),
     },
   },
 })

@@ -95,6 +95,8 @@
 
 ## Events
 
+The DOM event types below apply only to H5. Native components use host click events, not browser keyboard events or DOM APIs; follow the corresponding SFC contract.
+
 | Event   | Payload                       | Description                                          |
 | ------- | ----------------------------- | ---------------------------------------------------- |
 | `click` | `MouseEvent \| KeyboardEvent` | Fired when the cell is clicked or keyboard-activated |

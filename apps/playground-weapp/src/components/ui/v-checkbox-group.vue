@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import type { CheckboxGroupContext, CheckboxValue } from './selection-context'
 import { provide } from 'wevu'
-import { checkboxGroupKey, type CheckboxGroupContext, type CheckboxValue } from './selection-context'
+import { checkboxGroupKey } from './selection-context'
+
+defineOptions({
+  properties: {
+    max: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -13,29 +20,31 @@ const props = withDefaults(
     direction: 'vertical',
     disabled: false,
     max: undefined,
-    value: () => []
-  }
+    value: () => [],
+  },
 )
 
 const emit = defineEmits<{
-  change: [value: CheckboxValue[]]
+  'change': [value: CheckboxValue[]]
   'update:value': [value: CheckboxValue[]]
 }>()
 
 provide<CheckboxGroupContext>(checkboxGroupKey, {
   disabled: () => props.disabled,
-  isChecked: (value) => props.value.includes(value),
+  isChecked: value => props.value.includes(value),
   toggle: (value) => {
     const next = [...props.value]
     const index = next.indexOf(value)
-    if (index >= 0) next.splice(index, 1)
+    if (index >= 0) {
+      next.splice(index, 1)
+    }
     else {
-      if (props.max !== undefined && next.length >= props.max) return
+      if (props.max != null && next.length >= props.max) { return }
       next.push(value)
     }
     emit('update:value', next)
     emit('change', next)
-  }
+  },
 })
 </script>
 

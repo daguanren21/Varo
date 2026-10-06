@@ -1,3 +1,4 @@
+// Generated from registry/utils/date-utils/date-utils.ts; edit the Registry source.
 export interface CalendarDay {
   date: string
   day: number

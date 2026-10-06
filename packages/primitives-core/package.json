@@ -37,7 +37,7 @@
     "dev": "tsdown --watch",
     "lint": "echo headless lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo headless has no e2e"
   },
   "devDependencies": {

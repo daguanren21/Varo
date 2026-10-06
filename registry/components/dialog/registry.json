@@ -62,6 +62,11 @@
       "target": "weapp",
       "from": "registry/components/dialog/dialog-context.ts",
       "to": "src/components/ui/dialog-context.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/dialog/weapp-vite.css",
+      "to": "src/styles/varo-dialog.css"
     }
   ],
   "docs": "/components/dialog"

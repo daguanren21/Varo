@@ -12,11 +12,13 @@ Switch 的 thumb 使用 180ms 可逆位移。按住时 thumb 沿切换方向轻�
 
 ## Props
 
-| Prop         | 类型      | 默认值  | 描述   |
-| ------------ | --------- | ------- | ------ |
-| `modelValue` | `boolean` | `false` | 当前值 |
-| `disabled`   | `boolean` | `false` | 禁用   |
-| `loading`    | `boolean` | `false` | 加载中 |
+| Prop         | 类型                   | 默认值  | 描述             |
+| ------------ | ---------------------- | ------- | ---------------- |
+| `modelValue` | `boolean`              | `false` | 当前值           |
+| `disabled`   | `boolean`              | `false` | 禁用             |
+| `loading`    | `boolean`              | `false` | 加载中并阻止切换 |
+| `readonly`   | `boolean`              | `false` | 只读但仍可聚焦   |
+| `size`       | `'sm' \| 'md' \| 'lg'` | `'md'`  | 控件尺寸         |
 
 ## Events
 

@@ -1,4 +1,8 @@
-import { defineComponent, h, type PropType } from 'vue'
+// Generated from registry/components/safe-area/safe-area.ts; edit the Registry source.
+import type { PropType } from 'vue'
+import { defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-safe-area.css'
 
 export type SafeAreaEdge = 'top' | 'right' | 'bottom' | 'left'
 
@@ -7,12 +11,12 @@ export const VSafeArea = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     edges: {
       type: Array as PropType<SafeAreaEdge[]>,
-      default: () => ['bottom']
-    }
+      default: () => ['bottom'],
+    },
   },
   setup(props, { attrs, slots }) {
     return () =>
@@ -20,13 +24,13 @@ export const VSafeArea = defineComponent({
         props.as,
         {
           ...attrs,
-          class: ['varo-safe-area', attrs.class],
+          'class': ['varo-safe-area', attrs.class],
           'data-bottom': String(props.edges.includes('bottom')),
           'data-left': String(props.edges.includes('left')),
           'data-right': String(props.edges.includes('right')),
-          'data-top': String(props.edges.includes('top'))
+          'data-top': String(props.edges.includes('top')),
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })

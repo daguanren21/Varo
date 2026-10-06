@@ -71,7 +71,7 @@ function selectWidth(nextWidth: PreviewWidth) {
           这是 Web 兼容预览，不是真实微信客户端模拟器
         </h2>
         <p>
-          页面使用官方 glass-easel 框架运行实际 Wevu 构建产物。微信专属 API、登录、支付与扫码能力不会在这里伪造；外层 Vue 工具栏也不会替代预览中的原生交互。
+          页面使用 glass-easel 运行实际 Wevu 构建产物，仅允许装载本仓库可信构建。微信专属 API、登录、支付与扫码能力不会在这里伪造；同源 iframe 不是不可信代码沙箱，预览结果也不代表其他小程序或 Donut 真机验证。
         </p>
       </div>
     </section>

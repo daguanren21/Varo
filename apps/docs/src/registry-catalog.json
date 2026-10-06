@@ -1,0 +1,1191 @@
+{
+  "profiles": {
+    "h5": {
+      "id": "h5",
+      "renderer": "h5",
+      "compilerPlatform": null,
+      "host": "browser",
+      "maturity": "stable"
+    },
+    "weapp": {
+      "id": "weapp",
+      "renderer": "weapp",
+      "compilerPlatform": "weapp",
+      "host": "miniprogram",
+      "maturity": "stable"
+    },
+    "alipay": {
+      "id": "alipay",
+      "renderer": "weapp",
+      "compilerPlatform": "alipay",
+      "host": "miniprogram",
+      "maturity": "experimental"
+    },
+    "tt": {
+      "id": "tt",
+      "renderer": "weapp",
+      "compilerPlatform": "tt",
+      "host": "miniprogram",
+      "maturity": "experimental"
+    },
+    "xhs": {
+      "id": "xhs",
+      "renderer": "weapp",
+      "compilerPlatform": "xhs",
+      "host": "miniprogram",
+      "maturity": "experimental"
+    },
+    "donut-android": {
+      "id": "donut-android",
+      "renderer": "weapp",
+      "compilerPlatform": "weapp",
+      "host": "donut",
+      "os": "android",
+      "maturity": "experimental"
+    },
+    "donut-ios": {
+      "id": "donut-ios",
+      "renderer": "weapp",
+      "compilerPlatform": "weapp",
+      "host": "donut",
+      "os": "ios",
+      "maturity": "experimental"
+    },
+    "donut-ohos": {
+      "id": "donut-ohos",
+      "renderer": "weapp",
+      "compilerPlatform": "weapp",
+      "host": "donut",
+      "os": "ohos",
+      "maturity": "experimental"
+    }
+  },
+  "components": {
+    "action-sheet": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/action-sheet/v-action-sheet.vue",
+          "to": "src/components/ui/v-action-sheet.vue"
+        }
+      ]
+    },
+    "avatar": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/avatar/weapp-vite.vue",
+          "to": "src/components/ui/avatar.vue"
+        }
+      ]
+    },
+    "badge": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/badge/weapp-vite.vue",
+          "to": "src/components/ui/badge.vue"
+        }
+      ]
+    },
+    "breadcrumb": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/breadcrumb/v-breadcrumb.vue",
+          "to": "src/components/ui/v-breadcrumb.vue"
+        }
+      ]
+    },
+    "button": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/button/weapp-vite.vue",
+          "to": "src/components/ui/v-button.vue"
+        }
+      ]
+    },
+    "calendar": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "card": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/card/weapp-vite.vue",
+          "to": "src/components/ui/v-card.vue"
+        }
+      ]
+    },
+    "cascader": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "cell": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/cell/v-cell.vue",
+          "to": "src/components/ui/v-cell.vue"
+        },
+        {
+          "from": "registry/components/cell/v-cell-group.vue",
+          "to": "src/components/ui/v-cell-group.vue"
+        }
+      ]
+    },
+    "checkbox": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/checkbox/weapp-vite.vue",
+          "to": "src/components/ui/v-checkbox.vue"
+        },
+        {
+          "from": "registry/components/checkbox/checkbox-group.weapp-vite.vue",
+          "to": "src/components/ui/v-checkbox-group.vue"
+        }
+      ]
+    },
+    "collapse": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/collapse/v-collapse.vue",
+          "to": "src/components/ui/v-collapse.vue"
+        },
+        {
+          "from": "registry/components/collapse/v-collapse-item.vue",
+          "to": "src/components/ui/v-collapse-item.vue"
+        }
+      ]
+    },
+    "date-field": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/date-field/v-date-field.vue",
+          "to": "src/components/ui/v-date-field.vue"
+        }
+      ]
+    },
+    "date-picker": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "dialog": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/dialog/v-dialog-root.vue",
+          "to": "src/components/ui/v-dialog-root.vue"
+        },
+        {
+          "from": "registry/components/dialog/v-dialog-trigger.vue",
+          "to": "src/components/ui/v-dialog-trigger.vue"
+        },
+        {
+          "from": "registry/components/dialog/v-dialog-overlay.vue",
+          "to": "src/components/ui/v-dialog-overlay.vue"
+        },
+        {
+          "from": "registry/components/dialog/v-dialog-content.vue",
+          "to": "src/components/ui/v-dialog-content.vue"
+        },
+        {
+          "from": "registry/components/dialog/v-dialog-close.vue",
+          "to": "src/components/ui/v-dialog-close.vue"
+        }
+      ]
+    },
+    "divider": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/divider/v-divider.vue",
+          "to": "src/components/ui/v-divider.vue"
+        }
+      ]
+    },
+    "drawer": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/drawer/v-drawer.vue",
+          "to": "src/components/ui/v-drawer.vue"
+        }
+      ]
+    },
+    "elevator": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "empty": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/empty/weapp-vite.vue",
+          "to": "src/components/ui/empty.vue"
+        }
+      ]
+    },
+    "fixed-nav": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "form": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/form/v-form.weapp-vite.vue",
+          "to": "src/components/ui/v-form.vue"
+        },
+        {
+          "from": "registry/components/form/v-form-item.weapp-vite.vue",
+          "to": "src/components/ui/v-form-item.vue"
+        }
+      ]
+    },
+    "grid": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/grid/v-grid.vue",
+          "to": "src/components/ui/v-grid.vue"
+        },
+        {
+          "from": "registry/components/grid/v-grid-item.vue",
+          "to": "src/components/ui/v-grid-item.vue"
+        }
+      ]
+    },
+    "icon": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/icon/v-icon.vue",
+          "to": "src/components/ui/v-icon.vue"
+        }
+      ]
+    },
+    "image": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/image/weapp-vite.vue",
+          "to": "src/components/ui/v-image.vue"
+        }
+      ]
+    },
+    "indicator": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/indicator/v-indicator.vue",
+          "to": "src/components/ui/v-indicator.vue"
+        }
+      ]
+    },
+    "input": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/input/v-input.vue",
+          "to": "src/components/ui/v-input.vue"
+        }
+      ]
+    },
+    "input-number": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/input-number/weapp-vite.vue",
+          "to": "src/components/ui/input-number.vue"
+        }
+      ]
+    },
+    "input-otp": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/input-otp/v-input-otp.vue",
+          "to": "src/components/ui/v-input-otp.vue"
+        }
+      ]
+    },
+    "layout": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/layout/v-row.vue",
+          "to": "src/components/ui/v-row.vue"
+        },
+        {
+          "from": "registry/components/layout/v-col.vue",
+          "to": "src/components/ui/v-col.vue"
+        }
+      ]
+    },
+    "list": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/list/v-list.vue",
+          "to": "src/components/ui/v-list.vue"
+        }
+      ]
+    },
+    "loading": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/loading/v-loading.vue",
+          "to": "src/components/ui/v-loading.vue"
+        }
+      ]
+    },
+    "map": {
+      "targets": [
+        "weapp"
+      ],
+      "platforms": [
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/map/v-map.weapp-vite.vue",
+          "to": "src/components/ui/v-map.vue"
+        }
+      ]
+    },
+    "menu": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/menu/v-menu.vue",
+          "to": "src/components/ui/v-menu.vue"
+        },
+        {
+          "from": "registry/components/menu/v-menu-item.vue",
+          "to": "src/components/ui/v-menu-item.vue"
+        }
+      ]
+    },
+    "navbar": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/navbar/v-navbar.vue",
+          "to": "src/components/ui/v-navbar.vue"
+        }
+      ]
+    },
+    "notice-bar": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/notice-bar/v-notice-bar.vue",
+          "to": "src/components/ui/v-notice-bar.vue"
+        }
+      ]
+    },
+    "number-keyboard": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "overlay": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/overlay/v-overlay.vue",
+          "to": "src/components/ui/v-overlay.vue"
+        }
+      ]
+    },
+    "pagination": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/pagination/v-pagination.vue",
+          "to": "src/components/ui/v-pagination.vue"
+        }
+      ]
+    },
+    "picker": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/picker/v-picker.vue",
+          "to": "src/components/ui/v-picker.vue"
+        }
+      ]
+    },
+    "popover": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/popover/v-popover-root.vue",
+          "to": "src/components/ui/v-popover-root.vue"
+        },
+        {
+          "from": "registry/components/popover/v-popover-trigger.vue",
+          "to": "src/components/ui/v-popover-trigger.vue"
+        },
+        {
+          "from": "registry/components/popover/v-popover-content.vue",
+          "to": "src/components/ui/v-popover-content.vue"
+        },
+        {
+          "from": "registry/components/popover/v-popover-close.vue",
+          "to": "src/components/ui/v-popover-close.vue"
+        }
+      ]
+    },
+    "popup": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/popup/v-popup.vue",
+          "to": "src/components/ui/v-popup.vue"
+        }
+      ]
+    },
+    "progress": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/progress/weapp-vite.vue",
+          "to": "src/components/ui/v-progress.vue"
+        }
+      ]
+    },
+    "pull-refresh": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/pull-refresh/v-pull-refresh.vue",
+          "to": "src/components/ui/v-pull-refresh.vue"
+        }
+      ]
+    },
+    "radio": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/radio/weapp-vite.vue",
+          "to": "src/components/ui/v-radio.vue"
+        },
+        {
+          "from": "registry/components/radio/radio-group.weapp-vite.vue",
+          "to": "src/components/ui/v-radio-group.vue"
+        }
+      ]
+    },
+    "range": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "rate": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/rate/v-rate.vue",
+          "to": "src/components/ui/v-rate.vue"
+        }
+      ]
+    },
+    "region-picker": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/region-picker/v-region-picker.weapp-vite.vue",
+          "to": "src/components/ui/v-region-picker.vue"
+        }
+      ]
+    },
+    "robot-chat": {
+      "targets": [
+        "weapp"
+      ],
+      "platforms": [
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/robot-chat/v-robot-chat.weapp-vite.vue",
+          "to": "src/components/ui/v-robot-chat.vue"
+        },
+        {
+          "from": "registry/components/robot-chat/v-robot-operate-card.weapp-vite.vue",
+          "to": "src/components/ui/v-robot-operate-card.vue"
+        }
+      ]
+    },
+    "safe-area": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/safe-area/v-safe-area.vue",
+          "to": "src/components/ui/v-safe-area.vue"
+        }
+      ]
+    },
+    "searchbar": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/searchbar/v-searchbar.vue",
+          "to": "src/components/ui/v-searchbar.vue"
+        }
+      ]
+    },
+    "select": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/select/weapp-vite.vue",
+          "to": "src/components/ui/select.vue"
+        }
+      ]
+    },
+    "short-password": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "side-navbar": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "signature": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/signature/v-signature.vue",
+          "to": "src/components/ui/v-signature.vue"
+        }
+      ]
+    },
+    "skeleton": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/skeleton/weapp-vite.vue",
+          "to": "src/components/ui/v-skeleton.vue"
+        }
+      ]
+    },
+    "space": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/space/v-space.vue",
+          "to": "src/components/ui/v-space.vue"
+        }
+      ]
+    },
+    "steps": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/steps/v-steps.vue",
+          "to": "src/components/ui/v-steps.vue"
+        }
+      ]
+    },
+    "sticky": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/sticky/v-sticky.vue",
+          "to": "src/components/ui/v-sticky.vue"
+        }
+      ]
+    },
+    "swipe-cell": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/swipe-cell/v-swipe-cell.vue",
+          "to": "src/components/ui/v-swipe-cell.vue"
+        }
+      ]
+    },
+    "switch": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp",
+        "alipay",
+        "tt",
+        "xhs",
+        "donut-android",
+        "donut-ios",
+        "donut-ohos"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/switch/weapp-vite.vue",
+          "to": "src/components/ui/v-switch.vue"
+        }
+      ]
+    },
+    "tabbar": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/tabbar/v-tabbar.vue",
+          "to": "src/components/ui/v-tabbar.vue"
+        },
+        {
+          "from": "registry/components/tabbar/v-tabbar-item.vue",
+          "to": "src/components/ui/v-tabbar-item.vue"
+        }
+      ]
+    },
+    "tabs": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/tabs/v-tabs.weapp-vite.vue",
+          "to": "src/components/ui/v-tabs.vue"
+        },
+        {
+          "from": "registry/components/tabs/v-tab.weapp-vite.vue",
+          "to": "src/components/ui/v-tab.vue"
+        }
+      ]
+    },
+    "tag": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/tag/weapp-vite.vue",
+          "to": "src/components/ui/tag.vue"
+        }
+      ]
+    },
+    "textarea": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/textarea/v-textarea.vue",
+          "to": "src/components/ui/v-textarea.vue"
+        }
+      ]
+    },
+    "theme-provider": {
+      "targets": [
+        "weapp"
+      ],
+      "platforms": [
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/theme-provider/weapp-vite.vue",
+          "to": "src/components/ui/v-theme-provider.vue"
+        }
+      ]
+    },
+    "toast": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/toast/v-toast.vue",
+          "to": "src/components/ui/v-toast.vue"
+        },
+        {
+          "from": "registry/components/toast/v-toast-region.vue",
+          "to": "src/components/ui/v-toast-region.vue"
+        }
+      ]
+    },
+    "uploader": {
+      "targets": [
+        "h5"
+      ],
+      "platforms": [
+        "h5"
+      ],
+      "nativeFiles": []
+    },
+    "watermark": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/watermark/v-watermark.vue",
+          "to": "src/components/ui/v-watermark.vue"
+        }
+      ]
+    }
+  }
+}

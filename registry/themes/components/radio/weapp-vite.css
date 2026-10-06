@@ -1,0 +1,115 @@
+.varo-radio {
+  font: inherit;
+}
+
+.varo-radio-group {
+  display: grid;
+  gap: 10px;
+}
+
+.varo-radio-group[data-direction='horizontal'] {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.varo-radio {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  width: fit-content;
+  font-weight: 560;
+  color: var(--varo-ui-text);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.varo-radio[data-checked] {
+  box-sizing: border-box;
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+}
+
+.varo-radio {
+  min-height: 44px;
+  padding: 0 2px;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.varo-radio__icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  transition:
+    background-color var(--varo-ui-motion-state) var(--varo-ui-motion-ease),
+    border-color var(--varo-ui-motion-state) var(--varo-ui-motion-ease),
+    color var(--varo-ui-motion-state) var(--varo-ui-motion-ease),
+    transform var(--varo-ui-motion-press) var(--varo-ui-motion-ease);
+}
+
+.varo-radio__icon {
+  font-size: 10px;
+  background: var(--varo-ui-surface);
+  border-radius: 999px;
+  transform-origin: center;
+}
+
+.varo-radio__dot {
+  width: 10px;
+  height: 10px;
+  background: var(--varo-ui-primary);
+  border-radius: 999px;
+  opacity: 0;
+  transform: scale(0.45);
+  transform-origin: center;
+  transition:
+    opacity var(--varo-ui-motion-feedback) linear,
+    transform var(--varo-ui-motion-state) var(--varo-ui-motion-ease);
+}
+
+.varo-radio[data-checked='true'] .varo-radio__icon {
+  background: var(--varo-ui-surface);
+  border-color: var(--varo-ui-primary);
+  box-shadow: 0 0 0 3px var(--varo-ui-primary-soft);
+}
+
+.varo-radio[data-checked='true'] .varo-radio__dot {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.varo-radio.varo-radio--pressed:not([data-disabled='true']) .varo-radio__icon {
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-radio__icon,
+  .varo-radio__dot {
+    transition-duration: 1ms;
+  }
+
+  .varo-radio.varo-radio--pressed:not([data-disabled='true']) .varo-radio__icon {
+    transform: none;
+  }
+}
+
+.varo-radio[data-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-radio__icon {
+    transition: none;
+  }
+}

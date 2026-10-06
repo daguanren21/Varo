@@ -45,6 +45,11 @@
       "target": "weapp",
       "from": "registry/components/tabbar/v-tabbar-item.vue",
       "to": "src/components/ui/v-tabbar-item.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/tabbar/weapp-vite.css",
+      "to": "src/styles/varo-tabbar.css"
     }
   ],
   "docs": "/components/tabbar"

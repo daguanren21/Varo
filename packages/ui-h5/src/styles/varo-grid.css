@@ -1,0 +1,103 @@
+.varo-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--varo-grid-columns, 4), minmax(0, 1fr));
+  gap: var(--varo-grid-gutter, 0);
+}
+
+.varo-grid__item {
+  position: relative;
+  box-sizing: border-box;
+  display: grid;
+  grid-column: span var(--varo-grid-item-span, 1);
+  gap: 8px;
+  align-content: center;
+  justify-items: center;
+  min-width: 0;
+  min-height: 72px;
+  padding: 12px 8px;
+  color: var(--varo-ui-text);
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-grid[data-border='false'] .varo-grid__item {
+  border-color: transparent;
+}
+
+.varo-grid__item[data-direction='horizontal'] {
+  grid-template-columns: auto minmax(0, 1fr);
+  place-items: center start;
+  text-align: left;
+}
+
+.varo-grid__item[data-clickable='true'] {
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+}
+
+.varo-grid__item[data-clickable='true']:hover {
+  background: var(--varo-ui-primary-soft);
+  border-color: var(--varo-ui-primary);
+}
+
+.varo-grid__item[data-clickable='true']:active {
+  transform: scale(0.98);
+}
+
+.varo-grid__item[data-clickable='true']:focus-visible {
+  box-shadow: 0 0 0 3px var(--varo-ui-ring);
+}
+
+.varo-grid__icon-wrap {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+}
+
+.varo-grid__text {
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.varo-grid__badge,
+.varo-grid__dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 0.65rem;
+  line-height: 1;
+  color: var(--varo-ui-danger-foreground);
+  background: var(--varo-ui-danger);
+  border: 2px solid var(--varo-ui-surface);
+  border-radius: 999px;
+}
+
+.varo-grid__badge[data-wide='true'] {
+  width: auto;
+  padding-inline: 5px;
+}
+
+.varo-grid__dot {
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  min-width: 8px;
+  height: 8px;
+  border: 0;
+}

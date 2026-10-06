@@ -1,4 +1,7 @@
+// Generated from registry/components/short-password/short-password.ts; edit the Registry source.
 import { computed, defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-short-password.css'
 
 export const VShortPassword = defineComponent({
   name: 'VShortPassword',

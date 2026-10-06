@@ -2,6 +2,8 @@
 
 Varo 的主题能力集中在 `@varo-ui/theme`，目标是让交互层、组件封装层与视觉 token 解耦。
 
+Registry 样式的作者源位于 `registry/themes/**/*` 和各组件 manifest：`themes/base` 只包含 tokens 与基础规则，普通组件 CSS 随依赖闭包安装，Agent 额外依赖可选 `themes/agent`。H5 安装源码自动导入所需 CSS；原生端必须把全部 `src/styles/*.css` 按 `varo.css` 优先的顺序全局注入 `app.vue`，不能只加载主题 base，也不能导入组件局部 WXSS。配置见 [Wevu Registry](/guide/shadcn-mode)；npm 原生消费者全局加载完整 `@varo-ui/weapp/style.css`。
+
 ## H5 基础接入
 
 ```ts

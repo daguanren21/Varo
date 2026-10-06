@@ -4,7 +4,7 @@ Pressable entry foundation that aligns pressed, disabled, loading, and native ac
 
 ## Runtime ownership
 
-The `usePressableRoot` machine comes from `@varo-ui/headless`; H5 and mini-program primitives own rendering.
+The `usePressableRoot` machine comes from `@varo-ui/headless`. This page's `ButtonRoot` and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VButton` SFC, not equivalent Vue Parts; the native tab shows source/evidence only.
 
 ## Demo
 

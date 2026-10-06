@@ -31,6 +31,7 @@ describe('ui-h5 form', () => {
                   h(
                     VFormItem,
                     {
+                      description: '11-digit mobile number',
                       label: 'Mobile',
                       name: 'mobile',
                     },
@@ -69,6 +70,9 @@ describe('ui-h5 form', () => {
     expect(label.attributes('for')).toBe(input.attributes('id'))
     expect(input.attributes('aria-labelledby')).toContain(label.attributes('id'))
     expect(input.attributes('aria-describedby')).toContain(error.attributes('id'))
+    const description = wrapper.get('.varo-form-item__description')
+    expect(description.text()).toBe('11-digit mobile number')
+    expect(input.attributes('aria-describedby')).toContain(description.attributes('id'))
     expect(input.attributes('aria-invalid')).toBe('true')
 
     await wrapper.get('input').setValue('13800138000')
@@ -476,5 +480,41 @@ describe('ui-h5 form', () => {
     expect(control.attributes('aria-labelledby')).toBe(label.attributes('id'))
     expect(control.attributes('aria-describedby')).toBe(error.attributes('id'))
     expect(control.attributes('aria-invalid')).toBe('true')
+  })
+
+  it('blocks disabled form interactions and resumes validation after re-enabling', async () => {
+    const model = reactive({ name: 'Ada' })
+    const onSubmit = vi.fn()
+    const onFailed = vi.fn()
+    const wrapper = mount(VForm, {
+      props: { disabled: true, model, rules: { name: 'required' }, onSubmit, onFailed },
+      slots: {
+        default: () => h(VFormItem, { name: 'name' }, {
+          default: ({ value, setValue }: { value: { value: string }, setValue: (value: string) => void }) =>
+            h(VInput, { 'value': value.value, 'onUpdate:value': setValue }),
+        }),
+      },
+    })
+    const input = wrapper.get('input')
+    expect(input.element.disabled).toBe(true)
+    input.element.value = 'blocked'
+    input.element.dispatchEvent(new Event('input', { bubbles: true }))
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(model.name).toBe('Ada')
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(onFailed).not.toHaveBeenCalled()
+
+    await wrapper.setProps({ disabled: false })
+    expect(input.element.disabled).toBe(false)
+    await input.setValue('')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(onFailed).toHaveBeenCalledOnce()
+    await input.setValue('Grace')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ values: { name: 'Grace' } }))
+    wrapper.unmount()
   })
 })

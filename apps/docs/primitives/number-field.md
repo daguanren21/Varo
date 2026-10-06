@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-`useNumberFieldRoot` 来自 `@varo-ui/headless`，H5 与小程序复用同一数值约束。
+`useNumberFieldRoot` 来自 `@varo-ui/headless`，数值约束可跨端复用。本页 Parts 与交互示例仅属于 `@varo-ui/h5/primitives`；原生端使用 Wevu `VInputNumber` SFC，不提供等价 Vue Parts，原生标签页只展示源码/证据。
 
 ## 演示
 

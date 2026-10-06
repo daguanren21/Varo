@@ -20,20 +20,20 @@ let markerLayer: TencentMultiMarker | undefined
 
 const copy = computed(() => props.locale === 'en'
   ? {
-      eyebrow: 'Weapp-only native map',
-      title: 'VMap observable preview',
-      body: 'Docs cannot run WeChat’s native map view. This surface uses Tencent Map JS API GL to show the same VMap contract: center, markers, and regionchange.',
+      eyebrow: 'Browser map illustration',
+      title: 'VMap contract illustration',
+      body: 'This uses Tencent Map JS API GL to illustrate center, markers, and regionchange. It does not execute the compiled VMap SFC or WeChat’s native map view.',
       relocate: center.value.label === hangzhou.label ? 'Move to Shanghai' : 'Move to Hangzhou',
       tap: 'Emit regionchange',
-      note: 'Tencent Map GL is the docs/Web Preview host. Location permission and Map Context stay on the mini-program runtime.',
+      note: 'Browser map behavior is not native compiler or device evidence. Location permission and Map Context require the actual mini-program runtime.',
     }
   : {
-      eyebrow: '仅 weapp 的原生地图',
-      title: 'VMap 可观察预览',
-      body: '文档站不能跑微信客户端同层地图。这里用腾讯地图 JS API GL 展示同一套 VMap 契约：中心点、标记和 regionchange。',
+      eyebrow: '浏览器地图示例',
+      title: 'VMap 契约示意',
+      body: '这里用腾讯地图 JS API GL 演示中心点、标记和 regionchange，不执行编译后的 VMap SFC，也不是微信原生同层地图。',
       relocate: center.value.label === hangzhou.label ? '切换到上海' : '切换到杭州',
       tap: '发出 regionchange',
-      note: '腾讯地图 GL 是文档/Web Preview 的可见宿主。定位权限和 Map Context 仍只在小程序运行时可用。',
+      note: '浏览器地图表现不是原生编译或真机证据。定位权限和 Map Context 仍需在实际小程序运行时验证。',
     })
 
 const markers = computed(() => [{

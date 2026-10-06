@@ -1,5 +1,6 @@
 {
   "name": "primitives",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "util",
   "title": "Platform Primitives Adapter",
   "description": "Target-specific adapter that gives copied components one stable primitives import path.",
@@ -13,7 +14,6 @@
       "vue"
     ],
     "weapp": [
-      "@varo-ui/weapp",
       "wevu"
     ]
   },

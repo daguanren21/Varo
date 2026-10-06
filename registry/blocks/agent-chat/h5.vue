@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
-import type { AgentConversationMessage } from '../agent-ui'
+import type { AgentConversationMessage } from '../agent-ui/types'
 import { computed } from 'vue'
 import {
   AgentComposer,
   AgentConversation,
 
   AgentEventRenderer,
-} from '../agent-ui'
+} from '../agent-ui/conversation'
 import { VButton } from '../ui/button'
 
 const props = withDefaults(
@@ -105,4 +105,13 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
     font-size: 0;
   }
 }
+</style>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-agent.css';
+@import '../agent-ui/agent-conversation.css';
+@import '../agent-ui/agent-markdown.css';
+@import '../../styles/varo-button.css';
 </style>

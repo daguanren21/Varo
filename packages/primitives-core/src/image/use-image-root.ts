@@ -1,6 +1,6 @@
-import type { Ref } from '../reactive'
+import type { Ref } from '@varo/shared'
 import type { ImageRootOptions, UseImageRootResult } from './types'
-import { resolveReactiveRuntime } from '../reactive'
+import { resolveReactiveRuntime } from '@varo/shared'
 
 export function useImageRoot(options: ImageRootOptions = {}): UseImageRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)

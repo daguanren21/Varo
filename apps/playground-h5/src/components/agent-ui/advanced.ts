@@ -1,14 +1,15 @@
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { PropType, VNodeChild } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type {
   AgentActivityItem,
-  AgentAdvancedStatus,
   AgentCitationItem,
+  AgentCodeBlockStatus,
   AgentContextChunk,
   AgentFineTuneControl,
   AgentFlowNode,
+  AgentImageGenerationStatus,
   AgentInsightItem,
-  AgentRadioChoice,
   AgentSearchItem,
   AgentSelectionAction,
   AgentSidebarGroup,
@@ -16,6 +17,7 @@ import type {
 } from './advanced-types'
 import type { AgentFilterOption, AgentTableColumn, AgentTableRow } from './agent-table'
 import type { AgentDiffIndicators, AgentDiffLine, AgentDiffSelection, AgentDiffView, AgentFileDiffLabels, IndexedAgentDiffLine } from './file-diff'
+import type { AgentChoice } from './types'
 import { computed, defineComponent, h, shallowRef, useId } from 'vue'
 import { cn } from '../../lib/cn'
 import {
@@ -32,18 +34,21 @@ import {
 
   splitAgentDiffContent,
 } from './file-diff'
+import '../../styles/varo.css'
+import '../../styles/varo-agent.css'
 import './agent-advanced.css'
+import './agent-artifact.css'
 
 export type {
   AgentActivityItem,
-  AgentAdvancedStatus,
   AgentCitationItem,
+  AgentCodeBlockStatus,
   AgentCodeLine,
   AgentContextChunk,
   AgentFineTuneControl,
   AgentFlowNode,
+  AgentImageGenerationStatus,
   AgentInsightItem,
-  AgentRadioChoice,
   AgentSearchItem,
   AgentSelectionAction,
   AgentSidebarGroup,
@@ -64,14 +69,14 @@ function eventValue(event: Event) {
   return miniEvent.detail?.value ?? target?.value ?? ''
 }
 
-function statusLabel(status: AgentAdvancedStatus) {
+function statusLabel(status: AgentPartStatus) {
   if (status === 'completed') { return 'Completed' }
   if (status === 'failed') { return 'Failed' }
   if (status === 'running') { return 'Running' }
   return 'Waiting'
 }
 
-function renderStatus(status: AgentAdvancedStatus) {
+function renderStatus(status: AgentPartStatus) {
   return h('span', { 'class': 'agent-advanced__status', 'data-status': status }, [
     h('i', { 'class': 'agent-advanced__status-dot', 'aria-hidden': 'true' }),
     statusLabel(status),
@@ -123,6 +128,7 @@ function renderPlusIcon() {
     'aria-hidden': 'true',
   }, [h('path', { d: 'M12 5v14M5 12h14' })])
 }
+
 function renderChatIcon() {
   return h('svg', {
     'aria-hidden': 'true',
@@ -150,7 +156,7 @@ function renderSearchIcon() {
 export const AgentRadioGroup = defineComponent({
   name: 'AgentRadioGroup',
   props: {
-    choices: { type: Array as PropType<AgentRadioChoice[]>, default: () => [] },
+    choices: { type: Array as PropType<AgentChoice[]>, default: () => [] },
     orientation: { type: String as PropType<'horizontal' | 'vertical'>, default: 'vertical' },
     value: { type: String, default: '' },
   },
@@ -216,7 +222,7 @@ export const AgentCodeBlock = defineComponent({
     focusedLines: { type: Array as PropType<number[]>, default: () => [] },
     language: { type: String, default: 'text' },
     lineNumbers: { type: Boolean, default: true },
-    status: { type: String as PropType<'complete' | 'streaming'>, default: 'complete' },
+    status: { type: String as PropType<AgentCodeBlockStatus>, default: 'complete' },
   },
   emits: { copy: (_code: string) => true },
   setup(props, { emit, slots }) {
@@ -262,7 +268,7 @@ export const AgentFileDiff = defineComponent({
     open: { type: Boolean as PropType<boolean | undefined>, default: undefined },
     showActions: { type: Boolean, default: true },
     showToolbar: { type: Boolean, default: true },
-    status: { type: String as PropType<AgentAdvancedStatus>, default: 'completed' },
+    status: { type: String as PropType<AgentPartStatus>, default: 'completed' },
     view: { type: String as PropType<AgentDiffView | undefined>, default: undefined },
     wrap: { type: Boolean as PropType<boolean | undefined>, default: undefined },
   },
@@ -454,7 +460,7 @@ export const AgentFileDiff = defineComponent({
     }
 
     return () => h('section', {
-      'class': cn('agent-file-diff overflow-hidden rounded-[14px] border border-slate-200 bg-white shadow-sm', props.className),
+      'class': cn('agent-file-diff overflow-hidden rounded-[14px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
       'data-indicators': props.indicators,
       'data-line-numbers': String(currentLineNumbers.value),
       'data-open': String(currentOpen.value),
@@ -538,7 +544,7 @@ export const AgentToolResult = defineComponent({
     duration: String,
     name: { type: String, required: true },
     output: { type: String, default: '' },
-    status: { type: String as PropType<AgentAdvancedStatus>, default: 'completed' },
+    status: { type: String as PropType<AgentPartStatus>, default: 'completed' },
     summary: String,
   },
   emits: { 'retry': () => true, 'update:open': (_value: boolean) => true },
@@ -582,7 +588,7 @@ export const AgentImageGeneration = defineComponent({
     progress: { type: Number, default: 0 },
     prompt: String,
     src: String,
-    status: { type: String as PropType<'completed' | 'failed' | 'generating' | 'queued'>, default: 'queued' },
+    status: { type: String as PropType<AgentImageGenerationStatus>, default: 'queued' },
   },
   emits: { download: (_src: string) => true, retry: () => true },
   setup(props, { emit }) {
@@ -616,14 +622,14 @@ export const AgentImageGeneration = defineComponent({
     )
 
     return () => h('figure', {
-      'class': cn('agent-image-generation overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm', props.className),
+      'class': cn('agent-image-generation overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] shadow-sm', props.className),
       'data-status': props.status,
     }, [
       h('div', { class: 'agent-image-generation__canvas relative grid min-h-[252px] place-items-center overflow-hidden' }, [
         props.src
           ? h('img', { class: 'block min-h-[252px] h-full w-full object-cover', alt: props.alt, src: props.src })
           : h('div', { class: 'agent-image-generation__placeholder relative z-10 grid place-items-center gap-3 text-center' }, [
-              h('div', { 'class': 'agent-image-generation__preview relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[20px] border border-teal-700/20 bg-white/80 text-teal-700 shadow-[0_18px_34px_rgba(15,118,110,.13)]', 'aria-hidden': 'true' }, [
+              h('div', { 'class': 'agent-image-generation__preview relative grid h-[72px] w-[72px] place-items-center overflow-hidden rounded-[20px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-primary)] shadow-[var(--varo-agent-shadow)]', 'aria-hidden': 'true' }, [
                 h('span', { class: 'agent-image-generation__glow absolute h-[46px] w-[46px] rounded-2xl bg-teal-300/15 blur-lg' }),
                 h('svg', {
                   'class': 'relative z-[2] h-[34px] w-[34px]',
@@ -654,7 +660,7 @@ export const AgentImageGeneration = defineComponent({
                 h('small', { class: 'font-semibold tracking-[.03em]' }, 'Generation progress'),
                 h('strong', { class: 'text-[10px] tabular-nums text-teal-700' }, `${progress.value}%`),
               ]),
-              h('span', { class: 'agent-image-generation__track block h-[5px] overflow-hidden rounded-full bg-white/80' }, [
+              h('span', { class: 'agent-image-generation__track block h-[5px] overflow-hidden rounded-full bg-[var(--varo-agent-surface-strong)]' }, [
                 h('i', { class: 'block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300', style: { width: `${progress.value}%` } }),
               ]),
             ])
@@ -695,7 +701,24 @@ export const AgentToolApproval = defineComponent({
   },
   setup(props, { emit }) {
     return () => h('section', { 'class': 'agent-tool-approval', 'role': 'group', 'aria-label': `Approve ${props.tool}` }, [
-      h('header', [h('span', '!'), h('div', [h('small', 'Tool permission'), h('strong', props.tool), props.description ? h('p', props.description) : null])]),
+      h('header', [
+        h('span', { 'aria-hidden': 'true' }, [
+          h('svg', {
+            'fill': 'none',
+            'stroke': 'currentColor',
+            'stroke-linecap': 'round',
+            'stroke-linejoin': 'round',
+            'stroke-width': 1.8,
+            'viewBox': '0 0 24 24',
+            'width': 20,
+            'height': 20,
+          }, [
+            h('path', { d: 'm12 3-7 3v5c0 4.6 3 8.6 7 10 4-1.4 7-5.4 7-10V6z' }),
+            h('path', { d: 'M12 8v4 M12 16h.01' }),
+          ]),
+        ]),
+        h('div', [h('small', 'Tool permission'), h('strong', props.tool), props.description ? h('p', props.description) : null]),
+      ]),
       props.details.length
         ? h('dl', props.details.flatMap(detail => [h('dt', detail.label), h('dd', detail.value)]))
         : null,
@@ -1038,8 +1061,8 @@ export const AgentFilterTable = defineComponent({
         'class': cn(
           'inline-flex min-h-[34px] items-center gap-1.5 rounded-full border px-3 py-0 text-[10px] font-bold leading-none',
           filter.value === props.filter
-            ? 'border-teal-700 bg-emerald-50 text-teal-700'
-            : 'border-slate-200 bg-white text-slate-500',
+            ? 'border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]'
+            : 'border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-muted)]',
         ),
         'data-active': String(filter.value === props.filter),
         'key': filter.value,

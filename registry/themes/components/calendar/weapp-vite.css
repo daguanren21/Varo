@@ -1,0 +1,97 @@
+.varo-calendar button {
+  font: inherit;
+}
+
+.varo-calendar {
+  width: min(100%, 360px);
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-calendar-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-calendar-card__toolbar {
+  display: grid;
+  grid-template-columns: 32px 32px minmax(0, 1fr) 32px 32px;
+  gap: 6px;
+  align-items: center;
+}
+
+.varo-calendar-card__title {
+  font-weight: 750;
+  color: var(--varo-ui-text);
+  text-align: center;
+}
+
+.varo-calendar-card__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--varo-ui-primary);
+  cursor: pointer;
+  background: var(--varo-ui-surface-muted);
+  border: 0;
+  border-radius: var(--varo-ui-radius-sm);
+}
+
+.varo-calendar-card__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.varo-calendar-card__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  color: var(--varo-ui-text);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+}
+
+.varo-calendar-card__day[data-active='true'] {
+  font-weight: 750;
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+}
+
+.varo-calendar-card__day:disabled {
+  color: var(--varo-ui-border-strong);
+  cursor: not-allowed;
+}
+
+.varo-calendar .varo-calendar-card {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.varo-calendar__confirm {
+  width: calc(100% - 28px);
+  min-height: 42px;
+  margin: 0 14px 14px;
+  font-weight: 750;
+  color: var(--varo-ui-primary-foreground);
+  cursor: pointer;
+  background: var(--varo-ui-primary);
+  border: 0;
+  border-radius: 999px;
+}

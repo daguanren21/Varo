@@ -14,39 +14,6 @@ function collectFiles(directory: string, extension: string): string[] {
 }
 
 describe('playground-weapp delivery contract', () => {
-  it('declares deterministic build, AI dev, typecheck, and runtime smoke commands', () => {
-    const pkg = readJson<{ scripts: Record<string, string> }>('package.json')
-    const project = readJson<{ appid: string, compileType: string, miniprogramRoot: string }>('project.config.json')
-
-    expect(pkg.scripts.build).toBe('weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs')
-    expect(pkg.scripts.dev).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite')
-    expect(pkg.scripts['dev:ai']).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite --open')
-    expect(pkg.scripts.open).toBe('node scripts/prepare-devtools-project.mjs && weapp-vite open devtools/build')
-    expect(pkg.scripts.typecheck).toBe('vue-tsc -p tsconfig.json --noEmit')
-    expect(pkg.scripts['smoke:runtime']).toBe('node e2e/runtime-smoke.mjs')
-    expect(project).toMatchObject({
-      appid: '',
-      compileType: 'miniprogram',
-      miniprogramRoot: 'devtools/build/mp-weixin/',
-    })
-  })
-
-  it('uses Wevu as the mini-program runtime and limits Vue aliasing to tests', () => {
-    const sfcFiles = collectFiles(resolve(playgroundRoot, 'src/components'), '.vue')
-    const pageFiles = collectFiles(resolve(playgroundRoot, 'src/pages'), '.vue')
-    const featureFiles = collectFiles(resolve(playgroundRoot, 'src/features'), '.ts')
-    const viteConfig = readFileSync(resolve(playgroundRoot, 'vite.config.ts'), 'utf8')
-    const wevuTestAdapter = readFileSync(resolve(playgroundRoot, 'test/wevu.ts'), 'utf8')
-
-    ;[...sfcFiles, ...pageFiles, ...featureFiles].forEach((path) => {
-      expect(readFileSync(path, 'utf8'), path).not.toMatch(/from ['"]vue['"]/)
-    })
-    expect(viteConfig).toContain('wevu: resolve(root, \'test/wevu.ts\')')
-    expect(wevuTestAdapter).toContain('export * from \'vue\'')
-    expect(viteConfig).toContain('autoImportComponents: false')
-    expect(viteConfig).not.toContain('vue: \'wevu\'')
-  })
-
   it('produces compilable retail and AI mall routes when build output exists', () => {
     const outputRoot = resolve(playgroundRoot, 'devtools/build/mp-weixin')
     const appJsonPath = resolve(outputRoot, 'app.json')

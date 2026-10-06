@@ -55,6 +55,16 @@
       "target": "weapp",
       "from": "registry/components/region-picker/v-region-picker.weapp-vite.vue",
       "to": "src/components/ui/v-region-picker.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/region-picker/h5.css",
+      "to": "src/styles/varo-region-picker.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/region-picker/weapp-vite.css",
+      "to": "src/styles/varo-region-picker.css"
     }
   ],
   "docs": "/components/region-picker"

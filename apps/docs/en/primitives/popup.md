@@ -4,7 +4,7 @@ Popup foundation combining overlay, placement, close behavior, safe area, and de
 
 ## Runtime ownership
 
-`usePopupRoot` comes from `@varo-ui/headless`; H5 and Weapp implement placement and safe area separately.
+`usePopupRoot` comes from `@varo-ui/headless`. This page's `PopupRoot` and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use a separate Wevu `VPopup` SFC for placement and safe area; the native tab shows source/evidence only.
 
 ## Demo
 

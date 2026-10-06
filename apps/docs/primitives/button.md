@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-`usePressableRoot` 状态机来自 `@varo-ui/headless`；渲染适配分别来自 H5 与小程序 primitives。
+`usePressableRoot` 状态机来自 `@varo-ui/headless`；本页 `ButtonRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VButton` SFC，不提供等价 Vue Parts；原生标签页仅展示源码/证据。
 
 ## 演示
 

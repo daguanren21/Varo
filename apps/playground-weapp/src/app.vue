@@ -150,6 +150,7 @@ page {
     "pages/robot-chat-showcase/index",
     "pages/agent-workspace/index",
     "pages/web-preview/index",
+    "pages/web-preview-dialog/index",
     "pages/web-preview-agent/index",
     "pages/web-preview-map/index",
     "pages/web-preview-robot-chat/index",

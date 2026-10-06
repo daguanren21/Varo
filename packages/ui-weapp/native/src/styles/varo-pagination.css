@@ -1,0 +1,65 @@
+.varo-pagination button {
+  font: inherit;
+}
+
+.varo-pagination {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-start;
+  justify-content: safe center;
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+}
+
+.varo-pagination::-webkit-scrollbar {
+  display: none;
+}
+
+.varo-pagination__prev.varo-pagination__prev,
+.varo-pagination__page.varo-pagination__page,
+.varo-pagination__next.varo-pagination__next {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 32px;
+  min-height: 34px;
+  padding: 0 6px;
+  margin: 0;
+  color: var(--varo-ui-text);
+  cursor: pointer;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius-sm);
+}
+
+.varo-pagination__prev.varo-pagination__prev,
+.varo-pagination__next.varo-pagination__next {
+  min-width: 56px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.varo-pagination__page.varo-pagination__page[data-active='true'] {
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+  border-color: var(--varo-ui-primary);
+}
+
+.varo-pagination__prev.varo-pagination__prev:disabled,
+.varo-pagination__page.varo-pagination__page:disabled,
+.varo-pagination__next.varo-pagination__next:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.varo-pagination__simple {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  font-weight: 650;
+  color: var(--varo-ui-text-muted);
+}

@@ -47,6 +47,16 @@
       "target": "weapp",
       "from": "registry/components/radio/radio-context.ts",
       "to": "src/components/ui/radio-context.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/radio/h5.css",
+      "to": "src/styles/varo-radio.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/radio/weapp-vite.css",
+      "to": "src/styles/varo-radio.css"
     }
   ],
   "docs": "/components/radio"

@@ -1,12 +1,9 @@
 {
   "name": "@varo/registry",
-  "version": "0.0.1",
   "type": "module",
-  "sideEffects": false,
+  "version": "0.0.1",
   "private": true,
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -17,13 +14,16 @@
       "import": "./src/index.ts"
     }
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "scripts": {
     "build": "tsdown",
     "clean": "rimraf dist",
     "dev": "tsdown --watch",
     "lint": "echo registry lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo registry has no e2e"
   }
 }

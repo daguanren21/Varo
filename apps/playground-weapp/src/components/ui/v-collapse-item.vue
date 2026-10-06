@@ -2,8 +2,8 @@
 import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
-import VIcon from './v-icon.vue'
 import { useCollapseContext } from './collapse-context'
+import VIcon from './v-icon.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -59,7 +59,9 @@ function toggle() {
       @click="toggle"
     >
       <view class="varo-collapse-item__title">
-        <slot name="title">{{ props.title }}</slot>
+        <slot name="title">
+          {{ props.title }}
+        </slot>
       </view>
       <VIcon class-name="varo-collapse-item__chevron" name="chevronDown" :size="16" />
     </button>

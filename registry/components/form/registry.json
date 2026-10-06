@@ -1,5 +1,6 @@
 {
   "name": "form",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "component",
   "title": "VForm",
   "description": "Typed form and field controls with validation, status, and submit contracts.",
@@ -53,6 +54,16 @@
       "target": "weapp",
       "from": "registry/components/form/v-form-item.weapp-vite.vue",
       "to": "src/components/ui/v-form-item.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/form/h5.css",
+      "to": "src/styles/varo-form.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/form/weapp-vite.css",
+      "to": "src/styles/varo-form.css"
     }
   ],
   "docs": "/components/form"

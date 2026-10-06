@@ -18,6 +18,11 @@
       "target": "h5",
       "from": "registry/components/cascader/cascader.ts",
       "to": "src/components/ui/cascader.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/cascader/h5.css",
+      "to": "src/styles/varo-cascader.css"
     }
   ],
   "docs": "/components/cascader"

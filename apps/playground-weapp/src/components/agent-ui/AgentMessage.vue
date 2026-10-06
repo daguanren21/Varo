@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AgentStreamStatus } from '@varo-ui/ai'
 import { computed } from 'wevu'
 import AgentMarkdown from './AgentMarkdown.vue'
 import AgentStream from './AgentStream.vue'
@@ -13,7 +14,7 @@ const props = withDefaults(
     streamContent?: string
     streamError?: string
     streamFinal?: boolean
-    streamStatus?: 'completed' | 'failed' | 'idle' | 'streaming'
+    streamStatus?: AgentStreamStatus
     timestamp?: string
   }>(),
   {

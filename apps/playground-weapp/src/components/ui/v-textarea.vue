@@ -11,6 +11,9 @@ type InputConfirmType = 'send' | 'search' | 'next' | 'go' | 'done'
 
 defineOptions({
   inheritAttrs: false,
+  properties: {
+    value: { type: null, value: null },
+  },
 })
 
 const props = withDefaults(
@@ -118,7 +121,7 @@ const emit = defineEmits<{
   'update:value': [value: string]
   'valueChange': [value: string]
 }>()
-const valueControlled = computed(() => props.value !== undefined)
+const valueControlled = computed(() => props.value != null)
 const localValue = shallowRef(props.defaultValue)
 const currentValue = computed(() => {
   if (!valueControlled.value) {

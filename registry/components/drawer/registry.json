@@ -1,0 +1,57 @@
+{
+  "name": "drawer",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
+  "type": "component",
+  "title": "VDrawer",
+  "description": "Directional overlay panel with placement, modal semantics, controlled open state, close actions, and Weapp-safe rendering.",
+  "exportName": "VDrawer",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [
+    "@varo-ui/headless"
+  ],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/theme",
+      "vue"
+    ],
+    "weapp": [
+      "@varo-ui/headless",
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base",
+    "utils/primitives"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/drawer/drawer.ts",
+      "to": "src/components/ui/drawer.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/drawer/v-drawer.vue",
+      "to": "src/components/ui/v-drawer.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/drawer/h5.css",
+      "to": "src/styles/varo-drawer.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/drawer/weapp-vite.css",
+      "to": "src/styles/varo-drawer.css"
+    }
+  ],
+  "docs": "/components/drawer"
+}

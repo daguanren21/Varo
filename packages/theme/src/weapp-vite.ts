@@ -16,20 +16,24 @@ export function createVaroWeappThemePlugin(options: VaroWeappThemePluginOptions)
 
   return {
     name: 'varo:weapp-theme',
-    enforce: 'pre',
-    transform(source, id) {
-      const [pathname, query = ''] = id.split('?')
-      if (resolve(pathname) !== appStylePath) {
-        return
-      }
-      if (query.includes('weapp-vite-sidecar') || /(?:^|&)lang\.(?:js|ts|jsx|tsx)(?:&|$)/.test(query)) {
-        return
-      }
+    // Emit after native CSS generation while keeping source preprocessing early.
+    enforce: 'post',
+    transform: {
+      order: 'pre',
+      handler(source, id) {
+        const [pathname, query = ''] = id.split('?')
+        if (resolve(pathname) !== appStylePath) {
+          return
+        }
+        if (query.includes('weapp-vite-sidecar') || /(?:^|&)lang\.(?:js|ts|jsx|tsx)(?:&|$)/.test(query)) {
+          return
+        }
 
-      return {
-        code: `${source}\n${themeCss()}\n`,
-        map: null,
-      }
+        return {
+          code: `${source}\n${themeCss()}\n`,
+          map: null,
+        }
+      },
     },
     generateBundle: {
       order: 'post',

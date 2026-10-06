@@ -1,5 +1,7 @@
+// Generated from registry/components/tabbar/tabbar.ts; edit the Registry source.
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h, inject, provide } from 'vue'
+import './styles/varo.css'
 
 type TabbarName = string | number
 interface TabbarContext {

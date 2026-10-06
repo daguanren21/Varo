@@ -2,6 +2,8 @@
 
 Varo keeps theme ownership inside `@varo-ui/theme` so wrappers can remain token-driven.
 
+Registry styles are authored in `registry/themes/**/*` and owned by component manifests. `themes/base` contains only tokens and foundation rules; ordinary component CSS arrives with its dependency closure, while Agent units additionally require optional `themes/agent`. H5 installed source imports its CSS closure automatically. Native consumers must inject every `src/styles/*.css` globally into `app.vue`, with `varo.css` first, rather than loading only base or importing these files into component-local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). Native npm consumers globally load the complete `@varo-ui/weapp/style.css`.
+
 ## H5
 
 ```ts

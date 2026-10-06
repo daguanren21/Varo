@@ -1,6 +1,10 @@
+// Generated from registry/components/tag/tag.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-tag.css'
 
 export type TagSize = 'sm' | 'md' | 'lg'
 export type TagTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'

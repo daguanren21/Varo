@@ -18,6 +18,8 @@ Use `length` to control password cell count.
 
 ## Events
 
+`FocusEvent` below is an H5 contract, not a claim of native profile admission or browser focus events on native hosts. Registry manifests determine native admission.
+
 | Event          | Payload      | Description     |
 | -------------- | ------------ | --------------- |
 | `update:value` | `string`     | Value changed   |

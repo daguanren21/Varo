@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {},
-  "include": ["src/**/*.ts", "tests/**/*.ts"]
+  "compilerOptions": {
+    "types": ["miniprogram-api-typings", "node", "vite/client"],
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "native/src/**/*.ts", "native/src/**/*.vue", "tests/**/*.ts"]
 }
-
-

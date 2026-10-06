@@ -1,20 +1,6 @@
+import type { ReactiveRuntime, Ref, WritableRef } from '@varo/shared'
+import { resolveReactiveRuntime } from '@varo/shared'
 import { getByPath, setByPath } from '@varo/utils'
-
-interface Ref<T> {
-  value: T
-}
-
-interface WritableRef<T> extends Ref<T> {
-  value: T
-}
-
-interface ReactiveRuntime {
-  ref: <T>(value: T) => WritableRef<T>
-  computed: {
-    <T>(getter: () => T): Ref<T>
-    <T>(options: { get: () => T, set: (value: T) => void }): WritableRef<T>
-  }
-}
 
 export type FormValues = Record<string, unknown>
 export type StandardSchemaPathSegment = PropertyKey | { key: PropertyKey }
@@ -184,40 +170,6 @@ export function resetFormPreset() {
 
 export function getFormPreset(): Readonly<FormPreset> {
   return globalFormPreset
-}
-
-function ref<T>(value: T): WritableRef<T> {
-  return { value }
-}
-
-function computed<T>(getter: () => T): Ref<T>
-function computed<T>(options: { get: () => T, set: (value: T) => void }): WritableRef<T>
-function computed<T>(source: (() => T) | { get: () => T, set: (value: T) => void }) {
-  if (typeof source === 'function') {
-    return {
-      get value() {
-        return source()
-      },
-    }
-  }
-
-  return {
-    get value() {
-      return source.get()
-    },
-    set value(value: T) {
-      source.set(value)
-    },
-  }
-}
-
-const defaultReactiveRuntime: ReactiveRuntime = {
-  computed,
-  ref,
-}
-
-function resolveRuntime(runtime?: ReactiveRuntime): ReactiveRuntime {
-  return runtime ?? defaultReactiveRuntime
 }
 
 function isEmpty(value: unknown): boolean {
@@ -396,7 +348,7 @@ async function validateStandardSchema<TValues extends FormValues>(
 export function useForm<TValues extends FormValues = FormValues>(
   options: UseFormOptions<TValues> = {},
 ): UseFormReturn<TValues> {
-  const runtime = resolveRuntime(options.runtime)
+  const runtime = resolveReactiveRuntime(options.runtime)
   const preset = getFormPreset()
   const initialValues = { ...(options.initialValues ?? {}) } as TValues
   const values = options.values ?? runtime.ref(initialValues)

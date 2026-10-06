@@ -1,4 +1,8 @@
-import { computed, defineComponent, h, shallowRef, watch, type PropType, type StyleValue } from 'vue'
+// Generated from registry/components/swipe-cell/swipe-cell.ts; edit the Registry source.
+import type { PropType, StyleValue } from 'vue'
+import { computed, defineComponent, h, shallowRef, watch } from 'vue'
+import './styles/varo.css'
+import './styles/varo-swipe-cell.css'
 
 export type SwipeCellSide = 'left' | 'right' | null
 
@@ -13,20 +17,20 @@ export const VSwipeCell = defineComponent({
     disabled: Boolean,
     leftWidth: {
       type: Number,
-      default: 0
+      default: 0,
     },
     modelValue: {
       type: String as PropType<Exclude<SwipeCellSide, null> | undefined>,
-      default: undefined
+      default: undefined,
     },
     rightWidth: {
       type: Number,
-      default: 0
+      default: 0,
     },
     threshold: {
       type: Number,
-      default: 0.3
-    }
+      default: 0.3,
+    },
   },
   emits: ['close', 'open', 'update:modelValue'],
   setup(props, { attrs, emit, slots }) {
@@ -36,8 +40,8 @@ export const VSwipeCell = defineComponent({
     const startOffset = shallowRef(0)
     const startX = shallowRef(0)
     const restingOffset = computed(() => {
-      if (currentSide.value === 'left') return props.leftWidth
-      if (currentSide.value === 'right') return -props.rightWidth
+      if (currentSide.value === 'left') { return props.leftWidth }
+      if (currentSide.value === 'right') { return -props.rightWidth }
       return 0
     })
     const offset = computed(() => (dragging.value ? dragOffset.value : restingOffset.value))
@@ -47,7 +51,7 @@ export const VSwipeCell = defineComponent({
       () => props.modelValue,
       (side) => {
         currentSide.value = side ?? null
-      }
+      },
     )
 
     function pointX(event: TouchLikeEvent): number | undefined {
@@ -67,9 +71,9 @@ export const VSwipeCell = defineComponent({
     }
 
     function onTouchStart(event: TouchLikeEvent) {
-      if (props.disabled) return
+      if (props.disabled) { return }
       const x = pointX(event)
-      if (x === undefined) return
+      if (x === undefined) { return }
       dragging.value = true
       startX.value = x
       startOffset.value = restingOffset.value
@@ -77,14 +81,14 @@ export const VSwipeCell = defineComponent({
     }
 
     function onTouchMove(event: TouchLikeEvent) {
-      if (!dragging.value || props.disabled) return
+      if (!dragging.value || props.disabled) { return }
       const x = pointX(event)
-      if (x === undefined) return
+      if (x === undefined) { return }
       dragOffset.value = Math.max(-props.rightWidth, Math.min(props.leftWidth, startOffset.value + x - startX.value))
     }
 
     function onTouchEnd() {
-      if (!dragging.value) return
+      if (!dragging.value) { return }
       dragging.value = false
 
       if (props.leftWidth > 0 && dragOffset.value >= props.leftWidth * props.threshold) {
@@ -103,23 +107,23 @@ export const VSwipeCell = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-swipe-cell', attrs.class],
+          'class': ['varo-swipe-cell', attrs.class],
           'data-dragging': String(dragging.value),
-          'data-open': currentSide.value ?? 'none'
+          'data-open': currentSide.value ?? 'none',
         },
         [
           props.leftWidth > 0
             ? h(
                 'div',
                 { class: 'varo-swipe-cell__actions varo-swipe-cell__actions--left', style: { width: `${props.leftWidth}px` } },
-                slots.left?.({ close })
+                slots.left?.({ close }),
               )
             : null,
           props.rightWidth > 0
             ? h(
                 'div',
                 { class: 'varo-swipe-cell__actions varo-swipe-cell__actions--right', style: { width: `${props.rightWidth}px` } },
-                slots.right?.({ close })
+                slots.right?.({ close }),
               )
             : null,
           h(
@@ -130,11 +134,11 @@ export const VSwipeCell = defineComponent({
               onTouchstart: onTouchStart,
               onTouchmove: onTouchMove,
               onTouchend: onTouchEnd,
-              onTouchcancel: onTouchEnd
+              onTouchcancel: onTouchEnd,
             },
-            slots.default?.({ close, open })
-          )
-        ]
+            slots.default?.({ close, open }),
+          ),
+        ],
       )
-  }
+  },
 })

@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/swipe-cell/v-swipe-cell.vue",
       "to": "src/components/ui/v-swipe-cell.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/swipe-cell/style.css",
+      "to": "src/styles/varo-swipe-cell.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/swipe-cell/style.css",
+      "to": "src/styles/varo-swipe-cell.css"
     }
   ],
   "docs": "/guide/shadcn-mode"

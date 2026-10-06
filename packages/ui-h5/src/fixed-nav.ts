@@ -1,5 +1,7 @@
+// Generated from registry/components/fixed-nav/fixed-nav.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h, shallowRef, useId } from 'vue'
+import './styles/varo.css'
 
 export interface FixedNavItem {
   id?: string | number

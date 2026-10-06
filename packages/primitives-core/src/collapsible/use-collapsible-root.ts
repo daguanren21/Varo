@@ -1,6 +1,7 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '@varo/shared'
 import type { CollapsibleRootOptions, UseCollapsibleRootResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
+import { useControllableState } from '../use-controllable-state'
 
 export function useCollapsibleRoot(options: CollapsibleRootOptions = {}): UseCollapsibleRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,7 +10,7 @@ export function useCollapsibleRoot(options: CollapsibleRootOptions = {}): UseCol
     runtime,
     defaultValue: options.defaultOpen ?? false,
     value: options.open,
-    onUpdate: options.onOpenChange
+    onUpdate: options.onOpenChange,
   })
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
   const interactive = runtime.computed(() => !disabled.value) as Ref<boolean>
@@ -31,7 +32,7 @@ export function useCollapsibleRoot(options: CollapsibleRootOptions = {}): UseCol
     state: {
       disabled,
       interactive,
-      open: openState.current
+      open: openState.current,
     },
     attrs: {
       root: {
@@ -40,7 +41,7 @@ export function useCollapsibleRoot(options: CollapsibleRootOptions = {}): UseCol
         },
         get 'data-state'() {
           return getState()
-        }
+        },
       },
       trigger: {
         get 'aria-expanded'() {
@@ -54,21 +55,21 @@ export function useCollapsibleRoot(options: CollapsibleRootOptions = {}): UseCol
         },
         get 'data-state'() {
           return getState()
-        }
+        },
       },
       content: {
         get 'data-state'() {
           return getState()
-        }
-      }
+        },
+      },
     },
     events: {
       close: () => setOpen(false),
       open: () => setOpen(true),
-      toggle: () => setOpen(!openState.current.value)
+      toggle: () => setOpen(!openState.current.value),
     },
     api: {
-      setOpen
-    }
+      setOpen,
+    },
   }
 }

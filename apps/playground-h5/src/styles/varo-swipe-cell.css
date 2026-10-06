@@ -1,0 +1,33 @@
+.varo-swipe-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.varo-swipe-cell__actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.varo-swipe-cell__actions--left {
+  left: 0;
+}
+
+.varo-swipe-cell__actions--right {
+  right: 0;
+}
+
+.varo-swipe-cell__content {
+  position: relative;
+  z-index: 1;
+  touch-action: pan-y;
+  background: var(--varo-ui-surface);
+  transition: transform 0.22s ease;
+  will-change: transform;
+}
+
+.varo-swipe-cell[data-dragging='true'] .varo-swipe-cell__content {
+  transition: none;
+}

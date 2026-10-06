@@ -1,0 +1,22 @@
+{
+  "name": "agent",
+  "type": "theme",
+  "title": "Varo Agent Theme",
+  "description": "Optional Agent design tokens and native helpers, layered on the base UI theme.",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "registryDependencies": ["themes/base"],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/themes/agent/h5.css",
+      "to": "src/styles/varo-agent.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/agent/weapp-vite.css",
+      "to": "src/styles/varo-agent.css"
+    }
+  ],
+  "docs": "/guide/theme"
+}

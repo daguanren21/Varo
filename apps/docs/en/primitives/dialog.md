@@ -6,6 +6,8 @@ Modal interaction foundation composed from Root, Trigger, Overlay, Content, and 
 
 `useDialogRoot` comes from `@varo-ui/headless` and owns platform-neutral open requests, reasons, and synchronous cancellation. The H5 adapter owns focus trapping, background `inert`, and Trigger focus restoration; portal and motion stay in higher layers.
 
+Parts and interactive examples on this page come only from `@varo-ui/h5/primitives`. Native consumers use separate Wevu SFCs; the native tab shows source/evidence, not a Vue Parts preview.
+
 ## Demo
 
 <PrimitiveExample name="dialog" locale="en" />
@@ -70,5 +72,5 @@ const dialog = useDialogRoot({
 After cancellation, uncontrolled state is not written and adapters do not emit `update:open`. When `open` is provided, that prop remains authoritative: an allowed request changes visibility only after the parent applies the next prop. If the parent changes the prop independently after a canceled request, the component still follows the prop.
 
 ::: info Platform notes
-The H5 adapter supports overlay close, Escape, focus trapping, background `inert`, and Trigger focus restoration. The native WeChat mini-program runtime has no browser `document` keyboard events or DOM focus/inert/portal semantics, so native Weapp uses explicit Close and overlay paths. The repository's current Vue-modeled Weapp adapter maps Escape to `escape-key` when it runs on a browser/test surface with `document`; that modeled behavior does not promise keyboard or DOM focus capabilities in native WeChat. The reason/cancel state contract remains the same on both surfaces.
+H5 supports overlay close, Escape, focus trapping, background `inert`, and Trigger focus restoration. Native Wevu SFCs use explicit Close and overlay paths, with no browser `document` keyboard listeners or DOM focus/inert/portal semantics. They share the reason/cancel state contract, not a renderer.
 :::

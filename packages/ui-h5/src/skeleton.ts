@@ -1,5 +1,8 @@
+// Generated from registry/components/skeleton/skeleton.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, onBeforeUnmount, shallowRef, watch } from 'vue'
+import './styles/varo.css'
+import './styles/varo-skeleton.css'
 
 export type SkeletonMedia = 'image' | 'none' | 'video'
 

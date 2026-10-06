@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { PressableEvent } from '@varo-ui/headless'
 import type { ClassValue } from '../../lib/cn'
 import { usePressableRoot } from '@varo-ui/headless'
 import { computed } from 'wevu'
@@ -44,7 +45,7 @@ const classes = computed(() =>
 const hoverClass = computed(() => (props.interactive ? 'varo-card--pressed' : 'none'))
 
 function click(event: unknown) {
-  if (pressable.events.click(event as Event)) { emit('click', event) }
+  if (pressable.events.click(event as PressableEvent)) { emit('click', event) }
 }
 
 function pressStart() {

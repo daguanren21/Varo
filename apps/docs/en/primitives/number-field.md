@@ -4,7 +4,7 @@ Numeric-input foundation where Root owns bounds, step, and precision while contr
 
 ## Runtime ownership
 
-`useNumberFieldRoot` comes from `@varo-ui/headless`; H5 and Weapp share numeric constraints.
+`useNumberFieldRoot` comes from `@varo-ui/headless` with reusable numeric constraints. This page's Parts and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VInputNumber` SFC, not equivalent Vue Parts; the native tab shows source/evidence only.
 
 ## Demo
 

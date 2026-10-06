@@ -5,6 +5,12 @@ import { computed, inject } from 'wevu'
 import { cn } from '../../lib/cn'
 import { tabbarContextKey } from './tabbar-context'
 
+defineOptions({
+  properties: {
+    badge: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     badge?: string | number

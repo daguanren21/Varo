@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { AgentStreamStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import AgentMarkdown from './AgentMarkdown.vue'
+import { agentStreamIsFinal, agentStreamNotice } from './presentation'
 
 const props = withDefaults(
   defineProps<{
@@ -11,7 +13,7 @@ const props = withDefaults(
     cursor?: boolean
     final?: boolean
     error?: string
-    status?: 'idle' | 'streaming' | 'completed' | 'failed'
+    status?: AgentStreamStatus
   }>(),
   {
     content: '',
@@ -29,6 +31,8 @@ const rootClass = computed(() =>
   cn('agent-stream text-sm leading-7 text-[var(--varo-agent-foreground)]', props.className),
 )
 const normalizedContent = computed(() => String(props.content ?? ''))
+const isFinal = computed(() => props.final || agentStreamIsFinal(props.status))
+const statusNotice = computed(() => agentStreamNotice(props.status))
 </script>
 
 <template>
@@ -36,12 +40,15 @@ const normalizedContent = computed(() => String(props.content ?? ''))
     <text v-if="status === 'streaming' && !final" class="block whitespace-pre-wrap break-words">
       {{ normalizedContent }}
     </text>
-    <AgentMarkdown v-else :content="normalizedContent" :final="final || status === 'completed'" />
+    <AgentMarkdown v-else :content="normalizedContent" :final="isFinal" />
     <text
       v-if="cursor && status === 'streaming'"
       class="agent-stream__cursor ml-[3px] inline-block h-[1.15em] w-0.5 rounded-full bg-[var(--varo-agent-primary)] align-[-.18em]"
       aria-hidden="true"
     />
+    <text v-if="statusNotice" class="mt-2 block text-xs text-[var(--varo-agent-muted)]" role="status">
+      {{ statusNotice }}
+    </text>
     <view v-if="status === 'failed'" class="mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-[10px] bg-[var(--varo-agent-danger-soft)] px-3 py-2.5 text-xs text-[var(--varo-agent-danger)]" role="alert">
       <text>{{ error || '生成失败，请重试' }}</text>
       <button class="agent-native-button inline-flex min-h-9 min-w-[54px] items-center justify-center rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-xs font-semibold text-[var(--varo-agent-danger)]" type="button" @click="emit('retry')">

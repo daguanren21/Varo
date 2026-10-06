@@ -1,5 +1,7 @@
+// Generated from registry/components/side-navbar/side-navbar.ts; edit the Registry source.
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h, inject, provide } from 'vue'
+import './styles/varo.css'
 
 type NavName = string | number
 interface SideNavbarContext {

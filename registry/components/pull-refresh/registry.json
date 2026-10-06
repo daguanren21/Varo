@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/pull-refresh/v-pull-refresh.vue",
       "to": "src/components/ui/v-pull-refresh.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/pull-refresh/h5.css",
+      "to": "src/styles/varo-pull-refresh.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/pull-refresh/weapp-vite.css",
+      "to": "src/styles/varo-pull-refresh.css"
     }
   ],
   "docs": "/components/pull-refresh"

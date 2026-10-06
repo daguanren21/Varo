@@ -18,10 +18,7 @@
   "bugs": {
     "url": "https://github.com/daguanren21/Varo/issues"
   },
-  "sideEffects": [
-    "./src/style.css",
-    "./dist/style.css"
-  ],
+  "sideEffects": ["**/*.css"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -32,11 +29,7 @@
       "import": "./dist/primitives.js"
     },
     "./style.css": "./dist/style.css",
-    "./source/style.css": "./src/style.css",
-    "./source": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts"
-    }
+    "./source/style.css": "./src/style.css"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -51,13 +44,15 @@
     "dev": "vite build --watch",
     "lint": "echo ui-h5 lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo ui-h5 has no e2e"
   },
   "dependencies": {
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
-    "vue": "^3.5.42"
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0",
+    "vue": "^3.5.43"
   },
   "devDependencies": {
     "@varo/hooks": "workspace:*",

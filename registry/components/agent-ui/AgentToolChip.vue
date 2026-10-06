@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import type { AgentToolCall } from './types'
+import type { AgentToolPart } from '@varo-ui/ai'
 import VTag from '../ui/tag.vue'
 
 withDefaults(
   defineProps<{
     compact?: boolean
-    tool: AgentToolCall
+    tool: AgentToolPart
   }>(),
   {
     compact: false,
   },
 )
 
-function markClass(status: AgentToolCall['status']) {
+function markClass(status: AgentToolPart['status']) {
   if (status === 'completed') { return 'bg-[var(--varo-agent-success)]' }
   if (status === 'failed') { return 'bg-[var(--varo-agent-danger)]' }
   if (status === 'waiting') { return 'bg-[var(--varo-agent-border-strong)]' }

@@ -18,6 +18,7 @@ function useSwitchRootContext() {
 
 export const SwitchRoot = defineComponent({
   name: 'SwitchRoot',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,
@@ -29,6 +30,7 @@ export const SwitchRoot = defineComponent({
     },
     defaultChecked: Boolean,
     disabled: Boolean,
+    readonly: Boolean,
     loading: Boolean,
   },
   emits: ['update:checked', 'checkedChange'],
@@ -39,6 +41,7 @@ export const SwitchRoot = defineComponent({
       runtime: vueReactiveRuntime,
       checked: toRef(props, 'checked'),
       defaultChecked: props.defaultChecked,
+      readonly: toRef(props, 'readonly'),
       disabled: toRef(props, 'disabled'),
       loading: toRef(props, 'loading'),
       onCheckedChange(checked) {
@@ -58,7 +61,7 @@ export const SwitchRoot = defineComponent({
           ...restAttrs,
           ...switchRoot.attrs.root,
           class: [attrClass],
-          disabled: props.as === 'button' ? !switchRoot.state.interactive.value : undefined,
+          disabled: props.as === 'button' ? switchRoot.state.disabled.value || switchRoot.state.loading.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
             runInteractiveClick(event, {

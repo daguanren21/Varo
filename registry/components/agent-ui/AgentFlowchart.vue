@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentAdvancedStatus, AgentFlowNode } from './advanced-types'
+import type { AgentFlowNode } from './advanced-types'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import { agentPlusIcon } from './agent-icons'
@@ -49,7 +50,7 @@ function nodeClass(type: AgentFlowNode['type']) {
   return cn('agent-native-button agent-native-button--block agent-flowchart__node', `is-${type}`)
 }
 
-function statusClass(status?: AgentAdvancedStatus) {
+function statusClass(status?: AgentPartStatus) {
   return cn(
     'agent-flowchart__status-dot',
     status === 'completed' && 'is-completed',

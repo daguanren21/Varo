@@ -1,8 +1,10 @@
 import { defineStylelintConfig } from 'repoctl/tooling'
+import projections from './scripts/registry-projections.json' with { type: 'json' }
 
 export default await defineStylelintConfig({
   options: {
     ignoreFiles: [
+      ...Object.values(projections.owners).flatMap(files => Object.keys(files)),
       '**/dist/**',
       '**/devtools/**',
       'apps/realworld-weapp/src/**/*.scss',
@@ -10,6 +12,17 @@ export default await defineStylelintConfig({
       'apps/realworld-weapp/src/assets/**/iconfont.css',
     ],
     overrides: [
+      {
+        // Keep the authored negation specificity; Button intentionally uses complex notation.
+        files: [
+          'registry/themes/components/checkbox/h5.css',
+          'registry/themes/components/checkbox/weapp-vite.css',
+          'registry/themes/components/switch/h5.css',
+        ],
+        rules: {
+          'selector-not-notation': 'simple',
+        },
+      },
       {
         files: [
           'apps/playground-weapp-preview/src/runtime/*.css',

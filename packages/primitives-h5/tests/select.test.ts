@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, mergeProps } from 'vue'
 import {
   SelectContent,
   SelectGroup,
@@ -59,6 +59,8 @@ describe('primitives-h5 select', () => {
 
   it('emits controlled value changes without changing rendered value', async () => {
     const onUpdateValue = vi.fn()
+    const onClick = vi.fn()
+    const onMergedClick = vi.fn()
     const wrapper = mount(SelectRoot, {
       props: {
         'value': 'apple',
@@ -69,7 +71,7 @@ describe('primitives-h5 select', () => {
         default: () => [
           h(SelectTrigger, null, { default: () => h(SelectValue) }),
           h(SelectContent, null, {
-            default: () => options.map(option => h(SelectItem, { option }, { default: () => option.label })),
+            default: () => options.map(option => h(SelectItem, { option, ...mergeProps({ onClick }, { onClick: onMergedClick }) }, { default: () => option.label })),
           }),
         ],
       },
@@ -80,6 +82,9 @@ describe('primitives-h5 select', () => {
 
     expect(onUpdateValue).toHaveBeenCalledWith('banana')
     expect(wrapper.text()).toContain('Apple')
+    expect(onClick).toHaveBeenCalledOnce()
+    expect(onMergedClick).toHaveBeenCalledOnce()
+    wrapper.unmount()
   })
 
   it('keeps a readonly trigger operable while its items cannot change value', async () => {

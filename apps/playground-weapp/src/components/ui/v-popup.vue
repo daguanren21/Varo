@@ -7,9 +7,11 @@ import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import VIcon from './v-icon.vue'
 import VOverlay from './v-overlay.vue'
 
-type PopupCloseIconPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-type PopupDimension = number | string
-type PopupPosition = 'center' | 'top' | 'bottom' | 'left' | 'right'
+defineOptions({
+  properties: {
+    visible: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -48,15 +50,17 @@ const props = withDefaults(
     zIndex: undefined,
   },
 )
-
 const emit = defineEmits<{
   'clickOverlay': []
   'close': []
   'visibleChange': [visible: boolean]
   'update:visible': [visible: boolean]
 }>()
+type PopupCloseIconPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+type PopupDimension = number | string
+type PopupPosition = 'center' | 'top' | 'bottom' | 'left' | 'right'
 
-const visibleControlled = computed<boolean | undefined>(() => props.visible === undefined ? undefined : true)
+const visibleControlled = computed(() => props.visible != null)
 const popup = usePopupRoot({
   runtime: varoReactiveRuntime,
   defaultVisible: props.defaultVisible,

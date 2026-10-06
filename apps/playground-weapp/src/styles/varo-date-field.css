@@ -1,0 +1,76 @@
+.varo-date-field button {
+  font: inherit;
+}
+
+.varo-date-field {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: min(100%, 360px);
+  color: var(--varo-ui-text);
+}
+
+.varo-date-field__control.varo-date-field__control {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  padding: 0 12px;
+  margin: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-input-radius);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-date-field[data-open='true'] .varo-date-field__control {
+  border-color: var(--varo-ui-primary);
+  box-shadow: 0 0 0 3px var(--varo-ui-ring);
+}
+
+.varo-date-field[data-disabled='true'] .varo-date-field__control {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.varo-date-field[data-readonly='true'] .varo-date-field__control {
+  cursor: default;
+}
+
+.varo-date-field__value,
+.varo-date-field__placeholder {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.varo-date-field__placeholder {
+  color: var(--varo-ui-text-placeholder);
+}
+
+.varo-date-field__arrow {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  color: var(--varo-ui-text-muted);
+  border-right: 1.6px solid currentcolor;
+  border-bottom: 1.6px solid currentcolor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.varo-date-field[data-open='true'] .varo-date-field__arrow {
+  color: var(--varo-ui-primary);
+  transform: translateY(2px) rotate(225deg);
+}
+
+.varo-date-field__picker {
+  width: 100%;
+}

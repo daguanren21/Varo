@@ -19,6 +19,11 @@
       "target": "h5",
       "from": "registry/components/uploader/uploader.ts",
       "to": "src/components/ui/uploader.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/uploader/h5.css",
+      "to": "src/styles/varo-uploader.css"
     }
   ],
   "docs": "/components/uploader"

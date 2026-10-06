@@ -9,7 +9,7 @@ import {
   useSelectRootContext,
 } from '@varo-ui/headless'
 import { defineComponent, Fragment, h, inject, provide, toRef } from 'vue'
-import { usePropPresence } from '../vue-control'
+import { callHandler, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useSelectRoot } from './hooks'
@@ -17,12 +17,6 @@ export type * from './types'
 
 const provideRuntimeSelectRootContext = createSelectRootProvider(provide)
 const useRuntimeSelectRootContext = createSelectRootConsumer(inject)
-
-function callHandler(handler: unknown, event: Event) {
-  if (typeof handler === 'function') {
-    handler(event)
-  }
-}
 
 export const SelectRoot = defineComponent({
   name: 'SelectRoot',
@@ -203,6 +197,7 @@ export const SelectLabel = defineComponent({
 
 export const SelectItem = defineComponent({
   name: 'SelectItem',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

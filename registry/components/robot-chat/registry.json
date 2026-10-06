@@ -37,6 +37,11 @@
       "target": "weapp",
       "from": "registry/components/robot-chat/v-robot-operate-card.weapp-vite.vue",
       "to": "src/components/ui/v-robot-operate-card.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/robot-chat/weapp-vite.css",
+      "to": "src/styles/varo-robot-chat.css"
     }
   ],
   "docs": "/components/robot-chat"

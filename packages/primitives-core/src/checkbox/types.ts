@@ -1,4 +1,4 @@
-import type { ReactiveRuntime, Ref } from '../reactive'
+import type { ReactiveRuntime, Ref } from '@varo/shared'
 
 export interface CheckboxRootOptions {
   runtime?: ReactiveRuntime
@@ -6,13 +6,17 @@ export interface CheckboxRootOptions {
   checkedControlled?: Ref<boolean | undefined>
   defaultChecked?: boolean
   disabled?: Ref<boolean | undefined>
+  indeterminate?: Ref<boolean | undefined>
+  readonly?: Ref<boolean | undefined>
   onCheckedChange?: (checked: boolean) => void
 }
 
 export interface CheckboxRootState {
   checked: Ref<boolean>
   disabled: Ref<boolean>
+  indeterminate: Ref<boolean>
   interactive: Ref<boolean>
+  readonly: Ref<boolean>
 }
 
 export interface CheckboxRootAttrs {

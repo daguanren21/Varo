@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentAlternative } from './types'
+import type { AgentAlternative } from './advanced-types'
 import { computed } from 'wevu'
 import VButton from '../ui/v-button.vue'
 import VCard from '../ui/v-card.vue'

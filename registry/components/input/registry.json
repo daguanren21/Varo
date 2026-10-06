@@ -1,5 +1,6 @@
 {
   "name": "input",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "component",
   "title": "VInput",
   "description": "Mobile text input with clear, prefix, suffix, validation, and controlled value states.",
@@ -40,6 +41,16 @@
       "target": "weapp",
       "from": "registry/components/input/v-input.vue",
       "to": "src/components/ui/v-input.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/input/h5.css",
+      "to": "src/styles/varo-input.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/input/weapp-vite.css",
+      "to": "src/styles/varo-input.css"
     }
   ],
   "docs": "/components/input"

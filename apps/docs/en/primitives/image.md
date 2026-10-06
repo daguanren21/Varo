@@ -4,7 +4,7 @@ Image-state foundation that aligns loading, loaded, error, fit, sizing, and plac
 
 ## Runtime ownership
 
-`useImageRoot` comes from `@varo-ui/headless`; H5 renders img while Weapp uses native image.
+`useImageRoot` comes from `@varo-ui/headless`. This page's `ImageRoot` and interactive example are H5-only, from `@varo-ui/h5/primitives`, using `img`. Native consumers use the Wevu `VImage` SFC and native `image`; the native tab shows source/evidence only.
 
 ## Demo
 

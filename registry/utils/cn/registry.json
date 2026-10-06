@@ -1,5 +1,6 @@
 {
   "name": "cn",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "util",
   "title": "Class Name Merge",
   "description": "Shadcn-compatible cn helper with target-correct Tailwind conflict resolution.",

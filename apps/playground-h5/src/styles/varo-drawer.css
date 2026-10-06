@@ -1,0 +1,111 @@
+.varo-drawer {
+  position: relative;
+}
+
+.varo-drawer__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgb(0 0 0 / 45%);
+  animation: varo-drawer-overlay-enter var(--varo-ui-motion-enter) var(--varo-ui-motion-ease) both;
+}
+
+.varo-drawer__content {
+  position: fixed;
+  z-index: 1101;
+  box-sizing: border-box;
+  overflow: auto;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface-overlay);
+  box-shadow: var(--varo-ui-shadow-md);
+  transition: transform var(--varo-ui-motion-enter) var(--varo-ui-motion-ease);
+}
+
+.varo-drawer__content[data-placement='right'] {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(88vw, 420px);
+  transform: translateX(100%);
+}
+
+.varo-drawer__content[data-placement='left'] {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(88vw, 420px);
+  transform: translateX(-100%);
+}
+
+.varo-drawer__content[data-placement='top'] {
+  top: 0;
+  right: 0;
+  left: 0;
+  max-height: min(88vh, 560px);
+  transform: translateY(-100%);
+}
+
+.varo-drawer__content[data-placement='bottom'] {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: min(88vh, 560px);
+  transform: translateY(100%);
+}
+
+.varo-drawer__content[data-state='open'] {
+  transform: translate(0, 0);
+}
+
+.varo-drawer__content[data-round='true'][data-placement='right'],
+.varo-drawer__content[data-round='true'][data-placement='left'] {
+  border-radius: 18px 0 0 18px;
+}
+
+.varo-drawer__content[data-round='true'][data-placement='left'] {
+  border-radius: 0 18px 18px 0;
+}
+
+.varo-drawer__content[data-round='true'][data-placement='top'] {
+  border-radius: 0 0 18px 18px;
+}
+
+.varo-drawer__content[data-round='true'][data-placement='bottom'] {
+  border-radius: 18px 18px 0 0;
+}
+
+.varo-drawer__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--varo-ui-text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+}
+
+.varo-drawer__close:focus-visible {
+  outline: 2px solid var(--varo-ui-focus);
+  outline-offset: 2px;
+}
+
+@keyframes varo-drawer-overlay-enter {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-drawer__content {
+    transition: none;
+  }
+
+  .varo-drawer__overlay {
+    animation: none;
+  }
+}

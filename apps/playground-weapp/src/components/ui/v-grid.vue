@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
-import type { SizeValue } from './layout-utils'
 import type { GridContext, GridDirection } from './grid-context'
+import type { SizeValue } from './layout-utils'
 import { computed, provide } from 'wevu'
 import { cn } from '../../lib/cn'
-import { normalizeSize } from './layout-utils'
 import { gridContextKey } from './grid-context'
+import { normalizeSize } from './layout-utils'
 
 const props = withDefaults(
   defineProps<{

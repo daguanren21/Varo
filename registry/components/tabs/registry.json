@@ -45,6 +45,16 @@
       "target": "weapp",
       "from": "registry/components/tabs/v-tab.weapp-vite.vue",
       "to": "src/components/ui/v-tab.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/tabs/h5.css",
+      "to": "src/styles/varo-tabs.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/tabs/weapp-vite.css",
+      "to": "src/styles/varo-tabs.css"
     }
   ],
   "docs": "/components/tabs"

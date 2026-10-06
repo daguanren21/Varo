@@ -1,0 +1,64 @@
+.agent-native-button.agent-native-button {
+  box-sizing: border-box;
+  width: auto;
+}
+
+.agent-native-button.agent-native-button::after {
+  border: 0;
+}
+
+.agent-native-button--block.agent-native-button--block {
+  width: 100%;
+}
+
+.agent-native-button--fit.agent-native-button--fit {
+  width: fit-content;
+}
+
+.agent-attachments__remove.agent-attachments__remove,
+.agent-sidebar__toggle.agent-sidebar__toggle {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+}
+
+.agent-composer__submit.agent-composer__submit {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  margin: 0;
+}
+
+.agent-composer__send-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: currentcolor;
+}
+
+.agent-flowchart__connector.agent-flowchart__connector {
+  width: 28px;
+  height: 36px;
+  padding: 0;
+}
+
+.agent-insight-card__nav.agent-insight-card__nav {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+}
+
+.agent-sidebar__create.agent-sidebar__create {
+  width: calc(100% - 20px);
+}
+
+.agent-file-diff__collapse.agent-file-diff__collapse {
+  width: 30px;
+}
+
+.agent-shell__close.agent-shell__close {
+  width: 40px;
+}

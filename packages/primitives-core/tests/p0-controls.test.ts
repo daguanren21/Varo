@@ -29,6 +29,31 @@ describe('p0 control primitives', () => {
     expect(controlled.state.checked.value).toBe(false)
   })
 
+  it('exposes mixed checkbox semantics and blocks readonly changes', () => {
+    const onCheckedChange = vi.fn()
+    const readonly = ref(true)
+    const root = useCheckboxRoot({
+      defaultChecked: false,
+      indeterminate: ref(true),
+      onCheckedChange,
+      readonly,
+    })
+
+    expect(root.attrs.root).toMatchObject({
+      'aria-checked': 'mixed',
+      'aria-readonly': true,
+      'data-indeterminate': 'true',
+      'data-readonly': 'true',
+      'data-state': 'indeterminate',
+    })
+    expect(root.events.toggle()).toBe(false)
+    expect(onCheckedChange).not.toHaveBeenCalled()
+
+    readonly.value = false
+    expect(root.events.toggle()).toBe(true)
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+  })
+
   it('selects radio items through a group contract', () => {
     const value = ref<string | undefined>('h5')
     const onValueChange = vi.fn()
@@ -48,6 +73,25 @@ describe('p0 control primitives', () => {
 
     expect(onValueChange).toHaveBeenCalledWith('weapp')
     expect(group.state.value.value).toBe('h5')
+  })
+
+  it('exposes loading and readonly switch semantics', () => {
+    const root = useSwitchRoot({
+      defaultChecked: false,
+      loading: ref(true),
+      readonly: ref(true),
+    })
+
+    expect(root.attrs.root).toMatchObject({
+      'aria-busy': true,
+      'aria-disabled': true,
+      'aria-readonly': true,
+      'data-interactive': 'false',
+      'data-loading': 'true',
+      'data-readonly': 'true',
+    })
+    expect(root.events.toggle()).toBe(false)
+    expect(root.state.checked.value).toBe(false)
   })
 
   it('toggles switch state and exposes thumb state attributes', () => {

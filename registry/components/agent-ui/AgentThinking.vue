@@ -4,6 +4,7 @@ import type { AgentTraceStep } from './types'
 import { computed, shallowRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { agentChevronDownIcon as chevronIcon, agentSparklesIcon as thinkingIcon } from './agent-icons'
+import { agentTraceDetail, agentTraceDuration } from './presentation'
 
 const props = withDefaults(
   defineProps<{
@@ -51,15 +52,6 @@ function dotClass(status: AgentTraceStep['status']) {
     status === 'waiting' && 'bg-[var(--varo-agent-border-strong)]',
   )
 }
-
-function durationLabel(step: AgentTraceStep) {
-  if (step.duration) { return step.duration }
-  return step.durationMs === undefined ? '' : `${(step.durationMs / 1000).toFixed(1)}s`
-}
-
-function detailText(step: AgentTraceStep) {
-  return step.detail ?? step.content ?? ''
-}
 </script>
 
 <template>
@@ -92,12 +84,12 @@ function detailText(step: AgentTraceStep) {
             <text class="text-xs font-semibold leading-[17px] text-[var(--varo-agent-foreground)]">
               {{ step.title }}
             </text>
-            <text v-if="durationLabel(step)" class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
-              {{ durationLabel(step) }}
+            <text v-if="agentTraceDuration(step)" class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
+              {{ agentTraceDuration(step) }}
             </text>
           </view>
-          <text v-if="detailText(step)" class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
-            {{ detailText(step) }}
+          <text v-if="agentTraceDetail(step)" class="text-[12px] leading-4 text-[var(--varo-agent-text)]">
+            {{ agentTraceDetail(step) }}
           </text>
         </view>
       </view>

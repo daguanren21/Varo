@@ -1,0 +1,64 @@
+.varo-card {
+  overflow: hidden;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface);
+  border: 1px solid transparent;
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-card--padded {
+  padding: 16px;
+}
+
+.varo-card--outline {
+  border-color: var(--varo-ui-border);
+}
+
+.varo-card--elevated {
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-card--muted {
+  background: var(--varo-ui-surface-muted);
+}
+
+.varo-card--interactive {
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.varo-card--pressed {
+  transform: translateY(1px);
+}
+
+.varo-card__header,
+.varo-card__content,
+.varo-card__footer {
+  display: grid;
+  gap: 6px;
+}
+
+.varo-card__header {
+  margin-bottom: 14px;
+}
+
+.varo-card__footer {
+  margin-top: 14px;
+}
+
+.varo-card__title,
+.varo-card__description {
+  margin: 0;
+}
+
+.varo-card__title {
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--varo-ui-text);
+}
+
+.varo-card__description {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--varo-ui-text-muted);
+}

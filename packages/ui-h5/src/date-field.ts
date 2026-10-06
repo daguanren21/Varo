@@ -1,8 +1,12 @@
+// Generated from registry/components/date-field/date-field.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import type { PickerOption } from './picker'
 import { computed, defineComponent, h, shallowRef, watch } from 'vue'
 import { buildDateFieldColumns, dateFieldValue, parseDateFieldValue } from './date-utils'
 import { VPicker } from './picker'
+import './styles/varo.css'
+import './styles/varo-picker.css'
+import './styles/varo-date-field.css'
 
 export const VDateField = defineComponent({
   name: 'VDateField',

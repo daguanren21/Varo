@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/input-number/weapp-vite.vue",
       "to": "src/components/ui/input-number.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/input-number/h5.css",
+      "to": "src/styles/varo-input-number.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/input-number/weapp-vite.css",
+      "to": "src/styles/varo-input-number.css"
     }
   ],
   "docs": "/components/input-number"

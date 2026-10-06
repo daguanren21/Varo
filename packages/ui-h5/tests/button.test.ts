@@ -1,5 +1,7 @@
 import type { ThemeConfig } from '@varo-ui/theme'
 import type { Plugin } from 'vue'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -81,6 +83,13 @@ describe('ui-h5 button', () => {
 
     expect(wrapper.attributes('data-tone')).toBe('info')
     expect(wrapper.attributes('data-variant')).toBe('solid')
+  })
+  it('keeps solid theme buttons on a white foreground across tones', () => {
+    const style = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8')
+
+    expect(style).toContain('--varo-button-foreground: var(--varo-ui-white, #fff)')
+    expect(style).toContain('--varo-button-hover-foreground: var(--varo-ui-white, #fff)')
+    expect(style).toContain('.varo-button[data-tone=\'info\'][data-variant=\'solid\']')
   })
 
   it('exposes Varo-style equivalents for Vant and NutUI button features', () => {

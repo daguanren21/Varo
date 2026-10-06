@@ -1,10 +1,14 @@
-import { defineComponent, h, type PropType } from 'vue'
+// Generated from registry/components/popover/popover.ts; edit the Registry source.
+import type { PropType } from 'vue'
+import { defineComponent, h } from 'vue'
 import {
   PopoverClose,
   PopoverContent,
   PopoverRoot,
-  PopoverTrigger
+  PopoverTrigger,
 } from '@varo/primitives-h5'
+import './styles/varo.css'
+import './styles/varo-popover.css'
 
 export type PopoverSide = 'top' | 'right' | 'bottom' | 'left'
 export type PopoverAlign = 'start' | 'center' | 'end'
@@ -16,8 +20,8 @@ export const VPopoverRoot = defineComponent({
     disabled: Boolean,
     open: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['openChange', 'update:open'],
   setup(props, { attrs, emit, slots }) {
@@ -25,11 +29,11 @@ export const VPopoverRoot = defineComponent({
       h(
         PopoverRoot,
         {
-          defaultOpen: props.defaultOpen,
-          disabled: props.disabled,
+          'defaultOpen': props.defaultOpen,
+          'disabled': props.disabled,
           ...(props.open === undefined ? {} : { open: props.open }),
           'onUpdate:open': (open: boolean) => emit('update:open', open),
-          onOpenChange: (open: boolean) => emit('openChange', open)
+          'onOpenChange': (open: boolean) => emit('openChange', open),
         },
         {
           default: () =>
@@ -37,13 +41,13 @@ export const VPopoverRoot = defineComponent({
               'span',
               {
                 ...attrs,
-                class: ['varo-popover', attrs.class]
+                class: ['varo-popover', attrs.class],
               },
-              slots.default?.()
-            )
-        }
+              slots.default?.(),
+            ),
+        },
       )
-  }
+  },
 })
 
 export const VPopoverTrigger = defineComponent({
@@ -51,17 +55,17 @@ export const VPopoverTrigger = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     return () =>
       h(
         PopoverTrigger,
         { ...attrs, as: props.as, class: ['varo-popover__trigger', attrs.class] },
-        slots
+        slots,
       )
-  }
+  },
 })
 
 export const VPopoverContent = defineComponent({
@@ -69,16 +73,16 @@ export const VPopoverContent = defineComponent({
   props: {
     align: {
       type: String as PropType<PopoverAlign>,
-      default: 'center'
+      default: 'center',
     },
     as: {
       type: String,
-      default: 'div'
+      default: 'div',
     },
     side: {
       type: String as PropType<PopoverSide>,
-      default: 'bottom'
-    }
+      default: 'bottom',
+    },
   },
   setup(props, { attrs, slots }) {
     return () =>
@@ -86,14 +90,14 @@ export const VPopoverContent = defineComponent({
         PopoverContent,
         {
           ...attrs,
-          as: props.as,
-          class: ['varo-popover__content', attrs.class],
+          'as': props.as,
+          'class': ['varo-popover__content', attrs.class],
           'data-align': props.align,
-          'data-side': props.side
+          'data-side': props.side,
         },
-        slots
+        slots,
       )
-  }
+  },
 })
 
 export const VPopoverClose = defineComponent({
@@ -101,15 +105,15 @@ export const VPopoverClose = defineComponent({
   props: {
     as: {
       type: String,
-      default: 'button'
-    }
+      default: 'button',
+    },
   },
   setup(props, { attrs, slots }) {
     return () =>
       h(
         PopoverClose,
         { ...attrs, as: props.as, class: ['varo-popover__close', attrs.class] },
-        slots
+        slots,
       )
-  }
+  },
 })

@@ -4,7 +4,7 @@
 
 ## 运行时
 
-状态契约由 `@varo-ui/headless` 提供；渲染 Parts 分别来自 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives`。
+状态契约由 `@varo-ui/headless` 提供；本页 Parts 和交互示例仅属于 `@varo-ui/h5/primitives`。原生端使用 Wevu SFC 或 headless，不提供等价的 Vue Parts。
 
 ## 演示
 
@@ -12,11 +12,11 @@
 
 ## 基础用法
 
-通过上方演示面板切换 H5 与 Weapp primitive 预览/代码；每个运行时只渲染当前条目。
+上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
 
 ## Dismiss 契约
 
-H5 可处理 Escape/外部点击；小程序没有浏览器 `document`，应优先 `PopoverClose`、页面遮罩或页面级 dismiss adapter。
+H5 可处理 Escape/外部点击；原生端没有浏览器 `document`，使用原生 `VPopoverClose` SFC 或页面遮罩关闭，不直接复用本页的 H5 Parts。
 
 ## Parts
 

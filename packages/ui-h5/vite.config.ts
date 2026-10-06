@@ -8,9 +8,10 @@ export default defineConfig({
   plugins: [
     vue(),
     dts({
-      entryRoot: 'src',
+      entryRoot: '..',
       tsconfigPath: './tsconfig.build.json',
-      rollupTypes: true,
+      bundleTypes: true,
+      aliasesExclude: ['@varo-ui/headless', '@varo-ui/theme'],
     }),
     {
       name: 'copy-style-entry',

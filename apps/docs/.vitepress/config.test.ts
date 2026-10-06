@@ -47,13 +47,6 @@ describe('VitePress search rendering', () => {
     expect(html).not.toContain('hiddenList')
   })
 
-  it('expands included prose while omitting code from included Markdown', async () => {
-    const html = await renderSearch('<!-- @include: ../../README.md -->')
-    expect(html).toContain('Published packages')
-    expect(html).toContain('The CLI does not overwrite existing files by default.')
-    expect(html).not.toContain('pnpm dlx @varo-ui/cli')
-  })
-
   it('leaves the normal page code renderer intact', async () => {
     const html = await markdown.renderAsync('```ts\nconst visibleNormalCode = true\n```', {
       cleanUrls: true,

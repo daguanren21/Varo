@@ -34,8 +34,8 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  close: []
-  open: [side: SwipeCellOpenSide]
+  'close': []
+  'open': [side: SwipeCellOpenSide]
   'update:modelValue': [side: SwipeCellOpenSide | undefined]
 }>()
 

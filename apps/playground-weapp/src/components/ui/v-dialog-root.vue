@@ -8,6 +8,12 @@ import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { dialogContextKey } from './dialog-context'
 
+defineOptions({
+  properties: {
+    open: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     className?: ClassValue
@@ -23,7 +29,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'openChange': [open: boolean, details: DialogOpenChangeDetails]
+  'openChange': [payload: [open: boolean, details: DialogOpenChangeDetails]]
   'update:open': [open: boolean]
 }>()
 
@@ -31,7 +37,7 @@ let dialogRootSeq = 0
 
 const disabled = computed(() => props.disabled)
 const open = computed(() => props.open)
-const openControlled = computed(() => props.open !== undefined)
+const openControlled = computed(() => props.open != null)
 const dialogId = `varo-dialog-${++dialogRootSeq}`
 const dialog = useDialogRoot({
   id: dialogId,
@@ -41,7 +47,7 @@ const dialog = useDialogRoot({
   open,
   openControlled,
   onOpenChange(nextOpen, details) {
-    emit('openChange', nextOpen, details)
+    emit('openChange', [nextOpen, details])
     if (details.canceled) {
       return
     }

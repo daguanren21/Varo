@@ -1,3 +1,4 @@
+// Generated from registry/utils/layout-utils/layout-utils.ts; edit the Registry source.
 export type SizeValue = number | string
 export type PairSizeValue = SizeValue | [SizeValue, SizeValue]
 

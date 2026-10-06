@@ -1,0 +1,23 @@
+{
+  "name": "agent-workspace",
+  "type": "component",
+  "title": "Agent Workspace",
+  "description": "Context scope, retrieval and source receipts, task execution presentation, thread versions and workspace placement.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["@varo-ui/h5", "vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/agent-presentation", "themes/agent", "utils/cn"],
+  "files": [
+    { "target": "h5", "from": "registry/components/agent-workspace/h5.ts", "to": "src/components/agent-ui/workspace.ts" },
+    { "target": "h5", "from": "registry/components/agent-workspace/agent-workspace.css", "to": "src/components/agent-ui/agent-workspace.css" },
+    { "target": "h5", "from": "registry/components/agent-workspace/workspace-types.ts", "to": "src/components/agent-ui/workspace-types.ts" },
+    { "target": "weapp", "from": "registry/components/agent-workspace/workspace-types.ts", "to": "src/components/agent-ui/workspace-types.ts" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentComposerScope.vue", "to": "src/components/agent-ui/AgentComposerScope.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentRetrievalProgress.vue", "to": "src/components/agent-ui/AgentRetrievalProgress.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentSourceReceipt.vue", "to": "src/components/agent-ui/AgentSourceReceipt.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentTaskList.vue", "to": "src/components/agent-ui/AgentTaskList.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentTaskRunner.vue", "to": "src/components/agent-ui/AgentTaskRunner.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentThreadVersions.vue", "to": "src/components/agent-ui/AgentThreadVersions.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentShell.vue", "to": "src/components/agent-ui/AgentShell.vue" }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { createStore, onHide, onLaunch, onShow } from 'wevu'
+import { onHide, onLaunch, onShow, use } from 'wevu'
 import { useLoginInit } from './hooks'
 import { useAedStore } from './store'
+import { pinia } from './store/manager'
 
-createStore()
-const aedStore = useAedStore()
+use(pinia)
+const aedStore = useAedStore(pinia)
 
 const initialSearch = {
   brandId: 0,

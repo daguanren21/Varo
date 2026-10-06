@@ -1,5 +1,8 @@
+// Generated from registry/components/watermark/h5.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-watermark.css'
 
 const watermarkTiles = Array.from({ length: 80 }, (_, index) => index)
 

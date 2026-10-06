@@ -73,6 +73,7 @@ export const RadioGroup = defineComponent({
 
 export const RadioItem = defineComponent({
   name: 'RadioItem',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

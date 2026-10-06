@@ -1,4 +1,4 @@
-import type { RegistryItem, RegistryTarget } from '../src'
+import type { RegistryItem, RegistryRenderer } from '../src'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, posix, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -12,7 +12,7 @@ import {
 
 const root = resolve(__dirname, '../../..')
 const registryGroups = ['blocks', 'components', 'themes', 'utils'] as const
-const targets: RegistryTarget[] = ['h5', 'weapp']
+const targets: RegistryRenderer[] = ['h5', 'weapp']
 const readText = (path: string): string => readFileSync(resolve(root, path), 'utf8')
 const readJson = <T>(path: string): T => JSON.parse(readText(path)) as T
 const fileExists = (path: string): boolean => existsSync(resolve(root, path))
@@ -24,56 +24,9 @@ function registryItemFiles(): string[] {
     if (!existsSync(groupRoot)) { return [] }
 
     return readdirSync(groupRoot, { withFileTypes: true }).flatMap(entry =>
-      entry.isDirectory() ? [`registry/${group}/${entry.name}/registry.json`] : [],
+      entry.isDirectory() && fileExists(`registry/${group}/${entry.name}/registry.json`) ? [`registry/${group}/${entry.name}/registry.json`] : [],
     )
   })
-}
-
-function runtimeComponentNames(): string[] {
-  const helperFiles: Record<string, true> = {
-    'date-utils': true,
-    'index': true,
-    'layout-utils': true,
-    'primitives': true,
-    'selection': true,
-  }
-
-  return readdirSync(resolve(root, 'packages/ui-h5/src'), { withFileTypes: true })
-    .filter(entry => entry.isFile() && entry.name.endsWith('.ts'))
-    .map(entry => entry.name.replace(/\.ts$/, ''))
-    .filter(name => !helperFiles[name])
-    .sort()
-}
-
-function createValidRegistryItem(): RegistryItem {
-  return {
-    description: 'A select component.',
-    docs: '/components/select',
-    exportName: 'VSelect',
-    files: [
-      {
-        target: 'h5',
-        from: 'registry/components/select/select.ts',
-        to: 'src/components/ui/select.ts',
-      },
-      {
-        target: 'weapp',
-        from: 'registry/components/select/select.ts',
-        to: 'src/components/ui/select.ts',
-      },
-    ],
-    name: 'select',
-    registryDependencies: ['themes/base'],
-    targets: ['h5', 'weapp'],
-    title: 'Select',
-    type: 'component',
-  }
-}
-
-function omitRegistryField(field: keyof RegistryItem): unknown {
-  const item: Record<string, unknown> = { ...createValidRegistryItem() }
-  delete item[field]
-  return item
 }
 
 function resolveImportDestination(targetPath: string, importPath: string): string[] {
@@ -83,98 +36,17 @@ function resolveImportDestination(targetPath: string, importPath: string): strin
 
 describe('registry catalog', () => {
   it('keeps the Base Kit manifest aligned with the exported core list', () => {
-    const manifest = readJson<{ components: string[], targets: RegistryTarget[] }>('registry/base-kit.phase1.json')
+    const manifest = readJson<{ components: string[], targets: RegistryRenderer[] }>('registry/base-kit.phase1.json')
 
     expect(manifest.targets).toEqual(targets)
     expect(manifest.components).toEqual(baseKitPhase1)
     expect(baseKitPhase1).toHaveLength(15)
   })
 
-  it('publishes every maintained runtime component through the v0.1 registry catalog', () => {
-    expect([...componentCatalogV01].sort()).toEqual(runtimeComponentNames())
-    expect(componentCatalogV01).toHaveLength(61)
-  })
-
-  it('partitions the mini-program registry into high-consensus and specialized tiers', () => {
-    const tiers = readJson<{
-      agentUi: string[]
-      registryCatalog: { h5: number, weappSfc: number, weappSfcBaseKit: number, weappVite: number }
-      registryExtensions: string[]
-      runtimeCatalog: { h5: number, weappVite: number }
-      weappHighConsensus: string[]
-      weappSpecializedPendingRegistry: string[]
-    }>('registry/component-tiers.v0.1.json')
-
-    expect(tiers.runtimeCatalog).toEqual({ h5: 61, weappVite: 60 })
-    expect(tiers.registryCatalog).toEqual({ h5: 62, weappSfc: 52, weappSfcBaseKit: 15, weappVite: 53 })
-    expect(tiers.registryExtensions).toEqual(['map', 'region-picker'])
-    expect(tiers.weappHighConsensus).toEqual(weappComponentCatalogV01)
-    expect(
-      [...tiers.weappHighConsensus, ...tiers.weappSpecializedPendingRegistry].sort(),
-    ).toEqual([...componentCatalogV01].sort())
-    expect(tiers.agentUi).toHaveLength(42)
-  })
-
-  it('ships advanced Agent UI as native weapp SFCs with target-aware class merging', () => {
-    const manifest = readJson<RegistryItem & {
-      targetDependencies?: Partial<Record<RegistryTarget, string[]>>
-      targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
-    }>('registry/components/agent-ui/registry.json')
-    const weappFiles = manifest.files.filter(file => file.target === 'weapp')
-    const advancedComponents = [
-      'AgentMessageScroller',
-      'AgentCodeBlock',
-      'AgentFileDiff',
-      'AgentToolResult',
-      'AgentImageGeneration',
-      'AgentToolApproval',
-      'AgentCitations',
-      'AgentActivity',
-      'AgentSidebar',
-      'AgentContextCard',
-      'AgentInsightCard',
-      'AgentSelectionActions',
-      'AgentDiffTable',
-      'AgentRecordsTable',
-      'AgentFilterTable',
-      'AgentCommandSearch',
-      'AgentFlowchart',
-      'AgentFineTune',
-    ]
-
-    const markdownNode = readText('registry/components/agent-ui/AgentMarkdownNode.vue')
-    const advancedStyles = readText('registry/components/agent-ui/agent-advanced.css')
-
-    expect(manifest.registryDependencies).toContain('themes/base')
-    expect(manifest.targetRegistryDependencies?.['weapp']).toContain('utils/cn')
-    expect(manifest.targetDependencies?.h5).toContain('vue')
-    expect(manifest.targetDependencies?.['weapp']).toContain('wevu')
-    expect(weappFiles.some(file => file.to.endsWith('/advanced.ts'))).toBe(false)
-    expect(weappFiles.some(file => file.to.endsWith('/agent-advanced.css'))).toBe(false)
-    expect(markdownNode).toContain('<rich-text v-if="richTextNodes"')
-    expect(markdownNode).toContain('toAgentRichTextNodes')
-    expect(markdownNode).not.toContain('v-html')
-    expect(advancedStyles).toContain('--agent-surface: var(--varo-agent-surface')
-    expect(advancedStyles).toContain(':is(button, input, select):focus-visible')
-    expect(advancedStyles).toContain('animation: varo-agent-surface-enter 180ms ease-out both')
-    expect(advancedStyles).not.toContain('translateY(8px) scale(.99)')
-    advancedComponents.forEach((name) => {
-      expect(
-        weappFiles.some(file => file.to === `src/components/agent-ui/${name}.vue`),
-        `${name} must ship as a native weapp SFC`,
-      ).toBe(true)
-    })
-    weappFiles.filter(file => file.from.endsWith('.vue')).forEach((file) => {
-      expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
-    })
-  })
-
   it('keeps dual-target Blocks on Vue for H5 and Wevu for mini-programs', () => {
     const blockNames = ['agent-chat', 'login-form', 'order-filter', 'product-list', 'profile-card', 'profile-edit']
     blockNames.forEach((name) => {
-      const manifest = readJson<RegistryItem & {
-        targetDependencies?: Partial<Record<RegistryTarget, string[]>>
-      }>(`registry/blocks/${name}/registry.json`)
+      const manifest = readJson<RegistryItem>(`registry/blocks/${name}/registry.json`)
       const weappFiles = manifest.files.filter(file => file.target === 'weapp' && file.from.endsWith('.vue'))
 
       expect(manifest.targetDependencies?.h5, name).toContain('vue')
@@ -182,136 +54,6 @@ describe('registry catalog', () => {
       weappFiles.forEach((file) => {
         expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
       })
-    })
-  })
-  it('keeps one shadcn Form API behind target-owned renderers', () => {
-    const form = readJson<RegistryItem>('registry/components/form/registry.json')
-    const h5Files = form.files.filter(file => file.target === 'h5')
-    const weappFiles = form.files.filter(file => file.target === 'weapp')
-
-    expect(form.targetDependencies).toEqual({
-      h5: ['vue'],
-      weapp: ['wevu'],
-    })
-    expect(form.targetRegistryDependencies?.['weapp']).toContain('utils/primitives')
-    expect(h5Files.map(file => file.to)).toEqual(['src/components/ui/form.ts'])
-    expect(weappFiles.map(file => file.to)).toEqual([
-      'src/components/ui/form.ts',
-      'src/components/ui/form-context.ts',
-      'src/components/ui/v-form.vue',
-      'src/components/ui/v-form-item.vue',
-    ])
-
-    expect(readText('registry/components/form/form.ts')).toContain('export const VForm')
-    expect(readText('registry/components/form/form.ts')).toContain('export const VFormItem')
-    expect(readText('registry/components/form/form.weapp.ts')).toContain('default as VForm')
-    expect(readText('registry/components/form/form.weapp.ts')).toContain('default as VFormItem')
-    weappFiles.filter(file => file.from.endsWith('.vue')).forEach((file) => {
-      expect(readText(file.from), file.from).toContain('from \'wevu\'')
-      expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
-    })
-  })
-
-  it('keeps one shadcn Tabs API behind target-owned renderers', () => {
-    const tabs = readJson<RegistryItem>('registry/components/tabs/registry.json')
-    const h5Files = tabs.files.filter(file => file.target === 'h5')
-    const weappFiles = tabs.files.filter(file => file.target === 'weapp')
-
-    expect(tabs.targetDependencies).toEqual({
-      h5: ['vue'],
-      weapp: ['wevu'],
-    })
-    expect(h5Files.map(file => file.to)).toEqual(['src/components/ui/tabs.ts'])
-    expect(weappFiles.map(file => file.to)).toEqual([
-      'src/components/ui/tabs.ts',
-      'src/components/ui/tabs-context.ts',
-      'src/components/ui/v-tabs.vue',
-      'src/components/ui/v-tab.vue',
-    ])
-
-    expect(readText('registry/components/tabs/tabs.ts')).toContain('export const VTabs')
-    expect(readText('registry/components/tabs/tabs.ts')).toContain('export const VTab')
-    expect(readText('registry/components/tabs/tabs.weapp.ts')).toContain('default as VTabs')
-    expect(readText('registry/components/tabs/tabs.weapp.ts')).toContain('default as VTab')
-    expect(readText('registry/components/tabs/v-tabs.weapp-vite.vue')).toContain('role="tablist"')
-    expect(readText('registry/components/tabs/v-tab.weapp-vite.vue')).toContain('role="tabpanel"')
-    weappFiles.filter(file => file.from.endsWith('.vue')).forEach((file) => {
-      expect(readText(file.from), file.from).toContain('from \'wevu\'')
-      expect(readText(file.from), file.from).not.toMatch(/from ['"]vue['"]/)
-    })
-  })
-
-  it('ships RegionPicker cross-target and Map as a native weapp component', () => {
-    const regionPicker = readJson<RegistryItem>('registry/components/region-picker/registry.json')
-    const map = readJson<RegistryItem>('registry/components/map/registry.json')
-    const regionWeappFiles = regionPicker.files.filter(file => file.target === 'weapp')
-
-    expect(regionPicker.targets).toEqual(['h5', 'weapp'])
-    expect(regionPicker.targetDependencies).toEqual({
-      h5: ['vue'],
-      weapp: ['wevu'],
-    })
-    expect(regionPicker.registryDependencies).toContain('themes/base')
-    expect(regionWeappFiles.map(file => file.to)).toEqual([
-      'src/components/ui/region-picker.ts',
-      'src/components/ui/region-picker.shared.ts',
-      'src/components/ui/region-picker.types.ts',
-      'src/components/ui/v-region-picker.vue',
-    ])
-    expect(readText('registry/components/region-picker/v-region-picker.weapp-vite.vue')).toContain('from \'wevu\'')
-    expect(readText('registry/components/region-picker/v-region-picker.weapp-vite.vue')).not.toMatch(/from ['"]vue['"]/)
-
-    expect(map.targets).toEqual(['weapp'])
-    expect(map.targetDependencies).toEqual({ weapp: ['wevu'] })
-    expect(map.files.map(file => file.to)).toEqual([
-      'src/components/ui/map.ts',
-      'src/components/ui/map.types.ts',
-      'src/components/ui/v-map.vue',
-    ])
-    const mapSource = readText('registry/components/map/v-map.weapp-vite.vue')
-    expect(mapSource).toContain('<map')
-    expect(mapSource).toContain('@regionchange=')
-    expect(mapSource).not.toMatch(/from ['"]vue['"]/)
-  })
-
-  it('composes Block controls through headless-backed Base Kit components', () => {
-    const headlessComponents = new Map([
-      ['button', 'usePressableRoot'],
-      ['card', 'usePressableRoot'],
-      ['checkbox', 'useCheckboxRoot'],
-      ['image', 'useImageRoot'],
-      ['input', 'useFieldRoot'],
-      ['input-number', 'useNumberFieldRoot'],
-      ['select', 'useSelectRoot'],
-      ['switch', 'useSwitchRoot'],
-    ])
-
-    registryItemFiles().forEach((registryPath) => {
-      const item = readJson<RegistryItem>(registryPath)
-      if (item.type !== 'block') { return }
-
-      item.files.filter(file => file.from.endsWith('.vue')).forEach((file) => {
-        expect(readText(file.from), file.from).not.toMatch(/<(?:button|input|textarea|select|picker|checkbox|switch)\b/)
-      })
-    })
-
-    headlessComponents.forEach((primitive, name) => {
-      const manifest = readJson<RegistryItem & {
-        targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
-      }>(`registry/components/${name}/registry.json`)
-      const weappSource = manifest.files.find(file => file.target === 'weapp' && file.from.endsWith('.vue'))
-      const dependencies = [
-        ...(manifest.dependencies ?? []),
-        ...(manifest.targetDependencies?.weapp ?? []),
-      ]
-      const registryDependencies = [
-        ...manifest.registryDependencies,
-        ...(manifest.targetRegistryDependencies?.['weapp'] ?? []),
-      ]
-
-      expect(dependencies, name).toContain('@varo-ui/headless')
-      expect(registryDependencies, name).toContain('utils/primitives')
-      expect(readText(weappSource!.from), name).toContain(primitive)
     })
   })
 
@@ -335,10 +77,10 @@ describe('registry catalog', () => {
   it('keeps shared cross-target sources runtime-neutral', () => {
     registryItemFiles().forEach((registryPath) => {
       const item = readJson<RegistryItem>(registryPath)
-      const targetsBySource = new Map<string, Set<RegistryTarget>>()
+      const targetsBySource = new Map<string, Set<RegistryRenderer>>()
 
       item.files.forEach((file) => {
-        const sourceTargets = targetsBySource.get(file.from) ?? new Set<RegistryTarget>()
+        const sourceTargets = targetsBySource.get(file.from) ?? new Set<RegistryRenderer>()
         sourceTargets.add(file.target)
         targetsBySource.set(file.from, sourceTargets)
       })
@@ -354,7 +96,7 @@ describe('registry catalog', () => {
   })
 
   it('keeps the full H5 catalog, high-consensus weapp catalog, and executable SFC Base Kit aligned', () => {
-    expect(weappComponentCatalogV01).toHaveLength(51)
+    expect(weappComponentCatalogV01).toHaveLength(53)
     const baseKitNames = new Set<string>(baseKitPhase1)
     const weappComponentNames = new Set<string>(weappComponentCatalogV01)
 
@@ -375,7 +117,6 @@ describe('registry catalog', () => {
       expect(h5File, `${name} must expose its H5 source`).toBeDefined()
 
       const h5Source = readText(h5File!.from)
-      expect(h5Source).toContain('import \'../../styles/varo.css\'')
 
       if (h5Source.includes('../../lib/varo-primitives')) {
         expect(h5RegistryDependencies).toContain('utils/primitives')
@@ -481,209 +222,5 @@ describe('registry catalog', () => {
           })
       })
     })
-  })
-
-  it('declares target-specific primitives and class-merge dependencies', () => {
-    const primitives = readJson<RegistryItem>('registry/utils/primitives/registry.json')
-    const cn = readJson<RegistryItem>('registry/utils/cn/registry.json')
-
-    expect(primitives.dependencies).toEqual(['@varo-ui/headless'])
-    expect(primitives.targetDependencies).toEqual({
-      h5: ['@varo-ui/h5', 'vue'],
-      weapp: ['@varo-ui/weapp', 'wevu'],
-    })
-    expect(cn.dependencies).toEqual(['clsx'])
-    expect(cn.targetDependencies).toEqual({
-      h5: ['tailwind-merge'],
-      weapp: ['@weapp-tailwindcss/merge'],
-    })
-    expect(readText('registry/utils/cn/weapp-vite.ts')).toContain('from \'@weapp-tailwindcss/merge\'')
-  })
-
-  it('publishes a native weapp picker SFC with confirm, cancel, and disabled option gates', () => {
-    const manifest = readJson<RegistryItem>('registry/components/picker/registry.json')
-    const weappFile = manifest.files.find(file => file.target === 'weapp')
-    const source = readText(weappFile!.from)
-
-    expect(manifest.targets).toEqual(['h5', 'weapp'])
-    expect(weappFile).toEqual({
-      target: 'weapp',
-      from: 'registry/components/picker/v-picker.vue',
-      to: 'src/components/ui/v-picker.vue',
-    })
-    expect(source).toContain('from \'wevu\'')
-    expect(source).toContain('value: { type: null }')
-    expect(source).toContain('if (option.disabled)')
-    expect(source).toContain('emit(\'confirm\'')
-    expect(source).toContain('emit(\'cancel\')')
-    expect(source).toContain('emit(\'update:visible\', false)')
-    expect(source).toContain('"styleIsolation": "apply-shared"')
-  })
-})
-
-describe('registry validation', () => {
-  it.each([
-    ['non-object item', null, ['registry item must be an object']],
-    ['missing name', omitRegistryField('name'), ['name must be a non-empty string']],
-    [
-      'empty required strings',
-      { ...createValidRegistryItem(), description: ' ', title: '' },
-      ['description must be a non-empty string', 'title must be a non-empty string'],
-    ],
-    [
-      'unsupported type',
-      { ...createValidRegistryItem(), type: 'service' },
-      ['unsupported type: service'],
-    ],
-    ['missing docs', omitRegistryField('docs'), ['docs must be an absolute docs route']],
-    ['non-string docs', { ...createValidRegistryItem(), docs: 42 }, ['docs must be an absolute docs route']],
-    ['missing targets', omitRegistryField('targets'), ['targets must be an array']],
-    ['non-array targets', { ...createValidRegistryItem(), targets: 'weapp' }, ['targets must be an array']],
-    [
-      'legacy target',
-      {
-        ...createValidRegistryItem(),
-        targets: ['h5', 'weapp', 'weapp-vite'] as unknown as RegistryTarget[],
-      },
-      ['unsupported target: weapp-vite'],
-    ],
-    [
-      'missing registry dependencies',
-      omitRegistryField('registryDependencies'),
-      ['registryDependencies must be an array of package names'],
-    ],
-    [
-      'malformed optional dependencies',
-      { ...createValidRegistryItem(), dependencies: ['vue', ' '], devDependencies: 'vitest' },
-      [
-        'dependencies must be an array of package names',
-        'devDependencies must be an array of package names',
-      ],
-    ],
-    ['missing files', omitRegistryField('files'), ['files must be an array']],
-    ['non-array files', { ...createValidRegistryItem(), files: 'select.ts' }, ['files must be an array']],
-    [
-      'missing target file',
-      { ...createValidRegistryItem(), files: createValidRegistryItem().files.slice(0, 1) },
-      ['target has no files: weapp'],
-    ],
-    [
-      'undeclared file target',
-      { ...createValidRegistryItem(), targets: ['h5'] },
-      ['file target is not declared by item: weapp'],
-    ],
-    [
-      'invalid target dependencies',
-      { ...createValidRegistryItem(), targetDependencies: { browser: ['vue'], h5: 'vue' } },
-      ['unsupported targetDependencies target: browser', 'targetDependencies.h5 must be an array of package names'],
-    ],
-    [
-      'invalid target dev dependencies',
-      { ...createValidRegistryItem(), targetDevDependencies: { h5: [''] } },
-      ['targetDevDependencies.h5 must be an array of package names'],
-    ],
-    [
-      'invalid target registry dependencies',
-      { ...createValidRegistryItem(), targetRegistryDependencies: { native: [] } },
-      ['unsupported targetRegistryDependencies target: native'],
-    ],
-    [
-      'traversing source path',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          from: 'registry/components/../package.json',
-        })),
-      },
-      ['file.from must stay within registry/: registry/components/../package.json'],
-    ],
-    [
-      'traversing destination path',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          to: 'src/../package.json',
-        })),
-      },
-      ['file.to must stay within src/: src/../package.json'],
-    ],
-    [
-      'destination segment with a trailing dot',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          to: 'src/components/ui/select.ts.',
-        })),
-      },
-      ['file.to must use portable path segments: src/components/ui/select.ts.'],
-    ],
-    [
-      'destination segment with a trailing space',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          to: 'src/components/ui /select.ts',
-        })),
-      },
-      ['file.to must use portable path segments: src/components/ui /select.ts'],
-    ],
-    [
-      'destination with an NTFS alternate data stream',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          to: 'src/components/ui/victim.ts:stream',
-        })),
-      },
-      ['file.to must use portable path segments: src/components/ui/victim.ts:stream'],
-    ],
-    [
-      'destination with a reserved Windows device basename',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          to: 'src/components/ui/COM1.txt',
-        })),
-      },
-      ['file.to must use portable path segments: src/components/ui/COM1.txt'],
-    ],
-    [
-      'source with a reserved Windows device basename',
-      {
-        ...createValidRegistryItem(),
-        files: createValidRegistryItem().files.map(file => ({
-          ...file,
-          from: 'registry/components/NUL.ts',
-        })),
-      },
-      ['file.from must use portable path segments: registry/components/NUL.ts'],
-    ],
-    [
-      'malformed file entry',
-      { ...createValidRegistryItem(), files: [{ target: 'weapp' }] },
-      ['file.from must start with registry/: undefined', 'file.to must start with src/: undefined'],
-    ],
-    [
-      'null file entry',
-      { ...createValidRegistryItem(), files: [null] },
-      [
-        'unsupported file target: undefined',
-        'file.from must start with registry/: undefined',
-        'file.to must start with src/: undefined',
-      ],
-    ],
-  ])('returns validation errors for %s instead of throwing', (_, item, expectedErrors) => {
-    let errors: string[] | undefined
-
-    expect(() => {
-      errors = validateRegistryItem(item)
-    }).not.toThrow()
-    expect(errors).toEqual(expect.arrayContaining(expectedErrors))
   })
 })

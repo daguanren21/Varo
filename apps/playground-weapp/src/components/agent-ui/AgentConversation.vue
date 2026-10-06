@@ -1,14 +1,7 @@
 <script setup lang="ts">
+import type { AgentConversationMessage } from './types'
 import { computed } from 'wevu'
 import AgentMessage from './AgentMessage.vue'
-
-export interface AgentConversationMessage {
-  content: string
-  id: string
-  label?: string
-  role: 'assistant' | 'system' | 'user'
-  timestamp?: string
-}
 
 const props = withDefaults(
   defineProps<{

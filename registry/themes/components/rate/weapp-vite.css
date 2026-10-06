@@ -1,0 +1,26 @@
+.varo-rate__item {
+  font: inherit;
+}
+
+.varo-rate {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.varo-rate__item.varo-rate__item {
+  box-sizing: border-box;
+  width: auto;
+  padding: 0;
+  margin: 0;
+  font-size: 26px;
+  line-height: 1;
+  color: #f59e0b;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  transition: transform 0.16s ease;
+}
+
+.varo-rate__item:active {
+  transform: scale(0.9);
+}

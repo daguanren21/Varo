@@ -1,5 +1,5 @@
-import type { AgentContextSource } from '../components/agent-ui/advanced-types'
 import type { AgentRagAnswerPart, AgentRagSource, AgentRagStageId, AgentRagStep } from '../components/agent-ui/rag-pipeline'
+import type { AgentContextSource } from '../components/agent-ui/workspace-types'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
 import { agentRagStages } from '../components/agent-ui/rag-pipeline'
 

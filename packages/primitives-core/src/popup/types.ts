@@ -1,4 +1,4 @@
-import type { ReactiveRuntime, Ref } from '../reactive'
+import type { ReactiveRuntime, Ref } from '@varo/shared'
 
 export type PopupPosition = 'center' | 'top' | 'bottom' | 'left' | 'right'
 export type PopupCloseIconPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'

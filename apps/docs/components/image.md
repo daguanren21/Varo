@@ -59,6 +59,8 @@
 
 ## Events
 
+下表 DOM 事件类型仅描述 H5；原生 Wevu SFC 使用宿主图片/点击事件，不提供浏览器 `Event` / `MouseEvent` 对象。
+
 | Event   | Payload      | 描述         |
 | ------- | ------------ | ------------ |
 | `load`  | `Event`      | 图片加载完成 |
@@ -73,5 +75,5 @@
 | `error`   | 自定义失败占位 |
 
 ::: info Primitives
-`ImageRoot` 分别由 `@varo-ui/h5/primitives` 与 `@varo-ui/weapp/primitives` 提供；`@varo-ui/headless` 只承载共享状态契约，UI 包的 `VImage` 负责 Varo 类名和 API 包装。
+`ImageRoot` 是 `@varo-ui/h5/primitives` 的 H5 Parts API；`@varo-ui/headless` 只承载共享状态契约。原生 `VImage` 来自 Registry 或 `@varo-ui/weapp` 的 Wevu SFC，由目标编译器处理，不是等价的 Vue Parts。
 :::

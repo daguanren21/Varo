@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-H5 与小程序 adapters 共享状态与事件命名；滚动源由平台实现。
+本页 `StickyRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VSticky` SFC，不提供等价 Vue Parts；原生标签页只展示源码/证据。各自运行时负责真实滚动源。
 
 ## 演示
 

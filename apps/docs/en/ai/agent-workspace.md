@@ -50,22 +50,24 @@ function submit(value: string) {
 
 ## Events
 
-| Event            | Payload                         | Description            |
-| ---------------- | ------------------------------- | ---------------------- |
-| `submit`         | `string`                        | Submit input           |
-| `update:prompt`  | `string`                        | Sync input value       |
-| `close`          | `void`                          | Close workspace        |
-| `toggleSource`   | `(AgentContextSource, boolean)` | Toggle source          |
-| `connectSource`  | `AgentContextSource`            | Connect source         |
-| `retryRetrieval` | `AgentRetrievalItem`            | Retry retrieval        |
-| `retryTask`      | `AgentTask`                     | Retry task             |
-| `approveTask`    | `AgentTask`                     | Approve task           |
-| `cancelTask`     | `void`                          | Cancel task            |
-| `selectVersion`  | `AgentThreadVersion`            | Select version         |
-| `branchVersion`  | `AgentThreadVersion`            | Create branch          |
-| `pinVersion`     | `AgentThreadVersion`            | Pin version            |
-| `openReceipt`    | `AgentSourceReceiptItem`        | Open receipt           |
-| `connectReceipt` | `AgentSourceReceiptItem`        | Connect receipt source |
+| Event            | Payload                                            | Description            |
+| ---------------- | -------------------------------------------------- | ---------------------- |
+| `submit`         | `string`                                           | Submit input           |
+| `update:prompt`  | `string`                                           | Sync input value       |
+| `close`          | `void`                                             | Close workspace        |
+| `toggleSource`   | H5: `(source, enabled)`; Wevu: `[source, enabled]` | Toggle source          |
+| `connectSource`  | `AgentContextSource`                               | Connect source         |
+| `retryRetrieval` | `AgentRetrievalItem`                               | Retry retrieval        |
+| `retryTask`      | `AgentTask`                                        | Retry task             |
+| `approveTask`    | `AgentTask`                                        | Approve task           |
+| `cancelTask`     | `void`                                             | Cancel task            |
+| `selectVersion`  | `AgentThreadVersion`                               | Select version         |
+| `branchVersion`  | `AgentThreadVersion`                               | Create branch          |
+| `pinVersion`     | `AgentThreadVersion`                               | Pin version            |
+| `openReceipt`    | `AgentSourceReceiptItem`                           | Open receipt           |
+| `connectReceipt` | `AgentSourceReceiptItem`                           | Connect receipt source |
+
+`source` is an `AgentContextSource` and `enabled` is a `boolean`. Wevu uses `function onToggleSource([source, enabled]: [AgentContextSource, boolean])` to receive one tuple; the directly installed `AgentComposerScope` uses the same contract for `toggle`. H5 keeps two arguments. The application still decides whether to execute connection operations.
 
 ## Slots
 

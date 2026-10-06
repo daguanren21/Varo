@@ -1,8 +1,9 @@
 import type { IDeviceParams } from '../request/api/manage'
 import type { IMapLatLng } from '../request/interface'
 import type { IHomeState, InstitutionGroup } from '../typings'
-import { computed, defineStore, reactive, watch } from 'wevu'
+import { computed, defineStore, reactive } from 'wevu'
 import * as mapApi from '../request/api/deviceMap'
+import { aedStorageKey, aedStoreId } from './manager'
 
 export interface GlobalTip {
   isOpened: boolean
@@ -110,9 +111,9 @@ function freshState(): GlobalState {
   }
 }
 
-export const useAedStore = defineStore('realworld-weapp', () => {
+export const useAedStore = defineStore(aedStoreId, () => {
   const state = reactive(freshState())
-  const persisted = wx.getStorageSync<Partial<GlobalState>>('realworld-weapp-state')
+  const persisted = wx.getStorageSync<Partial<GlobalState>>(aedStorageKey)
   if (persisted && typeof persisted === 'object') { Object.assign(state, persisted) }
 
   const mapBounds = computed(() => ({
@@ -154,8 +155,6 @@ export const useAedStore = defineStore('realworld-weapp', () => {
 
   async function loadBrands() { setBrands(await mapApi.getBrandOptions()) }
   async function loadHotCities() { setHotCities(await mapApi.getHotCity()) }
-
-  watch(state, value => wx.setStorageSync('realworld-weapp-state', value), { deep: true })
 
   return {
     clearTagRecord,

@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/safe-area/v-safe-area.vue",
       "to": "src/components/ui/v-safe-area.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/safe-area/style.css",
+      "to": "src/styles/varo-safe-area.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/safe-area/style.css",
+      "to": "src/styles/varo-safe-area.css"
     }
   ],
   "docs": "/guide/shadcn-mode"

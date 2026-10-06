@@ -1,6 +1,6 @@
-import type { AgentStreamEvent, AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentStreamEvent, AgentStreamSnapshot, AgentToolPart } from '@varo-ui/ai'
 import type { ComputedRef, ShallowRef } from 'wevu'
-import type { AgentChoice, AgentTask, AgentToolCall, AgentTraceStep } from '../../components/agent-ui/types'
+import type { AgentChoice, AgentTask, AgentTraceStep } from '../../components/agent-ui/types'
 import {
 
   createAgentStreamController,
@@ -187,7 +187,7 @@ export function useMallAgent(): MallAgentController {
       timestamp: nowLabel(),
     },
   ])
-  const tools = shallowRef<AgentToolCall[]>([])
+  const tools = shallowRef<AgentToolPart[]>([])
   const traceSteps = shallowRef<AgentTraceStep[]>([])
   const tasks = shallowRef<AgentTask[]>([])
   const approvalChoices = shallowRef<AgentChoice[]>([])

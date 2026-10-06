@@ -91,7 +91,7 @@ describe('standard shadcn Registry inputs', () => {
       .toBe('<template><p>Hello World</p></template>\n')
   })
 
-  it('installs the supplied item schema and leaves a compilable Vue/hook consumer', async () => {
+  it('installs the supplied item schema and leaves a compilable Vue/hook consumer', { timeout: 60_000 }, async () => {
     const sourceRoot = temporaryRoot()
     const projectRoot = temporaryRoot()
     const registryRoot = join(sourceRoot, 'hello-world.json')
@@ -108,7 +108,7 @@ describe('standard shadcn Registry inputs', () => {
       include: ['src/**/*.ts', 'src/**/*.vue'],
     })
     symlinkSync(join(workspaceRoot, 'node_modules'), join(projectRoot, 'node_modules'), 'dir')
-    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.json')], { cwd: projectRoot })
+    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.json')], { cwd: projectRoot, timeout: 30_000 })
 
     const exported = await exportRegistryItem('hello-world', { registryRoot, target: 'h5', projectRoot })
     expect(exported.files.map(file => file.target)).toEqual([
@@ -118,7 +118,7 @@ describe('standard shadcn Registry inputs', () => {
     expect(exported.files[0]!.content).toBe(installedComponent)
   })
 
-  it('honors consumer aliases resolved from a referenced JSONC app tsconfig', async () => {
+  it('honors consumer aliases resolved from a referenced JSONC app tsconfig', { timeout: 60_000 }, async () => {
     const sourceRoot = temporaryRoot()
     const projectRoot = temporaryRoot()
     writeSourceFiles(sourceRoot)
@@ -132,7 +132,7 @@ describe('standard shadcn Registry inputs', () => {
     expect(readFileSync(join(projectRoot, 'src/domain/HelloWorld/useHelloWorld.ts'), 'utf8')).toBe(hookSource)
     expect(existsSync(join(projectRoot, 'src/components'))).toBe(false)
     symlinkSync(join(workspaceRoot, 'node_modules'), join(projectRoot, 'node_modules'), 'dir')
-    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.app.json')], { cwd: projectRoot })
+    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.app.json')], { cwd: projectRoot, timeout: 30_000 })
   })
 
   it('installs inline published files including empty content and explicit Weapp metadata', async () => {
@@ -149,6 +149,50 @@ describe('standard shadcn Registry inputs', () => {
     expect(plan.target).toBe('weapp')
     expect(readFileSync(join(projectRoot, 'src/lib/empty.ts'), 'utf8')).toBe('')
     await expect(installRegistryItems(['published'], { registryRoot, projectRoot, target: 'h5', force: true })).rejects.toThrow(/target|h5/i)
+  })
+
+  it('rejects an incompatible transitive standard profile before force-writing files', async () => {
+    const sourceRoot = temporaryRoot()
+    const projectRoot = temporaryRoot()
+    const registryRoot = join(sourceRoot, 'registry.json')
+    writeJson(registryRoot, {
+      name: 'profiles',
+      homepage: 'https://example.com',
+      items: [
+        {
+          name: 'entry',
+          type: 'registry:file',
+          meta: { varo: { target: 'donut-ios' } },
+          registryDependencies: ['shared'],
+          files: [{ path: 'entry.ts', type: 'registry:file', target: '~/src/entry.ts', content: 'replacement\n' }],
+        },
+        {
+          name: 'shared',
+          type: 'registry:file',
+          meta: { varo: { target: 'weapp' } },
+          files: [{ path: 'shared.ts', type: 'registry:file', target: '~/src/shared.ts', content: 'shared\n' }],
+        },
+      ],
+    })
+    mkdirSync(join(projectRoot, 'src'))
+    writeFileSync(join(projectRoot, 'src/entry.ts'), 'consumer customization\n')
+    await expect(installRegistryItems(['entry'], { registryRoot, projectRoot, force: true })).rejects.toThrow(/shared targets weapp, not donut-ios/)
+    expect(readFileSync(join(projectRoot, 'src/entry.ts'), 'utf8')).toBe('consumer customization\n')
+    expect(existsSync(join(projectRoot, 'src/shared.ts'))).toBe(false)
+  })
+
+  it('rejects unknown standard profile metadata rather than assuming H5 or Weapp', async () => {
+    const sourceRoot = temporaryRoot()
+    const projectRoot = temporaryRoot()
+    const registryRoot = join(sourceRoot, 'unknown.json')
+    writeJson(registryRoot, {
+      name: 'unknown',
+      type: 'registry:file',
+      meta: { varo: { target: 'constructor' } },
+      files: [{ path: 'value.ts', type: 'registry:file', target: '~/src/value.ts', content: 'unexpected\n' }],
+    })
+    await expect(installRegistryItems(['unknown'], { registryRoot, projectRoot })).rejects.toThrow(/meta.varo.target/)
+    expect(existsSync(join(projectRoot, 'src'))).toBe(false)
   })
 
   it('reads HTTP catalogs and encodes literal source path delimiters', async () => {

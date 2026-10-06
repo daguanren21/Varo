@@ -1,6 +1,5 @@
 import type { PropType } from 'vue'
 import { createVariantClass } from '@varo-ui/headless'
-
 import { computed, defineComponent, h } from 'vue'
 import {
   NumberFieldDecrement,
@@ -10,6 +9,8 @@ import {
 } from '../../lib/varo-primitives'
 import { VIcon } from './icon'
 import '../../styles/varo.css'
+import '../../styles/varo-icon.css'
+import '../../styles/varo-input-number.css'
 
 export const VInputNumber = defineComponent({
   name: 'VInputNumber',

@@ -7,10 +7,10 @@ describe('ui-h5 overlay', () => {
     const onUpdateVisible = vi.fn()
     const wrapper = mount(VOverlay, {
       props: {
-        visible: true,
-        zIndex: 2001,
-        'onUpdate:visible': onUpdateVisible
-      }
+        'visible': true,
+        'zIndex': 2001,
+        'onUpdate:visible': onUpdateVisible,
+      },
     })
 
     expect(wrapper.classes().join(' ')).toContain('varo-overlay')
@@ -19,5 +19,23 @@ describe('ui-h5 overlay', () => {
     await wrapper.trigger('click')
 
     expect(onUpdateVisible).toHaveBeenCalledWith(false)
+    wrapper.unmount()
+  })
+
+  it('opens from defaultVisible and reports the accepted close in order', async () => {
+    const events: string[] = []
+    const wrapper = mount(VOverlay, {
+      props: {
+        'defaultVisible': true,
+        'onUpdate:visible': (visible: boolean) => events.push(`update:${visible}`),
+        'onVisibleChange': (visible: boolean) => events.push(`change:${visible}`),
+        'onClose': () => events.push('close'),
+      },
+    })
+    expect(wrapper.find('.varo-overlay').exists()).toBe(true)
+    await wrapper.trigger('click')
+    expect(events).toEqual(['update:false', 'change:false', 'close'])
+    expect(wrapper.find('.varo-overlay').exists()).toBe(false)
+    wrapper.unmount()
   })
 })

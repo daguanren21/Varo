@@ -1,6 +1,6 @@
 # Wevu Registry Mode
 
-The CLI copies Wevu 7 mini-program component source into your project. Import it from `src/components/ui/*` and edit it as application code.
+The CLI copies native Wevu source admitted for the selected profile into your project. Import it from `src/components/ui/*` and edit it as application code. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for the exact profiles and experimental scope.
 
 ## One-Time Wevu 7 Project Setup
 
@@ -37,21 +37,25 @@ Use the same Tailwind v4 entry as the Varo mini-program playground in `src/style
 
 ### Register Managed Global Styles
 
-Register the Tailwind entry and the Registry-installed theme file in the `weapp` section of `vite.config.ts`, together with the managed Tailwind configuration:
+First install at least one component so its dependency closure creates `src/styles/`. In `vite.config.ts`, collect every installed CSS file, sort `varo.css` first, register the files globally, and configure Tailwind:
 
 ```ts
+import { readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'weapp-vite/config'
 
 const root = import.meta.dirname
+const registryStyles = readdirSync(resolve(root, 'src/styles'))
+  .filter(name => name.endsWith('.css'))
+  .sort((left, right) => left === 'varo.css' ? -1 : right === 'varo.css' ? 1 : left.localeCompare(right))
 
 export default defineConfig({
   weapp: {
     srcRoot: 'src',
     platform: 'weapp',
     styles: [
+      ...registryStyles.map(name => ({ source: `styles/${name}`, include: 'app.vue' })),
       { source: 'styles.css', include: 'app.vue' },
-      { source: 'styles/varo.css', include: 'app.vue' },
     ],
     tailwindcss: {
       appType: 'weapp-vite',
@@ -68,7 +72,9 @@ export default defineConfig({
 })
 ```
 
-Each `styles` source is relative to `srcRoot`. The component dependency on `themes/base` installs `src/styles/varo.css`; `weapp.styles` injects both stylesheet entries into `app.vue` once, so do not import them again in individual pages or components.
+Each `styles.source` is relative to `srcRoot`. `themes/base` installs `src/styles/varo.css` with tokens and foundation rules only; component manifests install their own CSS, and Agent units additionally depend on `varo-agent.css` from `themes/agent`. Registering only `varo.css` is insufficient. Restart the build process after adding components so it recollects all styles. This matches `apps/platform-smoke/vite.config.mjs`, with foundation before component CSS.
+
+Load all these files globally through `weapp.styles` with `include: 'app.vue'`. Retain `styleIsolation: apply-shared` in native SFCs. Do not import global theme or component CSS into component-local `<style>` / WXSS: application-level selectors cannot appear in component WXSS. H5 Registry source automatically imports its full CSS dependency closure and does not use this native global registration.
 
 ### Supplemental Native Component Styles
 
@@ -84,12 +90,16 @@ The repository's mini-program build recursively checks component WXSS and its st
 pnpm dlx @varo-ui/cli add --target weapp button form toast
 ```
 
-Replace the names at the end with the components you need. To install a Block or Agent UI:
+Replace the names at the end with the components you need. To install a Block or minimal Agent conversation:
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
-pnpm dlx @varo-ui/cli add --target weapp components/agent-ui
+pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 ```
+
+`agent-chat` pulls only the conversation closure, without advanced, RAG, or fine-tune files. Install `components/agent-ui` only when you deliberately want the full suite; see [Agent installation](/en/ai/) for smaller units.
+
+`--target alipay|tt|xhs|donut-android|donut-ios|donut-ohos` names six separate experimental install profiles, not interchangeable values for `weapp.platform`. Alipay, Douyin, and Xiaohongshu use their own compiler platforms; Donut uses the `weapp` compiler with per-host metadata. If any item in the dependency closure lacks explicit admission, installation fails instead of treating WeChat source as supported automatically. Compilation is not device validation.
 
 Existing files are preserved by default. Use `--force` only after reviewing local changes:
 

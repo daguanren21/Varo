@@ -1,0 +1,46 @@
+.varo-row {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--varo-row-gutter-y, 0);
+  margin-inline: calc(var(--varo-row-gutter-x, 0px) / -2);
+}
+
+.varo-row[data-wrap='false'] {
+  flex-wrap: nowrap;
+}
+
+.varo-row[data-justify='end'] {
+  justify-content: flex-end;
+}
+
+.varo-row[data-justify='center'] {
+  justify-content: center;
+}
+
+.varo-row[data-justify='space-around'] {
+  justify-content: space-around;
+}
+
+.varo-row[data-justify='space-between'] {
+  justify-content: space-between;
+}
+
+.varo-row[data-align='middle'] {
+  align-items: center;
+}
+
+.varo-row[data-align='bottom'] {
+  align-items: flex-end;
+}
+
+.varo-row[data-align='stretch'] {
+  align-items: stretch;
+}
+
+.varo-col {
+  box-sizing: border-box;
+  flex: 0 0 calc(var(--varo-col-span, 24) / 24 * 100%);
+  max-width: calc(var(--varo-col-span, 24) / 24 * 100%);
+  padding-inline: calc(var(--varo-row-gutter-x, 0px) / 2);
+  margin-left: calc(var(--varo-col-offset, 0) / 24 * 100%);
+}
