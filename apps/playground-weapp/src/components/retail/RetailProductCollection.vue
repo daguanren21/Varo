@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { RetailProduct } from '../../features/retail/types'
-import { computed, onLoad, shallowRef } from 'wevu'
+import { computed, onLoad, onMounted, shallowRef } from 'wevu'
 import { navigateRetail } from '../../features/retail/navigation'
 import { useRetailStore } from '../../features/retail/store'
+import { runRetailAction } from '../../features/retail/use-retail-page'
 import VEmpty from '../ui/empty.vue'
 import VButton from '../ui/v-button.vue'
 import VInput from '../ui/v-input.vue'
 import RetailProductCard from './RetailProductCard.vue'
+import RetailRequestState from './RetailRequestState.vue'
 
 withDefaults(
   defineProps<{
@@ -27,7 +29,8 @@ const sortOptions = computed(() => [
   { label: '销量', value: 'sales' as const, variant: sort.value === 'sales' ? 'solid' as const : 'ghost' as const },
   { label: '价格', value: 'price' as const, variant: sort.value === 'price' ? 'solid' as const : 'ghost' as const },
 ])
-const { addToCart, products } = useRetailStore()
+const { addToCart, products, loading, loadError, load } = useRetailStore()
+const retryLoad = () => runRetailAction(load)
 const visibleProducts = computed(() => {
   const query = keyword.value.trim().toLowerCase()
   const filtered = products.value.filter((product) => {
@@ -45,13 +48,17 @@ onLoad((options) => {
   keyword.value = String(options?.keyword ?? '')
 })
 
+onMounted(retryLoad)
+
 function openProduct(product: RetailProduct) {
   navigateRetail('/retail-goods/details/index', { id: product.id })
 }
 
 function addProduct(product: RetailProduct) {
-  addToCart(product.id)
-  wx.showToast({ title: '已加入购物车', icon: 'success' })
+  return runRetailAction(() => {
+    addToCart(product.id)
+    wx.showToast({ title: '已加入购物车', icon: 'success' })
+  })
 }
 </script>
 
@@ -80,7 +87,8 @@ function addProduct(product: RetailProduct) {
       </view>
     </view>
 
-    <view v-if="visibleProducts.length" class="grid grid-cols-2 gap-3 px-3 py-3">
+    <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
+    <view v-if="!loading && !loadError && visibleProducts.length" class="grid grid-cols-2 gap-3 px-3 py-3">
       <RetailProductCard
         v-for="product in visibleProducts"
         :key="product.id"
@@ -89,7 +97,7 @@ function addProduct(product: RetailProduct) {
         @add="addProduct"
       />
     </view>
-    <view v-else class="grid min-h-[65vh] place-items-center px-6">
+    <view v-else-if="!loading && !loadError" class="grid min-h-[65vh] place-items-center px-6">
       <VEmpty title="没有找到商品" description="换个关键词或分类再试试" />
     </view>
   </view>

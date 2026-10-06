@@ -17,7 +17,8 @@
     ]
   },
   "registryDependencies": [
-    "themes/base"
+    "themes/base",
+    "components/icon"
   ],
   "targetRegistryDependencies": {
     "h5": [

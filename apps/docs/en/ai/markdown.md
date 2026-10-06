@@ -20,6 +20,10 @@ const markdownContent = '## Result\n\n**Ready**'
 </template>
 ```
 
+## Weapp Rendering
+
+The native renderer reconciles stateless Markdown children by position when content is appended, replaced, cleared, or replayed. When editing Registry templates, do not use a loop index as a `wx:key` field name: it identifies an item property, not the loop position.
+
 ## Props
 
 | Prop             | Type         | Default     | Description                                            |

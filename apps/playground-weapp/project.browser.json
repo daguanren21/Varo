@@ -1,0 +1,8 @@
+{
+  "description": "Native artifacts for browser preview, not a DevTools project",
+  "compileType": "miniprogram",
+  "appid": "",
+  "projectname": "varo-browser-artifacts",
+  "miniprogramRoot": "dist/browser/mp-weixin/",
+  "srcMiniprogramRoot": "dist/browser/mp-weixin/"
+}

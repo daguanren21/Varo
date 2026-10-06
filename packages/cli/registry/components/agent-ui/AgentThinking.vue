@@ -65,7 +65,7 @@ function detailText(step: AgentTraceStep) {
 <template>
   <view :class="rootClass" :data-open="String(currentOpen)">
     <button
-      class="agent-thinking__trigger box-border flex min-h-16 w-full items-center gap-3 border-0 bg-[var(--varo-agent-surface)] px-[15px] py-2.5 text-left text-[var(--varo-agent-foreground)]"
+      class="agent-native-button agent-native-button--block agent-thinking__trigger box-border flex min-h-16 items-center gap-3 border-0 bg-[var(--varo-agent-surface)] px-[15px] py-2.5 text-left text-[var(--varo-agent-foreground)]"
       type="button"
       :aria-expanded="currentOpen"
       @click="toggle"

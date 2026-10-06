@@ -56,7 +56,7 @@ const confidenceLabel = computed(() => (confidence.value >= 80 ? '高置信度' 
         <button
           v-for="alternative in alternatives"
           :key="alternative.value"
-          class="flex min-h-[46px] items-center justify-between gap-2.5 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-2.5 py-2 text-left text-[var(--varo-agent-foreground)]"
+          class="agent-native-button flex min-h-[46px] items-center justify-between gap-2.5 rounded-[10px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-2.5 py-2 text-left text-[var(--varo-agent-foreground)]"
           type="button"
           @click="emit('selectAlternative', alternative)"
         >

@@ -1,18 +1,19 @@
 <script setup lang="ts">
+import RetailRequestState from '../../components/retail/RetailRequestState.vue'
 import VTag from '../../components/ui/tag.vue'
-import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
-import { formatRetailMoney, useRetailStore } from '../../features/retail/store'
+import { formatRetailMoney } from '../../features/retail/store'
+import { useRetailPage } from '../../features/retail/use-retail-page'
 
-const { coupons } = useRetailStore()
-
-function claim(title: string) {
-  wx.showToast({ title: `${title}已领取`, icon: 'success' })
-}
+const { coupons, loading, loadError, retryLoad } = useRetailPage()
 </script>
 
 <template>
   <view class="min-h-screen bg-[#f4f6f8] pb-8 text-slate-950">
+    <RetailRequestState :loading="loading" :error="loadError" :empty="coupons.length === 0" empty-title="暂无模拟优惠券" @retry="retryLoad" />
+    <text class="block px-4 pt-3 text-xs text-slate-500">
+      仅展示优惠券样式，不支持领取或核销。结算优惠以服务报价为准。
+    </text>
     <view class="grid gap-3 px-3 py-3">
       <VCard
         v-for="coupon in coupons"
@@ -42,16 +43,13 @@ function claim(title: string) {
                   {{ coupon.title }}
                 </text>
                 <VTag tone="danger" variant="soft" size="sm">
-                  可领取
+                  展示用券
                 </VTag>
               </view>
               <text class="text-[10px] text-slate-400">
                 有效期至 {{ coupon.validUntil }}
               </text>
             </view>
-            <VButton size="sm" tone="danger" shape="round" class-name="w-fit" @click="claim(coupon.title)">
-              立即领取
-            </VButton>
           </view>
         </view>
       </VCard>

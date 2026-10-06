@@ -31,9 +31,10 @@ describe('installed H5 registry blocks', () => {
     })
 
     const actions = wrapper.findAll('.varo-button')
-    await actions[0].trigger('click')
+    await actions.find(action => action.text() === '编辑资料')!.trigger('click')
     expect(wrapper.emitted('edit')).toHaveLength(1)
-    await actions[1].trigger('click')
+    expect(wrapper.emitted('selectStat')).toBeUndefined()
+    await actions.find(action => action.text().includes('Components'))!.trigger('click')
     expect(wrapper.emitted('selectStat')?.[0]?.[0]).toMatchObject({ index: 0, stat: { value: 56 } })
   })
 

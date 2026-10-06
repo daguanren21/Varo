@@ -212,6 +212,9 @@ importers:
       '@weapp-vite/miniprogram-automator':
         specifier: ^1.2.17
         version: 1.2.17(@types/node@26.1.0)
+      pngjs:
+        specifier: 7.0.0
+        version: 7.0.0
       postcss-selector-parser:
         specifier: 7.1.6
         version: 7.1.6

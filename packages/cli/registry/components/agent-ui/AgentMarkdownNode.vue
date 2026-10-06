@@ -3,6 +3,10 @@ import type { AgentMarkdownViewNode } from '@varo-ui/ai'
 import { toAgentRichTextNodes } from '@varo-ui/ai'
 import { computed } from 'wevu'
 
+defineOptions({
+  options: { virtualHost: true },
+})
+
 const props = defineProps<{
   node: AgentMarkdownViewNode
 }>()
@@ -35,19 +39,19 @@ function headingClass(level?: number) {
   <view v-else-if="node.kind === 'heading'" :class="headingClass(node.level)">
     <rich-text v-if="richTextNodes" :nodes="richTextNodes" />
     <template v-else>
-      <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+      <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
     </template>
   </view>
 
   <view v-else-if="node.kind === 'paragraph'" class="my-1.5 leading-7">
     <rich-text v-if="richTextNodes" :nodes="richTextNodes" />
     <template v-else>
-      <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+      <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
     </template>
   </view>
 
   <view v-else-if="node.kind === 'list'" class="my-2 grid gap-1.5">
-    <view v-for="(child, index) in node.children" :key="index" class="flex items-start gap-2 pl-1">
+    <view v-for="(child, index) in node.children" class="flex items-start gap-2 pl-1">
       <text class="w-5 flex-none pt-1 text-right font-bold text-inherit">
         {{ node.ordered ? `${(node.start ?? 1) + index}.` : '•' }}
       </text>
@@ -58,7 +62,7 @@ function headingClass(level?: number) {
   </view>
 
   <view v-else-if="node.kind === 'list-item'" class="min-w-0">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </view>
 
   <view v-else-if="node.kind === 'code-block'" class="my-2 overflow-hidden rounded-[14px] border border-slate-800 bg-slate-950 text-slate-200">
@@ -72,12 +76,12 @@ function headingClass(level?: number) {
     </scroll-view>
   </view>
 
-  <text v-else-if="node.kind === 'inline-code' || node.kind === 'math-inline'" class="rounded-md border border-current/25 bg-current/10 px-1 py-0.5 font-mono text-[12px] text-inherit">
+  <text v-else-if="node.kind === 'inline-code' || node.kind === 'math-inline'" class="rounded-md border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-1 py-0.5 font-mono text-[12px] text-inherit">
     {{ node.text }}
   </text>
 
-  <text v-else-if="node.kind === 'link'" class="font-semibold text-inherit underline" role="link" @click="node.href && emit('link', node.href)">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+  <text v-else-if="node.kind === 'link'" class="font-semibold text-inherit underline" role="link" tabindex="0" @click="node.href && emit('link', node.href)">
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
     <text v-if="!hasChildren">
       {{ node.text }}
     </text>
@@ -86,44 +90,44 @@ function headingClass(level?: number) {
   <image v-else-if="node.kind === 'image' && node.href" class="my-2 h-48 w-full rounded-xl bg-[var(--varo-agent-fill)]" :src="node.href" :alt="node.alt" mode="aspectFit" />
   <view v-else-if="node.kind === 'thematic-break'" class="my-3 h-px bg-[var(--varo-agent-border)]" />
 
-  <view v-else-if="node.kind === 'blockquote'" class="my-2 border-l-[3px] border-current/50 pl-3 text-inherit">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+  <view v-else-if="node.kind === 'blockquote'" class="my-2 border-l-[3px] border-[var(--varo-agent-border-strong)] pl-3 text-inherit">
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </view>
 
   <scroll-view v-else-if="node.kind === 'table'" class="my-2 max-w-full" scroll-x>
     <view class="min-w-[480px] overflow-hidden rounded-xl border border-[var(--varo-agent-border)]">
-      <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+      <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
     </view>
   </scroll-view>
 
   <view v-else-if="node.kind === 'table-row'" class="flex border-b border-[var(--varo-agent-border)] last:border-0">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </view>
 
-  <view v-else-if="node.kind === 'table-cell'" class="min-w-32 flex-1 border-r border-current/20 px-2.5 py-2 text-xs last:border-0" :class="[node.header && 'bg-current/5 font-bold text-inherit']">
+  <view v-else-if="node.kind === 'table-cell'" class="min-w-32 flex-1 border-r border-[var(--varo-agent-border)] px-2.5 py-2 text-xs last:border-0" :class="[node.header && 'bg-[var(--varo-agent-surface-strong)] font-bold text-inherit']">
     <rich-text v-if="richTextNodes" :nodes="richTextNodes" />
     <template v-else>
-      <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+      <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
     </template>
   </view>
 
   <text v-else-if="node.kind === 'strong'" class="font-extrabold text-inherit">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </text>
   <text v-else-if="node.kind === 'emphasis'" class="italic">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </text>
   <text v-else-if="node.kind === 'strikethrough'" class="line-through">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </text>
   <text v-else-if="node.kind === 'highlight'" class="rounded bg-[var(--varo-agent-warning-soft)] px-0.5">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </text>
   <text v-else-if="node.kind === 'insert'" class="underline">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </text>
   <text v-else-if="node.kind === 'subscript' || node.kind === 'superscript'" class="text-[11px]">
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </text>
 
   <text v-else-if="node.kind === 'checkbox'" class="mr-1 text-inherit">
@@ -138,20 +142,23 @@ function headingClass(level?: number) {
     <text v-if="node.title" class="mb-1 block font-bold text-[var(--varo-agent-primary)]">
       {{ node.title }}
     </text>
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </view>
 
   <view v-else-if="node.kind === 'definition-list' || node.kind === 'definition' || node.kind === 'footnote'" class="my-1" :class="[node.header && 'font-bold']">
     <text v-if="node.text">
       {{ node.text }}
     </text>
-    <AgentMarkdownNode v-for="(child, index) in node.children" :key="index" :node="child" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="child in node.children" :node="child" @link="emit('link', $event)" />
   </view>
 </template>
 
 <json lang="jsonc">
 {
   "component": true,
-  "styleIsolation": "apply-shared"
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "agent-markdown-node": "./AgentMarkdownNode"
+  }
 }
 </json>

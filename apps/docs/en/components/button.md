@@ -121,6 +121,14 @@ Buttons retain the 44px default target and existing semantic colors. Press feedb
 </template>
 ```
 
+On Weapp, put a `VButton` with `native-type="submit"` / `"reset"` inside a native `<form>` and handle `@submit` / `@reset`. [`wx://form-field-button`](https://developers.weixin.qq.com/miniprogram/dev/component/form.html#使用内置-behaviors) associates the form; no extra `@click` submission is needed.
+
+The browser compatibility preview supports form values, submit, and reset. `tap` cancellation is verified only for mouse before touch, touch, and keyboard (including after touch). It provides no WeChat `formId` reporting and is not DevTools or device verification.
+
+::: warning Unfixed: touch followed by a physical mouse
+In the same preview session, touch followed by a physical mouse makes `glass-easel@1.1.0` suppress mouse `tap`, so cancellation handlers do not run. Canceled submit/reset actions can still execute, and reset clears edited fields. This sequence failed verification.
+:::
+
 ## Props
 
 | Prop              | Type                                                           | Default     | Description                                         |
@@ -147,6 +155,8 @@ Buttons retain the 44px default target and existing semantic colors. Press feedb
 | --------- | ------------------------------------------------------ |
 | `default` | Button content                                         |
 | `icon`    | Custom icon content; has priority over the `icon` prop |
+
+The Weapp default and `icon` slots use `view` containers and accept native views, images, and component content, not only text.
 
 ## Data Attributes
 

@@ -35,9 +35,9 @@ The components below are directly operable. H5 runs real `@varo-ui/h5` browser c
 
 ## Weapp DevTools Verified: Compiled Blocks {#weapp-devtools-evidence}
 
-The images below were captured through WeChat DevTools automation from Block pages built by `weapp-vite`. The evidence snapshot is dated **2026-08-28**; inspect the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and a [representative original image](../../blocks/login-form.png). Every card also links directly to its original image.
+All **13 native Blocks** were recaptured on **2026-10-05** in the **375px WeChat DevTools simulator**, using pages built by `weapp-vite` and executed in the native runtime. System bars and simulator edges are cropped out. See the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and an [example screenshot](../../blocks/login-form.png); the link beneath each card opens its full-resolution image.
 
-Selecting H5 changes the install command and usage code only. When the repository has no published H5 image for that Block, the card continues to identify the image as **Weapp DevTools Verified** instead of implying that the H5 selector changed it.
+The six dual-renderer Blocks have H5 browser captures updated on **2026-10-05**. Selecting H5 changes the image, install command, and usage code together. Captures cover only the version at capture time; images from one target are not runtime evidence for another.
 
 <MiniProgramBlocksGallery locale="en" />
 
@@ -45,7 +45,7 @@ Selecting H5 changes the install command and usage code only. When the repositor
 
 - `H5 Live`: real browser components and interactions on this page
 - `Weapp Contract Preview`: a browser-rendered target contract, not the WeChat runtime
-- `Weapp DevTools Verified`: DevTools evidence from a compiled mini-program page
+- `Weapp DevTools Verified`: DevTools evidence from a compiled mini-program page, not physical-device or other-platform certification
 - `weapp-vite` owns component JSON, complex list keys, generated types, and target output; `wevu` is the runtime peer for `@varo-ui/weapp`
 - `weapp-tailwindcss` translates classes in the build chain; native `hover-class` provides mini-program pressed feedback
 

@@ -2,22 +2,39 @@
   "name": "picker",
   "type": "component",
   "title": "VPicker",
-  "description": "Single-column mobile picker with controlled value and option states.",
+  "description": "Single- and multi-column mobile picker with draft selection, controlled values, confirm, and cancel.",
   "exportName": "VPicker",
   "targets": [
-    "h5"
+    "h5",
+    "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
       "from": "registry/components/picker/picker.ts",
       "to": "src/components/ui/picker.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/picker/v-picker.vue",
+      "to": "src/components/ui/v-picker.vue"
     }
   ],
   "docs": "/components/picker"

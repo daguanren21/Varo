@@ -1,6 +1,7 @@
 export const nativeTemplates: Record<string, string> = {
   'view': '<slot />',
   'text': '<slot />',
+  'form': '<slot />',
   'button': '<button id="control" class="varo-native-button__control" type="button"><slot /></button>',
   'input': '<input id="control" class="varo-native-input__control" />',
   'textarea': '<textarea id="control" class="varo-native-textarea__control"></textarea>',

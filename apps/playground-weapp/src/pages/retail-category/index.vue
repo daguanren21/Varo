@@ -2,20 +2,21 @@
 import type { RetailProduct } from '../../features/retail/types'
 import { computed, shallowRef } from 'wevu'
 import RetailProductCard from '../../components/retail/RetailProductCard.vue'
+import RetailRequestState from '../../components/retail/RetailRequestState.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VInput from '../../components/ui/v-input.vue'
 import { useWeappChrome } from '../../composables/useWeappChrome'
 import { retailCategories } from '../../features/retail/data'
 import { navigateRetail } from '../../features/retail/navigation'
-import { useRetailStore } from '../../features/retail/store'
+import { runRetailAction, useRetailPage } from '../../features/retail/use-retail-page'
 
 const activeCategory = shallowRef(retailCategories[0].id)
 const keyword = shallowRef('')
-const { addToCart, products } = useRetailStore()
+const { addToCart, products, loading, loadError, retryLoad } = useRetailPage()
 const { navigationStyle, rootStyle } = useWeappChrome()
 const visibleProducts = computed(() => {
   const categoryProducts = products.value.filter(product => product.category === activeCategory.value)
-  const source = categoryProducts.length > 0 ? categoryProducts : products.value
+  const source = categoryProducts
   const query = keyword.value.trim().toLowerCase()
   return query ? source.filter(product => product.name.toLowerCase().includes(query)) : source
 })
@@ -26,8 +27,10 @@ function openProduct(product: RetailProduct) {
 }
 
 function addProduct(product: RetailProduct) {
-  addToCart(product.id)
-  wx.showToast({ title: '已加入购物车', icon: 'success' })
+  return runRetailAction(() => {
+    addToCart(product.id)
+    wx.showToast({ title: '已加入购物车', icon: 'success' })
+  })
 }
 </script>
 
@@ -45,7 +48,8 @@ function addProduct(product: RetailProduct) {
       <VInput :value="keyword" placeholder="搜索当前分类" clearable @update:value="keyword = $event" />
     </view>
 
-    <view class="grid min-h-[calc(100vh-132px)] grid-cols-[92px_minmax(0,1fr)]">
+    <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
+    <view v-if="!loading && !loadError" class="grid min-h-[calc(100vh-132px)] grid-cols-[92px_minmax(0,1fr)]">
       <scroll-view scroll-y class="h-full bg-slate-50">
         <VButton
           v-for="category in retailCategories"

@@ -1,7 +1,7 @@
 import type { UseNumberFieldRootResult } from '@varo-ui/headless'
 import type { PropType } from 'vue'
 import { useNumberFieldRoot } from '@varo-ui/headless'
-import { defineComponent, h, inject, provide, toRef } from 'vue'
+import { defineComponent, h, inject, nextTick, provide, toRef } from 'vue'
 import { usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
@@ -82,6 +82,7 @@ export const NumberFieldInput = defineComponent({
   name: 'NumberFieldInput',
   setup(_props, { attrs }) {
     const numberField = useNumberFieldContext()
+    let inputVersion = 0
     return () => {
       const { onBlur, onFocus, onInput, ...restAttrs } = attrs
       return h('input', {
@@ -92,11 +93,19 @@ export const NumberFieldInput = defineComponent({
         type: 'digit',
         value: String(numberField.state.value.value),
         onBlur: (event: FocusEvent) => {
+          const input = event.target as HTMLInputElement | null
+          const version = ++inputVersion
           numberField.events.input(eventValue(event))
           callHandler(onBlur, event)
+          void nextTick(() => {
+            if (input && version === inputVersion) {
+              input.value = String(numberField.state.value.value)
+            }
+          })
         },
         onFocus: (event: FocusEvent) => callHandler(onFocus, event),
         onInput: (event: Event) => {
+          inputVersion += 1
           numberField.events.input(eventValue(event))
           callHandler(onInput, event)
         },

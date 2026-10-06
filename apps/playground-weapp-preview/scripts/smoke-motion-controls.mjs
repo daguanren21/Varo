@@ -31,6 +31,7 @@ try {
   await switchControl.scrollIntoViewIfNeeded()
   const switchBox = await switchControl.boundingBox()
   assert.ok(switchBox)
+  assert.ok(switchBox.width >= 44 && switchBox.height >= 44)
   await page.mouse.move(switchBox.x + switchBox.width / 2, switchBox.y + switchBox.height / 2)
   await page.mouse.down()
   await expect(switchHost).toHaveClass(/varo-switch--pressed/)
@@ -66,10 +67,8 @@ try {
       copyWidth: copy?.getBoundingClientRect().width ?? 0,
       rowClientWidth: row?.clientWidth ?? 0,
       rowScrollWidth: row?.scrollWidth ?? 0,
-      width: element.getBoundingClientRect().width,
     }
   })
-  assert.ok(inputGeometry.width >= 128 && inputGeometry.width <= 132)
   assert.ok(inputGeometry.copyWidth > 0)
   assert.ok(inputGeometry.rowScrollWidth <= inputGeometry.rowClientWidth)
   const decrementButton = runtime.getByRole('button', { name: 'Decrease value', exact: true })
@@ -78,9 +77,18 @@ try {
   await expect(decrementButton).toHaveCount(1)
   await expect(incrementButton).toHaveCount(1)
   await expect(runtime.getByRole('textbox', { name: 'Numeric value', exact: true })).toHaveCount(1)
+  for (const control of [
+    decrementButton,
+    runtime.getByRole('textbox', { name: 'Numeric value', exact: true }),
+    incrementButton,
+  ]) {
+    const box = await control.boundingBox()
+    assert.ok(box)
+    assert.ok(box.width >= 44 && box.height >= 44)
+  }
   await incrementButton.click()
   await expect(state).toHaveAttribute('data-preview-value', /quantity=3/)
-  checks.push('compact InputNumber geometry and increment')
+  checks.push('InputNumber touch targets, horizontal fit and increment')
 
   const ghostHost = runtime.locator('wx-button.varo-button').filter({ hasText: 'Ghost 操作' })
   await expect(ghostHost).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')

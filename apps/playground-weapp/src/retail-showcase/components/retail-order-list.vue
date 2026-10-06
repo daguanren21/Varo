@@ -4,7 +4,6 @@ import { computed } from 'wevu'
 import VEmpty from '../../components/ui/empty.vue'
 import VTag from '../../components/ui/tag.vue'
 import VButton from '../../components/ui/v-button.vue'
-import VCard from '../../components/ui/v-card.vue'
 import VImage from '../../components/ui/v-image.vue'
 import { formatRetailMoney } from '../../lib/retail'
 
@@ -25,10 +24,10 @@ const emit = defineEmits<{
 }>()
 
 const STATUS_COPY: Record<RetailOrderSummary['status'], { action: string, label: string, tone: 'default' | 'primary' | 'success' | 'warning' | 'danger' }> = {
-  'pending-payment': { action: '立即付款', label: '待付款', tone: 'danger' },
-  'pending-delivery': { action: '查看进度', label: '待发货', tone: 'warning' },
-  'pending-receipt': { action: '确认收货', label: '待收货', tone: 'primary' },
-  'completed': { action: '再次购买', label: '已完成', tone: 'success' },
+  'pending-payment': { action: '立即付款', label: '待付款', tone: 'warning' },
+  'pending-delivery': { action: '查看进度', label: '待发货', tone: 'default' },
+  'pending-receipt': { action: '确认收货', label: '待收货', tone: 'default' },
+  'completed': { action: '再次购买', label: '已完成', tone: 'default' },
   'after-sale': { action: '查看售后', label: '售后中', tone: 'default' },
 }
 const visibleOrders = computed(() =>
@@ -42,44 +41,56 @@ const visibleOrders = computed(() =>
 </script>
 
 <template>
-  <view class="grid gap-3 bg-[#f4f6f8] p-3 text-slate-950">
-    <VCard v-for="order in visibleOrders" :key="order.id" class-name="grid gap-3">
-      <view class="flex items-center justify-between gap-3">
-        <view class="grid min-w-0 gap-0.5">
-          <text class="text-xs font-black">
-            Varo Retail 自营店
+  <view class="grid grid-cols-1 gap-6 bg-[var(--varo-ui-surface)] px-4 py-6 text-sm leading-6 text-[var(--varo-ui-text)]">
+    <text class="text-xl font-semibold leading-7">
+      我的订单
+    </text>
+
+    <view v-for="order in visibleOrders" :key="order.id" class="grid gap-4 border-b border-[var(--varo-ui-border-lighter)] pb-6">
+      <view class="flex flex-wrap items-start justify-between gap-3">
+        <view class="grid min-w-0 flex-1 grid-cols-1 gap-1">
+          <text class="break-all text-sm font-semibold leading-6">
+            订单 {{ order.id }}
           </text>
-          <text class="truncate text-[9px] text-slate-400">
-            {{ order.id }} · {{ order.createdAt }}
+          <text class="break-words text-xs tabular-nums leading-5 text-[var(--varo-ui-text-regular)]">
+            {{ order.createdAt }}
           </text>
         </view>
-        <VTag :label="order.statusLabel" :tone="order.tone" variant="soft" size="sm" />
+        <VTag :label="order.statusLabel" :tone="order.tone" variant="soft" />
       </view>
 
-      <VButton block variant="ghost" tone="default" class-name="!grid !min-h-0 !grid-cols-[72px_minmax(0,1fr)] !gap-3 !rounded-xl !bg-slate-50 !p-2 !text-left" @click="emit('view', order)">
-        <VImage :src="order.preview.image" :alt="order.preview.name" fit="cover" width="72px" height="72px" radius="12px" />
-        <view class="grid min-w-0 content-between gap-2">
-          <text class="line-clamp-2 text-xs font-semibold leading-[18px]">
-            {{ order.preview.name }}
-          </text>
-          <view class="flex justify-between text-[10px] text-slate-400">
-            <text>共 {{ order.itemCount }} 件</text>
-            <text class="text-sm font-black text-slate-950">
-              ¥{{ formatRetailMoney(order.total) }}
+      <VButton block variant="ghost" tone="default" :aria-label="order.preview.name" class-name="!min-h-11 !w-full !min-w-0 !rounded-lg !p-0 !text-left !shadow-none" @click="emit('view', order)">
+        <view class="grid w-full min-w-0 grid-cols-[72px_minmax(0,1fr)] items-start gap-3">
+          <VImage :src="order.preview.image" :alt="order.preview.name" fit="cover" width="72px" height="72px" radius="8px" />
+          <view class="grid min-w-0 grid-cols-1 gap-2">
+            <text class="break-words text-sm font-medium leading-6">
+              {{ order.preview.name }}
+            </text>
+            <text class="break-words text-xs leading-6 text-[var(--varo-ui-text-regular)]">
+              共 {{ order.itemCount }} 件
             </text>
           </view>
         </view>
       </VButton>
 
-      <view class="flex justify-end gap-2">
-        <VButton size="sm" variant="outline" tone="default" @click="emit('view', order)">
+      <view class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-4">
+        <text class="text-sm leading-6 text-[var(--varo-ui-text-regular)]">
+          订单金额
+        </text>
+        <text class="break-all text-right text-lg font-semibold tabular-nums leading-7">
+          ¥{{ formatRetailMoney(order.total) }}
+        </text>
+      </view>
+
+      <view class="grid grid-cols-2 gap-3">
+        <VButton block variant="outline" tone="default" class-name="!min-h-11 !rounded-lg !border-[var(--varo-ui-border-lighter)] !text-sm !shadow-none" @click="emit('view', order)">
           订单详情
         </VButton>
-        <VButton size="sm" @click="emit('action', order)">
+        <VButton block tone="default" class-name="!min-h-11 !rounded-lg !bg-[var(--varo-ui-text)] !text-sm !text-[var(--varo-ui-surface)] !shadow-none" @click="emit('action', order)">
           {{ order.actionLabel }}
         </VButton>
       </view>
-    </VCard>
+    </view>
 
     <VEmpty v-if="visibleOrders.length === 0" title="暂无相关订单" description="订单状态变化后会自动出现在这里" />
   </view>

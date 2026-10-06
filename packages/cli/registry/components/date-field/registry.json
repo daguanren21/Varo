@@ -1,0 +1,43 @@
+{
+  "name": "date-field",
+  "type": "component",
+  "title": "VDateField",
+  "description": "Year-month-day field composed from the multi-column Picker. Calendar remains a separate month-grid control.",
+  "exportName": "VDateField",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base",
+    "components/picker",
+    "utils/date-utils"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/date-field/date-field.ts",
+      "to": "src/components/ui/date-field.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/date-field/v-date-field.vue",
+      "to": "src/components/ui/v-date-field.vue"
+    }
+  ],
+  "docs": "/components/date-field"
+}

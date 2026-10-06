@@ -60,17 +60,17 @@ const profileStats = [
 ]
 const products = [
   {
-    id: 'starter',
-    name: 'Varo Starter Kit',
-    description: '双端主题、组件源码与基础 Blocks。',
+    id: 'canvas-bag',
+    name: '帆布通勤包',
+    description: '米白色 / 标准款。',
     price: 9900,
     badge: '推荐',
     inventory: 32,
   },
   {
-    id: 'commerce',
-    name: 'Commerce Blocks',
-    description: '商品、订单和筛选业务组合。',
+    id: 'cotton-shirt',
+    name: '棉质圆领上衣',
+    description: '白色 / M 码。',
     price: 19900,
     inventory: 8,
   },
@@ -194,8 +194,8 @@ function record(message: string) {
           />
           <ProductList
             class-name="lg:col-span-2"
-            title="组件与 Blocks"
-            description="可直接复制进业务项目的源码产品。"
+            title="商品列表"
+            description="商品信息、库存状态与独立加购操作。"
             :items="products"
             @select="record(`查看商品：${$event.item.name}`)"
             @add-to-cart="record(`加入购物车：${$event.item.name}`)"

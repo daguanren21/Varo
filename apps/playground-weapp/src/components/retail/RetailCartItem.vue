@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RetailProduct } from '../../features/retail/types'
+import { computed } from 'wevu'
 import { formatRetailMoney } from '../../features/retail/store'
 import InputNumber from '../ui/input-number.vue'
 import VButton from '../ui/v-button.vue'
@@ -11,13 +12,16 @@ const props = defineProps<{
   product: RetailProduct
   quantity: number
   selected: boolean
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
   'quantity-change': [quantity: number]
   'select': [selected: boolean]
   'view': [product: RetailProduct]
+  'remove': []
 }>()
+const quantityMax = computed(() => Math.max(1, props.product.stock))
 
 function changeQuantity(quantity: number) {
   // Wevu forwards camelCase names unchanged; the native listener is kebab-case.
@@ -31,7 +35,7 @@ function changeQuantity(quantity: number) {
     <view class="grid gap-3">
       <view class="grid grid-cols-[auto_88px_minmax(0,1fr)] items-center gap-3">
         <view class="grid h-10 w-10 place-items-center">
-          <VCheckbox :checked="selected" aria-label="选择商品" @update:checked="emit('select', $event)" />
+          <VCheckbox :checked="selected" :disabled="disabled" aria-label="选择商品" @update:checked="emit('select', $event)" />
         </view>
         <view class="h-[88px] w-[88px] overflow-hidden rounded-xl bg-slate-100">
           <VButton
@@ -49,7 +53,7 @@ function changeQuantity(quantity: number) {
             {{ product.name }}
           </text>
           <text class="truncate text-[9px] text-slate-400">
-            默认规格 · 七天无理由
+            库存 {{ product.stock }} · 当前数量 {{ quantity }}
           </text>
         </view>
       </view>
@@ -61,9 +65,13 @@ function changeQuantity(quantity: number) {
           <InputNumber
             :value="quantity"
             :min="1"
-            :max="Math.max(1, product.stock)"
+            :max="quantityMax"
+            :disabled="disabled || product.stock === 0"
             @change="changeQuantity"
           />
+          <VButton size="sm" variant="ghost" :disabled="disabled" @click="emit('remove')">
+            移除
+          </VButton>
         </view>
       </view>
     </view>

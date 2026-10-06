@@ -2,16 +2,17 @@
 import type { RetailOrder, RetailOrderStatus } from '../../features/retail/types'
 import { computed, onLoad, shallowRef } from 'wevu'
 import RetailOrderCard from '../../components/retail/RetailOrderCard.vue'
+import RetailRequestState from '../../components/retail/RetailRequestState.vue'
 import VEmpty from '../../components/ui/empty.vue'
 import VButton from '../../components/ui/v-button.vue'
 import { navigateRetail } from '../../features/retail/navigation'
-import { useRetailStore } from '../../features/retail/store'
+import { useRetailPage } from '../../features/retail/use-retail-page'
 
 const activeStatus = shallowRef<'all' | RetailOrderStatus>('all')
-const { orders } = useRetailStore()
+const { orders, loading, loadError, retryLoad } = useRetailPage()
 const tabs: Array<{ label: string, value: 'all' | RetailOrderStatus }> = [
   { label: '全部', value: 'all' },
-  { label: '待付款', value: 'pending-payment' },
+  { label: '模拟待付款', value: 'pending-payment' },
   { label: '待发货', value: 'pending-delivery' },
   { label: '待收货', value: 'pending-receipt' },
   { label: '售后', value: 'after-sale' },
@@ -56,10 +57,14 @@ function runAction(order: RetailOrder) {
       </view>
     </scroll-view>
 
-    <view v-if="visibleOrders.length" class="grid gap-3 px-3 py-3">
+    <text class="block px-4 py-3 text-xs text-slate-500">
+      仅展示模拟订单状态，不代表真实支付或履约。
+    </text>
+    <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
+    <view v-if="!loading && !loadError && visibleOrders.length" class="grid gap-3 px-3 py-3">
       <RetailOrderCard v-for="order in visibleOrders" :key="order.id" :order="order" @view="openOrder" @action="runAction" />
     </view>
-    <view v-else class="grid min-h-[70vh] place-items-center px-6">
+    <view v-else-if="!loading && !loadError" class="grid min-h-[70vh] place-items-center px-6">
       <VEmpty title="暂无相关订单" description="订单状态变化后会自动出现在这里" />
     </view>
   </view>

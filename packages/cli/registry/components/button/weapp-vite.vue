@@ -6,13 +6,13 @@ import { computed, toRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
-type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
-type ButtonVariant = 'solid' | 'outline' | 'ghost' | 'text'
-type ButtonSize = 'sm' | 'md' | 'lg'
-type ButtonShape = 'default' | 'square' | 'round'
+defineOptions({
+  behaviors: ['wx://form-field-button'],
+})
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     block?: boolean
     className?: ClassValue
     color?: string
@@ -31,6 +31,7 @@ const props = withDefaults(
     variant?: ButtonVariant
   }>(),
   {
+    ariaLabel: '',
     block: false,
     disabled: false,
     hairline: false,
@@ -46,10 +47,13 @@ const props = withDefaults(
     variant: 'solid',
   },
 )
-
 const emit = defineEmits<{
   click: [event: unknown]
 }>()
+type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
+type ButtonVariant = 'solid' | 'outline' | 'ghost' | 'text'
+type ButtonSize = 'sm' | 'md' | 'lg'
+type ButtonShape = 'default' | 'square' | 'round'
 
 function solidForeground(color: string, foregroundColor?: string) {
   if (foregroundColor) {
@@ -127,6 +131,7 @@ function pressCancel() {
   <button
     :class="classes"
     :style="customStyle"
+    :aria-label="props.ariaLabel"
     :disabled="!interactive"
     :form-type="formType"
     :hover-class="hoverClass"
@@ -154,14 +159,14 @@ function pressCancel() {
       </text>
     </template>
     <template v-else>
-      <text v-if="$slots.icon || (props.icon && props.iconPosition === 'left')" class="varo-button__icon" data-position="left">
+      <view v-if="$slots.icon || (props.icon && props.iconPosition === 'left')" class="varo-button__icon" data-position="left">
         <slot name="icon">
           {{ props.icon }}
         </slot>
-      </text>
-      <text class="varo-button__label">
+      </view>
+      <view class="varo-button__label">
         <slot />
-      </text>
+      </view>
       <text v-if="props.icon && props.iconPosition === 'right'" class="varo-button__icon" data-position="right">
         {{ props.icon }}
       </text>

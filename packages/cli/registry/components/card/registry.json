@@ -19,6 +19,11 @@
     "themes/base",
     "utils/primitives"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",

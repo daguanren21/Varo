@@ -8,6 +8,10 @@ const baseUrl = process.env.PREVIEW_URL ?? 'http://127.0.0.1:4182/'
 const artifacts = await mkdtemp(join(tmpdir(), 'varo-preview-smoke-'))
 const browser = await chromium.launch({ channel: 'chrome', headless: true })
 const errors = []
+const duplicateKeys = []
+function collectKeyWarnings(message) {
+  if (/keys .*not unique/i.test(message.text())) { duplicateKeys.push(message.text()) }
+}
 const checks = []
 const field = (root, name) => root.locator(`[data-preview-field="${name}"]`)
 async function selectRadio(page, name) {
@@ -20,6 +24,7 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 })
   const page = await context.newPage()
   page.on('pageerror', error => errors.push(error.message))
+  page.on('console', collectKeyWarnings)
   await page.goto(baseUrl)
   await expect(page.locator('.preview-frame')).toHaveAttribute('data-state', 'ready')
   let runtime = page.frameLocator('iframe')
@@ -123,11 +128,14 @@ try {
   await expect(field(runtime, 'stream-state')).toHaveAttribute('data-preview-value', 'phase=completed;chunks=14/14;pending=0;final=true')
   await expect(runtime.locator('.agent-stream')).toContainText('controller.finish()')
   await runtime.getByRole('button', { name: '从头重播', exact: true }).click()
+  await expect(field(runtime, 'stream-phase')).toHaveText(/streaming/)
+  await expect(runtime.locator('.agent-stream')).not.toContainText('controller.finish()')
   await expect(field(runtime, 'stream-state')).toHaveAttribute('data-preview-value', 'phase=completed;chunks=14/14;pending=0;final=true')
   checks.push('native Markdown link, stream stop/continue/replay and final Markdown content')
 
   const native = await context.newPage()
   native.on('pageerror', error => errors.push(error.message))
+  native.on('console', collectKeyWarnings)
   await native.setViewportSize({ width: 390, height: 844 })
   await native.goto(new URL('runtime.html?scenario=agent', baseUrl).href)
   await expect(native.locator('#runtime-status')).toBeHidden()
@@ -171,6 +179,7 @@ try {
   checks.push('native robot chat welcome, operateCard send and queryCallback')
 
   assert.deepEqual(errors.filter(message => !message.includes('preview-smoke-intentional')), [])
+  assert.deepEqual(duplicateKeys, [], 'Native Markdown must reconcile without duplicate item keys')
   console.log(JSON.stringify({ status: 'passed', url: baseUrl, browser: browser.version(), checks, artifacts }, null, 2))
   await context.close()
 }

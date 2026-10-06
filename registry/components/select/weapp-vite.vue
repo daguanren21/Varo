@@ -242,7 +242,9 @@ function closePanel() {
           :data-active="String(selectedValues.includes(option.value))"
           @click="selectOption(option)"
         >
-          <text>{{ option.label }}</text>
+          <text class="varo-select__option-label">
+            {{ option.label }}
+          </text>
           <VIcon
             v-if="selectedValues.includes(option.value)"
             class="varo-select__check"

@@ -19,18 +19,6 @@ import VSkeleton from '../../components/ui/v-skeleton.vue'
 import VSwitch from '../../components/ui/v-switch.vue'
 import VThemeProvider from '../../components/ui/v-theme-provider.vue'
 
-type MaybeRef<T> = T | { value: T }
-
-interface ThemePageAutomationContext {
-  __wevu?: {
-    proxy?: {
-      activeTheme?: MaybeRef<ThemeDefinition>
-      alternateThemeEnabled?: MaybeRef<boolean>
-      toggleTheme?: () => void
-    }
-  }
-}
-
 defineOptions({
   methods: {
     automationInspectTheme(this: ThemePageAutomationContext) {
@@ -56,6 +44,20 @@ defineOptions({
     },
   },
 })
+
+const robotChatEnabled = import.meta.env.VARO_ROBOT_CHAT_ENABLED === true
+
+type MaybeRef<T> = T | { value: T }
+
+interface ThemePageAutomationContext {
+  __wevu?: {
+    proxy?: {
+      activeTheme?: MaybeRef<ThemeDefinition>
+      alternateThemeEnabled?: MaybeRef<boolean>
+      toggleTheme?: () => void
+    }
+  }
+}
 
 const tealTheme = createTheme({
   primary: '#07c160',
@@ -183,6 +185,7 @@ function openFormShowcase() {
 }
 
 function openRobotChatShowcase() {
+  if (!robotChatEnabled) { return }
   void wx.navigateTo({ url: '/pages/robot-chat-showcase/index' })
 }
 </script>
@@ -204,9 +207,12 @@ function openRobotChatShowcase() {
       <VButton block variant="outline" tone="default" @click="openFormShowcase">
         打开 Varo Form / Region / Map Demo
       </VButton>
-      <VButton block variant="outline" tone="default" @click="openRobotChatShowcase">
+      <VButton block variant="outline" tone="default" :disabled="!robotChatEnabled" @click="openRobotChatShowcase">
         打开微信机器人对话 Demo
       </VButton>
+      <text v-if="!robotChatEnabled" class="desc">
+        机器人演示未启用。需使用已开通 chatbotwidget 插件的小程序，按文档显式启用后重新构建。
+      </text>
 
       <view class="card">
         <text class="card-title">

@@ -2,6 +2,7 @@
 import type { RetailProduct } from '../../features/retail/types'
 import { computed, shallowRef } from 'wevu'
 import RetailProductCard from '../../components/retail/RetailProductCard.vue'
+import RetailRequestState from '../../components/retail/RetailRequestState.vue'
 import RetailSectionHeader from '../../components/retail/RetailSectionHeader.vue'
 import Badge from '../../components/ui/badge.vue'
 import VButton from '../../components/ui/v-button.vue'
@@ -9,12 +10,16 @@ import VCard from '../../components/ui/v-card.vue'
 import VImage from '../../components/ui/v-image.vue'
 import VInput from '../../components/ui/v-input.vue'
 import { useWeappChrome } from '../../composables/useWeappChrome'
+import { retailConfig } from '../../features/retail/config'
 import { retailCategories } from '../../features/retail/data'
 import { navigateRetail, switchRetailTab } from '../../features/retail/navigation'
-import { formatRetailMoney, useRetailStore } from '../../features/retail/store'
+import { formatRetailMoney } from '../../features/retail/store'
+import { runRetailAction, useRetailPage } from '../../features/retail/use-retail-page'
 
 const keyword = shallowRef('')
-const { addToCart, cartCount, products } = useRetailStore()
+const { addToCart, cartCount, products, loading, loadError, retryLoad } = useRetailPage()
+const brand = retailConfig.brand
+const brandStyle = `color: ${brand.accent}`
 const { navigationStyle, rootStyle } = useWeappChrome()
 const featuredProducts = computed(() => products.value.slice(0, 8))
 const heroProducts = computed(() => products.value.slice(0, 3).map(product => ({
@@ -35,8 +40,10 @@ function openProduct(product: RetailProduct) {
 }
 
 function addProduct(product: RetailProduct) {
-  addToCart(product.id)
-  wx.showToast({ title: '已加入购物车', icon: 'success' })
+  return runRetailAction(() => {
+    addToCart(product.id)
+    wx.showToast({ title: '已加入购物车', icon: 'success' })
+  })
 }
 </script>
 
@@ -44,9 +51,10 @@ function addProduct(product: RetailProduct) {
   <view class="retail-page-enter min-h-screen bg-[#f4f6f8] pb-24 text-slate-950">
     <view class="sticky top-0 z-30 grid gap-2 bg-white/95 px-3 pb-3 shadow-sm backdrop-blur" :style="rootStyle">
       <view class="flex items-center justify-between gap-3" :style="navigationStyle">
-        <view class="grid gap-0.5">
-          <text class="text-[10px] font-black uppercase tracking-[0.18em] text-teal-700">
-            VARO RETAIL
+        <VImage :src="brand.logo" :alt="brand.name" width="40px" height="40px" />
+        <view class="grid flex-1 gap-0.5">
+          <text class="text-[10px] font-black uppercase tracking-[0.18em]" :style="brandStyle">
+            {{ brand.name }}
           </text>
           <text class="text-lg font-black">
             零售生活馆
@@ -71,14 +79,15 @@ function addProduct(product: RetailProduct) {
       </view>
     </view>
 
-    <view class="retail-section-enter grid gap-4 px-3 py-3">
+    <RetailRequestState :loading="loading" :error="loadError" :empty="products.length === 0" empty-title="暂无商品" @retry="retryLoad" />
+    <view v-if="!loading && !loadError && products.length" class="retail-section-enter grid gap-4 px-3 py-3">
       <swiper
         class="h-[220px] overflow-hidden rounded-2xl bg-slate-950"
         autoplay
         circular
         indicator-dots
         indicator-color="rgba(255,255,255,.38)"
-        indicator-active-color="#5eead4"
+        :indicator-active-color="brand.accent"
         :interval="4500"
         :duration="420"
       >
@@ -147,7 +156,7 @@ function addProduct(product: RetailProduct) {
       <RetailSectionHeader
         eyebrow="CURATED"
         title="精选推荐"
-        subtitle="真实商品状态 · Varo 原生组件"
+        subtitle="本地模拟商品 · Varo 原生组件"
         action="查看全部"
         @action="navigateRetail('/retail-goods/list/index')"
       />

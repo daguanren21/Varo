@@ -2,7 +2,7 @@
   "name": "retail-home",
   "type": "block",
   "title": "Retail Home",
-  "description": "Varo retail landing block with search, cart badge, banner, categories, product cards, pricing, and cart actions.",
+  "description": "Varo retail landing block with search, cart count, banner, categories, product cards, pricing, and cart actions.",
   "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
@@ -10,7 +10,6 @@
   },
   "registryDependencies": [
     "utils/retail",
-    "components/badge",
     "components/button",
     "components/card",
     "components/image",

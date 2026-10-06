@@ -8,13 +8,25 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "@varo-ui/headless",
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/primitives"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -23,8 +35,28 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/popover/popover.ts",
-      "to": "src/components/ui/popover.ts"
+      "from": "registry/components/popover/v-popover-root.vue",
+      "to": "src/components/ui/v-popover-root.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/popover/v-popover-trigger.vue",
+      "to": "src/components/ui/v-popover-trigger.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/popover/v-popover-content.vue",
+      "to": "src/components/ui/v-popover-content.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/popover/v-popover-close.vue",
+      "to": "src/components/ui/v-popover-close.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/popover/popover-context.ts",
+      "to": "src/components/ui/popover-context.ts"
     }
   ],
   "docs": "/components/popover"

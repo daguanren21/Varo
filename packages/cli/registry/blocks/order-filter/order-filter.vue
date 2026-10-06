@@ -6,12 +6,12 @@ const statuses = shallowRef<Array<string | number>>([])
 const statusOptions = [
   { label: '待付款', value: 'pending_payment' },
   { label: '待发货', value: 'pending_ship' },
-  { label: '已完成', value: 'done' }
+  { label: '已完成', value: 'done' },
 ]
 </script>
 
 <template>
   <section class="varo-block varo-order-filter">
-    <VSelect v-model:value="statuses" multiple searchable :options="statusOptions" placeholder="筛选订单状态" />
+    <VSelect v-model:value="statuses" multiple filterable :options="statusOptions" placeholder="筛选订单状态" />
   </section>
 </template>

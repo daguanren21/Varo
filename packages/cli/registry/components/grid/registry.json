@@ -8,14 +8,25 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "@varo-ui/headless",
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/headless",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/layout-utils"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +35,18 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/grid/grid.ts",
-      "to": "src/components/ui/grid.ts"
+      "from": "registry/components/grid/v-grid.vue",
+      "to": "src/components/ui/v-grid.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/grid/v-grid-item.vue",
+      "to": "src/components/ui/v-grid-item.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/grid/grid-context.ts",
+      "to": "src/components/ui/grid-context.ts"
     }
   ],
   "docs": "/components/grid"

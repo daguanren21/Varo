@@ -80,7 +80,8 @@ const rootClass = computed(() =>
 
 <template>
   <view :class="rootClass" :data-final="String(final)">
-    <AgentMarkdownNode v-for="(node, index) in nodes" :key="index" :node="node" @link="emit('link', $event)" />
+    <!-- Native wx:key names an item field, not a loop index; this stateless tree is positional. -->
+    <AgentMarkdownNode v-for="node in nodes" :node="node" @link="emit('link', $event)" />
   </view>
 </template>
 

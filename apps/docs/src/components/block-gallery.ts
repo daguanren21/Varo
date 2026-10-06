@@ -29,6 +29,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     componentName: 'LoginForm',
     dependencies: ['button', 'input', 'switch'],
     id: 'login-form',
+    previewAssets: { h5: { source: '/blocks/login-form-h5.png' } },
     targets: ['weapp', 'h5'],
     title: { zh: '登录表单', en: 'Login Form' },
     description: { zh: '手机号、密码、记住状态、错误与加载反馈。', en: 'Phone, password, remember, error, and loading states.' },
@@ -40,6 +41,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     componentName: 'ProfileCard',
     dependencies: ['avatar', 'badge', 'button'],
     id: 'profile-card',
+    previewAssets: { h5: { source: '/blocks/profile-card-h5.png' } },
     targets: ['weapp', 'h5'],
     title: { zh: '用户资料卡', en: 'Profile Card' },
     description: { zh: '头像、身份状态、统计信息与编辑动作。', en: 'Avatar, identity status, statistics, and edit action.' },
@@ -51,6 +53,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     componentName: 'ProfileEdit',
     dependencies: ['button', 'input', 'select'],
     id: 'profile-edit',
+    previewAssets: { h5: { source: '/blocks/profile-edit-h5.png' } },
     targets: ['weapp', 'h5'],
     title: { zh: '资料编辑', en: 'Profile Edit' },
     description: { zh: '姓名、手机号、城市搜索、简介与提交状态。', en: 'Name, phone, searchable city, biography, and submit state.' },
@@ -62,6 +65,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     componentName: 'ProductList',
     dependencies: ['badge', 'button', 'empty', 'image'],
     id: 'product-list',
+    previewAssets: { h5: { source: '/blocks/product-list-h5.png' } },
     targets: ['weapp', 'h5'],
     title: { zh: '商品列表', en: 'Product List' },
     description: { zh: '商品、库存、价格、空状态、选择与加购动作。', en: 'Products, inventory, pricing, empty state, selection, and cart actions.' },
@@ -73,6 +77,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     componentName: 'OrderFilter',
     dependencies: ['button', 'checkbox', 'input-number', 'tag'],
     id: 'order-filter',
+    previewAssets: { h5: { source: '/blocks/order-filter-h5.png' } },
     targets: ['weapp', 'h5'],
     title: { zh: '订单筛选', en: 'Order Filter' },
     description: { zh: '多状态选择、金额区间校验、重置与应用事件。', en: 'Status selection, amount validation, reset, and apply events.' },
@@ -84,6 +89,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     componentName: 'AgentChat',
     dependencies: ['agent-ui', '@varo-ui/ai'],
     id: 'agent-chat',
+    previewAssets: { h5: { source: '/blocks/agent-chat-h5.png' } },
     targets: ['weapp', 'h5'],
     title: { zh: 'Agent 对话', en: 'Agent Chat' },
     description: { zh: '增量 Markdown、工具状态、审批与输入组合。', en: 'Incremental Markdown, tool state, approvals, and composer.' },
@@ -104,11 +110,11 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
   {
     category: 'retail',
     componentName: 'RetailCategory',
-    dependencies: ['button', 'card', 'image', 'tag'],
+    dependencies: ['button', 'card', 'image'],
     id: 'retail-category',
     targets: ['weapp'],
     title: { zh: '零售分类', en: 'Retail Category' },
-    description: { zh: '双栏分类导航、商品网格与加购动作。', en: 'Two-column category navigation, product grid, and cart actions.' },
+    description: { zh: '可换行分类导航、商品网格与独立加购动作。', en: 'Wrapping category navigation, a product grid, and separate cart actions.' },
     usage: '<RetailCategory v-model:active-id="activeId" :categories="categories" :products="products" />',
     setup: 'const activeId = shallowRef(\'women\')\nconst categories = []\nconst products = []',
   },
@@ -126,7 +132,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
   {
     category: 'retail',
     componentName: 'RetailProductDetail',
-    dependencies: ['badge', 'button', 'card', 'image', 'input-number', 'tag'],
+    dependencies: ['badge', 'button', 'image', 'input-number'],
     id: 'retail-product-detail',
     targets: ['weapp'],
     title: { zh: '商品详情', en: 'Product Detail' },
@@ -141,14 +147,14 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     id: 'retail-checkout',
     targets: ['weapp'],
     title: { zh: '结算确认', en: 'Retail Checkout' },
-    description: { zh: '地址、商品、优惠、发票、金额与提交订单。', en: 'Address, products, coupons, invoice, totals, and order submission.' },
+    description: { zh: '受控结算：地址、库存校验、金额、加载、错误重试与提交中状态。', en: 'Controlled checkout with address and stock validation, totals, loading, error recovery, and pending submission.' },
     usage: '<RetailCheckout :address="address" :items="items" :total="total" @submit="submitOrder" />',
     setup: 'const address = {}\nconst items = []\nconst total = 0\nfunction submitOrder() {}',
   },
   {
     category: 'retail',
     componentName: 'RetailOrderList',
-    dependencies: ['button', 'card', 'empty', 'image', 'tag'],
+    dependencies: ['button', 'empty', 'image', 'tag'],
     id: 'retail-order-list',
     targets: ['weapp'],
     title: { zh: '订单列表', en: 'Retail Order List' },
@@ -159,7 +165,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
   {
     category: 'retail',
     componentName: 'RetailProfile',
-    dependencies: ['avatar', 'button', 'card', 'tag'],
+    dependencies: ['avatar', 'button', 'tag'],
     id: 'retail-profile',
     targets: ['weapp'],
     title: { zh: '会员中心', en: 'Retail Profile' },
@@ -169,7 +175,7 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
   },
 ]
 
-export const blockGalleryCaptureDate = '2026-08-28'
+export const blockGalleryCaptureDate = '2026-10-05'
 
 export function blockPreviewAsset(
   block: BlockGalleryDefinition,

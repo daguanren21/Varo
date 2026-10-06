@@ -8,14 +8,25 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "@varo-ui/headless",
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/headless",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/layout-utils"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +35,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/divider/divider.ts",
-      "to": "src/components/ui/divider.ts"
+      "from": "registry/components/divider/v-divider.vue",
+      "to": "src/components/ui/v-divider.vue"
     }
   ],
   "docs": "/components/divider"

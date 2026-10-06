@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     vue(),
     weappWebPlugin({
-      nativeBuildRoot: resolve(root, '../playground-weapp/devtools/build/mp-weixin'),
+      nativeBuildRoot: resolve(root, '../playground-weapp/dist/browser/mp-weixin'),
       pages: Object.fromEntries(previewScenarios.map(scenario => [scenario.id, scenario.page])),
     }),
   ],

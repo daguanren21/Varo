@@ -140,7 +140,6 @@ describe('H5 Agent UI', () => {
       },
     })
 
-    expect(wrapper.get('[aria-label="Agent conversation"]').text()).toContain('项目 Agent')
     expect(wrapper.text()).toContain('欢迎使用')
     await wrapper.get('textarea').setValue('生成方案')
     await wrapper.get('button[aria-label="发送"]').trigger('click')

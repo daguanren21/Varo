@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'wevu'
 import RetailMenuRow from '../../components/retail/RetailMenuRow.vue'
+import RetailRequestState from '../../components/retail/RetailRequestState.vue'
 import Avatar from '../../components/ui/avatar.vue'
 import VTag from '../../components/ui/tag.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
 import { useWeappChrome } from '../../composables/useWeappChrome'
 import { navigateRetail } from '../../features/retail/navigation'
-import { useRetailStore } from '../../features/retail/store'
+import { useRetailPage } from '../../features/retail/use-retail-page'
 
-const { addresses, coupons, orders } = useRetailStore()
+const { addresses, coupons, orders, loading, loadError, retryLoad } = useRetailPage()
 const { navigationStyle, rootStyle } = useWeappChrome()
 const orderActions = computed(() => [
   { count: orders.value.filter(order => order.status === 'pending-payment').length, label: '待付款', status: 'pending-payment', mark: '付' },
@@ -34,7 +35,7 @@ const orderActions = computed(() => [
             <VTag label="PLUS" tone="primary" variant="solid" size="sm" />
           </view>
           <text class="text-[10px] text-teal-100">
-            会员等级 3 · 已安全登录
+            本地模拟用户 · 未接入登录
           </text>
         </view>
         <VButton size="sm" tone="default" variant="ghost" class-name="!border !border-white/20 !bg-white/10 !text-white" @click="navigateRetail('/retail-user/person-info/index')">
@@ -69,6 +70,7 @@ const orderActions = computed(() => [
       </view>
     </view>
 
+    <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
     <view class="retail-section-enter -mt-4 grid gap-3 px-3 pb-5">
       <VCard variant="elevated">
         <view class="grid gap-4">
@@ -78,7 +80,7 @@ const orderActions = computed(() => [
                 我的订单
               </text>
               <text class="text-[9px] text-slate-400">
-                查看订单与履约进度
+                查看模拟订单，不代表支付或履约
               </text>
             </view>
             <VButton
@@ -142,7 +144,7 @@ const orderActions = computed(() => [
           <RetailMenuRow title="帮助与客服" :bordered="false">
             <template #trailing>
               <text class="text-[10px] font-semibold text-teal-700">
-                400-820-2026
+                演示，无客服接入
               </text>
             </template>
           </RetailMenuRow>

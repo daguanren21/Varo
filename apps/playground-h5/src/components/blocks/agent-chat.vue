@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
 import type { AgentConversationMessage } from '../agent-ui'
+import { computed } from 'vue'
 import {
   AgentComposer,
   AgentConversation,
@@ -9,9 +10,10 @@ import {
 } from '../agent-ui'
 import { VButton } from '../ui/button'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     busy?: boolean
+    closeLabel?: string
     messages?: AgentConversationMessage[]
     snapshot?: AgentStreamSnapshot
     subtitle?: string
@@ -20,6 +22,7 @@ withDefaults(
   }>(),
   {
     busy: false,
+    closeLabel: '关闭 Agent',
     messages: () => [],
     snapshot: undefined,
     subtitle: '工具调用与外部操作始终可见、可确认',
@@ -36,22 +39,33 @@ const emit = defineEmits<{
   submit: [prompt: string]
 }>()
 const prompt = defineModel<string>({ default: '' })
+const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
 </script>
 
 <template>
-  <section class="grid min-h-[560px] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-[0_20px_60px_rgba(15,23,42,.12)]" aria-label="Agent conversation">
-    <header class="flex min-h-16 items-center gap-3 border-b border-slate-200 bg-white px-4">
-      <span class="grid h-10 w-10 flex-none place-items-center rounded-2xl bg-teal-700 text-sm font-black text-white" aria-hidden="true">V</span>
-      <span class="grid min-w-0 flex-1">
-        <strong class="truncate text-sm text-slate-950">{{ title }}</strong>
-        <small class="truncate text-[11px] text-slate-400">{{ subtitle }}</small>
-      </span>
-      <VButton size="sm" shape="round" tone="default" variant="ghost" class="!h-11 !min-h-11 !px-3 !text-xs" aria-label="Close Agent" @click="emit('close')">
-        Close
+  <section
+    class="box-border grid min-h-[560px] w-full min-w-0 grid-cols-1 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-xl border border-[var(--varo-ui-border-lighter)] bg-[var(--varo-ui-surface)] text-sm leading-6 text-[var(--varo-ui-text)]"
+    :aria-label="title"
+    :aria-busy="busy"
+  >
+    <header class="flex min-w-0 items-start gap-4 border-b border-[var(--varo-ui-border-lighter)] p-4 sm:px-6">
+      <div class="grid min-w-0 flex-1 grid-cols-1 gap-2">
+        <h2 class="m-0 break-words text-xl font-semibold leading-7">
+          {{ title }}
+        </h2>
+        <p v-if="subtitle" class="m-0 break-words text-xs leading-5 text-[var(--varo-ui-text-regular)]">
+          {{ subtitle }}
+        </p>
+        <span class="w-fit rounded-md bg-[var(--varo-ui-surface-muted)] px-2 py-1 text-xs leading-5 text-[var(--varo-ui-text-regular)]" role="status">
+          {{ statusLabel }}
+        </span>
+      </div>
+      <VButton tone="default" variant="ghost" class="!min-h-11 !flex-none !rounded-lg !px-3 !text-sm !shadow-none" :aria-label="closeLabel" @click="emit('close')">
+        关闭
       </VButton>
     </header>
 
-    <div class="grid min-h-0 content-start gap-3 overflow-y-auto px-4 py-4">
+    <div class="grid min-h-0 min-w-0 content-start gap-6 overflow-y-auto p-4 sm:p-6">
       <AgentConversation :messages="messages" />
       <AgentEventRenderer
         v-if="snapshot && snapshot.status !== 'idle'"
@@ -67,8 +81,8 @@ const prompt = defineModel<string>({ default: '' })
       <slot />
     </div>
 
-    <footer class="border-t border-slate-200 bg-white p-3">
-      <AgentComposer v-model="prompt" :busy="busy" :suggestions="suggestions" @submit="emit('submit', $event)" />
+    <footer class="min-w-0 px-4 pb-4 sm:px-6 sm:pb-6">
+      <AgentComposer v-model="prompt" :busy="busy" :suggestions="suggestions" aria-label="消息内容" placeholder="给 Agent 发送消息…" @submit="emit('submit', $event)" />
     </footer>
   </section>
 </template>

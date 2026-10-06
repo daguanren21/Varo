@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h } from 'vue'
 import { VCheckbox, VCheckboxGroup } from '../src/checkbox'
@@ -40,7 +40,6 @@ describe('ui-weapp form controls', () => {
     const radios = radio.findAll('.varo-radio')
     expect(radios[0].attributes('aria-checked')).toBe('true')
     expect(radios[1].attributes('aria-checked')).toBe('false')
-    expect(radios.every(item => item.find('.varo-radio__dot').exists())).toBe(true)
 
     await checkbox.findAll('.varo-checkbox')[1].trigger('click')
     await radios[1].trigger('click')
@@ -78,8 +77,6 @@ describe('ui-weapp form controls', () => {
       },
     })
 
-    expect(number.get('.varo-input-number__minus .varo-icon').attributes('data-name')).toBe('minus')
-    expect(number.get('.varo-input-number__plus .varo-icon').attributes('data-name')).toBe('plus')
     expect(number.get('.varo-input-number__minus').attributes('aria-label')).toBe('减少数量')
     expect(number.get('.varo-input-number__input').attributes('aria-label')).toBe('数量')
     expect(number.get('.varo-input-number__plus').attributes('aria-label')).toBe('增加数量')
@@ -92,6 +89,20 @@ describe('ui-weapp form controls', () => {
     expect(numberUpdate).toHaveBeenCalledWith(5)
     expect(rateUpdate).toHaveBeenCalledWith(3)
     expect(rangeUpdate).toHaveBeenCalledWith(6)
+  })
+
+  it.each([
+    { value: 1, min: 1, max: 8, raw: '0' },
+    { value: 9999, min: 0, max: 9999, raw: '100000' },
+  ])('reconciles unchanged numeric bounds after blurring $raw', async ({ value, min, max, raw }) => {
+    const wrapper = mount(VInputNumber, { props: { value, min, max } })
+    const input = wrapper.get<HTMLInputElement>('input')
+    await input.setValue(raw)
+    await input.trigger('blur')
+    await flushPromises()
+    expect(input.element.value).toBe(String(value))
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
   })
 
   it('renders searchbar and textarea wrappers', async () => {

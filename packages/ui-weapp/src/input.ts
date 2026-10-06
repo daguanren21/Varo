@@ -185,6 +185,15 @@ export const VInput = defineComponent({
       emit('valueChange', value)
     }
 
+    function handleRootFocusout(event: FocusEvent) {
+      const nextTarget = event.relatedTarget
+      if (nextTarget instanceof Node && (event.currentTarget as HTMLElement).contains(nextTarget)) {
+        return
+      }
+
+      focused.value = false
+    }
+
     function clear(event: MouseEvent) {
       event.preventDefault()
 
@@ -253,6 +262,10 @@ export const VInput = defineComponent({
           'data-readonly': String(props.readonly),
           'data-size': props.size,
           'data-type': props.type,
+          'onFocusin': () => {
+            focused.value = true
+          },
+          'onFocusout': handleRootFocusout,
         },
         [
           labelVisible.value
@@ -290,11 +303,9 @@ export const VInput = defineComponent({
               'style': { textAlign: props.align },
               'type': props.type,
               'onBlur': (event: FocusEvent) => {
-                focused.value = false
                 emit('blur', event)
               },
               'onFocus': (event: FocusEvent) => {
-                focused.value = true
                 emit('focus', event)
               },
               'onValueChange': updateCurrentValue,

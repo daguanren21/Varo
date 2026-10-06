@@ -42,9 +42,7 @@ function updateField(label: string, value: string) {
 function submit() {
   if (screen.value.primaryPath) {
     navigateRetail(screen.value.primaryPath)
-    return
   }
-  wx.showToast({ title: `${screen.value.primaryAction ?? '操作'}成功`, icon: 'success' })
 }
 </script>
 
@@ -59,6 +57,9 @@ function submit() {
       </text>
       <text class="mt-2 block max-w-[88%] text-xs leading-5 text-slate-300">
         {{ screen.description }}
+      </text>
+      <text class="mt-3 block text-xs leading-5 text-white">
+        静态界面演示：以下为示例内容，未接入真实支付、物流、售后或资料保存。
       </text>
     </view>
 
@@ -93,7 +94,7 @@ function submit() {
       </VCard>
     </view>
 
-    <view v-if="screen.primaryAction" class="fixed inset-x-0 bottom-0 z-20 bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3 shadow-[0_-8px_24px_rgba(15,23,42,.06)]">
+    <view v-if="screen.primaryAction && screen.primaryPath" class="fixed inset-x-0 bottom-0 z-20 bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3 shadow-[0_-8px_24px_rgba(15,23,42,.06)]">
       <VButton block size="lg" @click="submit">
         {{ screen.primaryAction }}
       </VButton>

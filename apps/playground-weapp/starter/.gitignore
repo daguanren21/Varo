@@ -1,0 +1,11 @@
+node_modules/
+dist/
+devtools/
+.weapp-vite/
+.env
+.env.*
+!.env.example
+project.local.json
+project.private.config.json
+*.log
+.DS_Store

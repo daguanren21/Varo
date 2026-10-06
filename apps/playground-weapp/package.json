@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
+    "build:preview": "WEAPP_ROBOT_CHAT=1 weapp-vite build --mode browser-preview --project-config project.browser.json",
     "clean": "rimraf dist devtools .weapp-vite",
     "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite",
     "capture:blocks": "node e2e/capture-blocks.mjs",
@@ -33,6 +34,7 @@
     "@varo/primitives-weapp": "workspace:*",
     "@vitejs/plugin-vue": "^6.0.8",
     "@weapp-vite/miniprogram-automator": "^1.2.17",
+    "pngjs": "7.0.0",
     "postcss-selector-parser": "7.1.6",
     "tailwindcss": "^4.3.3",
     "vite": "8.2.2",

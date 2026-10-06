@@ -7,14 +7,18 @@ import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     className?: ClassValue
     interactive?: boolean
     padding?: boolean
+    role?: string
     variant?: 'default' | 'outline' | 'elevated' | 'muted'
   }>(),
   {
+    ariaLabel: '',
     interactive: false,
     padding: true,
+    role: '',
     variant: 'default',
   },
 )
@@ -59,6 +63,8 @@ function pressCancel() {
 <template>
   <view
     :class="classes"
+    :aria-label="props.ariaLabel"
+    :role="props.role"
     :hover-class="hoverClass"
     :hover-start-time="20"
     :hover-stay-time="70"

@@ -8,14 +8,25 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "components/loading",
     "components/popup"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +35,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/action-sheet/action-sheet.ts",
-      "to": "src/components/ui/action-sheet.ts"
+      "from": "registry/components/action-sheet/v-action-sheet.vue",
+      "to": "src/components/ui/v-action-sheet.vue"
     }
   ],
   "docs": "/guide/shadcn-mode"

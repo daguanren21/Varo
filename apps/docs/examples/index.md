@@ -35,9 +35,9 @@ Registry 是默认采用路径；从[安装指南](/guide/installation)开始，
 
 ## Weapp DevTools Verified：已编译 Blocks {#weapp-devtools-evidence}
 
-下方图片由 `weapp-vite` 构建后的 Block 页面通过微信开发者工具自动化采集。证据快照日期为 **2026-08-28**；可检查[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[代表性原始图片](../blocks/login-form.png)。每张卡片也会直接链接自己的原始图片。
+小程序图库的 **13 个 Block** 于 **2026-10-05** 在 **375px 微信开发者工具模拟器**中重新采集，来自 `weapp-vite` 构建并实际运行的页面；展示图片裁去系统栏和模拟器边缘。可查看[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[示例截图](../blocks/login-form.png)；点击卡片下方链接可打开完整尺寸图片。
 
-H5 目标只切换安装命令与使用代码；当前仓库没有发布对应的 H5 图片时，卡片会继续明确标注图片为 **Weapp DevTools Verified**，不会暗示 H5 选择改变了截图。
+六个双端 Block 的 H5 浏览器截图更新于 **2026-10-05**；选择 H5 会同时切换图片、安装命令与使用代码。截图只覆盖采集时的版本，不同目标的截图不互相充当运行证据。
 
 <MiniProgramBlocksGallery locale="zh" />
 
@@ -45,7 +45,7 @@ H5 目标只切换安装命令与使用代码；当前仓库没有发布对应�
 
 - `H5 Live`：当前页面中的真实浏览器组件与交互
 - `Weapp Contract Preview`：浏览器渲染的目标契约，不是微信运行时
-- `Weapp DevTools Verified`：已编译小程序页面的开发者工具证据
+- `Weapp DevTools Verified`：已编译小程序页面的开发者工具证据，不等于物理设备或其他平台认证
 - `weapp-vite` 负责组件 JSON、复杂列表 key、类型声明与目标产物；`wevu` 是 `@varo-ui/weapp` 的运行时 peer
 - `weapp-tailwindcss` 在构建链中转译 class；原生 `hover-class` 表达小程序按压反馈
 

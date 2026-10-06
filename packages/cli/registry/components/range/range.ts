@@ -1,5 +1,5 @@
 import { createVariantClass } from '@varo-ui/headless'
-import { useVaroTheme } from '@varo-ui/theme'
+
 import { computed, defineComponent, h } from 'vue'
 import '../../styles/varo.css'
 
@@ -27,17 +27,13 @@ export const VRange = defineComponent({
   },
   emits: ['update:value', 'change'],
   setup(props, { attrs, emit }) {
-    const theme = useVaroTheme()
     const currentValue = computed(() => Math.min(props.max, Math.max(props.min, props.value)))
     const percent = computed(() => {
       const total = props.max - props.min
       return total <= 0 ? 0 : ((currentValue.value - props.min) / total) * 100
     })
     const classes = computed(() =>
-      createVariantClass('varo-range', {
-        radius: theme.value.components.button.borderRadius,
-        disabled: props.disabled,
-      }),
+      createVariantClass('varo-range', { disabled: props.disabled }),
     )
 
     function update(value: number) {

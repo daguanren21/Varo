@@ -24,6 +24,18 @@ export default await defineEslintConfig({
       },
     },
     {
+      name: 'varo/native-positional-markdown',
+      files: [
+        'registry/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
+        'apps/playground-weapp/src/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
+        'packages/cli/registry/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
+      ],
+      rules: {
+        // Native wx:key resolves item fields; these stateless AST/code rows intentionally use positions.
+        'vue/valid-v-for': 'off',
+      },
+    },
+    {
       name: 'varo/realworld-weapp-legacy-coercion',
       files: ['apps/realworld-weapp/**/*.{js,ts,vue}'],
       languageOptions: {

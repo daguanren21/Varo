@@ -8,9 +8,15 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "components/image"

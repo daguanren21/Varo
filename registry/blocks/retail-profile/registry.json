@@ -2,7 +2,7 @@
   "name": "retail-profile",
   "type": "block",
   "title": "Retail Profile",
-  "description": "Controlled retail profile block with membership, points, order status badges, addresses, coupons, settings, and after-sale actions.",
+  "description": "Controlled retail profile block with membership, points, order status counts, addresses, coupons, settings, and after-sale actions.",
   "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
@@ -10,9 +10,7 @@
   },
   "registryDependencies": [
     "components/avatar",
-    "components/badge",
     "components/button",
-    "components/card",
     "components/tag"
   ],
   "files": [

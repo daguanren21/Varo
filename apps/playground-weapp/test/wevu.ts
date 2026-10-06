@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
-import { onMounted, onUnmounted } from 'vue'
+import { onDeactivated, onMounted, onUnmounted } from 'vue'
 
 export * from 'vue'
 
@@ -19,6 +19,14 @@ function resolveBoolean(value: MaybeReactiveBoolean | undefined): boolean {
 
 export function onLoad(callback: (query: Record<string, string>) => void) {
   onMounted(() => callback({}))
+}
+
+export function onShow(callback: () => void) {
+  onMounted(callback)
+}
+
+export function onHide(callback: () => void) {
+  onDeactivated(callback)
 }
 
 export function onPageScroll(_callback: (event: { scrollTop: number }) => void) {}

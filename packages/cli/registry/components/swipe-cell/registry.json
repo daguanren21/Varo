@@ -8,12 +8,23 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -22,8 +33,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/swipe-cell/swipe-cell.ts",
-      "to": "src/components/ui/swipe-cell.ts"
+      "from": "registry/components/swipe-cell/v-swipe-cell.vue",
+      "to": "src/components/ui/v-swipe-cell.vue"
     }
   ],
   "docs": "/guide/shadcn-mode"

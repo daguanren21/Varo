@@ -29,6 +29,8 @@ function submit(value: string) {
 </template>
 ```
 
+`v-model:prompt` is optional. Without a binding, the Block owns its draft. With a binding, the parent accepts updates and decides when to clear it; an explicit `''` remains controlled. Submission emits trimmed text without clearing the draft. Busy or whitespace-only input does not submit.
+
 ## Props
 
 | Prop              | Type                            | Default                          | Description              |

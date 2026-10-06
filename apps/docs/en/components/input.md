@@ -29,6 +29,8 @@ const value = ref('')
 </template>
 ```
 
+On H5, the default `clear-trigger="focus"` keeps the clear action visible while focus is inside the input or its clear button. Use `Tab` to reach the button and `Enter` or Space to clear the value; focus then returns to the input. The button hides when focus leaves the entire control.
+
 ## Formatting
 
 ```vue

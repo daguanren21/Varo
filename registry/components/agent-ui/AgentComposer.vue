@@ -63,7 +63,7 @@ function update(event: Event) {
       @select="submit"
     />
 
-    <view class="agent-composer__shell box-border flex h-[60px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-[18px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-2 shadow-[0_8px_28px_rgba(15,23,42,.1)]">
+    <view class="agent-composer__shell box-border flex h-[62px] w-full min-w-0 items-center gap-2 overflow-hidden rounded-[18px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-2 shadow-[0_8px_28px_rgba(15,23,42,.1)]">
       <textarea
         class="box-border h-[42px] min-h-[42px] min-w-0 flex-1 overflow-hidden bg-transparent px-2 py-2 text-[13px] leading-[26px] text-[var(--varo-agent-foreground)]"
         :style="{ width: 'auto', height: '42px', minHeight: '42px' }"

@@ -1,5 +1,6 @@
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h, inject, provide, shallowRef, useId } from 'vue'
+import { VIcon } from './icon'
 import '../../styles/varo.css'
 
 export interface MenuOption {
@@ -152,10 +153,10 @@ export const VMenuItem = defineComponent({
                       'onClick': () => select(option),
                     },
                     [
-                      option.icon ? h('span', { 'aria-hidden': 'true', 'class': 'varo-menu__option-icon' }, option.icon) : null,
+                      option.icon ? h(VIcon, { class: 'varo-menu__option-icon', name: option.icon, size: 16 }) : null,
                       h('span', { class: 'varo-menu__option-text' }, option.text),
                       props.modelValue === option.value
-                        ? h('span', { 'class': 'varo-menu__check', 'aria-hidden': 'true' }, '✓')
+                        ? h(VIcon, { class: 'varo-menu__check', name: 'check', size: 16 })
                         : null,
                     ],
                   ),

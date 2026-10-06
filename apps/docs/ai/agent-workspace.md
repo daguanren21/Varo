@@ -29,6 +29,8 @@ function submit(value: string) {
 </template>
 ```
 
+`v-model:prompt` 是可选的。未绑定时，Block 保存本地草稿；绑定后由父级接受更新并决定何时清空，显式 `''` 仍然是受控值。提交只发送去除首尾空白的文本，不会自动清空草稿；忙碌或纯空白输入不会提交。
+
 ## Props
 
 | Prop              | 类型                            | 默认值                           | 说明           |

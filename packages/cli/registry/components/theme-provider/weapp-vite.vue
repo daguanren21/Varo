@@ -19,7 +19,7 @@ const themeStyle = computed(() => createWeappThemeStyle(props.theme, {
   </view>
 </template>
 
-<style scoped>
+<style>
 .varo-theme-provider {
   box-sizing: border-box;
   display: block;

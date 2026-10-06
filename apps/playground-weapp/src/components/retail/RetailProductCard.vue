@@ -17,10 +17,12 @@ const emit = defineEmits<{
 const tags = computed(() => (Array.isArray(props.product.tags) ? props.product.tags : []).slice(0, 2))
 const priceLabel = computed(() => formatRetailMoney(props.product.price))
 const linePriceLabel = computed(() => formatRetailMoney(props.product.linePrice))
+const unavailable = computed(() => props.product.stock === 0)
+const addLabel = computed(() => unavailable.value ? '暂时缺货' : '加入购物车')
 </script>
 
 <template>
-  <VCard :padding="false" interactive class-name="retail-product-card retail-section-enter overflow-hidden" @click="emit('select', product)">
+  <VCard :padding="false" :interactive="true" class-name="retail-product-card retail-section-enter overflow-hidden" @click="emit('select', product)">
     <view class="relative h-44 overflow-hidden bg-slate-100">
       <VImage :src="product.image" :alt="product.name" fit="cover" width="100%" height="176px" lazy-load />
       <view class="absolute left-2 top-2 flex flex-wrap gap-1">
@@ -52,10 +54,11 @@ const linePriceLabel = computed(() => formatRetailMoney(props.product.linePrice)
           size="sm"
           tone="danger"
           class-name="!min-h-9 !w-full !rounded-lg !px-3"
-          aria-label="加入购物车"
+          :aria-label="addLabel"
+          :disabled="unavailable"
           @click.stop="emit('add', props.product)"
         >
-          加入购物车
+          {{ addLabel }}
         </VButton>
       </view>
       <text class="text-[9px] text-slate-400">

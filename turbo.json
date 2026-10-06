@@ -6,8 +6,15 @@
       "outputs": ["dist/**"]
     },
     "@varo/playground-weapp#build": {
+      "cache": false,
       "dependsOn": ["^build"],
+      "env": ["WEAPP_ROBOT_CHAT"],
+      "passThroughEnv": ["WEAPP_APP_ID"],
       "outputs": ["devtools/build/mp-weixin/**"]
+    },
+    "@varo/playground-weapp#build:preview": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/browser/mp-weixin/**"]
     },
     "@varo/weapp-web#build": {
       "cache": false

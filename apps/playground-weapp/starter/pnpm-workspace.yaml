@@ -1,0 +1,15 @@
+packages:
+  - .
+
+autoInstallPeers: false
+minimumReleaseAge: 0
+
+overrides:
+  vue: 3.5.42
+  undici: 7.29.0
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  '@tailwindcss/oxide': true
+  esbuild: true

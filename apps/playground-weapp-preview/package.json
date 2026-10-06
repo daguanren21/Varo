@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prepare:artifacts": "pnpm exec turbo run build --filter=@varo/playground-weapp",
+    "prepare:artifacts": "pnpm exec turbo run build:preview --filter=@varo/playground-weapp",
     "dev": "pnpm run prepare:artifacts && vite",
-    "build": "vite build",
+    "build": "pnpm run prepare:artifacts && vite build",
     "preview": "vite preview",
     "smoke:browser": "node scripts/smoke-preview.mjs",
     "smoke:pull-refresh": "node scripts/smoke-pull-refresh.mjs",

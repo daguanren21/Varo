@@ -18,9 +18,12 @@ export interface AgentToolCall {
 }
 
 export interface AgentTask {
+  description?: string
   id: string
   meta?: string
   progress?: number
+  requiresApproval?: boolean
+  retryable?: boolean
   status: AgentRunStatus
   title: string
 }

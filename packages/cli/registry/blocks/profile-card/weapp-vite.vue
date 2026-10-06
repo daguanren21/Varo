@@ -41,7 +41,11 @@ const emit = defineEmits<{
 }>()
 
 const rootClass = computed(() =>
-  cn('w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className),
+  cn(
+    'box-border w-full bg-[var(--varo-ui-surface)] p-6 text-sm leading-6 text-[var(--varo-ui-text)]',
+    '[&_.varo-badge]:!max-w-full [&_.varo-badge]:!whitespace-normal [&_.varo-badge]:!break-words [&_.varo-badge]:!text-xs [&_.varo-badge]:!font-medium [&_.varo-badge]:!leading-5 [&_.varo-badge]:!text-[var(--varo-ui-text)]',
+    props.className,
+  ),
 )
 </script>
 
@@ -52,48 +56,61 @@ const rootClass = computed(() =>
         :src="user.avatar"
         :alt="user.name"
         :fallback="user.fallback || user.name.slice(0, 2)"
-        :size="64"
+        :size="56"
       />
       <view class="min-w-0 flex-1">
-        <view class="flex flex-wrap items-center gap-2">
-          <text class="truncate text-lg font-bold text-slate-950">
-            {{ user.name }}
-          </text>
-          <VBadge v-if="user.status" :tone="user.statusTone || 'primary'" variant="soft">
-            {{ user.status }}
-          </VBadge>
-        </view>
-        <text v-if="user.subtitle" class="mt-1 block text-sm leading-6 text-slate-500">
+        <text class="block break-words text-xl font-semibold leading-7">
+          {{ user.name }}
+        </text>
+        <text v-if="user.subtitle" class="mt-1 block break-words text-xs leading-5 text-[var(--varo-ui-text-regular)]">
           {{ user.subtitle }}
         </text>
+        <view v-if="user.status" class="mt-2 flex min-w-0">
+          <VBadge :tone="user.statusTone || 'primary'" variant="soft" class="min-w-0 max-w-full">
+            <text class="block min-w-0 break-words">
+              {{ user.status }}
+            </text>
+          </VBadge>
+        </view>
       </view>
-      <VButton v-if="editable" size="sm" variant="outline" @click="emit('edit')">
-        编辑
-      </VButton>
     </view>
 
-    <view v-if="stats.length" class="mt-5 grid grid-cols-3 divide-x divide-slate-200 border-t border-slate-100 pt-4">
-      <VButton
-        v-for="(stat, index) in stats"
-        :key="`${stat.label}-${index}`"
-        size="sm"
-        variant="ghost"
-        tone="default"
-        class-name="!grid !min-h-0 !gap-1 !rounded-none !bg-transparent !px-2 !text-center"
-        @click="emit('selectStat', { index, stat })"
-      >
-        <text class="text-base font-bold text-slate-950">
-          {{ stat.value }}
-        </text>
-        <text class="text-xs text-slate-500">
-          {{ stat.label }}
-        </text>
-      </VButton>
+    <view v-if="stats.length" class="mt-6 grid grid-cols-3 gap-2 border-t border-[var(--varo-ui-border-lighter)] pt-4">
+      <view v-for="(stat, index) in stats" :key="`${stat.label}-${index}`" class="min-w-0">
+        <VButton
+          block
+          variant="ghost"
+          tone="default"
+          class-name="!min-h-16 !min-w-0 !whitespace-normal !rounded-lg !px-2 !py-3 !font-normal"
+          @click="emit('selectStat', { index, stat })"
+        >
+          <text class="block w-full min-w-0 text-center">
+            <text class="block break-words text-lg font-semibold leading-6 tabular-nums text-[var(--varo-ui-text)]">
+              {{ stat.value }}
+            </text>
+            <text class="mt-1 block break-words text-xs leading-5 text-[var(--varo-ui-text-regular)]">
+              {{ stat.label }}
+            </text>
+          </text>
+        </VButton>
+      </view>
     </view>
 
-    <view v-if="$slots.default" class="mt-4 border-t border-slate-100 pt-4">
+    <view v-if="$slots.default" class="mt-6 border-t border-[var(--varo-ui-border-lighter)] pt-6 text-sm leading-6">
       <slot />
     </view>
+
+    <VButton
+      v-if="editable"
+      block
+      size="lg"
+      color="var(--varo-ui-text)"
+      foreground-color="var(--varo-ui-surface)"
+      class-name="!mt-6 !min-h-12 !rounded-lg !text-sm !shadow-none"
+      @click="emit('edit')"
+    >
+      编辑资料
+    </VButton>
   </view>
 </template>
 

@@ -1095,7 +1095,7 @@ export const AgentComposer = defineComponent({
       if (!normalized || props.busy) { return }
       emit('submit', normalized)
     }
-    return () => h('div', { class: 'agent-composer grid w-full min-w-0 gap-2.5' }, [
+    return () => h('div', { class: 'agent-composer grid w-full min-w-0 grid-cols-1 gap-2.5' }, [
       h(AgentPromptSuggestions, { suggestions: props.suggestions, onSelect: submit }),
       h('div', { class: 'agent-composer__shell flex min-h-14 min-w-0 items-center gap-2 rounded-[18px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-2 shadow-lg' }, [
         slots.leading?.(),
@@ -1122,7 +1122,7 @@ export const AgentComposer = defineComponent({
           'button',
           {
             'aria-label': props.busy ? 'Agent 正在处理' : '发送',
-            'class': 'grid h-10 w-10 flex-none place-items-center self-center rounded-full bg-[var(--varo-agent-primary)] text-lg font-bold text-[var(--varo-agent-primary-foreground)] shadow-sm transition-transform active:translate-y-px disabled:opacity-45',
+            'class': 'grid h-11 w-11 flex-none place-items-center self-center rounded-full bg-[var(--varo-agent-primary)] text-lg font-bold text-[var(--varo-agent-primary-foreground)] shadow-sm transition-transform active:translate-y-px disabled:opacity-45',
             'disabled': props.busy || !props.modelValue.trim(),
             'type': 'button',
             'onClick': () => submit(),
