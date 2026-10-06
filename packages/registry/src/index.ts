@@ -1,8 +1,83 @@
-export type RegistryTarget = 'h5' | 'weapp'
+export type RegistryRenderer = 'h5' | 'weapp'
+
+export const registryProfiles = Object.freeze({
+  'h5': Object.freeze({
+    id: 'h5',
+    renderer: 'h5',
+    compilerPlatform: null,
+    host: 'browser',
+    maturity: 'stable',
+  } as const),
+  'weapp': Object.freeze({
+    id: 'weapp',
+    renderer: 'weapp',
+    compilerPlatform: 'weapp',
+    host: 'miniprogram',
+    maturity: 'stable',
+  } as const),
+  'alipay': Object.freeze({
+    id: 'alipay',
+    renderer: 'weapp',
+    compilerPlatform: 'alipay',
+    host: 'miniprogram',
+    maturity: 'experimental',
+  } as const),
+  'tt': Object.freeze({
+    id: 'tt',
+    renderer: 'weapp',
+    compilerPlatform: 'tt',
+    host: 'miniprogram',
+    maturity: 'experimental',
+  } as const),
+  'xhs': Object.freeze({
+    id: 'xhs',
+    renderer: 'weapp',
+    compilerPlatform: 'xhs',
+    host: 'miniprogram',
+    maturity: 'experimental',
+  } as const),
+  'donut-android': Object.freeze({
+    id: 'donut-android',
+    renderer: 'weapp',
+    compilerPlatform: 'weapp',
+    host: 'donut',
+    os: 'android',
+    maturity: 'experimental',
+  } as const),
+  'donut-ios': Object.freeze({
+    id: 'donut-ios',
+    renderer: 'weapp',
+    compilerPlatform: 'weapp',
+    host: 'donut',
+    os: 'ios',
+    maturity: 'experimental',
+  } as const),
+  'donut-ohos': Object.freeze({
+    id: 'donut-ohos',
+    renderer: 'weapp',
+    compilerPlatform: 'weapp',
+    host: 'donut',
+    os: 'ohos',
+    maturity: 'experimental',
+  } as const),
+})
+
+export type RegistryTarget = keyof typeof registryProfiles
+
+export function isRegistryTarget(value: unknown): value is RegistryTarget {
+  return typeof value === 'string' && Object.hasOwn(registryProfiles, value)
+}
+
+export function getRegistryProfile<T extends RegistryTarget>(target: T): typeof registryProfiles[T] {
+  if (!isRegistryTarget(target)) {
+    throw new Error(`Unsupported registry target: ${formatValue(target)}`)
+  }
+  return registryProfiles[target]
+}
 export type RegistryItemType = 'component' | 'block' | 'hook' | 'util' | 'theme' | 'template'
 
 export interface RegistryFile {
-  target: RegistryTarget
+  target: RegistryRenderer
   from: string
   to: string
 }
@@ -15,11 +90,12 @@ export interface RegistryItem {
   exportName?: string
   files: RegistryFile[]
   name: string
+  platforms?: RegistryTarget[]
   registryDependencies: string[]
-  targetDependencies?: Partial<Record<RegistryTarget, string[]>>
-  targetDevDependencies?: Partial<Record<RegistryTarget, string[]>>
-  targetRegistryDependencies?: Partial<Record<RegistryTarget, string[]>>
-  targets: RegistryTarget[]
+  targetDependencies?: Partial<Record<RegistryRenderer, string[]>>
+  targetDevDependencies?: Partial<Record<RegistryRenderer, string[]>>
+  targetRegistryDependencies?: Partial<Record<RegistryRenderer, string[]>>
+  targets: RegistryRenderer[]
   title: string
   type: RegistryItemType
 }
@@ -58,6 +134,7 @@ export const componentCatalogV01 = [
   'date-picker',
   'dialog',
   'divider',
+  'drawer',
   'empty',
   'elevator',
   'fixed-nav',
@@ -68,13 +145,14 @@ export const componentCatalogV01 = [
   'indicator',
   'input',
   'input-number',
+  'input-otp',
   'layout',
   'list',
   'loading',
   'menu',
   'navbar',
-  'number-keyboard',
   'notice-bar',
+  'number-keyboard',
   'overlay',
   'pagination',
   'picker',
@@ -119,6 +197,7 @@ export const weappComponentCatalogV01 = [
   'date-field',
   'dialog',
   'divider',
+  'drawer',
   'empty',
   'form',
   'grid',
@@ -127,6 +206,7 @@ export const weappComponentCatalogV01 = [
   'indicator',
   'input',
   'input-number',
+  'input-otp',
   'layout',
   'list',
   'loading',
@@ -160,7 +240,7 @@ export const weappComponentCatalogV01 = [
   'watermark',
 ] as const
 
-const allowedTargets: readonly RegistryTarget[] = ['h5', 'weapp']
+const allowedRenderers: readonly RegistryRenderer[] = ['h5', 'weapp']
 const allowedTypes: readonly RegistryItemType[] = ['component', 'block', 'hook', 'util', 'theme', 'template']
 
 function isNonEmptyString(value: unknown): value is string {
@@ -268,10 +348,27 @@ export function validateRegistryItem(input: unknown): string[] {
     if (targets.length === 0) { errors.push('targets must not be empty') }
 
     targets.forEach((target) => {
-      if (!allowedTargets.includes(target as RegistryTarget)) {
+      if (!allowedRenderers.includes(target as RegistryRenderer)) {
         errors.push(`unsupported target: ${formatValue(target)}`)
       }
     })
+  }
+
+  const platforms = registryItem.platforms
+  if (platforms !== undefined) {
+    if (!Array.isArray(platforms)) {
+      errors.push('platforms must be an array')
+    }
+    else {
+      for (const platform of platforms) {
+        if (!isRegistryTarget(platform)) {
+          errors.push(`unsupported platform: ${formatValue(platform)}`)
+        }
+        else if (Array.isArray(targets) && !targets.includes(getRegistryProfile(platform).renderer)) {
+          errors.push(`platform renderer is not declared by item: ${platform}`)
+        }
+      }
+    }
   }
 
   validateDependencyArray(registryItem.dependencies, 'dependencies', errors, false)
@@ -292,7 +389,7 @@ export function validateRegistryItem(input: unknown): string[] {
         errors.push(`files[${index}] must be an object`)
       }
 
-      if (!allowedTargets.includes(registryFile.target as RegistryTarget)) {
+      if (!allowedRenderers.includes(registryFile.target as RegistryRenderer)) {
         errors.push(`unsupported file target: ${formatValue(registryFile.target)}`)
       }
       if (Array.isArray(targets) && !targets.includes(registryFile.target)) {
@@ -342,7 +439,7 @@ export function validateRegistryItem(input: unknown): string[] {
     }
 
     Object.entries(targetDependencies).forEach(([target, dependencies]) => {
-      if (!allowedTargets.includes(target as RegistryTarget)) {
+      if (!allowedRenderers.includes(target as RegistryRenderer)) {
         errors.push(`unsupported ${field} target: ${target}`)
       }
       if (!Array.isArray(dependencies) || dependencies.some(dependency => !isNonEmptyString(dependency))) {

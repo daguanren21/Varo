@@ -20,6 +20,11 @@
       "target": "h5",
       "from": "registry/components/range/range.ts",
       "to": "src/components/ui/range.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/range/style.css",
+      "to": "src/styles/varo-range.css"
     }
   ],
   "docs": "/components/range"

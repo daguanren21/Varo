@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "description": "Reusable Vue composables and form hooks for Varo component systems.",
+  "description": "Framework-neutral form state and validation contracts for Varo.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",
   "homepage": "https://daguanren21.github.io/Varo/",
@@ -39,13 +39,14 @@
     "dev": "tsdown --watch",
     "lint": "echo hooks lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo hooks has no e2e"
   },
   "dependencies": {
+    "@varo/shared": "workspace:*",
     "@varo/utils": "workspace:*"
   },
   "devDependencies": {
-    "zod": "^4.5.4"
+    "zod": "^4.6.5"
   }
 }

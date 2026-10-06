@@ -1,5 +1,8 @@
+// Generated from registry/components/elevator/elevator.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h, shallowRef } from 'vue'
+import './styles/varo.css'
+import './styles/varo-elevator.css'
 
 export interface ElevatorGroup {
   title: string

@@ -4,7 +4,7 @@ export default defineConfig({
   clean: true,
   dts: true,
   deps: {
-    alwaysBundle: [/^@varo\/(?:hooks|primitives-h5|primitives-weapp|registry|shared|utils)(?:\/|$)/],
+    alwaysBundle: [/^@varo\/(?:hooks|primitives-h5|registry|shared|utils)(?:\/|$)/],
   },
   entry: ['src/index.ts'],
   format: 'esm',

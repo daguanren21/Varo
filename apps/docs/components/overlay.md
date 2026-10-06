@@ -51,6 +51,8 @@ const visible = ref(false)
 
 ## Events
 
+下表 `MouseEvent` 仅适用于 H5；原生 SFC 传递宿主点击事件。`lockScroll` 的 DOM body 锁定属于 H5，原生页面滚动策略需由业务按宿主能力处理。
+
 | Event            | Payload      | 描述         |
 | ---------------- | ------------ | ------------ |
 | `update:visible` | `boolean`    | 受控同步事件 |

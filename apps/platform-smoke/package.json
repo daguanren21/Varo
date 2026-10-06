@@ -1,0 +1,46 @@
+{
+  "name": "@varo/platform-smoke",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs weapp",
+    "build:weapp": "node scripts/build.mjs weapp",
+    "build:alipay": "node scripts/build.mjs alipay",
+    "build:tt": "node scripts/build.mjs tt",
+    "build:xhs": "node scripts/build.mjs xhs",
+    "build:donut-android": "node scripts/build.mjs donut-android",
+    "build:donut-ios": "node scripts/build.mjs donut-ios",
+    "build:donut-ohos": "node scripts/build.mjs donut-ohos",
+    "verify": "node scripts/verify.mjs",
+    "verify:weapp": "node scripts/verify.mjs weapp",
+    "verify:alipay": "node scripts/verify.mjs alipay",
+    "verify:tt": "node scripts/verify.mjs tt",
+    "verify:xhs": "node scripts/verify.mjs xhs",
+    "verify:donut-android": "node scripts/verify.mjs donut-android",
+    "verify:donut-ios": "node scripts/verify.mjs donut-ios",
+    "verify:donut-ohos": "node scripts/verify.mjs donut-ohos",
+    "open:weapp": "node scripts/open.mjs weapp",
+    "open:alipay": "node scripts/open.mjs alipay",
+    "open:tt": "node scripts/open.mjs tt",
+    "open:xhs": "node scripts/open.mjs xhs",
+    "open:donut-android": "node scripts/open.mjs donut-android",
+    "open:donut-ios": "node scripts/open.mjs donut-ios",
+    "open:donut-ohos": "node scripts/open.mjs donut-ohos"
+  },
+  "dependencies": {
+    "@varo-ui/headless": "workspace:*",
+    "@varo-ui/theme": "workspace:*",
+    "@weapp-tailwindcss/merge": "^2.2.4",
+    "clsx": "^2.1.1",
+    "wevu": "7.4.0"
+  },
+  "devDependencies": {
+    "@varo/registry": "workspace:*",
+    "@weapp-core/shared": "3.2.7",
+    "tailwindcss": "^4.3.3",
+    "vite": "8.3.0",
+    "weapp-tailwindcss": "^5.5.6",
+    "weapp-vite": "7.4.0"
+  }
+}

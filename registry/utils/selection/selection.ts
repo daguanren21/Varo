@@ -88,10 +88,14 @@ export const VCheckbox = defineComponent({
       default: undefined,
     },
     disabled: Boolean,
+    indeterminate: Boolean,
+    invalid: Boolean,
     label: {
       type: String,
       default: undefined,
     },
+    readonly: Boolean,
+    required: Boolean,
     value: {
       type: [String, Number, Boolean] as PropType<CheckboxValue>,
       default: true,
@@ -102,42 +106,55 @@ export const VCheckbox = defineComponent({
     const group = inject(checkboxGroupKey, undefined)
     const isChecked = computed(() => group?.isChecked(props.value) ?? Boolean(props.checked))
     const isDisabled = computed(() => props.disabled || Boolean(group?.disabled()))
+    const isIndeterminate = computed(() => props.indeterminate)
+    const isReadonly = computed(() => props.readonly)
     const classes = computed(() =>
       createVariantClass('varo-checkbox', {
         checked: isChecked.value,
         disabled: isDisabled.value,
+        indeterminate: isIndeterminate.value,
+        invalid: props.invalid,
+        readonly: isReadonly.value,
       }),
     )
 
     function update(checked: boolean) {
+      if (isReadonly.value) {
+        return
+      }
+
       if (group) {
         group.toggle(props.value)
         return
       }
-
       emit('update:checked', checked)
       emit('change', checked)
     }
 
     return () =>
-      h(
-        CheckboxRoot,
-        {
-          ...attrs,
-          'class': [classes.value, attrs.class],
-          'checked': isChecked.value,
-          'disabled': isDisabled.value,
-          'onUpdate:checked': update,
-        },
-        {
-          default: () => [
-            h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, [
-              h(CheckboxIndicator, { as: 'span' }, () => h(VIcon, { name: 'check', size: 14 })),
-            ]),
-            h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
-          ],
-        },
-      )
+      h(CheckboxRoot, {
+        ...attrs,
+        'aria-invalid': props.invalid || undefined,
+        'aria-required': props.required || undefined,
+        'class': [classes.value, attrs.class],
+        'checked': isChecked.value,
+        'data-invalid': String(props.invalid),
+        'data-required': String(props.required),
+        'disabled': isDisabled.value,
+        'indeterminate': isIndeterminate.value,
+        'readonly': isReadonly.value,
+        'onUpdate:checked': update,
+      }, {
+        default: () => [
+          h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, [
+            h(CheckboxIndicator, { as: 'span' }, () => h(VIcon, {
+              name: isIndeterminate.value ? 'minus' : 'check',
+              size: 14,
+            })),
+          ]),
+          h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
+        ],
+      })
   },
 })
 

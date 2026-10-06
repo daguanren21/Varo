@@ -5,6 +5,13 @@ import { computed, provide, shallowRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { menuContextKey } from './menu-context'
 
+defineOptions({
+  properties: {
+    activeName: { type: null, value: null },
+    defaultActiveName: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     activeName?: MenuName
@@ -18,18 +25,18 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  close: [name?: MenuName]
-  open: [name: MenuName]
+  'close': [name?: MenuName]
+  'open': [name: MenuName]
   'update:activeName': [name: MenuName | undefined]
 }>()
 
-const localActive = shallowRef<MenuName | undefined>(props.defaultActiveName)
+const localActive = shallowRef<MenuName | undefined>(props.defaultActiveName ?? undefined)
 const current = computed(() => props.activeName ?? localActive.value)
 const classes = computed(() => cn('varo-menu', props.className))
 const activeNameData = computed(() => current.value === undefined ? undefined : String(current.value))
 
 function setActive(name: MenuName | undefined) {
-  if (props.activeName === undefined || name === undefined) {
+  if (props.activeName == null || name === undefined) {
     localActive.value = name
   }
   emit('update:activeName', name)

@@ -1,5 +1,8 @@
+// Generated from registry/components/signature/h5.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import './styles/varo.css'
+import './styles/varo-signature.css'
 
 export interface SignaturePoint {
   x: number

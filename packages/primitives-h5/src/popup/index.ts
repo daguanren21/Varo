@@ -1,7 +1,7 @@
 import type { PopupCloseIconPosition, PopupPosition } from '@varo-ui/headless'
 import type { PropType, StyleValue } from 'vue'
 import type { PopupDimension } from './types'
-import { useBodyScrollLock, usePopupRoot } from '@varo-ui/headless'
+import { usePopupRoot } from '@varo-ui/headless'
 import {
   computed,
   defineComponent,
@@ -12,6 +12,7 @@ import {
   toRef,
   watch,
 } from 'vue'
+import { useBodyScrollLock } from '../use-body-scroll-lock'
 import { usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 

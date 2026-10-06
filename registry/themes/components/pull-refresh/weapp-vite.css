@@ -1,0 +1,13 @@
+.varo-pull-refresh {
+  display: block;
+  width: 100%;
+}
+
+.varo-pull-refresh__native-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  font-size: 12px;
+  color: var(--varo-ui-text-muted);
+}

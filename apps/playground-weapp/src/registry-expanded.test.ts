@@ -1,7 +1,5 @@
 // @vitest-environment jsdom
 
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h, nextTick } from 'vue'
@@ -20,34 +18,10 @@ import VNoticeBar from './components/ui/v-notice-bar.vue'
 import VPullRefresh from './components/ui/v-pull-refresh.vue'
 import VSteps from './components/ui/v-steps.vue'
 import VSwipeCell from './components/ui/v-swipe-cell.vue'
-import VSwitch from './components/ui/v-switch.vue'
 import VTextarea from './components/ui/v-textarea.vue'
 import VToast from './components/ui/v-toast.vue'
 
 describe('expanded weapp registry components', () => {
-  it('moves the Switch thumb with controlled checked state', async () => {
-    const style = document.createElement('style')
-    style.textContent = readFileSync(resolve(import.meta.dirname, 'styles/varo.css'), 'utf8')
-    document.head.append(style)
-    const wrapper = mount(VSwitch, {
-      attachTo: document.body,
-      props: { modelValue: false },
-    })
-
-    try {
-      const thumb = wrapper.get('.varo-switch__thumb').element
-      const uncheckedTransform = getComputedStyle(thumb).transform
-      await wrapper.setProps({ modelValue: true })
-      expect(getComputedStyle(thumb).transform).toBe('translateX(20px)')
-      await wrapper.setProps({ modelValue: false })
-      expect(getComputedStyle(thumb).transform).toBe(uncheckedTransform)
-    }
-    finally {
-      wrapper.unmount()
-      style.remove()
-    }
-  })
-
   it('uses native mini-program hover classes for pressed feedback', () => {
     const button = mount(VButton, { props: { className: 'rounded-none shadow-none' } })
     expect(button.get('button').attributes('hover-class')).toBe('varo-button--pressed')

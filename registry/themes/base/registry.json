@@ -1,8 +1,9 @@
 {
   "name": "base",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "theme",
   "title": "Varo Base Theme",
-  "description": "Cross-platform component styles and design tokens for copied Varo components.",
+  "description": "Shared UI design tokens and animation foundation. Component styles are owned by their component manifests; Agent styles are optional.",
   "targets": ["h5", "weapp"],
   "dependencies": [],
   "registryDependencies": [],

@@ -1,10 +1,13 @@
-import type { PressableSize } from '@varo/primitives-h5'
+// Generated from registry/components/input/input.ts; edit the Registry source.
 import type { ComputedRef, InjectionKey, PropType, ShallowRef, StyleValue } from 'vue'
-
-import { InputRoot } from '@varo/primitives-h5'
-import { createVariantClass } from '@varo/shared'
+import type { PressableSize } from '@varo/primitives-h5'
+import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, getCurrentInstance, h, inject, onUpdated, ref, shallowRef, useId } from 'vue'
+import { InputRoot } from '@varo/primitives-h5'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-input.css'
 
 type InputAlign = 'left' | 'center' | 'right'
 type InputClearTrigger = 'focus' | 'always'
@@ -19,6 +22,9 @@ interface InputRootExpose {
 interface FormItemControlContext {
   controlId: ShallowRef<string>
   defaultControlId: string
+  disabled: ComputedRef<boolean>
+  descriptionId: string
+  descriptionVisible: ComputedRef<boolean>
   errorId: string
   errorVisible: ComputedRef<boolean>
   invalid: ComputedRef<boolean>
@@ -36,6 +42,7 @@ function mergeAriaTokens(...values: unknown[]) {
 
 export const VInput = defineComponent({
   name: 'VInput',
+  inheritAttrs: false,
   props: {
     disabled: Boolean,
     invalid: Boolean,
@@ -121,6 +128,7 @@ export const VInput = defineComponent({
     const ownLabelId = `${inputId}-label`
     const labelVisible = computed(() => Boolean(props.label || slots.label))
     const effectiveInvalid = computed(() => props.invalid || formItemControl?.invalid.value || false)
+    const effectiveDisabled = computed(() => props.disabled || formItemControl?.disabled.value || false)
     const controlId = computed(() => {
       const callerId = attrs.id
       return typeof callerId === 'string' && callerId.length > 0 ? callerId : ownControlId
@@ -152,7 +160,7 @@ export const VInput = defineComponent({
       return typeof props.labelWidth === 'number' ? `${props.labelWidth}px` : props.labelWidth
     })
     const classes = computed(() =>
-      createVariantClass('varo-input', { size: props.size, align: props.align, disabled: props.disabled, invalid: effectiveInvalid.value, readonly: props.readonly, clearable: props.clearable }),
+      createVariantClass('varo-input', { size: props.size, align: props.align, disabled: effectiveDisabled.value, invalid: effectiveInvalid.value, readonly: props.readonly, clearable: props.clearable }),
     )
     const normalizedMaxLength = computed(() => {
       if (props.maxLength == null || props.maxLength === '') {
@@ -166,7 +174,7 @@ export const VInput = defineComponent({
       () =>
         props.clearable
         && currentValue.value.length > 0
-        && !props.disabled
+        && !effectiveDisabled.value
         && !props.readonly
         && (props.clearTrigger === 'always' || focused.value),
     )
@@ -188,13 +196,12 @@ export const VInput = defineComponent({
     function clear(event: MouseEvent) {
       event.preventDefault()
 
-      if (props.disabled || props.readonly) {
+      if (effectiveDisabled.value || props.readonly) {
         return
       }
 
-      const cleared = inputRoot.value?.clear()
-      if (cleared !== false && !inputRoot.value) {
-        updateCurrentValue('')
+      if (!inputRoot.value?.clear()) {
+        return
       }
 
       emit('clear', event)
@@ -232,6 +239,7 @@ export const VInput = defineComponent({
       const controlledValueProps = valueControlled.value ? { value: props.value } : {}
       const describedBy = mergeAriaTokens(
         callerDescribedBy,
+        formItemControl?.descriptionVisible.value ? formItemControl.descriptionId : undefined,
         formItemControl?.errorVisible.value ? formItemControl.errorId : undefined,
         props.errorMessage ? ownErrorId : undefined,
       )
@@ -247,7 +255,7 @@ export const VInput = defineComponent({
           'style': style as StyleValue,
           'data-align': props.align,
           'data-clearable': String(props.clearable),
-          'data-disabled': String(props.disabled),
+          'data-disabled': String(effectiveDisabled.value),
           'data-focused': String(focused.value),
           'data-invalid': String(effectiveInvalid.value),
           'data-readonly': String(props.readonly),
@@ -279,7 +287,7 @@ export const VInput = defineComponent({
               'aria-labelledby': labelledBy,
               'defaultValue': props.defaultValue,
               'id': controlId.value,
-              'disabled': props.disabled,
+              'disabled': effectiveDisabled.value,
               'formatTrigger': props.formatTrigger,
               'formatter': props.formatter,
               'invalid': effectiveInvalid.value,

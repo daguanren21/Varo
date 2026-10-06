@@ -6,6 +6,14 @@ function normalizePagePath(path) {
   return path.replace(/^\/+/, '')
 }
 
+async function findByClass(page, className) {
+  // Page.$ cannot reach nodes inside custom-component scopes.
+  const [element] = await page.getElementsByXpath(
+    `//*[contains(concat(' ', normalize-space(@class), ' '), ' ${className} ')]`,
+  )
+  return element
+}
+
 async function main() {
   const playgroundRoot = resolve(import.meta.dirname, '..')
   const launcher = new Launcher()
@@ -19,36 +27,36 @@ async function main() {
     const page = await miniProgram.reLaunch(path)
     await page.waitFor(300)
     assert.equal(normalizePagePath(page.path), normalizePagePath(path))
-    assert.ok(await page.$('.varo-button'), `${path} must render a Varo button`)
-    assert.ok(await page.$('.varo-card'), `${path} must render a Varo card`)
+    assert.ok(await findByClass(page, 'varo-button'), `${path} must render a Varo button`)
+    assert.ok(await findByClass(page, 'varo-card'), `${path} must render a Varo card`)
     return page
   }
 
   try {
     const home = await inspectPage('/pages/retail-home/index')
-    assert.ok(await home.$('.varo-input'), 'Retail home must render the Varo search input')
+    assert.ok(await findByClass(home, 'varo-input'), 'Retail home must render the Varo search input')
 
     await inspectPage('/pages/retail-category/index')
     const cart = await inspectPage('/pages/retail-cart/index')
-    const quantityInput = await cart.$('.varo-input-number__input')
+    const quantityInput = await findByClass(cart, 'varo-input-number__input')
     assert.ok(quantityInput, 'Retail cart must render the quantity value input')
     assert.equal(await quantityInput.attr('value'), '1', 'Retail cart must display the current quantity')
-    const decrementButton = await cart.$('.varo-input-number__minus')
-    const incrementButton = await cart.$('.varo-input-number__plus')
+    const decrementButton = await findByClass(cart, 'varo-input-number__minus')
+    const incrementButton = await findByClass(cart, 'varo-input-number__plus')
     assert.ok(decrementButton, 'Retail cart must render the decrement button')
     assert.ok(incrementButton, 'Retail cart must render the increment button')
 
     await incrementButton.tap()
     await cart.waitFor(100)
-    const incrementedInput = await cart.$('.varo-input-number__input')
+    const incrementedInput = await findByClass(cart, 'varo-input-number__input')
     assert.ok(incrementedInput, 'Incremented quantity input must stay rendered')
     assert.equal(await incrementedInput.attr('value'), '2', 'Increment must update the cart quantity')
 
-    const enabledDecrementButton = await cart.$('.varo-input-number__minus')
+    const enabledDecrementButton = await findByClass(cart, 'varo-input-number__minus')
     assert.ok(enabledDecrementButton, 'Enabled decrement button must stay rendered')
     await enabledDecrementButton.tap()
     await cart.waitFor(100)
-    const decrementedInput = await cart.$('.varo-input-number__input')
+    const decrementedInput = await findByClass(cart, 'varo-input-number__input')
     assert.ok(decrementedInput, 'Decremented quantity input must stay rendered')
     assert.equal(await decrementedInput.attr('value'), '1', 'Decrement must update the cart quantity')
     await inspectPage('/retail-showcase/index/index')

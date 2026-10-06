@@ -1,11 +1,11 @@
-import type { Ref } from '../reactive'
+import type { Ref } from '@varo/shared'
 import type {
   AccordionRootOptions,
   AccordionType,
   AccordionValue,
   UseAccordionRootResult,
 } from './types'
-import { readMaybeRef, resolveReactiveRuntime } from '../reactive'
+import { readMaybeRef, resolveReactiveRuntime } from '@varo/shared'
 import { useControllableState } from '../use-controllable-state'
 
 function encodeId(value: string) {

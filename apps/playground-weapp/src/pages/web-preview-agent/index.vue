@@ -1,13 +1,53 @@
 <script setup lang="ts">
 import type { TextStreamSnapshot } from '@varo-ui/ai'
+import type { AgentDiffLine } from '../../components/agent-ui/file-diff'
+import type { AgentContextSource } from '../../components/agent-ui/workspace-types'
+import type { MenuName } from '../../components/ui/menu-context'
 import { createTextStream } from '@varo-ui/ai'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
+import AgentComposerScope from '../../components/agent-ui/AgentComposerScope.vue'
+import AgentFileDiff from '../../components/agent-ui/AgentFileDiff.vue'
 import AgentMarkdown from '../../components/agent-ui/AgentMarkdown.vue'
 import AgentStream from '../../components/agent-ui/AgentStream.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
+import VMenuItem from '../../components/ui/v-menu-item.vue'
+import VMenu from '../../components/ui/v-menu.vue'
 
 type StreamPhase = 'idle' | 'streaming' | 'stopped' | 'completed'
+
+const localSources = shallowRef<AgentContextSource[]>([
+  { id: 'local', label: '本地验证来源', enabled: true, status: 'available' },
+])
+const sourceToggleCount = shallowRef(0)
+const sourceTogglePayload = shallowRef('none')
+const sourceDiagnostic = computed(() =>
+  `enabled=${localSources.value[0]?.enabled};count=${sourceToggleCount.value};payload=${sourceTogglePayload.value}`,
+)
+function toggleLocalSource([source, enabled]: [AgentContextSource, boolean]) {
+  sourceToggleCount.value += 1
+  sourceTogglePayload.value = `${source.id}:${enabled}`
+  localSources.value = localSources.value.map(item => item.id === source.id ? { ...item, enabled } : item)
+}
+
+const diffLines: AgentDiffLine[] = [
+  { id: 'context', type: 'hunk', content: '@@ local context @@', collapsedLines: 3 },
+]
+const diffDiagnostic = shallowRef('none')
+function expandLocalDiff([line, index]: [AgentDiffLine, number]) {
+  diffDiagnostic.value = `${line.id}:${index}:${line.collapsedLines}`
+}
+
+const menuValue = shallowRef<MenuName>('source-a')
+const menuOptions = [
+  { text: '来源 A', value: 'source-a' },
+  { text: '来源 B', value: 'source-b' },
+]
+const menuPayload = shallowRef('none')
+const menuDiagnostic = computed(() => `value=${menuValue.value};payload=${menuPayload.value}`)
+function selectLocalMenu([value, option]: [MenuName, { text: string, value: MenuName }]) {
+  menuPayload.value = `${value}:${option.text}`
+}
 
 const markdownSample = [
   '# AgentMarkdown 静态样例',
@@ -270,6 +310,43 @@ onUnmounted(cleanup)
             从头重播
           </VButton>
         </view>
+      </view>
+    </VCard>
+
+    <VCard class-name="mt-3" variant="outline">
+      <template #title>
+        原生多值事件
+      </template>
+      <template #description>
+        Wevu 使用单个 tuple 载荷；这里运行实际 ComposerScope、FileDiff 和 Menu 组件，不调用外部服务。
+      </template>
+      <view class="grid gap-4">
+        <text data-preview-field="source-toggle-state" :data-preview-value="sourceDiagnostic">
+          {{ sourceDiagnostic }}
+        </text>
+        <AgentComposerScope
+          class="preview-source-scope block"
+          :sources="localSources"
+          title="来源事件验证"
+          @toggle="toggleLocalSource"
+        />
+        <AgentFileDiff
+          class="preview-file-diff"
+          filename="local-context.ts"
+          :lines="diffLines"
+          :show-actions="false"
+          :show-toolbar="false"
+          @expand="expandLocalDiff"
+        />
+        <text data-preview-field="diff-expand-state" :data-preview-value="diffDiagnostic">
+          {{ diffDiagnostic }}
+        </text>
+        <VMenu class="preview-menu">
+          <VMenuItem v-model="menuValue" name="source" title="选择来源" :options="menuOptions" @select="selectLocalMenu" />
+        </VMenu>
+        <text data-preview-field="menu-select-state" :data-preview-value="menuDiagnostic">
+          {{ menuDiagnostic }}
+        </text>
       </view>
     </VCard>
   </view>

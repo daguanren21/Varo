@@ -1,5 +1,4 @@
-import type { VSelectOption, VSelectValue } from '@varo/shared'
-import type { ReactiveRuntime, Ref } from '../reactive'
+import type { ReactiveRuntime, Ref, VSelectOption, VSelectValue } from '@varo/shared'
 
 export type SelectValue = VSelectValue | VSelectValue[] | undefined
 export type SelectOption = VSelectOption

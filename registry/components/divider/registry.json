@@ -37,6 +37,16 @@
       "target": "weapp",
       "from": "registry/components/divider/v-divider.vue",
       "to": "src/components/ui/v-divider.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/divider/style.css",
+      "to": "src/styles/varo-divider.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/divider/style.css",
+      "to": "src/styles/varo-divider.css"
     }
   ],
   "docs": "/components/divider"

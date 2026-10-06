@@ -28,6 +28,9 @@ interface PublicRef<T> {
 interface FormItemControlContext {
   controlId: PublicRef<string>
   defaultControlId: string
+  disabled: PublicRef<boolean>
+  descriptionId: string
+  descriptionVisible: PublicRef<boolean>
   errorId: string
   errorVisible: PublicRef<boolean>
   invalid: PublicRef<boolean>
@@ -35,11 +38,11 @@ interface FormItemControlContext {
   labelVisible: PublicRef<boolean>
 }
 
-// WeChat validates initial child bindings before Wevu applies setup defaults.
+// Keep absent values distinct from a controlled empty string at the native boundary.
 defineOptions({
   inheritAttrs: false,
   properties: {
-    value: { type: null, value: '' },
+    value: { type: null, value: null },
   },
 })
 
@@ -177,9 +180,9 @@ const slots = useSlots()
 const focused = shallowRef(false)
 const focusRequested = shallowRef(false)
 const value = computed(() => props.value ?? '')
-const valueControlled = computed(() => props.value !== undefined)
-const disabled = toRef(props, 'disabled')
+const valueControlled = computed(() => props.value != null)
 const formItemControl = inject<FormItemControlContext | null>(formItemControlContextKey, null)
+const disabled = computed(() => props.disabled || formItemControl?.disabled.value || false)
 const instance = getCurrentInstance()
 const inputId = `varo-input-${instance?.uid ?? 'control'}`
 const ownControlId = `${inputId}-control`
@@ -190,6 +193,7 @@ const invalid = computed(() => props.invalid || formItemControl?.invalid.value |
 const controlId = computed(() => props.inputId || ownControlId)
 const describedBy = computed(() => mergeAriaTokens(
   props.ariaDescribedby,
+  formItemControl?.descriptionVisible.value ? formItemControl.descriptionId : undefined,
   formItemControl?.errorVisible.value ? formItemControl.errorId : undefined,
   props.errorMessage ? ownErrorId : undefined,
 ))
@@ -214,6 +218,7 @@ const field = useFieldRoot({
   value,
   valueControlled,
   disabled,
+  readonly: toRef(props, 'readonly'),
   invalid,
   onValueChange(value) {
     emit('update:value', value)
@@ -303,7 +308,7 @@ const rootClass = computed(() =>
       radius: '12px',
       size: props.size,
       align: props.align,
-      disabled: props.disabled,
+      disabled: disabled.value,
       invalid: props.invalid,
       readonly: props.readonly,
       clearable: props.clearable,
@@ -371,7 +376,7 @@ function updateCurrentValue(value: string) {
 }
 
 function input(event: unknown) {
-  if (props.disabled || props.readonly) {
+  if (!field.state.interactive.value) {
     return currentValue.value
   }
 
@@ -394,7 +399,7 @@ function blur(event: unknown) {
   focused.value = false
   focusRequested.value = false
 
-  if (!props.disabled && !props.readonly && props.formatTrigger === 'onBlur') {
+  if (field.state.interactive.value && props.formatTrigger === 'onBlur') {
     updateCurrentValue(formatValue(eventValue(event, currentValue.value), 'onBlur'))
   }
 
@@ -402,11 +407,13 @@ function blur(event: unknown) {
 }
 
 function clear(event: unknown) {
-  if (props.disabled || props.readonly) {
+  if (!field.state.interactive.value) {
     return
   }
 
-  field.events.clear()
+  if (!field.events.clear()) {
+    return
+  }
   emit('clear', event)
   focusRequested.value = true
 }
@@ -518,7 +525,7 @@ function touchstart(event: unknown) {
         :data-disabled="dataDisabled"
         :data-invalid="dataInvalid"
         :data-readonly="dataReadonly"
-        :disabled="props.disabled"
+        :disabled="disabled"
         :focus="resolvedFocus"
         :maxlength="nativeMaxLength"
         :placeholder="props.placeholder"
@@ -578,7 +585,7 @@ function touchstart(event: unknown) {
         :data-disabled="dataDisabled"
         :data-invalid="dataInvalid"
         :data-readonly="dataReadonly"
-        :disabled="props.disabled"
+        :disabled="disabled"
         :focus="resolvedFocus"
         :maxlength="nativeMaxLength"
         :password="isPassword"

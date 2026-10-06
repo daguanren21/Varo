@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentContextSource } from '../../components/agent-ui/advanced-types'
+import type { AgentContextSource } from '../../components/agent-ui/workspace-types'
 import { computed, onUnmounted, shallowRef } from 'wevu'
 import AgentRagPipeline from '../../components/agent-ui/AgentRagPipeline.vue'
 import VButton from '../../components/ui/v-button.vue'

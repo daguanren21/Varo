@@ -1,6 +1,7 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '@varo/shared'
 import type { OverlayRootOptions, UseOverlayRootResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
+import { useControllableState } from '../use-controllable-state'
 
 export function useOverlayRoot(options: OverlayRootOptions = {}): UseOverlayRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,14 +10,14 @@ export function useOverlayRoot(options: OverlayRootOptions = {}): UseOverlayRoot
     runtime,
     defaultValue: options.defaultVisible ?? false,
     value: options.visible,
-    onUpdate: options.onVisibleChange
+    onUpdate: options.onVisibleChange,
   })
 
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
   const closeOnClickOverlay = runtime.computed(() => options.closeOnClickOverlay?.value ?? true) as Ref<boolean>
 
   function setVisible(visible: boolean) {
-    if (disabled.value) {
+    if (disabled.value || visible === visibleState.current.value) {
       return
     }
 
@@ -35,13 +36,13 @@ export function useOverlayRoot(options: OverlayRootOptions = {}): UseOverlayRoot
     state: {
       visible: visibleState.current,
       disabled,
-      closeOnClickOverlay
+      closeOnClickOverlay,
     },
     attrs: {
       root: {
         'aria-hidden': true,
-        'data-state': visibleState.current.value ? 'open' : 'closed'
-      }
+        'data-state': visibleState.current.value ? 'open' : 'closed',
+      },
     },
     events: {
       open: () => setVisible(true),
@@ -51,10 +52,10 @@ export function useOverlayRoot(options: OverlayRootOptions = {}): UseOverlayRoot
         if (closeOnClickOverlay.value) {
           close()
         }
-      }
+      },
     },
     api: {
-      setVisible
-    }
+      setVisible,
+    },
   }
 }

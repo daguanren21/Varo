@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { DemoKind, Locale, Platform } from './demo'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
-import { blockGalleryCaptureDate } from './block-gallery'
 import {
 
+  demoRuntime,
   getDemoCopy,
-  getDemoRuntime,
 
   resolveDemoContent,
 } from './demo'
+import NativeSourcePreview from './NativeSourcePreview.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -21,7 +21,6 @@ const props = withDefaults(
 )
 
 const platforms = ['h5', 'weapp'] as const
-const withDocsBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`
 const platformPreferenceKey = 'varo.docs.platform'
 
 const inputValue = ref(props.locale === 'en' ? 'Avery Lin' : '林默')
@@ -616,26 +615,20 @@ const inputSampleCopy = computed(() => props.locale === 'en'
 
 const copy = computed(() => getDemoCopy(props.locale))
 const demo = computed(() => resolveDemoContent(props.locale, props.example))
-const platformDemo = computed(() => demo.value.platforms[activePlatform.value])
-const runtime = computed(() => getDemoRuntime(activePlatform.value))
+const platformDemo = computed(() => demo.value.platforms.h5)
+const runtime = demoRuntime
 const currentIndicatorItem = computed(
   () => indicatorSampleCopy.value.items[indicatorCurrent.value] ?? indicatorSampleCopy.value.items[0]!,
 )
 const indicatorSlideStyle = computed(() => ({
   backgroundImage: `linear-gradient(135deg, rgb(5 8 10 / 92%), rgb(5 8 10 / 58%)), url("${currentIndicatorItem.value.image}")`,
 }))
-const activeCodeExample = computed(() => {
-  const platform = demo.value.platforms[activePlatform.value]
-  return {
-    code: platform.code,
-    packageName: platform.packageName,
-    title: activePlatform.value === 'h5' ? copy.value.h5CodeTitle : copy.value.weappCodeTitle,
-  }
-})
+const activeCodeExample = computed(() => ({
+  code: demo.value.platforms.h5.code,
+  packageName: demo.value.platforms.h5.packageName,
+  title: copy.value.h5CodeTitle,
+}))
 const hasControls = computed(() => props.example === 'overview')
-const weappEvidenceHref = computed(() =>
-  withDocsBase(`${props.locale === 'en' ? '/en' : ''}/examples/#weapp-devtools-evidence`),
-)
 const codeToggleLabel = computed(() =>
   codeExpanded.value ? copy.value.codeCollapse : copy.value.codeExpand,
 )
@@ -841,7 +834,7 @@ onBeforeUnmount(() => {
       :aria-labelledby="platformTabId(activePlatform)"
       :data-layout="hasControls ? 'controls-preview' : 'preview-only'"
     >
-      <section v-if="hasControls" class="platform-demo__panel platform-demo__panel--controls">
+      <section v-if="hasControls && activePlatform === 'h5'" class="platform-demo__panel platform-demo__panel--controls">
         <div class="platform-demo__controls">
           <div class="platform-demo__control-group">
             <span>{{ copy.invalidLabel }}</span>
@@ -857,17 +850,11 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <section class="platform-demo__panel platform-demo__panel--preview">
-        <div class="platform-demo__evidence" :data-level="activePlatform === 'h5' ? 'live' : 'contract-preview'">
-          <strong>{{ activePlatform === 'h5' ? 'H5 Live' : 'Weapp Preview' }}</strong>
-          <span>
-            {{ activePlatform === 'h5'
-              ? (locale === 'en' ? 'Interactive browser runtime' : '浏览器运行时实时交互')
-              : (locale === 'en' ? 'Browser contract' : '浏览器契约预览') }}
-          </span>
-          <a v-if="activePlatform === 'weapp'" :href="weappEvidenceHref">
-            DevTools · <time :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
-          </a>
+      <NativeSourcePreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" />
+      <section v-else class="platform-demo__panel platform-demo__panel--preview">
+        <div class="platform-demo__evidence" data-level="browser-runtime">
+          <strong>H5 Live</strong>
+          <span>{{ locale === 'en' ? 'Interactive browser runtime' : '浏览器运行时实时交互' }}</span>
         </div>
         <div class="platform-demo__phone-frame" :data-platform="activePlatform">
           <div class="platform-demo__phone-bezel">

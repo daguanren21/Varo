@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { CSSProperties } from 'vue'
 import type {
   AgentRagAnswerPart,
@@ -10,6 +11,8 @@ import { computed, onBeforeUnmount, shallowRef, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import { agentRagIcons } from './rag-icons'
 import { getRagSourceTone, resolveRagSteps } from './rag-pipeline'
+import '../../styles/varo.css'
+import '../../styles/varo-agent.css'
 
 const props = withDefaults(defineProps<AgentRagPipelineProps>(), {
   answer: () => [],
@@ -25,8 +28,6 @@ const emit = defineEmits<{
   run: []
   selectSource: [source: AgentRagSource]
 }>()
-
-type OverallStatus = 'waiting' | 'running' | 'completed' | 'failed'
 
 interface SourceEntry {
   number: number
@@ -67,7 +68,7 @@ const isCompleted = computed(() => resolvedSteps.value.every(step => step.status
 const hasFailed = computed(() => resolvedSteps.value.some(step => step.status === 'failed'))
 const hasProgress = computed(() => completedCount.value > 0)
 
-const overallStatus = computed<OverallStatus>(() => {
+const overallStatus = computed<AgentPartStatus>(() => {
   if (isRunning.value) { return 'running' }
   if (hasFailed.value) { return 'failed' }
   if (isCompleted.value) { return 'completed' }
@@ -86,7 +87,7 @@ const rootClass = computed(() =>
   ),
 )
 
-function stageStatusClass(status: OverallStatus) {
+function stageStatusClass(status: AgentPartStatus) {
   if (status === 'running') {
     return 'bg-[var(--varo-agent-primary-soft)] text-[var(--varo-agent-primary)]'
   }
@@ -1094,4 +1095,10 @@ onBeforeUnmount(clearAllPings)
     transform: none;
   }
 }
+</style>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-agent.css';
 </style>

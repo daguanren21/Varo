@@ -1,5 +1,7 @@
+import type { PropType } from 'vue'
+import { computed, defineComponent, h } from 'vue'
 import '../../styles/varo.css'
-import { computed, defineComponent, h, type PropType } from 'vue'
+import '../../styles/varo-badge.css'
 
 export type BadgeTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
 export type BadgeVariant = 'solid' | 'soft' | 'outline'
@@ -9,33 +11,33 @@ export const VBadge = defineComponent({
   props: {
     content: {
       type: [Number, String],
-      default: undefined
+      default: undefined,
     },
     dot: Boolean,
     max: {
       type: Number,
-      default: 99
+      default: 99,
     },
     showZero: Boolean,
     tone: {
       type: String as PropType<BadgeTone>,
-      default: 'danger'
+      default: 'danger',
     },
     variant: {
       type: String as PropType<BadgeVariant>,
-      default: 'solid'
-    }
+      default: 'solid',
+    },
   },
   setup(props, { attrs, slots }) {
     const displayContent = computed(() => {
-      if (props.dot) return ''
-      if (typeof props.content === 'number' && props.content > props.max) return `${props.max}+`
+      if (props.dot) { return '' }
+      if (typeof props.content === 'number' && props.content > props.max) { return `${props.max}+` }
       return props.content
     })
     const visible = computed(() =>
       props.dot || displayContent.value === undefined || displayContent.value === null
         ? props.dot || Boolean(slots.default)
-        : props.showZero || displayContent.value !== 0
+        : props.showZero || displayContent.value !== 0,
     )
 
     return () =>
@@ -44,14 +46,14 @@ export const VBadge = defineComponent({
             'span',
             {
               ...attrs,
-              class: ['varo-badge', attrs.class],
-              role: 'status',
+              'class': ['varo-badge', attrs.class],
+              'role': 'status',
               'data-dot': String(props.dot),
               'data-tone': props.tone,
-              'data-variant': props.variant
+              'data-variant': props.variant,
             },
-            slots.default?.() ?? displayContent.value
+            slots.default?.() ?? displayContent.value,
           )
         : null
-  }
+  },
 })

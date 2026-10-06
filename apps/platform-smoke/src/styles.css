@@ -1,0 +1,34 @@
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css";
+@source "./";
+
+page {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-bg);
+}
+
+.platform-smoke-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.platform-smoke-muted {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--varo-ui-text-muted);
+}
+
+.platform-smoke-status {
+  display: block;
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+.platform-smoke-snapshot {
+  line-height: 1.6;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}

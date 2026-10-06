@@ -5,16 +5,11 @@ import {
   usePressableRoot,
 } from '@varo-ui/headless'
 import { computed, defineComponent, h, toRef } from 'vue'
+import { callHandler } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useButtonRoot } from './hooks'
 export type * from './types'
-
-function callHandler(handler: unknown, event: Event) {
-  if (typeof handler === 'function') {
-    handler(event)
-  }
-}
 
 export const ButtonRoot = defineComponent({
   name: 'ButtonRoot',

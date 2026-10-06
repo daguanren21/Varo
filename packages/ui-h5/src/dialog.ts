@@ -1,3 +1,5 @@
+// Generated from registry/components/dialog/dialog.ts; edit the Registry source.
+import './styles/varo.css'
 export {
   DialogClose as VDialogClose,
   DialogContent as VDialogContent,

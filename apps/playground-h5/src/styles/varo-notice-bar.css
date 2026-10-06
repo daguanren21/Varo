@@ -1,0 +1,66 @@
+.varo-notice-bar {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: var(--varo-ui-warning-dark);
+  background: var(--varo-ui-warning-soft);
+}
+
+.varo-notice-bar[data-tone='info'] {
+  color: var(--varo-ui-info-dark);
+  background: var(--varo-ui-info-soft);
+}
+
+.varo-notice-bar[data-tone='success'] {
+  color: var(--varo-ui-success-dark);
+  background: var(--varo-ui-success-soft);
+}
+
+.varo-notice-bar[data-tone='danger'] {
+  color: var(--varo-ui-danger-dark);
+  background: var(--varo-ui-danger-soft);
+}
+
+.varo-notice-bar__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.varo-notice-bar__content {
+  line-height: 1.45;
+}
+
+.varo-notice-bar[data-wrapable='false'] .varo-notice-bar__content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.varo-notice-bar__content--scrolling {
+  display: inline-block;
+  padding-left: 100%;
+  animation: varo-notice-scroll 12s linear infinite;
+}
+
+@keyframes varo-notice-scroll {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.varo-notice-bar__close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}

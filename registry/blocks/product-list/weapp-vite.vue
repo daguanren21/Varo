@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'wevu'
-import VEmpty from '../ui/empty.vue'
-import { cn, type ClassValue } from '../../lib/cn'
-import ProductListItem from './product-list-item.vue'
+import type { ClassValue } from '../../lib/cn'
 import type { ProductListAction, ProductListItemData } from './product-list.types'
+import { computed } from 'wevu'
+import { cn } from '../../lib/cn'
+import VEmpty from '../ui/empty.vue'
+import ProductListItem from './product-list-item.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -21,8 +22,8 @@ const props = withDefaults(
     emptyText: '暂无商品',
     items: () => [],
     loadingId: '',
-    title: '推荐商品'
-  }
+    title: '推荐商品',
+  },
 )
 
 const emit = defineEmits<{
@@ -37,8 +38,12 @@ const rootClass = computed(() => cn('w-full grid gap-4', props.className))
   <view :class="rootClass" aria-labelledby="product-list-title">
     <view class="flex items-end justify-between gap-4">
       <view>
-        <text id="product-list-title" class="text-xl font-bold tracking-tight text-slate-950">{{ title }}</text>
-        <text v-if="description" class="mt-1 block text-sm text-slate-500">{{ description }}</text>
+        <text id="product-list-title" class="text-xl font-bold tracking-tight text-slate-950">
+          {{ title }}
+        </text>
+        <text v-if="description" class="mt-1 block text-sm text-slate-500">
+          {{ description }}
+        </text>
       </view>
       <slot name="action" />
     </view>

@@ -1,13 +1,5 @@
 <script setup lang="ts">
-export interface AgentArtifactItem {
-  content?: string
-  id: string
-  kind?: 'code' | 'document' | 'file' | 'image'
-  language?: string
-  previewUrl?: string
-  title: string
-  url?: string
-}
+import type { AgentArtifactItem } from './advanced-types'
 
 defineProps<{
   artifact: AgentArtifactItem

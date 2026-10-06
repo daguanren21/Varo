@@ -1,4 +1,4 @@
-import type { ReactiveRuntime, Ref } from '../reactive'
+import type { ReactiveRuntime, Ref } from '@varo/shared'
 
 export interface NumberFieldRootOptions {
   defaultValue?: number

@@ -1,0 +1,15 @@
+.varo-safe-area[data-top='true'] {
+  padding-top: env(safe-area-inset-top);
+}
+
+.varo-safe-area[data-right='true'] {
+  padding-right: env(safe-area-inset-right);
+}
+
+.varo-safe-area[data-bottom='true'] {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.varo-safe-area[data-left='true'] {
+  padding-left: env(safe-area-inset-left);
+}

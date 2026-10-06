@@ -1,23 +1,22 @@
 <script setup lang="ts">
 import type { AgentThreadVersion } from '@varo-ui/ai'
-import type { AgentConversationMessage, AgentTask } from '../agent-ui'
+import type { AgentConversationMessage, AgentTask } from '../agent-ui/types'
 import type {
   AgentContextSource,
   AgentRetrievalItem,
   AgentSourceReceiptItem,
   AgentWorkspacePlacement,
-} from '../agent-ui/advanced-types'
+} from '../agent-ui/workspace-types'
 import { computed } from 'vue'
+import { AgentComposer, AgentConversation } from '../agent-ui/conversation'
 import {
-  AgentComposer,
   AgentComposerScope,
-  AgentConversation,
   AgentRetrievalProgress,
   AgentShell,
   AgentSourceReceipt,
   AgentTaskRunner,
   AgentThreadVersions,
-} from '../agent-ui'
+} from '../agent-ui/workspace'
 
 const props = withDefaults(
   defineProps<{
@@ -147,3 +146,12 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
     </section>
   </AgentShell>
 </template>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-agent.css';
+@import '../agent-ui/agent-conversation.css';
+@import '../agent-ui/agent-markdown.css';
+@import '../agent-ui/agent-workspace.css';
+</style>

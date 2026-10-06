@@ -30,6 +30,16 @@
       "target": "weapp",
       "from": "registry/components/badge/weapp-vite.vue",
       "to": "src/components/ui/badge.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/badge/style.css",
+      "to": "src/styles/varo-badge.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/badge/style.css",
+      "to": "src/styles/varo-badge.css"
     }
   ],
   "docs": "/components/badge"

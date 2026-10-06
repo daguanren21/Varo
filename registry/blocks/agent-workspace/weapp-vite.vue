@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { AgentThreadVersion } from '@varo-ui/ai'
+import type { AgentConversationMessage, AgentTask } from '../agent-ui/types'
 import type {
   AgentContextSource,
   AgentRetrievalItem,
   AgentSourceReceiptItem,
   AgentWorkspacePlacement,
-} from '../agent-ui/advanced-types'
-import type { AgentTask } from '../agent-ui/types'
+} from '../agent-ui/workspace-types'
 import { computed } from 'wevu'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentComposerScope from '../agent-ui/AgentComposerScope.vue'
@@ -16,14 +16,6 @@ import AgentShell from '../agent-ui/AgentShell.vue'
 import AgentSourceReceipt from '../agent-ui/AgentSourceReceipt.vue'
 import AgentTaskRunner from '../agent-ui/AgentTaskRunner.vue'
 import AgentThreadVersions from '../agent-ui/AgentThreadVersions.vue'
-
-interface AgentConversationMessage {
-  content: string
-  id: string
-  label?: string
-  role: 'assistant' | 'system' | 'user'
-  timestamp?: string
-}
 
 const props = withDefaults(
   defineProps<{
@@ -71,7 +63,7 @@ const emit = defineEmits<{
   retryTask: [task: AgentTask]
   selectVersion: [version: AgentThreadVersion]
   submit: [prompt: string]
-  toggleSource: [source: AgentContextSource, enabled: boolean]
+  toggleSource: [payload: [source: AgentContextSource, enabled: boolean]]
 }>()
 
 const prompt = defineModel<string>('prompt', { default: '' })
@@ -80,8 +72,8 @@ const statusClass = computed(() => props.busy
   : 'bg-[var(--varo-agent-success)]')
 const statusLabel = computed(() => props.busy ? 'Agent 正在处理' : 'Agent 已就绪')
 
-function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
-  emit('toggleSource', source, enabled)
+function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
+  emit('toggleSource', payload)
 }
 </script>
 

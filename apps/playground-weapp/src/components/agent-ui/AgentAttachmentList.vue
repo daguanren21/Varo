@@ -1,13 +1,6 @@
 <script setup lang="ts">
+import type { AgentAttachmentItem } from './advanced-types'
 import { agentCloseIcon } from './agent-icons'
-
-export interface AgentAttachmentItem {
-  id: string
-  mimeType?: string
-  name: string
-  previewUrl?: string
-  size?: string
-}
 
 withDefaults(
   defineProps<{

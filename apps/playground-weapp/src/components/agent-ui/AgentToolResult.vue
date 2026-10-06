@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentAdvancedStatus } from './advanced-types'
 import { computed, shallowRef } from 'wevu'
 import { cn } from '../../lib/cn'
 
@@ -11,7 +11,7 @@ const props = withDefaults(
     duration?: string
     name: string
     output?: string
-    status?: AgentAdvancedStatus
+    status?: AgentPartStatus
     summary?: string
   }>(),
   {

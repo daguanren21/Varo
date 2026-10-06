@@ -151,6 +151,50 @@ describe('standard shadcn Registry inputs', () => {
     await expect(installRegistryItems(['published'], { registryRoot, projectRoot, target: 'h5', force: true })).rejects.toThrow(/target|h5/i)
   })
 
+  it('rejects an incompatible transitive standard profile before force-writing files', async () => {
+    const sourceRoot = temporaryRoot()
+    const projectRoot = temporaryRoot()
+    const registryRoot = join(sourceRoot, 'registry.json')
+    writeJson(registryRoot, {
+      name: 'profiles',
+      homepage: 'https://example.com',
+      items: [
+        {
+          name: 'entry',
+          type: 'registry:file',
+          meta: { varo: { target: 'donut-ios' } },
+          registryDependencies: ['shared'],
+          files: [{ path: 'entry.ts', type: 'registry:file', target: '~/src/entry.ts', content: 'replacement\n' }],
+        },
+        {
+          name: 'shared',
+          type: 'registry:file',
+          meta: { varo: { target: 'weapp' } },
+          files: [{ path: 'shared.ts', type: 'registry:file', target: '~/src/shared.ts', content: 'shared\n' }],
+        },
+      ],
+    })
+    mkdirSync(join(projectRoot, 'src'))
+    writeFileSync(join(projectRoot, 'src/entry.ts'), 'consumer customization\n')
+    await expect(installRegistryItems(['entry'], { registryRoot, projectRoot, force: true })).rejects.toThrow(/shared targets weapp, not donut-ios/)
+    expect(readFileSync(join(projectRoot, 'src/entry.ts'), 'utf8')).toBe('consumer customization\n')
+    expect(existsSync(join(projectRoot, 'src/shared.ts'))).toBe(false)
+  })
+
+  it('rejects unknown standard profile metadata rather than assuming H5 or Weapp', async () => {
+    const sourceRoot = temporaryRoot()
+    const projectRoot = temporaryRoot()
+    const registryRoot = join(sourceRoot, 'unknown.json')
+    writeJson(registryRoot, {
+      name: 'unknown',
+      type: 'registry:file',
+      meta: { varo: { target: 'constructor' } },
+      files: [{ path: 'value.ts', type: 'registry:file', target: '~/src/value.ts', content: 'unexpected\n' }],
+    })
+    await expect(installRegistryItems(['unknown'], { registryRoot, projectRoot })).rejects.toThrow(/meta.varo.target/)
+    expect(existsSync(join(projectRoot, 'src'))).toBe(false)
+  })
+
   it('reads HTTP catalogs and encodes literal source path delimiters', async () => {
     const projectRoot = temporaryRoot()
     const filePath = 'registry/new-york/HelloWorld/Hello #世界.vue'

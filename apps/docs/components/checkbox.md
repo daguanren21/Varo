@@ -10,12 +10,16 @@
 
 ## Props
 
-| Prop       | 类型                          | 默认值      | 描述             |
-| ---------- | ----------------------------- | ----------- | ---------------- |
-| `checked`  | `boolean`                     | `undefined` | 单个复选框选中态 |
-| `value`    | `string \| number \| boolean` | `true`      | 复选框值         |
-| `label`    | `string`                      | `undefined` | 文案             |
-| `disabled` | `boolean`                     | `false`     | 禁用             |
+| Prop            | 类型                          | 默认值      | 描述             |
+| --------------- | ----------------------------- | ----------- | ---------------- |
+| `checked`       | `boolean`                     | `undefined` | 单个复选框选中态 |
+| `value`         | `string \| number \| boolean` | `true`      | 复选框值         |
+| `label`         | `string`                      | `undefined` | 文案             |
+| `disabled`      | `boolean`                     | `false`     | 禁用             |
+| `indeterminate` | `boolean`                     | `false`     | 混合选中态       |
+| `invalid`       | `boolean`                     | `false`     | 错误状态         |
+| `readonly`      | `boolean`                     | `false`     | 只读但仍可聚焦   |
+| `required`      | `boolean`                     | `false`     | 必填语义         |
 
 ## CheckboxGroup Props
 

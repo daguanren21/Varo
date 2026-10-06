@@ -31,6 +31,11 @@
       "target": "weapp",
       "from": "registry/components/map/v-map.weapp-vite.vue",
       "to": "src/components/ui/v-map.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/map/style.css",
+      "to": "src/styles/varo-map.css"
     }
   ],
   "docs": "/components/map"

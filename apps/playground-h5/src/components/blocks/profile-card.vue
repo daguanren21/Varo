@@ -91,3 +91,12 @@ const rootClass = computed(() =>
     </div>
   </section>
 </template>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-image.css';
+@import '../../styles/varo-avatar.css';
+@import '../../styles/varo-badge.css';
+@import '../../styles/varo-button.css';
+</style>

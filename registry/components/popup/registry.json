@@ -40,6 +40,11 @@
       "target": "weapp",
       "from": "registry/components/popup/v-popup.vue",
       "to": "src/components/ui/v-popup.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/popup/weapp-vite.css",
+      "to": "src/styles/varo-popup.css"
     }
   ],
   "docs": "/components/popup"

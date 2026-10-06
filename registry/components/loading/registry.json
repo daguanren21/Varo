@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/loading/v-loading.vue",
       "to": "src/components/ui/v-loading.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/loading/style.css",
+      "to": "src/styles/varo-loading.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/loading/style.css",
+      "to": "src/styles/varo-loading.css"
     }
   ],
   "docs": "/guide/shadcn-mode"

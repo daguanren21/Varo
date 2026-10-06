@@ -1,0 +1,45 @@
+:where(.varo-signature button) {
+  font: inherit;
+}
+
+.varo-signature {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.varo-signature__canvas {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  touch-action: none;
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-signature__canvas:focus-visible {
+  outline: 2px solid var(--varo-ui-primary);
+  outline-offset: 2px;
+}
+
+.varo-signature[data-disabled='true'] {
+  opacity: 0.58;
+}
+
+.varo-signature__clear {
+  justify-self: end;
+  min-height: 36px;
+  padding: 0 12px;
+  font-weight: 700;
+  color: var(--varo-ui-danger);
+  cursor: pointer;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius-sm);
+}
+
+.varo-signature__clear:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

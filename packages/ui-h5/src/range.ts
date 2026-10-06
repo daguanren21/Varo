@@ -1,5 +1,8 @@
-import { createVariantClass } from '@varo/shared'
+// Generated from registry/components/range/range.ts; edit the Registry source.
+import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-range.css'
 
 export const VRange = defineComponent({
   name: 'VRange',

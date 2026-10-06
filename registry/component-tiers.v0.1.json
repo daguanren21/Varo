@@ -1,13 +1,13 @@
 {
   "version": "0.2",
   "runtimeCatalog": {
-    "h5": 61,
-    "weappVite": 60
+    "h5": 63,
+    "weappVite": 62
   },
   "registryCatalog": {
-    "h5": 62,
-    "weappVite": 53,
-    "weappSfc": 52,
+    "h5": 64,
+    "weappVite": 55,
+    "weappSfc": 54,
     "weappSfcBaseKit": 15
   },
   "registryExtensions": [
@@ -27,6 +27,7 @@
     "date-field",
     "dialog",
     "divider",
+    "drawer",
     "empty",
     "form",
     "grid",
@@ -35,6 +36,7 @@
     "indicator",
     "input",
     "input-number",
+    "input-otp",
     "layout",
     "list",
     "loading",

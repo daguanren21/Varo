@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import type { AgentStreamSnapshot } from '@varo-ui/ai'
 import type { AgentFineTuneControl } from './components/agent-ui/advanced-types'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
@@ -77,6 +78,39 @@ describe('advanced mini-program Agent UI', () => {
       },
     })
     expect(wrapper.get('.agent-stream').text()).toContain('正在处理退货')
+  })
+
+  it('preserves waiting and cancellation without presenting either as a generation failure', async () => {
+    const snapshot: AgentStreamSnapshot = {
+      data: [],
+      eventCount: 1,
+      message: { final: false, id: 'message', role: 'assistant', source: '```\n保留回答\n```', visible: '```\n保留回答\n```' },
+      reasoning: [],
+      status: 'waiting',
+      tools: [],
+    }
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('waiting')
+      expect(wrapper.find('.agent-stream__cursor').exists()).toBe(false)
+      expect(wrapper.find('.agent-loading').exists()).toBe(false)
+      expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'cancelled' } })
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('cancelled')
+      expect(wrapper.get('.agent-markdown scroll-view text').text()).toBe('保留回答')
+      expect(wrapper.get('.agent-markdown').attributes('data-final')).toBe('true')
+      expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+      expect(wrapper.find('.agent-stream__cursor').exists()).toBe(false)
+
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'failed', error: { type: 'error', message: '连接中断' } } })
+      expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')
+      await wrapper.get('[role="alert"] button').trigger('click')
+      expect(wrapper.emitted('retry')).toEqual([[]])
+    }
+    finally {
+      wrapper.unmount()
+    }
   })
 
   it('supports file diff layouts and tool approval decisions', async () => {

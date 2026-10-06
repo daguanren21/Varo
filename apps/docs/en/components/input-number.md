@@ -27,6 +27,8 @@ Use `step` for increments and `precision` for decimal formatting.
 
 ## Events
 
+`FocusEvent` below describes H5 only. Native SFCs use host events rather than browser DOM objects; follow the installed SFC contract.
+
 | Event          | Payload      | Description   |
 | -------------- | ------------ | ------------- |
 | `update:value` | `number`     | Value changed |

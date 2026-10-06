@@ -18,6 +18,11 @@
       "target": "h5",
       "from": "registry/components/short-password/short-password.ts",
       "to": "src/components/ui/short-password.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/short-password/style.css",
+      "to": "src/styles/varo-short-password.css"
     }
   ],
   "docs": "/components/short-password"

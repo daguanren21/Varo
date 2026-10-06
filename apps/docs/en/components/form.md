@@ -68,18 +68,41 @@ SSR applications should configure each isolated application process during boots
 
 ## Props
 
-| Prop               | Type                      | Default     | Description                                |
-| ------------------ | ------------------------- | ----------- | ------------------------------------------ |
-| `model`            | `Record<string, unknown>` | `undefined` | Form values                                |
-| `rules`            | `FormRules`               | `undefined` | Field rules; inherits the global preset    |
-| `validationSchema` | `StandardSchemaV1`        | `undefined` | Standard Schema validator such as Zod      |
-| `showError`        | `boolean`                 | `true`      | Show validation error                      |
-| `validateOnChange` | `boolean`                 | `undefined` | Validate on change; inherits global preset |
+| Prop               | Type                      | Default     | Description                                                      |
+| ------------------ | ------------------------- | ----------- | ---------------------------------------------------------------- |
+| `model`            | `Record<string, unknown>` | `undefined` | Form values                                                      |
+| `rules`            | `FormRules`               | `undefined` | Field rules; inherits the global preset                          |
+| `validationSchema` | `StandardSchemaV1`        | `undefined` | Standard Schema validator such as Zod                            |
+| `showError`        | `boolean`                 | `true`      | Show validation error                                            |
+| `validateOnChange` | `boolean`                 | `undefined` | Validate on change; inherits global preset                       |
+| `disabled`         | `boolean`                 | `false`     | Reject submission and propagate disabled state to field controls |
+
+## FormItem Props
+
+| Prop              | Type                             | Default     | Description                  |
+| ----------------- | -------------------------------- | ----------- | ---------------------------- |
+| `name`            | `string`                         | —           | Field name                   |
+| `label`           | `string`                         | `undefined` | Field label                  |
+| `description`     | `string`                         | `undefined` | Supporting field description |
+| `required`        | `boolean`                        | `false`     | Adds the required rule       |
+| `validateTrigger` | `'submit' \| 'change' \| 'blur'` | `'submit'`  | Validation trigger           |
 
 ## Events
 
-| Event    | Payload              | Description       |
-| -------- | -------------------- | ----------------- |
-| `submit` | `{ values, errors }` | Validation passed |
-| `failed` | `{ values, errors }` | Validation failed |
-| `reset`  | `{ values, errors }` | Form reset        |
+| Event    | Payload              | Description                              |
+| -------- | -------------------- | ---------------------------------------- |
+| `submit` | `SubmitPayload`      | Emitted once after successful validation |
+| `failed` | `SubmitPayload`      | Emitted once after failed validation     |
+| `reset`  | `{ values, errors }` | Form reset                               |
+
+`submit` / `failed` receive the named `SubmitPayload` exported by `@varo-ui/headless`. The component's `FormSubmitPayload` is an alias of that contract, not a raw DOM event or a type inferred through `ReturnType` of a concrete function:
+
+```ts
+import type { SubmitPayload } from '@varo-ui/headless'
+
+function onSubmit({ values, errors, event }: SubmitPayload) {
+  console.log(values, errors, event)
+}
+```
+
+The payload contains `values`, `errors`, and optional `event?: unknown`. H5 supplies the DOM form event; native consumers receive a host event, and programmatic calls may omit it. Do not assume a browser `SubmitEvent`. Validation selects exactly one success/failure branch; `disabled` rejects submission. `reset` retains the `{ values, errors }` shape shown above without a submit event.

@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-`useImageRoot` 来自 `@varo-ui/headless`；H5 使用 img，小程序使用原生 image。
+`useImageRoot` 来自 `@varo-ui/headless`。本页 `ImageRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`，使用 `img`；原生端使用 Wevu `VImage` SFC 与原生 `image`，原生标签页只展示源码/证据。
 
 ## 演示
 

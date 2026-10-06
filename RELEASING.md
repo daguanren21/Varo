@@ -4,7 +4,7 @@ Varo uses `repoctl` with pnpm native change intents and fixed package versioning
 
 ## Release policy
 
-- Seven user-facing `@varo/*` packages ship as one fixed version; internal implementation packages are bundled and remain private.
+- Six user-facing `@varo-ui/*` packages ship as one fixed version; internal implementation packages are bundled and remain private.
 - Stable releases are prepared from `main`.
 - The initial `1.0.0` publish is authenticated locally because npm trusted publishing cannot be configured before the package pages exist.
 - After that bootstrap publish, `.github/workflows/release.yml` publishes through GitHub Actions OIDC without `NPM_TOKEN`.
@@ -36,6 +36,10 @@ npm whoami
 pnpm install --frozen-lockfile
 pnpm exec repo doctor --strict
 pnpm exec repo check --full
+pnpm check:generated
+pnpm check:architecture
+pnpm check:consumers
+pnpm check:platforms
 ```
 
 ### 3. Record and apply the release intent
@@ -87,7 +91,6 @@ Private bundled implementation packages:
 
 - `@varo/hooks`
 - `@varo/primitives-h5`
-- `@varo/primitives-weapp`
 - `@varo/shared`
 - `@varo/utils`
 

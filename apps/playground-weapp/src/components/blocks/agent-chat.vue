@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentConversationMessage } from '../agent-ui/types'
 import { computed } from 'wevu'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
 import VButton from '../ui/v-button.vue'
-
-interface AgentConversationMessage {
-  content: string
-  id: string
-  label?: string
-  role: 'assistant' | 'system' | 'user'
-  timestamp?: string
-}
 
 const props = withDefaults(
   defineProps<{

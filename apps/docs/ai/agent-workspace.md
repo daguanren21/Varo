@@ -50,22 +50,24 @@ function submit(value: string) {
 
 ## Events
 
-| Event            | Payload                         | 说明         |
-| ---------------- | ------------------------------- | ------------ |
-| `submit`         | `string`                        | 提交输入     |
-| `update:prompt`  | `string`                        | 同步输入内容 |
-| `close`          | `void`                          | 关闭工作区   |
-| `toggleSource`   | `(AgentContextSource, boolean)` | 切换来源     |
-| `connectSource`  | `AgentContextSource`            | 连接来源     |
-| `retryRetrieval` | `AgentRetrievalItem`            | 重试检索     |
-| `retryTask`      | `AgentTask`                     | 重试任务     |
-| `approveTask`    | `AgentTask`                     | 批准任务     |
-| `cancelTask`     | `void`                          | 取消任务     |
-| `selectVersion`  | `AgentThreadVersion`            | 选择版本     |
-| `branchVersion`  | `AgentThreadVersion`            | 创建分支     |
-| `pinVersion`     | `AgentThreadVersion`            | 固定版本     |
-| `openReceipt`    | `AgentSourceReceiptItem`        | 打开回执     |
-| `connectReceipt` | `AgentSourceReceiptItem`        | 连接回执来源 |
+| Event            | Payload                                            | 说明         |
+| ---------------- | -------------------------------------------------- | ------------ |
+| `submit`         | `string`                                           | 提交输入     |
+| `update:prompt`  | `string`                                           | 同步输入内容 |
+| `close`          | `void`                                             | 关闭工作区   |
+| `toggleSource`   | H5: `(source, enabled)`；Wevu: `[source, enabled]` | 切换来源     |
+| `connectSource`  | `AgentContextSource`                               | 连接来源     |
+| `retryRetrieval` | `AgentRetrievalItem`                               | 重试检索     |
+| `retryTask`      | `AgentTask`                                        | 重试任务     |
+| `approveTask`    | `AgentTask`                                        | 批准任务     |
+| `cancelTask`     | `void`                                             | 取消任务     |
+| `selectVersion`  | `AgentThreadVersion`                               | 选择版本     |
+| `branchVersion`  | `AgentThreadVersion`                               | 创建分支     |
+| `pinVersion`     | `AgentThreadVersion`                               | 固定版本     |
+| `openReceipt`    | `AgentSourceReceiptItem`                           | 打开回执     |
+| `connectReceipt` | `AgentSourceReceiptItem`                           | 连接回执来源 |
+
+`source` 类型为 `AgentContextSource`，`enabled` 为 `boolean`。Wevu 使用 `function onToggleSource([source, enabled]: [AgentContextSource, boolean])` 接收单个 tuple；直接使用 `AgentComposerScope` 时，其 `toggle` 事件也采用此契约。H5 保持两个参数；是否执行连接操作仍由应用决定。
 
 ## Slots
 

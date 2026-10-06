@@ -1,4 +1,8 @@
-import { computed, defineComponent, h, type PropType } from 'vue'
+// Generated from registry/components/steps/steps.ts; edit the Registry source.
+import type { PropType } from 'vue'
+import { computed, defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-steps.css'
 
 export interface StepItem {
   description?: string
@@ -16,31 +20,31 @@ export const VSteps = defineComponent({
     clickable: Boolean,
     current: {
       type: Number,
-      default: 0
+      default: 0,
     },
     direction: {
       type: String as PropType<StepsDirection>,
-      default: 'horizontal'
+      default: 'horizontal',
     },
     items: {
       type: Array as PropType<Array<StepItem | string>>,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   emits: ['select', 'update:current'],
   setup(props, { attrs, emit, slots }) {
     const normalizedItems = computed<StepItem[]>(() =>
-      props.items.map((item) => (typeof item === 'string' ? { title: item } : item))
+      props.items.map(item => (typeof item === 'string' ? { title: item } : item)),
     )
 
     function statusFor(index: number): StepStatus {
-      if (index < props.current) return 'completed'
-      if (index === props.current) return 'current'
+      if (index < props.current) { return 'completed' }
+      if (index === props.current) { return 'current' }
       return 'pending'
     }
 
     function select(index: number, item: StepItem) {
-      if (!props.clickable || item.disabled) return
+      if (!props.clickable || item.disabled) { return }
       emit('update:current', index)
       emit('select', { index, item })
     }
@@ -50,42 +54,42 @@ export const VSteps = defineComponent({
         'ol',
         {
           ...attrs,
-          class: ['varo-steps', attrs.class],
-          'data-direction': props.direction
+          'class': ['varo-steps', attrs.class],
+          'data-direction': props.direction,
         },
         normalizedItems.value.map((item, index) =>
           h(
             'li',
             {
-              key: `${index}-${item.title}`,
-              class: 'varo-steps__item',
+              'key': `${index}-${item.title}`,
+              'class': 'varo-steps__item',
               'data-disabled': String(Boolean(item.disabled)),
-              'data-status': statusFor(index)
+              'data-status': statusFor(index),
             },
             [
               h(
                 'button',
                 {
-                  class: 'varo-steps__trigger',
-                  type: 'button',
-                  disabled: item.disabled || !props.clickable,
+                  'class': 'varo-steps__trigger',
+                  'type': 'button',
+                  'disabled': item.disabled || !props.clickable,
                   'aria-current': statusFor(index) === 'current' ? 'step' : undefined,
-                  onClick: () => select(index, item)
+                  'onClick': () => select(index, item),
                 },
                 [
-                  h('span', { class: 'varo-steps__marker', 'aria-hidden': 'true' }, item.icon ?? (index + 1)),
+                  h('span', { 'class': 'varo-steps__marker', 'aria-hidden': 'true' }, item.icon ?? (index + 1)),
                   h('span', { class: 'varo-steps__body' }, [
                     h('span', { class: 'varo-steps__title' }, slots.title?.({ index, item }) ?? item.title),
                     item.description
                       ? h('span', { class: 'varo-steps__description' }, item.description)
-                      : null
-                  ])
-                ]
+                      : null,
+                  ]),
+                ],
               ),
-              index < normalizedItems.value.length - 1 ? h('span', { class: 'varo-steps__line' }) : null
-            ]
-          )
-        )
+              index < normalizedItems.value.length - 1 ? h('span', { class: 'varo-steps__line' }) : null,
+            ],
+          ),
+        ),
       )
-  }
+  },
 })

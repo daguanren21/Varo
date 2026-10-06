@@ -91,3 +91,12 @@ function submit() {
     </form>
   </section>
 </template>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-button.css';
+@import '../../styles/varo-icon.css';
+@import '../../styles/varo-input.css';
+@import '../../styles/varo-switch.css';
+</style>

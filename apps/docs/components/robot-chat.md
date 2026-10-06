@@ -6,7 +6,7 @@
 
 <RobotChatDemo locale="zh" />
 
-文档站不能加载 chatbotwidget。演示画出欢迎语、operateCard、发送和 `queryCallback`。这是 Web Preview 的可见宿主，不是微信对话开放平台。
+这是本地浏览器交互示意，不是原生 SFC、编译产物预览或已连接的 chatbotwidget 插件。欢迎语、回复、连接状态与 `queryCallback` 计数均由示例本地生成，不表示真实服务连接、网络请求成功或微信对话开放平台回调。插件、权限和业务 AppID 必须在真实微信宿主中另行配置与验证，不能从此示意推断设备支持。
 
 ::: warning 小程序配置
 小程序需先开通插件，并在 `app.json` 中使用固定别名 `varoRobot`：

@@ -5,11 +5,11 @@ import { computed, inject } from 'wevu'
 import { cn } from '../../lib/cn'
 import { gridContextKey } from './grid-context'
 
-interface KeyboardLikeEvent {
-  detail?: { key?: string }
-  key?: string
-  preventDefault?: () => void
-}
+defineOptions({
+  properties: {
+    clickable: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -34,11 +34,17 @@ const emit = defineEmits<{
   click: [event: unknown]
 }>()
 
+interface KeyboardLikeEvent {
+  detail?: { key?: string }
+  key?: string
+  preventDefault?: () => void
+}
+
 const grid = inject<GridContext | undefined>(gridContextKey, undefined)
 const hasNavigation = computed(() => Boolean(props.url || props.to))
-const navigationTarget = computed(() => (props.url == null ? props.to : props.url))
+const navigationTarget = computed(() => (props.url ?? props.to))
 const clickable = computed(() => {
-  if (props.clickable !== undefined) { return props.clickable }
+  if (props.clickable != null) { return props.clickable }
   if (grid !== undefined) { return grid.clickable }
   return hasNavigation.value
 })
@@ -81,7 +87,9 @@ function handleKeydown(event: unknown) {
   >
     <view v-if="$slots.icon || props.icon || props.badge || props.dot" class="varo-grid__icon-wrap">
       <slot name="icon">
-        <text v-if="props.icon" class="varo-grid__icon">{{ props.icon }}</text>
+        <text v-if="props.icon" class="varo-grid__icon">
+          {{ props.icon }}
+        </text>
       </slot>
       <text v-if="props.badge != null" class="varo-grid__badge" :data-wide="badgeWide">
         {{ badgeText }}
@@ -89,7 +97,9 @@ function handleKeydown(event: unknown) {
       <text v-if="props.dot" class="varo-grid__dot" />
     </view>
     <slot name="text">
-      <text v-if="props.text" class="varo-grid__text">{{ props.text }}</text>
+      <text v-if="props.text" class="varo-grid__text">
+        {{ props.text }}
+      </text>
     </slot>
     <slot />
   </navigator>
@@ -109,7 +119,9 @@ function handleKeydown(event: unknown) {
   >
     <view v-if="$slots.icon || props.icon || props.badge || props.dot" class="varo-grid__icon-wrap">
       <slot name="icon">
-        <text v-if="props.icon" class="varo-grid__icon">{{ props.icon }}</text>
+        <text v-if="props.icon" class="varo-grid__icon">
+          {{ props.icon }}
+        </text>
       </slot>
       <text v-if="props.badge != null" class="varo-grid__badge" :data-wide="badgeWide">
         {{ badgeText }}
@@ -117,7 +129,9 @@ function handleKeydown(event: unknown) {
       <text v-if="props.dot" class="varo-grid__dot" />
     </view>
     <slot name="text">
-      <text v-if="props.text" class="varo-grid__text">{{ props.text }}</text>
+      <text v-if="props.text" class="varo-grid__text">
+        {{ props.text }}
+      </text>
     </slot>
     <slot />
   </view>

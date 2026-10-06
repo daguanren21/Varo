@@ -57,6 +57,16 @@
       "target": "weapp",
       "from": "registry/components/popover/popover-context.ts",
       "to": "src/components/ui/popover-context.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/popover/h5.css",
+      "to": "src/styles/varo-popover.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/popover/weapp-vite.css",
+      "to": "src/styles/varo-popover.css"
     }
   ],
   "docs": "/components/popover"

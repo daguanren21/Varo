@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentRetrievalItem, AgentRetrievalStatus } from './advanced-types'
+import type { AgentRetrievalItem, AgentRetrievalStatus } from './workspace-types'
 import { computed } from 'wevu'
 
 const props = withDefaults(

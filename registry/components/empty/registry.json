@@ -32,6 +32,16 @@
       "target": "weapp",
       "from": "registry/components/empty/weapp-vite.vue",
       "to": "src/components/ui/empty.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/empty/style.css",
+      "to": "src/styles/varo-empty.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/empty/style.css",
+      "to": "src/styles/varo-empty.css"
     }
   ],
   "docs": "/guide/shadcn-mode"

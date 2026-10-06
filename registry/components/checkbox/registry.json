@@ -1,8 +1,9 @@
 {
   "name": "checkbox",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "component",
   "title": "VCheckbox",
-  "description": "Single and grouped checkbox controls with disabled and selection-limit states.",
+  "description": "Single and grouped checkbox controls with indeterminate, invalid, readonly, disabled, and selection-limit states.",
   "exportName": "VCheckbox",
   "targets": [
     "h5",
@@ -48,6 +49,16 @@
       "target": "weapp",
       "from": "registry/components/checkbox/selection-context.ts",
       "to": "src/components/ui/selection-context.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/checkbox/h5.css",
+      "to": "src/styles/varo-checkbox.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/checkbox/weapp-vite.css",
+      "to": "src/styles/varo-checkbox.css"
     }
   ],
   "docs": "/components/checkbox"

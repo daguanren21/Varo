@@ -1,9 +1,15 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
     "rootDir": "../..",
+    "noEmit": false,
     "outDir": "dist"
   },
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "../primitives-h5/src/**/*.ts",
+    "../hooks/src/**/*.ts",
+    "../shared/src/**/*.ts",
+    "../utils/src/**/*.ts"
+  ]
 }

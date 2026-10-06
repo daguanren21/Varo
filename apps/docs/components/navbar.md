@@ -28,6 +28,8 @@
 
 ## Events
 
+下表 `MouseEvent` 仅适用于 H5；原生 SFC 传递宿主点击事件，不提供浏览器 DOM 事件对象。
+
 | Event        | Payload      | 描述         |
 | ------------ | ------------ | ------------ |
 | `clickLeft`  | `MouseEvent` | 点击左侧区域 |

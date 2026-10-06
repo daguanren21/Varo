@@ -1,8 +1,11 @@
+// Generated from registry/components/grid/grid.ts; edit the Registry source.
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import type { SizeValue } from './layout-utils'
-import { createVariantClass } from '@varo/shared'
+import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, h, inject, provide } from 'vue'
 import { normalizeSize } from './layout-utils'
+import './styles/varo.css'
+import './styles/varo-grid.css'
 
 export type GridDirection = 'vertical' | 'horizontal'
 

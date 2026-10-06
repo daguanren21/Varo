@@ -17,23 +17,23 @@
   },
   "dependencies": {
     "@varo-ui/theme": "workspace:^",
-    "@weapp-tailwindcss/merge": "^2.2.3",
+    "@weapp-tailwindcss/merge": "^2.2.4",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.23",
-    "es-toolkit": "^1.51.0",
+    "es-toolkit": "^1.52.0",
     "mitt": "^3.0.0",
-    "wevu": "^7.1.0"
+    "wevu": "7.4.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
     "miniprogram-api-typings": "^5.2.3",
-    "sass": "^1.92.1",
+    "sass": "^1.104.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
-    "vite": "8.2.2",
-    "vitest": "^4.1.11",
+    "vite": "8.3.0",
+    "vitest": "^5.0.1",
     "vue-tsc": "^3.3.11",
-    "weapp-tailwindcss": "^5.5.3",
-    "weapp-vite": "^7.1.0"
+    "weapp-tailwindcss": "^5.5.6",
+    "weapp-vite": "7.4.0"
   }
 }

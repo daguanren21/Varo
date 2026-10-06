@@ -1,0 +1,28 @@
+.varo-searchbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.varo-searchbar__body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.varo-searchbar .varo-input__prefix {
+  font-size: 18px;
+}
+
+.varo-searchbar__action.varo-searchbar__action {
+  box-sizing: border-box;
+  width: auto;
+  padding: 0;
+  margin: 0;
+  font-weight: 650;
+  color: var(--varo-ui-primary);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}

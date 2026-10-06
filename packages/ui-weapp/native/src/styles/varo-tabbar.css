@@ -1,0 +1,7 @@
+.varo-tabbar__item.varo-tabbar__item {
+  box-sizing: border-box;
+  width: auto;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+}

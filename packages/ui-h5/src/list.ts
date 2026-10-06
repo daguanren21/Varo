@@ -1,3 +1,4 @@
+// Generated from registry/components/list/h5.ts; edit the Registry source.
 import {
   computed,
   defineComponent,
@@ -5,9 +6,12 @@ import {
   onBeforeUnmount,
   onMounted,
   shallowRef,
-  watch
+  watch,
 } from 'vue'
 import { VLoading } from './loading'
+import './styles/varo.css'
+import './styles/varo-loading.css'
+import './styles/varo-list.css'
 
 export const VList = defineComponent({
   name: 'VList',
@@ -17,21 +21,21 @@ export const VList = defineComponent({
     finished: Boolean,
     finishedText: {
       type: String,
-      default: '没有更多了'
+      default: '没有更多了',
     },
     immediate: {
       type: Boolean,
-      default: true
+      default: true,
     },
     loading: Boolean,
     loadingText: {
       type: String,
-      default: '加载中'
+      default: '加载中',
     },
     lowerThreshold: {
       type: Number,
-      default: 80
-    }
+      default: 80,
+    },
   },
   emits: ['load', 'retry'],
   setup(props, { attrs, emit, slots }) {
@@ -42,7 +46,7 @@ export const VList = defineComponent({
     const canLoad = computed(() => !props.disabled && !props.finished && !props.loading && !props.errorText)
 
     function requestLoad() {
-      if (!canLoad.value || loadRequested.value) return
+      if (!canLoad.value || loadRequested.value) { return }
       loadRequested.value = true
       emit('load')
     }
@@ -54,30 +58,30 @@ export const VList = defineComponent({
 
     onMounted(() => {
       if (typeof IntersectionObserver === 'undefined') {
-        if (props.immediate) requestLoad()
+        if (props.immediate) { requestLoad() }
         return
       }
 
       observer = new IntersectionObserver(
         (entries) => {
-          intersecting.value = entries.some((entry) => entry.isIntersecting)
-          if (intersecting.value) requestLoad()
+          intersecting.value = entries.some(entry => entry.isIntersecting)
+          if (intersecting.value) { requestLoad() }
         },
-        { rootMargin: `0px 0px ${props.lowerThreshold}px 0px` }
+        { rootMargin: `0px 0px ${props.lowerThreshold}px 0px` },
       )
-      if (sentinel.value) observer.observe(sentinel.value)
-      if (props.immediate) requestLoad()
+      if (sentinel.value) { observer.observe(sentinel.value) }
+      if (props.immediate) { requestLoad() }
     })
 
     onBeforeUnmount(() => observer?.disconnect())
     watch(
       () => props.loading,
       (loading, previous) => {
-        if (previous && !loading) loadRequested.value = false
-      }
+        if (previous && !loading) { loadRequested.value = false }
+      },
     )
     watch(canLoad, (ready) => {
-      if (ready && intersecting.value) requestLoad()
+      if (ready && intersecting.value) { requestLoad() }
     })
 
     return () =>
@@ -85,27 +89,27 @@ export const VList = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-list', attrs.class],
+          'class': ['varo-list', attrs.class],
           'aria-busy': String(props.loading),
-          'data-finished': String(props.finished)
+          'data-finished': String(props.finished),
         },
         [
           slots.default?.(),
-          h('div', { ref: sentinel, class: 'varo-list__sentinel', 'aria-hidden': 'true' }),
-          h('footer', { class: 'varo-list__footer', 'aria-live': 'polite' }, [
+          h('div', { 'ref': sentinel, 'class': 'varo-list__sentinel', 'aria-hidden': 'true' }),
+          h('footer', { 'class': 'varo-list__footer', 'aria-live': 'polite' }, [
             props.loading
               ? slots.loading?.() ?? h(VLoading, { size: 'sm', text: props.loadingText })
               : props.errorText
                 ? h(
                     'button',
                     { class: 'varo-list__retry', type: 'button', onClick: retry },
-                    slots.error?.() ?? props.errorText
+                    slots.error?.() ?? props.errorText,
                   )
                 : props.finished
                   ? slots.finished?.() ?? props.finishedText
-                  : null
-          ])
-        ]
+                  : null,
+          ]),
+        ],
       )
-  }
+  },
 })

@@ -291,6 +291,8 @@ describe('theme', () => {
       '--varo-ui-focus': '#000000',
       '--varo-ui-shadow-sm': '0 1px 2px rgb(48 49 51 / 6%)',
       '--varo-ui-motion-feedback': '140ms',
+      '--varo-ui-motion-press': '90ms',
+      '--varo-ui-motion-indicator': '140ms',
       '--varo-ui-motion-state': '180ms',
       '--varo-ui-motion-enter': '220ms',
       '--varo-ui-motion-exit': '160ms',

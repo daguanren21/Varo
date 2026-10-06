@@ -1,4 +1,4 @@
-import type { ReactiveRuntime, Ref } from '../reactive'
+import type { ReactiveRuntime, Ref } from '@varo/shared'
 
 export interface SwitchRootOptions {
   runtime?: ReactiveRuntime
@@ -7,6 +7,7 @@ export interface SwitchRootOptions {
   defaultChecked?: boolean
   disabled?: Ref<boolean | undefined>
   loading?: Ref<boolean | undefined>
+  readonly?: Ref<boolean | undefined>
   onCheckedChange?: (checked: boolean) => void
 }
 
@@ -15,6 +16,7 @@ export interface SwitchRootState {
   disabled: Ref<boolean>
   interactive: Ref<boolean>
   loading: Ref<boolean>
+  readonly: Ref<boolean>
 }
 
 export interface SwitchRootAttrs {

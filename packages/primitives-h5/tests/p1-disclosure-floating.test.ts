@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import {
   AccordionContent,
@@ -17,11 +17,12 @@ import {
 
 describe('primitives-h5 p1 disclosure and floating parts', () => {
   it('composes collapsible root, trigger, and content', async () => {
+    const onClick = vi.fn()
     const wrapper = mount(CollapsibleRoot, {
       props: { defaultOpen: false },
       slots: {
         default: () => [
-          h(CollapsibleTrigger, null, { default: () => 'Toggle' }),
+          h(CollapsibleTrigger, { onClick }, { default: () => 'Toggle' }),
           h(CollapsibleContent, null, { default: () => 'Details' }),
         ],
       },
@@ -33,9 +34,12 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
 
     expect(wrapper.text()).toContain('Details')
     expect(wrapper.get('[aria-expanded="true"]').attributes('data-state')).toBe('open')
+    expect(onClick).toHaveBeenCalledOnce()
+    wrapper.unmount()
   })
 
   it('composes a collapsible single accordion', async () => {
+    const onClick = vi.fn()
     const Harness = defineComponent({
       setup() {
         return () =>
@@ -49,7 +53,7 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
               }),
               h(AccordionItem, { value: 'security' }, {
                 default: () => [
-                  h(AccordionTrigger, null, { default: () => 'Security' }),
+                  h(AccordionTrigger, { onClick }, { default: () => 'Security' }),
                   h(AccordionContent, null, { default: () => 'Security panel' }),
                 ],
               }),
@@ -67,23 +71,27 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
 
     expect(wrapper.findAll('[role="region"]')[0]!.attributes('aria-hidden')).toBe('true')
     expect(wrapper.findAll('[role="region"]')[1]!.attributes('aria-hidden')).toBeUndefined()
+    expect(onClick).toHaveBeenCalledOnce()
 
     await wrapper.findAll('[aria-expanded]')[1]!.trigger('click')
     expect(wrapper.findAll('[role="region"]')[1]!.attributes('aria-hidden')).toBe('true')
+    expect(onClick).toHaveBeenCalledTimes(2)
+    wrapper.unmount()
   })
 
   it('opens popover and closes it through close, escape, and outside interaction', async () => {
+    const clickEvents: string[] = []
     const Harness = defineComponent({
       setup() {
         return () =>
           h('div', [
             h(PopoverRoot, null, {
               default: () => [
-                h(PopoverTrigger, null, { default: () => 'Open' }),
+                h(PopoverTrigger, { onClick: () => clickEvents.push('trigger') }, { default: () => 'Open' }),
                 h(PopoverContent, null, {
                   default: () => [
                     h('span', 'Popover panel'),
-                    h(PopoverClose, null, { default: () => 'Close' }),
+                    h(PopoverClose, { onClick: () => clickEvents.push('close') }, { default: () => 'Close' }),
                   ],
                 }),
               ],
@@ -99,6 +107,7 @@ describe('primitives-h5 p1 disclosure and floating parts', () => {
 
     await wrapper.get('[data-part="close"]').trigger('click')
     expect(wrapper.text()).not.toContain('Popover panel')
+    expect(clickEvents).toEqual(['trigger', 'close'])
 
     await wrapper.get('[aria-haspopup="dialog"]').trigger('click')
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))

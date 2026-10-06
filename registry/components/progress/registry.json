@@ -10,8 +10,12 @@
   ],
   "dependencies": [],
   "targetDependencies": {
-    "h5": ["vue"],
-    "weapp": ["wevu"]
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
   },
   "registryDependencies": [
     "themes/base"
@@ -26,6 +30,16 @@
       "target": "weapp",
       "from": "registry/components/progress/weapp-vite.vue",
       "to": "src/components/ui/v-progress.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/progress/style.css",
+      "to": "src/styles/varo-progress.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/progress/style.css",
+      "to": "src/styles/varo-progress.css"
     }
   ],
   "docs": "/guide/shadcn-mode"

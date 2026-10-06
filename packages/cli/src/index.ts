@@ -7,13 +7,13 @@ import { existsSync, lstatSync, readFileSync, realpathSync } from 'node:fs'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { validateRegistryItem } from '@varo/registry/source'
+import { getRegistryProfile, isRegistryTarget, registryProfiles, validateRegistryItem } from '@varo/registry/source'
 import { mkdir, open, readFile, rename, rm, rmdir } from './file-system.ts'
 import { fetchRegistryFile, getRemoteRegistryRoot, registryUrl } from './remote-registry.ts'
 import { rewriteStandardFileImports } from './standard-files.ts'
 import { resolveStandardRegistryItems } from './standard-registry.ts'
 
-export type { RegistryFile, RegistryItem, RegistryTarget } from '@varo/registry/source'
+export type { RegistryFile, RegistryItem, RegistryRenderer, RegistryTarget } from '@varo/registry/source'
 
 export interface PlannedRegistryFile extends RegistryFile {
   item: string
@@ -170,6 +170,7 @@ function resolveProjectTarget(canonicalRoot: string, to: string): string {
 }
 
 export async function resolveRegistryItems(names: string[], options: ResolveRegistryOptions = {}): Promise<RegistryInstallPlan> {
+  const selectedProfile = options.target === undefined ? undefined : getRegistryProfile(options.target)
   if (options.registryRoot !== undefined) {
     const standardPlan = await resolveStandardRegistryItems(names, options)
     if (standardPlan !== undefined) {
@@ -179,7 +180,8 @@ export async function resolveRegistryItems(names: string[], options: ResolveRegi
 
   const registryRoot = options.registryRoot ?? defaultRegistryRoot
   const remoteRoot = getRemoteRegistryRoot(registryRoot)
-  const target = options.target ?? 'weapp'
+  const profile = selectedProfile ?? getRegistryProfile('weapp')
+  const { id: target, renderer } = profile
   const items: RegistryItem[] = []
   const seen = new Set<string>()
   const visiting = new Set<string>()
@@ -198,10 +200,10 @@ export async function resolveRegistryItems(names: string[], options: ResolveRegi
     dependencyStack.push(itemPathName)
     const item = await resolveRegistryItem(requestName, registryRoot, remoteRoot)
     try {
-      if (!item.targets.includes(target)) {
+      if (!item.targets.includes(renderer) || (target !== renderer && !item.platforms?.includes(target))) {
         throw new Error(`Registry item ${itemPathName} does not support target ${target}`)
       }
-      for (const dependency of [...item.registryDependencies, ...(item.targetRegistryDependencies?.[target] ?? [])]) {
+      for (const dependency of [...item.registryDependencies, ...(item.targetRegistryDependencies?.[renderer] ?? [])]) {
         await visit(dependency)
       }
     }
@@ -219,14 +221,14 @@ export async function resolveRegistryItems(names: string[], options: ResolveRegi
   }
 
   const dependencies = Array.from(
-    new Set(items.flatMap(item => [...(item.dependencies ?? []), ...(item.targetDependencies?.[target] ?? [])])),
+    new Set(items.flatMap(item => [...(item.dependencies ?? []), ...(item.targetDependencies?.[renderer] ?? [])])),
   ).sort()
   const devDependencies = Array.from(
-    new Set(items.flatMap(item => [...(item.devDependencies ?? []), ...(item.targetDevDependencies?.[target] ?? [])])),
+    new Set(items.flatMap(item => [...(item.devDependencies ?? []), ...(item.targetDevDependencies?.[renderer] ?? [])])),
   ).sort()
   const files = items.flatMap(item =>
     item.files
-      .filter(file => file.target === target)
+      .filter(file => file.target === renderer)
       .map(file => ({
         target: file.target,
         from: file.from,
@@ -473,6 +475,15 @@ export async function installRegistryItems(names: string[], options: InstallRegi
 
 async function runCli(argv: string[]) {
   const [command, ...args] = argv
+  const targets = Object.keys(registryProfiles).join('|')
+  const usage = `Usage: varo add [--registry directory|json|url] [--target ${targets}] [--force] <component|blocks/name> [...items]\n`
+    + `       varo export [--registry directory|json|url] [--target ${targets}] <component|blocks/name>\n`
+    + 'Native registries default to weapp; standard registries use meta.varo.target or h5.\n'
+    + 'Profiles other than h5 and weapp are experimental; explicit admission is required for every dependency.\n'
+  if (argv.includes('--help') || argv.includes('-h')) {
+    process.stdout.write(usage)
+    return
+  }
   let force = false
   let target: RegistryTarget | undefined
   let registryRoot: string | undefined
@@ -487,7 +498,7 @@ async function runCli(argv: string[]) {
 
     if (arg === '--target') {
       const value = args[index + 1]
-      if (value !== 'h5' && value !== 'weapp') {
+      if (!isRegistryTarget(value)) {
         throw new Error(`Unsupported registry target: ${value ?? '(missing)'}`)
       }
       target = value
@@ -497,7 +508,7 @@ async function runCli(argv: string[]) {
 
     if (arg.startsWith('--target=')) {
       const value = arg.slice('--target='.length)
-      if (value !== 'h5' && value !== 'weapp') {
+      if (!isRegistryTarget(value)) {
         throw new Error(`Unsupported registry target: ${value || '(missing)'}`)
       }
       target = value
@@ -521,10 +532,7 @@ async function runCli(argv: string[]) {
   }
 
   if ((command !== 'add' && command !== 'export') || items.length === 0) {
-    process.stderr.write(
-      'Usage: varo add [--registry directory|json|url] [--target h5|weapp] [--force] <component|blocks/name> [...items]\n'
-      + '       varo export [--registry directory|json|url] [--target h5|weapp] <component|blocks/name>\n',
-    )
+    process.stderr.write(usage)
     process.exitCode = 1
     return
   }
@@ -545,6 +553,9 @@ async function runCli(argv: string[]) {
     target,
   })
   const output = [`Installed ${plan.items.map(item => item.name).join(', ')} for ${plan.target}`]
+  if (getRegistryProfile(plan.target).maturity === 'experimental') {
+    output.push(`Experimental profile ${plan.target}: source admission does not certify native device or Donut host behavior.`)
+  }
 
   if (plan.dependencies.length > 0) {
     output.push(`Dependencies: ${plan.dependencies.join(' ')}`)

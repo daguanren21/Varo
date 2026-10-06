@@ -62,16 +62,18 @@ const lines: AgentDiffLine[] = [
 
 ## Events
 
-| Event                | Payload              | 说明                           |
-| -------------------- | -------------------- | ------------------------------ |
-| `accept`             | `void`               | 接受当前文件变更               |
-| `reject`             | `void`               | 拒绝当前文件变更               |
-| `select`             | `AgentDiffSelection` | 选择单栏行或并排侧的行         |
-| `expand`             | `(line, index)`      | 请求展开 `hunk` 中折叠的上下文 |
-| `update:open`        | `boolean`            | 展开状态变化                   |
-| `update:view`        | `AgentDiffView`      | 单栏/并排视图变化              |
-| `update:wrap`        | `boolean`            | 换行状态变化                   |
-| `update:lineNumbers` | `boolean`            | 行号状态变化                   |
+| Event                | Payload                                    | 说明                           |
+| -------------------- | ------------------------------------------ | ------------------------------ |
+| `accept`             | `void`                                     | 接受当前文件变更               |
+| `reject`             | `void`                                     | 拒绝当前文件变更               |
+| `select`             | `AgentDiffSelection`                       | 选择单栏行或并排侧的行         |
+| `expand`             | H5: `(line, index)`；Wevu: `[line, index]` | 请求展开 `hunk` 中折叠的上下文 |
+| `update:open`        | `boolean`                                  | 展开状态变化                   |
+| `update:view`        | `AgentDiffView`                            | 单栏/并排视图变化              |
+| `update:wrap`        | `boolean`                                  | 换行状态变化                   |
+| `update:lineNumbers` | `boolean`                                  | 行号状态变化                   |
+
+Wevu 监听器接收单个 tuple：`function onExpand([line, index]: [AgentDiffLine, number]) { /* 按需加载上下文 */ }`。H5 继续接收两个参数。省略受控的 `open`、`view`、`wrap`、`lineNumbers` 时，组件维护对应的本地状态。
 
 ## Slots
 

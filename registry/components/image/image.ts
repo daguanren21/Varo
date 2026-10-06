@@ -4,6 +4,7 @@ import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { ImageRoot } from '../../lib/varo-primitives'
 import '../../styles/varo.css'
+import '../../styles/varo-image.css'
 
 export const VImage = defineComponent({
   name: 'VImage',

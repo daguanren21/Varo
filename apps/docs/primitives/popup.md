@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-`usePopupRoot` 来自 `@varo-ui/headless`；H5 与小程序分别实现定位和安全区。
+`usePopupRoot` 来自 `@varo-ui/headless`。本页 `PopupRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`；原生端使用独立 Wevu `VPopup` SFC 实现定位和安全区，原生标签页只展示源码/证据。
 
 ## 演示
 

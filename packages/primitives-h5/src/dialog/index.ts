@@ -20,7 +20,7 @@ import {
   useId,
   watch,
 } from 'vue'
-import { usePropPresence } from '../vue-control'
+import { callHandler, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useDialogRoot } from './hooks'
@@ -52,12 +52,6 @@ const inertRecords = new WeakMap<HTMLElement, InertRecord>()
 const openDialogLayers: symbol[] = []
 const provideRuntimeDialogRootContext = createDialogRootProvider(provide)
 const useRuntimeDialogRootContext = createDialogRootConsumer(inject)
-
-function callHandler(handler: unknown, event: Event) {
-  if (typeof handler === 'function') {
-    handler(event)
-  }
-}
 
 function useDialogDomContext() {
   const context = inject(dialogDomContextKey)
@@ -174,7 +168,7 @@ export const DialogRoot = defineComponent({
       trigger: shallowRef<HTMLElement | null>(null),
     }
     let releaseBackground: (() => void) | undefined
-    let restoreTrigger = false
+    let restoreFocusTarget: HTMLElement | null = null
 
     function focusInside() {
       const content = dom.content.value
@@ -250,7 +244,8 @@ export const DialogRoot = defineComponent({
         return
       }
       if (shouldRestoreFocus) {
-        restoreTrigger = dom.trigger.value !== null
+        restoreFocusTarget = dom.trigger.value
+          ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null)
       }
       if (!openDialogLayers.includes(layer)) {
         openDialogLayers.push(layer)
@@ -277,9 +272,10 @@ export const DialogRoot = defineComponent({
       }
       releaseBackground?.()
       releaseBackground = undefined
-      if (shouldRestoreFocus && wasTopLayer && restoreTrigger) {
-        restoreTrigger = false
-        dom.trigger.value?.focus({ preventScroll: true })
+      const target = restoreFocusTarget
+      restoreFocusTarget = null
+      if (shouldRestoreFocus && wasTopLayer && target?.isConnected) {
+        target.focus({ preventScroll: true })
       }
     }
 
@@ -319,6 +315,7 @@ export const DialogRoot = defineComponent({
 
 export const DialogTrigger = defineComponent({
   name: 'DialogTrigger',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,
@@ -351,6 +348,7 @@ export const DialogTrigger = defineComponent({
 
 export const DialogOverlay = defineComponent({
   name: 'DialogOverlay',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,
@@ -424,6 +422,7 @@ export const DialogContent = defineComponent({
 
 export const DialogClose = defineComponent({
   name: 'DialogClose',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

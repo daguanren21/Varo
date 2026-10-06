@@ -12,6 +12,27 @@ import { cn } from '../../lib/cn'
 import { agentRagIcons } from './rag-icons'
 import { getRagSourceTone, resolveRagSteps } from './rag-pipeline'
 
+defineOptions({
+  properties: {
+    elapsedMs: { type: null, value: null },
+  },
+})
+
+const props = withDefaults(defineProps<AgentRagPipelineProps>(), {
+  answer: () => [],
+  query: '',
+  reducedMotion: false,
+  sources: () => [],
+  steps: () => [],
+  title: '检索增强生成',
+})
+
+const emit = defineEmits<{
+  cancel: []
+  run: []
+  selectSource: [source: AgentRagSource]
+}>()
+
 interface CitationPartView {
   ariaLabel: string
   canSelect: boolean
@@ -39,21 +60,6 @@ interface TextPartView {
 
 type AnswerPartView = CitationPartView | TextPartView
 type StyleValue = Record<string, string>
-
-const props = withDefaults(defineProps<AgentRagPipelineProps>(), {
-  answer: () => [],
-  query: '',
-  reducedMotion: false,
-  sources: () => [],
-  steps: () => [],
-  title: '检索增强生成',
-})
-
-const emit = defineEmits<{
-  cancel: []
-  run: []
-  selectSource: [source: AgentRagSource]
-}>()
 
 const VECTOR_CELLS = Array.from({ length: 24 }, (_, index) => index + 1)
 const PING_TIMEOUT_MS = 400
@@ -163,9 +169,9 @@ const rootClass = computed(() => cn(
   props.className,
 ))
 
-const showElapsed = computed(() => props.elapsedMs !== undefined)
+const showElapsed = computed(() => props.elapsedMs != null)
 const elapsedLabel = computed(() => {
-  if (props.elapsedMs === undefined) { return '' }
+  if (props.elapsedMs == null) { return '' }
   return `${Math.max(0, Math.round(props.elapsedMs))} ms`
 })
 const hasQuery = computed(() => props.query.length > 0)

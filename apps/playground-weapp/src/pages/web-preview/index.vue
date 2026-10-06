@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { DialogOpenChangeDetails } from '@varo-ui/headless'
 import { computed, onBeforeUnmount, shallowRef } from 'wevu'
 import VInputNumber from '../../components/ui/input-number.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
 import VDateField from '../../components/ui/v-date-field.vue'
+import VDrawer from '../../components/ui/v-drawer.vue'
 import VInput from '../../components/ui/v-input.vue'
 import VPullRefresh from '../../components/ui/v-pull-refresh.vue'
 import VRadio from '../../components/ui/v-radio.vue'
@@ -40,6 +42,28 @@ const inputUpdateEventCount = shallowRef(0)
 const inputFocusEventCount = shallowRef(0)
 const inputBlurEventCount = shallowRef(0)
 const lastInputEvent = shallowRef('等待输入、聚焦或失焦')
+
+const drawerOpen = shallowRef(false)
+const cancelDrawerClose = shallowRef(true)
+const drawerEvents = shallowRef('')
+const drawerDiagnostic = computed(() => `open=${drawerOpen.value};cancel=${cancelDrawerClose.value};events=${drawerEvents.value}`)
+
+function openPreviewDrawer() {
+  drawerEvents.value = ''
+  cancelDrawerClose.value = true
+  drawerOpen.value = true
+}
+function recordDrawerChange([open, details]: [boolean, DialogOpenChangeDetails]) {
+  drawerEvents.value += `request:${open}|`
+  if (!open && cancelDrawerClose.value) { details.cancel() }
+}
+function updateDrawerOpen(open: boolean) {
+  drawerEvents.value += `update:${open}|`
+  drawerOpen.value = open
+}
+function recordDrawerClose() {
+  drawerEvents.value += 'close|'
+}
 
 const dateValue = shallowRef('2026-01-31')
 const dateVisible = shallowRef(false)
@@ -381,6 +405,36 @@ onBeforeUnmount(() => {
         </view>
       </view>
     </VCard>
+
+    <VCard class-name="mb-3" variant="outline">
+      <template #title>
+        VDrawer 同步取消与关闭顺序
+      </template>
+      <template #description>
+        首次关闭被同步取消；允许关闭后只发出一次状态更新与 close。
+      </template>
+      <VButton @click="openPreviewDrawer">
+        打开取消验证抽屉
+      </VButton>
+      <text class="block break-all text-xs" data-preview-field="drawer-state" :data-preview-value="drawerDiagnostic">
+        {{ drawerDiagnostic }}
+      </text>
+    </VCard>
+    <VDrawer
+      :open="drawerOpen"
+      placement="bottom"
+      closeable
+      @open-change="recordDrawerChange"
+      @update:open="updateDrawerOpen"
+      @close="recordDrawerClose"
+    >
+      <view class="grid gap-3 p-4">
+        <text>先点击关闭按钮，抽屉应保持打开。</text>
+        <VButton @click="cancelDrawerClose = false">
+          允许关闭
+        </VButton>
+      </view>
+    </VDrawer>
 
     <VCard class-name="mb-3" variant="outline">
       <template #title>

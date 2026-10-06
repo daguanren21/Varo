@@ -1,2 +1,5 @@
 import '../../styles/varo.css'
-export { VCheckbox, VCheckboxGroup, type CheckboxValue, type SelectionDirection } from './selection'
+import '../../styles/varo-icon.css'
+import '../../styles/varo-checkbox.css'
+
+export { type CheckboxValue, type SelectionDirection, VCheckbox, VCheckboxGroup } from './selection'

@@ -1,0 +1,113 @@
+:where(.varo-menu button) {
+  font: inherit;
+}
+
+.varo-menu {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 44px;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-menu__item {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.varo-menu__title {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  font-weight: 750;
+  color: var(--varo-ui-text);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.varo-menu__title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.varo-menu__arrow {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentcolor;
+  border-bottom: 1.5px solid currentcolor;
+  opacity: 0.68;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.varo-menu__item[data-open='true'] .varo-menu__arrow {
+  transform: translateY(2px) rotate(225deg);
+}
+
+.varo-menu__popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: 0;
+  display: grid;
+  min-width: 180px;
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-menu__option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--varo-ui-text);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--varo-ui-border);
+}
+
+.varo-menu__option:first-child {
+  border-top: 0;
+}
+
+.varo-menu__option:not(:disabled):hover {
+  background: color-mix(in srgb, var(--varo-ui-primary) 7%, transparent);
+}
+
+.varo-menu__option:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.varo-menu__option[data-active='true'] {
+  font-weight: 750;
+  color: var(--varo-ui-primary);
+}
+
+.varo-menu__option-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.varo-menu__check {
+  font-weight: 800;
+  color: var(--varo-ui-primary);
+}

@@ -1,0 +1,63 @@
+.varo-badge {
+  --varo-badge-tone: var(--varo-ui-danger);
+  --varo-badge-soft: var(--varo-ui-danger-soft);
+  --varo-badge-foreground: var(--varo-ui-danger-foreground);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1;
+  color: var(--varo-badge-foreground);
+  white-space: nowrap;
+  background: var(--varo-badge-tone);
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+
+.varo-badge[data-dot='true'] {
+  width: 8px;
+  min-width: 8px;
+  height: 8px;
+  min-height: 8px;
+  padding: 0;
+}
+
+.varo-badge[data-tone='default'] {
+  --varo-badge-tone: var(--varo-ui-text-muted);
+  --varo-badge-foreground: var(--varo-ui-black);
+  --varo-badge-soft: var(--varo-ui-surface-muted);
+}
+
+.varo-badge[data-tone='primary'] {
+  --varo-badge-tone: var(--varo-ui-primary);
+  --varo-badge-foreground: var(--varo-ui-primary-foreground);
+  --varo-badge-soft: var(--varo-ui-primary-soft);
+}
+
+.varo-badge[data-tone='success'] {
+  --varo-badge-tone: var(--varo-ui-success);
+  --varo-badge-foreground: var(--varo-ui-success-foreground);
+  --varo-badge-soft: var(--varo-ui-success-soft);
+}
+
+.varo-badge[data-tone='warning'] {
+  --varo-badge-tone: var(--varo-ui-warning);
+  --varo-badge-foreground: var(--varo-ui-warning-foreground);
+  --varo-badge-soft: var(--varo-ui-warning-soft);
+}
+
+.varo-badge[data-variant='soft'] {
+  color: var(--varo-badge-tone);
+  background: var(--varo-badge-soft);
+}
+
+.varo-badge[data-variant='outline'] {
+  color: var(--varo-badge-tone);
+  background: transparent;
+  border-color: currentcolor;
+}

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
+import type { AgentCodeBlockStatus } from './advanced-types'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 
@@ -11,7 +12,7 @@ const props = withDefaults(
     focusedLines?: number[]
     language?: string
     lineNumbers?: boolean
-    status?: 'complete' | 'streaming'
+    status?: AgentCodeBlockStatus
   }>(),
   {
     code: '',

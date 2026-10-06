@@ -1,12 +1,15 @@
-import type { PopupCloseIconPosition, PopupDimension, PopupPosition } from '@varo/primitives-h5'
+// Generated from registry/components/popup/popup.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
+import type { PopupCloseIconPosition, PopupDimension, PopupPosition } from '@varo/primitives-h5'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
 import {
 
   PopupRoot,
 } from '@varo/primitives-h5'
-import { createVariantClass } from '@varo/shared'
-import { computed, defineComponent, h } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
 
 export const VPopup = defineComponent({
   name: 'VPopup',
@@ -87,7 +90,7 @@ export const VPopup = defineComponent({
           'round': props.round,
           'safeAreaInsetBottom': props.safeAreaInsetBottom,
           'style': attrs.style as StyleValue,
-          'visible': props.visible,
+          ...props.visible === undefined ? {} : { visible: props.visible },
           'zIndex': props.zIndex,
           'onClickOverlay': () => emit('clickOverlay'),
           'onClose': () => emit('close'),

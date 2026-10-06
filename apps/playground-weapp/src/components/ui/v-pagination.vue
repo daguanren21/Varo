@@ -37,7 +37,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  change: [page: number]
+  'change': [page: number]
   'update:modelValue': [page: number]
 }>()
 

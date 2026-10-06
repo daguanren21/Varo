@@ -6,7 +6,7 @@
 
 <RobotChatDemo locale="en" />
 
-The docs site cannot load chatbotwidget. This demo shows welcome text, the operate card, send, and `queryCallback`. It is the Web Preview host, not WeChat Dialog Open Platform.
+This is a local browser interaction illustration, not a native SFC, compiled-artifact preview, or connected chatbotwidget plugin. Welcome text, replies, connection state, and the `queryCallback` count are generated locally by the example; they do not indicate a real service connection, successful request, or WeChat Dialog Open Platform callback. Configure and verify the plugin, permissions, and product AppID in the real WeChat host. This illustration is not device support evidence.
 
 ::: warning Mini-program configuration
 Enable the plugin for the Mini Program, then declare it under the fixed `varoRobot` alias in `app.json`:

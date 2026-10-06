@@ -1,6 +1,7 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '@varo/shared'
 import type { FieldRootOptions, UseFieldRootResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
+import { useControllableState } from '../use-controllable-state'
 
 export function useFieldRoot(options: FieldRootOptions = {}): UseFieldRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,15 +10,16 @@ export function useFieldRoot(options: FieldRootOptions = {}): UseFieldRootResult
     runtime,
     defaultValue: options.defaultValue ?? '',
     value: options.value,
-    onUpdate: options.onValueChange
+    onUpdate: options.onValueChange,
   })
 
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
+  const readonly = runtime.computed(() => options.readonly?.value ?? false) as Ref<boolean>
   const invalid = runtime.computed(() => options.invalid?.value ?? false) as Ref<boolean>
-  const interactive = runtime.computed(() => !disabled.value) as Ref<boolean>
+  const interactive = runtime.computed(() => !disabled.value && !readonly.value) as Ref<boolean>
 
   function setValue(value: string) {
-    if (!interactive.value) {
+    if (!interactive.value || value === valueState.current.value) {
       return false
     }
 
@@ -26,31 +28,34 @@ export function useFieldRoot(options: FieldRootOptions = {}): UseFieldRootResult
   }
 
   function clear() {
-    setValue('')
+    return setValue('')
   }
 
   return {
     state: {
       value: valueState.current,
       disabled,
+      readonly,
       invalid,
-      interactive
+      interactive,
     },
     attrs: {
       input: {
-        disabled: disabled.value,
+        'disabled': disabled.value,
+        'readonly': readonly.value,
         'aria-invalid': invalid.value || undefined,
         'data-disabled': String(disabled.value),
-        'data-invalid': String(invalid.value)
-      }
+        'data-readonly': String(readonly.value),
+        'data-invalid': String(invalid.value),
+      },
     },
     events: {
       input: setValue,
-      clear
+      clear,
     },
     api: {
       setValue,
-      clear
-    }
+      clear,
+    },
   }
 }

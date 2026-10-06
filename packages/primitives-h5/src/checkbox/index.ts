@@ -18,6 +18,7 @@ function useCheckboxRootContext() {
 
 export const CheckboxRoot = defineComponent({
   name: 'CheckboxRoot',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,
@@ -29,6 +30,8 @@ export const CheckboxRoot = defineComponent({
     },
     defaultChecked: Boolean,
     disabled: Boolean,
+    indeterminate: Boolean,
+    readonly: Boolean,
   },
   emits: ['update:checked', 'checkedChange'],
   setup(props, { attrs, emit, slots }) {
@@ -37,6 +40,8 @@ export const CheckboxRoot = defineComponent({
       checkedControlled,
       runtime: vueReactiveRuntime,
       checked: toRef(props, 'checked'),
+      indeterminate: toRef(props, 'indeterminate'),
+      readonly: toRef(props, 'readonly'),
       defaultChecked: props.defaultChecked,
       disabled: toRef(props, 'disabled'),
       onCheckedChange(checked) {
@@ -53,7 +58,7 @@ export const CheckboxRoot = defineComponent({
         {
           ...attrs,
           ...checkbox.attrs.root,
-          disabled: props.as === 'button' ? !checkbox.state.interactive.value : undefined,
+          disabled: props.as === 'button' ? checkbox.state.disabled.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
             runInteractiveClick(event, {
@@ -80,7 +85,7 @@ export const CheckboxIndicator = defineComponent({
     const checkbox = useCheckboxRootContext()
 
     return () =>
-      checkbox.state.checked.value
+      checkbox.state.checked.value || checkbox.state.indeterminate.value
         ? h(props.as, { ...attrs, ...checkbox.attrs.indicator }, slots.default?.())
         : null
   },

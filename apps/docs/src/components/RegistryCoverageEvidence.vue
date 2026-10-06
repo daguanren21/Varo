@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import baseKit from '../../../../registry/base-kit.phase1.json'
-import componentTiers from '../../../../registry/component-tiers.v0.1.json'
+import catalog from '../registry-catalog.json'
 
 const { locale = 'zh' } = defineProps<{
   locale?: 'en' | 'zh'
@@ -8,31 +7,32 @@ const { locale = 'zh' } = defineProps<{
 
 const copy = locale === 'zh'
   ? {
-      baseKit: 'DevTools 验证的 Base Kit',
-      contract: `Registry contract v${componentTiers.version}`,
-      highConsensus: '个高共识 Weapp 组件族',
-      h5Registry: 'H5 Registry',
-      h5Runtime: 'H5 Runtime',
-      nativeSfc: 'Weapp Native SFC',
-      source: '以下数据直接读取 Registry contract，不在首页维护第二份计数。',
-      weappRegistry: 'Weapp Registry',
+      contract: 'Registry 源码覆盖',
+      h5Registry: 'H5 组件族',
+      weappRegistry: '原生组件族',
+      nativeSfc: '原生 SFC 文件',
+      profiles: '安装 profiles',
+      source: '根据实际 Registry 清单生成，不再手工维护组件计数。',
+      experimental: '实验性 profiles',
+      evidence: '源码准入、编译产物、浏览器预览与真机认证分别验证；以下覆盖数不代表真机通过。',
     }
   : {
-      baseKit: 'DevTools-verified Base Kit',
-      contract: `Registry contract v${componentTiers.version}`,
-      highConsensus: 'high-consensus Weapp component families',
-      h5Registry: 'H5 Registry',
-      h5Runtime: 'H5 Runtime',
-      nativeSfc: 'Weapp Native SFC',
-      source: 'These values render directly from the Registry contract; the homepage does not maintain a second count.',
-      weappRegistry: 'Weapp Registry',
+      contract: 'Registry source coverage',
+      h5Registry: 'H5 families',
+      weappRegistry: 'Native families',
+      nativeSfc: 'Native SFC files',
+      profiles: 'Install profiles',
+      source: 'Generated from authored Registry manifests, without hand-maintained counts.',
+      experimental: 'Experimental profiles',
+      evidence: 'Source admission, compilation, browser preview, and device certification are separate checks. These counts do not certify devices.',
     }
-
+const components = Object.values(catalog.components)
+const experimental = Object.values(catalog.profiles).filter(profile => profile.maturity === 'experimental')
 const metrics = [
-  { label: copy.h5Runtime, value: componentTiers.runtimeCatalog.h5 },
-  { label: copy.h5Registry, value: componentTiers.registryCatalog.h5 },
-  { label: copy.weappRegistry, value: componentTiers.registryCatalog.weappVite },
-  { label: copy.nativeSfc, value: componentTiers.registryCatalog.weappSfc },
+  { label: copy.h5Registry, value: components.filter(item => item.targets.includes('h5')).length },
+  { label: copy.weappRegistry, value: components.filter(item => item.targets.includes('weapp')).length },
+  { label: copy.nativeSfc, value: new Set(components.flatMap(item => item.nativeFiles.map(file => file.from))).size },
+  { label: copy.profiles, value: Object.keys(catalog.profiles).length },
 ]
 </script>
 
@@ -48,13 +48,10 @@ const metrics = [
         <span>{{ metric.label }}</span>
       </article>
     </div>
+    <p>{{ copy.evidence }}</p>
     <p>
-      <strong>{{ copy.baseKit }} · {{ baseKit.components.length }}</strong>
-      <code v-for="component in baseKit.components" :key="component">{{ component }}</code>
-    </p>
-    <p>
-      <strong>{{ componentTiers.weappHighConsensus.length }} {{ copy.highConsensus }}</strong>
-      <span>{{ componentTiers.registryExtensions.join(' · ') }}</span>
+      <strong>{{ copy.experimental }}</strong>
+      <code v-for="profile in experimental" :key="profile.id">{{ profile.id }}</code>
     </p>
   </div>
 </template>

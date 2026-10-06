@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { FormRules, FormValues, StandardSchemaV1, UseFormReturn } from '@varo-ui/headless'
+import type { FormRules, SubmitPayload as FormSubmitPayload, FormValues, StandardSchemaV1 } from '@varo-ui/headless'
 import { useForm } from '@varo-ui/headless'
 import { computed, provide, shallowRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { formContextKey } from './form-context'
 
 type FormLabelAlign = 'left' | 'center' | 'right'
-type FormSubmitPayload = Parameters<ReturnType<UseFormReturn['handleSubmit']>>[0]
 
 const props = withDefaults(
   defineProps<{
@@ -84,10 +83,12 @@ watch(
 
 provide(formContextKey, {
   form,
+  disabled: computed(() => props.disabled),
   showError: props.showError,
 })
 
 async function submit(event?: unknown) {
+  if (props.disabled) { return }
   return form.handleSubmit(
     payload => emit('submit', payload),
     payload => emit('failed', payload),

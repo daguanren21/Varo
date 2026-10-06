@@ -1,6 +1,10 @@
+// Generated from registry/components/menu/menu.ts; edit the Registry source.
 import type { InjectionKey, PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h, inject, provide, shallowRef, useId } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-menu.css'
 
 export interface MenuOption {
   text: string

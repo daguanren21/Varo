@@ -1,4 +1,7 @@
-export type AgentAdvancedStatus = 'waiting' | 'running' | 'completed' | 'failed'
+import type { AgentPartStatus } from '@varo-ui/ai'
+
+export type AgentCodeBlockStatus = 'complete' | 'streaming'
+export type AgentImageGenerationStatus = 'completed' | 'failed' | 'generating' | 'queued'
 
 export interface AgentCodeLine {
   content: string
@@ -19,7 +22,7 @@ export interface AgentActivityItem {
   duration?: string
   id: string
   kind: 'reasoning' | 'search' | 'tool' | 'trace'
-  status: AgentAdvancedStatus
+  status: AgentPartStatus
   title: string
 }
 
@@ -71,7 +74,7 @@ export interface AgentFlowNode {
   detail?: string
   id: string
   label: string
-  status?: AgentAdvancedStatus
+  status?: AgentPartStatus
   type: 'action' | 'condition' | 'result' | 'trigger'
 }
 
@@ -82,44 +85,35 @@ export interface AgentFineTuneControl {
   step?: number
   type: 'number' | 'select' | 'text'
   value: number | string
-  values?: Array<{ label: string; value: string }>
+  values?: Array<{ label: string, value: string }>
 }
 
-export interface AgentRadioChoice {
+export interface AgentArtifactItem {
+  content?: string
+  id: string
+  kind?: 'code' | 'document' | 'file' | 'image'
+  language?: string
+  previewUrl?: string
+  title: string
+  url?: string
+}
+export interface AgentAttachmentItem {
+  id: string
+  mimeType?: string
+  name: string
+  previewUrl?: string
+  size?: string
+}
+export interface AgentSourceItem {
   description?: string
-  disabled?: boolean
+  domain?: string
+  id: string
+  title: string
+  url: string
+}
+
+export interface AgentAlternative {
+  description?: string
   label: string
   value: string
 }
-
-export type AgentContextSourceStatus = 'available' | 'connecting' | 'unavailable'
-
-export interface AgentContextSource {
-  description?: string
-  enabled: boolean
-  id: string
-  label: string
-  meta?: string
-  status?: AgentContextSourceStatus
-}
-
-export type AgentRetrievalStatus = 'queued' | 'reading' | 'read' | 'skipped' | 'failed'
-
-export interface AgentRetrievalItem {
-  detail?: string
-  id: string
-  retryable?: boolean
-  sourceId?: string
-  status: AgentRetrievalStatus
-  title: string
-}
-
-export interface AgentSourceReceiptItem {
-  detail?: string
-  id: string
-  itemCount?: number
-  label: string
-  status: 'read' | 'skipped' | 'failed'
-}
-
-export type AgentWorkspacePlacement = 'page' | 'docked' | 'sheet'

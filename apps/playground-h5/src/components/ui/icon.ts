@@ -1,6 +1,7 @@
 import type { PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import '../../styles/varo.css'
+import '../../styles/varo-icon.css'
 
 export type IconTone = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'muted'
 

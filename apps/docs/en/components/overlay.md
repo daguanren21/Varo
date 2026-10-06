@@ -51,6 +51,8 @@ const visible = ref(false)
 
 ## Events
 
+`MouseEvent` below applies only to H5; native SFCs forward host click events. DOM body locking through `lockScroll` belongs to H5. Native page scrolling policy must use the host's capabilities in application code.
+
 | Event            | Payload      | Description           |
 | ---------------- | ------------ | --------------------- |
 | `update:visible` | `boolean`    | Controlled sync event |

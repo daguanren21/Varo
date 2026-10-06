@@ -1,7 +1,12 @@
-import { createVariantClass } from '@varo/shared'
+// Generated from registry/components/searchbar/searchbar.ts; edit the Registry source.
+import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { VIcon } from './icon'
 import { VInput } from './input'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-input.css'
+import './styles/varo-searchbar.css'
 
 export const VSearchbar = defineComponent({
   name: 'VSearchbar',

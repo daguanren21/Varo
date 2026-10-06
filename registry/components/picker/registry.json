@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/picker/v-picker.vue",
       "to": "src/components/ui/v-picker.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/picker/h5.css",
+      "to": "src/styles/varo-picker.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/picker/weapp-vite.css",
+      "to": "src/styles/varo-picker.css"
     }
   ],
   "docs": "/components/picker"

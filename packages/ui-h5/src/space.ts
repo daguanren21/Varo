@@ -1,6 +1,11 @@
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { normalizePairSize, type PairSizeValue } from './layout-utils'
+// Generated from registry/components/space/space.ts; edit the Registry source.
+import type { PropType, StyleValue } from 'vue'
+import type { PairSizeValue } from './layout-utils'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
+import { normalizePairSize } from './layout-utils'
+import './styles/varo.css'
+import './styles/varo-space.css'
 
 export type SpaceDirection = 'horizontal' | 'vertical'
 export type SpaceAlign = 'start' | 'end' | 'center' | 'baseline' | 'stretch'
@@ -11,22 +16,22 @@ export const VSpace = defineComponent({
   props: {
     direction: {
       type: String as PropType<SpaceDirection>,
-      default: 'horizontal'
+      default: 'horizontal',
     },
     size: {
       type: [Number, String, Array] as PropType<PairSizeValue | undefined>,
-      default: undefined
+      default: undefined,
     },
     align: {
       type: String as PropType<SpaceAlign>,
-      default: 'start'
+      default: 'start',
     },
     justify: {
       type: String as PropType<SpaceJustify>,
-      default: 'start'
+      default: 'start',
     },
     wrap: Boolean,
-    fill: Boolean
+    fill: Boolean,
   },
   setup(props, { attrs, slots }) {
     const classes = computed(() =>
@@ -35,14 +40,14 @@ export const VSpace = defineComponent({
         align: props.align,
         justify: props.justify,
         wrap: props.wrap,
-        fill: props.fill
-      })
+        fill: props.fill,
+      }),
     )
     const style = computed(() => {
       const [gapX, gapY] = normalizePairSize(props.size)
       return {
         '--varo-space-gap-x': gapX,
-        '--varo-space-gap-y': gapY
+        '--varo-space-gap-y': gapY,
       }
     })
 
@@ -51,15 +56,15 @@ export const VSpace = defineComponent({
         'div',
         {
           ...attrs,
-          class: [classes.value, attrs.class],
-          style: [attrs.style as StyleValue, style.value],
+          'class': [classes.value, attrs.class],
+          'style': [attrs.style as StyleValue, style.value],
           'data-align': props.align,
           'data-direction': props.direction,
           'data-fill': String(props.fill),
           'data-justify': props.justify,
-          'data-wrap': String(props.wrap)
+          'data-wrap': String(props.wrap),
         },
-        slots.default?.()
+        slots.default?.(),
       )
-  }
+  },
 })

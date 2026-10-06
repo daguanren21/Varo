@@ -1,12 +1,12 @@
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentAdvancedStatus } from './advanced-types'
 
 export type AgentRagStageId = 'query' | 'embed' | 'retrieve' | 'assemble' | 'generate'
 export type AgentRagSourceTone = 'blue' | 'violet' | 'rose'
 
 export interface AgentRagStep {
   id: AgentRagStageId
-  status: AgentAdvancedStatus
+  status: AgentPartStatus
   detail?: string
   durationMs?: number
 }
@@ -43,7 +43,7 @@ export const agentRagStages = [
   { id: 'generate', label: '引用回答', description: '生成可追溯到来源的回答' },
 ] as const
 
-const statusLabels: Record<AgentAdvancedStatus, string> = {
+const statusLabels: Record<AgentPartStatus, string> = {
   waiting: '等待',
   running: '处理中',
   completed: '已完成',

@@ -1,6 +1,7 @@
+import type { PropType } from 'vue'
 import { mount } from '@vue/test-utils'
-import { defineComponent, h, type PropType } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
+import { defineComponent, h } from 'vue'
 import {
   CheckboxIndicator,
   CheckboxRoot,
@@ -12,16 +13,18 @@ import {
   TabsContent,
   TabsList,
   TabsRoot,
-  TabsTrigger
+  TabsTrigger,
 } from '../src'
 
 describe('primitives-h5 p0 controls', () => {
   it('composes checkbox root and indicator', async () => {
+    const onClick = vi.fn()
     const wrapper = mount(CheckboxRoot, {
       props: { defaultChecked: false },
+      attrs: { onClick },
       slots: {
-        default: () => h(CheckboxIndicator, null, { default: () => 'check' })
-      }
+        default: () => h(CheckboxIndicator, null, { default: () => 'check' }),
+      },
     })
 
     expect(wrapper.get('[role="checkbox"]').attributes('data-state')).toBe('unchecked')
@@ -31,18 +34,20 @@ describe('primitives-h5 p0 controls', () => {
 
     expect(wrapper.get('[role="checkbox"]').attributes('data-state')).toBe('checked')
     expect(wrapper.text()).toBe('check')
+    expect(onClick).toHaveBeenCalledOnce()
+    wrapper.unmount()
   })
 
   it('keeps checkbox controlled when checked is explicitly undefined', async () => {
     const onUpdateChecked = vi.fn()
     const wrapper = mount(CheckboxRoot, {
       props: {
-        checked: undefined,
-        'onUpdate:checked': onUpdateChecked
+        'checked': undefined,
+        'onUpdate:checked': onUpdateChecked,
       },
       slots: {
-        default: () => h(CheckboxIndicator, null, { default: () => 'check' })
-      }
+        default: () => h(CheckboxIndicator, null, { default: () => 'check' }),
+      },
     })
 
     await wrapper.get('[role="checkbox"]').trigger('click')
@@ -56,7 +61,7 @@ describe('primitives-h5 p0 controls', () => {
     const disabledClick = vi.fn()
     const disabled = mount(CheckboxRoot, {
       attrs: { onClick: disabledClick },
-      props: { as: 'div', defaultChecked: false, disabled: true }
+      props: { as: 'div', defaultChecked: false, disabled: true },
     })
 
     await disabled.get('[role="checkbox"]').trigger('click')
@@ -66,9 +71,9 @@ describe('primitives-h5 p0 controls', () => {
 
     const prevented = mount(CheckboxRoot, {
       attrs: {
-        onClick: (event: MouseEvent) => event.preventDefault()
+        onClick: (event: MouseEvent) => event.preventDefault(),
       },
-      props: { defaultChecked: false }
+      props: { defaultChecked: false },
     })
 
     await prevented.get('[role="checkbox"]').trigger('click')
@@ -78,22 +83,24 @@ describe('primitives-h5 p0 controls', () => {
 
   it('composes radio group, item, and indicator', async () => {
     const onUpdateValue = vi.fn()
+    const onClick = vi.fn()
     const wrapper = mount(RadioGroup, {
       props: {
-        value: 'h5',
-        'onUpdate:value': onUpdateValue
+        'value': 'h5',
+        'onUpdate:value': onUpdateValue,
       },
       slots: {
         default: () => [
           h(RadioItem, { value: 'h5' }, { default: () => h(RadioIndicator, null, { default: () => 'dot' }) }),
-          h(RadioItem, { value: 'weapp' }, { default: () => 'Weapp' })
-        ]
-      }
+          h(RadioItem, { value: 'weapp', onClick }, { default: () => 'Weapp' }),
+        ],
+      },
     })
 
     expect(wrapper.findAll('[role="radio"]')[0].attributes('data-state')).toBe('checked')
     await wrapper.findAll('[role="radio"]')[1].trigger('click')
     expect(onUpdateValue).toHaveBeenCalledWith('weapp')
+    expect(onClick).toHaveBeenCalledOnce()
     expect(wrapper.findAll('[role="radio"]')[0].attributes('data-state')).toBe('checked')
   })
 
@@ -101,12 +108,12 @@ describe('primitives-h5 p0 controls', () => {
     const onUpdateValue = vi.fn()
     const wrapper = mount(RadioGroup, {
       props: {
-        value: undefined,
-        'onUpdate:value': onUpdateValue
+        'value': undefined,
+        'onUpdate:value': onUpdateValue,
       },
       slots: {
-        default: () => h(RadioItem, { value: 'h5' }, { default: () => 'H5' })
-      }
+        default: () => h(RadioItem, { value: 'h5' }, { default: () => 'H5' }),
+      },
     })
 
     await wrapper.get('[role="radio"]').trigger('click')
@@ -120,8 +127,8 @@ describe('primitives-h5 p0 controls', () => {
     const disabled = mount(RadioGroup, {
       slots: {
         default: () =>
-          h(RadioItem, { as: 'div', disabled: true, value: 'h5', onClick: disabledClick }, { default: () => 'H5' })
-      }
+          h(RadioItem, { as: 'div', disabled: true, value: 'h5', onClick: disabledClick }, { default: () => 'H5' }),
+      },
     })
 
     await disabled.get('[role="radio"]').trigger('click')
@@ -135,9 +142,9 @@ describe('primitives-h5 p0 controls', () => {
           h(
             RadioItem,
             { value: 'h5', onClick: (event: MouseEvent) => event.preventDefault() },
-            { default: () => 'H5' }
-          )
-      }
+            { default: () => 'H5' },
+          ),
+      },
     })
 
     await prevented.get('[role="radio"]').trigger('click')
@@ -150,18 +157,18 @@ describe('primitives-h5 p0 controls', () => {
       props: {
         itemValue: {
           type: String as PropType<string>,
-          default: 'h5'
-        }
+          default: 'h5',
+        },
       },
       setup(props) {
         return () =>
           h(RadioGroup, { value: 'weapp' }, {
             default: () =>
               h(RadioItem, { value: props.itemValue }, {
-                default: () => h(RadioIndicator, null, { default: () => 'dot' })
-              })
+                default: () => h(RadioIndicator, null, { default: () => 'dot' }),
+              }),
           })
-      }
+      },
     })
     const wrapper = mount(Harness)
 
@@ -173,11 +180,13 @@ describe('primitives-h5 p0 controls', () => {
   })
 
   it('composes switch root and thumb', async () => {
+    const onClick = vi.fn()
     const wrapper = mount(SwitchRoot, {
       props: { defaultChecked: false },
+      attrs: { onClick },
       slots: {
-        default: () => h(SwitchThumb, null, { default: () => 'thumb' })
-      }
+        default: () => h(SwitchThumb, null, { default: () => 'thumb' }),
+      },
     })
 
     expect(wrapper.get('[role="switch"]').attributes('data-state')).toBe('unchecked')
@@ -187,13 +196,15 @@ describe('primitives-h5 p0 controls', () => {
 
     expect(wrapper.get('[role="switch"]').attributes('data-state')).toBe('checked')
     expect(wrapper.get('[data-part="thumb"]').attributes('data-state')).toBe('checked')
+    expect(onClick).toHaveBeenCalledOnce()
+    wrapper.unmount()
   })
 
   it('does not toggle switch when loading on a non-button element or when default is prevented', async () => {
     const loadingClick = vi.fn()
     const loading = mount(SwitchRoot, {
       attrs: { onClick: loadingClick },
-      props: { as: 'div', defaultChecked: false, loading: true }
+      props: { as: 'div', defaultChecked: false, loading: true },
     })
 
     await loading.get('[role="switch"]').trigger('click')
@@ -203,9 +214,9 @@ describe('primitives-h5 p0 controls', () => {
 
     const prevented = mount(SwitchRoot, {
       attrs: {
-        onClick: (event: MouseEvent) => event.preventDefault()
+        onClick: (event: MouseEvent) => event.preventDefault(),
       },
-      props: { defaultChecked: false }
+      props: { defaultChecked: false },
     })
 
     await prevented.get('[role="switch"]').trigger('click')
@@ -222,14 +233,14 @@ describe('primitives-h5 p0 controls', () => {
               h(TabsList, null, {
                 default: () => [
                   h(TabsTrigger, { value: 'docs' }, { default: () => 'Docs' }),
-                  h(TabsTrigger, { value: 'api' }, { default: () => 'API' })
-                ]
+                  h(TabsTrigger, { value: 'api' }, { default: () => 'API' }),
+                ],
               }),
               h(TabsContent, { value: 'docs' }, { default: () => 'Docs panel' }),
-              h(TabsContent, { value: 'api' }, { default: () => 'API panel' })
-            ]
+              h(TabsContent, { value: 'api' }, { default: () => 'API panel' }),
+            ],
           })
-      }
+      },
     })
     const wrapper = mount(Harness)
 
@@ -251,10 +262,10 @@ describe('primitives-h5 p0 controls', () => {
           h(TabsRoot, { defaultValue: 'docs' }, {
             default: () =>
               h(TabsTrigger, { as: 'div', disabled: true, value: 'api', onClick: disabledClick }, {
-                default: () => 'API'
-              })
+                default: () => 'API',
+              }),
           })
-      }
+      },
     })
     const disabled = mount(DisabledHarness)
 
@@ -271,10 +282,10 @@ describe('primitives-h5 p0 controls', () => {
               h(
                 TabsTrigger,
                 { value: 'api', onClick: (event: MouseEvent) => event.preventDefault() },
-                { default: () => 'API' }
-              )
+                { default: () => 'API' },
+              ),
           })
-      }
+      },
     })
     const prevented = mount(PreventedHarness)
 

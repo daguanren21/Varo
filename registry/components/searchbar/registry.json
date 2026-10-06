@@ -40,6 +40,16 @@
       "target": "weapp",
       "from": "registry/components/searchbar/v-searchbar.vue",
       "to": "src/components/ui/v-searchbar.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/searchbar/h5.css",
+      "to": "src/styles/varo-searchbar.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/searchbar/weapp-vite.css",
+      "to": "src/styles/varo-searchbar.css"
     }
   ],
   "docs": "/components/searchbar"

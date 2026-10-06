@@ -1,6 +1,6 @@
 # 跨运行时案例
 
-这里是 Varo 面向使用者的跨运行时展示页：先确认采用路径，再区分浏览器实时交互、浏览器中的 Weapp 契约预览，以及微信开发者工具中的已编译证据。仓库内的 playground 仍是维护者 QA surface，不是公开安装入口。
+这里是 Varo 面向使用者的跨运行时展示页：先确认采用路径，再区分 H5 浏览器交互、原生源码/支持证据、编译产物浏览器预览与微信开发者工具快照。仓库内的 playground 仍是维护者 QA surface，不是公开安装入口；以上证据都不能替代真机验证。
 
 ## 先选择采用路径
 
@@ -9,13 +9,13 @@
     <span>H5 REGISTRY</span>
     <h3>H5 业务项目</h3>
     <code>pnpm dlx @varo-ui/cli add --target h5 components/button</code>
-    <p>将可编辑的 Vue 组件源码与依赖安装到业务仓库。</p>
+    <p>将可编辑的 Vue 组件源码和递归 Registry 依赖复制到业务仓库；npm 依赖另外安装。</p>
   </article>
   <article>
     <span>WEAPP REGISTRY</span>
     <h3>Weapp 业务项目</h3>
     <code>pnpm dlx @varo-ui/cli add --target weapp components/button</code>
-    <p>将 WXML-safe 的目标专用 Wevu SFC 与依赖安装到业务仓库。</p>
+    <p>复制目标专用 Wevu SFC 和递归 Registry 依赖；另行安装报告的 npm 依赖并配置全局样式。</p>
   </article>
   <article>
     <span>RUNTIME PACKAGE</span>
@@ -27,15 +27,17 @@
 
 Registry 是默认采用路径；从[安装指南](/guide/installation)开始，再按目标生成源码。
 
-## H5 Live 与 Weapp Contract Preview
+## H5 Live 与原生源码证据
 
-下方组件可以直接操作。H5 标签运行 `@varo-ui/h5` 的真实浏览器组件；切换到小程序后，标签会明确变为 **Weapp Contract Preview**，用于检查公共 API 与视觉契约，不冒充小程序运行时。
+H5 标签运行 `@varo-ui/h5` 的真实浏览器组件，可以直接操作。原生标签页只展示目标 Wevu SFC 源码与支持信息，不再用 Vue 组件渲染“等价小程序”，也不声称该页面执行了原生运行时。
 
 <PlatformTabsDemo example="overview" locale="zh" />
 
 ## Weapp DevTools Verified：已编译 Blocks {#weapp-devtools-evidence}
 
 下方图片由 `weapp-vite` 构建后的 Block 页面通过微信开发者工具自动化采集。证据快照日期为 **2026-08-28**；可检查[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[代表性原始图片](../blocks/login-form.png)。每张卡片也会直接链接自己的原始图片。
+
+这些是注明日期的历史截图，不是本次源码切换的实时回归，也不认证六个实验性 profile 或真实设备。当前精确准入与编译检查范围见 [安装指南](/guide/installation#安装-profile-与支持边界)。
 
 H5 目标只切换安装命令与使用代码；当前仓库没有发布对应的 H5 图片时，卡片会继续明确标注图片为 **Weapp DevTools Verified**，不会暗示 H5 选择改变了截图。
 
@@ -44,8 +46,9 @@ H5 目标只切换安装命令与使用代码；当前仓库没有发布对应�
 ## 证据与实现边界
 
 - `H5 Live`：当前页面中的真实浏览器组件与交互
-- `Weapp Contract Preview`：浏览器渲染的目标契约，不是微信运行时
-- `Weapp DevTools Verified`：已编译小程序页面的开发者工具证据
+- 原生源码：Registry manifest 与 Wevu SFC 的可检查证据，不是 live preview
+- 编译产物浏览器预览：glass-easel 执行可信产物；同源 iframe 不是安全沙箱，也不证明设备能力
+- `Weapp DevTools Verified`：注明日期的开发者工具页面截图，不代表所有组件或 profile 当前已验收
 - `weapp-vite` 负责组件 JSON、复杂列表 key、类型声明与目标产物；`wevu` 是 `@varo-ui/weapp` 的运行时 peer
 - `weapp-tailwindcss` 在构建链中转译 class；原生 `hover-class` 表达小程序按压反馈
 

@@ -4,7 +4,7 @@ Lightweight floating runtime: Root owns open, Trigger opens, Content renders, Cl
 
 ## Runtime
 
-State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`.
+State contracts come from `@varo-ui/headless`. Parts and interactive examples on this page are H5-only, from `@varo-ui/h5/primitives`. Native consumers use Wevu SFCs or headless, not equivalent Vue Parts.
 
 ## Demo
 
@@ -12,11 +12,11 @@ State contracts come from `@varo-ui/headless`; rendered parts come from `@varo-u
 
 ## Basic usage
 
-Use the Demo panel above to switch H5 and Weapp primitive preview/code; each runtime renders only the current entry.
+The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
 
 ## Dismiss contract
 
-H5 may handle Escape/outside click; mini-programs lack browser `document`, so prefer `PopoverClose`, page masks, or page-level dismiss adapters.
+H5 may handle Escape/outside click. Native consumers have no browser `document`; use the native `VPopoverClose` SFC or a page mask, not the H5 Parts on this page.
 
 ## Parts
 

@@ -62,16 +62,18 @@ const lines: AgentDiffLine[] = [
 
 ## Events
 
-| Event                | Payload              | Description                                      |
-| -------------------- | -------------------- | ------------------------------------------------ |
-| `accept`             | `void`               | Accepts the current file change                  |
-| `reject`             | `void`               | Rejects the current file change                  |
-| `select`             | `AgentDiffSelection` | Selects a unified row or one side of a split row |
-| `expand`             | `(line, index)`      | Requests expansion of collapsed `hunk` context   |
-| `update:open`        | `boolean`            | Expanded state changed                           |
-| `update:view`        | `AgentDiffView`      | Unified/split view changed                       |
-| `update:wrap`        | `boolean`            | Wrapping state changed                           |
-| `update:lineNumbers` | `boolean`            | Line-number state changed                        |
+| Event                | Payload                                    | Description                                      |
+| -------------------- | ------------------------------------------ | ------------------------------------------------ |
+| `accept`             | `void`                                     | Accepts the current file change                  |
+| `reject`             | `void`                                     | Rejects the current file change                  |
+| `select`             | `AgentDiffSelection`                       | Selects a unified row or one side of a split row |
+| `expand`             | H5: `(line, index)`; Wevu: `[line, index]` | Requests expansion of collapsed `hunk` context   |
+| `update:open`        | `boolean`                                  | Expanded state changed                           |
+| `update:view`        | `AgentDiffView`                            | Unified/split view changed                       |
+| `update:wrap`        | `boolean`                                  | Wrapping state changed                           |
+| `update:lineNumbers` | `boolean`                                  | Line-number state changed                        |
+
+Wevu listeners receive one tuple: `function onExpand([line, index]: [AgentDiffLine, number]) { /* Load context as needed. */ }`. H5 keeps two arguments. Omitting controlled `open`, `view`, `wrap`, or `lineNumbers` leaves that state under local component ownership.
 
 ## Slots
 

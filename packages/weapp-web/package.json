@@ -46,20 +46,20 @@
     "dev": "echo @varo/weapp-web ships source until a public release",
     "lint": "echo weapp-web lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo weapp-web has no e2e"
   },
   "peerDependencies": {
     "vite": "^8.2.2"
   },
   "dependencies": {
-    "glass-easel": "1.1.0",
-    "glass-easel-miniprogram-adapter": "1.1.0",
-    "glass-easel-stylesheet-compiler": "1.1.0",
-    "glass-easel-template-compiler": "1.1.0",
+    "glass-easel": "1.2.1",
+    "glass-easel-miniprogram-adapter": "1.2.1",
+    "glass-easel-stylesheet-compiler": "1.2.1",
+    "glass-easel-template-compiler": "1.2.1",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "vite": "^8.2.2"
+    "vite": "^8.3.0"
   }
 }

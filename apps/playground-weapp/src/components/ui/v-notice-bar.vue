@@ -27,7 +27,7 @@ const props = withDefaults(
   },
 )
 const emit = defineEmits<{
-  close: [event: unknown]
+  'close': [event: unknown]
   'update:visible': [visible: boolean]
 }>()
 

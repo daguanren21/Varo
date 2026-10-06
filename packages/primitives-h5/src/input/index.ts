@@ -1,17 +1,11 @@
 import type { PropType } from 'vue'
 import { useFieldRoot } from '@varo-ui/headless'
 import { computed, defineComponent, h, nextTick, onMounted, ref, toRef, watch } from 'vue'
-import { usePropPresence } from '../vue-control'
+import { callHandler, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useInputRoot } from './hooks'
 export type * from './types'
-
-function callHandler(handler: unknown, event: Event) {
-  if (typeof handler === 'function') {
-    handler(event)
-  }
-}
 
 export type InputFormatTrigger = 'onInput' | 'onBlur'
 
@@ -31,6 +25,7 @@ function resolveMaxLength(value: number | string | undefined) {
 
 export const InputRoot = defineComponent({
   name: 'InputRoot',
+  inheritAttrs: false,
   props: {
     value: {
       type: String as PropType<string | undefined>,
@@ -79,6 +74,7 @@ export const InputRoot = defineComponent({
       defaultValue: props.defaultValue,
       value: toRef(props, 'value'),
       disabled: toRef(props, 'disabled'),
+      readonly: toRef(props, 'readonly'),
       invalid: toRef(props, 'invalid'),
       onValueChange(value) {
         emit('update:value', value)
@@ -134,7 +130,7 @@ export const InputRoot = defineComponent({
     }
 
     function updateValue(value: string, trigger: InputFormatTrigger) {
-      if (props.readonly) {
+      if (!field.state.interactive.value) {
         syncDomValue(field.state.value.value)
         return false
       }
@@ -156,10 +152,6 @@ export const InputRoot = defineComponent({
     }
 
     function clear() {
-      if (props.readonly) {
-        return false
-      }
-
       const allowed = field.api.setValue('')
       syncDomValue(field.state.value.value)
       resizeTextarea()

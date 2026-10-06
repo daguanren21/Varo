@@ -4,6 +4,10 @@
 
 <PlatformTabsDemo example="menu" locale="zh" />
 
+::: warning 原生组合运行验证暂缓
+仓库的 `weapp-vite` / `wevu` 7.4.0 plain-slot 编译产物预览中，点击原生 Menu 后仍未展开，选项与 `select` 事件没有出现；上下文边界跟踪于 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172)。以下 H5 示例和原生事件类型不是该原生场景的运行证明。暂缓该场景验收，等待上游反馈；不修改插槽配置或添加兼容桥，也不推断 IDE/真机结果。
+:::
+
 ## 基础用法
 
 ```vue
@@ -53,7 +57,9 @@ const options = [
 
 ## VMenuItem Events
 
-| Event               | Payload            | 描述       |
-| ------------------- | ------------------ | ---------- |
-| `update:modelValue` | `string \| number` | 选中值变化 |
-| `select`            | `(value, option)`  | 点击选项   |
+| Event               | Payload                                        | 描述       |
+| ------------------- | ---------------------------------------------- | ---------- |
+| `update:modelValue` | `string \| number`                             | 选中值变化 |
+| `select`            | H5: `(value, option)`；Wevu: `[value, option]` | 点击选项   |
+
+Wevu 的 `@select` 监听器接收单个 tuple，应写成 `([value, option]) => ...`，不要声明两个回调参数。`update:modelValue` 仍只传选中值。

@@ -1,11 +1,11 @@
-import type { Ref } from '../reactive'
+import type { Ref } from '@varo/shared'
 import type {
   DialogOpenChangeDetails,
   DialogOpenChangeReason,
   DialogRootOptions,
   UseDialogRootResult,
 } from './types'
-import { resolveReactiveRuntime } from '../reactive'
+import { resolveReactiveRuntime } from '@varo/shared'
 import { useControllableState } from '../use-controllable-state'
 
 export function useDialogRoot(options: DialogRootOptions = {}): UseDialogRootResult {

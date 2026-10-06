@@ -17,6 +17,8 @@
 
 ## Events
 
+DOM event types below apply only to H5. Native event payloads follow the corresponding SFC and host contract, not browser `MouseEvent` / `FocusEvent`.
+
 | Event          | Payload      | Description   |
 | -------------- | ------------ | ------------- |
 | `update:value` | `string`     | Value changed |

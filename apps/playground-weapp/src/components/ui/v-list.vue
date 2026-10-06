@@ -111,7 +111,9 @@ watch(
         type="button"
         @click="retry"
       >
-        <slot name="error">{{ props.errorText }}</slot>
+        <slot name="error">
+          {{ props.errorText }}
+        </slot>
       </button>
       <slot v-else-if="props.finished" name="finished">
         {{ props.finishedText }}

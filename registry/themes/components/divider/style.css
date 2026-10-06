@@ -1,0 +1,50 @@
+.varo-divider {
+  display: flex;
+  align-items: center;
+  margin: var(--varo-divider-spacing, 8px) 0;
+  font-size: 0.82rem;
+  color: var(--varo-divider-text-color, var(--varo-ui-text-muted));
+}
+
+.varo-divider::before,
+.varo-divider::after {
+  flex: 1;
+  content: '';
+  border-top: 1px solid var(--varo-divider-line-color, var(--varo-ui-border));
+}
+
+.varo-divider[data-dashed='true']::before,
+.varo-divider[data-dashed='true']::after {
+  border-top-style: dashed;
+}
+
+.varo-divider[data-content-position='left']::before {
+  max-width: 10%;
+}
+
+.varo-divider[data-content-position='right']::after {
+  max-width: 10%;
+}
+
+.varo-divider[data-hairline='false']::before,
+.varo-divider[data-hairline='false']::after {
+  border-top-width: 2px;
+}
+
+.varo-divider[data-vertical='true'] {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin: 0 var(--varo-divider-spacing, 8px);
+  vertical-align: middle;
+  background: var(--varo-divider-line-color, var(--varo-ui-border));
+}
+
+.varo-divider[data-vertical='true']::before,
+.varo-divider[data-vertical='true']::after {
+  content: none;
+}
+
+.varo-divider__text {
+  padding: 0 12px;
+}

@@ -1,0 +1,7 @@
+.varo-sticky {
+  width: 100%;
+}
+
+.varo-sticky[data-fixed='true'] {
+  box-shadow: var(--varo-ui-shadow-sm);
+}

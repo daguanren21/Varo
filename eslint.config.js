@@ -1,7 +1,12 @@
 import { defineEslintConfig } from 'repoctl/tooling'
+import projections from './scripts/registry-projections.json' with { type: 'json' }
 
 export default await defineEslintConfig({
   configs: [
+    {
+      name: 'varo/registry-projections',
+      ignores: Object.values(projections.owners).flatMap(files => Object.keys(files)),
+    },
     {
       name: 'varo/realworld-weapp-generated-code',
       ignores: [

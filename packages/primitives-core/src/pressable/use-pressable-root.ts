@@ -1,5 +1,5 @@
-import { resolveReactiveRuntime } from '../reactive'
-import type { PressableRootOptions, UsePressableRootResult } from './types'
+import type { PressableEvent, PressableRootOptions, UsePressableRootResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
 
 export function usePressableRoot(options: PressableRootOptions = {}): UsePressableRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -26,7 +26,7 @@ export function usePressableRoot(options: PressableRootOptions = {}): UsePressab
     pressed.value = false
   }
 
-  function click(event?: Event) {
+  function click(event?: PressableEvent) {
     if (interactive.value) {
       return true
     }
@@ -43,18 +43,18 @@ export function usePressableRoot(options: PressableRootOptions = {}): UsePressab
       loading,
       pressed,
       size,
-      variant
+      variant,
     },
     attrs: {
       root: {
-        type: 'button'
-      }
+        type: 'button',
+      },
     },
     events: {
       pressStart,
       pressEnd,
       pressCancel,
-      click
-    }
+      click,
+    },
   }
 }

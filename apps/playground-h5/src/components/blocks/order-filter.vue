@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { ClassValue } from '../../lib/cn'
+import type { CheckboxValue } from '../ui/checkbox'
 import { computed, shallowRef } from 'vue'
+import { cn } from '../../lib/cn'
 import { VButton } from '../ui/button'
-import { VCheckbox, VCheckboxGroup, type CheckboxValue } from '../ui/checkbox'
+import { VCheckbox, VCheckboxGroup } from '../ui/checkbox'
 import { VInputNumber } from '../ui/input-number'
 import { VTag } from '../ui/tag'
-import { cn, type ClassValue } from '../../lib/cn'
 
 interface OrderStatusOption {
   label: string
@@ -33,10 +35,10 @@ const props = withDefaults(
     statuses: () => [
       { label: '待付款', value: 'pending_payment' },
       { label: '待发货', value: 'pending_ship' },
-      { label: '已完成', value: 'done' }
+      { label: '已完成', value: 'done' },
     ],
-    title: '筛选订单'
-  }
+    title: '筛选订单',
+  },
 )
 
 const emit = defineEmits<{
@@ -50,19 +52,19 @@ const selectedStatuses = shallowRef<CheckboxValue[]>([...(props.initialValue.sta
 const invalidRange = computed(() => minPrice.value > maxPrice.value)
 const activeCount = computed(() => selectedStatuses.value.length + Number(minPrice.value > 0) + Number(maxPrice.value < 9999))
 const rootClass = computed(() =>
-  cn('w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className)
+  cn('w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-sm', props.className),
 )
 
 function currentValue(): OrderFilterValue {
   return {
     maxPrice: maxPrice.value,
     minPrice: minPrice.value,
-    statuses: [...selectedStatuses.value]
+    statuses: [...selectedStatuses.value],
   }
 }
 
 function apply() {
-  if (invalidRange.value || props.loading) return
+  if (invalidRange.value || props.loading) { return }
   emit('apply', currentValue())
 }
 
@@ -78,15 +80,23 @@ function reset() {
   <section :class="rootClass" aria-labelledby="order-filter-title">
     <header class="mb-5 flex items-center justify-between gap-3">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">Orders</p>
-        <h2 id="order-filter-title" class="mt-1 text-xl font-bold text-slate-950">{{ title }}</h2>
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
+          Orders
+        </p>
+        <h2 id="order-filter-title" class="mt-1 text-xl font-bold text-slate-950">
+          {{ title }}
+        </h2>
       </div>
-      <VTag v-if="activeCount" tone="primary" variant="soft" round>{{ activeCount }} 项条件</VTag>
+      <VTag v-if="activeCount" tone="primary" variant="soft" round>
+        {{ activeCount }} 项条件
+      </VTag>
     </header>
 
     <div class="space-y-5">
       <fieldset class="m-0 border-0 p-0">
-        <legend class="mb-3 text-sm font-bold text-slate-800">订单状态</legend>
+        <legend class="mb-3 text-sm font-bold text-slate-800">
+          订单状态
+        </legend>
         <VCheckboxGroup v-model:value="selectedStatuses" direction="horizontal">
           <VCheckbox v-for="status in statuses" :key="String(status.value)" :value="status.value">
             {{ status.label }}
@@ -95,7 +105,9 @@ function reset() {
       </fieldset>
 
       <fieldset class="m-0 border-0 p-0">
-        <legend class="mb-3 text-sm font-bold text-slate-800">订单金额</legend>
+        <legend class="mb-3 text-sm font-bold text-slate-800">
+          订单金额
+        </legend>
         <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           <label class="grid gap-1.5 text-xs text-slate-500">
             最低金额
@@ -107,16 +119,22 @@ function reset() {
             <VInputNumber v-model:value="maxPrice" :min="0" :max="9999" :step="50" />
           </label>
         </div>
-        <p v-if="invalidRange" class="mt-2 text-sm text-red-600" role="alert">最低金额不能高于最高金额</p>
+        <p v-if="invalidRange" class="mt-2 text-sm text-red-600" role="alert">
+          最低金额不能高于最高金额
+        </p>
       </fieldset>
     </div>
 
     <footer class="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
       <p class="m-0 text-sm text-slate-500">
-        <template v-if="resultCount !== undefined">预计 {{ resultCount }} 条结果</template>
+        <template v-if="resultCount !== undefined">
+          预计 {{ resultCount }} 条结果
+        </template>
       </p>
       <div class="flex gap-2">
-        <VButton variant="ghost" @click="reset">重置</VButton>
+        <VButton variant="ghost" @click="reset">
+          重置
+        </VButton>
         <VButton :disabled="invalidRange" :loading="loading" loading-text="筛选中..." @click="apply">
           应用筛选
         </VButton>
@@ -124,3 +142,13 @@ function reset() {
     </footer>
   </section>
 </template>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-button.css';
+@import '../../styles/varo-icon.css';
+@import '../../styles/varo-checkbox.css';
+@import '../../styles/varo-input-number.css';
+@import '../../styles/varo-tag.css';
+</style>

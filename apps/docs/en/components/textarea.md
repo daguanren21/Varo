@@ -18,6 +18,8 @@ Textarea reuses the `VInput` props and sets `type="textarea"` internally.
 
 ## Events
 
+DOM event types below describe H5 only. Native SFCs use host events, not browser `FocusEvent` / `MouseEvent`; follow the installed SFC contract.
+
 | Event          | Payload      | Description         |
 | -------------- | ------------ | ------------------- |
 | `update:value` | `string`     | Value changed       |

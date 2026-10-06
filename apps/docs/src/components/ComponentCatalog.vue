@@ -19,9 +19,9 @@ const targetFilter = shallowRef<AvailabilityFilter>('all')
 const copy = computed(() => props.locale === 'zh'
   ? {
       all: '全部',
-      availability: '按支持端筛选',
+      availability: '按渲染器源码筛选',
       count: '个组件',
-      dual: '双端',
+      dual: '两类渲染器',
       empty: '没有匹配的组件',
       emptyDetail: '尝试其他名称，或清除当前端筛选。',
       eyebrow: '组件目录',
@@ -31,15 +31,15 @@ const copy = computed(() => props.locale === 'zh'
       reset: '清除筛选',
       searchLabel: '搜索组件',
       searchPlaceholder: '搜索名称，如 Badge、地图或 Picker',
-      summary: '按名称或支持端筛选。',
-      targets: '支持端',
-      weapp: 'Weapp',
+      summary: '支持信息来自 Registry；新增宿主的实验性准入与真机验证分开标注。',
+      targets: '渲染器源码',
+      weapp: 'Wevu 原生',
     }
   : {
       all: 'All',
-      availability: 'Filter by target availability',
+      availability: 'Filter by renderer source',
       count: 'components',
-      dual: 'Dual',
+      dual: 'Both renderers',
       empty: 'No components match',
       emptyDetail: 'Try another name or clear the target filter.',
       eyebrow: 'Component catalog',
@@ -49,9 +49,9 @@ const copy = computed(() => props.locale === 'zh'
       reset: 'Clear filters',
       searchLabel: 'Search components',
       searchPlaceholder: 'Search by name, such as Badge, Map, or Picker',
-      summary: 'Filter by name or target.',
-      targets: 'Targets',
-      weapp: 'Weapp',
+      summary: 'Availability comes from Registry. Experimental host admission is separate from device verification.',
+      targets: 'Renderer source',
+      weapp: 'Native Wevu',
     })
 
 const targetCounts = {

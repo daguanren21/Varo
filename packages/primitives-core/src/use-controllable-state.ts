@@ -1,4 +1,5 @@
-import { resolveReactiveRuntime, type ReactiveRuntime, type Ref } from './reactive'
+import type { ReactiveRuntime, Ref } from '@varo/shared'
+import { resolveReactiveRuntime } from '@varo/shared'
 
 export interface UseControllableStateOptions<T> {
   controlled?: boolean | Ref<boolean | undefined>
@@ -33,11 +34,11 @@ export function useControllableState<T>(options: UseControllableStateOptions<T>)
       }
 
       options.onUpdate?.(value)
-    }
+    },
   })
 
   return {
     current,
-    isControlled
+    isControlled,
   }
 }

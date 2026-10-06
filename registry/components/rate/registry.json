@@ -38,6 +38,16 @@
       "target": "weapp",
       "from": "registry/components/rate/v-rate.vue",
       "to": "src/components/ui/v-rate.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/rate/h5.css",
+      "to": "src/styles/varo-rate.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/rate/weapp-vite.css",
+      "to": "src/styles/varo-rate.css"
     }
   ],
   "docs": "/components/rate"

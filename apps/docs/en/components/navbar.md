@@ -28,6 +28,8 @@
 
 ## Events
 
+`MouseEvent` below applies only to H5. Native SFCs forward host click events, not browser DOM event objects.
+
 | Event        | Payload      | Description        |
 | ------------ | ------------ | ------------------ |
 | `clickLeft`  | `MouseEvent` | Left area clicked  |

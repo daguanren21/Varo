@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/pagination/v-pagination.vue",
       "to": "src/components/ui/v-pagination.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/pagination/h5.css",
+      "to": "src/styles/varo-pagination.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/pagination/weapp-vite.css",
+      "to": "src/styles/varo-pagination.css"
     }
   ],
   "docs": "/components/pagination"

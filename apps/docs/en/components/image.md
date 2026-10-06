@@ -59,6 +59,8 @@
 
 ## Events
 
+The DOM event types below describe H5 only. Native Wevu SFCs use host image/click events, not browser `Event` / `MouseEvent` objects.
+
 | Event   | Payload      | Description          |
 | ------- | ------------ | -------------------- |
 | `load`  | `Event`      | Image loaded         |
@@ -73,5 +75,5 @@
 | `error`   | Custom error placeholder   |
 
 ::: info Primitives
-`ImageRoot` comes from `@varo-ui/h5/primitives` or `@varo-ui/weapp/primitives`; `@varo-ui/headless` only carries shared state contracts, while `VImage` adds the Varo API wrapper and classes.
+`ImageRoot` is an H5 Parts API from `@varo-ui/h5/primitives`; `@varo-ui/headless` carries shared state contracts only. Native `VImage` is a Wevu SFC from Registry or `@varo-ui/weapp`, processed by the target compiler, not equivalent Vue Parts.
 :::

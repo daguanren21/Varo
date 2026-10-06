@@ -43,7 +43,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  select: [payload: { index: number, item: StepItem }]
+  'select': [payload: { index: number, item: StepItem }]
   'update:current': [current: number]
 }>()
 

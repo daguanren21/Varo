@@ -39,6 +39,16 @@
       "target": "weapp",
       "from": "registry/components/sticky/v-sticky.vue",
       "to": "src/components/ui/v-sticky.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/sticky/style.css",
+      "to": "src/styles/varo-sticky.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/sticky/style.css",
+      "to": "src/styles/varo-sticky.css"
     }
   ],
   "docs": "/components/sticky"

@@ -1,5 +1,6 @@
 import type { NavigationPayload } from '../store/navigation'
 import { useNativeRouter } from 'wevu'
+import { pinia } from '../store/manager'
 import { useNavigationStore } from '../store/navigation'
 
 export type RouteParams = Record<string, string | number | boolean | null | undefined>
@@ -30,7 +31,7 @@ function routeUrl(path: string, area: string, params: RouteParams) {
 
 export function useAedNavigation() {
   const router = useNativeRouter()
-  const navigation = useNavigationStore()
+  const navigation = useNavigationStore(pinia)
 
   function toRoute(path: string, area = 'pages', options: NavigationOptions = {}) {
     navigation.setPayload(options.data)
@@ -50,7 +51,7 @@ export function useAedNavigation() {
 }
 
 export function readRouteData<T extends NavigationPayload = NavigationPayload>() {
-  return useNavigationStore().payload.value as unknown as T | undefined
+  return useNavigationStore(pinia).payload as T | undefined
 }
 
 export function readRouteParams<T extends RouteParams = RouteParams>() {
