@@ -68,3 +68,13 @@ const rootClass = computed(() => cn('box-border grid w-full min-w-0 grid-cols-1 
     </div>
   </section>
 </template>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-badge.css';
+@import '../../styles/varo-button.css';
+@import '../../styles/varo-icon.css';
+@import '../../styles/varo-image.css';
+@import '../../styles/varo-empty.css';
+</style>

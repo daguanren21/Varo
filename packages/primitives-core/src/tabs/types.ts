@@ -1,14 +1,14 @@
-import type { MaybeRef, ReactiveRuntime, Ref } from '../reactive'
+import type { MaybeRef, ReactiveRuntime, Ref } from '@varo/shared'
 
 export type TabsValue = string | number
 export type TabsOrientation = 'horizontal' | 'vertical'
-export type TabsNavigationKey =
-  | 'ArrowLeft'
-  | 'ArrowRight'
-  | 'ArrowUp'
-  | 'ArrowDown'
-  | 'Home'
-  | 'End'
+export type TabsNavigationKey
+  = | 'ArrowLeft'
+    | 'ArrowRight'
+    | 'ArrowUp'
+    | 'ArrowDown'
+    | 'Home'
+    | 'End'
 
 export interface TabsNavigationOptions {
   currentIndex: number

@@ -1,0 +1,84 @@
+.varo-elevator button {
+  font: inherit;
+}
+
+.varo-elevator {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  width: 100%;
+}
+
+.varo-elevator__content {
+  display: grid;
+  grid-auto-rows: max-content;
+  gap: 10px;
+  align-content: start;
+  max-height: 324px;
+  padding-right: 6px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.varo-elevator__group {
+  overflow: hidden;
+  background: var(--varo-ui-surface-muted);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-elevator__title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 12px;
+  font-weight: 750;
+  color: var(--varo-ui-primary);
+  background: color-mix(in srgb, var(--varo-ui-primary) 10%, var(--varo-ui-surface));
+}
+
+.varo-elevator__item {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  color: var(--varo-ui-text);
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--varo-ui-border);
+}
+
+.varo-elevator__item:hover {
+  background: color-mix(in srgb, var(--varo-ui-primary) 7%, transparent);
+}
+
+.varo-elevator__indexes {
+  display: grid;
+  gap: 6px;
+  align-self: center;
+  padding: 8px 4px;
+  background: color-mix(in srgb, var(--varo-ui-surface) 92%, transparent);
+  border-radius: 999px;
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-elevator__index {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--varo-ui-text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+}
+
+.varo-elevator__index[data-active='true'] {
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+}

@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-H5 与小程序 adapters 保持相同公开 API；键盘和导航细节由目标处理。
+本页 Parts 与交互示例仅属于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VCell` / `VCellGroup` SFC，不承诺 Parts API 等价；原生标签页仅展示源码/证据。键盘与导航能力由各自运行时决定。
 
 ## 演示
 

@@ -105,20 +105,19 @@ function commit(nextValue: number) {
   void reconcileInput()
 }
 
-function eventValue(event: Event) {
-  const miniEvent = event as Event & { detail?: { value?: string } }
-  const target = event.target as HTMLInputElement | null
-  return miniEvent.detail?.value ?? target?.value ?? draft.value
+function eventValue(event: unknown) {
+  const nativeEvent = event as { detail?: { value?: string }, target?: { value?: string } }
+  return nativeEvent.detail?.value ?? nativeEvent.target?.value ?? draft.value
 }
 
-function input(event: Event) {
+function input(event: unknown) {
   if (!interactive.value) { return String(value.value) }
   draftVersion += 1
   draft.value = eventValue(event)
   return draft.value
 }
 
-function blur(event: Event) {
+function blur(event: unknown) {
   draft.value = eventValue(event)
   commit(Number(draft.value))
 }

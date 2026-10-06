@@ -27,6 +27,34 @@ describe('ui-h5 missing base kit components', () => {
     expect(onUpdate).toHaveBeenLastCalledWith(false)
   })
 
+  it('keeps readonly switches focusable and renders loading state', async () => {
+    const onUpdate = vi.fn()
+    const wrapper = mount(VSwitch, {
+      props: {
+        'modelValue': true,
+        'readonly': true,
+        'size': 'sm',
+        'onUpdate:modelValue': onUpdate,
+      },
+    })
+
+    expect(wrapper.attributes()).toMatchObject({
+      'aria-checked': 'true',
+      'aria-readonly': 'true',
+      'data-readonly': 'true',
+      'data-size': 'sm',
+    })
+    expect(wrapper.attributes('disabled')).toBeUndefined()
+
+    await wrapper.trigger('click')
+    expect(onUpdate).not.toHaveBeenCalled()
+
+    await wrapper.setProps({ loading: true })
+    expect(wrapper.attributes('aria-busy')).toBe('true')
+    expect(wrapper.attributes('disabled')).toBe('')
+    expect(wrapper.get('.varo-switch__spinner').attributes('aria-hidden')).toBe('true')
+  })
+
   it('renders VLoading with text', () => {
     const wrapper = mount(VLoading, {
       props: {

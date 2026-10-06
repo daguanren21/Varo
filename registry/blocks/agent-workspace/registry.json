@@ -12,8 +12,12 @@
     "weapp": ["wevu"]
   },
   "registryDependencies": [
-    "components/agent-ui"
+    "components/agent-conversation",
+    "components/agent-workspace"
   ],
+  "targetRegistryDependencies": {
+    "weapp": ["utils/primitives"]
+  },
   "files": [
     {
       "target": "h5",

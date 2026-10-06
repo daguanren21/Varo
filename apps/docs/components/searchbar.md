@@ -17,6 +17,8 @@
 
 ## Events
 
+下表 DOM 事件类型仅适用于 H5；原生事件的 payload 由对应 SFC 与宿主定义，不是浏览器 `MouseEvent`。
+
 | Event    | Payload      | 描述         |
 | -------- | ------------ | ------------ |
 | `search` | `string`     | 提交搜索     |

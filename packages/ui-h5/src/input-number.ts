@@ -1,14 +1,17 @@
+// Generated from registry/components/input-number/input-number.ts; edit the Registry source.
 import type { PropType } from 'vue'
-
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
 import {
   NumberFieldDecrement,
   NumberFieldIncrement,
   NumberFieldInput,
   NumberFieldRoot,
 } from '@varo/primitives-h5'
-import { createVariantClass } from '@varo/shared'
-import { computed, defineComponent, h } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-input-number.css'
 
 export const VInputNumber = defineComponent({
   name: 'VInputNumber',

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { PressableEvent } from '@varo-ui/headless'
 import type { ClassValue } from '../../lib/cn'
 import { usePressableRoot } from '@varo-ui/headless'
 import { contrastSafeForeground } from '@varo-ui/theme/weapp'
@@ -111,7 +112,7 @@ const formType = computed(() => (props.nativeType === 'submit' || props.nativeTy
 const hoverClass = computed(() => (pressable.state.interactive.value ? 'varo-button--pressed' : 'none'))
 
 function click(event: unknown) {
-  if (pressable.events.click(event as Event)) { emit('click', event) }
+  if (pressable.events.click(event as PressableEvent)) { emit('click', event) }
 }
 
 function pressStart() {

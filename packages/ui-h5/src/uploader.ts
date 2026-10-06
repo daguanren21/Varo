@@ -1,6 +1,10 @@
+// Generated from registry/components/uploader/uploader.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import { computed, defineComponent, h } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-uploader.css'
 
 export interface UploaderFile {
   file?: File

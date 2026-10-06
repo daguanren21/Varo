@@ -113,6 +113,7 @@ export const AccordionItem = defineComponent({
 
 export const AccordionTrigger = defineComponent({
   name: 'AccordionTrigger',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

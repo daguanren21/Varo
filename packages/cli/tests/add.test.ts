@@ -1,7 +1,7 @@
 import type { Mode, PathLike, RmOptions } from 'node:fs'
 import type * as FileSystem from '../src/file-system.ts'
-import type { RegistryTarget } from '../src/index'
-import { execFileSync } from 'node:child_process'
+import type { RegistryRenderer } from '../src/index'
+import { execFile, execFileSync } from 'node:child_process'
 import {
   existsSync,
   mkdirSync,
@@ -15,6 +15,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
+import { promisify } from 'node:util'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const fsFaultState = vi.hoisted(() => ({
@@ -60,6 +61,7 @@ vi.mock('../src/file-system.ts', async (importOriginal) => {
 // Import after the local filesystem mock so the CLI captures fault-injected bindings.
 const { installRegistryItems, resolveRegistryItems } = await import('../src/index')
 
+const execute = promisify(execFile)
 const workspaceRoot = resolve(__dirname, '../../..')
 const registryRoot = resolve(workspaceRoot, 'registry')
 let projectRoot: string | undefined
@@ -82,8 +84,8 @@ function writeRegistryItem(
   options: {
     from?: string
     registryDependencies?: string[]
-    targetDependencies?: Partial<Record<RegistryTarget, string[]>>
-    targets?: RegistryTarget[]
+    targetDependencies?: Partial<Record<RegistryRenderer, string[]>>
+    targets?: RegistryRenderer[]
     to?: string
   } = {},
 ) {
@@ -131,6 +133,7 @@ describe('varo add targets', () => {
       'src/lib/cn.ts',
       'src/lib/varo-primitives.ts',
       'src/components/ui/button.ts',
+      'src/styles/varo-button.css',
     ])
     expect(plan.dependencies).toEqual(
       expect.arrayContaining(['@varo-ui/h5', '@varo-ui/headless', '@varo-ui/theme', 'clsx', 'tailwind-merge', 'vue']),
@@ -144,7 +147,6 @@ describe('varo add targets', () => {
     expect(plan.target).toBe('weapp')
     expect(plan.dependencies).toEqual(
       expect.arrayContaining([
-        '@varo-ui/weapp',
         '@varo-ui/headless',
         '@varo-ui/theme',
         '@weapp-tailwindcss/merge',
@@ -154,6 +156,7 @@ describe('varo add targets', () => {
     )
     expect(plan.dependencies).not.toContain('tailwind-merge')
     expect(plan.dependencies).not.toContain('vue')
+    expect(plan.dependencies).not.toContain('@varo-ui/weapp')
   })
 
   it('resolves target-specific registry dependencies without copying H5 helpers into weapp', async () => {
@@ -172,6 +175,7 @@ describe('varo add targets', () => {
     expect(h5.files.map(file => file.to)).toEqual([
       'src/styles/varo.css',
       'src/components/ui/form.ts',
+      'src/styles/varo-form.css',
     ])
     expect(weapp.files.map(file => file.to)).toEqual([
       'src/styles/varo.css',
@@ -180,6 +184,7 @@ describe('varo add targets', () => {
       'src/components/ui/form-context.ts',
       'src/components/ui/v-form.vue',
       'src/components/ui/v-form-item.vue',
+      'src/styles/varo-form.css',
     ])
     expect(h5.dependencies).toContain('vue')
     expect(h5.dependencies).not.toContain('wevu')
@@ -187,6 +192,43 @@ describe('varo add targets', () => {
     expect(weapp.dependencies).not.toContain('vue')
     expect(h5.files.some(file => file.to === 'src/components/ui/form.ts')).toBe(true)
     expect(weapp.files.some(file => file.to === 'src/components/ui/form.ts')).toBe(true)
+  })
+
+  it('typechecks installed Weapp FormItem sources with workspace aliases', { timeout: 60_000 }, async () => {
+    projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-form-typecheck-'))
+
+    await installRegistryItems(['form'], {
+      projectRoot,
+      registryRoot,
+      target: 'weapp',
+    })
+
+    writeFileSync(join(projectRoot, 'package.json'), JSON.stringify({ type: 'module' }))
+    writeFileSync(
+      join(projectRoot, 'tsconfig.json'),
+      JSON.stringify({
+        extends: join(workspaceRoot, 'tsconfig.base.json'),
+        compilerOptions: {
+          noEmit: true,
+        },
+        include: [
+          'src/components/ui/form-context.ts',
+          'src/components/ui/v-form-item.vue',
+        ],
+      }),
+    )
+    symlinkSync(join(workspaceRoot, 'node_modules'), join(projectRoot, 'node_modules'), 'dir')
+
+    await execute(
+      process.execPath,
+      [
+        join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'),
+        '--noEmit',
+        '-p',
+        join(projectRoot, 'tsconfig.json'),
+      ],
+      { cwd: projectRoot, timeout: 30_000 },
+    )
   })
 
   it('copies target-correct component, adapter, merge helper, and styles', async () => {

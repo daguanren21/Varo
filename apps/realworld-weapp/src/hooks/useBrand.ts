@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'wevu'
+import type { Ref } from 'wevu'
 import { computed, ref, watchEffect } from 'wevu'
 import { useAedStore } from '@/store'
 
@@ -8,7 +8,7 @@ interface BrandTarget {
 }
 
 /** 获取品牌列表并同步当前设备品牌。 */
-export function useBrand(device: ComputedRef<BrandTarget>, brandName = 'Jousing') {
+export function useBrand(device: Readonly<Ref<BrandTarget>>, brandName = 'Jousing') {
   const aedStore = useAedStore()
   const { state } = aedStore
   const brandList = computed(() => state.brandList)

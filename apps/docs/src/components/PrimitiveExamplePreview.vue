@@ -1,24 +1,13 @@
 <script setup lang="ts">
 import type { PrimitiveExampleName } from './primitiveExamples'
-import * as WeappPrimitives from '@varo-ui/weapp/primitives'
 import * as H5Primitives from '@varo/primitives-h5'
-import { computed, shallowRef } from 'vue'
+import { shallowRef } from 'vue'
 
-type PreviewPlatform = 'h5' | 'weapp'
 type PrimitiveRuntime = typeof H5Primitives
+const props = defineProps<{ name: PrimitiveExampleName }>()
 
-const props = withDefaults(defineProps<{
-  name: PrimitiveExampleName
-  platform?: PreviewPlatform
-}>(), {
-  platform: 'h5',
-})
-
-const primitiveRuntime = computed<PrimitiveRuntime>(() =>
-  props.platform === 'weapp' ? WeappPrimitives as PrimitiveRuntime : H5Primitives,
-)
 function primitive<Name extends keyof PrimitiveRuntime>(name: Name) {
-  return computed(() => primitiveRuntime.value[name])
+  return H5Primitives[name]
 }
 
 const AccordionContent = primitive('AccordionContent')
@@ -89,7 +78,7 @@ const imageSource = '/logo.svg'
 </script>
 
 <template>
-  <div class="primitive-example-preview" :data-name="props.name" :data-platform="props.platform">
+  <div class="primitive-example-preview" :data-name="props.name" data-platform="h5">
     <ButtonRoot v-if="name === 'button'" class="pe-chip" @click="buttonClicks += 1">
       Pressed {{ buttonClicks }} times
     </ButtonRoot>

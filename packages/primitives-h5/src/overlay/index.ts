@@ -1,7 +1,8 @@
 import type { PropType, StyleValue } from 'vue'
 import type { OverlayDimension } from './types'
-import { useBodyScrollLock, useOverlayRoot } from '@varo-ui/headless'
+import { useOverlayRoot } from '@varo-ui/headless'
 import { computed, defineComponent, h, onBeforeUnmount, toRef, watch } from 'vue'
+import { useBodyScrollLock } from '../use-body-scroll-lock'
 import { usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 

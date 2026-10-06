@@ -42,11 +42,11 @@
     "dev": "tsdown --watch",
     "lint": "echo agent-core lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo agent-core has no e2e"
   },
   "dependencies": {
-    "markstream-core": "^2.0.7",
-    "stream-markdown-parser": "^1.2.13"
+    "markstream-core": "^2.0.12",
+    "stream-markdown-parser": "^1.2.16"
   }
 }

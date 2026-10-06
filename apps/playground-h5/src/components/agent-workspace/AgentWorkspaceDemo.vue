@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AgentThreadVersion } from '@varo-ui/ai'
-import type { AgentContextSource, AgentWorkspacePlacement } from '../agent-ui/advanced-types'
+import type { AgentContextSource, AgentWorkspacePlacement } from '../agent-ui/workspace-types'
 import { shallowRef } from 'vue'
 import { useRagDemo } from '../../features/useRagDemo'
 import { AgentRagPipeline } from '../agent-ui'

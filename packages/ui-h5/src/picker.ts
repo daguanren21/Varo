@@ -1,5 +1,8 @@
+// Generated from registry/components/picker/picker.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, nextTick, onMounted, shallowRef, watch } from 'vue'
+import './styles/varo.css'
+import './styles/varo-picker.css'
 
 export interface PickerOption {
   disabled?: boolean

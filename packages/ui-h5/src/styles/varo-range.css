@@ -1,0 +1,25 @@
+.varo-range {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: min(100%, 320px);
+}
+
+.varo-range__track {
+  height: 6px;
+  overflow: hidden;
+  background: var(--varo-ui-border);
+  border-radius: 999px;
+}
+
+.varo-range__fill {
+  display: block;
+  height: 100%;
+  background: var(--varo-ui-primary);
+  border-radius: inherit;
+}
+
+.varo-range__input {
+  width: 100%;
+  accent-color: var(--varo-ui-primary);
+}

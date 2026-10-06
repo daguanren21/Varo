@@ -19,6 +19,11 @@
       "target": "h5",
       "from": "registry/components/date-picker/date-picker.ts",
       "to": "src/components/ui/date-picker.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/date-picker/h5.css",
+      "to": "src/styles/varo-date-picker.css"
     }
   ],
   "docs": "/components/date-picker"

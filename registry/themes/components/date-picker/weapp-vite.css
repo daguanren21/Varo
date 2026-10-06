@@ -1,0 +1,30 @@
+.varo-date-picker button {
+  font: inherit;
+}
+
+.varo-date-picker {
+  width: min(100%, 360px);
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-date-picker .varo-calendar-card {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.varo-date-picker__confirm {
+  width: calc(100% - 28px);
+  min-height: 42px;
+  margin: 0 14px 14px;
+  font-weight: 750;
+  color: var(--varo-ui-primary-foreground);
+  cursor: pointer;
+  background: var(--varo-ui-primary);
+  border: 0;
+  border-radius: 999px;
+}

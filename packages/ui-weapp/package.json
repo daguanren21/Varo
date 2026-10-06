@@ -2,7 +2,7 @@
   "name": "@varo-ui/weapp",
   "type": "module",
   "version": "2.1.0",
-  "description": "Production-ready component wrappers for native WeChat mini-program products.",
+  "description": "Canonical native Wevu SFC sources and Registry component resolver.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",
   "homepage": "https://daguanren21.github.io/Varo/",
@@ -18,58 +18,46 @@
   "bugs": {
     "url": "https://github.com/daguanren21/Varo/issues"
   },
-  "sideEffects": [
-    "./src/style.css"
-  ],
+  "sideEffects": ["**/*.css"],
   "exports": {
-    ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
-    },
-    "./primitives": {
-      "types": "./dist/primitives.d.mts",
-      "import": "./dist/primitives.mjs"
-    },
+    ".": "./native/src/index.ts",
+    "./components/*": "./native/src/components/ui/*",
     "./resolver": {
       "types": "./dist/resolver.d.mts",
       "import": "./dist/resolver.mjs"
     },
     "./style.css": "./src/style.css",
-    "./source/style.css": "./src/style.css",
-    "./source": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts"
-    }
+    "./source/style.css": "./src/style.css"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./native/src/index.ts",
+  "module": "./native/src/index.ts",
+  "types": "./native/src/index.ts",
   "files": [
     "dist",
-    "src"
+    "native",
+    "src/style.css"
   ],
   "scripts": {
     "build": "tsdown",
     "clean": "rimraf dist",
     "dev": "tsdown --watch",
     "lint": "echo ui-weapp lint pending",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo ui-weapp has no e2e"
   },
   "peerDependencies": {
-    "weapp-vite": ">=7.0.4 <8",
-    "wevu": ">=7.0.4 <8"
+    "weapp-vite": ">=7.2.1 <8",
+    "wevu": ">=7.2.1 <8"
   },
   "dependencies": {
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
-    "vue": "^3.5.42"
+    "@weapp-tailwindcss/merge": "^2.2.4",
+    "clsx": "^2.1.1"
   },
   "devDependencies": {
-    "@varo/hooks": "workspace:*",
-    "@varo/primitives-weapp": "workspace:*",
-    "@varo/shared": "workspace:*",
-    "weapp-vite": "^7.1.0"
+    "weapp-vite": "7.4.0",
+    "wevu": "7.4.0"
   }
 }

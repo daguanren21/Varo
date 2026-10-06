@@ -102,6 +102,7 @@ export const PopoverRoot = defineComponent({
 
 export const PopoverTrigger = defineComponent({
   name: 'PopoverTrigger',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,
@@ -161,6 +162,7 @@ export const PopoverContent = defineComponent({
 
 export const PopoverClose = defineComponent({
   name: 'PopoverClose',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,

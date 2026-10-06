@@ -47,10 +47,9 @@ function submit(prompt = promptValue.value) {
   emit('submit', value)
 }
 
-function update(event: Event) {
-  const miniEvent = event as Event & { detail?: { value?: string } }
-  const target = event.target as HTMLTextAreaElement | null
-  emit('update:modelValue', miniEvent.detail?.value ?? target?.value ?? '')
+function update(event: unknown) {
+  const nativeEvent = event as { detail?: { value?: string }, target?: { value?: string } }
+  emit('update:modelValue', nativeEvent.detail?.value ?? nativeEvent.target?.value ?? '')
 }
 </script>
 

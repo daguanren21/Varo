@@ -10,6 +10,7 @@ import {
 
 } from '../../lib/varo-primitives'
 import '../../styles/varo.css'
+import '../../styles/varo-button.css'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
 type ButtonShape = 'default' | 'square' | 'round'

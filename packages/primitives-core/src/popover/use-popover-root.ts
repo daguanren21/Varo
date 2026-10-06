@@ -1,6 +1,7 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '@varo/shared'
 import type { PopoverRootOptions, UsePopoverRootResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
+import { useControllableState } from '../use-controllable-state'
 
 export function usePopoverRoot(options: PopoverRootOptions = {}): UsePopoverRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,7 +10,7 @@ export function usePopoverRoot(options: PopoverRootOptions = {}): UsePopoverRoot
     runtime,
     defaultValue: options.defaultOpen ?? false,
     value: options.open,
-    onUpdate: options.onOpenChange
+    onUpdate: options.onOpenChange,
   })
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
   const interactive = runtime.computed(() => !disabled.value) as Ref<boolean>
@@ -31,7 +32,7 @@ export function usePopoverRoot(options: PopoverRootOptions = {}): UsePopoverRoot
     state: {
       disabled,
       interactive,
-      open: openState.current
+      open: openState.current,
     },
     attrs: {
       trigger: {
@@ -47,30 +48,30 @@ export function usePopoverRoot(options: PopoverRootOptions = {}): UsePopoverRoot
         },
         get 'data-state'() {
           return getState()
-        }
+        },
       },
       content: {
-        role: 'dialog',
+        'role': 'dialog',
         get 'data-state'() {
           return getState()
-        }
+        },
       },
       close: {
         'data-part': 'close',
         get 'data-state'() {
           return getState()
-        }
-      }
+        },
+      },
     },
     events: {
       close: () => setOpen(false),
       onEscapeKeyDown: () => setOpen(false),
       onInteractOutside: () => setOpen(false),
       open: () => setOpen(true),
-      toggle: () => setOpen(!openState.current.value)
+      toggle: () => setOpen(!openState.current.value),
     },
     api: {
-      setOpen
-    }
+      setOpen,
+    },
   }
 }

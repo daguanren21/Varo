@@ -1,0 +1,30 @@
+{
+  "name": "agent-conversation",
+  "type": "component",
+  "title": "Agent Conversation",
+  "description": "Minimal conversation, Markdown, streaming, reasoning, tools, approvals, response actions and prompt composition.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/agent-presentation", "themes/agent", "utils/cn"],
+  "targetRegistryDependencies": { "weapp": ["components/button", "components/card", "components/tag"] },
+  "files": [
+    { "target": "h5", "from": "registry/components/agent-conversation/h5.ts", "to": "src/components/agent-ui/conversation.ts" },
+    { "target": "h5", "from": "registry/components/agent-conversation/agent-conversation.css", "to": "src/components/agent-ui/agent-conversation.css" },
+    { "target": "h5", "from": "registry/components/agent-ui/h5/AgentMarkdown.ts", "to": "src/components/agent-ui/AgentMarkdown.ts" },
+    { "target": "h5", "from": "registry/components/agent-ui/h5/agent-markdown.css", "to": "src/components/agent-ui/agent-markdown.css" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentApproval.vue", "to": "src/components/agent-ui/AgentApproval.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentComposer.vue", "to": "src/components/agent-ui/AgentComposer.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentConversation.vue", "to": "src/components/agent-ui/AgentConversation.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentEventRenderer.vue", "to": "src/components/agent-ui/AgentEventRenderer.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentLoading.vue", "to": "src/components/agent-ui/AgentLoading.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentMarkdown.vue", "to": "src/components/agent-ui/AgentMarkdown.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentMarkdownNode.vue", "to": "src/components/agent-ui/AgentMarkdownNode.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentMessage.vue", "to": "src/components/agent-ui/AgentMessage.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentPromptSuggestions.vue", "to": "src/components/agent-ui/AgentPromptSuggestions.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentResponseActions.vue", "to": "src/components/agent-ui/AgentResponseActions.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentStream.vue", "to": "src/components/agent-ui/AgentStream.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentThinking.vue", "to": "src/components/agent-ui/AgentThinking.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentToolChip.vue", "to": "src/components/agent-ui/AgentToolChip.vue" }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

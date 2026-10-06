@@ -8,6 +8,12 @@ export const previewScenarios = [
     description: '按钮、受控输入、插槽与组件生命周期',
   },
   {
+    id: 'dialog',
+    title: 'Dialog 阻塞诊断',
+    page: 'pages/web-preview-dialog/index',
+    description: '受上游 weapp-vite #1172 plain-slot 上下文问题阻塞；未通过运行验证',
+  },
+  {
     id: 'agent',
     title: 'Agent 内容',
     page: 'pages/web-preview-agent/index',

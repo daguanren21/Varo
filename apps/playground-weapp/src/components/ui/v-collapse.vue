@@ -8,6 +8,12 @@ import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { collapseContextKey } from './collapse-context'
 
+defineOptions({
+  properties: {
+    value: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     accordion?: boolean
@@ -27,7 +33,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  change: [value: AccordionValue]
+  'change': [value: AccordionValue]
   'update:value': [value: AccordionValue]
 }>()
 
@@ -35,7 +41,7 @@ const type = computed<AccordionType>(() => props.accordion ? 'single' : 'multipl
 const collapsible = computed(() => props.collapsible)
 const disabled = computed(() => props.disabled)
 const value = computed<AccordionValue>(() => props.value)
-const valueControlled = computed(() => props.value !== undefined)
+const valueControlled = computed(() => props.value != null)
 const collapse = useAccordionRoot({
   runtime: varoReactiveRuntime,
   collapsible,

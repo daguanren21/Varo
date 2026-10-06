@@ -1,0 +1,111 @@
+.varo-cascader button {
+  font: inherit;
+}
+
+.varo-cascader {
+  width: min(100%, 360px);
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-cascader__toolbar {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) 78px;
+  align-items: center;
+  min-height: 48px;
+  border-bottom: 1px solid var(--varo-ui-border);
+}
+
+.varo-cascader__title {
+  color: var(--varo-ui-text);
+  text-align: center;
+}
+
+.varo-cascader__cancel,
+.varo-cascader__confirm {
+  font-weight: 650;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  transition:
+    color 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.varo-cascader__cancel:hover,
+.varo-cascader__confirm:hover {
+  opacity: 0.86;
+  transform: translateY(-1px);
+}
+
+.varo-cascader__cancel {
+  color: var(--varo-ui-text-muted);
+}
+
+.varo-cascader__confirm {
+  color: var(--varo-ui-primary);
+}
+
+.varo-cascader__options {
+  display: grid;
+  padding: 8px;
+}
+
+.varo-cascader__option {
+  position: relative;
+  min-height: 42px;
+  color: var(--varo-ui-text);
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--varo-ui-radius);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.varo-cascader__option:hover {
+  font-weight: 750;
+  color: var(--varo-ui-primary);
+  background: var(--varo-ui-surface-muted);
+  box-shadow: inset 0 0 0 1px var(--varo-ui-ring);
+  transform: translateY(-1px);
+}
+
+.varo-cascader__option:focus-visible {
+  outline: 2px solid var(--varo-ui-ring);
+  outline-offset: 2px;
+}
+
+.varo-cascader__tabs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--varo-ui-border);
+}
+
+.varo-cascader__tab {
+  padding: 3px 9px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--varo-ui-primary);
+  border-radius: 999px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.varo-cascader__tab:hover {
+  background: var(--varo-ui-surface-muted);
+  transform: translateY(-1px);
+}

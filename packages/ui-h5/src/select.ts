@@ -1,4 +1,5 @@
-import type { VSelectFilter, VSelectMode, VSelectOption, VSelectValue } from '@varo/shared'
+// Generated from registry/components/select/select.ts; edit the Registry source.
+import type { VSelectFilter, VSelectMode, VSelectOption, VSelectValue } from '@varo-ui/headless'
 import type { PropType } from 'vue'
 import {
   clearSelectValue,
@@ -6,10 +7,12 @@ import {
   filterSelectOptions,
   normalizeSelectArray,
   toggleSelectValue,
-
-} from '@varo/shared'
+} from '@varo-ui/headless'
 import { computed, defineComponent, h, shallowRef, useId, watch } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-select.css'
 
 type VSelectValueProp = VSelectValue | VSelectValue[] | undefined
 type ActivePreference = 'first' | 'last' | 'selected'

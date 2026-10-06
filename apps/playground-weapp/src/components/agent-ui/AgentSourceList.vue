@@ -1,11 +1,5 @@
 <script setup lang="ts">
-export interface AgentSourceItem {
-  description?: string
-  domain?: string
-  id: string
-  title: string
-  url: string
-}
+import type { AgentSourceItem } from './advanced-types'
 
 withDefaults(
   defineProps<{

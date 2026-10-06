@@ -5,7 +5,11 @@ import { computed, toRef } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
-type OverlayDimension = number | string
+defineOptions({
+  properties: {
+    visible: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -30,13 +34,15 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  click: [event: unknown]
-  close: []
-  visibleChange: [visible: boolean]
+  'click': [event: unknown]
+  'close': []
+  'visibleChange': [visible: boolean]
   'update:visible': [visible: boolean]
 }>()
 
-const visibleControlled = computed<boolean | undefined>(() => props.visible === undefined ? undefined : true)
+type OverlayDimension = number | string
+
+const visibleControlled = computed(() => props.visible != null)
 const overlay = useOverlayRoot({
   runtime: varoReactiveRuntime,
   defaultVisible: props.defaultVisible,

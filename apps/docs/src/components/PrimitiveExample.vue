@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Locale, PrimitiveExampleName } from './primitiveExamples'
 import { computed, onBeforeUnmount, ref } from 'vue'
+import NativeSourcePreview from './NativeSourcePreview.vue'
 import PrimitiveExamplePreview from './PrimitiveExamplePreview.vue'
 import {
 
@@ -16,14 +17,12 @@ const props = withDefaults(
     locale?: Locale
     packageName?: string
     h5Code?: string
-    weappCode?: string
     contractRows?: Array<{ label: string, value: string }>
   }>(),
   {
     locale: 'zh',
     packageName: '',
     h5Code: '',
-    weappCode: '',
     contractRows: () => [],
   },
 )
@@ -69,12 +68,7 @@ const activePackage = computed(
   () => props.packageName || '@varo-ui/headless',
 )
 
-const activeCode = computed(
-  () =>
-    (platform.value === 'h5'
-      ? props.h5Code || example.value.h5Code
-      : props.weappCode || example.value.weappCode),
-)
+const activeCode = computed(() => props.h5Code || example.value.h5Code)
 
 const activeContractRows = computed(() =>
   props.contractRows?.length ? props.contractRows : example.value.contractRows,
@@ -180,9 +174,10 @@ onBeforeUnmount(() => resetCopy())
       <strong>{{ activePackage }}</strong>
     </div>
 
-    <div v-if="showPreview" class="primitive-example__preview" :data-platform="platform">
-      <PrimitiveExamplePreview :name="name" :platform="platform" />
-      <table v-if="platform === 'weapp'" class="primitive-example__contract-table">
+    <NativeSourcePreview v-if="platform === 'weapp'" :component="name" :locale="locale" />
+    <div v-else-if="showPreview" class="primitive-example__preview" data-platform="h5">
+      <PrimitiveExamplePreview :name="name" />
+      <table class="primitive-example__contract-table">
         <tbody>
           <tr v-for="row in activeContractRows" :key="row.label">
             <th>{{ row.label }}</th>

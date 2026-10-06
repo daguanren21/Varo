@@ -19,18 +19,6 @@ const emit = defineEmits<{
 }>()
 const emptyChoices: AgentChoice[] = []
 
-const streamStatus = computed<'completed' | 'failed' | 'idle' | 'streaming'>(() => {
-  if (props.snapshot.status === 'completed') {
-    return 'completed'
-  }
-  if (props.snapshot.status === 'failed' || props.snapshot.status === 'cancelled') {
-    return 'failed'
-  }
-  if (props.snapshot.status === 'idle') {
-    return 'idle'
-  }
-  return 'streaming'
-})
 const choices = computed<AgentChoice[]>(() => props.snapshot.approval?.choices ?? emptyChoices)
 const messageContent = computed(() => String(props.snapshot.message?.visible ?? ''))
 const messageError = computed(() => String(props.snapshot.error?.message ?? ''))
@@ -55,11 +43,11 @@ const showApproval = computed(() => props.snapshot.approval?.status === 'waiting
       :stream-content="messageContent"
       :stream-error="messageError"
       :stream-final="Boolean(snapshot.message.final)"
-      :stream-status="streamStatus"
+      :stream-status="snapshot.status"
       @retry="emit('retry')"
     />
 
-    <AgentLoading v-if="streamStatus === 'streaming' && !messageContent" label="正在生成回答" />
+    <AgentLoading v-if="snapshot.status === 'streaming' && !messageContent" label="正在生成回答" />
 
     <AgentApproval
       v-if="showApproval"

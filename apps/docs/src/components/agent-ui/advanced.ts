@@ -1,14 +1,15 @@
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { PropType, VNodeChild } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type {
   AgentActivityItem,
-  AgentAdvancedStatus,
   AgentCitationItem,
+  AgentCodeBlockStatus,
   AgentContextChunk,
   AgentFineTuneControl,
   AgentFlowNode,
+  AgentImageGenerationStatus,
   AgentInsightItem,
-  AgentRadioChoice,
   AgentSearchItem,
   AgentSelectionAction,
   AgentSidebarGroup,
@@ -16,6 +17,7 @@ import type {
 } from './advanced-types'
 import type { AgentFilterOption, AgentTableColumn, AgentTableRow } from './agent-table'
 import type { AgentDiffIndicators, AgentDiffLine, AgentDiffSelection, AgentDiffView, AgentFileDiffLabels, IndexedAgentDiffLine } from './file-diff'
+import type { AgentChoice } from './types'
 import { computed, defineComponent, h, shallowRef, useId } from 'vue'
 import { cn } from '../../lib/cn'
 import {
@@ -32,18 +34,21 @@ import {
 
   splitAgentDiffContent,
 } from './file-diff'
+import '../../styles/varo.css'
+import '../../styles/varo-agent.css'
 import './agent-advanced.css'
+import './agent-artifact.css'
 
 export type {
   AgentActivityItem,
-  AgentAdvancedStatus,
   AgentCitationItem,
+  AgentCodeBlockStatus,
   AgentCodeLine,
   AgentContextChunk,
   AgentFineTuneControl,
   AgentFlowNode,
+  AgentImageGenerationStatus,
   AgentInsightItem,
-  AgentRadioChoice,
   AgentSearchItem,
   AgentSelectionAction,
   AgentSidebarGroup,
@@ -64,14 +69,14 @@ function eventValue(event: Event) {
   return miniEvent.detail?.value ?? target?.value ?? ''
 }
 
-function statusLabel(status: AgentAdvancedStatus) {
+function statusLabel(status: AgentPartStatus) {
   if (status === 'completed') { return 'Completed' }
   if (status === 'failed') { return 'Failed' }
   if (status === 'running') { return 'Running' }
   return 'Waiting'
 }
 
-function renderStatus(status: AgentAdvancedStatus) {
+function renderStatus(status: AgentPartStatus) {
   return h('span', { 'class': 'agent-advanced__status', 'data-status': status }, [
     h('i', { 'class': 'agent-advanced__status-dot', 'aria-hidden': 'true' }),
     statusLabel(status),
@@ -151,7 +156,7 @@ function renderSearchIcon() {
 export const AgentRadioGroup = defineComponent({
   name: 'AgentRadioGroup',
   props: {
-    choices: { type: Array as PropType<AgentRadioChoice[]>, default: () => [] },
+    choices: { type: Array as PropType<AgentChoice[]>, default: () => [] },
     orientation: { type: String as PropType<'horizontal' | 'vertical'>, default: 'vertical' },
     value: { type: String, default: '' },
   },
@@ -217,7 +222,7 @@ export const AgentCodeBlock = defineComponent({
     focusedLines: { type: Array as PropType<number[]>, default: () => [] },
     language: { type: String, default: 'text' },
     lineNumbers: { type: Boolean, default: true },
-    status: { type: String as PropType<'complete' | 'streaming'>, default: 'complete' },
+    status: { type: String as PropType<AgentCodeBlockStatus>, default: 'complete' },
   },
   emits: { copy: (_code: string) => true },
   setup(props, { emit, slots }) {
@@ -263,7 +268,7 @@ export const AgentFileDiff = defineComponent({
     open: { type: Boolean as PropType<boolean | undefined>, default: undefined },
     showActions: { type: Boolean, default: true },
     showToolbar: { type: Boolean, default: true },
-    status: { type: String as PropType<AgentAdvancedStatus>, default: 'completed' },
+    status: { type: String as PropType<AgentPartStatus>, default: 'completed' },
     view: { type: String as PropType<AgentDiffView | undefined>, default: undefined },
     wrap: { type: Boolean as PropType<boolean | undefined>, default: undefined },
   },
@@ -539,7 +544,7 @@ export const AgentToolResult = defineComponent({
     duration: String,
     name: { type: String, required: true },
     output: { type: String, default: '' },
-    status: { type: String as PropType<AgentAdvancedStatus>, default: 'completed' },
+    status: { type: String as PropType<AgentPartStatus>, default: 'completed' },
     summary: String,
   },
   emits: { 'retry': () => true, 'update:open': (_value: boolean) => true },
@@ -583,7 +588,7 @@ export const AgentImageGeneration = defineComponent({
     progress: { type: Number, default: 0 },
     prompt: String,
     src: String,
-    status: { type: String as PropType<'completed' | 'failed' | 'generating' | 'queued'>, default: 'queued' },
+    status: { type: String as PropType<AgentImageGenerationStatus>, default: 'queued' },
   },
   emits: { download: (_src: string) => true, retry: () => true },
   setup(props, { emit }) {

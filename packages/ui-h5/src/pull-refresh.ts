@@ -1,4 +1,7 @@
+// Generated from registry/components/pull-refresh/h5.ts; edit the Registry source.
 import { computed, defineComponent, h, nextTick, shallowRef, watch } from 'vue'
+import './styles/varo.css'
+import './styles/varo-pull-refresh.css'
 
 type PullRefreshState = 'idle' | 'loading' | 'pulling' | 'ready'
 

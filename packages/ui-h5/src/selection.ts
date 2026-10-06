@@ -1,8 +1,8 @@
+// Generated from registry/utils/selection/selection.ts; edit the Registry source.
 import type { InjectionKey, PropType } from 'vue'
-
-import { CheckboxIndicator, CheckboxRoot } from '@varo/primitives-h5'
-import { createVariantClass } from '@varo/shared'
+import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, h, inject, provide } from 'vue'
+import { CheckboxIndicator, CheckboxRoot } from '@varo/primitives-h5'
 import { VIcon } from './icon'
 
 export type SelectionDirection = 'horizontal' | 'vertical'
@@ -89,10 +89,14 @@ export const VCheckbox = defineComponent({
       default: undefined,
     },
     disabled: Boolean,
+    indeterminate: Boolean,
+    invalid: Boolean,
     label: {
       type: String,
       default: undefined,
     },
+    readonly: Boolean,
+    required: Boolean,
     value: {
       type: [String, Number, Boolean] as PropType<CheckboxValue>,
       default: true,
@@ -103,11 +107,23 @@ export const VCheckbox = defineComponent({
     const group = inject(checkboxGroupKey, undefined)
     const isChecked = computed(() => group?.isChecked(props.value) ?? Boolean(props.checked))
     const isDisabled = computed(() => props.disabled || Boolean(group?.disabled()))
+    const isIndeterminate = computed(() => props.indeterminate)
+    const isReadonly = computed(() => props.readonly)
     const classes = computed(() =>
-      createVariantClass('varo-checkbox', { checked: isChecked.value, disabled: isDisabled.value }),
+      createVariantClass('varo-checkbox', {
+        checked: isChecked.value,
+        disabled: isDisabled.value,
+        indeterminate: isIndeterminate.value,
+        invalid: props.invalid,
+        readonly: isReadonly.value,
+      }),
     )
 
     function update(checked: boolean) {
+      if (isReadonly.value) {
+        return
+      }
+
       if (group) {
         group.toggle(props.value)
         return
@@ -119,14 +135,23 @@ export const VCheckbox = defineComponent({
     return () =>
       h(CheckboxRoot, {
         ...attrs,
+        'aria-invalid': props.invalid || undefined,
+        'aria-required': props.required || undefined,
         'class': [classes.value, attrs.class],
         'checked': isChecked.value,
+        'data-invalid': String(props.invalid),
+        'data-required': String(props.required),
         'disabled': isDisabled.value,
+        'indeterminate': isIndeterminate.value,
+        'readonly': isReadonly.value,
         'onUpdate:checked': update,
       }, {
         default: () => [
           h('span', { 'class': 'varo-checkbox__icon', 'aria-hidden': 'true' }, [
-            h(CheckboxIndicator, { as: 'span' }, () => h(VIcon, { name: 'check', size: 14 })),
+            h(CheckboxIndicator, { as: 'span' }, () => h(VIcon, {
+              name: isIndeterminate.value ? 'minus' : 'check',
+              size: 14,
+            })),
           ]),
           h('span', { class: 'varo-checkbox__label' }, slots.default?.() ?? props.label),
         ],
@@ -196,7 +221,10 @@ export const VRadio = defineComponent({
     const isChecked = computed(() => group?.isChecked(props.value) ?? Boolean(props.checked))
     const isDisabled = computed(() => props.disabled || Boolean(group?.disabled()))
     const classes = computed(() =>
-      createVariantClass('varo-radio', { checked: isChecked.value, disabled: isDisabled.value }),
+      createVariantClass('varo-radio', {
+        checked: isChecked.value,
+        disabled: isDisabled.value,
+      }),
     )
 
     function select() {
@@ -227,9 +255,7 @@ export const VRadio = defineComponent({
           'onClick': select,
         },
         [
-          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, [
-            h('span', { class: 'varo-radio__dot' }),
-          ]),
+          h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, isChecked.value ? [h(VIcon, { name: 'dot', size: 10 })] : []),
           h('span', { class: 'varo-radio__label' }, slots.default?.() ?? props.label),
         ],
       )

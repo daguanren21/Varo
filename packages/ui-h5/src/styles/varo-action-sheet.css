@@ -1,0 +1,66 @@
+.varo-action-sheet {
+  width: 100%;
+  max-height: min(76vh, 640px);
+  overflow: auto;
+  background: var(--varo-ui-surface);
+}
+
+.varo-action-sheet__header {
+  display: grid;
+  gap: 4px;
+  padding: 18px 16px 12px;
+  text-align: center;
+}
+
+.varo-action-sheet__title,
+.varo-action-sheet__description {
+  margin: 0;
+}
+
+.varo-action-sheet__title {
+  font-size: 16px;
+  color: var(--varo-ui-text);
+}
+
+.varo-action-sheet__description,
+.varo-action-sheet__item-description {
+  font-size: 12px;
+  color: var(--varo-ui-text-muted);
+}
+
+.varo-action-sheet__actions {
+  display: grid;
+}
+
+.varo-action-sheet__action,
+.varo-action-sheet__cancel {
+  display: grid;
+  gap: 3px;
+  place-items: center;
+  min-height: 52px;
+  padding: 8px 16px;
+  font: inherit;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-surface);
+  border: 0;
+  border-top: 1px solid var(--varo-ui-border);
+}
+
+.varo-action-sheet__action:active,
+.varo-action-sheet__cancel:active {
+  background: var(--varo-ui-surface-muted);
+}
+
+.varo-action-sheet__action:disabled {
+  opacity: 0.5;
+}
+
+.varo-action-sheet__name {
+  font-weight: 700;
+}
+
+.varo-action-sheet__cancel {
+  margin-top: 8px;
+  font-weight: 700;
+  border-top: 8px solid var(--varo-ui-surface-muted);
+}

@@ -9,6 +9,7 @@ type FormValidateTrigger = 'submit' | 'change' | 'blur'
 const props = withDefaults(
   defineProps<{
     colon?: boolean
+    description?: string
     label?: string
     labelWidth?: number | string
     name: string
@@ -19,6 +20,7 @@ const props = withDefaults(
   }>(),
   {
     colon: false,
+    description: '',
     label: '',
     labelWidth: undefined,
     required: false,
@@ -57,17 +59,25 @@ const itemId = createFormItemId()
 const defaultControlId = `${itemId}-control`
 const controlId = shallowRef(defaultControlId)
 const errorId = `${itemId}-error`
+const descriptionId = `${itemId}-description`
 const labelId = `${itemId}-label`
 const labelVisible = computed(() => Boolean(props.label || slots.label))
+const descriptionVisible = computed(() => Boolean(props.description || slots.description))
 const errorVisible = computed(() => shouldShowError.value && invalid.value)
 const labelFor = computed(() => controlId.value === defaultControlId ? undefined : controlId.value)
-const controlAriaDescribedBy = computed(() => errorVisible.value ? errorId : undefined)
-const controlAriaInvalid = computed(() => invalid.value ? 'true' : undefined)
+const controlAriaDescribedBy = computed(() => [
+  descriptionVisible.value ? descriptionId : undefined,
+  errorVisible.value ? errorId : undefined,
+].filter(Boolean).join(' ') || undefined)
 const controlAriaLabelledBy = computed(() => labelVisible.value ? labelId : undefined)
+const controlAriaInvalid = computed(() => invalid.value ? 'true' : undefined)
 
 provide(formItemControlContextKey, {
   controlId,
   defaultControlId,
+  disabled: formContext.disabled,
+  descriptionId,
+  descriptionVisible,
   errorId,
   errorVisible,
   invalid,
@@ -84,6 +94,7 @@ watch(mergedRules, rules => field.setRules(rules))
 onBeforeUnmount(() => field.unregister())
 
 function setValue(value: unknown) {
+  if (formContext.disabled.value || Object.is(field.value.value, value)) { return }
   field.value.value = value
   if (props.validateTrigger === 'change') {
     void field.validate()
@@ -94,6 +105,7 @@ function setValue(value: unknown) {
 }
 
 function onBlur(event?: unknown) {
+  if (formContext.disabled.value) { return event }
   field.setTouched(true)
   if (props.validateTrigger === 'blur') {
     void field.validate()
@@ -143,6 +155,11 @@ function onBlur(event?: unknown) {
           :validate="slotValidate"
           :value="slotValue"
         />
+      </view>
+      <view v-if="descriptionVisible" :id="descriptionId" class="varo-form-item__description">
+        <slot name="description">
+          {{ props.description }}
+        </slot>
       </view>
       <view v-if="errorVisible" :id="errorId" class="varo-form-item__error">
         {{ field.errorMessage.value }}

@@ -10,6 +10,8 @@ import {
 import { computed, defineComponent, h, shallowRef, useId, watch } from 'vue'
 import { VIcon } from './icon'
 import '../../styles/varo.css'
+import '../../styles/varo-icon.css'
+import '../../styles/varo-select.css'
 
 type VSelectValueProp = VSelectValue | VSelectValue[] | undefined
 type ActivePreference = 'first' | 'last' | 'selected'

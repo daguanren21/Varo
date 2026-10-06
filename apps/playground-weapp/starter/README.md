@@ -4,7 +4,7 @@ An MIT, editable WeChat mini-program project exported from the current Varo nati
 
 ## Requirements and first run
 
-Use Node **22.18+ within Node 22, 24.11+ within Node 24, or 26+**, and **pnpm 11.24.0**. Node 25 is outside this repository's supported runtime policy. The direct `wevu` and `weapp-vite` versions are pinned to **7.1.0**, matching the source baseline. Install registry dependencies with network access:
+Use Node **22.18+ within Node 22, 24.11+ within Node 24, or 26+**, and **pnpm 11.24.0**. Node 25 is outside this repository's supported runtime policy. Compiler/runtime versions are pinned in `package.json` and listed in `DEPENDENCIES.md`. Install registry dependencies with network access:
 
 ```sh
 pnpm install --frozen-lockfile
@@ -55,11 +55,11 @@ starter-manifest.json
 pnpm-lock.yaml
 ```
 
-Unrelated robot, Agent/AI, gallery, Registry showcase and plugin registrations are excluded. Native feature source paths are preserved. Imports into the source monorepo are rewritten to local pure-helper files; the generated headless barrel exports only the helpers consumed by native components. The unused renderer wildcard in `lib/varo-primitives.ts` is removed only after checking that reached consumers use its native reactive runtime binding. There is no `@varo/primitives-weapp` dependency, H5 renderer wrapper, Vite workspace alias or runtime compatibility layer.
+Unrelated robot, Agent/AI, gallery, Registry showcase and plugin registrations are excluded. Native feature source paths are preserved. Imports into the source monorepo are rewritten to local pure-helper files; the generated headless barrel exports only the helpers consumed by native components. `lib/varo-primitives.ts` binds those neutral helpers to the native reactive runtime. There is no `@varo/primitives-weapp` dependency, H5 renderer wrapper, Vite workspace alias or runtime compatibility layer.
 
 Start data/API integration in `src/features/retail/runtime.ts`, which exports the default mock-backed `retailService`. Its local service is a simulation; no server URL, authentication or payment provider is configured by the exporter. `src/features/retail/http-service.ts` is included explicitly as an integration entry even though the default runtime does not import it. Its `createHttpRetailService` example requires an application-owned `RetailHttpTransport` implementation and actual API contract. Adapt authoritative prices, stock, address validation and order persistence at that service boundary rather than embedding private APIs in UI components. Keep integer-cent amounts and the native service's order/address snapshot contract intact.
 
-Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data/assets, tab images and app theme values for your application; `retailConfig.scenario` selects local demo scenarios. `src/styles/varo.css` and the reached native UI source remain editable. See the source repository's [technical guide](https://daguanren21.github.io/Varo/guide/retail-starter) for the service contracts, deterministic local scenarios and brand entry details.
+Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data/assets, tab images and app theme values for your application; `retailConfig.scenario` selects local demo scenarios. `src/styles/` and the reached native UI source remain editable. `vite.config.ts` loads foundation (`varo.css`) before component styles, globally into `app.vue`. See the source repository's [technical guide](https://daguanren21.github.io/Varo/guide/retail-starter) for the service contracts, deterministic local scenarios and brand entry details.
 
 ## Version and integrity record
 

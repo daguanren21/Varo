@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentActivityItem, AgentAdvancedStatus } from './advanced-types'
+import type { AgentActivityItem } from './advanced-types'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import { agentSearchIcon, agentSparklesIcon, agentToolIcon } from './agent-icons'
@@ -63,7 +64,7 @@ const displayItems = computed(() =>
   }),
 )
 
-function statusDotClass(status: AgentAdvancedStatus) {
+function statusDotClass(status: AgentPartStatus) {
   return cn(
     'agent-activity__status-dot',
     `is-${status}`,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentContextSource, AgentContextSourceStatus } from './advanced-types'
+import type { AgentContextSource, AgentContextSourceStatus } from './workspace-types'
 import { computed } from 'wevu'
 import { agentPlugIcon } from './agent-icons'
 
@@ -20,7 +20,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   connect: [source: AgentContextSource]
-  toggle: [source: AgentContextSource, enabled: boolean]
+  toggle: [payload: [source: AgentContextSource, enabled: boolean]]
 }>()
 
 const clampedUsage = computed(() => {
@@ -108,7 +108,7 @@ const displaySources = computed(() => props.sources.map((source) => {
           hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
-          @click="emit('toggle', item.source, !item.source.enabled)"
+          @click="emit('toggle', [item.source, !item.source.enabled])"
         >
           {{ item.toggleText }}
         </button>

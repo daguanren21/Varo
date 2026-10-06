@@ -78,7 +78,7 @@ src/
   components/retail/, components/ui/
   features/retail/                 # Service/store, data and brand configuration
   composables/, lib/
-  styles.css, styles/varo.css      # Editable Tailwind entry and Varo styles
+  styles.css, styles/              # Editable Tailwind entry and Registry styles
   static/                         # Reached local images, icons and feature assets
   vendor/varo/packages/            # Selected framework-neutral helper source
 scripts/
@@ -98,7 +98,7 @@ Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data, i
 
 ## Tailwind 4 and global Varo styles
 
-`src/App.vue` imports `./styles.css` first and `./styles/varo.css` second in its unscoped style block; the app's retail token overrides follow both imports. Keep this order. `src/styles.css` owns the Tailwind theme/utility imports and explicit source discovery for exported Vue/TypeScript, including the copied helper recipes. There is no second manually maintained palette or UI stylesheet in the template.
+`src/App.vue` imports `./styles.css`, then every exported Registry stylesheet under `./styles/`, with foundation (`varo.css`) before component styles. The app's retail token overrides follow all imports in its unscoped style block. Keep this order. `src/styles.css` owns the Tailwind theme/utility imports and explicit source discovery for exported Vue/TypeScript, including the copied helper recipes. There is no second manually maintained palette or UI stylesheet in the template.
 
 `WeappTailwindcss` runs **after** the official uni plugin, with `cssEntries` pointing at that real imported CSS file. It remains enabled for both platforms:
 

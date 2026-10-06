@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { AgentThreadVersion } from '@varo-ui/ai'
+import type { AgentConversationMessage, AgentTask } from '../agent-ui/types'
 import type {
   AgentContextSource,
   AgentRetrievalItem,
   AgentSourceReceiptItem,
   AgentWorkspacePlacement,
-} from '../agent-ui/advanced-types'
-import type { AgentTask } from '../agent-ui/types'
+} from '../agent-ui/workspace-types'
 import { useControllableState } from '@varo-ui/headless'
 import { computed } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
@@ -18,14 +18,6 @@ import AgentShell from '../agent-ui/AgentShell.vue'
 import AgentSourceReceipt from '../agent-ui/AgentSourceReceipt.vue'
 import AgentTaskRunner from '../agent-ui/AgentTaskRunner.vue'
 import AgentThreadVersions from '../agent-ui/AgentThreadVersions.vue'
-
-interface AgentConversationMessage {
-  content: string
-  id: string
-  label?: string
-  role: 'assistant' | 'system' | 'user'
-  timestamp?: string
-}
 
 // Keep an omitted native model distinct from a controlled empty string.
 defineOptions({
@@ -83,7 +75,7 @@ const emit = defineEmits<{
   'retryTask': [task: AgentTask]
   'selectVersion': [version: AgentThreadVersion]
   'submit': [prompt: string]
-  'toggleSource': [source: AgentContextSource, enabled: boolean]
+  'toggleSource': [payload: [source: AgentContextSource, enabled: boolean]]
   'update:prompt': [value: string]
 }>()
 
@@ -106,8 +98,8 @@ function updatePrompt(value: string) {
   promptState.current.value = value
 }
 
-function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
-  emit('toggleSource', source, enabled)
+function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
+  emit('toggleSource', payload)
 }
 </script>
 

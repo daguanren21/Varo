@@ -55,6 +55,39 @@ describe('H5 Agent UI', () => {
     expect(wrapper.emitted('approve')?.[0]).toEqual(['verify'])
   })
 
+  it('preserves waiting and cancellation without presenting either as a generation failure', async () => {
+    const snapshot: AgentStreamSnapshot = {
+      data: [],
+      eventCount: 1,
+      message: { final: false, id: 'message', role: 'assistant', source: '保留回答', visible: '保留回答' },
+      reasoning: [],
+      status: 'waiting',
+      tools: [],
+    }
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('waiting')
+      expect(wrapper.find('.agent-ui__cursor').exists()).toBe(false)
+      expect(wrapper.find('.agent-loading').exists()).toBe(false)
+      expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'cancelled' } })
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('cancelled')
+      expect(wrapper.get('.agent-markdown').text()).toBe('保留回答')
+      expect(wrapper.get('.agent-markdown').attributes('data-final')).toBe('true')
+      expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+      expect(wrapper.find('.agent-ui__cursor').exists()).toBe(false)
+
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'failed', error: { type: 'error', message: '连接中断' } } })
+      expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')
+      await wrapper.get('[role="alert"] button').trigger('click')
+      expect(wrapper.emitted('retry')).toEqual([[]])
+    }
+    finally {
+      wrapper.unmount()
+    }
+  })
+
   it('submits explicit composer input and prompt suggestions', async () => {
     const composer = mount(AgentComposer, {
       props: { modelValue: '分析双端方案', suggestions: ['生成发布计划'] },

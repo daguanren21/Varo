@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AgentThreadVersion } from '@varo-ui/ai'
-import type { AgentContextSource, AgentWorkspacePlacement } from '../../components/agent-ui/advanced-types'
+import type { AgentContextSource, AgentWorkspacePlacement } from '../../components/agent-ui/workspace-types'
 import { computed, shallowRef } from 'wevu'
 import AgentRagPipeline from '../../components/agent-ui/AgentRagPipeline.vue'
 import AgentWorkspace from '../../components/blocks/agent-workspace.vue'
@@ -34,7 +34,7 @@ const versions: AgentThreadVersion[] = [
   { id: 'flow-fix', parentId: 'root', label: '流程修复', summary: '修复签名与幂等', createdAt: '09:41' },
 ]
 
-function toggleSource(source: AgentContextSource, enabled: boolean) {
+function toggleSource([source, enabled]: [AgentContextSource, boolean]) {
   sources.value = sources.value.map(item => item.id === source.id ? { ...item, enabled } : item)
   activity.value = `${source.label}已${enabled ? '加入' : '移出'}上下文。`
 }

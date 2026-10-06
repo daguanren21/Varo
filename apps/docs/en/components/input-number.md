@@ -31,6 +31,8 @@ H5 retains its input-time numeric updates and reconciles the displayed text with
 
 ## Events
 
+`focus` and `blur` below are H5-only DOM events. The native SFC exposes numeric value updates, not browser `FocusEvent` objects.
+
 | Event          | Payload      | Description             |
 | -------------- | ------------ | ----------------------- |
 | `update:value` | `number`     | Value changed           |

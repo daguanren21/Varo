@@ -1,0 +1,43 @@
+.varo-number-keyboard button {
+  font: inherit;
+}
+
+.varo-number-keyboard {
+  width: min(100%, 360px);
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-number-keyboard {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  background: var(--varo-ui-surface-muted);
+}
+
+.varo-number-keyboard__keys {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.varo-number-keyboard__key,
+.varo-number-keyboard__delete,
+.varo-number-keyboard__close {
+  min-height: 42px;
+  font-weight: 750;
+  color: var(--varo-ui-text);
+  cursor: pointer;
+  background: var(--varo-ui-surface);
+  border: 0;
+  border-radius: var(--varo-ui-radius);
+  box-shadow: 0 1px 0 rgb(15 23 42 / 8%);
+}
+
+.varo-number-keyboard__close {
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+}

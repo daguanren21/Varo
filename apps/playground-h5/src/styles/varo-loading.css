@@ -1,0 +1,27 @@
+.varo-loading {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: #64748b;
+}
+
+.varo-loading__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: varo-spin 0.75s linear infinite;
+}
+
+.varo-loading[data-tone='primary'] {
+  color: #0f766e;
+}
+
+.varo-loading[data-size='sm'] {
+  font-size: 12px;
+}
+
+.varo-loading[data-size='lg'] {
+  font-size: 18px;
+}

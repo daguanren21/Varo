@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentWorkspacePlacement } from './advanced-types'
+import type { AgentWorkspacePlacement } from './workspace-types'
 import { computed } from 'wevu'
 import { agentCloseIcon } from './agent-icons'
 

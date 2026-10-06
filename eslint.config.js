@@ -1,7 +1,12 @@
 import { defineEslintConfig } from 'repoctl/tooling'
+import projections from './scripts/registry-projections.json' with { type: 'json' }
 
 export default await defineEslintConfig({
   configs: [
+    {
+      name: 'varo/registry-projections',
+      ignores: Object.values(projections.owners).flatMap(files => Object.keys(files)),
+    },
     {
       name: 'varo/generated-code',
       ignores: [
@@ -28,7 +33,6 @@ export default await defineEslintConfig({
       name: 'varo/native-positional-markdown',
       files: [
         'registry/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
-        'apps/playground-weapp/src/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
       ],
       rules: {
         // Native wx:key resolves item fields; these stateless AST/code rows intentionally use positions.
@@ -39,7 +43,6 @@ export default await defineEslintConfig({
       name: 'varo/native-composer-events',
       files: [
         'registry/blocks/{agent-chat,agent-workspace}/weapp-vite.vue',
-        'apps/playground-weapp/src/components/blocks/{agent-chat,agent-workspace}.vue',
       ],
       rules: {
         // The pinned native compiler distinguishes modelValue from model-value.

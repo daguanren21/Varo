@@ -9,6 +9,7 @@ import type {
 import { lstatSync, readFileSync, realpathSync } from 'node:fs'
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { getRegistryProfile, isRegistryTarget } from '@varo/registry/source'
 import { fetchRegistryFile, registryUrl } from './remote-registry.ts'
 import { resolveStandardFileTargets } from './standard-files.ts'
 
@@ -188,7 +189,7 @@ function validateStandardItem(value: unknown, label: string): StandardRegistryIt
     if (meta.varo !== undefined) {
       const varo = assertObject(meta.varo, `${label}.meta.varo`)
       const target = varo.target
-      if (target !== undefined && target !== 'h5' && target !== 'weapp') {
+      if (target !== undefined && !isRegistryTarget(target)) {
         throw new Error(`${label}.meta.varo.target is unsupported: ${String(target)}`)
       }
     }
@@ -478,6 +479,7 @@ export async function resolveStandardRegistryItems(
     throw new Error(`Requested standard registry items target multiple runtimes: ${[...requestedTargets].join(', ')}`)
   }
   const target = options.target ?? requestedTargets.values().next().value ?? 'h5'
+  const { renderer } = getRegistryProfile(target)
   const seen = new Set<string>()
   const visiting = new Set<string>()
   const dependencyStack: StandardItemContext[] = []
@@ -533,7 +535,7 @@ export async function resolveStandardRegistryItems(
           ? fileURLToPath(sourceKey)
           : localSourcePath(context.location, standardFile.path, sourceKey)
       const normalizedFile: RegistryFile = {
-        target,
+        target: renderer,
         from: standardFile.path,
         to: destination.to,
       }
@@ -561,7 +563,8 @@ export async function resolveStandardRegistryItems(
       docs: context.item.docs
         ?? context.catalog?.catalog.homepage
         ?? `Standard registry item ${context.item.name}`,
-      targets: [target],
+      targets: [renderer],
+      platforms: [target],
       dependencies: [...(context.item.dependencies ?? [])],
       devDependencies: [...(context.item.devDependencies ?? [])],
       registryDependencies: [...(context.item.registryDependencies ?? [])],

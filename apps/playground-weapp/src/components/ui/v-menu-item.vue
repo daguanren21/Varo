@@ -41,7 +41,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  select: [value: MenuName, option: MenuOption]
+  'select': [payload: [value: MenuName, option: MenuOption]]
   'update:modelValue': [value: MenuName]
 }>()
 
@@ -51,7 +51,7 @@ const classes = computed(() => cn('varo-menu__item', props.className))
 const openData = computed(() => String(open.value))
 const popupId = createMenuPopupId()
 const renderedOptions = computed<RenderedMenuOption[]>(() =>
-  props.options.map(option => {
+  props.options.map((option) => {
     const active = props.modelValue === option.value
     return {
       active,
@@ -68,7 +68,7 @@ function toggle() {
 function select(option: MenuOption) {
   if (option.disabled) { return }
   emit('update:modelValue', option.value)
-  emit('select', option.value, option)
+  emit('select', [option.value, option])
   if (menu) { menu.close() }
 }
 
@@ -92,7 +92,9 @@ function keydown(event: unknown) {
       @click="toggle"
     >
       <text class="varo-menu__title-text">
-        <slot name="title">{{ props.title }}</slot>
+        <slot name="title">
+          {{ props.title }}
+        </slot>
       </text>
       <text class="varo-menu__arrow" aria-hidden="true" />
     </button>
@@ -114,7 +116,9 @@ function keydown(event: unknown) {
             :size="16"
             class-name="varo-menu__option-icon"
           />
-          <text class="varo-menu__option-text">{{ renderedOption.option.text }}</text>
+          <text class="varo-menu__option-text">
+            {{ renderedOption.option.text }}
+          </text>
           <VIcon
             v-if="renderedOption.active"
             name="success"

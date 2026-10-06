@@ -1,0 +1,42 @@
+.varo-dialog {
+  position: relative;
+}
+
+.varo-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgb(0 0 0 / 45%);
+}
+
+.varo-dialog__content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1101;
+  box-sizing: border-box;
+  width: calc(100% - 144rpx);
+  max-width: 560rpx;
+  overflow: hidden;
+  color: var(--varo-ui-text);
+  text-align: center;
+  background: var(--varo-ui-surface);
+  border-radius: 28rpx;
+  transform: translate(-50%, -50%);
+}
+
+.varo-dialog__close {
+  box-sizing: border-box;
+  min-height: 88rpx;
+  padding: 0 16rpx;
+  margin: 0;
+  font: inherit;
+  line-height: 88rpx;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+
+.varo-dialog__close::after {
+  border: 0;
+}

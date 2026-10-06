@@ -7,6 +7,12 @@ import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { popoverContextKey } from './popover-context'
 
+defineOptions({
+  properties: {
+    open: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     className?: ClassValue
@@ -22,13 +28,13 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  openChange: [open: boolean]
+  'openChange': [open: boolean]
   'update:open': [open: boolean]
 }>()
 
 const disabled = computed(() => props.disabled)
 const open = computed(() => props.open)
-const openControlled = computed(() => props.open !== undefined)
+const openControlled = computed(() => props.open != null)
 const popover = usePopoverRoot({
   runtime: varoReactiveRuntime,
   defaultOpen: props.defaultOpen,

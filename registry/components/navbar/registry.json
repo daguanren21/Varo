@@ -36,6 +36,11 @@
       "target": "weapp",
       "from": "registry/components/navbar/v-navbar.vue",
       "to": "src/components/ui/v-navbar.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/navbar/weapp-vite.css",
+      "to": "src/styles/varo-navbar.css"
     }
   ],
   "docs": "/components/navbar"

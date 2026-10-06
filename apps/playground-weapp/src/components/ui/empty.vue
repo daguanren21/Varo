@@ -16,12 +16,12 @@ const props = withDefaults(
     icon: 'info',
     image: '',
     size: 'md',
-    title: ''
-  }
+    title: '',
+  },
 )
 const iconSize = computed(() => {
-  if (props.size === 'lg') return 44
-  if (props.size === 'sm') return 28
+  if (props.size === 'lg') { return 44 }
+  if (props.size === 'sm') { return 28 }
   return 36
 })
 </script>
@@ -34,9 +34,19 @@ const iconSize = computed(() => {
         <VIcon v-else :name="icon" :size="iconSize" />
       </slot>
     </view>
-    <text v-if="title || $slots.title" class="varo-empty__title"><slot name="title">{{ title }}</slot></text>
-    <text class="varo-empty__description"><slot name="description">{{ description }}</slot></text>
-    <view v-if="$slots.default" class="varo-empty__action"><slot /></view>
+    <text v-if="title || $slots.title" class="varo-empty__title">
+      <slot name="title">
+        {{ title }}
+      </slot>
+    </text>
+    <text class="varo-empty__description">
+      <slot name="description">
+        {{ description }}
+      </slot>
+    </text>
+    <view v-if="$slots.default" class="varo-empty__action">
+      <slot />
+    </view>
   </view>
 </template>
 

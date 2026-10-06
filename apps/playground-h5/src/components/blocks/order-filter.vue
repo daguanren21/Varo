@@ -166,3 +166,13 @@ function reset() {
     </footer>
   </section>
 </template>
+
+<style>
+/* Registry styles: generated from the dependency closure. */
+@import '../../styles/varo.css';
+@import '../../styles/varo-button.css';
+@import '../../styles/varo-icon.css';
+@import '../../styles/varo-checkbox.css';
+@import '../../styles/varo-input-number.css';
+@import '../../styles/varo-tag.css';
+</style>

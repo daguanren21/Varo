@@ -6,7 +6,7 @@
 
 <MapDemo locale="zh" />
 
-文档站不能跑微信客户端同层地图。演示用腾讯地图 JS API GL 展示同一套 VMap 契约：中心点、标记和 `regionchange`。定位权限和 Map Context 仍只在小程序运行时可用。
+这是独立的浏览器地图示意，不是 `VMap` 原生 SFC 或编译产物预览：它使用腾讯地图 JS API / 栅格瓦片与本地状态展示中心点、标记和 `regionchange` 交互。文档站不能运行微信同层地图；定位权限和 Map Context 只能在微信宿主中验证。它不构成其他 profile 或真机支持证据。
 
 ## 使用
 

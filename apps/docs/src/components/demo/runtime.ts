@@ -1,5 +1,4 @@
 import type { Component } from 'vue'
-import type { Platform } from './types'
 import {
   VBadge as H5Badge,
   VButton as H5Button,
@@ -40,46 +39,6 @@ import {
   VTabbarItem as H5TabbarItem,
   VTabs as H5Tabs,
 } from '@varo-ui/h5'
-import {
-  VBadge as WeappBadge,
-  VButton as WeappButton,
-  VCell as WeappCell,
-  VCellGroup as WeappCellGroup,
-  VCol as WeappCol,
-  VDialogClose as WeappDialogClose,
-  VDialogContent as WeappDialogContent,
-  VDialogOverlay as WeappDialogOverlay,
-  VDialogRoot as WeappDialogRoot,
-  VDialogTrigger as WeappDialogTrigger,
-  VDivider as WeappDivider,
-  VElevator as WeappElevator,
-  VFixedNav as WeappFixedNav,
-  VGrid as WeappGrid,
-  VGridItem as WeappGridItem,
-  VImage as WeappImage,
-  VIndicator as WeappIndicator,
-  VInput as WeappInput,
-  VMenu as WeappMenu,
-  VMenuItem as WeappMenuItem,
-  VNavbar as WeappNavbar,
-  VOverlay as WeappOverlay,
-  VPagination as WeappPagination,
-  VPopoverClose as WeappPopoverClose,
-  VPopoverContent as WeappPopoverContent,
-  VPopoverRoot as WeappPopoverRoot,
-  VPopoverTrigger as WeappPopoverTrigger,
-  VPopup as WeappPopup,
-  VRow as WeappRow,
-  VSideNavbar as WeappSideNavbar,
-  VSideNavbarItem as WeappSideNavbarItem,
-  VSpace as WeappSpace,
-  VSticky as WeappSticky,
-  VSwitch as WeappSwitch,
-  VTab as WeappTab,
-  VTabbar as WeappTabbar,
-  VTabbarItem as WeappTabbarItem,
-  VTabs as WeappTabs,
-} from '@varo-ui/weapp'
 
 export interface DemoRuntime {
   Badge: Component
@@ -122,7 +81,7 @@ export interface DemoRuntime {
   Tabs: Component
 }
 
-const h5Runtime: DemoRuntime = {
+export const demoRuntime: DemoRuntime = {
   Badge: H5Badge,
   Button: H5Button,
   Cell: H5Cell,
@@ -161,49 +120,4 @@ const h5Runtime: DemoRuntime = {
   TabbarItem: H5TabbarItem,
   Tab: H5Tab,
   Tabs: H5Tabs,
-}
-
-const weappRuntime: DemoRuntime = {
-  Badge: WeappBadge,
-  Button: WeappButton,
-  Cell: WeappCell,
-  CellGroup: WeappCellGroup,
-  DialogClose: WeappDialogClose,
-  DialogContent: WeappDialogContent,
-  DialogOverlay: WeappDialogOverlay,
-  DialogRoot: WeappDialogRoot,
-  DialogTrigger: WeappDialogTrigger,
-  Divider: WeappDivider,
-  Elevator: WeappElevator,
-  FixedNav: WeappFixedNav,
-  Grid: WeappGrid,
-  GridItem: WeappGridItem,
-  Image: WeappImage,
-  Indicator: WeappIndicator,
-  Input: WeappInput,
-  Col: WeappCol,
-  Menu: WeappMenu,
-  MenuItem: WeappMenuItem,
-  Navbar: WeappNavbar,
-  Overlay: WeappOverlay,
-  Pagination: WeappPagination,
-  Popup: WeappPopup,
-  PopoverClose: WeappPopoverClose,
-  PopoverContent: WeappPopoverContent,
-  PopoverRoot: WeappPopoverRoot,
-  PopoverTrigger: WeappPopoverTrigger,
-  Row: WeappRow,
-  SideNavbar: WeappSideNavbar,
-  SideNavbarItem: WeappSideNavbarItem,
-  Space: WeappSpace,
-  Sticky: WeappSticky,
-  Switch: WeappSwitch,
-  Tabbar: WeappTabbar,
-  TabbarItem: WeappTabbarItem,
-  Tab: WeappTab,
-  Tabs: WeappTabs,
-}
-
-export function getDemoRuntime(platform: Platform): DemoRuntime {
-  return platform === 'weapp' ? weappRuntime : h5Runtime
 }

@@ -1,6 +1,9 @@
+// Generated from registry/components/navbar/navbar.ts; edit the Registry source.
 import type { StyleValue } from 'vue'
 import { defineComponent, h } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
 
 export const VNavbar = defineComponent({
   name: 'VNavbar',

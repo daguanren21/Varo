@@ -1,0 +1,113 @@
+.varo-skeleton {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+
+.varo-skeleton__body {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.varo-skeleton--pending {
+  min-height: 72px;
+  opacity: 0;
+}
+
+.varo-skeleton__loaded[data-fade='true'] {
+  animation: varo-skeleton-content-in 180ms ease-out both;
+}
+
+@keyframes varo-skeleton-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.varo-skeleton__media,
+.varo-skeleton__avatar,
+.varo-skeleton__title,
+.varo-skeleton__row {
+  position: relative;
+  overflow: hidden;
+  background: var(--varo-ui-surface-muted);
+}
+
+.varo-skeleton__media {
+  display: block;
+  width: 100%;
+  min-height: 96px;
+  border-radius: var(--varo-ui-radius);
+}
+
+.varo-skeleton__media[data-kind='video']::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  content: '';
+  background: color-mix(in srgb, var(--varo-ui-text-muted) 48%, transparent);
+  clip-path: polygon(28% 18%, 82% 50%, 28% 82%);
+  transform: translate(-50%, -50%);
+}
+
+.varo-skeleton__avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+}
+
+.varo-skeleton__content {
+  display: grid;
+  flex: 1;
+  gap: 9px;
+  min-width: 0;
+}
+
+.varo-skeleton__title {
+  width: 42%;
+  height: 16px;
+  border-radius: 5px;
+}
+
+.varo-skeleton__row {
+  width: 100%;
+  height: 12px;
+  border-radius: 5px;
+}
+
+.varo-skeleton[data-round='true'] :where(.varo-skeleton__title, .varo-skeleton__row) {
+  border-radius: 999px;
+}
+
+.varo-skeleton[data-animated='true'] :where(.varo-skeleton__media, .varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 64%), transparent);
+  transform: translateX(-100%);
+  animation: varo-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes varo-skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .varo-skeleton[data-animated='true'] :where(.varo-skeleton__media, .varo-skeleton__avatar, .varo-skeleton__title, .varo-skeleton__row)::after {
+    opacity: 0;
+    transform: none;
+    animation: none;
+  }
+
+  .varo-skeleton__loaded[data-fade='true'] {
+    animation: none;
+  }
+}

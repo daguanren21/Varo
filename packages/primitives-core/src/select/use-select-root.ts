@@ -1,7 +1,6 @@
-import type { Ref } from '../reactive'
+import type { Ref } from '@varo/shared'
 import type { SelectOption, SelectRootOptions, SelectValue, UseSelectRootResult } from './types'
-import { createSelectDisplay, toggleSelectValue } from '@varo/shared'
-import { resolveReactiveRuntime } from '../reactive'
+import { createSelectDisplay, resolveReactiveRuntime, toggleSelectValue } from '@varo/shared'
 import { useControllableState } from '../use-controllable-state'
 
 export function useSelectRoot(options: SelectRootOptions = {}): UseSelectRootResult {

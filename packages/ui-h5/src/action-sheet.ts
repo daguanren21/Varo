@@ -1,6 +1,12 @@
-import { defineComponent, h, type PropType } from 'vue'
+// Generated from registry/components/action-sheet/action-sheet.ts; edit the Registry source.
+import type { PropType } from 'vue'
+import { defineComponent, h } from 'vue'
 import { VLoading } from './loading'
 import { VPopup } from './popup'
+import './styles/varo.css'
+import './styles/varo-loading.css'
+import './styles/varo-icon.css'
+import './styles/varo-action-sheet.css'
 
 export interface ActionSheetItem {
   color?: string
@@ -16,19 +22,19 @@ export const VActionSheet = defineComponent({
   props: {
     actions: {
       type: Array as PropType<ActionSheetItem[]>,
-      default: () => []
+      default: () => [],
     },
     cancelText: String,
     closeOnSelect: {
       type: Boolean,
-      default: true
+      default: true,
     },
     description: String,
     title: String,
     visible: {
       type: Boolean as PropType<boolean | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['cancel', 'close', 'select', 'update:visible'],
   setup(props, { attrs, emit, slots }) {
@@ -38,9 +44,9 @@ export const VActionSheet = defineComponent({
     }
 
     function select(item: ActionSheetItem, index: number) {
-      if (item.disabled || item.loading) return
+      if (item.disabled || item.loading) { return }
       emit('select', { index, item })
-      if (props.closeOnSelect) close('select')
+      if (props.closeOnSelect) { close('select') }
     }
 
     function cancel() {
@@ -53,14 +59,14 @@ export const VActionSheet = defineComponent({
         VPopup,
         {
           ...attrs,
-          class: ['varo-action-sheet', attrs.class],
-          closeOnClickOverlay: true,
-          position: 'bottom',
-          round: true,
-          safeAreaInsetBottom: true,
-          visible: props.visible,
+          'class': ['varo-action-sheet', attrs.class],
+          'closeOnClickOverlay': true,
+          'position': 'bottom',
+          'round': true,
+          'safeAreaInsetBottom': true,
+          'visible': props.visible,
           'onUpdate:visible': (visible: boolean) => emit('update:visible', visible),
-          onClickOverlay: () => close('overlay')
+          'onClickOverlay': () => close('overlay'),
         },
         {
           default: () => [
@@ -70,8 +76,8 @@ export const VActionSheet = defineComponent({
                     props.title ? h('h3', { class: 'varo-action-sheet__title' }, props.title) : null,
                     props.description
                       ? h('p', { class: 'varo-action-sheet__description' }, props.description)
-                      : null
-                  ]
+                      : null,
+                  ],
                 ])
               : null,
             h(
@@ -81,23 +87,23 @@ export const VActionSheet = defineComponent({
                 h(
                   'button',
                   {
-                    key: `${index}-${item.name}`,
-                    class: 'varo-action-sheet__action',
-                    type: 'button',
-                    disabled: item.disabled || item.loading,
-                    style: item.color ? { color: item.color } : undefined,
+                    'key': `${index}-${item.name}`,
+                    'class': 'varo-action-sheet__action',
+                    'type': 'button',
+                    'disabled': item.disabled || item.loading,
+                    'style': item.color ? { color: item.color } : undefined,
                     'data-loading': String(Boolean(item.loading)),
-                    onClick: () => select(item, index)
+                    'onClick': () => select(item, index),
                   },
                   [
                     item.loading ? h(VLoading, { size: 'sm' }) : null,
                     h('span', { class: 'varo-action-sheet__name' }, item.name),
                     item.description
                       ? h('span', { class: 'varo-action-sheet__item-description' }, item.description)
-                      : null
-                  ]
-                )
-              )
+                      : null,
+                  ],
+                ),
+              ),
             ),
             slots.default?.(),
             props.cancelText
@@ -106,13 +112,13 @@ export const VActionSheet = defineComponent({
                   {
                     class: 'varo-action-sheet__cancel',
                     type: 'button',
-                    onClick: cancel
+                    onClick: cancel,
                   },
-                  props.cancelText
+                  props.cancelText,
                 )
-              : null
-          ]
-        }
+              : null,
+          ],
+        },
       )
-  }
+  },
 })

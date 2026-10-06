@@ -57,5 +57,5 @@ export interface PlatformContent {
 export interface DemoContent {
   title: string
   description: string
-  platforms: Record<Platform, PlatformContent>
+  platforms: { h5: PlatformContent }
 }

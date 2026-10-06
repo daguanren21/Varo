@@ -44,9 +44,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  cancel: []
-  close: [reason: 'cancel' | 'overlay' | 'select']
-  select: [payload: { index: number, item: ActionSheetItem }]
+  'cancel': []
+  'close': [reason: 'cancel' | 'overlay' | 'select']
+  'select': [payload: { index: number, item: ActionSheetItem }]
   'update:visible': [visible: boolean]
 }>()
 
@@ -96,8 +96,12 @@ function cancel() {
   >
     <view v-if="$slots.header || props.title || props.description" class="varo-action-sheet__header">
       <slot name="header">
-        <text v-if="props.title" class="varo-action-sheet__title">{{ props.title }}</text>
-        <text v-if="props.description" class="varo-action-sheet__description">{{ props.description }}</text>
+        <text v-if="props.title" class="varo-action-sheet__title">
+          {{ props.title }}
+        </text>
+        <text v-if="props.description" class="varo-action-sheet__description">
+          {{ props.description }}
+        </text>
       </slot>
     </view>
     <view class="varo-action-sheet__actions">
@@ -111,7 +115,9 @@ function cancel() {
         @click="select(action)"
       >
         <VLoading v-if="action.item.loading" size="sm" />
-        <text class="varo-action-sheet__name">{{ action.item.name }}</text>
+        <text class="varo-action-sheet__name">
+          {{ action.item.name }}
+        </text>
         <text v-if="action.item.description" class="varo-action-sheet__item-description">
           {{ action.item.description }}
         </text>

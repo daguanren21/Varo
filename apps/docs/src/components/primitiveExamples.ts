@@ -20,23 +20,16 @@ export type PrimitiveExampleName
 
 export interface PrimitiveExampleData {
   h5Code: string
-  weappCode: string
   contractRows: Array<{ label: string, value: string }>
 }
 
-function dualRuntimeExample(source: string) {
-  return {
-    h5: source
-      .replaceAll('__FRAMEWORK__', 'vue')
-      .replaceAll('__PACKAGE__', '@varo-ui/h5/primitives'),
-    weapp: source
-      .replaceAll('__FRAMEWORK__', 'wevu')
-      .replaceAll('__PACKAGE__', '@varo-ui/weapp/primitives'),
-  }
+function h5Example(source: string) {
+  return { h5: source
+    .replaceAll('__FRAMEWORK__', 'vue')
+    .replaceAll('__PACKAGE__', '@varo-ui/h5/primitives') }
 }
 
-const checkbox = {
-  h5: `<script setup lang="ts">
+const checkbox = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import { CheckboxRoot, CheckboxIndicator } from '@varo-ui/h5/primitives'
 
@@ -44,28 +37,13 @@ const checked = ref(false)
 </script>
 
 <template>
-  <CheckboxRoot v-model:checked="checked">
-    <CheckboxIndicator>✓</CheckboxIndicator>
-    Enable state
-  </CheckboxRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import { CheckboxRoot, CheckboxIndicator } from '@varo-ui/weapp/primitives'
+<CheckboxRoot v-model:checked="checked">
+  <CheckboxIndicator>✓</CheckboxIndicator>
+  Enable state
+</CheckboxRoot>
+</template>` }
 
-const checked = ref(false)
-</script>
-
-<template>
-  <CheckboxRoot v-model:checked="checked">
-    <CheckboxIndicator>✓</CheckboxIndicator>
-    Enable state
-  </CheckboxRoot>
-</template>`,
-}
-
-const radio = {
-  h5: `<script setup lang="ts">
+const radio = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import { RadioGroup, RadioItem, RadioIndicator } from '@varo-ui/h5/primitives'
 
@@ -73,28 +51,13 @@ const value = ref('h5')
 </script>
 
 <template>
-  <RadioGroup v-model:value="value">
-    <RadioItem value="h5"><RadioIndicator>•</RadioIndicator>H5</RadioItem>
-    <RadioItem value="weapp"><RadioIndicator>•</RadioIndicator>Weapp</RadioItem>
-  </RadioGroup>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import { RadioGroup, RadioItem, RadioIndicator } from '@varo-ui/weapp/primitives'
+<RadioGroup v-model:value="value">
+  <RadioItem value="h5"><RadioIndicator>•</RadioIndicator>H5</RadioItem>
+  <RadioItem value="weapp"><RadioIndicator>•</RadioIndicator>Weapp</RadioItem>
+</RadioGroup>
+</template>` }
 
-const value = ref('h5')
-</script>
-
-<template>
-  <RadioGroup v-model:value="value">
-    <RadioItem value="h5"><RadioIndicator>•</RadioIndicator>H5</RadioItem>
-    <RadioItem value="weapp"><RadioIndicator>•</RadioIndicator>Weapp</RadioItem>
-  </RadioGroup>
-</template>`,
-}
-
-const switchExample = {
-  h5: `<script setup lang="ts">
+const switchExample = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import { SwitchRoot, SwitchThumb } from '@varo-ui/h5/primitives'
 
@@ -102,26 +65,12 @@ const on = ref(false)
 </script>
 
 <template>
-  <SwitchRoot v-model:checked="on">
-    <SwitchThumb />
-  </SwitchRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import { SwitchRoot, SwitchThumb } from '@varo-ui/weapp/primitives'
+<SwitchRoot v-model:checked="on">
+  <SwitchThumb />
+</SwitchRoot>
+</template>` }
 
-const on = ref(false)
-</script>
-
-<template>
-  <SwitchRoot v-model:checked="on">
-    <SwitchThumb />
-  </SwitchRoot>
-</template>`,
-}
-
-const tabs = {
-  h5: `<script setup lang="ts">
+const tabs = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@varo-ui/h5/primitives'
 
@@ -129,229 +78,112 @@ const tab = ref('a')
 </script>
 
 <template>
-  <TabsRoot v-model:value="tab">
-    <TabsList>
-      <TabsTrigger value="a">A</TabsTrigger>
-      <TabsTrigger value="b">B</TabsTrigger>
-    </TabsList>
-    <TabsContent value="a">Panel A</TabsContent>
-    <TabsContent value="b">Panel B</TabsContent>
-  </TabsRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import { TabsRoot, TabsList, TabsTrigger, TabsContent } from '@varo-ui/weapp/primitives'
+<TabsRoot v-model:value="tab">
+  <TabsList>
+    <TabsTrigger value="a">A</TabsTrigger>
+    <TabsTrigger value="b">B</TabsTrigger>
+  </TabsList>
+  <TabsContent value="a">Panel A</TabsContent>
+  <TabsContent value="b">Panel B</TabsContent>
+</TabsRoot>
+</template>` }
 
-const tab = ref('a')
-</script>
-
-<template>
-  <TabsRoot v-model:value="tab">
-    <TabsList>
-      <TabsTrigger value="a">A</TabsTrigger>
-      <TabsTrigger value="b">B</TabsTrigger>
-    </TabsList>
-    <TabsContent value="a">Panel A</TabsContent>
-    <TabsContent value="b">Panel B</TabsContent>
-  </TabsRoot>
-</template>`,
-}
-
-const select = {
-  h5: `<script setup lang="ts">
+const select = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import {
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
+SelectRoot,
+SelectTrigger,
+SelectValue,
+SelectContent,
+SelectItem
 } from '@varo-ui/h5/primitives'
 
 const value = ref()
 const options = [
-  { label: 'Starter', value: 'starter' },
-  { label: 'Base Kit', value: 'base-kit' }
+{ label: 'Starter', value: 'starter' },
+{ label: 'Base Kit', value: 'base-kit' }
 ]
 </script>
 
 <template>
-  <SelectRoot v-model:value="value" :options="options">
-    <SelectTrigger>
-      <SelectValue placeholder="Pick a layer" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem v-for="option in options" :key="option.value" :option="option">
-        {{ option.label }}
-      </SelectItem>
-    </SelectContent>
-  </SelectRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import {
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from '@varo-ui/weapp/primitives'
+<SelectRoot v-model:value="value" :options="options">
+  <SelectTrigger>
+    <SelectValue placeholder="Pick a layer" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem v-for="option in options" :key="option.value" :option="option">
+      {{ option.label }}
+    </SelectItem>
+  </SelectContent>
+</SelectRoot>
+</template>` }
 
-const value = ref()
-const options = [
-  { label: 'Starter', value: 'starter' },
-  { label: 'Base Kit', value: 'base-kit' }
-]
-</script>
-
-<template>
-  <SelectRoot v-model:value="value" :options="options">
-    <SelectTrigger>
-      <SelectValue placeholder="Pick a layer" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem v-for="option in options" :key="option.value" :option="option">
-        {{ option.label }}
-      </SelectItem>
-    </SelectContent>
-  </SelectRoot>
-</template>`,
-}
-
-const collapsible = {
-  h5: `<script setup lang="ts">
+const collapsible = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import {
-  CollapsibleRoot,
-  CollapsibleTrigger,
-  CollapsibleContent
+CollapsibleRoot,
+CollapsibleTrigger,
+CollapsibleContent
 } from '@varo-ui/h5/primitives'
 
 const open = ref(false)
 </script>
 
 <template>
-  <CollapsibleRoot v-model:open="open">
-    <CollapsibleTrigger>Toggle details</CollapsibleTrigger>
-    <CollapsibleContent>Hidden content becomes visible when open.</CollapsibleContent>
-  </CollapsibleRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import {
-  CollapsibleRoot,
-  CollapsibleTrigger,
-  CollapsibleContent
-} from '@varo-ui/weapp/primitives'
+<CollapsibleRoot v-model:open="open">
+  <CollapsibleTrigger>Toggle details</CollapsibleTrigger>
+  <CollapsibleContent>Hidden content becomes visible when open.</CollapsibleContent>
+</CollapsibleRoot>
+</template>` }
 
-const open = ref(false)
-</script>
-
-<template>
-  <CollapsibleRoot v-model:open="open">
-    <CollapsibleTrigger>Toggle details</CollapsibleTrigger>
-    <CollapsibleContent>Hidden content becomes visible when open.</CollapsibleContent>
-  </CollapsibleRoot>
-</template>`,
-}
-
-const accordion = {
-  h5: `<script setup lang="ts">
+const accordion = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import {
-  AccordionRoot,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent
+AccordionRoot,
+AccordionItem,
+AccordionTrigger,
+AccordionContent
 } from '@varo-ui/h5/primitives'
 
 const value = ref('one')
 </script>
 
 <template>
-  <AccordionRoot v-model:value="value" type="single" collapsible>
-    <AccordionItem value="one">
-      <AccordionTrigger>One</AccordionTrigger>
-      <AccordionContent>Body one</AccordionContent>
-    </AccordionItem>
-    <AccordionItem value="two">
-      <AccordionTrigger>Two</AccordionTrigger>
-      <AccordionContent>Body two</AccordionContent>
-    </AccordionItem>
-  </AccordionRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import {
-  AccordionRoot,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent
-} from '@varo-ui/weapp/primitives'
+<AccordionRoot v-model:value="value" type="single" collapsible>
+  <AccordionItem value="one">
+    <AccordionTrigger>One</AccordionTrigger>
+    <AccordionContent>Body one</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="two">
+    <AccordionTrigger>Two</AccordionTrigger>
+    <AccordionContent>Body two</AccordionContent>
+  </AccordionItem>
+</AccordionRoot>
+</template>` }
 
-const value = ref('one')
-</script>
-
-<template>
-  <AccordionRoot v-model:value="value" type="single" collapsible>
-    <AccordionItem value="one">
-      <AccordionTrigger>One</AccordionTrigger>
-      <AccordionContent>Body one</AccordionContent>
-    </AccordionItem>
-    <AccordionItem value="two">
-      <AccordionTrigger>Two</AccordionTrigger>
-      <AccordionContent>Body two</AccordionContent>
-    </AccordionItem>
-  </AccordionRoot>
-</template>`,
-}
-
-const popover = {
-  h5: `<script setup lang="ts">
+const popover = { h5: `<script setup lang="ts">
 import { ref } from 'vue'
 import {
-  PopoverRoot,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverClose
+PopoverRoot,
+PopoverTrigger,
+PopoverContent,
+PopoverClose
 } from '@varo-ui/h5/primitives'
 
 const open = ref(false)
 </script>
 
 <template>
-  <PopoverRoot v-model:open="open">
-    <PopoverTrigger>Open</PopoverTrigger>
-    <PopoverContent>
-      Lightweight floating content
-      <PopoverClose>Close</PopoverClose>
-    </PopoverContent>
-  </PopoverRoot>
-</template>`,
-  weapp: `<script setup lang="ts">
-import { ref } from 'wevu'
-import {
-  PopoverRoot,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverClose
-} from '@varo-ui/weapp/primitives'
+<PopoverRoot v-model:open="open">
+  <PopoverTrigger>Open</PopoverTrigger>
+  <PopoverContent>
+    Lightweight floating content
+    <PopoverClose>Close</PopoverClose>
+  </PopoverContent>
+</PopoverRoot>
+</template>` }
 
-const open = ref(false)
-</script>
-
-<template>
-  <PopoverRoot v-model:open="open">
-    <PopoverTrigger>Open</PopoverTrigger>
-    <PopoverContent>
-      Lightweight floating content
-      <PopoverClose>Close</PopoverClose>
-    </PopoverContent>
-  </PopoverRoot>
-</template>`,
-}
-
-const button = dualRuntimeExample(`<script setup lang="ts">
+const button = h5Example(`<script setup lang="ts">
 import { ButtonRoot } from '__PACKAGE__'
 </script>
 
@@ -361,7 +193,7 @@ import { ButtonRoot } from '__PACKAGE__'
   </ButtonRoot>
 </template>`)
 
-const inputExample = dualRuntimeExample(`<script setup lang="ts">
+const inputExample = h5Example(`<script setup lang="ts">
 import { shallowRef } from '__FRAMEWORK__'
 import { InputRoot } from '__PACKAGE__'
 
@@ -372,7 +204,7 @@ const value = shallowRef('')
   <InputRoot v-model:value="value" placeholder="Type a value" />
 </template>`)
 
-const numberField = dualRuntimeExample(`<script setup lang="ts">
+const numberField = h5Example(`<script setup lang="ts">
 import { shallowRef } from '__FRAMEWORK__'
 import {
   NumberFieldRoot,
@@ -392,7 +224,7 @@ const value = shallowRef(2)
   </NumberFieldRoot>
 </template>`)
 
-const imageExample = dualRuntimeExample(`<script setup lang="ts">
+const imageExample = h5Example(`<script setup lang="ts">
 import { ImageRoot } from '__PACKAGE__'
 </script>
 
@@ -407,7 +239,7 @@ import { ImageRoot } from '__PACKAGE__'
   />
 </template>`)
 
-const cell = dualRuntimeExample(`<script setup lang="ts">
+const cell = h5Example(`<script setup lang="ts">
 import { CellGroupRoot, CellRoot } from '__PACKAGE__'
 </script>
 
@@ -424,7 +256,7 @@ import { CellGroupRoot, CellRoot } from '__PACKAGE__'
   </CellGroupRoot>
 </template>`)
 
-const sticky = dualRuntimeExample(`<script setup lang="ts">
+const sticky = h5Example(`<script setup lang="ts">
 import { StickyRoot } from '__PACKAGE__'
 </script>
 
@@ -436,7 +268,7 @@ import { StickyRoot } from '__PACKAGE__'
   </StickyRoot>
 </template>`)
 
-const dialog = dualRuntimeExample(`<script setup lang="ts">
+const dialog = h5Example(`<script setup lang="ts">
 import { shallowRef } from '__FRAMEWORK__'
 import {
   DialogRoot,
@@ -460,7 +292,7 @@ const open = shallowRef(false)
   </DialogRoot>
 </template>`)
 
-const overlay = dualRuntimeExample(`<script setup lang="ts">
+const overlay = h5Example(`<script setup lang="ts">
 import { shallowRef } from '__FRAMEWORK__'
 import { ButtonRoot, OverlayRoot } from '__PACKAGE__'
 
@@ -472,7 +304,7 @@ const visible = shallowRef(false)
   <OverlayRoot v-model:visible="visible" @click="visible = false" />
 </template>`)
 
-const popup = dualRuntimeExample(`<script setup lang="ts">
+const popup = h5Example(`<script setup lang="ts">
 import { shallowRef } from '__FRAMEWORK__'
 import { ButtonRoot, PopupRoot } from '__PACKAGE__'
 
@@ -491,7 +323,7 @@ const visible = shallowRef(false)
   </PopupRoot>
 </template>`)
 
-const catalog: Record<PrimitiveExampleName, { h5: string, weapp: string }> = {
+const catalog: Record<PrimitiveExampleName, { h5: string }> = {
   button,
   'input': inputExample,
   'number-field': numberField,
@@ -728,7 +560,6 @@ export function resolvePrimitiveExample(
   const sample = catalog[name]
   return {
     h5Code: sample.h5,
-    weappCode: sample.weapp,
     contractRows: locale === 'en' ? contractsEn[name] : contractsZh[name],
   }
 }

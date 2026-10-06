@@ -1,6 +1,6 @@
 # 构建你自己的 Block
 
-这份指南教你如何从 Base Kit 组件沉淀一个可本地维护、可安装、可贡献的业务区块（block）。示例使用匿名的筛选区块，不包含真实 API、凭证、私有 URL 或内部需求编号。
+这份指南教你如何从 Base Kit 组件沉淀一个可本地维护、可安装、可贡献的业务区块（block）。下面的筛选区块是 **H5 Vue 示例**，不包含真实 API、凭证、私有 URL 或内部需求编号。原生版本必须另写 Wevu SFC、使用原生节点和组件 JSON，不能只修改 manifest 的 target。
 
 ## 当前可安装 Blocks
 
@@ -8,12 +8,12 @@
 
 ## 1. 先分清分层
 
-| 层                | 负责                            | 不负责                       |
-| ----------------- | ------------------------------- | ---------------------------- |
-| **Primitives**    | 状态、事件、parts、跨端交互语义 | 视觉 token、业务文案         |
-| **Base Kit / UI** | 可复制的低层组件源码与默认样式  | 远程数据、权限、领域模型     |
-| **业务 wrapper**  | 接口、权限、字段映射、产品文案  | 通用交互状态机               |
-| **Blocks**        | 可复用页面切片与本地组合        | 私有后端细节、一次性页面胶水 |
+| 层                      | 负责                                       | 不负责                                |
+| ----------------------- | ------------------------------------------ | ------------------------------------- |
+| **Headless / H5 Parts** | 平台中立状态与事件；H5 Parts 负责 DOM 交互 | 视觉 token、业务文案、原生 Vue 渲染器 |
+| **Base Kit / UI**       | 可复制的低层组件源码与默认样式             | 远程数据、权限、领域模型              |
+| **业务 wrapper**        | 接口、权限、字段映射、产品文案             | 通用交互状态机                        |
+| **Blocks**              | 可复用页面切片与本地组合                   | 私有后端细节、一次性页面胶水          |
 
 经验法则：block 应该像“可搬运的页面切片”，不是“绑死某业务接口的页面”。
 
@@ -65,7 +65,7 @@ src/components/ui/*
 安装底座组件：
 
 ```bash
-pnpm dlx @varo-ui/cli add --target weapp components/select
+pnpm dlx @varo-ui/cli add --target h5 components/select
 ```
 
 ## 4. 创建本地 block
@@ -211,12 +211,12 @@ registry/blocks/status-filter/status-filter.vue
   "type": "block",
   "title": "Status Filter",
   "description": "A local filter bar for selecting multiple anonymized statuses with VSelect.",
-  "targets": ["weapp"],
+  "targets": ["h5"],
   "dependencies": ["vue"],
   "registryDependencies": ["components/select"],
   "files": [
     {
-      "target": "weapp",
+      "target": "h5",
       "from": "registry/blocks/status-filter/status-filter.vue",
       "to": "src/components/blocks/status-filter.vue"
     }
@@ -228,10 +228,13 @@ registry/blocks/status-filter/status-filter.vue
 字段要点：
 
 - `type`：`block`
-- `targets`：如 `weapp`
+- `targets` / `files.target`：renderer 为 `h5` 或 `weapp`；本例只提供 H5 源码
 - `registryDependencies`：递归安装的底座组件
 - `files`：from/to 映射
 - `docs`：文档路由
+- `platforms`：新增 profile 的显式准入列表；条目及每个传递依赖都必须准入，缺失时在写入前拒绝，不回退到 `weapp`
+
+安装 profile 包含 `h5`、`weapp`、`alipay`、`tt`、`xhs`、`donut-android`、`donut-ios`、`donut-ohos`；新增六个保持 experimental，详见 [支持边界](/guide/installation#安装-profile-与支持边界)。没有针对目标的实现和证据时不要添加准入。原生 SFC 的全局 CSS 必须按 [Wevu Registry](/guide/shadcn-mode) 加载所有已安装 `src/styles/*.css`，基础文件优先，不能局部导入。
 
 ## 8. 补充双语文档
 
@@ -259,7 +262,7 @@ pnpm test
 
 # 打包 CLI 后在临时目录验证安装
 pnpm --filter @varo-ui/cli build
-pnpm dlx @varo-ui/cli add --registry ./registry --target weapp blocks/status-filter
+pnpm dlx @varo-ui/cli add --registry ./registry --target h5 blocks/status-filter
 ```
 
 确认：
@@ -274,7 +277,7 @@ pnpm dlx @varo-ui/cli add --registry ./registry --target weapp blocks/status-fil
 不必先贡献回 Varo。把 `registry/` 目录及其所有传递依赖的 manifest 和源码部署到自己的静态站点，即可从业务项目安装：
 
 ```bash
-pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target weapp blocks/status-filter
+pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target h5 blocks/status-filter
 ```
 
 CLI 从该地址下的 `blocks/status-filter/registry.json` 读取元数据，按 `files.from` 去掉 `registry/` 前缀后的路径下载源码。普通和 target-specific 的 `registryDependencies` 都在同一个 Registry 内解析；缺失依赖会报错，不会回退到官方 Registry。也可以用 `--registry ./registry` 验证本地目录。
@@ -294,7 +297,7 @@ pnpm dlx @varo-ui/cli export --registry ./registry.json hello-world > hello-worl
 
 `files.path` 相对清单目录读取；已包含 `content` 的发布条目无需源文件。组件、UI、hook、lib 默认分别进入 `src/components`、`src/components/ui`、`src/composables`、`src/lib`，保留组件子目录；显式 `target` 优先，但必须留在 `src/`。也会读取消费项目的 `components.json` 和 TypeScript/JSONC 别名配置，并用 AST 重写随文件移动而变化的 JS/TS/Vue script 导入。
 
-标准清单默认 H5；Weapp 条目需明确声明 `meta.varo.target: "weapp"`。目录内依赖按名称解析，独立条目可读取同目录的 `<name>.json`，跨 Registry 依赖使用明确的 HTTP(S) 条目 URL。支持 `registry:block/component/ui/hook/composable/lib/page/file/theme/style` 的文件语义；`page/file` 文件必须提供明确目标。不支持 `registry:base/font`、框架转换或 npm 自动安装；`css`、`cssVars`、`tailwind`、`envVars` 与样式继承 `extends` 会明确报错，不会静默忽略，也不会自动回退到公共 Registry。
+标准清单默认 H5；非 H5 条目需用 `meta.varo.target` 声明精确安装 profile（例如 `"weapp"` 或已准入的 `"alipay"`），不能把 renderer 当成其他 profile 的通用授权。完整依赖闭包必须与请求 profile 匹配。目录内依赖按名称解析，独立条目可读取同目录的 `<name>.json`，跨 Registry 依赖使用明确的 HTTP(S) 条目 URL。支持 `registry:block/component/ui/hook/composable/lib/page/file/theme/style` 的文件语义；`page/file` 文件必须提供明确目标。不支持 `registry:base/font`、框架转换或 npm 自动安装；`css`、`cssVars`、`tailwind`、`envVars` 与样式继承 `extends` 会明确报错，不会静默忽略，也不会自动回退到公共 Registry。
 
 ### 供 shadcn-vue 生态安装
 
@@ -302,7 +305,7 @@ pnpm dlx @varo-ui/cli export --registry ./registry.json hello-world > hello-worl
 
 ```bash
 mkdir -p public/r
-pnpm dlx @varo-ui/cli export --registry ./registry --target weapp blocks/status-filter > public/r/status-filter.json
+pnpm dlx @varo-ui/cli export --registry ./registry --target h5 blocks/status-filter > public/r/status-filter.json
 # 部署 public/ 后，在已配置 components.json 和 TypeScript 路径别名的消费项目执行：
 pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 ```
@@ -311,7 +314,7 @@ pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 
 导出要求文件内容为有效 UTF-8；非 UTF-8 字节会明确报错，不会被替换字符静默损坏。`add` 仍按原始字节复制二进制资源。安装与导出都会拒绝“同一路径既是文件又是其他文件的父目录”的冲突，包括仅大小写不同的路径冲突。
 
-H5 与 Weapp 必须分别导出。`meta.varo.target` 记录目标，但第三方安装器不会替你检查运行时，也不会把 Vue 转成 Wevu；消费工程仍需安装匹配的依赖并接入主题。CLI API 调用方须使用 `await resolveRegistryItems(...)`，现在本地与远端解析均返回 Promise。
+每个精确 profile 必须分别导出。`meta.varo.target` 保留所选 profile，而文件按对应 renderer 选择；第三方安装器不会替你检查运行时，也不会把 Vue 转成 Wevu。消费工程仍需另行安装匹配依赖并接入完整样式。CLI API 调用方须使用 `await resolveRegistryItems(...)`，本地与远端解析均返回 Promise。原生编译成功只证明编译/产物，不证明真机或 Donut 宿主能力。
 
 ## 10. 贡献回 Varo
 
@@ -330,13 +333,13 @@ H5 与 Weapp 必须分别导出。`meta.varo.target` 记录目标，但第三方
 
 ## 故障排查
 
-| 现象             | 处理                                                     |
-| ---------------- | -------------------------------------------------------- |
-| 依赖没装上       | 检查 `registryDependencies` 拼写，如 `components/select` |
-| 目标文件冲突     | 确认 `to` 路径；默认 no-clobber，覆盖需显式 force        |
-| block 难复用     | 把远程数据/权限/埋点移到业务 wrapper                     |
-| 小程序不可用     | 删除 H5-only API，保持双端契约                           |
-| 单测过但安装失败 | 用 packed CLI + 临时 fixture 复现，检查 files 映射       |
+| 现象             | 处理                                                                       |
+| ---------------- | -------------------------------------------------------------------------- |
+| 依赖没装上       | 检查 `registryDependencies` 拼写，如 `components/select`                   |
+| 目标文件冲突     | 确认 `to` 路径；默认 no-clobber，覆盖需显式 force                          |
+| block 难复用     | 把远程数据/权限/埋点移到业务 wrapper                                       |
+| 小程序不可用     | 提供真实 Wevu SFC 与原生依赖，检查 profile 准入和全局样式；不能只改 target |
+| 单测过但安装失败 | 用 packed CLI + 临时 fixture 复现，检查 files 映射                         |
 
 ## 安装现有 block
 

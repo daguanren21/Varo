@@ -1,5 +1,7 @@
-import type { AccordionType, AccordionValue } from '@varo/primitives-h5'
+// Generated from registry/components/collapse/collapse.ts; edit the Registry source.
 import type { PropType } from 'vue'
+import type { AccordionType, AccordionValue } from '@varo/primitives-h5'
+import { defineComponent, h } from 'vue'
 import {
   AccordionContent,
   AccordionItem,
@@ -7,8 +9,10 @@ import {
   AccordionTrigger,
 
 } from '@varo/primitives-h5'
-import { defineComponent, h } from 'vue'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-collapse.css'
 
 export const VCollapse = defineComponent({
   name: 'VCollapse',

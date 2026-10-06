@@ -9,7 +9,7 @@ const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'zh' })
 const draft = shallowRef('')
 const queryCount = shallowRef(0)
 const lastQuery = shallowRef(props.locale === 'en' ? 'No query yet' : '尚未发送')
-const status = shallowRef(props.locale === 'en' ? 'Robot connected' : '机器人已连接')
+const status = shallowRef(props.locale === 'en' ? 'Local example ready · no connection' : '本地示例就绪 · 未连接机器人')
 const messages = shallowRef<Message[]>([{
   role: 'assistant',
   text: props.locale === 'en' ? 'Hello, how can I help?' : '你好，请问需要什么帮助？',
@@ -17,22 +17,22 @@ const messages = shallowRef<Message[]>([{
 
 const copy = computed(() => props.locale === 'en'
   ? {
-      eyebrow: 'Weapp-only plugin host',
-      title: 'VRobotChat observable preview',
-      body: 'Docs cannot load chatbotwidget. This surface shows the same session: welcome, operateCard, send, and queryCallback.',
+      eyebrow: 'Local browser illustration',
+      title: 'VRobotChat session illustration',
+      body: 'This example uses local message state only. It does not load chatbotwidget, connect a robot, or execute the compiled native component.',
       placeholder: 'Ask about an order',
       send: 'Send',
       back: 'Back',
-      note: 'This is the docs/Web Preview host, not WeChat Dialog Open Platform.',
+      note: 'Messages and counters are illustrative local state, not native callbacks or platform verification.',
     }
   : {
-      eyebrow: '仅 weapp 的插件宿主',
-      title: 'VRobotChat 可观察预览',
-      body: '文档站不能加载 chatbotwidget。这里画出同一套会话面：欢迎语、operateCard、发送和 queryCallback。',
+      eyebrow: '本地浏览器示例',
+      title: 'VRobotChat 会话示意',
+      body: '这里仅使用本地消息状态，不加载 chatbotwidget、不连接机器人，也不执行编译后的原生组件。',
       placeholder: '请输入问题',
       send: '发送',
       back: '返回',
-      note: '这是文档/Web Preview 的可见宿主，不是微信对话开放平台。',
+      note: '消息和计数均为本地交互示意，不是原生回调或平台验证证据。',
     })
 
 const canSend = computed(() => draft.value.trim().length > 0)
@@ -47,22 +47,22 @@ function send() {
   lastQuery.value = query
   queryCount.value += 1
   status.value = props.locale === 'en'
-    ? `queryCallback #${queryCount.value}`
-    : `已收到查询回调 #${queryCount.value}`
+    ? `Local example message #${queryCount.value}`
+    : `本地示例消息 #${queryCount.value}`
   messages.value = [
     ...messages.value,
     { role: 'user', text: query },
     {
       role: 'assistant',
       text: props.locale === 'en'
-        ? `Received “${query}”. This is the docs host for chatbotwidget, not WeChat Dialog Open Platform.`
-        : `已收到「${query}」。这是文档对 chatbotwidget 会话面的可见宿主，不是微信对话开放平台。`,
+        ? `Local echo: “${query}”. No request was sent to a robot service.`
+        : `本地回显：「${query}」。没有向机器人服务发送请求。`,
     },
   ]
 }
 
 function backHome() {
-  status.value = props.locale === 'en' ? 'Left the robot session' : '已退出机器人会话'
+  status.value = props.locale === 'en' ? 'Left the local example' : '已退出本地示例'
 }
 </script>
 
@@ -113,7 +113,7 @@ function backHome() {
         </dd>
       </div>
       <div>
-        <dt>queryCallback</dt>
+        <dt>{{ props.locale === 'en' ? 'Local sends' : '本地发送次数' }}</dt>
         <dd data-preview-field="robot-query-count">
           {{ queryCount }}
         </dd>

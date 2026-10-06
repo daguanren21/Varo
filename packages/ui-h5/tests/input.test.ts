@@ -166,4 +166,29 @@ describe('ui-h5 input', () => {
     expect(input.attributes('aria-describedby')).toContain(error.attributes('id'))
     expect(input.attributes('aria-invalid')).toBe('true')
   })
+
+  it('forwards one accepted input event and no events for readonly, disabled, or unchanged values', async () => {
+    const events: string[] = []
+    const wrapper = mount(VInput, {
+      props: {
+        'defaultValue': 'AB',
+        'readonly': true,
+        'onUpdate:value': (value: string) => events.push(`update:${value}`),
+        'onValueChange': (value: string) => events.push(`change:${value}`),
+        'onInput': () => events.push('input'),
+      },
+    })
+    await wrapper.get('input').setValue('blocked')
+    expect(events).toEqual([])
+    await wrapper.setProps({ readonly: false, disabled: true })
+    await wrapper.get('input').setValue('disabled')
+    expect(events).toEqual([])
+    await wrapper.setProps({ disabled: false })
+    await wrapper.get('input').setValue('ABC')
+    expect(events).toEqual(['update:ABC', 'change:ABC', 'input'])
+    events.length = 0
+    await wrapper.get('input').trigger('input')
+    expect(events).toEqual([])
+    wrapper.unmount()
+  })
 })

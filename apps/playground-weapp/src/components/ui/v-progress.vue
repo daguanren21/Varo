@@ -14,8 +14,8 @@ const props = withDefaults(
     showText: true,
     status: 'default',
     strokeWidth: 8,
-    type: 'line'
-  }
+    type: 'line',
+  },
 )
 
 const value = computed(() => Math.min(100, Math.max(0, props.percentage)))
@@ -32,8 +32,14 @@ const value = computed(() => Math.min(100, Math.max(0, props.percentage)))
     :data-type="type"
     :style="{ '--varo-progress-value': `${value}%`, '--varo-progress-stroke': `${strokeWidth}px` }"
   >
-    <view class="varo-progress__track"><text class="varo-progress__bar" /></view>
-    <text v-if="showText" class="varo-progress__text"><slot :value="value">{{ value }}%</slot></text>
+    <view class="varo-progress__track">
+      <text class="varo-progress__bar" />
+    </view>
+    <text v-if="showText" class="varo-progress__text">
+      <slot :value="value">
+        {{ value }}%
+      </slot>
+    </text>
   </view>
 </template>
 

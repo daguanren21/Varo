@@ -1,12 +1,17 @@
-import type { PressableSize, PressableVariant } from '@varo/primitives-h5'
+// Generated from registry/components/button/button.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
+import type { ClassValue } from './lib/cn'
+import type { PressableSize, PressableVariant } from '@varo/primitives-h5'
+import { createVariantClass } from '@varo-ui/headless'
 import { contrastSafeForeground } from '@varo-ui/theme'
+import { computed, defineComponent, h } from 'vue'
+import { cn } from './lib/cn'
 import {
   ButtonRoot,
 
 } from '@varo/primitives-h5'
-import { createVariantClass } from '@varo/shared'
-import { computed, defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-button.css'
 
 type ButtonTone = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
 type ButtonShape = 'default' | 'square' | 'round'
@@ -150,7 +155,7 @@ export const VButton = defineComponent({
           'nativeType': props.nativeType,
           'size': props.size,
           'variant': visualVariant.value,
-          'class': [classes.value, attrs.class],
+          'class': cn(classes.value, attrs.class as ClassValue),
           'style': [attrs.style as StyleValue, customColorStyle.value],
           'data-tone': props.tone,
           'data-shape': props.shape,

@@ -17,7 +17,7 @@
   "dependencies": {
     "@weapp-tailwindcss/merge": "2.2.3",
     "clsx": "2.1.1",
-    "wevu": "7.1.0"
+    "wevu": "7.4.0"
   },
   "devDependencies": {
     "@babel/core": "8.0.1",
@@ -30,6 +30,6 @@
     "vite": "8.2.2",
     "vue": "3.5.42",
     "weapp-tailwindcss": "5.5.3",
-    "weapp-vite": "7.1.0"
+    "weapp-vite": "7.4.0"
   }
 }

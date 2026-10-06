@@ -35,6 +35,37 @@ describe('ui-h5 form controls', () => {
     expect(onUpdate).toHaveBeenCalledTimes(1)
   })
 
+  it('renders checkbox validation states and blocks readonly changes', async () => {
+    const onUpdate = vi.fn()
+    const wrapper = mount(VCheckbox, {
+      props: {
+        'checked': false,
+        'indeterminate': true,
+        'invalid': true,
+        'readonly': true,
+        'required': true,
+        'onUpdate:checked': onUpdate,
+      },
+    })
+
+    expect(wrapper.attributes()).toMatchObject({
+      'aria-checked': 'mixed',
+      'aria-invalid': 'true',
+      'aria-readonly': 'true',
+      'aria-required': 'true',
+      'data-indeterminate': 'true',
+      'data-state': 'indeterminate',
+    })
+    expect(wrapper.get('.varo-icon').attributes('data-name')).toBe('minus')
+
+    await wrapper.trigger('click')
+    expect(onUpdate).not.toHaveBeenCalled()
+
+    await wrapper.setProps({ indeterminate: false, readonly: false })
+    await wrapper.trigger('click')
+    expect(onUpdate).toHaveBeenCalledWith(true)
+  })
+
   it('selects one radio value inside a group', async () => {
     const onUpdate = vi.fn()
     const wrapper = mount(VRadioGroup, {

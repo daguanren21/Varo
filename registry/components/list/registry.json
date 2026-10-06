@@ -36,6 +36,16 @@
       "target": "weapp",
       "from": "registry/components/list/v-list.vue",
       "to": "src/components/ui/v-list.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/list/h5.css",
+      "to": "src/styles/varo-list.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/list/weapp-vite.css",
+      "to": "src/styles/varo-list.css"
     }
   ],
   "docs": "/components/list"

@@ -1,5 +1,10 @@
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
+// Generated from registry/components/avatar/avatar.ts; edit the Registry source.
+import type { PropType, StyleValue } from 'vue'
+import { computed, defineComponent, h } from 'vue'
 import { VImage } from './image'
+import './styles/varo.css'
+import './styles/varo-image.css'
+import './styles/varo-avatar.css'
 
 type AvatarFit = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
 
@@ -10,42 +15,42 @@ export const VAvatar = defineComponent({
   props: {
     alt: {
       type: String,
-      default: ''
+      default: '',
     },
     fallback: {
       type: String,
-      default: ''
+      default: '',
     },
     fit: {
       type: String as PropType<AvatarFit>,
-      default: 'cover'
+      default: 'cover',
     },
     shape: {
       type: String as PropType<AvatarShape>,
-      default: 'circle'
+      default: 'circle',
     },
     size: {
       type: [Number, String],
-      default: 40
+      default: 40,
     },
-    src: String
+    src: String,
   },
   setup(props, { attrs, slots }) {
     const dimension = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
     const style = computed<StyleValue>(() => ({ height: dimension.value, width: dimension.value }))
     const fallback = () =>
-      h('span', { class: 'varo-avatar__fallback', 'aria-hidden': props.alt ? undefined : 'true' }, slots.fallback?.() ?? props.fallback)
+      h('span', { 'class': 'varo-avatar__fallback', 'aria-hidden': props.alt ? undefined : 'true' }, slots.fallback?.() ?? props.fallback)
 
     return () =>
       h(
         'span',
         {
           ...attrs,
-          class: ['varo-avatar', attrs.class],
-          style: [style.value, attrs.style as StyleValue],
-          role: props.alt ? 'img' : undefined,
+          'class': ['varo-avatar', attrs.class],
+          'style': [style.value, attrs.style as StyleValue],
+          'role': props.alt ? 'img' : undefined,
           'aria-label': props.alt || undefined,
-          'data-shape': props.shape
+          'data-shape': props.shape,
         },
         props.src
           ? [
@@ -58,14 +63,14 @@ export const VAvatar = defineComponent({
                   radius: 'inherit',
                   showLoading: false,
                   src: props.src,
-                  width: '100%'
+                  width: '100%',
                 },
-                { error: fallback }
-              )
+                { error: fallback },
+              ),
             ]
-          : [fallback()]
+          : [fallback()],
       )
-  }
+  },
 })
 
 export const VAvatarGroup = defineComponent({
@@ -73,16 +78,16 @@ export const VAvatarGroup = defineComponent({
   props: {
     max: {
       type: Number,
-      default: undefined
+      default: undefined,
     },
     overlap: {
       type: [Number, String],
-      default: 10
-    }
+      default: 10,
+    },
   },
   setup(props, { attrs, slots }) {
     const style = computed<StyleValue>(() => ({
-      '--varo-avatar-group-overlap': typeof props.overlap === 'number' ? `${props.overlap}px` : props.overlap
+      '--varo-avatar-group-overlap': typeof props.overlap === 'number' ? `${props.overlap}px` : props.overlap,
     }))
 
     return () => {
@@ -94,15 +99,15 @@ export const VAvatarGroup = defineComponent({
         'div',
         {
           ...attrs,
-          class: ['varo-avatar-group', attrs.class],
-          style: [style.value, attrs.style as StyleValue],
-          'aria-label': hiddenCount > 0 ? `${hiddenCount} more` : undefined
+          'class': ['varo-avatar-group', attrs.class],
+          'style': [style.value, attrs.style as StyleValue],
+          'aria-label': hiddenCount > 0 ? `${hiddenCount} more` : undefined,
         },
         [
           ...visible,
-          hiddenCount > 0 ? h('span', { class: 'varo-avatar-group__more' }, `+${hiddenCount}`) : null
-        ]
+          hiddenCount > 0 ? h('span', { class: 'varo-avatar-group__more' }, `+${hiddenCount}`) : null,
+        ],
       )
     }
-  }
+  },
 })

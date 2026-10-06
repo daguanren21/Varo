@@ -12,19 +12,19 @@
     "smoke:pull-refresh": "node scripts/smoke-pull-refresh.mjs",
     "smoke:motion-controls": "node scripts/smoke-motion-controls.mjs",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
     "@varo-ui/h5": "workspace:*",
     "@varo/weapp-web": "workspace:*",
-    "vue": "^3.5.42"
+    "vue": "^3.5.43"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.1",
+    "@playwright/test": "^1.63.0",
     "@varo/playground-weapp": "workspace:*",
-    "@vitejs/plugin-vue": "^6.0.8",
+    "@vitejs/plugin-vue": "^6.0.9",
     "typescript": "^6.0.3",
-    "vite": "^8.2.2",
+    "vite": "^8.3.0",
     "vue-tsc": "^3.3.11"
   }
 }

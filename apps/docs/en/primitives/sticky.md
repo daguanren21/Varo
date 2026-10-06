@@ -4,7 +4,7 @@ Sticky foundation exposing fixed state, offset, and scroll information while wra
 
 ## Runtime ownership
 
-H5 and Weapp adapters align state and event names; each runtime owns its scrolling source.
+This page's `StickyRoot` and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VSticky` SFC, not equivalent Vue Parts; the native tab shows source/evidence only. Each runtime owns its real scrolling source.
 
 ## Demo
 

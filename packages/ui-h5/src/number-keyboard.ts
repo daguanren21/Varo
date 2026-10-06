@@ -1,4 +1,7 @@
+// Generated from registry/components/number-keyboard/number-keyboard.ts; edit the Registry source.
 import { defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-number-keyboard.css'
 
 const defaultKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
@@ -7,17 +10,17 @@ export const VNumberKeyboard = defineComponent({
   props: {
     closeText: {
       type: String,
-      default: 'Done'
+      default: 'Done',
     },
     deleteText: {
       type: String,
-      default: 'Delete'
+      default: 'Delete',
     },
     extraKey: {
       type: String,
-      default: ''
+      default: '',
     },
-    visible: Boolean
+    visible: Boolean,
   },
   emits: ['input', 'delete', 'close'],
   setup(props, { emit }) {
@@ -27,22 +30,22 @@ export const VNumberKeyboard = defineComponent({
             h(
               'div',
               { class: 'varo-number-keyboard__keys' },
-              [...defaultKeys, props.extraKey].filter(Boolean).map((key) =>
+              [...defaultKeys, props.extraKey].filter(Boolean).map(key =>
                 h(
                   'button',
                   {
-                    class: 'varo-number-keyboard__key',
-                    type: 'button',
+                    'class': 'varo-number-keyboard__key',
+                    'type': 'button',
                     'data-key': key,
-                    onClick: () => emit('input', key)
+                    'onClick': () => emit('input', key),
                   },
-                  key
-                )
-              )
+                  key,
+                ),
+              ),
             ),
             h('button', { class: 'varo-number-keyboard__delete', type: 'button', onClick: () => emit('delete') }, props.deleteText),
-            h('button', { class: 'varo-number-keyboard__close', type: 'button', onClick: () => emit('close') }, props.closeText)
+            h('button', { class: 'varo-number-keyboard__close', type: 'button', onClick: () => emit('close') }, props.closeText),
           ])
         : null
-  }
+  },
 })

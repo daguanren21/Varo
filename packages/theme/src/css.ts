@@ -72,6 +72,8 @@ export interface ThemeCssVariables {
   '--varo-ui-shadow-sm': string
   '--varo-ui-shadow-md': string
   '--varo-ui-motion-feedback': string
+  '--varo-ui-motion-press': string
+  '--varo-ui-motion-indicator': string
   '--varo-ui-motion-state': string
   '--varo-ui-motion-enter': string
   '--varo-ui-motion-exit': string
@@ -252,6 +254,8 @@ export function createThemeCssVariables(
       ? '0 12px 32px 4px rgb(0 0 0 / 36%), 0 8px 20px rgb(0 0 0 / 72%)'
       : '0 12px 32px 4px rgb(0 0 0 / 4%), 0 8px 20px rgb(0 0 0 / 8%)',
     '--varo-ui-motion-feedback': '140ms',
+    '--varo-ui-motion-press': '90ms',
+    '--varo-ui-motion-indicator': '140ms',
     '--varo-ui-motion-state': '180ms',
     '--varo-ui-motion-enter': '220ms',
     '--varo-ui-motion-exit': '160ms',

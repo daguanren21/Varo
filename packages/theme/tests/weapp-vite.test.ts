@@ -12,11 +12,12 @@ const theme = createTheme({
 })
 
 function themeTransform(appStyle: string) {
-  const transform = createVaroWeappThemePlugin({ appStyle, theme }).transform
-  if (typeof transform !== 'function') {
+  const hook = createVaroWeappThemePlugin({ appStyle, theme }).transform
+  const handler = typeof hook === 'function' ? hook : hook?.handler
+  if (!handler) {
     throw new TypeError('Expected a Vite transform hook')
   }
-  return transform
+  return handler
 }
 
 describe('createVaroWeappThemePlugin', () => {

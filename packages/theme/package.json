@@ -62,13 +62,13 @@
     "dev": "tsdown --watch",
     "lint": "echo theme lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
     "test:e2e": "echo theme has no e2e"
   },
   "dependencies": {
-    "vue": "^3.5.42"
+    "vue": "^3.5.43"
   },
   "devDependencies": {
-    "vite": "8.2.2"
+    "vite": "8.3.0"
   }
 }

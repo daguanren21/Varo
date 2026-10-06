@@ -1,0 +1,68 @@
+.varo-progress {
+  position: relative;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--varo-ui-text);
+}
+
+.varo-progress__track {
+  width: 100%;
+  height: var(--varo-progress-stroke, 8px);
+  overflow: hidden;
+  background: var(--varo-ui-surface-muted);
+  border-radius: 999px;
+}
+
+.varo-progress__bar {
+  display: block;
+  width: var(--varo-progress-value);
+  height: 100%;
+  background: var(--varo-ui-primary);
+  border-radius: inherit;
+  transition: width 0.28s ease;
+}
+
+.varo-progress[data-status='success'] .varo-progress__bar,
+.varo-progress[data-status='success'] .varo-progress__circle {
+  --varo-progress-color: var(--varo-ui-success);
+}
+
+.varo-progress[data-status='warning'] .varo-progress__bar,
+.varo-progress[data-status='warning'] .varo-progress__circle {
+  --varo-progress-color: var(--varo-ui-warning);
+}
+
+.varo-progress[data-status='danger'] .varo-progress__bar,
+.varo-progress[data-status='danger'] .varo-progress__circle {
+  --varo-progress-color: var(--varo-ui-danger);
+}
+
+.varo-progress__bar {
+  background: var(--varo-progress-color, var(--varo-ui-primary));
+}
+
+.varo-progress[data-type='line'] {
+  width: 100%;
+}
+
+.varo-progress[data-type='circle'] {
+  display: inline-grid;
+  place-items: center;
+}
+
+.varo-progress__circle {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle, var(--varo-ui-surface) calc(50% - var(--varo-progress-stroke)), transparent calc(50% - var(--varo-progress-stroke) + 1px)),
+    conic-gradient(var(--varo-progress-color, var(--varo-ui-primary)) var(--varo-progress-value), var(--varo-ui-surface-muted) 0);
+  border-radius: 999px;
+}
+
+.varo-progress[data-type='circle'] .varo-progress__text {
+  position: relative;
+  z-index: 1;
+}

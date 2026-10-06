@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import ts from 'typescript'
 import { parse as parseSfc } from 'vue/compiler-sfc'
+import { resolveRegistryItems } from '../../../packages/cli/src/index.ts'
+import { registryItems, registryRoot } from '../../../scripts/registry-artifacts.mjs'
 import { convertRetailSources } from './convert-retail-uni-app.mjs'
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -14,7 +16,6 @@ const repoRoot = resolve(appRoot, '../..')
 const sourceRoot = resolve(appRoot, 'src')
 const templateRoot = resolve(appRoot, 'starter')
 const uniTemplateRoot = resolve(appRoot, 'starter-uni-app')
-const bridgePath = resolve(sourceRoot, 'lib/varo-primitives.ts')
 const retailRoots = new Set(['retail-goods', 'retail-order', 'retail-user', 'retail-coupon', 'retail-promotion'])
 const helperEntries = new Map([
   ['@varo-ui/headless', 'packages/primitives-core/src/index.ts'],
@@ -98,6 +99,27 @@ async function collectProject(framework) {
   const headlessEntry = resolve(repoRoot, helperEntries.get('@varo-ui/headless'))
   const headlessExports = new Map()
   let helperProgram
+  const catalog = await registryItems()
+  const nativeOwners = new Map(catalog.flatMap(item => item.files
+    .filter(file => file.target === 'weapp' && file.to.endsWith('.vue'))
+    .map(file => [resolve(appRoot, file.to), item])))
+  const styledItems = new Set()
+
+  async function includeRegistryStyles(path) {
+    const owner = nativeOwners.get(path)
+    if (!owner || styledItems.has(owner.id)) { return }
+    const plan = await resolveRegistryItems([owner.id], { registryRoot, target: 'weapp' })
+    for (const dependency of plan.items) {
+      const item = catalog.find(item => item.type === dependency.type && item.name === dependency.name)
+      await snapshot(item.manifest)
+      styledItems.add(item.id)
+    }
+    for (const file of plan.files) {
+      if (file.to.startsWith('src/styles/') && file.to.endsWith('.css')) {
+        enqueue(resolve(appRoot, file.to))
+      }
+    }
+  }
 
   async function includeHeadlessExports(node) {
     const bindings = ts.isImportDeclaration(node) && node.importClause?.namedBindings
@@ -192,15 +214,7 @@ async function collectProject(framework) {
 
   async function dependency(owner, specifier, node) {
     if (specifier.startsWith('.') || specifier.startsWith('/')) {
-      const target = await localTarget(owner, specifier)
-      if (target === bridgePath) {
-        const bindings = ts.isImportDeclaration(node) && node.importClause?.namedBindings
-        if (!bindings || !ts.isNamedImports(bindings)
-          || bindings.elements.some(binding => (binding.propertyName ?? binding.name).text !== 'varoReactiveRuntime')
-          || node.importClause.name) {
-          throw new Error('A retail consumer uses renderer exports from lib/varo-primitives.ts; migrate it to native components before export.')
-        }
-      }
+      await localTarget(owner, specifier)
       return specifier
     }
     const helper = helperEntries.get(specifier)
@@ -227,12 +241,6 @@ async function collectProject(framework) {
       if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier) {
         const literal = node.moduleSpecifier
         if (!ts.isStringLiteral(literal)) { throw new Error('Module references must be static strings.') }
-        if (owner === bridgePath && ts.isExportDeclaration(node) && !node.exportClause
-          && literal.text === '@varo-ui/weapp/primitives') {
-          edits.push({ start: offset + node.getStart(parsed), end: offset + node.end, text: '' })
-          transforms.push({ file: outputName(owner), operation: 'Remove unused renderer-only wildcard re-export; all reached consumers use varoReactiveRuntime.' })
-          return
-        }
         references.push({ literal, node })
       }
       else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument) && ts.isStringLiteral(node.argument.literal)) {
@@ -302,6 +310,7 @@ async function collectProject(framework) {
 
   for (let index = 0; index < queue.length; index++) {
     const path = queue[index]
+    await includeRegistryStyles(path)
     const original = await snapshot(path)
     let content = path === appPath ? app.content : original
     if (textExtensions.has(extname(path))) {

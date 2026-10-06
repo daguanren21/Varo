@@ -1,6 +1,10 @@
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
-import { createVariantClass } from '@varo/shared'
-import { CellGroupRoot, CellRoot, type CellDescTextAlign, type CellSize } from '@varo/primitives-h5'
+// Generated from registry/components/cell/cell.ts; edit the Registry source.
+import type { PropType, StyleValue } from 'vue'
+import type { CellDescTextAlign, CellSize } from '@varo/primitives-h5'
+import { createVariantClass } from '@varo-ui/headless'
+import { computed, defineComponent, h } from 'vue'
+import { CellGroupRoot, CellRoot } from '@varo/primitives-h5'
+import './styles/varo.css'
 
 const cellProps = {
   title: String,
@@ -8,7 +12,7 @@ const cellProps = {
   desc: String,
   descTextAlign: {
     type: String as PropType<CellDescTextAlign>,
-    default: 'right'
+    default: 'right',
   },
   icon: String,
   isLink: Boolean,
@@ -17,13 +21,13 @@ const cellProps = {
   center: Boolean,
   size: {
     type: String as PropType<CellSize>,
-    default: 'default'
+    default: 'default',
   },
   clickable: Boolean,
   titleWidth: {
     type: [Number, String] as PropType<number | string | undefined>,
-    default: undefined
-  }
+    default: undefined,
+  },
 }
 
 export const VCell = defineComponent({
@@ -37,8 +41,8 @@ export const VCell = defineComponent({
         size: props.size,
         center: props.center,
         clickable: clickable.value,
-        link: props.isLink || Boolean(props.to)
-      })
+        link: props.isLink || Boolean(props.to),
+      }),
     )
 
     return () =>
@@ -60,18 +64,18 @@ export const VCell = defineComponent({
           title: props.title,
           titleWidth: props.titleWidth,
           to: props.to,
-          onClick: (event: MouseEvent) => emit('click', event)
+          onClick: (event: MouseEvent) => emit('click', event),
         },
-        slots
+        slots,
       )
-  }
+  },
 })
 
 export const VCellGroup = defineComponent({
   name: 'VCellGroup',
   props: {
     title: String,
-    desc: String
+    desc: String,
   },
   setup(props, { attrs, slots }) {
     return () =>
@@ -81,9 +85,9 @@ export const VCellGroup = defineComponent({
           ...attrs,
           class: ['varo-cell-group', attrs.class],
           desc: props.desc,
-          title: props.title
+          title: props.title,
         },
-        slots
+        slots,
       )
-  }
+  },
 })

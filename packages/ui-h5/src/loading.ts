@@ -1,4 +1,8 @@
-import { defineComponent, h, type PropType } from 'vue'
+// Generated from registry/components/loading/loading.ts; edit the Registry source.
+import type { PropType } from 'vue'
+import { defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-loading.css'
 
 export type VLoadingSize = 'sm' | 'md' | 'lg'
 export type VLoadingTone = 'default' | 'primary' | 'success' | 'warning' | 'danger'
@@ -8,16 +12,16 @@ export const VLoading = defineComponent({
   props: {
     size: {
       type: String as PropType<VLoadingSize>,
-      default: 'md'
+      default: 'md',
     },
     tone: {
       type: String as PropType<VLoadingTone>,
-      default: 'default'
+      default: 'default',
     },
     text: {
       type: String,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   setup(props, { attrs, slots }) {
     return () =>
@@ -25,14 +29,14 @@ export const VLoading = defineComponent({
         'span',
         {
           ...attrs,
-          class: ['varo-loading', attrs.class],
+          'class': ['varo-loading', attrs.class],
           'data-size': props.size,
-          'data-tone': props.tone
+          'data-tone': props.tone,
         },
         [
-          h('span', { class: 'varo-loading__spinner', 'aria-hidden': 'true' }),
-          props.text || slots.default ? h('span', { class: 'varo-loading__text' }, slots.default?.() ?? props.text) : null
-        ]
+          h('span', { 'class': 'varo-loading__spinner', 'aria-hidden': 'true' }),
+          props.text || slots.default ? h('span', { class: 'varo-loading__text' }, slots.default?.() ?? props.text) : null,
+        ],
       )
-  }
+  },
 })

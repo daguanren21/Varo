@@ -1,6 +1,6 @@
 # Cross-runtime Showcase
 
-This is Varo’s public cross-runtime showcase: choose an adoption path first, then distinguish live browser interaction, a browser-rendered Weapp contract preview, and compiled evidence from WeChat DevTools. Repository playgrounds remain maintainer QA surfaces, not the public installation path.
+This is Varo's public cross-runtime showcase. Choose an adoption path, then distinguish H5 browser interaction, native source/support evidence, compiled-artifact browser previews, and WeChat DevTools snapshots. Repository playgrounds remain maintainer QA surfaces, not the public installation path. None of these evidence categories substitutes for device validation.
 
 ## Choose an Adoption Path
 
@@ -9,13 +9,13 @@ This is Varo’s public cross-runtime showcase: choose an adoption path first, t
     <span>H5 REGISTRY</span>
     <h3>H5 Product</h3>
     <code>pnpm dlx @varo-ui/cli add --target h5 components/button</code>
-    <p>Installs editable Vue component source and dependencies into the product repository.</p>
+    <p>Copies editable Vue source and recursive Registry dependencies; install reported npm dependencies separately.</p>
   </article>
   <article>
     <span>WEAPP REGISTRY</span>
     <h3>Weapp Product</h3>
     <code>pnpm dlx @varo-ui/cli add --target weapp components/button</code>
-    <p>Installs target-specific, WXML-safe Wevu SFC source and dependencies into the product repository.</p>
+    <p>Copies target-specific Wevu SFCs and recursive Registry dependencies; install reported npm packages and configure global styles separately.</p>
   </article>
   <article>
     <span>RUNTIME PACKAGE</span>
@@ -27,9 +27,9 @@ This is Varo’s public cross-runtime showcase: choose an adoption path first, t
 
 Registry installation is the default path. Start with the [installation guide](/en/guide/installation), then generate source for the selected target.
 
-## H5 Live & Weapp Contract Preview
+## H5 Live and Native Source Evidence
 
-The components below are directly operable. H5 runs real `@varo-ui/h5` browser components; switching target is explicitly labelled **Weapp Contract Preview** so the browser-rendered API and visual contract is not mistaken for the mini-program runtime.
+The H5 tab runs real, directly operable `@varo-ui/h5` browser components. The native tab shows target Wevu SFC source and support information only; it no longer renders Vue components as an “equivalent mini program” or claims to execute a native runtime on this page.
 
 <PlatformTabsDemo example="overview" locale="en" />
 
@@ -39,13 +39,16 @@ All **13 native Blocks** were recaptured on **2026-10-05** in the **375px WeChat
 
 The six dual-renderer Blocks have H5 browser captures updated on **2026-10-05**. Selecting H5 changes the image, install command, and usage code together. Captures cover only the version at capture time; images from one target are not runtime evidence for another.
 
+These dated historical screenshots are not a live regression run for the current source cutover and do not certify the six experimental profiles or devices. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for exact current admission and compiler-check scope.
+
 <MiniProgramBlocksGallery locale="en" />
 
 ## Evidence and Implementation Boundaries
 
 - `H5 Live`: real browser components and interactions on this page
-- `Weapp Contract Preview`: a browser-rendered target contract, not the WeChat runtime
-- `Weapp DevTools Verified`: DevTools evidence from a compiled mini-program page, not physical-device or other-platform certification
+- Native source: inspectable Registry manifest and Wevu SFC evidence, not a live preview
+- Compiled-artifact browser preview: glass-easel runs trusted artifacts; its same-origin iframe is not a security sandbox or device proof
+- `Weapp DevTools Verified`: dated DevTools page screenshots, not current certification of every component or profile
 - `weapp-vite` owns component JSON, complex list keys, generated types, and target output; `wevu` is the runtime peer for `@varo-ui/weapp`
 - `weapp-tailwindcss` translates classes in the build chain; native `hover-class` provides mini-program pressed feedback
 

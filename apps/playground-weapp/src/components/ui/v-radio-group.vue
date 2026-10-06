@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
+import type { RadioGroupContext, RadioValue, SelectionDirection } from './radio-context'
 import { computed, provide } from 'wevu'
 import { cn } from '../../lib/cn'
-import { radioGroupKey, type RadioGroupContext, type RadioValue, type SelectionDirection } from './radio-context'
+import { radioGroupKey } from './radio-context'
 
 const props = withDefaults(
   defineProps<{
@@ -19,7 +20,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  change: [value: RadioValue]
+  'change': [value: RadioValue]
   'update:value': [value: RadioValue]
 }>()
 
@@ -29,7 +30,7 @@ provide<RadioGroupContext>(radioGroupKey, {
   disabled: () => props.disabled,
   isChecked: value => props.value === value,
   select: (value) => {
-    if (props.value === value) return
+    if (props.value === value) { return }
     emit('update:value', value)
     emit('change', value)
   },

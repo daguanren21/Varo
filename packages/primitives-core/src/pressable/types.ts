@@ -1,4 +1,4 @@
-import type { ReactiveRuntime, Ref } from '../reactive'
+import type { ReactiveRuntime, Ref } from '@varo/shared'
 
 export type PressableSize = 'sm' | 'md' | 'lg'
 export type PressableVariant = 'solid' | 'ghost' | 'outline' | 'text'
@@ -24,11 +24,16 @@ export interface PressableRootAttrs {
   root: Record<string, unknown>
 }
 
+export interface PressableEvent {
+  preventDefault?: () => void
+  stopPropagation?: () => void
+}
+
 export interface PressableRootEvents {
   pressStart: () => void
   pressEnd: () => void
   pressCancel: () => void
-  click: (event?: Event) => boolean
+  click: (event?: PressableEvent) => boolean
 }
 
 export interface UsePressableRootResult {

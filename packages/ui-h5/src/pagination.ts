@@ -1,5 +1,8 @@
+// Generated from registry/components/pagination/pagination.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-pagination.css'
 
 export const VPagination = defineComponent({
   name: 'VPagination',

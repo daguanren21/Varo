@@ -1,6 +1,7 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '@varo/shared'
 import type { PopupRootOptions, UsePopupRootResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
+import { useControllableState } from '../use-controllable-state'
 
 export function usePopupRoot(options: PopupRootOptions = {}): UsePopupRootResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,7 +10,7 @@ export function usePopupRoot(options: PopupRootOptions = {}): UsePopupRootResult
     runtime,
     defaultValue: options.defaultVisible ?? false,
     value: options.visible,
-    onUpdate: options.onVisibleChange
+    onUpdate: options.onVisibleChange,
   })
 
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
@@ -17,7 +18,7 @@ export function usePopupRoot(options: PopupRootOptions = {}): UsePopupRootResult
   const contentId = runtime.ref('varo-popup-content')
 
   function setVisible(visible: boolean) {
-    if (disabled.value) {
+    if (disabled.value || visible === visibleState.current.value) {
       return
     }
 
@@ -36,22 +37,22 @@ export function usePopupRoot(options: PopupRootOptions = {}): UsePopupRootResult
     state: {
       visible: visibleState.current,
       disabled,
-      closeOnClickOverlay
+      closeOnClickOverlay,
     },
     attrs: {
       root: {
-        'data-state': visibleState.current.value ? 'open' : 'closed'
+        'data-state': visibleState.current.value ? 'open' : 'closed',
       },
       overlay: {
         'aria-hidden': true,
-        'data-state': visibleState.current.value ? 'open' : 'closed'
+        'data-state': visibleState.current.value ? 'open' : 'closed',
       },
       content: {
-        id: contentId.value,
-        role: 'dialog',
-        tabindex: -1,
-        'data-state': visibleState.current.value ? 'open' : 'closed'
-      }
+        'id': contentId.value,
+        'role': 'dialog',
+        'tabindex': -1,
+        'data-state': visibleState.current.value ? 'open' : 'closed',
+      },
     },
     events: {
       open: () => setVisible(true),
@@ -62,10 +63,10 @@ export function usePopupRoot(options: PopupRootOptions = {}): UsePopupRootResult
         if (closeOnClickOverlay.value) {
           close()
         }
-      }
+      },
     },
     api: {
-      setVisible
-    }
+      setVisible,
+    },
   }
 }

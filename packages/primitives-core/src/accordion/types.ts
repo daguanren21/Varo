@@ -1,4 +1,4 @@
-import type { MaybeRef, ReactiveRuntime, Ref } from '../reactive'
+import type { MaybeRef, ReactiveRuntime, Ref } from '@varo/shared'
 
 export type AccordionType = 'single' | 'multiple'
 export type AccordionValue = string | string[] | undefined

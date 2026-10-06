@@ -10,20 +10,18 @@
     "lint": "echo docs lint pending",
     "preview": "vitepress preview .",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:e2e": "vitest run e2e --passWithNoTests"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
     "@varo-ui/ai": "workspace:^",
     "@varo-ui/h5": "workspace:*",
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
-    "@varo-ui/weapp": "workspace:*",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.6.0",
+    "tailwind-merge": "^3.7.0",
     "vitepress": "2.0.0-alpha.19",
-    "vue": "^3.5.42",
-    "zod": "^4.5.4"
+    "vue": "^3.5.43",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",

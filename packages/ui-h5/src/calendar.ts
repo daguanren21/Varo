@@ -1,7 +1,11 @@
+// Generated from registry/components/calendar/calendar.ts; edit the Registry source.
 import type { PropType } from 'vue'
 import { computed, defineComponent, h, shallowRef, watch } from 'vue'
 import { buildMonthDays, normalizeMonth, shiftMonth, shiftYear } from './date-utils'
 import { VIcon } from './icon'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-calendar.css'
 
 export const VCalendarCard = defineComponent({
   name: 'VCalendarCard',

@@ -1,0 +1,57 @@
+{
+  "name": "input-otp",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
+  "type": "component",
+  "title": "VInputOtp",
+  "description": "One-time password input with controlled value, validation, masking, completion, and H5/Weapp adapters.",
+  "exportName": "VInputOtp",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [
+    "@varo-ui/headless"
+  ],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/theme",
+      "vue"
+    ],
+    "weapp": [
+      "@varo-ui/headless",
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base",
+    "utils/primitives"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/input-otp/input.ts",
+      "to": "src/components/ui/input-otp.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/input-otp/v-input-otp.vue",
+      "to": "src/components/ui/v-input-otp.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/input-otp/h5.css",
+      "to": "src/styles/varo-input-otp.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/input-otp/weapp-vite.css",
+      "to": "src/styles/varo-input-otp.css"
+    }
+  ],
+  "docs": "/components/input-otp"
+}

@@ -35,6 +35,16 @@
       "target": "weapp",
       "from": "registry/components/watermark/v-watermark.vue",
       "to": "src/components/ui/v-watermark.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/watermark/style.css",
+      "to": "src/styles/varo-watermark.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/watermark/style.css",
+      "to": "src/styles/varo-watermark.css"
     }
   ],
   "docs": "/components/watermark"

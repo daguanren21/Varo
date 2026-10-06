@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
+import type { AgentImageGenerationStatus } from './advanced-types'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import { agentImageIcon as imageIcon } from './agent-icons'
-
-type ImageGenerationStatus = 'completed' | 'failed' | 'generating' | 'queued'
 
 const props = withDefaults(
   defineProps<{
@@ -13,7 +12,7 @@ const props = withDefaults(
     progress?: number
     prompt?: string
     src?: string
-    status?: ImageGenerationStatus
+    status?: AgentImageGenerationStatus
   }>(),
   {
     alt: 'Generated image',

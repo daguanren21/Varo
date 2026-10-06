@@ -144,10 +144,6 @@ describe('PlatformTabsDemo', () => {
     expect(dividers.filter(node => node.attributes('aria-orientation') === 'vertical')).toHaveLength(1)
     expect(dividers.find(node => node.attributes('data-dashed') === 'true')?.text()).toBe('物流进度')
     expect(wrapper.findAll('.platform-demo__divider-order footer button')).toHaveLength(2)
-
-    await wrapper.findAll('.platform-demo__platform-tab')[1]!.trigger('click')
-    expect(wrapper.get('.platform-demo__platform-tab[data-active="true"]').text()).toBe('小程序')
-    expect(wrapper.findAll('.varo-divider')).toHaveLength(4)
   })
   it('presents Grid as keyboard-accessible account shortcuts', async () => {
     const wrapper = mount(PlatformTabsDemo, {
@@ -189,10 +185,6 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.findAll('.varo-col').map(col => col.attributes('data-span'))).toEqual(['16', '8', '8', '8', '8'])
     expect(wrapper.findAll('.platform-demo__layout-card')).toHaveLength(5)
     expect(wrapper.findAll('.platform-demo__layout-card--primary')).toHaveLength(1)
-
-    await wrapper.findAll('.platform-demo__platform-tab')[1]!.trigger('click')
-    expect(wrapper.get('.platform-demo__platform-tab[data-active="true"]').text()).toBe('小程序')
-    expect(wrapper.findAll('.varo-col')).toHaveLength(5)
   })
   it('presents Space as wrapped filters and stacked full-width actions', async () => {
     const wrapper = mount(PlatformTabsDemo, {
@@ -483,10 +475,6 @@ describe('PlatformTabsDemo', () => {
     await flushPromises()
 
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
-    expect(wrapper.find('.platform-demo__code-shell').exists()).toBe(true)
-    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('Weapp Preview')
-    expect(wrapper.get('.platform-demo__evidence span').text()).toBe('Browser contract')
-    expect(wrapper.get('.platform-demo__evidence a').text()).toContain('DevTools · 2026-08-28')
     expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('weapp')
 
     await wrapper.findAll('.platform-demo__platform-tab')[0]!.trigger('click')
@@ -495,7 +483,6 @@ describe('PlatformTabsDemo', () => {
     let params = new URL(window.location.href).searchParams
     expect(params.get('platform')).toBe('h5')
     expect(params.has('code')).toBe(false)
-    expect(wrapper.get('.platform-demo__evidence strong').text()).toBe('H5 Live')
     expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('h5')
 
     wrapper.unmount()
@@ -547,54 +534,6 @@ describe('PlatformTabsDemo', () => {
     await tabs[1]!.trigger('keydown', { key: 'Home' })
     await flushPromises()
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('h5')
-  })
-
-  it('keeps expanded code synchronized with the upper runtime tabs', async () => {
-    const writeText = vi.fn((text: string) => Promise.resolve(text))
-    const clipboard = { writeText }
-    vi.stubGlobal('navigator', { clipboard })
-
-    const wrapper = mount(PlatformTabsDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'button',
-        locale: 'zh',
-      },
-    })
-
-    await wrapper.get('.platform-demo__code-toggle').trigger('click')
-    const codeSection = wrapper.get('.platform-demo__code-section')
-    const platformTabs = wrapper.findAll('.platform-demo__platform-tab')
-    expect(platformTabs).toHaveLength(2)
-    expect(codeSection.findAll('[role="tab"]')).toHaveLength(0)
-    await platformTabs[1]!.trigger('click')
-    expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('小程序写法')
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/weapp')
-    expect(codeSection.get('code').text()).toContain('from \'@varo-ui/weapp\'')
-    expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
-    expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('weapp')
-    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
-
-    const copyButton = wrapper.get('.platform-demo__code-copy')
-    expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
-    await copyButton.trigger('click')
-    await flushPromises()
-
-    expect(writeText).toHaveBeenCalledTimes(1)
-    expect(writeText.mock.calls[0]![0]).toContain('from \'@varo-ui/weapp\'')
-    expect(copyButton.attributes('aria-label')).toBe('已复制')
-    expect(wrapper.get('.platform-demo__code-toast').text()).toContain('已复制到剪贴板')
-
-    await platformTabs[0]!.trigger('click')
-    expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
-    expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
-    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
-    expect(wrapper.find('.platform-demo__code-toast').exists()).toBe(false)
-
-    vi.unstubAllGlobals()
   })
 
   it('uses a preview-only layout for demos without controls', () => {

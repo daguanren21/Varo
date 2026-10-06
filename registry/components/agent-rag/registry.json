@@ -1,0 +1,19 @@
+{
+  "name": "agent-rag",
+  "type": "component",
+  "title": "Agent RAG Pipeline",
+  "description": "Retrieval-augmented generation progress and source-linked answers without unrelated Agent workspace or advanced payload.",
+  "targets": ["h5", "weapp"],
+  "dependencies": ["@varo-ui/ai"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["themes/agent", "utils/cn"],
+  "files": [
+    { "target": "h5", "from": "registry/components/agent-ui/h5/AgentRagPipeline.vue", "to": "src/components/agent-ui/AgentRagPipeline.vue" },
+    { "target": "h5", "from": "registry/components/agent-ui/rag-pipeline.ts", "to": "src/components/agent-ui/rag-pipeline.ts" },
+    { "target": "h5", "from": "registry/components/agent-ui/rag-icons.ts", "to": "src/components/agent-ui/rag-icons.ts" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentRagPipeline.vue", "to": "src/components/agent-ui/AgentRagPipeline.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/rag-pipeline.ts", "to": "src/components/agent-ui/rag-pipeline.ts" },
+    { "target": "weapp", "from": "registry/components/agent-ui/rag-icons.ts", "to": "src/components/agent-ui/rag-icons.ts" }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

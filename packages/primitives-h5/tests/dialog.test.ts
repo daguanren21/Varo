@@ -1,7 +1,7 @@
 import type { DialogOpenChangeDetails } from '../src/dialog'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { createSSRApp, defineComponent, h, shallowRef } from 'vue'
+import { createSSRApp, defineComponent, h, mergeProps, shallowRef } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import {
   DialogClose,
@@ -33,6 +33,7 @@ describe('primitives-h5 dialog', () => {
   it('opens and closes once with trigger and close reasons in uncontrolled mode', async () => {
     const onUpdateOpen = vi.fn()
     const onOpenChange = vi.fn()
+    const clickEvents: string[] = []
     const wrapper = mount(DialogRoot, {
       props: {
         'defaultOpen': false,
@@ -41,11 +42,14 @@ describe('primitives-h5 dialog', () => {
       },
       slots: {
         default: () => [
-          h(DialogTrigger, null, { default: () => 'Open dialog' }),
+          h(DialogTrigger, mergeProps(
+            { onClick: () => clickEvents.push('trigger') },
+            { onClick: () => clickEvents.push('merged-trigger') },
+          ), { default: () => 'Open dialog' }),
           h(DialogContent, null, {
             default: () => [
               h('span', 'Dialog body'),
-              h(DialogClose, null, { default: () => 'Close dialog' }),
+              h(DialogClose, { onClick: () => clickEvents.push('close') }, { default: () => 'Close dialog' }),
             ],
           }),
         ],
@@ -66,6 +70,8 @@ describe('primitives-h5 dialog', () => {
       [false, 'close-press'],
     ])
     expect(onUpdateOpen.mock.calls).toEqual([[true], [false]])
+    expect(clickEvents).toEqual(['trigger', 'merged-trigger', 'close'])
+    wrapper.unmount()
   })
 
   it('requests open change in controlled mode without mutating local visibility', async () => {
@@ -218,6 +224,36 @@ describe('primitives-h5 dialog', () => {
     expect(document.activeElement).toBe(trigger.element)
     expect((trigger.element as HTMLElement).inert).not.toBe(true)
     wrapper.unmount()
+  })
+
+  it('restores an external opener when no DialogTrigger is rendered', async () => {
+    const opener = document.createElement('button')
+    document.body.append(opener)
+    const wrapper = mount(DialogRoot, {
+      attachTo: document.body,
+      props: { open: false },
+      slots: {
+        default: () => h(DialogContent, null, {
+          default: () => h(DialogClose, null, { default: () => 'Close' }),
+        }),
+      },
+    })
+    try {
+      opener.focus()
+      await wrapper.setProps({ open: true })
+      await wrapper.vm.$nextTick()
+      expect(document.activeElement).toBe(wrapper.get('button').element)
+      expect(opener.inert).toBe(true)
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+      expect(wrapper.emitted('update:open')).toEqual([[false]])
+      await wrapper.setProps({ open: false })
+      expect(document.activeElement).toBe(opener)
+      expect(opener.inert).not.toBe(true)
+    }
+    finally {
+      wrapper.unmount()
+      opener.remove()
+    }
   })
 
   it('keeps Escape and focus ownership on the topmost nested dialog', async () => {

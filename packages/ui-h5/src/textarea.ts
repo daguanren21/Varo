@@ -1,5 +1,9 @@
+// Generated from registry/components/textarea/textarea.ts; edit the Registry source.
 import { defineComponent, h } from 'vue'
 import { VInput } from './input'
+import './styles/varo.css'
+import './styles/varo-icon.css'
+import './styles/varo-input.css'
 
 export const VTextarea = defineComponent({
   name: 'VTextarea',
@@ -9,9 +13,9 @@ export const VTextarea = defineComponent({
         VInput,
         {
           ...attrs,
-          type: 'textarea'
+          type: 'textarea',
         },
-        slots
+        slots,
       )
-  }
+  },
 })

@@ -1,5 +1,8 @@
+// Generated from registry/components/indicator/indicator.ts; edit the Registry source.
 import type { PropType, StyleValue } from 'vue'
 import { defineComponent, h } from 'vue'
+import './styles/varo.css'
+import './styles/varo-indicator.css'
 
 export const VIndicator = defineComponent({
   name: 'VIndicator',

@@ -1200,7 +1200,7 @@ export function useJxMapList() {
   const { state } = aedStore
   const { toRoute } = useAedNavigation()
   const deviceList = ref<WechatMiniprogram.IAnyObject[]>([])
-  const latlng = aedStore.mapBounds
+  const latlng = computed(() => aedStore.mapBounds)
   const totalPageG = ref<number>(1)
   const page = ref<number>(1)
   const loadingStatus = ref<string>('')

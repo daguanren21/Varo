@@ -6,7 +6,7 @@
 
 <MapDemo locale="en" />
 
-The docs site cannot run WeChat's native map view. This demo uses Tencent Map JS API GL to show the same VMap contract: center, marker count, and `regionchange`. Location permission and Map Context remain mini-program-only.
+This is a standalone browser map illustration, not the native `VMap` SFC or a compiled-artifact preview. It uses Tencent Map JS API / raster tiles and local state to illustrate center, markers, and `regionchange` interaction. The docs cannot run WeChat's native map view; location permission and Map Context require the WeChat host. This is not evidence of other profiles or device support.
 
 ## Usage
 

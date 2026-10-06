@@ -4,7 +4,7 @@
 
 ## 运行时归属
 
-`useOverlayRoot` 和滚动锁定来自 `@varo-ui/headless`，目标 adapter 负责真实页面锁定。
+`useOverlayRoot` 来自 `@varo-ui/headless`，只管理中立状态。DOM 滚动锁定属于 H5 适配层，不由 headless 导出。本页 `OverlayRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`；原生端使用 Wevu SFC，标签页只展示源码/证据。
 
 ## 演示
 
@@ -22,5 +22,5 @@
 - 事件：`update:visible`、`visibleChange`、`close`、`click`。
 
 ::: info 平台差异
-H5 锁定 body；小程序按页面能力处理滚动。
+H5 可锁定 `body`；原生端没有 `body`，需要由业务页面按宿主能力管理滚动，不能把共享 `lockScroll` 意图当作原生页面已锁定的证明。
 :::

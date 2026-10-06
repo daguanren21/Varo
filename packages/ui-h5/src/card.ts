@@ -1,6 +1,9 @@
+// Generated from registry/components/card/card.ts; edit the Registry source.
 import type { PropType } from 'vue'
-import { ButtonRoot } from '@varo/primitives-h5'
 import { computed, defineComponent, h } from 'vue'
+import { ButtonRoot } from '@varo/primitives-h5'
+import './styles/varo.css'
+import './styles/varo-card.css'
 
 export type CardVariant = 'default' | 'outline' | 'elevated' | 'muted'
 

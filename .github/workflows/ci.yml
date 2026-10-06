@@ -34,6 +34,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check source ownership and projections
+        run: |
+          pnpm check:generated
+          pnpm check:architecture
+
       - name: Type check
         run: pnpm typecheck
 
@@ -46,10 +51,8 @@ jobs:
       - name: Build packages and apps
         run: pnpm build
 
-      - name: Build docs
-        run: pnpm --filter @varo/docs build
+      - name: Verify isolated package and source consumers
+        run: pnpm check:consumers
 
-      - name: Build playgrounds
-        run: |
-          pnpm --filter @varo/playground-h5 build
-          pnpm --filter @varo/playground-weapp build
+      - name: Verify native profile artifacts
+        run: pnpm check:platforms

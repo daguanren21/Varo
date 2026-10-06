@@ -2,7 +2,7 @@ import type { UseNumberFieldRootResult } from '@varo-ui/headless'
 import type { PropType } from 'vue'
 import { useNumberFieldRoot } from '@varo-ui/headless'
 import { defineComponent, h, inject, nextTick, provide, toRef } from 'vue'
-import { usePropPresence } from '../vue-control'
+import { callHandler, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 const numberFieldRootContextKey = Symbol('varo-number-field-root')
@@ -11,10 +11,6 @@ function useNumberFieldContext() {
   const context = inject<UseNumberFieldRootResult | undefined>(numberFieldRootContextKey, undefined)
   if (!context) { throw new Error('Number field parts must be used within NumberFieldRoot.') }
   return context
-}
-
-function callHandler(handler: unknown, event: Event) {
-  if (typeof handler === 'function') { handler(event) }
 }
 
 function eventValue(event: Event) {

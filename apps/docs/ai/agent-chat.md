@@ -2,6 +2,15 @@
 
 组合导航头、消息历史、事件渲染、审批和输入区的完整 Block。
 
+## 安装
+
+```bash
+pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
+# 原生 Wevu 工程改用 --target weapp
+```
+
+无需先装 `components/agent-ui`：此 Block 只安装 conversation 及其必要依赖，不包含 advanced、RAG、fine-tune 或 workspace UI。CLI 报告的 npm 依赖需另外安装；原生全局样式见 [Wevu Registry](/guide/shadcn-mode)。`approve`、`reject`、`retry` 和取消相关意图不执行网络或审批策略，这些仍由业务层处理。
+
 ## 案例
 
 <AgentComponentDemo component="agent-chat" locale="zh" />

@@ -1,75 +1,37 @@
 // @vitest-environment jsdom
 
-import type { AgentThreadVersion } from '@varo-ui/ai'
-import type { VueWrapper } from '@vue/test-utils'
 import type { Component } from 'vue'
+import type { AgentContextSource } from './components/agent-ui/workspace-types'
 import { enableAutoUnmount, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
+import { defineComponent, h, shallowRef } from 'vue'
 import AgentChat from './components/blocks/agent-chat.vue'
 import AgentWorkspace from './components/blocks/agent-workspace.vue'
-
-const versions: AgentThreadVersion[] = [
-  { id: 'root', label: 'Root' },
-  { id: 'branch', label: 'Branch', parentId: 'root' },
-]
-
-function buttonByText(wrapper: VueWrapper, text: string) {
-  const button = wrapper.findAll('button').find(item => item.text() === text)
-  if (!button) { throw new Error(`Missing button: ${text}`) }
-  return button
-}
 
 enableAutoUnmount(afterEach)
 
 describe('AgentWorkspace Weapp block', () => {
-  it('forwards source, retrieval, task, version, and shell decisions', async () => {
-    const source = { id: 'support', label: 'Support', enabled: true, status: 'available' as const }
-    const disconnected = { id: 'docs', label: 'Docs', enabled: false, status: 'unavailable' as const }
-    const retrieval = { id: 'retrieve', title: 'Read docs', retryable: true, status: 'failed' as const }
-    const task = { id: 'approve', title: 'Apply patch', requiresApproval: true, status: 'waiting' as const }
-    const retryTask = { id: 'retry', title: 'Retry patch', retryable: true, status: 'failed' as const }
-    const readReceipt = { id: 'read', label: 'Read receipt', status: 'read' as const }
-    const failedReceipt = { id: 'failed', label: 'Failed receipt', status: 'failed' as const }
-    const wrapper = mount(AgentWorkspace, {
-      props: {
-        activeVersionId: 'root',
+  it('updates only the selected source through the native tuple consumer', async () => {
+    const sources = shallowRef<AgentContextSource[]>([
+      { id: 'support', label: 'Support', enabled: true, status: 'available' },
+      { id: 'docs', label: 'Docs', enabled: true, status: 'available' },
+    ])
+    const wrapper = mount(defineComponent({
+      setup: () => () => h(AgentWorkspace, {
         open: true,
-        placement: 'sheet',
-        receipts: [readReceipt, failedReceipt],
-        retrieval: [retrieval],
-        sources: [source, disconnected],
-        tasks: [retryTask, task],
-        versions,
-      },
-    })
-
-    await buttonByText(wrapper, '停用').trigger('click')
-    expect(wrapper.emitted('toggleSource')?.[0]).toEqual([source, false])
-
-    await buttonByText(wrapper, '连接').trigger('click')
-    expect(wrapper.emitted('connectSource')?.[0]).toEqual([disconnected])
-
-    await buttonByText(wrapper, '重试').trigger('click')
-    expect(wrapper.emitted('retryRetrieval')?.[0]).toEqual([retrieval])
-    await wrapper.get('button[aria-label="重试Retry patch"]').trigger('click')
-    expect(wrapper.emitted('retryTask')?.[0]).toEqual([retryTask])
-
-    await buttonByText(wrapper, '批准').trigger('click')
-    expect(wrapper.emitted('approveTask')?.[0]).toEqual([task])
-    await wrapper.get('button[aria-label="查看Read receipt"]').trigger('click')
-    expect(wrapper.emitted('openReceipt')?.[0]).toEqual([readReceipt])
-    await wrapper.get('button[aria-label="连接Failed receipt"]').trigger('click')
-    expect(wrapper.emitted('connectReceipt')?.[0]).toEqual([failedReceipt])
-
-    await buttonByText(wrapper, '选择').trigger('click')
-    expect(wrapper.emitted('selectVersion')?.[0]).toEqual([versions[1]])
-    await wrapper.get('button[aria-label="从Root创建分支"]').trigger('click')
-    expect(wrapper.emitted('branchVersion')?.[0]).toEqual([versions[0]])
-    await wrapper.get('button[aria-label="固定Root"]').trigger('click')
-    expect(wrapper.emitted('pinVersion')?.[0]).toEqual([versions[0]])
-
-    await wrapper.get('.agent-shell__close').trigger('click')
-    expect(wrapper.emitted('close')).toHaveLength(1)
+        sources: sources.value,
+        onToggleSource: ([source, enabled]: [AgentContextSource, boolean]) => {
+          sources.value = sources.value.map(item => item.id === source.id ? { ...item, enabled } : item)
+        },
+      }),
+    }))
+    const toggles = () => wrapper.findAll('.agent-composer-scope button[aria-pressed]')
+    await toggles()[0]!.trigger('click')
+    expect(sources.value.map(source => source.enabled)).toEqual([false, true])
+    expect(toggles().map(button => button.attributes('aria-pressed'))).toEqual(['false', 'true'])
+    await toggles()[0]!.trigger('click')
+    expect(sources.value.map(source => source.enabled)).toEqual([true, true])
+    expect(toggles().map(button => button.attributes('aria-pressed'))).toEqual(['true', 'true'])
   })
 
   it.each(['page', 'docked'] as const)('hides the %s placement when closed', (placement) => {

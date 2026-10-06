@@ -1,0 +1,17 @@
+{
+  "name": "agent-presentation",
+  "type": "component",
+  "title": "Agent Presentation",
+  "description": "Pure presentation contracts and helpers shared by Agent renderers without provider or execution policy.",
+  "targets": ["h5", "weapp"],
+  "dependencies": ["@varo-ui/ai"],
+  "registryDependencies": [],
+  "files": [
+    { "target": "h5", "from": "registry/components/agent-ui/types.ts", "to": "src/components/agent-ui/types.ts" },
+    { "target": "h5", "from": "registry/components/agent-presentation/presentation.ts", "to": "src/components/agent-ui/presentation.ts" },
+    { "target": "weapp", "from": "registry/components/agent-ui/types.ts", "to": "src/components/agent-ui/types.ts" },
+    { "target": "weapp", "from": "registry/components/agent-presentation/presentation.ts", "to": "src/components/agent-ui/presentation.ts" },
+    { "target": "weapp", "from": "registry/components/agent-ui/agent-icons.ts", "to": "src/components/agent-ui/agent-icons.ts" }
+  ],
+  "docs": "/guide/shadcn-mode"
+}

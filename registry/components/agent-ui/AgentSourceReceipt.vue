@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentSourceReceiptItem } from './advanced-types'
+import type { AgentSourceReceiptItem } from './workspace-types'
 import { computed } from 'wevu'
 import { agentReceiptIcon } from './agent-icons'
 

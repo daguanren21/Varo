@@ -10,10 +10,10 @@ The following direct versions and SPDX license declarations were read from the s
 
 | Package                    | Direct version | Declared license | Role                                                                                   |
 | -------------------------- | -------------- | ---------------- | -------------------------------------------------------------------------------------- |
-| `wevu`                     | 7.1.0          | MIT              | Native component/reactivity runtime                                                    |
+| `wevu`                     | 7.4.0          | MIT              | Native component/reactivity runtime                                                    |
 | `@weapp-tailwindcss/merge` | 2.2.3          | MIT              | Native-compatible class merging                                                        |
 | `clsx`                     | 2.1.1          | MIT              | Class value composition                                                                |
-| `weapp-vite`               | 7.1.0          | MIT              | Native compiler and watcher                                                            |
+| `weapp-vite`               | 7.4.0          | MIT              | Native compiler and watcher                                                            |
 | `weapp-tailwindcss`        | 5.5.3          | MIT              | Mini-program style transforms                                                          |
 | `tailwindcss`              | 4.3.3          | MIT              | Utility generation                                                                     |
 | `vite`                     | 8.2.2          | MIT              | Build pipeline                                                                         |

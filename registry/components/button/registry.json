@@ -1,5 +1,6 @@
 {
   "name": "button",
+  "platforms": ["alipay", "tt", "xhs", "donut-android", "donut-ios", "donut-ohos"],
   "type": "component",
   "title": "VButton",
   "description": "Mobile action control with solid, outline, ghost, and text variants, sizes, loading, disabled, icon, and block states.",
@@ -35,6 +36,16 @@
       "target": "weapp",
       "from": "registry/components/button/weapp-vite.vue",
       "to": "src/components/ui/v-button.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/button/h5.css",
+      "to": "src/styles/varo-button.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/button/weapp-vite.css",
+      "to": "src/styles/varo-button.css"
     }
   ],
   "docs": "/components/button"

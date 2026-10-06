@@ -578,7 +578,8 @@ export function convertRetailSources(files, transforms) {
         for (const path of ['src/styles.css', 'src/styles/varo.css']) {
           if (!files.has(path)) { unsupported(file, `missing global stylesheet ${path}`) }
         }
-        const imports = '\n@import \'./styles.css\';\n@import \'./styles/varo.css\';\n'
+        const registryStyles = [...files.keys()].filter(path => path.startsWith('src/styles/') && path.endsWith('.css')).sort((left, right) => left === 'src/styles/varo.css' ? -1 : right === 'src/styles/varo.css' ? 1 : left.localeCompare(right))
+        const imports = `\n${['src/styles.css', ...registryStyles].map(path => `@import './${path.slice(4)}';`).join('\n')}\n`
         const style = descriptor.styles[0]
         if (style?.scoped) { unsupported(file, 'app styles must be global') }
         if (!style) { edits.push({ start: source.length, end: source.length, text: `\n<style>${imports}</style>\n` }) }

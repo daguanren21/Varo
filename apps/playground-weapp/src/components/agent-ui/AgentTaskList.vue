@@ -2,6 +2,7 @@
 import type { AgentTask } from './types'
 import { computed } from 'wevu'
 import { agentCheckIcon, agentCloseIcon } from './agent-icons'
+import { agentPartStatusLabels } from './presentation'
 
 const props = withDefaults(
   defineProps<{
@@ -37,15 +38,7 @@ const displayTasks = computed(() =>
       indexLabel: String(index + 1),
       itemClass: `agent-task-list__item is-${task.status}`,
       progressWidth: task.progress === undefined ? '' : `${Math.min(100, Math.max(0, task.progress))}%`,
-      statusLabel: task.status === 'completed'
-        ? '已完成'
-        : task.status === 'failed'
-          ? '失败'
-          : task.status === 'running'
-            ? '进行中'
-            : task.status === 'waiting'
-              ? '等待中'
-              : '待开始',
+      statusLabel: agentPartStatusLabels[task.status],
     }
   }),
 )
@@ -238,8 +231,7 @@ const displayTasks = computed(() =>
   white-space: nowrap;
 }
 
-.agent-task-list__item.is-waiting .agent-task-list__name,
-.agent-task-list__item.is-idle .agent-task-list__name {
+.agent-task-list__item.is-waiting .agent-task-list__name {
   color: var(--varo-agent-muted, #667085);
 }
 

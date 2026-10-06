@@ -1,13 +1,33 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { mergeProps } from 'vue'
 import { InputRoot } from '../src/input'
 
 describe('primitives-h5 input', () => {
+  it('forwards merged input listeners once only for accepted changes', async () => {
+    const events: string[] = []
+    const wrapper = mount(InputRoot, {
+      attrs: mergeProps(
+        { onInput: () => events.push('first') },
+        { onInput: () => events.push('second') },
+      ),
+    })
+    await wrapper.get('input').setValue('accepted')
+    expect((wrapper.element as HTMLInputElement).value).toBe('accepted')
+    expect(events).toEqual(['first', 'second'])
+
+    await wrapper.setProps({ readonly: true })
+    await wrapper.get('input').setValue('blocked')
+    expect((wrapper.element as HTMLInputElement).value).toBe('accepted')
+    expect(events).toEqual(['first', 'second'])
+    wrapper.unmount()
+  })
+
   it('updates local value in uncontrolled mode', async () => {
     const wrapper = mount(InputRoot, {
       props: {
-        defaultValue: 'hello'
-      }
+        defaultValue: 'hello',
+      },
     })
     const input = wrapper.find('input')
 
@@ -20,9 +40,9 @@ describe('primitives-h5 input', () => {
     const onUpdateValue = vi.fn()
     const wrapper = mount(InputRoot, {
       props: {
-        value: 'hello',
-        'onUpdate:value': onUpdateValue
-      }
+        'value': 'hello',
+        'onUpdate:value': onUpdateValue,
+      },
     })
     const input = wrapper.find('input')
 
@@ -35,8 +55,8 @@ describe('primitives-h5 input', () => {
     const wrapper = mount(InputRoot, {
       props: {
         disabled: true,
-        invalid: true
-      }
+        invalid: true,
+      },
     })
 
     expect(wrapper.attributes('aria-invalid')).toBe('true')
@@ -49,8 +69,8 @@ describe('primitives-h5 input', () => {
       props: {
         formatter: (value: string) => value.toUpperCase(),
         maxLength: 4,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
     const input = wrapper.find('input')
 
@@ -67,8 +87,8 @@ describe('primitives-h5 input', () => {
       props: {
         defaultValue: 'locked',
         readonly: true,
-        onValueChange
-      }
+        onValueChange,
+      },
     })
     const input = wrapper.find('input')
 
@@ -85,12 +105,37 @@ describe('primitives-h5 input', () => {
       props: {
         type: 'textarea',
         rows: 3,
-        autosize: { minRows: 2, maxRows: 5 }
-      }
+        autosize: { minRows: 2, maxRows: 5 },
+      },
     })
 
     expect(wrapper.find('textarea').exists()).toBe(true)
     expect(wrapper.attributes('rows')).toBe('3')
     expect(wrapper.attributes('data-autosize')).toBe('true')
+  })
+
+  it('rejects imperative writes while readonly or disabled and emits accepted changes in order', async () => {
+    const events: string[] = []
+    const wrapper = mount(InputRoot, {
+      props: {
+        'defaultValue': 'locked',
+        'readonly': true,
+        'onUpdate:value': (value: string) => events.push(`update:${value}`),
+        'onValueChange': (value: string) => events.push(`change:${value}`),
+      },
+    })
+    const api = wrapper.vm as unknown as { setValue: (value: string) => boolean, clear: () => boolean }
+    expect(api.setValue('changed')).toBe(false)
+    expect(api.clear()).toBe(false)
+    expect(events).toEqual([])
+
+    await wrapper.setProps({ readonly: false, disabled: true })
+    expect(api.setValue('changed')).toBe(false)
+    await wrapper.setProps({ disabled: false })
+    expect(api.clear()).toBe(true)
+    expect(events).toEqual(['update:', 'change:'])
+    expect((wrapper.element as HTMLInputElement).value).toBe('')
+    expect(api.clear()).toBe(false)
+    wrapper.unmount()
   })
 })

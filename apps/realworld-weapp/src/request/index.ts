@@ -1,4 +1,5 @@
 import { useAedStore } from '../store'
+import { pinia } from '../store/manager'
 import { baseUrl } from './constants'
 
 export const Method = {
@@ -64,7 +65,7 @@ function responseError(data: unknown) {
 function request<T = WechatMiniprogram.IAnyObject>(data: RequestBase<true> & { fullResponse: true }): Promise<HttpResponse<T>>
 function request<T = WechatMiniprogram.IAnyObject>(data: RequestBase<false>): Promise<T>
 function request<T = WechatMiniprogram.IAnyObject>(data: RequestBase<boolean>) {
-  const { state } = useAedStore()
+  const { state } = useAedStore(pinia)
   const options = {
     ...requestDefaults,
     ...data,
@@ -109,7 +110,7 @@ export async function uploadFiles(
   success: (files: UploadedFile[]) => void,
   failure: (message: string) => void = () => {},
 ): Promise<void> {
-  const { state } = useAedStore()
+  const { state } = useAedStore(pinia)
   const imagePath = tempFilePaths.pop()
   const src = typeof imagePath === 'string' ? imagePath : imagePath?.url ?? imagePath?.path
   if (!src) {

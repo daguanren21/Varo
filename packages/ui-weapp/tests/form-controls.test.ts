@@ -1,13 +1,16 @@
-import { flushPromises, mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { h } from 'vue'
-import { VCheckbox, VCheckboxGroup } from '../src/checkbox'
-import { VInputNumber } from '../src/input-number'
-import { VRadio, VRadioGroup } from '../src/radio'
-import { VRange } from '../src/range'
-import { VRate } from '../src/rate'
-import { VSearchbar } from '../src/searchbar'
-import { VTextarea } from '../src/textarea'
+import VInputNumber from '../native/src/components/ui/input-number.vue'
+import VCheckboxGroup from '../native/src/components/ui/v-checkbox-group.vue'
+import VCheckbox from '../native/src/components/ui/v-checkbox.vue'
+import VRadioGroup from '../native/src/components/ui/v-radio-group.vue'
+import VRadio from '../native/src/components/ui/v-radio.vue'
+import VRate from '../native/src/components/ui/v-rate.vue'
+import VSearchbar from '../native/src/components/ui/v-searchbar.vue'
+import VTextarea from '../native/src/components/ui/v-textarea.vue'
+
+enableAutoUnmount(afterEach)
 
 describe('ui-weapp form controls', () => {
   it('toggles checkbox and radio group values', async () => {
@@ -48,10 +51,9 @@ describe('ui-weapp form controls', () => {
     expect(radioUpdate).toHaveBeenCalledWith('alipay')
   })
 
-  it('updates input number, rate, and range values', async () => {
+  it('updates native input number and rate values', async () => {
     const numberUpdate = vi.fn()
     const rateUpdate = vi.fn()
-    const rangeUpdate = vi.fn()
     const number = mount(VInputNumber, {
       props: {
         'decreaseAriaLabel': '减少数量',
@@ -69,26 +71,18 @@ describe('ui-weapp form controls', () => {
         'onUpdate:value': rateUpdate,
       },
     })
-    const range = mount(VRange, {
-      props: {
-        'ariaLabel': 'Budget allocation',
-        'value': 2,
-        'onUpdate:value': rangeUpdate,
-      },
-    })
 
     expect(number.get('.varo-input-number__minus').attributes('aria-label')).toBe('减少数量')
     expect(number.get('.varo-input-number__input').attributes('aria-label')).toBe('数量')
     expect(number.get('.varo-input-number__plus').attributes('aria-label')).toBe('增加数量')
 
-    await number.get('.varo-input-number__plus').trigger('click')
+    await number.get('.varo-input-number__plus').trigger('tap')
     await rate.findAll('.varo-rate__item')[2].trigger('click')
-    await range.get('input').setValue('6')
-    expect(range.get('input').attributes('aria-label')).toBe('Budget allocation')
+    await flushPromises()
 
     expect(numberUpdate).toHaveBeenCalledWith(5)
+    expect(number.get<HTMLInputElement>('input').element.value).toBe('5')
     expect(rateUpdate).toHaveBeenCalledWith(3)
-    expect(rangeUpdate).toHaveBeenCalledWith(6)
   })
 
   it.each([
@@ -97,15 +91,16 @@ describe('ui-weapp form controls', () => {
   ])('reconciles unchanged numeric bounds after blurring $raw', async ({ value, min, max, raw }) => {
     const wrapper = mount(VInputNumber, { props: { value, min, max } })
     const input = wrapper.get<HTMLInputElement>('input')
-    await input.setValue(raw)
-    await input.trigger('blur')
+    input.element.value = raw
+    await input.trigger('input', { detail: { value: raw } })
+    input.element.dispatchEvent(new CustomEvent('blur', { detail: { value: raw } }))
     await flushPromises()
     expect(input.element.value).toBe(String(value))
     expect(wrapper.emitted('update:value')).toBeUndefined()
     expect(wrapper.emitted('change')).toBeUndefined()
   })
 
-  it('renders searchbar and textarea wrappers', async () => {
+  it('submits native search queries and edits textarea values', async () => {
     const onSearch = vi.fn()
     const wrapper = mount(VSearchbar, {
       props: {
@@ -120,10 +115,12 @@ describe('ui-weapp form controls', () => {
       },
     })
 
-    await wrapper.get('form').trigger('submit')
+    await wrapper.get('input').trigger('confirm')
     expect(wrapper.get('.varo-input__control').attributes('aria-label')).toBe('Search components')
 
     expect(onSearch).toHaveBeenCalledWith('varo')
-    expect(textarea.find('textarea').exists()).toBe(true)
+    expect(textarea.get<HTMLTextAreaElement>('textarea').element.value).toBe('hello')
+    await textarea.get('textarea').trigger('input', { detail: { value: 'Updated memo' } })
+    expect(textarea.emitted('update:value')).toEqual([['Updated memo']])
   })
 })

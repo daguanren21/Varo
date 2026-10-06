@@ -1,6 +1,6 @@
-import type { Ref } from '../reactive'
+import type { Ref } from '@varo/shared'
 import type { NumberFieldRootOptions, UseNumberFieldRootResult } from './types'
-import { resolveReactiveRuntime } from '../reactive'
+import { resolveReactiveRuntime } from '@varo/shared'
 import { useControllableState } from '../use-controllable-state'
 
 export function useNumberFieldRoot(options: NumberFieldRootOptions = {}): UseNumberFieldRootResult {

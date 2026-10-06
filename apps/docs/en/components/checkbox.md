@@ -10,12 +10,16 @@ Use `VCheckboxGroup` to manage selected values, max count, and layout direction.
 
 ## Props
 
-| Prop       | Type                          | Default     | Description                        |
-| ---------- | ----------------------------- | ----------- | ---------------------------------- |
-| `checked`  | `boolean`                     | `undefined` | Checked state for standalone usage |
-| `value`    | `string \| number \| boolean` | `true`      | Checkbox value                     |
-| `label`    | `string`                      | `undefined` | Label text                         |
-| `disabled` | `boolean`                     | `false`     | Disable checkbox                   |
+| Prop            | Type                          | Default     | Description                        |
+| --------------- | ----------------------------- | ----------- | ---------------------------------- |
+| `checked`       | `boolean`                     | `undefined` | Checked state for standalone usage |
+| `value`         | `string \| number \| boolean` | `true`      | Checkbox value                     |
+| `label`         | `string`                      | `undefined` | Label text                         |
+| `disabled`      | `boolean`                     | `false`     | Disable checkbox                   |
+| `indeterminate` | `boolean`                     | `false`     | Mixed checked state                |
+| `invalid`       | `boolean`                     | `false`     | Invalid state                      |
+| `readonly`      | `boolean`                     | `false`     | Readonly but still focusable       |
+| `required`      | `boolean`                     | `false`     | Required semantics                 |
 
 ## CheckboxGroup Props
 

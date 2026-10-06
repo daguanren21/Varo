@@ -8,6 +8,9 @@ import {
 } from '@varo-ui/ai'
 import { defineComponent, h, shallowRef, watch } from 'vue'
 import { cn } from '../../lib/cn'
+import '../../styles/varo.css'
+import '../../styles/varo-agent.css'
+import './agent-conversation.css'
 import './agent-markdown.css'
 
 function renderChildren(node: AgentMarkdownViewNode, onLink: (href: string) => void): VNodeChild[] {

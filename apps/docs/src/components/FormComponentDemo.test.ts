@@ -1,7 +1,6 @@
 import type { ThemeConfig } from '@varo-ui/theme'
 import type { Plugin } from 'vue'
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
-import { VCalendar as WeappCalendar } from '@varo-ui/weapp'
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import FormComponentDemo from './FormComponentDemo.vue'
@@ -21,76 +20,6 @@ describe('FormComponentDemo', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.useRealTimers()
-  })
-
-  it('keeps expanded code synchronized with the upper runtime tabs', async () => {
-    const writeText = vi.fn((text: string) => Promise.resolve(text))
-    vi.stubGlobal('navigator', { clipboard: { writeText } })
-
-    const wrapper = mount(FormComponentDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'picker',
-        locale: 'zh',
-      },
-    })
-
-    expect(wrapper.find('.form-demo__code').exists()).toBe(false)
-    const toggle = wrapper.get('.form-demo__code-toggle')
-    expect(toggle.attributes('aria-label')).toBe('展开代码')
-    expect(toggle.text()).toContain('展开代码')
-
-    await toggle.trigger('click')
-    const code = wrapper.get('.form-demo__code')
-    const platformTabs = wrapper.findAll('.form-demo__platform-switch button')
-    const preview = wrapper.get('.form-demo__preview')
-
-    expect(platformTabs).toHaveLength(2)
-    expect(code.findAll('[role="tab"]')).toHaveLength(0)
-    expect(preview.attributes('id')).toBe('form-picker-platform-panel')
-    expect(preview.attributes('role')).toBe('tabpanel')
-    expect(preview.attributes('aria-labelledby')).toBe('form-picker-platform-tab-h5')
-    expect(platformTabs[0]!.attributes('aria-controls')).toBe('form-picker-platform-panel')
-    expect(platformTabs[0]!.attributes('tabindex')).toBe('0')
-    expect(platformTabs[1]!.attributes('tabindex')).toBe('-1')
-
-    expect(toggle.attributes('aria-label')).toBe('收起代码')
-    expect(toggle.text()).toContain('收起代码')
-    expect(platformTabs[0]!.attributes('data-active')).toBe('true')
-    expect(code.get('code').text()).toContain('from \'@varo-ui/h5\'')
-    expect(code.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
-
-    const copyButton = code.get('.form-demo__code-copy')
-    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
-
-    await platformTabs[0]!.trigger('keydown', { key: 'ArrowRight' })
-
-    expect(platformTabs[0]!.attributes('data-active')).toBe('false')
-    expect(platformTabs[1]!.attributes('data-active')).toBe('true')
-    expect(platformTabs[0]!.attributes('tabindex')).toBe('-1')
-    expect(platformTabs[1]!.attributes('tabindex')).toBe('0')
-    expect(preview.attributes('aria-labelledby')).toBe('form-picker-platform-tab-weapp')
-    expect(code.get('code').text()).toContain('from \'@varo-ui/weapp\'')
-    expect(code.get('code').text()).not.toContain('from \'@varo-ui/h5\'')
-    expect(code.get('code').text()).toContain('from \'wevu\'')
-    expect(code.get('code').text()).not.toContain('from \'vue\'')
-    expect(copyButton.attributes('aria-label')).toBe('复制小程序代码')
-
-    await copyButton.trigger('click')
-    await flushPromises()
-
-    expect(writeText).toHaveBeenCalledTimes(1)
-    expect(writeText.mock.calls[0]![0]).toContain('from \'@varo-ui/weapp\'')
-    expect(copyButton.attributes('aria-label')).toBe('已复制')
-    expect(code.get('.form-demo__code-toast').text()).toContain('已复制到剪贴板')
-
-    await platformTabs[1]!.trigger('keydown', { key: 'Home' })
-    expect(code.get('code').text()).toContain('from \'@varo-ui/h5\'')
-    expect(code.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
-    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
-    expect(code.find('.form-demo__code-toast').exists()).toBe(false)
   })
 
   it('turns Picker into a delivery-window flow with controlled visibility', async () => {
@@ -130,12 +59,6 @@ describe('FormComponentDemo', () => {
     expect(wrapper.get('.form-demo__context-head').text()).toContain('预约服务')
     expect(wrapper.get('.form-demo__context-head').text()).toContain('2026-05-14')
     expect(wrapper.find('.varo-calendar').exists()).toBe(true)
-    const runtimeTabs = wrapper.findAll('.form-demo__platform-switch [role="tab"]')
-    expect(runtimeTabs).toHaveLength(2)
-    expect(wrapper.get('.form-demo__stage').attributes('data-platform')).toBe('h5')
-    await runtimeTabs[1]!.trigger('click')
-    expect(wrapper.get('.form-demo__stage').attributes('data-platform')).toBe('weapp')
-    expect(wrapper.findComponent(WeappCalendar).exists()).toBe(true)
 
     await wrapper.get('.varo-calendar__confirm').trigger('click')
     await flushPromises()

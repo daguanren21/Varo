@@ -4,7 +4,7 @@ List-row foundation for settings, details, links, and clickable information cell
 
 ## Runtime ownership
 
-H5 and Weapp adapters keep the same public API; keyboard and navigation details stay target-owned.
+This page's Parts and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use Wevu `VCell` / `VCellGroup` SFCs, with no Parts API equivalence; the native tab shows source/evidence only. Keyboard and navigation capabilities remain runtime-specific.
 
 ## Demo
 

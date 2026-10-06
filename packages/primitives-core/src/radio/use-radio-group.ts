@@ -1,6 +1,7 @@
-import { resolveReactiveRuntime, type Ref } from '../reactive'
-import { useControllableState } from '../use-controllable-state'
+import type { Ref } from '@varo/shared'
 import type { RadioGroupOptions, RadioValue, UseRadioGroupResult } from './types'
+import { resolveReactiveRuntime } from '@varo/shared'
+import { useControllableState } from '../use-controllable-state'
 
 export function useRadioGroup(options: RadioGroupOptions = {}): UseRadioGroupResult {
   const runtime = resolveReactiveRuntime(options.runtime)
@@ -9,7 +10,7 @@ export function useRadioGroup(options: RadioGroupOptions = {}): UseRadioGroupRes
     runtime,
     defaultValue: options.defaultValue,
     value: options.value,
-    onUpdate: options.onValueChange
+    onUpdate: options.onValueChange,
   })
   const disabled = runtime.computed(() => options.disabled?.value ?? false) as Ref<boolean>
   const interactive = runtime.computed(() => !disabled.value) as Ref<boolean>
@@ -36,19 +37,19 @@ export function useRadioGroup(options: RadioGroupOptions = {}): UseRadioGroupRes
     const checked = isChecked(value)
 
     return {
-      role: 'radio',
+      'role': 'radio',
       'aria-checked': checked,
       'aria-disabled': disabledValue || undefined,
       'data-disabled': String(disabledValue),
       'data-state': getItemState(value),
-      'data-value': String(value)
+      'data-value': String(value),
     }
   }
 
   function getIndicatorAttrs(value: RadioValue) {
     return {
       'data-part': 'indicator',
-      'data-state': getItemState(value)
+      'data-state': getItemState(value),
     }
   }
 
@@ -56,23 +57,23 @@ export function useRadioGroup(options: RadioGroupOptions = {}): UseRadioGroupRes
     state: {
       disabled,
       interactive,
-      value: valueState.current
+      value: valueState.current,
     },
     attrs: {
       root: {
-        role: 'radiogroup',
+        'role': 'radiogroup',
         get 'data-disabled'() {
           return String(disabled.value)
-        }
-      }
+        },
+      },
     },
     events: {
-      select
+      select,
     },
     api: {
       getIndicatorAttrs,
       getItemAttrs,
-      select
-    }
+      select,
+    },
   }
 }

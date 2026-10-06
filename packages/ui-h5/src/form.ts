@@ -1,31 +1,31 @@
-import type { ReactiveRuntime } from '@varo-ui/headless'
-import type { FieldRule, FormRules, FormValues, StandardSchemaV1, UseFormReturn } from '@varo/hooks'
+// Generated from registry/components/form/form.ts; edit the Registry source.
+import type { FieldRule, FormRules, SubmitPayload as FormSubmitPayload, FormValues, ReactiveRuntime, StandardSchemaV1, UseFormReturn } from '@varo-ui/headless'
 import type { ComputedRef, InjectionKey, PropType, ShallowRef, StyleValue } from 'vue'
-
-import { useForm } from '@varo/hooks'
-import { createVariantClass } from '@varo/shared'
+import { createVariantClass, useForm } from '@varo-ui/headless'
 import {
   computed,
   defineComponent,
   h,
   inject,
-
   onBeforeUnmount,
-
   provide,
   ref,
   shallowRef,
   useId,
   watch,
 } from 'vue'
+import './styles/varo.css'
+import './styles/varo-form.css'
 
-type FormSubmitPayload = Parameters<ReturnType<UseFormReturn['handleSubmit']>>[0]
 type FormLabelAlign = 'left' | 'center' | 'right'
 type FormValidateTrigger = 'submit' | 'change' | 'blur'
 
 interface FormItemControlContext {
   controlId: ShallowRef<string>
   defaultControlId: string
+  disabled: ComputedRef<boolean>
+  descriptionId: string
+  descriptionVisible: ComputedRef<boolean>
   errorId: string
   errorVisible: ComputedRef<boolean>
   invalid: ComputedRef<boolean>
@@ -35,6 +35,7 @@ interface FormItemControlContext {
 
 const formContextKey: InjectionKey<{
   form: UseFormReturn
+  disabled: ComputedRef<boolean>
   showError: boolean
 }> = Symbol('varo-form')
 const formItemControlContextKey = 'varo-form-item-control' as unknown as InjectionKey<FormItemControlContext>
@@ -115,10 +116,6 @@ export const VForm = defineComponent({
     const classes = computed(() =>
       createVariantClass('varo-form', { disabled: props.disabled }),
     )
-    watch(
-      () => props.validationSchema,
-      schema => form.setValidationSchema(schema),
-    )
     const labelBasis = computed(() => normalizeLabelWidth(props.labelWidth))
 
     watch(
@@ -126,14 +123,20 @@ export const VForm = defineComponent({
       rules => form.setRules(rules),
       { deep: true },
     )
+    watch(
+      () => props.validationSchema,
+      schema => form.setValidationSchema(schema),
+    )
 
     provide(formContextKey, {
       form,
+      disabled: computed(() => props.disabled),
       showError: props.showError,
     })
 
     async function submit(event?: Event) {
       event?.preventDefault()
+      if (props.disabled) { return }
 
       return form.handleSubmit(
         (payload) => {
@@ -192,6 +195,10 @@ export const VFormItem = defineComponent({
   name: 'VFormItem',
   props: {
     colon: Boolean,
+    description: {
+      type: String,
+      default: undefined,
+    },
     label: {
       type: String,
       default: undefined,
@@ -262,13 +269,22 @@ export const VFormItem = defineComponent({
     const defaultControlId = `${itemId}-control`
     const controlId = shallowRef(defaultControlId)
     const errorId = `${itemId}-error`
+    const descriptionId = `${itemId}-description`
     const labelId = `${itemId}-label`
     const labelVisible = computed(() => Boolean(props.label || slots.label))
+    const descriptionVisible = computed(() => Boolean(props.description || slots.description))
     const errorVisible = computed(() => shouldShowError.value && invalid.value)
+    const controlAriaDescribedBy = computed(() => [
+      descriptionVisible.value ? descriptionId : undefined,
+      errorVisible.value ? errorId : undefined,
+    ].filter(Boolean).join(' ') || undefined)
 
     provide(formItemControlContextKey, {
       controlId,
       defaultControlId,
+      disabled: formContext.disabled,
+      descriptionId,
+      descriptionVisible,
       errorId,
       errorVisible,
       invalid,
@@ -280,6 +296,7 @@ export const VFormItem = defineComponent({
     onBeforeUnmount(() => field.unregister())
 
     function setValue(value: unknown) {
+      if (formContext.disabled.value || Object.is(field.value.value, value)) { return }
       field.value.value = value
       if (props.validateTrigger === 'change') {
         void field.validate()
@@ -290,6 +307,7 @@ export const VFormItem = defineComponent({
     }
 
     function onBlur(event?: FocusEvent) {
+      if (formContext.disabled.value) { return event }
       field.setTouched(true)
       if (props.validateTrigger === 'blur') {
         void field.validate()
@@ -332,7 +350,7 @@ export const VFormItem = defineComponent({
             h(
               'div',
               {
-                'aria-describedby': errorVisible.value ? errorId : undefined,
+                'aria-describedby': controlAriaDescribedBy.value,
                 'aria-invalid': invalid.value || undefined,
                 'aria-labelledby': labelVisible.value ? labelId : undefined,
                 'class': 'varo-form-item__control',
@@ -347,6 +365,9 @@ export const VFormItem = defineComponent({
                 value: field.value,
               }) ?? [],
             ),
+            descriptionVisible.value
+              ? h('div', { class: 'varo-form-item__description', id: descriptionId }, slots.description?.() ?? props.description)
+              : null,
             errorVisible.value
               ? h('div', { class: 'varo-form-item__error', id: errorId }, field.errorMessage.value)
               : null,

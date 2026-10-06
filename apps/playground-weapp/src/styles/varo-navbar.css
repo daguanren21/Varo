@@ -1,0 +1,8 @@
+.varo-navbar__left.varo-navbar__left,
+.varo-navbar__right.varo-navbar__right {
+  box-sizing: border-box;
+  width: auto;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+}

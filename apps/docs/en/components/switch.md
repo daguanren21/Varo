@@ -12,11 +12,13 @@ The thumb uses a reversible 180ms translation. Holding the control briefly stret
 
 ## Props
 
-| Prop         | Type      | Default | Description    |
-| ------------ | --------- | ------- | -------------- |
-| `modelValue` | `boolean` | `false` | Current value  |
-| `disabled`   | `boolean` | `false` | Disabled state |
-| `loading`    | `boolean` | `false` | Loading state  |
+| Prop         | Type                   | Default | Description                  |
+| ------------ | ---------------------- | ------- | ---------------------------- |
+| `modelValue` | `boolean`              | `false` | Current value                |
+| `disabled`   | `boolean`              | `false` | Disabled state               |
+| `loading`    | `boolean`              | `false` | Loading and blocks toggling  |
+| `readonly`   | `boolean`              | `false` | Readonly but still focusable |
+| `size`       | `'sm' \| 'md' \| 'lg'` | `'md'`  | Control size                 |
 
 ## Events
 
