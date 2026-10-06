@@ -1,7 +1,7 @@
 import type { Mode, PathLike, RmOptions } from 'node:fs'
 import type * as FileSystem from '../src/file-system.ts'
 import type { RegistryRenderer } from '../src/index'
-import { execFileSync } from 'node:child_process'
+import { execFile, execFileSync } from 'node:child_process'
 import {
   existsSync,
   mkdirSync,
@@ -15,6 +15,7 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
+import { promisify } from 'node:util'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const fsFaultState = vi.hoisted(() => ({
@@ -60,6 +61,7 @@ vi.mock('../src/file-system.ts', async (importOriginal) => {
 // Import after the local filesystem mock so the CLI captures fault-injected bindings.
 const { installRegistryItems, resolveRegistryItems } = await import('../src/index')
 
+const execute = promisify(execFile)
 const workspaceRoot = resolve(__dirname, '../../..')
 const registryRoot = resolve(workspaceRoot, 'registry')
 let projectRoot: string | undefined
@@ -192,7 +194,7 @@ describe('varo add targets', () => {
     expect(weapp.files.some(file => file.to === 'src/components/ui/form.ts')).toBe(true)
   })
 
-  it('typechecks installed Weapp FormItem sources with workspace aliases', async () => {
+  it('typechecks installed Weapp FormItem sources with workspace aliases', { timeout: 60_000 }, async () => {
     projectRoot = mkdtempSync(join(tmpdir(), 'varo-cli-form-typecheck-'))
 
     await installRegistryItems(['form'], {
@@ -217,7 +219,7 @@ describe('varo add targets', () => {
     )
     symlinkSync(join(workspaceRoot, 'node_modules'), join(projectRoot, 'node_modules'), 'dir')
 
-    execFileSync(
+    await execute(
       process.execPath,
       [
         join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'),
@@ -225,7 +227,7 @@ describe('varo add targets', () => {
         '-p',
         join(projectRoot, 'tsconfig.json'),
       ],
-      { cwd: projectRoot, stdio: 'pipe' },
+      { cwd: projectRoot, timeout: 30_000 },
     )
   })
 

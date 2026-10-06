@@ -42,6 +42,8 @@ pnpm check:consumers
 pnpm check:platforms
 ```
 
+The three compiler-backed CLI consumer tests run real `vue-tsc` processes with a 30-second subprocess timeout and a 60-second test limit for installation and assertions. These are integration bounds, not a five-second compiler performance requirement. Compiler errors still fail the tests; ordinary unit-test timeouts are unchanged.
+
 ### 3. Record and apply the release intent
 
 The initial intent uses a `major` bump. Because the public packages are a fixed group, they all resolve to `1.0.0`.

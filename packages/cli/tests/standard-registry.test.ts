@@ -91,7 +91,7 @@ describe('standard shadcn Registry inputs', () => {
       .toBe('<template><p>Hello World</p></template>\n')
   })
 
-  it('installs the supplied item schema and leaves a compilable Vue/hook consumer', async () => {
+  it('installs the supplied item schema and leaves a compilable Vue/hook consumer', { timeout: 60_000 }, async () => {
     const sourceRoot = temporaryRoot()
     const projectRoot = temporaryRoot()
     const registryRoot = join(sourceRoot, 'hello-world.json')
@@ -108,7 +108,7 @@ describe('standard shadcn Registry inputs', () => {
       include: ['src/**/*.ts', 'src/**/*.vue'],
     })
     symlinkSync(join(workspaceRoot, 'node_modules'), join(projectRoot, 'node_modules'), 'dir')
-    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.json')], { cwd: projectRoot })
+    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.json')], { cwd: projectRoot, timeout: 30_000 })
 
     const exported = await exportRegistryItem('hello-world', { registryRoot, target: 'h5', projectRoot })
     expect(exported.files.map(file => file.target)).toEqual([
@@ -118,7 +118,7 @@ describe('standard shadcn Registry inputs', () => {
     expect(exported.files[0]!.content).toBe(installedComponent)
   })
 
-  it('honors consumer aliases resolved from a referenced JSONC app tsconfig', async () => {
+  it('honors consumer aliases resolved from a referenced JSONC app tsconfig', { timeout: 60_000 }, async () => {
     const sourceRoot = temporaryRoot()
     const projectRoot = temporaryRoot()
     writeSourceFiles(sourceRoot)
@@ -132,7 +132,7 @@ describe('standard shadcn Registry inputs', () => {
     expect(readFileSync(join(projectRoot, 'src/domain/HelloWorld/useHelloWorld.ts'), 'utf8')).toBe(hookSource)
     expect(existsSync(join(projectRoot, 'src/components'))).toBe(false)
     symlinkSync(join(workspaceRoot, 'node_modules'), join(projectRoot, 'node_modules'), 'dir')
-    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.app.json')], { cwd: projectRoot })
+    await execute(process.execPath, [join(workspaceRoot, 'node_modules/vue-tsc/bin/vue-tsc.js'), '--noEmit', '-p', join(projectRoot, 'tsconfig.app.json')], { cwd: projectRoot, timeout: 30_000 })
   })
 
   it('installs inline published files including empty content and explicit Weapp metadata', async () => {
