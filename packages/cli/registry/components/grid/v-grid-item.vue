@@ -36,7 +36,7 @@ const emit = defineEmits<{
 
 const grid = inject<GridContext | undefined>(gridContextKey, undefined)
 const hasNavigation = computed(() => Boolean(props.url || props.to))
-const navigationTarget = computed(() => (props.url ?? props.to))
+const navigationTarget = computed(() => (props.url == null ? props.to : props.url))
 const clickable = computed(() => {
   if (props.clickable !== undefined) { return props.clickable }
   if (grid !== undefined) { return grid.clickable }
@@ -81,9 +81,7 @@ function handleKeydown(event: unknown) {
   >
     <view v-if="$slots.icon || props.icon || props.badge || props.dot" class="varo-grid__icon-wrap">
       <slot name="icon">
-        <text v-if="props.icon" class="varo-grid__icon">
-          {{ props.icon }}
-        </text>
+        <text v-if="props.icon" class="varo-grid__icon">{{ props.icon }}</text>
       </slot>
       <text v-if="props.badge != null" class="varo-grid__badge" :data-wide="badgeWide">
         {{ badgeText }}
@@ -91,9 +89,7 @@ function handleKeydown(event: unknown) {
       <text v-if="props.dot" class="varo-grid__dot" />
     </view>
     <slot name="text">
-      <text v-if="props.text" class="varo-grid__text">
-        {{ props.text }}
-      </text>
+      <text v-if="props.text" class="varo-grid__text">{{ props.text }}</text>
     </slot>
     <slot />
   </navigator>
@@ -113,9 +109,7 @@ function handleKeydown(event: unknown) {
   >
     <view v-if="$slots.icon || props.icon || props.badge || props.dot" class="varo-grid__icon-wrap">
       <slot name="icon">
-        <text v-if="props.icon" class="varo-grid__icon">
-          {{ props.icon }}
-        </text>
+        <text v-if="props.icon" class="varo-grid__icon">{{ props.icon }}</text>
       </slot>
       <text v-if="props.badge != null" class="varo-grid__badge" :data-wide="badgeWide">
         {{ badgeText }}
@@ -123,9 +117,7 @@ function handleKeydown(event: unknown) {
       <text v-if="props.dot" class="varo-grid__dot" />
     </view>
     <slot name="text">
-      <text v-if="props.text" class="varo-grid__text">
-        {{ props.text }}
-      </text>
+      <text v-if="props.text" class="varo-grid__text">{{ props.text }}</text>
     </slot>
     <slot />
   </view>

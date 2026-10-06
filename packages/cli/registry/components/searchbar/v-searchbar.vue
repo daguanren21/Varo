@@ -3,8 +3,8 @@ import type { ClassValue } from '../../lib/cn'
 import { createVariantClass } from '@varo-ui/headless'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
-import VIcon from './v-icon.vue'
 import VInput from './v-input.vue'
+import VIcon from './v-icon.vue'
 
 const props = withDefaults(
   defineProps<{

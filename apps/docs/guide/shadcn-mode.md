@@ -1,8 +1,8 @@
 # Wevu Registry 模式
 
-CLI 把适用于 Wevu 7 小程序的组件源码复制到项目中。安装后直接从 `src/components/ui/*` 导入并按业务修改。
+CLI 把适用于 Wevu 小程序的组件源码复制到项目中。安装后直接从 `src/components/ui/*` 导入并按业务修改。
 
-## 一次性接入 Wevu 7 工程
+## 一次性接入 Wevu 工程
 
 以下全局样式与 Tailwind 配置每个工程只需完成一次，不需要在每个组件页面重复配置。
 

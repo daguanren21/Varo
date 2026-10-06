@@ -47,6 +47,29 @@ describe('injected retail HTTP adapter', () => {
     expect(retail.orders.value[0].id).toBe('remote-simulation-1')
   })
 
+  it('loads and creates simulated orders without Object.hasOwn', async () => {
+    const service = createHttpRetailService({
+      baseUrl: 'https://retail.example.invalid',
+      transport: async request => ({
+        statusCode: 200,
+        data: request.method === 'GET' ? { ...snapshot, orders: [order] } : order,
+      }),
+    })
+    const descriptor = Object.getOwnPropertyDescriptor(Object, 'hasOwn')!
+    let loaded: RetailSnapshot
+    let created: RetailOrder
+    try {
+      Object.defineProperty(Object, 'hasOwn', { value: undefined })
+      loaded = await service.load()
+      created = await service.createOrder({ ...input, expectedTotal: 1420 })
+    }
+    finally {
+      Object.defineProperty(Object, 'hasOwn', descriptor)
+    }
+    expect(loaded.orders[0].status).toBe('pending-payment')
+    expect(created.total).toBe(1420)
+  })
+
   it('reports HTTP and transport errors instead of returning an empty success', async () => {
     const failedHttp = createHttpRetailService({ baseUrl: 'https://retail.example.invalid', transport: async () => ({ statusCode: 503, data: { message: 'unavailable' } }) })
     await expect(failedHttp.load()).rejects.toMatchObject({ code: 'HTTP' })
@@ -67,8 +90,13 @@ describe('injected retail HTTP adapter', () => {
     await expect(service.quote(input)).rejects.toMatchObject({ code: 'INVALID_RESPONSE' })
   })
 
-  it('rejects a response claiming payment or changing the accepted total', async () => {
-    for (const response of [{ ...order, simulation: false }, { ...order, shipping: 30, total: 1430 }]) {
+  it('rejects a response claiming payment, changing the total, or using an inherited status', async () => {
+    for (const response of [
+      { ...order, simulation: false },
+      { ...order, shipping: 30, total: 1430 },
+      { ...order, status: 'constructor' },
+      { ...order, status: '__proto__' },
+    ]) {
       const service = createHttpRetailService({ baseUrl: 'https://retail.example.invalid', transport: async () => ({ statusCode: 201, data: response }) })
       await expect(service.createOrder({ ...input, expectedTotal: 1420 })).rejects.toMatchObject({ code: 'INVALID_RESPONSE' })
     }

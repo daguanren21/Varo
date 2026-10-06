@@ -1,8 +1,8 @@
 # Wevu Registry Mode
 
-The CLI copies Wevu 7 mini-program component source into your project. Import it from `src/components/ui/*` and edit it as application code.
+The CLI copies Wevu mini-program component source into your project. Import it from `src/components/ui/*` and edit it as application code.
 
-## One-Time Wevu 7 Project Setup
+## One-Time Wevu Project Setup
 
 Complete this global stylesheet and Tailwind setup once per project. Do not repeat it on individual component pages.
 

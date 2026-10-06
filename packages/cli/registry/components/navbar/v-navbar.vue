@@ -70,9 +70,7 @@ function clickRight(event: unknown) {
       </slot>
     </button>
     <view class="varo-navbar__title">
-      <slot name="title">
-        {{ props.title }}
-      </slot>
+      <slot name="title">{{ props.title }}</slot>
     </view>
     <button
       class="varo-navbar__right"
@@ -82,9 +80,7 @@ function clickRight(event: unknown) {
       :tabindex="rightTabIndex"
       @click="clickRight"
     >
-      <slot name="right">
-        {{ props.rightText }}
-      </slot>
+      <slot name="right">{{ props.rightText }}</slot>
     </button>
   </view>
 </template>

@@ -30,9 +30,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'click': [event: unknown]
-  'close': []
-  'visibleChange': [visible: boolean]
+  click: [event: unknown]
+  close: []
+  visibleChange: [visible: boolean]
   'update:visible': [visible: boolean]
 }>()
 

@@ -109,7 +109,7 @@ function updatePrompt(value: string) {
     </scroll-view>
 
     <view class="box-border w-full min-w-0 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-      <AgentComposer :model-value="currentPrompt" :busy="busy" :suggestions="suggestions" aria-label="消息内容" placeholder="给 Agent 发送消息…" @update:model-value="updatePrompt" @submit="emit('submit', $event)" />
+      <AgentComposer :model-value="currentPrompt" :busy="busy" :suggestions="suggestions" aria-label="消息内容" placeholder="给 Agent 发送消息…" @update:modelValue="updatePrompt" @submit="emit('submit', $event)" />
     </view>
   </view>
 </template>

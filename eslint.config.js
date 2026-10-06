@@ -3,8 +3,9 @@ import { defineEslintConfig } from 'repoctl/tooling'
 export default await defineEslintConfig({
   configs: [
     {
-      name: 'varo/realworld-weapp-generated-code',
+      name: 'varo/generated-code',
       ignores: [
+        'packages/cli/registry/**',
         'apps/realworld-weapp/devtools/**',
         'apps/realworld-weapp/dist/**',
         'apps/realworld-weapp/.weapp-vite/**',
@@ -28,11 +29,21 @@ export default await defineEslintConfig({
       files: [
         'registry/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
         'apps/playground-weapp/src/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
-        'packages/cli/registry/components/agent-ui/{AgentMarkdown,AgentMarkdownNode,AgentCodeBlock}.vue',
       ],
       rules: {
         // Native wx:key resolves item fields; these stateless AST/code rows intentionally use positions.
         'vue/valid-v-for': 'off',
+      },
+    },
+    {
+      name: 'varo/native-composer-events',
+      files: [
+        'registry/blocks/{agent-chat,agent-workspace}/weapp-vite.vue',
+        'apps/playground-weapp/src/components/blocks/{agent-chat,agent-workspace}.vue',
+      ],
+      rules: {
+        // The pinned native compiler distinguishes modelValue from model-value.
+        'vue/v-on-event-hyphenation': 'off',
       },
     },
     {

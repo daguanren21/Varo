@@ -180,7 +180,7 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
           :model-value="currentPrompt"
           class="block w-full min-w-0 max-w-full overflow-hidden"
           :busy="busy"
-          @update:model-value="updatePrompt"
+          @update:modelValue="updatePrompt"
           @submit="emit('submit', $event)"
         />
       </view>

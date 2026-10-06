@@ -28,4 +28,4 @@ Refresh native Block previews from a measured 375px DevTools viewport, excluding
 
 Use a native layout container for Tag slot content so reactive labels repaint instead of retaining their initial text.
 
-Keep native automation and compiler-backed form fixtures compatible with repository lint gates. Scope the Vue-only iteration-key exception to stateless native Markdown/code renderers, preserving H5 key and native syntax checks.
+Keep native automation and compiler-backed form fixtures compatible with repository lint gates. Scope the Vue-only iteration-key exception to stateless native Markdown/code renderers, preserving H5 key and native syntax checks. Preserve native model-event spelling and compatible own-property validation during autofix; exclude generated CLI Registry copies from formatting so they remain byte-identical to authored source.

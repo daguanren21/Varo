@@ -67,7 +67,8 @@ function orderValue(value: unknown): RetailOrder {
   quoteValue(value)
   const order = record(value)
   strings(order, ['id', 'createdAt', 'status'])
-  if (!order.id || !order.createdAt || order.simulation !== true || !Object.hasOwn(orderStatuses, order.status as string)) { return invalidResponse() }
+  // eslint-disable-next-line e18e/prefer-object-has-own -- Native engines need not expose ES2022 built-ins.
+  if (!order.id || !order.createdAt || order.simulation !== true || !Object.prototype.hasOwnProperty.call(orderStatuses, order.status as string)) { return invalidResponse() }
   return snapshotOrder(value as RetailOrder)
 }
 

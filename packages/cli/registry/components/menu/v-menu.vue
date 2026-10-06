@@ -18,8 +18,8 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'close': [name?: MenuName]
-  'open': [name: MenuName]
+  close: [name?: MenuName]
+  open: [name: MenuName]
   'update:activeName': [name: MenuName | undefined]
 }>()
 

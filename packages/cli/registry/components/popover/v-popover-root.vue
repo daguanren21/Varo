@@ -22,7 +22,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'openChange': [open: boolean]
+  openChange: [open: boolean]
   'update:open': [open: boolean]
 }>()
 

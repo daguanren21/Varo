@@ -27,7 +27,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'change': [value: AccordionValue]
+  change: [value: AccordionValue]
   'update:value': [value: AccordionValue]
 }>()
 

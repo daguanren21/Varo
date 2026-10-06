@@ -82,7 +82,7 @@ export interface AgentFineTuneControl {
   step?: number
   type: 'number' | 'select' | 'text'
   value: number | string
-  values?: Array<{ label: string, value: string }>
+  values?: Array<{ label: string; value: string }>
 }
 
 export interface AgentRadioChoice {

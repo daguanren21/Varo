@@ -5,6 +5,7 @@ export default await defineStylelintConfig({
     ignoreFiles: [
       '**/dist/**',
       '**/devtools/**',
+      'packages/cli/registry/**',
       'apps/realworld-weapp/src/**/*.scss',
       'apps/realworld-weapp/src/**/*.vue',
       'apps/realworld-weapp/src/assets/**/iconfont.css',

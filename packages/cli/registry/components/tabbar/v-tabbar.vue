@@ -23,7 +23,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'change': [name: TabbarName]
+  change: [name: TabbarName]
   'update:modelValue': [name: TabbarName]
 }>()
 
