@@ -15,7 +15,7 @@
 
 ## 范围
 
-目标为 **Wevu + weapp-vite + weapp-tailwindcss 原生微信小程序**，不含独立 H5 零售工程，不默认兼容 uni-app 或 Taro。
+公开导出支持两种工程：默认的 **Wevu + weapp-vite + weapp-tailwindcss 原生微信小程序**，以及由同一套零售源码转换的 **uni-app Vue 3（H5 + 微信小程序）**。不包含 Taro 转换，也不承诺任意 Wevu 工程或其他 uni-app 平台兼容。
 
 生产后端、鉴权、支付、退款和物流由使用方接入；默认订单仅在内存中模拟，不是实际交易。构建与浏览器演示不代表真机验证或审核保证。
 

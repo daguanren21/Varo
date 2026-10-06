@@ -1,0 +1,22 @@
+packages:
+  - .
+
+autoInstallPeers: false
+strictPeerDependencies: true
+nodeLinker: hoisted
+minimumReleaseAge: 0
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@tailwindcss/oxide': true
+  core-js: false
+  core-js-pure: false
+  esbuild: true
+
+overrides:
+  '@dcloudio/vite-plugin-uni@3.0.0-5020420260813003>@vitejs/plugin-legacy': 6.1.1
+  '@dcloudio/vite-plugin-uni@3.0.0-5020420260813003>@vitejs/plugin-vue-jsx': 4.2.0
+  '@dcloudio/vite-plugin-uni@3.0.0-5020420260813003>vite': 6.4.3
+
+patchedDependencies:
+  '@dcloudio/uni-h5@3.0.0-5020420260813003': patches/@dcloudio__uni-h5@3.0.0-5020420260813003.patch

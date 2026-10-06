@@ -76,3 +76,11 @@ it('a dangling destination symlink is not treated as a new destination', async (
   assert.equal(await readlink(destination), target)
   assert.deepEqual(await readdir(root), ['retail'])
 })
+
+it('an unsupported framework never falls back to publishing a different project', async (t) => {
+  const root = await sandbox(t)
+
+  await assert.rejects(exportRetailStarter(resolve(root, 'retail'), { framework: 'taro' }), /Unsupported framework: taro/)
+
+  assert.deepEqual(await readdir(root), [])
+})

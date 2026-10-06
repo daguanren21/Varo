@@ -15,7 +15,7 @@ For independent developers, studios, and small teams that can connect their own 
 
 ## Scope
 
-The target is a **native WeChat mini program using Wevu + weapp-vite + weapp-tailwindcss**. There is no standalone H5 retail project or assumed compatibility with uni-app or Taro.
+The public exporter supports two projects: **native WeChat using Wevu + weapp-vite + weapp-tailwindcss** by default, or **uni-app Vue 3 (H5 + WeChat)** converted from the same retail source. Taro conversion, arbitrary Wevu projects, and other uni-app platforms are outside scope.
 
 You provide the production backend, authentication, payment, refunds, and shipping integrations. Default orders are in-memory simulations, not real transactions. Builds and browser demos do not establish device verification or guarantee platform approval.
 

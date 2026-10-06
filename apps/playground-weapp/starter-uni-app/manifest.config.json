@@ -1,0 +1,29 @@
+{
+  "name": "Varo Retail",
+  "appid": "",
+  "description": "Editable retail simulation for uni-app Vue 3",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "vueVersion": "3",
+  "locale": "zh-Hans",
+  "uniStatistics": { "enable": false },
+  "h5": {
+    "title": "Varo Retail",
+    "router": { "mode": "hash", "base": "/" }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "usingComponents": true,
+    "style": "v2",
+    "componentFramework": "glass-easel",
+    "lazyCodeLoading": "requiredComponents",
+    "libVersion": "3.5.5",
+    "setting": {
+      "urlCheck": true,
+      "es6": true,
+      "postcss": false,
+      "minified": false
+    }
+  }
+}

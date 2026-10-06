@@ -4,13 +4,16 @@ import { lstat, mkdir, mkdtemp, readdir, readFile, realpath, rename, rm, writeFi
 import { homedir } from 'node:os'
 import { basename, dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parseArgs } from 'node:util'
 import ts from 'typescript'
 import { parse as parseSfc } from 'vue/compiler-sfc'
+import { convertRetailSources } from './convert-retail-uni-app.mjs'
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const repoRoot = resolve(appRoot, '../..')
 const sourceRoot = resolve(appRoot, 'src')
 const templateRoot = resolve(appRoot, 'starter')
+const uniTemplateRoot = resolve(appRoot, 'starter-uni-app')
 const bridgePath = resolve(sourceRoot, 'lib/varo-primitives.ts')
 const retailRoots = new Set(['retail-goods', 'retail-order', 'retail-user', 'retail-coupon', 'retail-promotion'])
 const helperEntries = new Map([
@@ -84,13 +87,13 @@ function retailApp(source, manifest) {
   return { app, pages, content }
 }
 
-async function collectProject() {
+async function collectProject(framework) {
   const files = new Map()
   const sources = new Map()
   const queue = []
   const queued = new Set()
   const transforms = []
-  const packageJson = JSON.parse(await readFile(resolve(templateRoot, 'package.json'), 'utf8'))
+  const packageJson = JSON.parse((await snapshot(resolve(templateRoot, 'package.json'))).toString('utf8'))
   const npmPackages = new Set(Object.keys({ ...packageJson.dependencies, ...packageJson.devDependencies }))
   const headlessEntry = resolve(repoRoot, helperEntries.get('@varo-ui/headless'))
   const headlessExports = new Map()
@@ -357,6 +360,12 @@ async function collectProject() {
     transforms.push({ file: outputName(headlessEntry), operation: 'Generate only the named pure-helper exports consumed by native components from their owning source declarations.' })
   }
 
+  const selectedTemplateRoot = framework === 'uni-app' ? uniTemplateRoot : templateRoot
+  if (framework === 'uni-app') {
+    await snapshot(fileURLToPath(new URL('./convert-retail-uni-app.mjs', import.meta.url)))
+    convertRetailSources(files, transforms)
+  }
+
   async function addTemplates(directory) {
     for (const name of (await readdir(directory)).sort()) {
       const path = resolve(directory, name)
@@ -364,16 +373,17 @@ async function collectProject() {
       if (stat.isSymbolicLink()) { throw new Error('Starter templates must not contain symlinks.') }
       if (stat.isDirectory()) { await addTemplates(path) }
       else {
-        const destination = portable(relative(templateRoot, path))
+        const templatePath = portable(relative(selectedTemplateRoot, path))
+        const destination = templatePath === 'package.json.template' ? 'package.json' : templatePath
         if (files.has(destination)) { throw new Error(`Template/source path collision: ${destination}`) }
         files.set(destination, await snapshot(path))
       }
     }
   }
-  await addTemplates(templateRoot)
+  await addTemplates(selectedTemplateRoot)
   files.set('LICENSE', await snapshot(resolve(repoRoot, 'LICENSE')))
   await snapshot(fileURLToPath(import.meta.url))
-  return { files, sources, pages: app.pages, transforms, packageJson }
+  return { files, sources, pages: app.pages, transforms, packageJson: JSON.parse(files.get('package.json').toString('utf8')) }
 }
 
 async function generateLock(directory) {
@@ -400,7 +410,10 @@ async function generateLock(directory) {
   }
 }
 
-export async function exportRetailStarter(destination) {
+export async function exportRetailStarter(destination, { framework = 'wevu' } = {}) {
+  if (framework !== 'wevu' && framework !== 'uni-app') {
+    throw new Error(`Unsupported framework: ${framework}. Choose wevu or uni-app.`)
+  }
   const requested = resolve(destination)
   const initial = await inspectDestination(requested)
   const parent = await realpath(dirname(requested))
@@ -409,7 +422,7 @@ export async function exportRetailStarter(destination) {
   if (inside(canonicalRepo, target) || inside(target, canonicalRepo)) {
     throw new Error('Export outside the Varo repository and its ancestors to avoid source/workspace collisions.')
   }
-  const project = await collectProject()
+  const project = await collectProject(framework)
   const pnpmVersion = execFileSync('pnpm', ['--version'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
   if (pnpmVersion !== '11.24.0') { throw new Error(`Use pnpm 11.24.0 for this export; found ${pnpmVersion}.`) }
   const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
@@ -428,6 +441,7 @@ export async function exportRetailStarter(destination) {
       name: project.packageJson.name,
       version: project.packageJson.version,
       license: 'MIT',
+      framework,
       source: { repository: 'https://github.com/daguanren21/Varo', revision, app: 'apps/playground-weapp/src' },
       exporter: { node: process.version, pnpm: pnpmVersion },
       dependencies: project.packageJson.dependencies,
@@ -445,7 +459,7 @@ export async function exportRetailStarter(destination) {
     }
     await rename(staging, target)
     published = true
-    return { pages: project.pages.length, files: project.files.size + 1, revision }
+    return { framework, pages: project.pages.length, files: project.files.size + 1, revision }
   }
   catch (error) {
     error.message = error.message.replaceAll(staging, '<export-staging>')
@@ -460,13 +474,20 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const args = process.argv.slice(2)
   if (args[0] === '--') { args.shift() }
   try {
-    if (args.length !== 1 || args[0].startsWith('-')) {
-      throw new Error('Usage: pnpm retail:export -- <new-empty-destination>. The parent directory must exist; choose a destination outside Varo.')
+    const { values, positionals } = parseArgs({
+      args,
+      options: { framework: { type: 'string', default: 'wevu' } },
+      allowPositionals: true,
+    })
+    if (positionals.length !== 1) {
+      throw new Error('Usage: pnpm retail:export -- [--framework wevu|uni-app] <new-empty-destination>. The parent directory must exist; choose a destination outside Varo.')
     }
-    const result = await exportRetailStarter(args[0])
-    console.log(`Exported ${result.pages} retail pages and ${result.files} files from Varo ${result.revision}.`)
+    const result = await exportRetailStarter(positionals[0], { framework: values.framework })
+    console.log(`Exported ${result.pages} retail pages and ${result.files} ${result.framework} files from Varo ${result.revision}.`)
     console.log('Source and output SHA256 digests are in starter-manifest.json. No node_modules or compiled output was copied.')
-    console.log('In the exported directory: pnpm install --frozen-lockfile; pnpm dev; pnpm build; pnpm verify.')
+    console.log(result.framework === 'uni-app'
+      ? 'In the exported directory: pnpm install --frozen-lockfile; pnpm typecheck; pnpm dev:h5; pnpm build; pnpm verify.'
+      : 'In the exported directory: pnpm install --frozen-lockfile; pnpm dev; pnpm build; pnpm verify.')
     console.log('Configure your own WEAPP_APP_ID in .env.local before DevTools/device validation. Compilation is not device certification.')
   }
   catch (error) {

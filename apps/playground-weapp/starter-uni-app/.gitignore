@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.vite/
+.weapp-tailwindcss/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+src/manifest.json
+src/project.config.json
+project.private.config.json
+src/project.private.config.json
+.DS_Store
