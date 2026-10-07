@@ -2,9 +2,7 @@
 import { computed, shallowRef } from 'wevu'
 import { navigateRetail } from '../../features/retail/navigation'
 import { retailScreens } from '../../features/retail/screens'
-import VTag from '../ui/tag.vue'
 import VButton from '../ui/v-button.vue'
-import VCard from '../ui/v-card.vue'
 import VInput from '../ui/v-input.vue'
 
 const props = defineProps<{
@@ -18,13 +16,6 @@ const screen = computed(() => retailScreens[props.screenId] ?? {
   sections: [],
   title: '零售服务',
 })
-const visibleSections = computed(() =>
-  screen.value.sections.map((section, index) => ({
-    ...section,
-    tone: index === 0 ? 'primary' as const : 'default' as const,
-    variant: index === 0 ? 'elevated' as const : 'default' as const,
-  })),
-)
 const visibleFields = computed(() =>
   (screen.value.fields ?? []).map(field => ({
     ...field,
@@ -47,39 +38,40 @@ function submit() {
 </script>
 
 <template>
-  <view class="retail-page-enter min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
-    <view class="retail-section-enter bg-slate-950 px-4 pb-10 pt-7 text-white">
-      <text class="text-[9px] font-black tracking-[0.18em] text-teal-300">
-        {{ screen.eyebrow }}
-      </text>
-      <text class="mt-1 block text-2xl font-black">
-        {{ screen.title }}
-      </text>
-      <text class="mt-2 block max-w-[88%] text-xs leading-5 text-slate-300">
-        {{ screen.description }}
-      </text>
-      <text class="mt-3 block text-xs leading-5 text-white">
-        静态界面演示：以下为示例内容，未接入真实支付、物流、售后或资料保存。
-      </text>
-    </view>
+  <view class="retail-page-enter min-h-screen bg-[#f7f4ee] pb-[calc(env(safe-area-inset-bottom)+32px)] text-[#292722]">
+    <view class="mx-auto max-w-3xl px-[18px]">
+      <view class="retail-section-enter border-b border-[#dcd6cb] py-6">
+        <text class="retail-heading block text-[26px] leading-snug">
+          {{ screen.title }}
+        </text>
+        <text class="mt-3 block text-[15px] leading-7 text-[#625e55]">
+          以下为静态示例内容，未接入真实支付、物流、售后或资料保存。
+        </text>
+        <text class="mt-3 block text-base leading-7">
+          {{ screen.description }}
+        </text>
+      </view>
 
-    <view class="retail-section-enter -mt-4 grid gap-3 px-3 pb-4">
-      <VCard v-for="section in visibleSections" :key="section.title" :variant="section.variant">
-        <view class="grid gap-2">
-          <view class="flex items-center justify-between gap-3">
-            <text class="text-sm font-black">
+      <view class="retail-section-enter">
+        <view
+          v-for="section in screen.sections"
+          :key="section.title"
+          class="grid gap-2 border-b border-[#dcd6cb] py-5"
+        >
+          <view class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+            <text class="retail-heading min-w-0 text-lg leading-7">
               {{ section.title }}
             </text>
-            <VTag v-if="section.status" :label="section.status" :tone="section.tone" variant="soft" size="sm" />
+            <text v-if="section.status" class="text-[15px] leading-6 text-[#625e55]">
+              {{ section.status }}
+            </text>
           </view>
-          <text class="text-xs leading-5 text-slate-500">
+          <text class="text-base leading-7 text-[#625e55]">
             {{ section.detail }}
           </text>
         </view>
-      </VCard>
 
-      <VCard v-if="hasFields" variant="default">
-        <view class="grid gap-6">
+        <view v-if="hasFields" class="grid gap-6 py-6">
           <VInput
             v-for="field in visibleFields"
             :key="field.label"
@@ -88,16 +80,20 @@ function submit() {
             :placeholder="field.placeholder"
             :type="field.inputType"
             :rows="field.rows"
+            size="lg"
             @update:value="updateField(field.label, $event)"
           />
+          <text class="text-[15px] leading-7 text-[#625e55]">
+            输入内容仅用于当前页面预览，不会保存或提交。
+          </text>
         </view>
-      </VCard>
-    </view>
+      </view>
 
-    <view v-if="screen.primaryAction && screen.primaryPath" class="fixed inset-x-0 bottom-0 z-20 bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3 shadow-[0_-8px_24px_rgba(15,23,42,.06)]">
-      <VButton block size="lg" @click="submit">
-        {{ screen.primaryAction }}
-      </VButton>
+      <view v-if="screen.primaryAction && screen.primaryPath" class="pt-6">
+        <VButton block size="lg" class-name="!min-h-12 !rounded-[3px] !text-base !shadow-none" @click="submit">
+          {{ screen.primaryAction }}
+        </VButton>
+      </view>
     </view>
   </view>
 </template>

@@ -21,30 +21,27 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <view class="flex items-end justify-between gap-3">
-    <view class="grid min-w-0 gap-0.5">
-      <text v-if="eyebrow" class="text-[9px] font-black uppercase tracking-[0.16em] text-teal-700">
+  <view class="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+    <view class="grid min-w-0 gap-1">
+      <text v-if="eyebrow" class="text-[15px] leading-6 text-[#625e55]">
         {{ eyebrow }}
       </text>
-      <text class="text-lg font-black tracking-tight text-slate-950">
+      <text class="retail-heading text-[22px] leading-8 text-[#292722]">
         {{ title }}
       </text>
-      <text v-if="subtitle" class="truncate text-[10px] text-slate-400">
+      <text v-if="subtitle" class="whitespace-normal text-[15px] leading-6 text-[#625e55]">
         {{ subtitle }}
       </text>
     </view>
     <VButton
       v-if="action"
-      size="sm"
+      size="md"
       variant="ghost"
       tone="default"
-      class-name="!min-h-8 !flex-none !p-0 !text-[11px] !font-bold !text-teal-700"
+      class-name="!min-h-11 !flex-none !rounded-[3px] !px-2 !text-[15px] !font-medium !text-[#86543c]"
       @click="emit('action')"
     >
       {{ action }}
-      <text aria-hidden="true">
-        ›
-      </text>
     </VButton>
   </view>
 </template>

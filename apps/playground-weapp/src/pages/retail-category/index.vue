@@ -21,6 +21,13 @@ const visibleProducts = computed(() => {
   return query ? source.filter(product => product.name.toLowerCase().includes(query)) : source
 })
 const activeLabel = computed(() => retailCategories.find(category => category.id === activeCategory.value)?.label ?? '全部')
+const categoryOptions = computed(() => retailCategories.map(category => ({
+  ...category,
+  ariaLabel: activeCategory.value === category.id ? `${category.label}，当前分类` : category.label,
+  className: activeCategory.value === category.id
+    ? '!min-h-11 !w-full !rounded-none !border-0 !border-b-2 !border-[#86543c] !px-2 !text-[15px] !font-semibold !text-[#86543c]'
+    : '!min-h-11 !w-full !rounded-none !px-2 !text-[15px] !font-normal !text-[#625e55]',
+})))
 
 function openProduct(product: RetailProduct) {
   navigateRetail('/retail-goods/details/index', { id: product.id })
@@ -35,65 +42,74 @@ function addProduct(product: RetailProduct) {
 </script>
 
 <template>
-  <view class="retail-page-enter min-h-screen bg-white pb-20 text-slate-950">
-    <view class="sticky top-0 z-20 grid gap-3 border-b border-slate-100 bg-white px-3 pb-3 shadow-sm" :style="rootStyle">
-      <view class="flex items-center justify-between gap-3" :style="navigationStyle">
-        <text class="text-xl font-black">
-          分类
-        </text>
-        <VButton size="sm" variant="ghost" @click="navigateRetail('/retail-goods/search/index')">
-          筛选
-        </VButton>
+  <view class="retail-page-enter min-h-screen bg-[#f7f4ee] pb-32 text-[#292722]">
+    <view class="sticky top-0 z-20 border-b border-[#dcd6cb] bg-[#f7f4ee]" :style="rootStyle">
+      <view class="mx-auto grid box-border w-full max-w-[1160px] gap-3 px-[18px] pb-3 md:px-9">
+        <view class="flex items-center justify-between gap-3" :style="navigationStyle">
+          <text class="retail-heading text-[24px] leading-8">
+            分类
+          </text>
+          <VButton
+            variant="ghost"
+            class-name="!min-h-11 !rounded-[3px] !px-2 !text-[15px] !text-[#86543c]"
+            @click="navigateRetail('/retail-goods/search/index')"
+          >
+            搜索全部
+          </VButton>
+        </view>
+        <VInput
+          :value="keyword"
+          aria-label="搜索当前分类"
+          placeholder="搜索当前分类"
+          clearable
+          class-name="!min-h-11 !rounded-[3px]"
+          @update:value="keyword = $event"
+        />
       </view>
-      <VInput :value="keyword" placeholder="搜索当前分类" clearable @update:value="keyword = $event" />
     </view>
 
-    <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
-    <view v-if="!loading && !loadError" class="grid min-h-[calc(100vh-132px)] grid-cols-[92px_minmax(0,1fr)]">
-      <scroll-view scroll-y class="h-full bg-slate-50">
+    <view class="mx-auto box-border w-full max-w-[1160px] px-[18px] md:px-9">
+      <view class="grid grid-cols-5 border-b border-[#dcd6cb] py-1">
         <VButton
-          v-for="category in retailCategories"
+          v-for="category in categoryOptions"
           :key="category.id"
-          size="sm"
           variant="ghost"
           tone="default"
-          class-name="relative !flex !min-h-14 !w-full !items-center !justify-center !rounded-none !border-0 !px-2 !text-xs !font-semibold !text-slate-500"
-          :class="activeCategory === category.id ? '!bg-white !font-black !text-teal-700' : ''"
+          :class-name="category.className"
+          :aria-label="category.ariaLabel"
           @click="activeCategory = category.id"
         >
-          <text v-if="activeCategory === category.id" class="absolute inset-y-3 left-0 w-1 rounded-r-full bg-teal-600" />
           {{ category.label }}
         </VButton>
-      </scroll-view>
-
-      <scroll-view scroll-y class="h-full bg-white">
-        <view class="retail-section-enter grid gap-3 p-3">
-          <view class="overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#0f766e,#2dd4bf)] p-4 text-white">
-            <text class="text-[10px] font-black tracking-[0.16em] text-white/70">
-              {{ activeLabel.toUpperCase() }}
-            </text>
-            <text class="mt-1 block text-lg font-black">
-              {{ activeLabel }}精选
-            </text>
-            <text class="mt-1 block text-[10px] text-white/75">
-              从高复购商品到当季新品，一次浏览。
-            </text>
-          </view>
-
-          <view v-if="visibleProducts.length" class="grid grid-cols-2 gap-3">
-            <RetailProductCard
-              v-for="product in visibleProducts"
-              :key="product.id"
-              :product="product"
-              @select="openProduct"
-              @add="addProduct"
-            />
-          </view>
-          <view v-else class="grid min-h-64 place-items-center text-xs text-slate-400">
-            当前分类暂无商品
-          </view>
+      </view>
+      <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
+      <view v-if="!loading && !loadError" class="retail-section-enter py-6">
+        <view class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+          <text class="retail-heading text-[22px] leading-8">
+            {{ activeLabel }}
+          </text>
+          <text class="text-[15px] leading-6 text-[#625e55]">
+            {{ visibleProducts.length }} 件商品
+          </text>
         </view>
-      </scroll-view>
+        <view v-if="visibleProducts.length" class="grid grid-cols-2 gap-x-4 gap-y-7 md:grid-cols-4 md:gap-x-6 md:gap-y-9">
+          <RetailProductCard
+            v-for="product in visibleProducts"
+            :key="product.id"
+            :product="product"
+            @select="openProduct"
+            @add="addProduct"
+          />
+        </view>
+        <view v-else class="grid min-h-64 content-center justify-items-center gap-3 text-center">
+          <text class="retail-heading text-xl leading-7">
+            当前分类暂无商品
+          </text>
+          <text class="text-[15px] leading-6 text-[#625e55]">
+            试试其他分类或搜索词
+          </text>
+        </view>
+      </view>
     </view>
   </view>
 </template>

@@ -7,6 +7,6 @@ export interface RetailConfig {
 }
 
 export const retailConfig: RetailConfig = {
-  brand: { name: 'Varo Retail', logo, accent: '#0f766e' },
+  brand: { name: 'Varo Retail', logo, accent: '#86543c' },
   scenario: 'default',
 }

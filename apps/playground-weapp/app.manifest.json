@@ -80,9 +80,9 @@
     }
   ],
   "tabBar": {
-    "color": "#94a3b8",
-    "selectedColor": "#0f766e",
-    "backgroundColor": "#ffffff",
+    "color": "#625e55",
+    "selectedColor": "#86543c",
+    "backgroundColor": "#f7f4ee",
     "borderStyle": "white",
     "list": [
       {
@@ -113,9 +113,9 @@
   },
   "window": {
     "navigationBarTitleText": "Varo Retail",
-    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarBackgroundColor": "#f7f4ee",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f4f6f8"
+    "backgroundColor": "#f7f4ee"
   },
   "style": "v2",
   "componentFramework": "glass-easel",

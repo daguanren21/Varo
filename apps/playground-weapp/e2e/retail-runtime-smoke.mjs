@@ -97,8 +97,6 @@ async function main() {
     const page = await miniProgram.reLaunch(path)
     await page.waitFor(300)
     assert.equal(normalizePagePath(page.path), normalizePagePath(path))
-    assert.ok((await nodesByClass(page, 'varo-button'))[0], `${path} must render a Varo button`)
-    assert.ok((await nodesByClass(page, 'varo-card'))[0], `${path} must render a Varo card`)
     return page
   }
 
@@ -121,8 +119,7 @@ async function main() {
   }
 
   try {
-    const home = await inspectPage('/pages/retail-home/index')
-    assert.ok((await nodesByClass(home, 'varo-input'))[0], 'Retail home must render the Varo search input')
+    await inspectPage('/pages/retail-home/index')
 
     await inspectPage('/pages/retail-category/index')
     const cart = await inspectPage('/pages/retail-cart/index')
@@ -150,10 +147,7 @@ async function main() {
 
     const browse = await miniProgram.switchTab('/pages/retail-home/index')
     await browse.waitFor(100)
-    const [product] = await nodesByClass(browse, 'retail-product-card')
-    assert.ok(product, 'Home must expose a product detail entry')
-    await product.tap()
-    await browse.waitFor(100)
+    await tapButton(browse, '雾白轻盈连衣裙')
     const details = await currentRoute('/retail-goods/details/index')
     await tapButton(details, '加入购物车')
     await tapButton(details, '购物车')
@@ -164,15 +158,21 @@ async function main() {
     const addresses = await currentRoute('/retail-user/address/list/index')
     await tapButton(addresses, '新增收货地址')
     const addressForm = await currentRoute('/retail-user/address/edit/index')
-    for (const [placeholder, value] of [
-      ['请输入姓名', '流程验收'],
-      ['请输入手机号', '13800138001'],
-      ['请选择省市', '杭州市'],
-      ['请选择区县', '西湖区'],
-      ['街道、楼牌号等', '示例路 8 号'],
+    const fieldIds = new Map()
+    for (const label of await nodesByClass(addressForm, 'varo-input__label')) {
+      fieldIds.set(String(await label.text()).trim(), await label.attr('for'))
+    }
+    for (const [label, value] of [
+      ['收货人', '流程验收'],
+      ['手机号码', '13800138001'],
+      ['省市', '杭州市'],
+      ['区县', '西湖区'],
+      ['详细地址', '示例路 8 号'],
     ]) {
-      const [field] = await addressForm.getElementsByXpath(`//input[@placeholder="${placeholder}"] | //textarea[@placeholder="${placeholder}"]`)
-      assert.ok(field, `Address form must expose ${placeholder}`)
+      const id = fieldIds.get(label)
+      assert.ok(id, `Address label ${label} must identify its editable control`)
+      const [field] = await addressForm.getElementsByXpath(`//input[@id="${id}"] | //textarea[@id="${id}"]`)
+      assert.ok(field, `Address control for ${label} must be reachable`)
       await field.input(value)
     }
     const [defaultSwitch] = await addressForm.getElementsByXpath('//button[@role="switch"]')
@@ -193,10 +193,9 @@ async function main() {
     await tapButton(updatedAddresses, '选择此地址')
     checkout = await currentRoute('/retail-order/order-confirm/index')
     assert.ok(String(await (await checkout.$('view')).text()).includes('流程验收'), 'Checkout must display the newly saved address')
-    const quotedAmount = await checkout.$('text.text-xl')
-    assert.ok(quotedAmount, 'Checkout must render its quoted amount')
-    const payable = String(await quotedAmount.text())
-    assert.match(payable, /^¥\d+\.\d{2}$/)
+    assert.equal((await checkout.data()).checkoutQuote.total, 118500, 'One hub and two dresses minus the coupon must total 1185 yuan')
+    const payable = '¥1185.00'
+    assert.ok(String(await (await checkout.$('view')).text()).includes(payable), 'Checkout must display the calculated total')
     await tapButton(checkout, '创建模拟订单')
     const result = await currentRoute('/retail-order/pay-result/index')
     assert.ok(String(await (await result.$('view')).text()).includes(payable), 'Result must retain the displayed checkout amount')

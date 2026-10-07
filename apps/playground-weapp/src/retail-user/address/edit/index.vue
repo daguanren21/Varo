@@ -3,7 +3,6 @@ import type { RetailAddress } from '../../../features/retail/types'
 import { computed, onLoad, shallowRef } from 'wevu'
 import RetailRequestState from '../../../components/retail/RetailRequestState.vue'
 import VButton from '../../../components/ui/v-button.vue'
-import VCard from '../../../components/ui/v-card.vue'
 import VInput from '../../../components/ui/v-input.vue'
 import VSwitch from '../../../components/ui/v-switch.vue'
 import { errorMessage, RetailServiceError } from '../../../features/retail/service'
@@ -44,7 +43,7 @@ function loadForm() {
       isDefault.value = current.isDefault
     }
     ready.value = true
-  })
+  }, () => loadError.value || formError.value)
 }
 
 onLoad((options) => {
@@ -76,37 +75,49 @@ async function submit() {
 </script>
 
 <template>
-  <view class="min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
+  <view class="retail-page-enter min-h-screen bg-[#f7f4ee] pb-32 text-[#292722]">
+    <view class="mx-auto max-w-xl px-[18px] pb-5 pt-6">
+      <text class="retail-heading block text-[26px] leading-9">
+        收货地址
+      </text>
+      <text class="mt-3 block text-[15px] leading-7 text-[#625e55]">
+        用于模拟订单，不会安排真实配送。
+      </text>
+    </view>
     <RetailRequestState :loading="loading" :error="loadError" @retry="loadForm" />
-    <VCard v-if="formError" class-name="m-3 text-sm text-red-600">
-      {{ formError }}
-    </VCard>
-    <view v-if="ready" class="grid gap-3 px-3 py-3">
-      <VCard class-name="grid gap-3" variant="default">
-        <VInput :value="name" label="收货人" placeholder="请输入姓名" @update:value="name = $event" />
-        <VInput :value="phone" label="手机号码" placeholder="请输入手机号" type="tel" @update:value="phone = $event" />
-        <VInput :value="city" label="省市" placeholder="请选择省市" @update:value="city = $event" />
-        <VInput :value="district" label="区县" placeholder="请选择区县" @update:value="district = $event" />
-        <VInput :value="detail" label="详细地址" placeholder="街道、楼牌号等" type="textarea" :rows="3" @update:value="detail = $event" />
-      </VCard>
-
-      <VCard class-name="flex items-center justify-between" variant="default">
-        <view class="grid gap-0.5">
-          <text class="text-sm font-bold">
-            设为默认地址
-          </text>
-          <text class="text-[10px] text-slate-400">
-            结算时优先使用该地址
-          </text>
+    <view class="mx-auto grid max-w-xl gap-5 px-[18px]">
+      <view v-if="formError" class="border-l-2 border-[#a12116] py-2 pl-4 text-base leading-7 text-[#a12116]">
+        {{ formError }}
+      </view>
+      <view v-if="ready" class="grid gap-6">
+        <view class="grid gap-5 border-t border-[#dcd6cb] pt-5">
+          <VInput :value="name" size="lg" label="收货人" placeholder="请输入姓名" @update:value="name = $event" />
+          <VInput :value="phone" size="lg" label="手机号码" placeholder="请输入手机号" type="tel" @update:value="phone = $event" />
+          <VInput :value="city" size="lg" label="省市" placeholder="请输入省市" @update:value="city = $event" />
+          <VInput :value="district" size="lg" label="区县" placeholder="请输入区县" @update:value="district = $event" />
+          <VInput :value="detail" size="lg" label="详细地址" placeholder="街道、楼牌号等" type="textarea" :rows="3" @update:value="detail = $event" />
         </view>
-        <VSwitch v-model="isDefault" />
-      </VCard>
+
+        <view class="flex items-center justify-between gap-4 border-y border-[#dcd6cb] py-5">
+          <view class="grid min-w-0 gap-1">
+            <text class="text-base font-semibold leading-7">
+              设为默认地址
+            </text>
+            <text class="text-[15px] leading-7 text-[#625e55]">
+              结算时优先使用该地址
+            </text>
+          </view>
+          <VSwitch v-model="isDefault" aria-label="设为默认地址" />
+        </view>
+      </view>
     </view>
 
-    <view class="fixed inset-x-0 bottom-0 z-20 bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3">
-      <VButton block size="lg" :disabled="saveDisabled" :loading="saving" @click="submit">
-        保存地址
-      </VButton>
+    <view class="fixed inset-x-0 bottom-0 z-20 border-t border-[#dcd6cb] bg-[#f7f4ee] px-[18px] pb-[calc(env(safe-area-inset-bottom)+16px)] pt-4">
+      <view class="mx-auto max-w-xl">
+        <VButton block size="lg" class-name="!min-h-12 !rounded-[3px] !text-base" :disabled="saveDisabled" :loading="saving" loading-text="正在保存…" @click="submit">
+          保存地址
+        </VButton>
+      </view>
     </view>
   </view>
 </template>

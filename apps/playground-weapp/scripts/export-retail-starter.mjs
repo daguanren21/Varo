@@ -9,13 +9,14 @@ import ts from 'typescript'
 import { parse as parseSfc } from 'vue/compiler-sfc'
 import { resolveRegistryItems } from '../../../packages/cli/src/index.ts'
 import { registryItems, registryRoot } from '../../../scripts/registry-artifacts.mjs'
-import { convertRetailSources } from './convert-retail-uni-app.mjs'
+import { convertRetailSources } from './convert-retail-vue.mjs'
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const repoRoot = resolve(appRoot, '../..')
 const sourceRoot = resolve(appRoot, 'src')
 const templateRoot = resolve(appRoot, 'starter')
 const uniTemplateRoot = resolve(appRoot, 'starter-uni-app')
+const taroTemplateRoot = resolve(appRoot, 'starter-taro')
 const retailRoots = new Set(['retail-goods', 'retail-order', 'retail-user', 'retail-coupon', 'retail-promotion'])
 const helperEntries = new Map([
   ['@varo-ui/headless', 'packages/primitives-core/src/index.ts'],
@@ -94,7 +95,9 @@ async function collectProject(framework) {
   const queue = []
   const queued = new Set()
   const transforms = []
-  const packageJson = JSON.parse((await snapshot(resolve(templateRoot, 'package.json'))).toString('utf8'))
+  const selectedTemplateRoot = framework === 'taro' ? taroTemplateRoot : framework === 'uni-app' ? uniTemplateRoot : templateRoot
+  const packagePath = resolve(selectedTemplateRoot, framework === 'wevu' ? 'package.json' : 'package.json.template')
+  const packageJson = JSON.parse((await snapshot(packagePath)).toString('utf8'))
   const npmPackages = new Set(Object.keys({ ...packageJson.dependencies, ...packageJson.devDependencies }))
   const headlessEntry = resolve(repoRoot, helperEntries.get('@varo-ui/headless'))
   const headlessExports = new Map()
@@ -226,7 +229,7 @@ async function collectProject(framework) {
       return path.startsWith('.') ? path : `./${path}`
     }
     const packageName = specifier.startsWith('@') ? specifier.split('/').slice(0, 2).join('/') : specifier.split('/')[0]
-    if (packageName === 'vue' || packageName.startsWith('@varo') || !npmPackages.has(packageName)
+    if (packageName === 'vue' || packageName.startsWith('@varo') || (!npmPackages.has(packageName) && packageName !== 'wevu')
       || (helperRoots.some(root => inside(root, owner)) && packageName === 'wevu')) {
       throw new Error(`Unsupported runtime dependency in ${portable(relative(repoRoot, owner))}: ${specifier}. Use relative native source or an explicitly declared registry dependency.`)
     }
@@ -369,10 +372,9 @@ async function collectProject(framework) {
     transforms.push({ file: outputName(headlessEntry), operation: 'Generate only the named pure-helper exports consumed by native components from their owning source declarations.' })
   }
 
-  const selectedTemplateRoot = framework === 'uni-app' ? uniTemplateRoot : templateRoot
-  if (framework === 'uni-app') {
-    await snapshot(fileURLToPath(new URL('./convert-retail-uni-app.mjs', import.meta.url)))
-    convertRetailSources(files, transforms)
+  if (framework !== 'wevu') {
+    await snapshot(fileURLToPath(new URL('./convert-retail-vue.mjs', import.meta.url)))
+    convertRetailSources(files, transforms, framework)
   }
 
   async function addTemplates(directory) {
@@ -391,6 +393,10 @@ async function collectProject(framework) {
   }
   await addTemplates(selectedTemplateRoot)
   files.set('LICENSE', await snapshot(resolve(repoRoot, 'LICENSE')))
+  if (framework !== 'wevu') {
+    const verifier = fileURLToPath(new URL('./verify-retail-native.mjs', import.meta.url))
+    files.set('scripts/verify-native.mjs', await snapshot(verifier))
+  }
   await snapshot(fileURLToPath(import.meta.url))
   return { files, sources, pages: app.pages, transforms, packageJson: JSON.parse(files.get('package.json').toString('utf8')) }
 }
@@ -420,8 +426,8 @@ async function generateLock(directory) {
 }
 
 export async function exportRetailStarter(destination, { framework = 'wevu' } = {}) {
-  if (framework !== 'wevu' && framework !== 'uni-app') {
-    throw new Error(`Unsupported framework: ${framework}. Choose wevu or uni-app.`)
+  if (framework !== 'wevu' && framework !== 'uni-app' && framework !== 'taro') {
+    throw new Error(`Unsupported framework: ${framework}. Choose wevu, uni-app or taro.`)
   }
   const requested = resolve(destination)
   const initial = await inspectDestination(requested)
@@ -489,12 +495,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       allowPositionals: true,
     })
     if (positionals.length !== 1) {
-      throw new Error('Usage: pnpm retail:export -- [--framework wevu|uni-app] <new-empty-destination>. The parent directory must exist; choose a destination outside Varo.')
+      throw new Error('Usage: pnpm retail:export -- [--framework wevu|uni-app|taro] <new-empty-destination>. The parent directory must exist; choose a destination outside Varo.')
     }
     const result = await exportRetailStarter(positionals[0], { framework: values.framework })
     console.log(`Exported ${result.pages} retail pages and ${result.files} ${result.framework} files from Varo ${result.revision}.`)
     console.log('Source and output SHA256 digests are in starter-manifest.json. No node_modules or compiled output was copied.')
-    console.log(result.framework === 'uni-app'
+    console.log(result.framework !== 'wevu'
       ? 'In the exported directory: pnpm install --frozen-lockfile; pnpm typecheck; pnpm dev:h5; pnpm build; pnpm verify.'
       : 'In the exported directory: pnpm install --frozen-lockfile; pnpm dev; pnpm build; pnpm verify.')
     console.log('Configure your own WEAPP_APP_ID in .env.local before DevTools/device validation. Compilation is not device certification.')

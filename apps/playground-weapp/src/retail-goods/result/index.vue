@@ -3,7 +3,7 @@ import RetailProductCollection from '../../components/retail/RetailProductCollec
 </script>
 
 <template>
-  <RetailProductCollection eyebrow="SEARCH RESULT" title="搜索结果" />
+  <RetailProductCollection title="搜索结果" />
 </template>
 
 <json lang="jsonc">

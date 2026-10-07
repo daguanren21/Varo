@@ -83,7 +83,7 @@ src/
   vendor/varo/packages/            # Selected framework-neutral helper source
 scripts/
   prepare-uni-project.mjs
-  verify-mp-weixin.mjs
+  verify-native.mjs
 starter-manifest.json
 pnpm-lock.yaml
 ```
@@ -111,7 +111,7 @@ Do not also register `@tailwindcss/vite` or `@tailwindcss/postcss`: that would c
 
 ## What the native verifier checks
 
-`scripts/verify-mp-weixin.mjs` consumes the actual `dist/build/mp-weixin/` output and fails on:
+`scripts/verify-native.mjs` consumes the actual `dist/build/mp-weixin/` output and fails on:
 
 - Missing, duplicate or unexpected registered pages compared with the current `src/pages.json`.
 - Missing page/component `.js`, `.json` or `.wxml`, including recursive `usingComponents` and generic defaults.

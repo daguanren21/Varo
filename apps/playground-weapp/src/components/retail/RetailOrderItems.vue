@@ -7,16 +7,20 @@ defineProps<{ items: readonly RetailOrderItem[] }>()
 </script>
 
 <template>
-  <view class="grid gap-3">
-    <view v-for="item in items" :key="item.productId" class="grid grid-cols-[76px_minmax(0,1fr)] gap-3 rounded-xl bg-slate-50 p-2">
-      <VImage :src="item.image" :alt="item.name" fit="cover" width="76px" height="76px" radius="12px" />
-      <view class="grid min-w-0 content-between gap-2">
-        <text class="line-clamp-2 text-xs font-semibold leading-[18px]">
+  <view>
+    <view v-for="item in items" :key="item.productId" class="grid grid-cols-[72px_minmax(0,1fr)] items-start gap-3 border-b border-[#dcd6cb] py-5 text-[#292722]">
+      <VImage :src="item.image" :alt="item.name" fit="cover" width="72px" height="72px" radius="3px" />
+      <view class="grid min-w-0 gap-3">
+        <text class="retail-heading break-words text-[17px] leading-7">
           {{ item.name }}
         </text>
-        <view class="flex items-center justify-between text-xs text-slate-500">
-          <text>¥{{ formatRetailMoney(item.unitPrice) }}</text>
-          <text>× {{ item.quantity }}</text>
+        <view class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <text class="retail-price text-xl">
+            ¥{{ formatRetailMoney(item.unitPrice) }}
+          </text>
+          <text class="text-[15px] text-[#625e55]">
+            × {{ item.quantity }}
+          </text>
         </view>
       </view>
     </view>

@@ -1,0 +1,33 @@
+packages:
+  - .
+
+autoInstallPeers: false
+strictPeerDependencies: true
+nodeLinker: hoisted
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  '@tailwindcss/oxide': true
+  '@tarojs/binding': false
+  '@tarojs/cli': false
+  core-js: false
+  core-js-pure: false
+  esbuild: true
+
+# The upstream 4.3.0 compiler family pins an old webpack patch as an exact peer.
+# This one same-major substitution is documented in DEPENDENCIES.md.
+peerDependencyRules:
+  allowedVersions:
+    '@tarojs/webpack5-runner@4.3.0>webpack': 5.111.1
+    '@tarojs/taro-loader@4.3.0>webpack': 5.111.1
+    '@tarojs/webpack5-prebundle@4.3.0>webpack': 5.111.1
+
+overrides:
+  '@tarojs/plugin-framework-vue3@4.3.0>lodash': 4.18.1
+  '@tarojs/plugin-platform-h5@4.3.0>lodash-es': 4.18.1
+  '@tarojs/taro-h5@4.3.0>lodash-es': 4.18.1
+  solid-js@1.9.15>seroval: 1.6.1
+
+patchedDependencies:
+  swiper@11.1.15: patches/swiper@11.1.15.patch

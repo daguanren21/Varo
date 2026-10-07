@@ -80,7 +80,21 @@ it('a dangling destination symlink is not treated as a new destination', async (
 it('an unsupported framework never falls back to publishing a different project', async (t) => {
   const root = await sandbox(t)
 
-  await assert.rejects(exportRetailStarter(resolve(root, 'retail'), { framework: 'taro' }), /Unsupported framework: taro/)
+  await assert.rejects(exportRetailStarter(resolve(root, 'retail'), { framework: 'flutter' }), /Unsupported framework: flutter/)
 
   assert.deepEqual(await readdir(root), [])
+})
+
+it('Taro selection rejects occupied and symlink destinations before creating staging files', async (t) => {
+  const root = await sandbox(t)
+  const occupied = resolve(root, 'occupied')
+  const linked = resolve(root, 'linked')
+  await mkdir(occupied)
+  await writeFile(resolve(occupied, '.env.local'), 'KEEP_THIS_SETTING=1\n')
+  await symlink(occupied, linked, 'dir')
+  await assert.rejects(exportRetailStarter(occupied, { framework: 'taro' }), /Destination is occupied/)
+  await assert.rejects(exportRetailStarter(linked, { framework: 'taro' }), /never a file or symlink/)
+  assert.equal(await readFile(resolve(occupied, '.env.local'), 'utf8'), 'KEEP_THIS_SETTING=1\n')
+  assert.equal(await readlink(linked), occupied)
+  assert.deepEqual((await readdir(root)).sort(), ['linked', 'occupied'])
 })

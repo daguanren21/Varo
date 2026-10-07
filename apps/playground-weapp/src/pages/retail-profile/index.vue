@@ -2,10 +2,8 @@
 import { computed } from 'wevu'
 import RetailMenuRow from '../../components/retail/RetailMenuRow.vue'
 import RetailRequestState from '../../components/retail/RetailRequestState.vue'
-import Avatar from '../../components/ui/avatar.vue'
-import VTag from '../../components/ui/tag.vue'
 import VButton from '../../components/ui/v-button.vue'
-import VCard from '../../components/ui/v-card.vue'
+import VIcon from '../../components/ui/v-icon.vue'
 import { useWeappChrome } from '../../composables/useWeappChrome'
 import { navigateRetail } from '../../features/retail/navigation'
 import { useRetailPage } from '../../features/retail/use-retail-page'
@@ -13,147 +11,121 @@ import { useRetailPage } from '../../features/retail/use-retail-page'
 const { addresses, coupons, orders, loading, loadError, retryLoad } = useRetailPage()
 const { navigationStyle, rootStyle } = useWeappChrome()
 const orderActions = computed(() => [
-  { count: orders.value.filter(order => order.status === 'pending-payment').length, label: '待付款', status: 'pending-payment', mark: '付' },
-  { count: orders.value.filter(order => order.status === 'pending-delivery').length, label: '待发货', status: 'pending-delivery', mark: '发' },
-  { count: orders.value.filter(order => order.status === 'pending-receipt').length, label: '待收货', status: 'pending-receipt', mark: '收' },
-  { count: orders.value.filter(order => order.status === 'completed').length, label: '待评价', status: 'completed', mark: '评' },
-  { count: orders.value.filter(order => order.status === 'after-sale').length, label: '退款/售后', status: 'after-sale', mark: '退' },
+  { count: orders.value.filter(order => order.status === 'pending-payment').length, label: '待付款', status: 'pending-payment' },
+  { count: orders.value.filter(order => order.status === 'pending-delivery').length, label: '待发货', status: 'pending-delivery' },
+  { count: orders.value.filter(order => order.status === 'pending-receipt').length, label: '待收货', status: 'pending-receipt' },
+  { count: orders.value.filter(order => order.status === 'completed').length, label: '待评价', status: 'completed' },
+  { count: orders.value.filter(order => order.status === 'after-sale').length, label: '退款/售后', status: 'after-sale' },
 ])
+const addressMeta = computed(() => `${addresses.value.length} 个地址`)
+const couponMeta = computed(() => `${coupons.value.length} 张模拟优惠券`)
 </script>
 
 <template>
-  <view class="retail-page-enter min-h-screen bg-[#f4f6f8] pb-24 text-slate-950">
-    <view class="relative overflow-hidden bg-[linear-gradient(145deg,#082f35,#0f766e)] px-4 pb-6 text-white" :style="rootStyle">
-      <view class="absolute -right-10 top-0 h-40 w-40 rounded-full border-[28px] border-white/10" />
-      <view class="relative z-10 flex items-center gap-3" :style="navigationStyle">
-        <Avatar alt="Varo 用户" fallback="V" :size="58" shape="rounded" />
-        <view class="grid min-w-0 flex-1 gap-1">
-          <view class="flex items-center gap-2">
-            <text class="text-xl font-black text-white">
-              Varo 用户
-            </text>
-            <VTag label="PLUS" tone="primary" variant="solid" size="sm" />
-          </view>
-          <text class="text-[10px] text-teal-100">
-            本地模拟用户 · 未接入登录
-          </text>
-        </view>
-        <VButton size="sm" tone="default" variant="ghost" class-name="!border !border-white/20 !bg-white/10 !text-white" @click="navigateRetail('/retail-user/person-info/index')">
-          设置
-        </VButton>
-      </view>
-      <view class="relative z-10 mt-3 grid grid-cols-3 gap-2 rounded-2xl bg-white/10 p-3">
-        <view class="grid justify-items-center gap-1">
-          <text class="text-base font-black">
-            2680
-          </text>
-          <text class="text-[9px] text-teal-100">
-            会员积分
-          </text>
-        </view>
-        <view class="grid justify-items-center gap-1">
-          <text class="text-base font-black">
-            {{ addresses.length }}
-          </text>
-          <text class="text-[9px] text-teal-100">
-            收货地址
-          </text>
-        </view>
-        <view class="grid justify-items-center gap-1">
-          <text class="text-base font-black">
-            {{ coupons.length }}
-          </text>
-          <text class="text-[9px] text-teal-100">
-            可用优惠券
-          </text>
-        </view>
+  <view class="retail-page-enter min-h-screen bg-[#f7f4ee] pb-24 text-[#292722]">
+    <view class="border-b border-[#dcd6cb] px-[18px]" :style="rootStyle">
+      <view class="flex items-center" :style="navigationStyle">
+        <text class="retail-heading text-[22px] leading-8">
+          个人中心
+        </text>
       </view>
     </view>
 
-    <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
-    <view class="retail-section-enter -mt-4 grid gap-3 px-3 pb-5">
-      <VCard variant="elevated">
-        <view class="grid gap-4">
-          <view class="flex items-center justify-between">
-            <view class="grid gap-0.5">
-              <text class="text-base font-black">
-                我的订单
-              </text>
-              <text class="text-[9px] text-slate-400">
-                查看模拟订单，不代表支付或履约
-              </text>
-            </view>
+    <view class="mx-auto max-w-3xl">
+      <view class="flex flex-wrap items-center justify-between gap-4 px-[18px] py-6">
+        <view class="grid min-w-0 gap-2">
+          <text class="retail-heading text-[26px] leading-9">
+            Varo 用户
+          </text>
+          <text class="text-[15px] leading-6 text-[#625e55]">
+            本地模拟用户，未接入登录。
+          </text>
+        </view>
+        <VButton
+          size="lg"
+          tone="default"
+          variant="outline"
+          class-name="!min-h-11 !rounded-[3px] !text-[15px] !shadow-none"
+          @click="navigateRetail('/retail-user/person-info/index')"
+        >
+          设置
+        </VButton>
+      </view>
+
+      <RetailRequestState :loading="loading" :error="loadError" @retry="retryLoad" />
+
+      <view class="retail-section-enter grid gap-8 px-[18px] pb-6">
+        <view>
+          <view class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <text class="retail-heading text-[21px] leading-8">
+              我的订单
+            </text>
             <VButton
-              size="sm"
-              variant="ghost"
-              tone="default"
-              class-name="!min-h-8 !px-2 !text-[10px] !font-semibold !text-teal-700"
+              variant="text"
+              class-name="!min-h-11 !rounded-[3px] !px-1 !text-[15px] !font-medium !shadow-none"
               @click="navigateRetail('/retail-order/order-list/index')"
             >
               全部订单
             </VButton>
           </view>
-          <view class="grid grid-cols-5 gap-2">
-            <VButton
+          <text class="mb-3 block text-[15px] leading-7 text-[#625e55]">
+            模拟订单，不代表支付或履约。
+          </text>
+          <view class="border-t border-[#dcd6cb]">
+            <RetailMenuRow
               v-for="action in orderActions"
               :key="action.status"
-              size="sm"
-              variant="ghost"
-              tone="default"
-              class-name="relative !grid !min-h-[72px] !w-full !place-items-center !gap-1 !rounded-xl !bg-slate-50 !p-1"
+              :title="action.label"
               @click="navigateRetail('/retail-order/order-list/index', { status: action.status })"
             >
-              <text class="grid h-9 w-9 place-items-center rounded-xl bg-white text-xs font-black text-slate-700 shadow-sm">
-                {{ action.mark }}
-              </text>
-              <text v-if="action.count" class="absolute right-0 top-0 grid h-5 min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[9px] font-black text-white">
-                {{ action.count }}
-              </text>
-              <text class="text-[9px] text-slate-500">
-                {{ action.label }}
-              </text>
-            </VButton>
+              <template #trailing>
+                <view class="flex shrink-0 items-center gap-3">
+                  <text class="retail-price text-lg leading-6 text-[#625e55]">
+                    {{ action.count }}
+                  </text>
+                  <VIcon name="chevron-right" :size="18" color="#625e55" />
+                </view>
+              </template>
+            </RetailMenuRow>
           </view>
         </view>
-      </VCard>
 
-      <VCard variant="default">
-        <view class="grid gap-1">
-          <RetailMenuRow
-            title="收货地址"
-            :meta="`${addresses.length} 个地址`"
-            @click="navigateRetail('/retail-user/address/list/index')"
-          />
-          <RetailMenuRow
-            title="优惠券"
-            :meta="`${coupons.length} 张可用`"
-            @click="navigateRetail('/retail-coupon/coupon-list/index')"
-          />
-          <RetailMenuRow
-            title="积分与会员权益"
-            meta="2,680 积分"
-            :bordered="false"
-            @click="navigateRetail('/retail-user/person-info/index')"
-          />
-        </view>
-      </VCard>
-
-      <VCard variant="default">
-        <view class="grid gap-1">
-          <RetailMenuRow title="售后服务" @click="navigateRetail('/retail-order/after-service-list/index')" />
-          <RetailMenuRow title="帮助与客服" :bordered="false">
-            <template #trailing>
-              <text class="text-[10px] font-semibold text-teal-700">
-                演示，无客服接入
+        <view>
+          <text class="retail-heading mb-3 block text-[21px] leading-8">
+            常用服务
+          </text>
+          <view class="border-t border-[#dcd6cb]">
+            <RetailMenuRow
+              title="收货地址"
+              :meta="addressMeta"
+              @click="navigateRetail('/retail-user/address/list/index')"
+            />
+            <RetailMenuRow
+              title="优惠券"
+              :meta="couponMeta"
+              @click="navigateRetail('/retail-coupon/coupon-list/index')"
+            />
+            <RetailMenuRow
+              title="积分与会员权益"
+              meta="PLUS 会员 · 2,680 积分"
+              @click="navigateRetail('/retail-user/person-info/index')"
+            />
+            <RetailMenuRow
+              title="售后服务"
+              meta="静态示例，未接入退货或退款"
+              @click="navigateRetail('/retail-order/after-service-list/index')"
+            />
+            <view class="grid gap-1 border-b border-[#dcd6cb] py-4">
+              <text class="text-base font-medium leading-6">
+                帮助与客服
               </text>
-            </template>
-          </RetailMenuRow>
+              <text class="text-[15px] leading-6 text-[#625e55]">
+                尚未接入客服服务
+              </text>
+            </view>
+          </view>
         </view>
-      </VCard>
-
-      <text class="py-4 text-center text-[9px] text-slate-300">
-        Varo Retail v1.0.1
-      </text>
+      </view>
     </view>
   </view>
 </template>

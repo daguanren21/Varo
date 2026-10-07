@@ -2,9 +2,7 @@
 import type { RetailProduct } from '../../features/retail/types'
 import { computed } from 'wevu'
 import { formatRetailMoney } from '../../features/retail/store'
-import VTag from '../ui/tag.vue'
 import VButton from '../ui/v-button.vue'
-import VCard from '../ui/v-card.vue'
 import VImage from '../ui/v-image.vue'
 
 const props = defineProps<{
@@ -14,58 +12,51 @@ const emit = defineEmits<{
   add: [product: RetailProduct]
   select: [product: RetailProduct]
 }>()
-const tags = computed(() => (Array.isArray(props.product.tags) ? props.product.tags : []).slice(0, 2))
 const priceLabel = computed(() => formatRetailMoney(props.product.price))
-const linePriceLabel = computed(() => formatRetailMoney(props.product.linePrice))
 const unavailable = computed(() => props.product.stock === 0)
-const addLabel = computed(() => unavailable.value ? '暂时缺货' : '加入购物车')
+const addLabel = computed(() => unavailable.value ? '暂时缺货' : '加购')
+const addAriaLabel = computed(() => unavailable.value ? `${props.product.name}，暂时缺货` : `将${props.product.name}加入购物车`)
 </script>
 
 <template>
-  <VCard :padding="false" :interactive="true" class-name="retail-product-card retail-section-enter overflow-hidden" @click="emit('select', product)">
-    <view class="relative h-44 overflow-hidden bg-slate-100">
-      <VImage :src="product.image" :alt="product.name" fit="cover" width="100%" height="176px" lazy-load />
-      <view class="absolute left-2 top-2 flex flex-wrap gap-1">
-        <VTag v-for="tag in tags" :key="tag" :label="tag" tone="danger" variant="solid" size="sm" />
-      </view>
-    </view>
-
-    <view class="grid gap-2 p-3">
-      <text class="line-clamp-2 min-h-10 text-sm font-bold leading-5 text-slate-900">
-        {{ product.name }}
-      </text>
-      <text class="truncate text-[10px] text-slate-400">
-        {{ product.description }}
-      </text>
-      <view class="grid gap-2">
-        <view class="flex min-w-0 items-baseline gap-1">
-          <text class="text-[11px] font-black text-[#f04438]">
-            ¥
-          </text>
-          <text class="text-xl font-black tracking-tight text-[#f04438]">
-            {{ priceLabel }}
-          </text>
-          <text class="truncate text-[9px] text-slate-300 line-through">
-            ¥{{ linePriceLabel }}
-          </text>
+  <view class="retail-product-card retail-section-enter flex min-w-0 flex-col">
+    <VButton
+      block
+      variant="ghost"
+      tone="default"
+      class-name="!h-auto !w-full !min-w-0 !items-start !rounded-[3px] !border-0 !bg-transparent !p-0 !text-left !text-[#292722] !shadow-none"
+      :aria-label="product.name"
+      @click="emit('select', product)"
+    >
+      <view class="grid w-full min-w-0 gap-2">
+        <view class="relative w-full overflow-hidden rounded-[3px] pt-[100%]">
+          <view class="absolute inset-0">
+            <VImage :src="product.image" :alt="product.name" fit="contain" width="100%" height="100%" radius="3px" lazy-load />
+          </view>
         </view>
+        <text class="retail-heading block min-h-[54px] whitespace-normal break-words text-[17px] leading-[27px]">
+          {{ product.name }}
+        </text>
+      </view>
+    </VButton>
+    <view class="mt-auto pt-2">
+      <view class="flex flex-wrap items-center justify-between gap-x-1 gap-y-2 border-t border-[#dcd6cb] pt-2">
+        <text class="retail-price whitespace-nowrap text-[22px] leading-8 text-[#292722]">
+          ¥{{ priceLabel }}
+        </text>
         <VButton
-          block
-          size="sm"
-          tone="danger"
-          class-name="!min-h-9 !w-full !rounded-lg !px-3"
-          :aria-label="addLabel"
+          variant="ghost"
+          tone="default"
+          class-name="!min-h-11 !min-w-11 !rounded-none !border-0 !border-b !border-[#86543c] !bg-transparent !px-2 !py-2 !text-[15px] !font-medium !text-[#86543c] !shadow-none"
+          :aria-label="addAriaLabel"
           :disabled="unavailable"
-          @click.stop="emit('add', props.product)"
+          @click="emit('add', props.product)"
         >
           {{ addLabel }}
         </VButton>
       </view>
-      <text class="text-[9px] text-slate-400">
-        已售 {{ product.sales }} · 库存 {{ product.stock }}
-      </text>
     </view>
-  </VCard>
+  </view>
 </template>
 
 <json lang="jsonc">

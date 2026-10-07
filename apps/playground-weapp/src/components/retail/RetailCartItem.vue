@@ -4,7 +4,6 @@ import { computed } from 'wevu'
 import { formatRetailMoney } from '../../features/retail/store'
 import InputNumber from '../ui/input-number.vue'
 import VButton from '../ui/v-button.vue'
-import VCard from '../ui/v-card.vue'
 import VCheckbox from '../ui/v-checkbox.vue'
 import VImage from '../ui/v-image.vue'
 
@@ -22,6 +21,12 @@ const emit = defineEmits<{
   'remove': []
 }>()
 const quantityMax = computed(() => Math.max(1, props.product.stock))
+const selectionLabel = computed(() => `选择${props.product.name}`)
+const viewLabel = computed(() => `查看${props.product.name}`)
+const decreaseLabel = computed(() => `减少${props.product.name}数量`)
+const increaseLabel = computed(() => `增加${props.product.name}数量`)
+const quantityLabel = computed(() => `${props.product.name}数量`)
+const removeLabel = computed(() => `移除${props.product.name}`)
 
 function changeQuantity(quantity: number) {
   // Wevu forwards camelCase names unchanged; the native listener is kebab-case.
@@ -31,51 +36,46 @@ function changeQuantity(quantity: number) {
 </script>
 
 <template>
-  <VCard class-name="retail-section-enter" variant="default">
-    <view class="grid gap-3">
-      <view class="grid grid-cols-[auto_88px_minmax(0,1fr)] items-center gap-3">
-        <view class="grid h-10 w-10 place-items-center">
-          <VCheckbox :checked="selected" :disabled="disabled" aria-label="选择商品" @update:checked="emit('select', $event)" />
-        </view>
-        <view class="h-[88px] w-[88px] overflow-hidden rounded-xl bg-slate-100">
-          <VButton
-            block
-            variant="ghost"
-            tone="default"
-            class-name="!h-[88px] !min-h-[88px] !w-[88px] !overflow-hidden !rounded-xl !bg-slate-100 !p-0"
-            @click="emit('view', props.product)"
-          >
-            <VImage :src="product.image" :alt="product.name" fit="cover" width="88px" height="88px" />
-          </VButton>
-        </view>
-        <view class="grid min-w-0 gap-1">
-          <text class="line-clamp-2 text-sm font-bold leading-5 text-slate-900">
-            {{ product.name }}
-          </text>
-          <text class="truncate text-[9px] text-slate-400">
-            库存 {{ product.stock }} · 当前数量 {{ quantity }}
-          </text>
-        </view>
-      </view>
-      <view class="flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
-        <text class="text-lg font-black text-[#f04438]">
-          ¥{{ formatRetailMoney(product.price) }}
-        </text>
-        <view class="flex-none">
-          <InputNumber
-            :value="quantity"
-            :min="1"
-            :max="quantityMax"
-            :disabled="disabled || product.stock === 0"
-            @change="changeQuantity"
-          />
-          <VButton size="sm" variant="ghost" :disabled="disabled" @click="emit('remove')">
-            移除
-          </VButton>
-        </view>
+  <view class="retail-section-enter grid grid-cols-[44px_72px_minmax(0,1fr)] items-start gap-2 border-b border-[#dcd6cb] py-6 text-[#292722]">
+    <view class="grid min-h-11 w-11 place-items-center">
+      <VCheckbox :checked="selected" :disabled="disabled" :aria-label="selectionLabel" @update:checked="emit('select', $event)" />
+    </view>
+    <VButton
+      variant="ghost"
+      tone="default"
+      :aria-label="viewLabel"
+      class-name="!h-[72px] !min-h-[72px] !w-[72px] !overflow-hidden !rounded-[3px] !p-0"
+      @click="emit('view', props.product)"
+    >
+      <VImage :src="product.image" :alt="product.name" fit="cover" width="72px" height="72px" radius="3px" />
+    </VButton>
+    <view class="grid min-w-0 gap-2">
+      <text class="retail-heading break-words text-[17px] leading-7">
+        {{ product.name }}
+      </text>
+      <text class="text-[15px] leading-6 text-[#625e55]">
+        库存 {{ product.stock }} · 数量 {{ quantity }} 件
+      </text>
+      <text class="retail-price text-[22px] leading-8">
+        ¥{{ formatRetailMoney(product.price) }}
+      </text>
+      <view class="flex flex-wrap items-center gap-x-2 gap-y-1 pt-1">
+        <InputNumber
+          :value="quantity"
+          :min="1"
+          :max="quantityMax"
+          :disabled="disabled || product.stock === 0"
+          :decrease-aria-label="decreaseLabel"
+          :increase-aria-label="increaseLabel"
+          :input-aria-label="quantityLabel"
+          @change="changeQuantity"
+        />
+        <VButton variant="ghost" :aria-label="removeLabel" class-name="!min-h-11 !min-w-11 !px-2 !text-[15px]" :disabled="disabled" @click="emit('remove')">
+          移除
+        </VButton>
       </view>
     </view>
-  </VCard>
+  </view>
 </template>
 
 <json lang="jsonc">

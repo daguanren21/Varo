@@ -8,7 +8,11 @@ import valueParser from 'postcss-value-parser'
 import ts from 'typescript'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const outputRoot = await realpath(resolve(projectRoot, 'dist/build/mp-weixin'))
+const manifest = JSON.parse(await readFile(resolve(projectRoot, 'starter-manifest.json'), 'utf8'))
+if (manifest.framework !== 'taro' && manifest.framework !== 'uni-app') { throw new Error('Expected a Taro or uni-app source export') }
+const isTaro = manifest.framework === 'taro'
+const outputDirectory = isTaro ? 'dist/weapp' : 'dist/build/mp-weixin'
+const outputRoot = await realpath(resolve(projectRoot, outputDirectory))
 const requiredExtensions = ['.js', '.json', '.wxml']
 const contents = new Map()
 const scriptQueue = []
@@ -77,12 +81,28 @@ function assertUniquePages(pages, owner) {
   }
 }
 
-const sourcePages = JSON.parse(await readFile(resolve(projectRoot, 'src/pages.json'), 'utf8'))
+const sourceConfig = isTaro ? 'src/app.config.ts' : 'src/pages.json'
+let sourcePages
+if (isTaro) {
+  const text = await readFile(resolve(projectRoot, sourceConfig), 'utf8')
+  const source = ts.createSourceFile(sourceConfig, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  const statement = source.statements[0]
+  const call = statement && ts.isExportAssignment(statement) ? statement.expression : undefined
+  if (source.parseDiagnostics.length || source.statements.length !== 1 || !call || !ts.isCallExpression(call)
+    || !ts.isIdentifier(call.expression) || call.expression.text !== 'defineAppConfig'
+    || call.arguments.length !== 1 || !ts.isObjectLiteralExpression(call.arguments[0])) {
+    throw new Error('Keep src/app.config.ts as a static export default defineAppConfig({...}) for recursive route verification')
+  }
+  const parsed = ts.parseConfigFileTextToJson(sourceConfig, call.arguments[0].getText(source))
+  if (parsed.error) { throw new Error('Taro app configuration must contain JSON-compatible static values') }
+  sourcePages = parsed.config
+}
+else { sourcePages = JSON.parse(await readFile(resolve(projectRoot, sourceConfig), 'utf8')) }
 const expectedPages = [
-  ...(sourcePages.pages ?? []).map(page => page.path),
-  ...(sourcePages.subPackages ?? []).flatMap(group => group.pages.map(page => `${group.root}/${page.path}`)),
+  ...(sourcePages.pages ?? []).map(page => isTaro ? page : page.path),
+  ...(sourcePages.subPackages ?? []).flatMap(group => group.pages.map(page => `${group.root}/${isTaro ? page : page.path}`)),
 ]
-assertUniquePages(expectedPages, 'src/pages.json')
+assertUniquePages(expectedPages, sourceConfig)
 const appPath = resolve(outputRoot, 'app.json')
 const app = await readJson(appPath)
 const pages = [
@@ -91,7 +111,7 @@ const pages = [
 ]
 assertUniquePages(pages, 'app.json')
 if (JSON.stringify([...pages].sort()) !== JSON.stringify([...expectedPages].sort())) {
-  throw new Error('Compiled page registration differs from src/pages.json; rebuild after changing routes')
+  throw new Error(`Compiled page registration differs from ${sourceConfig}; rebuild after changing routes`)
 }
 
 const project = await readJson(resolve(outputRoot, 'project.config.json'))
@@ -99,9 +119,9 @@ if (typeof project.appid !== 'string' || (project.appid && !/^wx[0-9a-f]{16}$/i.
   throw new Error('Compiled project must have your actual AppID or an empty compilation-only AppID')
 }
 if (project.miniprogramRoot !== './') {
-  throw new Error('Import dist/build/mp-weixin directly; its miniprogramRoot must be ./')
+  throw new Error(`Import ${outputDirectory} directly; its miniprogramRoot must be ./`)
 }
-const sourceProject = JSON.parse(await readFile(resolve(projectRoot, 'src/project.config.json'), 'utf8'))
+const sourceProject = JSON.parse(await readFile(resolve(projectRoot, isTaro ? 'project.config.json' : 'src/project.config.json'), 'utf8'))
 if (project.appid !== sourceProject.appid) {
   throw new Error('Compiled AppID differs from the prepared local project; rebuild before importing DevTools')
 }

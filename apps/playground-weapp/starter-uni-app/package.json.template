@@ -16,7 +16,7 @@
     "build:h5": "node scripts/prepare-uni-project.mjs && uni build -p h5",
     "build:mp-weixin": "node scripts/prepare-uni-project.mjs && uni build -p mp-weixin && pnpm verify",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
-    "verify": "node scripts/verify-mp-weixin.mjs"
+    "verify": "node scripts/verify-native.mjs"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-5020420260813003",
