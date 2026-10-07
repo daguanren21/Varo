@@ -11,6 +11,11 @@
   intents:
     - agent-workspace
     - safe-streams-install
+"@varo-ui/ai@2.2.0":
+  dir: packages/agent-core
+  intents:
+    - canonical-native-source-cutover
+    - cool-bars-wave
 "@varo-ui/cli@1.0.0":
   dir: packages/cli
   intents:
@@ -59,6 +64,15 @@
     - quiet-weapp-icon-toast
     - rapid-input-number-icons
     - spotty-geckos-flow
+"@varo-ui/cli@2.2.0":
+  dir: packages/cli
+  intents:
+    - bright-codes-draw
+    - canonical-native-source-cutover
+    - cool-bars-wave
+    - shiny-islands-fly
+    - soft-fields-pulse
+    - white-buttons-shine
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -96,6 +110,15 @@
     - calm-heroui-ui-motion
     - quiet-weapp-icon-toast
     - rapid-input-number-icons
+"@varo-ui/h5@2.2.0":
+  dir: packages/ui-h5
+  intents:
+    - bright-codes-draw
+    - canonical-native-source-cutover
+    - cool-bars-wave
+    - shiny-islands-fly
+    - soft-fields-pulse
+    - white-buttons-shine
 "@varo-ui/headless@1.0.0":
   dir: packages/primitives-core
   intents:
@@ -119,6 +142,13 @@
   intents:
     - calm-heroui-ui-motion
     - rapid-input-number-icons
+"@varo-ui/headless@2.2.0":
+  dir: packages/primitives-core
+  intents:
+    - bright-codes-draw
+    - canonical-native-source-cutover
+    - cool-bars-wave
+    - soft-fields-pulse
 "@varo-ui/theme@1.0.0":
   dir: packages/theme
   intents:
@@ -146,6 +176,12 @@
   intents:
     - calm-heroui-ui-motion
     - clear-weapp-preview
+"@varo-ui/theme@2.2.0":
+  dir: packages/theme
+  intents:
+    - canonical-native-source-cutover
+    - cool-bars-wave
+    - soft-fields-pulse
 "@varo-ui/weapp@1.0.0":
   dir: packages/ui-weapp
   intents:
@@ -187,6 +223,15 @@
     - deep-cars-dress
     - quiet-weapp-icon-toast
     - rapid-input-number-icons
+"@varo-ui/weapp@2.2.0":
+  dir: packages/ui-weapp
+  intents:
+    - bright-codes-draw
+    - canonical-native-source-cutover
+    - cool-bars-wave
+    - shiny-islands-fly
+    - soft-fields-pulse
+    - white-buttons-shine
 "@varo/registry@0.0.1":
   dir: packages/registry
   intents:
