@@ -1,10 +1,10 @@
 ---
-"@varo-ui/ai": major
-"@varo-ui/cli": major
-"@varo-ui/h5": major
-"@varo-ui/headless": major
-"@varo-ui/theme": major
-"@varo-ui/weapp": major
+"@varo-ui/ai": minor
+"@varo-ui/cli": minor
+"@varo-ui/h5": minor
+"@varo-ui/headless": minor
+"@varo-ui/theme": minor
+"@varo-ui/weapp": minor
 ---
 
 Cut over the six-package fixed release group to canonical Registry authorship and native Wevu source delivery, without compatibility renderers or legacy export shims.
