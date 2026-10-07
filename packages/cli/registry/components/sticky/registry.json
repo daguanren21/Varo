@@ -8,14 +8,27 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "@varo-ui/headless",
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/headless",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
-    "themes/base",
-    "utils/primitives"
+    "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "h5": [
+      "utils/primitives"
+    ],
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +37,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/sticky/sticky.ts",
-      "to": "src/components/ui/sticky.ts"
+      "from": "registry/components/sticky/v-sticky.vue",
+      "to": "src/components/ui/v-sticky.vue"
     }
   ],
   "docs": "/components/sticky"

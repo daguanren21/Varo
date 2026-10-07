@@ -1,0 +1,22 @@
+diff --git a/dist/uni-h5.es.js b/dist/uni-h5.es.js
+index 2057e8eecfcd1a16ea496d9de141125bac78ea62..3cfd1053ed1164b5836e73072961427a1fa5f553 100644
+--- a/dist/uni-h5.es.js
++++ b/dist/uni-h5.es.js
+@@ -10479,7 +10479,8 @@ function useValueSync(props2, state2, emit2, trigger, fieldRef) {
+       triggerInputFn.flush();
+     }
+   };
+-  onBeforeMount(() => {
++  triggerInput.flush = triggerInputFn.flush;
++  onBeforeUnmount(() => {
+     valueChangeFn.cancel();
+     triggerInputFn.cancel();
+   });
+@@ -10581,6 +10582,7 @@ function useEvent(fieldRef, state2, props2, trigger, triggerInput, beforeInput)
+         state2.composing = false;
+         onInput(event, true);
+       }
++      triggerInput.flush();
+       state2.focus = false;
+       trigger("blur", event, {
+         value: state2.value,

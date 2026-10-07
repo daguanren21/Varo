@@ -8,13 +8,24 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "components/icon"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -23,8 +34,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/notice-bar/notice-bar.ts",
-      "to": "src/components/ui/notice-bar.ts"
+      "from": "registry/components/notice-bar/v-notice-bar.vue",
+      "to": "src/components/ui/v-notice-bar.vue"
     }
   ],
   "docs": "/guide/shadcn-mode"

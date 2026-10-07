@@ -27,6 +27,8 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 </template>
 ```
 
+`v-model` is optional. Without a binding, the Block owns an initially empty draft. With a binding, the parent owns the draft, including an explicit empty string. `submit` emits trimmed text without clearing the draft; the parent can set its bound value to `''` after accepting the submission. Busy or whitespace-only input does not submit.
+
 ## Props
 
 | Prop          | Type                         | Default      | Description       |

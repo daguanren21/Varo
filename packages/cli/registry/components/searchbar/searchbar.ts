@@ -1,6 +1,7 @@
 import { createVariantClass } from '@varo-ui/headless'
-import { useVaroTheme } from '@varo-ui/theme'
+
 import { computed, defineComponent, h } from 'vue'
+import { VIcon } from './icon'
 import { VInput } from './input'
 import '../../styles/varo.css'
 
@@ -28,12 +29,8 @@ export const VSearchbar = defineComponent({
   },
   emits: ['update:value', 'search', 'clear', 'cancel', 'focus', 'blur'],
   setup(props, { attrs, emit, slots }) {
-    const theme = useVaroTheme()
     const classes = computed(() =>
-      createVariantClass('varo-searchbar', {
-        radius: theme.value.components.input.borderRadius,
-        disabled: props.disabled,
-      }),
+      createVariantClass('varo-searchbar', { disabled: props.disabled }),
     )
 
     function update(value: string) {
@@ -61,12 +58,13 @@ export const VSearchbar = defineComponent({
               'clearTrigger': 'always',
               'disabled': props.disabled,
               'placeholder': props.placeholder,
-              'prefixIcon': '⌕',
               'value': props.value,
               'onBlur': (event: FocusEvent) => emit('blur', event),
               'onClear': (event: MouseEvent) => emit('clear', event),
               'onFocus': (event: FocusEvent) => emit('focus', event),
               'onUpdate:value': update,
+            }, {
+              prefix: () => h(VIcon, { name: 'search', size: 18 }),
             }),
           ]),
           props.actionText || slots.action

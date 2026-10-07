@@ -2390,6 +2390,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__panel--preview {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -2493,6 +2494,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__preview-content {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -2883,6 +2885,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
 }
 
@@ -2897,6 +2900,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__stack {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -4751,6 +4755,7 @@ onBeforeUnmount(() => {
 
 :deep(.varo-input) {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   width: 100%;
   color: var(--vp-c-text-1);

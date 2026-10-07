@@ -11,10 +11,8 @@
   "registryDependencies": [
     "utils/retail",
     "components/button",
-    "components/card",
     "components/image",
-    "components/input-number",
-    "components/tag"
+    "components/input-number"
   ],
   "files": [
     {

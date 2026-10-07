@@ -13,7 +13,7 @@ export function toDateString(date: Date): string {
 }
 
 export function parseDate(value: string | undefined, fallback = new Date()): Date {
-  if (!value) return new Date(fallback)
+  if (!value) { return new Date(fallback) }
   const [year, month = '1', day = '1'] = value.split('-')
   return new Date(Number(year), Number(month) - 1, Number(day))
 }
@@ -48,9 +48,55 @@ export function buildMonthDays(month?: string): CalendarDay[] {
     days.push({
       date: toDateString(date),
       day,
-      inMonth: true
+      inMonth: true,
     })
   }
 
   return days
+}
+
+export interface DateFieldOption {
+  label: string
+  value: number
+}
+
+export function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate()
+}
+
+export function clampDateParts(year: number, month: number, day: number): [number, number, number] {
+  const nextMonth = Math.min(12, Math.max(1, month))
+  const nextDay = Math.min(daysInMonth(year, nextMonth), Math.max(1, day))
+  return [year, nextMonth, nextDay]
+}
+
+export function dateFieldValue(year: number, month: number, day: number): string {
+  const [nextYear, nextMonth, nextDay] = clampDateParts(year, month, day)
+  return `${nextYear}-${pad(nextMonth)}-${pad(nextDay)}`
+}
+
+export function parseDateFieldValue(value: string | undefined, fallback = new Date()): [number, number, number] {
+  const date = parseDate(value, fallback)
+  return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+}
+
+export function buildDateFieldColumns(
+  value: string | undefined,
+  minYear = 1970,
+  maxYear = 2100,
+): DateFieldOption[][] {
+  const [year, month] = parseDateFieldValue(value)
+  const years: DateFieldOption[] = []
+  for (let next = minYear; next <= maxYear; next += 1) {
+    years.push({ label: String(next), value: next })
+  }
+  const months: DateFieldOption[] = Array.from({ length: 12 }, (_, index) => ({
+    label: pad(index + 1),
+    value: index + 1,
+  }))
+  const days: DateFieldOption[] = Array.from({ length: daysInMonth(year, month) }, (_, index) => ({
+    label: pad(index + 1),
+    value: index + 1,
+  }))
+  return [years, months, days]
 }

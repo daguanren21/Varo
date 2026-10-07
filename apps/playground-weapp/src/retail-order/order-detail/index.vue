@@ -1,125 +1,115 @@
 <script setup lang="ts">
 import { computed, onLoad, shallowRef } from 'wevu'
-import VTag from '../../components/ui/tag.vue'
+import RetailOrderItems from '../../components/retail/RetailOrderItems.vue'
+import RetailRequestState from '../../components/retail/RetailRequestState.vue'
 import VButton from '../../components/ui/v-button.vue'
-import VCard from '../../components/ui/v-card.vue'
-import VImage from '../../components/ui/v-image.vue'
+import { retailConfig } from '../../features/retail/config'
 import { navigateRetail } from '../../features/retail/navigation'
-import { findRetailProduct, formatRetailMoney, useRetailStore } from '../../features/retail/store'
+import { formatRetailMoney } from '../../features/retail/store'
+import { useRetailPage } from '../../features/retail/use-retail-page'
 
 const orderId = shallowRef('')
-const { defaultAddress, orders } = useRetailStore()
-const order = computed(() => orders.value.find(item => item.id === orderId.value) ?? orders.value[0])
-const products = computed(() => order.value?.items.map(item => ({ ...item, product: findRetailProduct(item.productId) })) ?? [])
-
-onLoad((options) => {
-  orderId.value = String(options?.id ?? '')
-})
+const { orders, loading, loadError, retryLoad } = useRetailPage()
+const order = computed(() => orders.value.find(item => item.id === orderId.value))
+const brand = retailConfig.brand
+onLoad((options) => { orderId.value = String(options?.id ?? '') })
 </script>
 
 <template>
-  <view class="min-h-screen bg-[#f4f6f8] pb-28 text-slate-950">
-    <view class="bg-[linear-gradient(135deg,#0f766e,#14b8a6)] px-4 pb-10 pt-6 text-white">
-      <text class="text-2xl font-black">
-        订单处理中
-      </text>
-      <text class="mt-2 block text-xs text-white/75">
-        预计明日送达，请留意配送通知。
-      </text>
-      <view class="mt-4 flex items-center gap-2 text-[10px] text-white/80">
-        <text class="rounded-full bg-white/15 px-2 py-1">
-          已付款
+  <view class="retail-page-enter min-h-screen bg-[#f7f4ee] pb-32 text-[#292722]">
+    <RetailRequestState :loading="loading" :error="loadError" :empty="!order" empty-title="未找到该订单" @retry="retryLoad" />
+    <view v-if="order && !loading && !loadError" class="mx-auto max-w-4xl px-[18px]">
+      <view class="pb-5 pt-6">
+        <text class="retail-heading block text-[26px] leading-9">
+          模拟订单详情
         </text>
-        <text>—</text>
-        <text class="rounded-full bg-white/15 px-2 py-1">
-          仓库处理中
-        </text>
-        <text>—</text>
-        <text class="rounded-full bg-white/10 px-2 py-1">
-          待配送
+        <text class="mt-3 block text-[15px] leading-7 text-[#625e55]">
+          未进行真实支付、扣款或发货。以下内容为创建时的快照。
         </text>
       </view>
-    </view>
-
-    <view class="-mt-4 grid gap-3 px-3 pb-4">
-      <VCard class-name="grid gap-2" variant="elevated">
-        <view class="flex items-center gap-2">
-          <VTag tone="primary" variant="soft" size="sm">
-            收货
-          </VTag>
-          <text class="text-sm font-black">
-            {{ defaultAddress?.name }} {{ defaultAddress?.phone }}
+      <view class="grid gap-6">
+        <view class="grid gap-3 border-y border-[#dcd6cb] py-5">
+          <text class="retail-heading text-xl">
+            收货地址快照
           </text>
-        </view>
-        <text class="text-xs leading-5 text-slate-500">
-          {{ defaultAddress?.city }} {{ defaultAddress?.district }} {{ defaultAddress?.detail }}
-        </text>
-      </VCard>
-
-      <VCard class-name="grid gap-3" variant="default">
-        <view class="flex items-center justify-between">
-          <text class="text-sm font-black">
-            Varo Retail 自营店
-          </text>
-          <text class="text-[10px] text-teal-700">
-            联系商家
-          </text>
-        </view>
-        <view v-for="item in products" :key="item.product.id" class="grid grid-cols-[76px_minmax(0,1fr)] gap-3 rounded-xl bg-slate-50 p-2">
-          <VImage :src="item.product.image" :alt="item.product.name" fit="cover" width="76px" height="76px" radius="12px" />
-          <view class="grid min-w-0 content-between gap-2">
-            <text class="line-clamp-2 text-xs font-semibold leading-[18px]">
-              {{ item.product.name }}
+          <view class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-base leading-7">
+            <text class="break-words font-semibold">
+              {{ order.address.name }}
             </text>
-            <view class="flex items-center justify-between text-[10px] text-slate-400">
-              <text>¥{{ formatRetailMoney(item.product.price) }}</text>
-              <text>× {{ item.quantity }}</text>
-            </view>
+            <text>{{ order.address.phone }}</text>
+          </view>
+          <text class="break-words text-[15px] leading-7 text-[#625e55]">
+            {{ order.address.city }} {{ order.address.district }} {{ order.address.detail }}
+          </text>
+        </view>
+        <view>
+          <text class="retail-heading text-xl">
+            {{ brand.name }} · 商品快照
+          </text>
+          <RetailOrderItems :items="order.items" />
+        </view>
+        <view class="grid gap-3 text-[15px] leading-7">
+          <view class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <text class="text-[#625e55]">
+              商品金额
+            </text>
+            <text class="retail-price text-xl">
+              ¥{{ formatRetailMoney(order.subtotal) }}
+            </text>
+          </view>
+          <view class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <text class="text-[#625e55]">
+              运费
+            </text>
+            <text class="retail-price text-xl">
+              ¥{{ formatRetailMoney(order.shipping) }}
+            </text>
+          </view>
+          <view class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <text class="text-[#625e55]">
+              模拟优惠
+            </text>
+            <text class="retail-price text-xl">
+              -¥{{ formatRetailMoney(order.discount) }}
+            </text>
+          </view>
+          <view class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-[#dcd6cb] pt-4">
+            <text>模拟订单金额</text>
+            <text class="retail-price text-[26px] leading-9">
+              ¥{{ formatRetailMoney(order.total) }}
+            </text>
           </view>
         </view>
-      </VCard>
-
-      <VCard class-name="grid gap-2 text-xs" variant="default">
-        <view class="flex justify-between">
-          <text class="text-slate-400">
-            订单编号
-          </text><text>{{ order?.id }}</text>
+        <view class="grid gap-4 border-t border-[#dcd6cb] pt-5 text-[15px] leading-7">
+          <view class="grid gap-1">
+            <text class="text-[#625e55]">
+              订单编号
+            </text>
+            <text class="break-all">
+              {{ order.id }}
+            </text>
+          </view>
+          <view class="grid gap-1">
+            <text class="text-[#625e55]">
+              创建时间
+            </text>
+            <text class="break-words">
+              {{ order.createdAt }}
+            </text>
+          </view>
         </view>
-        <view class="flex justify-between">
-          <text class="text-slate-400">
-            创建时间
-          </text><text>{{ order?.createdAt }}</text>
-        </view>
-        <view class="flex justify-between">
-          <text class="text-slate-400">
-            支付方式
-          </text><text>微信支付</text>
-        </view>
-        <view class="flex justify-between border-t border-slate-100 pt-2">
-          <text class="font-bold">
-            实付金额
-          </text><text class="text-base font-black text-[#f04438]">
-            ¥{{ formatRetailMoney(order?.total ?? 0) }}
-          </text>
-        </view>
-      </VCard>
+      </view>
     </view>
-
-    <view class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-slate-200 bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-3">
-      <VButton variant="outline" @click="navigateRetail('/retail-order/apply-service/index', { id: order?.id ?? '' })">
-        申请售后
-      </VButton>
-      <VButton @click="navigateRetail('/retail-order/delivery-detail/index', { id: order?.id ?? '' })">
-        查看物流
-      </VButton>
+    <view class="fixed inset-x-0 bottom-0 z-30 border-t border-[#dcd6cb] bg-[#f7f4ee] px-[18px] pb-[calc(env(safe-area-inset-bottom)+16px)] pt-4">
+      <view class="mx-auto max-w-4xl">
+        <VButton block class-name="!min-h-12 !rounded-[3px] !text-base" @click="navigateRetail('/retail-order/order-list/index')">
+          查看订单列表
+        </VButton>
+      </view>
     </view>
   </view>
 </template>
 
 <json lang="jsonc">
-{
-  "$schema": "https://vite.icebreaker.top/page.json",
-  "navigationBarTitleText": "订单详情",
-  "usingComponents": {}
-}
+{ "$schema": "https://vite.icebreaker.top/page.json", "navigationBarTitleText": "模拟订单详情", "usingComponents": {} }
 </json>

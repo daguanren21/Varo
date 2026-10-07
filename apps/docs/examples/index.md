@@ -35,11 +35,11 @@ H5 标签运行 `@varo-ui/h5` 的真实浏览器组件，可以直接操作。�
 
 ## Weapp DevTools Verified：已编译 Blocks {#weapp-devtools-evidence}
 
-下方图片由 `weapp-vite` 构建后的 Block 页面通过微信开发者工具自动化采集。证据快照日期为 **2026-08-28**；可检查[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[代表性原始图片](../blocks/login-form.png)。每张卡片也会直接链接自己的原始图片。
+小程序图库的 **13 个 Block** 于 **2026-10-05** 在 **375px 微信开发者工具模拟器**中重新采集，来自 `weapp-vite` 构建并实际运行的页面；展示图片裁去系统栏和模拟器边缘。可查看[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[示例截图](../blocks/login-form.png)；点击卡片下方链接可打开完整尺寸图片。
+
+六个双端 Block 的 H5 浏览器截图更新于 **2026-10-05**；选择 H5 会同时切换图片、安装命令与使用代码。截图只覆盖采集时的版本，不同目标的截图不互相充当运行证据。
 
 这些是注明日期的历史截图，不是本次源码切换的实时回归，也不认证六个实验性 profile 或真实设备。当前精确准入与编译检查范围见 [安装指南](/guide/installation#安装-profile-与支持边界)。
-
-H5 目标只切换安装命令与使用代码；当前仓库没有发布对应的 H5 图片时，卡片会继续明确标注图片为 **Weapp DevTools Verified**，不会暗示 H5 选择改变了截图。
 
 <MiniProgramBlocksGallery locale="zh" />
 

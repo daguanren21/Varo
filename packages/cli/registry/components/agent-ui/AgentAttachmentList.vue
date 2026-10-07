@@ -38,7 +38,7 @@ const emit = defineEmits<{
           {{ attachment.size }}
         </text>
       </view>
-      <button class="grid h-7 w-7 place-items-center rounded-full bg-transparent" type="button" :aria-label="`移除 ${attachment.name}`" @click="emit('remove', attachment)">
+      <button class="agent-native-button agent-attachments__remove grid place-items-center rounded-full bg-transparent" type="button" :aria-label="`移除 ${attachment.name}`" @click="emit('remove', attachment)">
         <image class="h-4 w-4" :src="agentCloseIcon" mode="aspectFit" aria-hidden="true" />
       </button>
     </view>

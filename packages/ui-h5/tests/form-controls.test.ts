@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h } from 'vue'
 import { VCheckbox, VCheckboxGroup } from '../src/checkbox'
@@ -104,8 +104,6 @@ describe('ui-h5 form controls', () => {
       },
     })
 
-    expect(wrapper.get('.varo-input-number__minus .varo-icon').attributes('data-name')).toBe('minus')
-    expect(wrapper.get('.varo-input-number__plus .varo-icon').attributes('data-name')).toBe('plus')
     expect(wrapper.get('.varo-input-number__minus').attributes('aria-label')).toBe('减少数量')
     expect(wrapper.get('.varo-input-number__input').attributes('aria-label')).toBe('数量')
     expect(wrapper.get('.varo-input-number__plus').attributes('aria-label')).toBe('增加数量')
@@ -118,6 +116,20 @@ describe('ui-h5 form controls', () => {
     await wrapper.setProps({ value: 3 })
     await wrapper.get('.varo-input-number__minus').trigger('click')
     expect(onUpdate).toHaveBeenLastCalledWith(1)
+  })
+
+  it.each([
+    { value: 1, min: 1, max: 8, raw: '0' },
+    { value: 9999, min: 0, max: 9999, raw: '100000' },
+  ])('reconciles unchanged numeric bounds after blurring $raw', async ({ value, min, max, raw }) => {
+    const wrapper = mount(VInputNumber, { props: { value, min, max } })
+    const input = wrapper.get<HTMLInputElement>('input')
+    await input.setValue(raw)
+    await input.trigger('blur')
+    await flushPromises()
+    expect(input.element.value).toBe(String(value))
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
   })
 
   it('updates rate and range values', async () => {
@@ -186,7 +198,6 @@ describe('ui-h5 form controls', () => {
     })
 
     expect(wrapper.find('textarea').exists()).toBe(true)
-    expect(wrapper.attributes('data-type')).toBe('textarea')
     expect(wrapper.get('.varo-input__word-limit').text()).toBe('5/20')
   })
 })

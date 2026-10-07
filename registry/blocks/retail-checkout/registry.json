@@ -2,7 +2,7 @@
   "name": "retail-checkout",
   "type": "block",
   "title": "Retail Checkout",
-  "description": "Controlled checkout block with delivery address, cart lines, coupons, invoice entry, totals, discount, and submit action.",
+  "description": "Controlled checkout with address and stock validation, cent-based totals, loading, error recovery, and pending submission states.",
   "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {

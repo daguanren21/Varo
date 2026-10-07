@@ -25,6 +25,23 @@
 版本按小程序后台已启用版本调整。插件配置详见 [chatbotwidget 插件文档](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1)。
 :::
 
+## 在 playground 中启用
+
+默认不注册插件或两条机器人路由，总览入口禁用；零售页面和 Blocks 无需插件权限。
+
+先为自己的小程序开通 `chatbotwidget`，再从仓库根目录启用：
+
+```bash
+WEAPP_ROBOT_CHAT=1 pnpm --filter @varo/playground-weapp build
+pnpm --filter @varo/playground-weapp open
+```
+
+开发使用 `WEAPP_ROBOT_CHAT=1 pnpm --filter @varo/playground-weapp dev`。去掉环境变量并重新构建即可关闭。
+
+`provider` 是插件提供方 AppID，不能换成自己的小程序 AppID 或 `options.appid`（机器人应用 ID）。自己的 AppID 放在忽略的 `project.local.json` 或 `WEAPP_APP_ID`；测试号登录不授予插件权限。
+
+浏览器用 `pnpm --filter @varo/playground-weapp-preview dev` / `build`，产物独立写入 `dist/browser/mp-weixin`，不覆盖 `devtools/build/mp-weixin`。预览配置无 AppID，不能用于开发者工具登录，也不证明插件授权或真机行为。
+
 ## 使用
 
 ```vue

@@ -3,12 +3,20 @@ import type { VaroRobotChatPlugin } from './robot-chat.types'
 import { computed, shallowRef, watch } from 'wevu'
 import VButton from './v-button.vue'
 
-const props = defineProps({
-  focus: { type: Boolean, default: false },
-  height: { type: Number, default: 72 },
-  inputText: { type: String, default: '' },
-  inputing: { type: Boolean, default: false },
-})
+const props = withDefaults(
+  defineProps<{
+    focus?: boolean
+    height?: number
+    inputText?: string
+    inputing?: boolean
+  }>(),
+  {
+    focus: false,
+    height: 72,
+    inputText: '',
+    inputing: false,
+  },
+)
 
 const draft = shallowRef(props.inputText)
 const canSend = computed(() => draft.value.trim().length > 0)

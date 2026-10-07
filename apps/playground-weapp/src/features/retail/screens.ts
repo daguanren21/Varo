@@ -45,15 +45,15 @@ export const retailScreens: Record<string, RetailScreenConfig> = {
     title: '发表评价',
   },
   'receipt': {
-    description: '选择微信支付并确认本次交易金额。',
-    eyebrow: 'PAYMENT',
+    description: '本示例不接入支付。创建模拟订单后不会扣款或安排发货。',
+    eyebrow: 'SIMULATION ONLY',
     sections: [
-      { title: '微信支付', detail: '推荐使用，支付结果实时同步', status: '已选择' },
-      { title: '支付保障', detail: '平台担保交易 · 退款原路返回' },
+      { title: '未接入支付', detail: '没有调用微信支付接口，也没有付款凭证', status: '演示' },
+      { title: '模拟订单', detail: '可在订单列表查看本次运行的订单快照' },
     ],
-    primaryAction: '确认支付',
-    primaryPath: '/retail-order/pay-result/index',
-    title: '收银台',
+    primaryAction: '查看模拟订单',
+    primaryPath: '/retail-order/order-list/index',
+    title: '支付边界说明',
   },
   'apply-service': {
     description: '选择售后类型、原因并补充问题说明。',

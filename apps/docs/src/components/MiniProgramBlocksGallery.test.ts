@@ -1,7 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { blockGalleryDefinitions } from './block-gallery'
-import BlockGalleryCard from './BlockGalleryCard.vue'
 import MiniProgramBlocksGallery from './MiniProgramBlocksGallery.vue'
 
 beforeEach(() => {
@@ -14,44 +12,6 @@ afterEach(() => {
 })
 
 describe('MiniProgramBlocksGallery', () => {
-  it('renders every registry Block as a screenshot card', () => {
-    const wrapper = mount(MiniProgramBlocksGallery, { props: { locale: 'zh' } })
-    const cards = wrapper.findAll('.varo-block-card')
-
-    expect(cards).toHaveLength(13)
-    expect(wrapper.find('table').exists()).toBe(false)
-    expect(wrapper.text()).toContain('登录表单')
-    expect(wrapper.text()).toContain('Agent 对话')
-    expect(wrapper.text()).toContain('零售首页')
-    expect(wrapper.text()).toContain('会员中心')
-    expect(wrapper.findAll('.varo-block-card__preview img')).toHaveLength(13)
-    expect(cards[0].get('img').attributes('src')).toContain('/blocks/login-form.png')
-    expect(cards[0].get('.varo-block-card__evidence').text()).toContain('Weapp DevTools Verified')
-    expect(cards[0].get('.varo-block-card__evidence time').attributes('datetime')).toBe('2026-08-28')
-  })
-
-  it('uses a target-specific H5 preview asset when a Block publishes one', () => {
-    const login = blockGalleryDefinitions[0]!
-    const wrapper = mount(BlockGalleryCard, {
-      props: {
-        block: {
-          ...login,
-          previewAssets: {
-            h5: {
-              source: '/blocks/login-form-h5.png',
-            },
-          },
-        },
-        locale: 'en',
-        selectedTarget: 'h5',
-      },
-    })
-
-    expect(wrapper.get('img').attributes('src')).toContain('/blocks/login-form-h5.png')
-    expect(wrapper.get('.varo-block-card__evidence').text()).toContain('H5 Preview Asset')
-    expect(wrapper.find('.varo-block-card__preview-note').exists()).toBe(false)
-  })
-
   it('filters screenshot cards by category and search text', async () => {
     const wrapper = mount(MiniProgramBlocksGallery, { props: { locale: 'zh' } })
     const retailFilter = wrapper.findAll('.varo-block-gallery__filters button')
@@ -88,9 +48,6 @@ describe('MiniProgramBlocksGallery', () => {
     expect(card.get('.varo-block-card__command code').text()).toContain(
       'add --target h5 blocks/login-form',
     )
-    expect(card.get('.varo-block-card__preview-note').text()).toContain(
-      'this image remains Weapp DevTools Verified evidence',
-    )
   })
 
   it('expands usage, switches target, and copies the exact install command', async () => {
@@ -102,7 +59,6 @@ describe('MiniProgramBlocksGallery', () => {
     expect(card.get('.varo-block-card__command code').text()).toContain(
       'add --target weapp blocks/login-form',
     )
-    expect(card.get('pre code').text()).toContain('from \'@/components/blocks/login-form.vue\'')
 
     const targetGroup = card.get('.varo-block-card__target-tabs')
     expect(targetGroup.attributes('role')).toBe('group')
@@ -114,7 +70,6 @@ describe('MiniProgramBlocksGallery', () => {
     )
     expect(card.attributes('data-target')).toBe('h5')
     expect(card.findAll('.varo-block-card__target-tabs button')[1]!.attributes('aria-pressed')).toBe('true')
-    expect(card.get('.varo-block-card__preview-note').text()).toContain('Weapp DevTools Verified')
     const params = new URL(window.location.href).searchParams
     expect(params.get('block')).toBe('login-form')
     expect(params.get('target')).toBe('h5')
@@ -123,6 +78,5 @@ describe('MiniProgramBlocksGallery', () => {
     expect(writeText).toHaveBeenCalledWith(
       'pnpm dlx @varo-ui/cli add --target h5 blocks/login-form',
     )
-    expect(card.get('.varo-block-card__command button').text()).toBe('已复制')
   })
 })

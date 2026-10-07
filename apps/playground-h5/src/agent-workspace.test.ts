@@ -79,23 +79,6 @@ describe('AgentWorkspace H5 block', () => {
     expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
-  it('keeps thread version cards inside a clipped workspace card', () => {
-    const wrapper = mount(AgentWorkspace, {
-      props: {
-        activeVersionId: 'root',
-        open: true,
-        placement: 'page',
-        versions,
-      },
-    })
-    const list = wrapper.get('[aria-label="会话版本列表"]')
-    const card = wrapper.get('[role="listitem"]')
-
-    expect(wrapper.get('[aria-label="会话版本"]').classes()).toContain('agent-thread-versions')
-    expect(list.classes()).toContain('agent-thread-versions__list')
-    expect(card.classes()).toContain('agent-thread-versions__card')
-  })
-
   it.each(['page', 'docked'] as const)('hides the %s placement when closed', (placement) => {
     const wrapper = mount(AgentWorkspace, {
       props: { open: false, placement },

@@ -28,6 +28,22 @@ function nativeProperties(value: unknown): Record<string, unknown> | undefined {
   }))
 }
 
+function nativeBehaviors(value: unknown): unknown[] | undefined {
+  if (value === undefined) { return undefined }
+  if (!Array.isArray(value)) { throw new TypeError('小程序 behaviors 必须是数组') }
+  return value.filter((behavior: unknown) => {
+    if (typeof behavior !== 'string') { return true }
+    if (behavior !== 'wx://form-field-button') {
+      throw new Error(`Behavior "${behavior}" is not supported by the browser preview adapter`)
+    }
+    // Custom components render as light-DOM hosts, not browser shadow roots.
+    // The real button/form elements already associate across those hosts; the
+    // native form owner forwards their actions and payloads. This capability
+    // needs no glass-easel mixin or duplicate form/child registry.
+    return false
+  })
+}
+
 function invoke(target: Record<string, unknown> | undefined, name: string, args: unknown[] = []): unknown {
   const method = target?.[name]
   if (typeof method === 'function') { return Reflect.apply(method, target, args) }
@@ -143,6 +159,7 @@ export function createNativeHost(
       args[0] = {
         ...definition,
         properties: nativeProperties(definition.properties),
+        behaviors: nativeBehaviors(definition.behaviors),
         lifetimes: {
           ...lifetimes,
           created(this: unknown, ...values: unknown[]) {
@@ -182,10 +199,20 @@ export function createNativeHost(
     }
     return Reflect.apply(environment.Component, undefined, args)
   }
-  const behavior = (...args: unknown[]) => Reflect.apply(sharedEnv.Behavior, undefined, args)
+  const behavior = (...args: unknown[]) => {
+    if (args.length) {
+      const definition = record(args[0], '小程序 Behavior 定义')
+      args[0] = { ...definition, behaviors: nativeBehaviors(definition.behaviors) }
+    }
+    return Reflect.apply(sharedEnv.Behavior, undefined, args)
+  }
   Object.assign(behavior, { trait: sharedEnv.Behavior.trait })
   const page = (...args: unknown[]) => {
     if (!environment) { throw new Error('Page 必须在小程序页面模块注册阶段调用') }
+    if (args.length) {
+      const definition = record(args[0], '小程序页面定义')
+      args[0] = { ...definition, behaviors: nativeBehaviors(definition.behaviors) }
+    }
     return Reflect.apply(environment.Page, undefined, args)
   }
   const application = (value: unknown) => {

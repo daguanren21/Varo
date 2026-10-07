@@ -1,5 +1,6 @@
 import type { StyleValue } from 'vue'
 import { defineComponent, h } from 'vue'
+import { VIcon } from './icon'
 import '../../styles/varo.css'
 
 export const VNavbar = defineComponent({
@@ -44,7 +45,7 @@ export const VNavbar = defineComponent({
               'tabindex': hasLeft() ? undefined : -1,
               'onClick': (event: MouseEvent) => emit('clickLeft', event),
             },
-            slots.left?.() ?? [props.leftArrow ? h('span', { 'aria-hidden': 'true', 'class': 'varo-navbar__arrow' }, '‹') : null, props.leftText],
+            slots.left?.() ?? [props.leftArrow ? h(VIcon, { class: 'varo-navbar__arrow', name: 'back' }) : null, props.leftText],
           ),
           h('div', { class: 'varo-navbar__title' }, slots.title?.() ?? props.title),
           h(

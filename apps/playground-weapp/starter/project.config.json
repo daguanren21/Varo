@@ -1,0 +1,21 @@
+{
+  "description": "Varo native retail starter",
+  "compileType": "miniprogram",
+  "libVersion": "3.5.5",
+  "appid": "",
+  "projectname": "varo-retail-starter",
+  "miniprogramRoot": "devtools/build/mp-weixin/",
+  "srcMiniprogramRoot": "devtools/build/mp-weixin/",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "useIsolateContext": true,
+    "useMultiFrameRuntime": true,
+    "nodeModules": false
+  },
+  "packOptions": { "ignore": [], "include": [] }
+}

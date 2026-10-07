@@ -7,7 +7,9 @@ import type {
   AgentSourceReceiptItem,
   AgentWorkspacePlacement,
 } from '../agent-ui/workspace-types'
+import { useControllableState } from '@varo-ui/headless'
 import { computed } from 'wevu'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentComposerScope from '../agent-ui/AgentComposerScope.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
@@ -17,6 +19,13 @@ import AgentSourceReceipt from '../agent-ui/AgentSourceReceipt.vue'
 import AgentTaskRunner from '../agent-ui/AgentTaskRunner.vue'
 import AgentThreadVersions from '../agent-ui/AgentThreadVersions.vue'
 
+// Keep an omitted native model distinct from a controlled empty string.
+defineOptions({
+  properties: {
+    prompt: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     activeVersionId?: string
@@ -25,6 +34,8 @@ const props = withDefaults(
     messages?: AgentConversationMessage[]
     open?: boolean
     placement?: AgentWorkspacePlacement
+    prompt?: string
+    promptModifiers?: Record<string, boolean>
     receipts?: AgentSourceReceiptItem[]
     retrieval?: AgentRetrievalItem[]
     sources?: AgentContextSource[]
@@ -40,6 +51,7 @@ const props = withDefaults(
     messages: () => [],
     open: true,
     placement: 'page',
+    promptModifiers: () => ({}),
     receipts: () => [],
     retrieval: () => [],
     sources: () => [],
@@ -51,26 +63,40 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  approveTask: [task: AgentTask]
-  branchVersion: [version: AgentThreadVersion]
-  cancelTask: []
-  close: []
-  connectReceipt: [receipt: AgentSourceReceiptItem]
-  connectSource: [source: AgentContextSource]
-  openReceipt: [receipt: AgentSourceReceiptItem]
-  pinVersion: [version: AgentThreadVersion]
-  retryRetrieval: [item: AgentRetrievalItem]
-  retryTask: [task: AgentTask]
-  selectVersion: [version: AgentThreadVersion]
-  submit: [prompt: string]
-  toggleSource: [payload: [source: AgentContextSource, enabled: boolean]]
+  'approveTask': [task: AgentTask]
+  'branchVersion': [version: AgentThreadVersion]
+  'cancelTask': []
+  'close': []
+  'connectReceipt': [receipt: AgentSourceReceiptItem]
+  'connectSource': [source: AgentContextSource]
+  'openReceipt': [receipt: AgentSourceReceiptItem]
+  'pinVersion': [version: AgentThreadVersion]
+  'retryRetrieval': [item: AgentRetrievalItem]
+  'retryTask': [task: AgentTask]
+  'selectVersion': [version: AgentThreadVersion]
+  'submit': [prompt: string]
+  'toggleSource': [payload: [source: AgentContextSource, enabled: boolean]]
+  'update:prompt': [value: string]
 }>()
 
-const prompt = defineModel<string>('prompt', { default: '' })
+const promptState = useControllableState<string>({
+  runtime: varoReactiveRuntime,
+  controlled: computed(() => props.prompt != null),
+  defaultValue: '',
+  value: computed(() => props.prompt ?? ''),
+  onUpdate(value) {
+    emit('update:prompt', value)
+  },
+})
+const currentPrompt = computed(() => promptState.current.value)
 const statusClass = computed(() => props.busy
   ? 'bg-[var(--varo-agent-primary)]'
   : 'bg-[var(--varo-agent-success)]')
 const statusLabel = computed(() => props.busy ? 'Agent 正在处理' : 'Agent 已就绪')
+
+function updatePrompt(value: string) {
+  promptState.current.value = value
+}
 
 function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
   emit('toggleSource', payload)
@@ -143,9 +169,10 @@ function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
 
       <view class="box-border w-full min-w-0 max-w-full overflow-hidden border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
         <AgentComposer
-          v-model="prompt"
+          :model-value="currentPrompt"
           class="block w-full min-w-0 max-w-full overflow-hidden"
           :busy="busy"
+          @update:modelValue="updatePrompt"
           @submit="emit('submit', $event)"
         />
       </view>

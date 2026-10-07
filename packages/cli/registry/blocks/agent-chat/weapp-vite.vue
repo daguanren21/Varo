@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import { useControllableState } from '@varo-ui/headless'
 import { computed } from 'wevu'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
@@ -14,11 +16,20 @@ interface AgentConversationMessage {
   timestamp?: string
 }
 
+// Keep an omitted native model distinct from a controlled empty string.
+defineOptions({
+  properties: {
+    modelValue: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     busy?: boolean
     closeLabel?: string
     messages?: AgentConversationMessage[]
+    modelModifiers?: Record<string, boolean>
+    modelValue?: string
     snapshot?: AgentStreamSnapshot
     subtitle?: string
     suggestions?: string[]
@@ -28,6 +39,7 @@ const props = withDefaults(
     busy: false,
     closeLabel: '关闭 Agent',
     messages: () => [],
+    modelModifiers: () => ({}),
     snapshot: undefined,
     subtitle: '工具调用与外部操作始终可见、可确认',
     suggestions: () => [],
@@ -36,48 +48,55 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  approve: [value: string]
-  close: []
-  reject: []
-  retry: []
-  submit: [prompt: string]
+  'approve': [value: string]
+  'close': []
+  'reject': []
+  'retry': []
+  'submit': [prompt: string]
+  'update:modelValue': [value: string]
 }>()
-const prompt = defineModel<string>({ default: '' })
-const statusClass = computed(() => props.busy
-  ? 'agent-chat__status-pulse bg-[var(--varo-agent-primary)]'
-  : 'bg-[var(--varo-agent-success)]')
+const promptState = useControllableState<string>({
+  runtime: varoReactiveRuntime,
+  controlled: computed(() => props.modelValue != null),
+  defaultValue: '',
+  value: computed(() => props.modelValue ?? ''),
+  onUpdate(value) {
+    emit('update:modelValue', value)
+  },
+})
+const currentPrompt = computed(() => promptState.current.value)
 const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
+
+function updatePrompt(value: string) {
+  promptState.current.value = value
+}
 </script>
 
 <template>
   <view
-    class="grid min-h-[72vh] grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-[24px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] shadow-[var(--varo-agent-shadow)]"
-    aria-label="Agent conversation"
+    class="box-border grid min-h-[72vh] w-full min-w-0 grid-cols-1 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-xl border border-[var(--varo-ui-border-lighter)] bg-[var(--varo-ui-surface)] text-sm leading-6 text-[var(--varo-ui-text)]"
+    :aria-label="title"
     :aria-busy="busy"
   >
-    <view class="agent-chat__header flex min-h-16 items-center gap-3 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-4">
-      <text class="grid h-10 w-10 flex-none place-items-center rounded-2xl bg-[var(--varo-agent-primary)] text-sm font-black text-white" aria-hidden="true">
-        V
-      </text>
-      <view class="agent-chat__meta grid min-w-0 flex-1">
-        <text class="truncate text-sm font-bold text-[var(--varo-agent-foreground)]">
+    <view class="flex min-w-0 items-start gap-4 border-b border-[var(--varo-ui-border-lighter)] p-4">
+      <view class="grid min-w-0 flex-1 grid-cols-1 gap-2">
+        <text class="block break-words text-xl font-semibold leading-7">
           {{ title }}
         </text>
-        <text class="truncate text-[12px] text-[var(--varo-agent-muted)]">
+        <text v-if="subtitle" class="block break-words text-xs leading-5 text-[var(--varo-ui-text-regular)]">
           {{ subtitle }}
         </text>
+        <view class="w-fit rounded-md bg-[var(--varo-ui-surface-muted)] px-2 py-1 text-xs leading-5 text-[var(--varo-ui-text-regular)]" role="status">
+          <text>{{ statusLabel }}</text>
+        </view>
       </view>
-      <view class="agent-chat__status inline-flex items-center gap-1.5 text-[11px] font-semibold text-[var(--varo-agent-muted)]" role="status">
-        <text class="h-2 w-2 rounded-full" :class="statusClass" aria-hidden="true" />
-        <text>{{ statusLabel }}</text>
-      </view>
-      <VButton size="sm" shape="round" tone="default" variant="ghost" class-name="!h-10 !min-h-10 !px-3 !text-xs" :aria-label="closeLabel" @click="emit('close')">
+      <VButton tone="default" variant="ghost" class-name="!min-h-11 !rounded-lg !px-3 !text-sm !shadow-none" :aria-label="closeLabel" @click="emit('close')">
         关闭
       </VButton>
     </view>
 
-    <scroll-view class="box-border min-h-0 w-full px-4 py-4" scroll-y :scroll-with-animation="false">
-      <view class="grid gap-3">
+    <scroll-view class="box-border min-h-0 w-full min-w-0 p-4" scroll-y :scroll-with-animation="false">
+      <view class="grid min-w-0 gap-6">
         <AgentConversation :messages="messages" />
         <AgentEventRenderer
           v-if="snapshot && snapshot.status !== 'idle'"
@@ -89,47 +108,11 @@ const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
       </view>
     </scroll-view>
 
-    <view class="border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
-      <AgentComposer v-model="prompt" :busy="busy" :suggestions="suggestions" @submit="emit('submit', $event)" />
+    <view class="box-border w-full min-w-0 px-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
+      <AgentComposer :model-value="currentPrompt" :busy="busy" :suggestions="suggestions" aria-label="消息内容" placeholder="给 Agent 发送消息…" @update:modelValue="updatePrompt" @submit="emit('submit', $event)" />
     </view>
   </view>
 </template>
-
-<style scoped>
-.agent-chat__status-pulse {
-  animation: agent-chat-status-pulse 1s ease-in-out infinite;
-}
-
-@keyframes agent-chat-status-pulse {
-  50% {
-    opacity: 0.4;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .agent-chat__status-pulse {
-    animation: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .agent-chat__header {
-    gap: 8px;
-    padding-right: 12px;
-    padding-left: 12px;
-  }
-
-  .agent-chat__meta > text:last-child {
-    display: none;
-  }
-
-  .agent-chat__status {
-    width: 8px;
-    overflow: hidden;
-    font-size: 0;
-  }
-}
-</style>
 
 <json lang="jsonc">
 {

@@ -6,6 +6,7 @@ import {
 
   PopupRoot,
 } from '../../lib/varo-primitives'
+import { VIcon } from './icon'
 import '../../styles/varo.css'
 
 export const VPopup = defineComponent({
@@ -31,7 +32,7 @@ export const VPopup = defineComponent({
     closeable: Boolean,
     closeIcon: {
       type: String,
-      default: '×',
+      default: 'close',
     },
     closeIconPosition: {
       type: String as PropType<PopupCloseIconPosition>,
@@ -94,7 +95,10 @@ export const VPopup = defineComponent({
           'onUpdate:visible': (visible: boolean) => emit('update:visible', visible),
           'onVisibleChange': (visible: boolean) => emit('visibleChange', visible),
         },
-        slots,
+        {
+          ...slots,
+          closeIcon: () => slots.closeIcon?.() ?? h(VIcon, { name: props.closeIcon }),
+        },
       )
   },
 })

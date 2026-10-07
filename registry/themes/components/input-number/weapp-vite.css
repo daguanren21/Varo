@@ -7,8 +7,8 @@
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  width: 130px;
-  min-width: 128px;
+  width: 146px;
+  min-width: 146px;
   max-width: 100%;
   overflow: hidden;
   background: var(--varo-ui-surface);
@@ -24,9 +24,9 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  min-width: 36px;
-  height: 36px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
   padding: 0;
   margin: 0;
   font-size: 18px;
@@ -50,7 +50,7 @@
   flex: 1 1 auto;
   width: 56px;
   min-width: 0;
-  height: 36px;
+  height: 44px;
   padding: 0;
   margin: 0;
   font: inherit;

@@ -1,5 +1,5 @@
-import type * as glassEasel from 'glass-easel'
 import type { MiniProgramEnv } from 'glass-easel-miniprogram-adapter'
+import * as glassEasel from 'glass-easel'
 import { loadTencentMapApi, tencentMapDemoKey, tencentRasterTileUrl } from './tencent-map.ts'
 
 // glass-easel StyleSegmentIndex.TEMP_EXTRA; ambient const enums are unusable with verbatimModuleSyntax.
@@ -14,6 +14,7 @@ export interface NativeElementRegistrationOptions {
 type NativeTag
   = | 'view'
     | 'text'
+    | 'form'
     | 'button'
     | 'input'
     | 'textarea'
@@ -56,6 +57,11 @@ interface ButtonState extends ManagedState {
   component: NativeComponent
   control: HTMLButtonElement
   host: HTMLElement
+}
+
+interface FormState extends ManagedState {
+  component: NativeComponent
+  control: HTMLFormElement
 }
 
 interface LabelState extends ManagedState {
@@ -135,6 +141,7 @@ type RichTextTag = 'br' | 'code' | 'del' | 'em' | 'ins' | 'mark' | 'span' | 'str
 
 const textControlStates = new WeakMap<NativeComponent, TextControlState>()
 const buttonStates = new WeakMap<NativeComponent, ButtonState>()
+const formStates = new WeakMap<NativeComponent, FormState>()
 const hoverStates = new WeakMap<NativeComponent, HoverState>()
 const viewTransitionCleanups = new WeakMap<NativeComponent, () => void>()
 const labelStates = new WeakMap<NativeComponent, LabelState>()
@@ -1012,6 +1019,51 @@ function attachButton(component: NativeComponent, options: NativeElementRegistra
   }, true)
 
   syncButton(state, options)
+}
+
+function syncForm(state: FormState, options: NativeElementRegistrationOptions) {
+  syncSemanticAttributes(state.component, state.control)
+  reportUnsupportedProperty(state, options, state.component, 'reportSubmit', 'WeChat formId reporting')
+  reportUnsupportedProperty(state, options, state.component, 'reportSubmitTimeout', 'WeChat formId reporting timeout')
+}
+
+function detachForm(component: NativeComponent) {
+  const state = formStates.get(component)
+  if (!state) { return }
+  formStates.delete(component)
+  cleanState(state)
+}
+
+function attachForm(component: NativeComponent, options: NativeElementRegistrationOptions) {
+  detachForm(component)
+  const control = hostElement(component, 'form', options)
+  if (!control) { return }
+  if (!(control instanceof HTMLFormElement)) {
+    reportBackendError(options, 'form', 'form')
+    return
+  }
+  const state: FormState = { cleanups: [], component, control, reported: new Set() }
+  formStates.set(component, state)
+
+  addDomListener(state, control, 'submit', (event) => {
+    if (event.target !== control || formStates.get(component) !== state) { return }
+    // Mini-program submission is an event, never browser navigation. FormData
+    // uses the actual DOM form owner, including controls across custom hosts,
+    // and excludes unnamed/disabled controls without a parallel value model.
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    const value: Record<string, FormDataEntryValue> = Object.create(null)
+    new FormData(control).forEach((entry, name) => { value[name] = entry })
+    component.triggerEvent('submit', { value, formId: '' }, { bubbles: false, composed: false, originalEvent: event })
+  }, true)
+  addDomListener(state, control, 'reset', (event) => {
+    if (event.target !== control || formStates.get(component) !== state) { return }
+    event.stopImmediatePropagation()
+    const reset = new glassEasel.Event('reset', {}, { bubbles: false, composed: false, originalEvent: event })
+    component.dispatchEvent(reset)
+    if (reset.defaultPrevented()) { event.preventDefault() }
+  }, true)
+  syncForm(state, options)
 }
 
 function syncLabel(state: LabelState) {
@@ -2028,6 +2080,38 @@ function registerViewDefinition(
     .general()
 }
 
+function registerFormDefinition(
+  space: glassEasel.ComponentSpace,
+  template: glassEasel.template.ComponentTemplate,
+  options: NativeElementRegistrationOptions,
+) {
+  return space
+    .define('form')
+    // Keep the form itself as the DOM host: native association, reset, IDs,
+    // classes and layout must not move to a nested wrapper.
+    .options({ ...componentOptions(), hostNodeTagName: 'form' })
+    .definition({
+      properties: {
+        ...semanticProperties,
+        reportSubmit: { type: Boolean, value: false },
+        reportSubmitTimeout: { type: Number, value: 0 },
+      },
+      attached() {
+        attachForm(this.general(), options)
+      },
+      detached() {
+        detachForm(this.general())
+      },
+    })
+    .observer('**', function () {
+      const state = formStates.get(this.general())
+      if (state) { syncForm(state, options) }
+    })
+    .template(template)
+    .registerComponent()
+    .general()
+}
+
 function registerButtonDefinition(
   space: glassEasel.ComponentSpace,
   template: glassEasel.template.ComponentTemplate,
@@ -2355,6 +2439,7 @@ export function registerNativeElements(
   return {
     'view': registerViewDefinition(space, templateFor(templates, 'view'), options),
     'text': registerSlotDefinition(space, 'text', templateFor(templates, 'text')),
+    'form': registerFormDefinition(space, templateFor(templates, 'form'), options),
     'button': registerButtonDefinition(space, templateFor(templates, 'button'), options),
     'input': registerTextControlDefinition(space, 'input', templateFor(templates, 'input'), options),
     'textarea': registerTextControlDefinition(space, 'textarea', templateFor(templates, 'textarea'), options),

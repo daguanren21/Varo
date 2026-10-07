@@ -608,6 +608,7 @@ const copy = computed(() => {
 
 :deep(.varo-input) {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   width: 100%;
   color: var(--vp-c-text-1);

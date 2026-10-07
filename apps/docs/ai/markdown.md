@@ -20,6 +20,10 @@ const markdownContent = '## Result\n\n**Ready**'
 </template>
 ```
 
+## Weapp 渲染
+
+原生版本按位置更新无状态的 Markdown 子节点，支持内容追加、替换、清空和重播。修改 Registry 模板时，不要将循环索引写成 `wx:key` 字段名：它表示数据项属性，而不是循环位置。
+
 ## Props
 
 | Prop             | Type         | Default     | 说明                               |

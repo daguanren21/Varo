@@ -106,9 +106,9 @@ function toggle() {
     <view class="varo-checkbox__icon" aria-hidden="true">
       <VIcon v-if="checked || indeterminate" :name="indicatorName" :size="14" />
     </view>
-    <text class="varo-checkbox__label">
+    <view v-if="props.label || $slots.default" class="varo-checkbox__label">
       <slot>{{ props.label }}</slot>
-    </text>
+    </view>
   </button>
 </template>
 

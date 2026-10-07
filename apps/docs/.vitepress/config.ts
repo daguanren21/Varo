@@ -168,6 +168,8 @@ export default defineConfig({
             items: [
               { text: 'Primitives', link: '/primitives/' },
               { text: '跨端示例', link: '/examples/' },
+              { text: '零售工程接入', link: '/guide/retail-starter' },
+              { text: '商业提案（未开售）', link: '/commercial/retail-starter' },
               { text: '主题配置', link: '/guide/theme' },
               { text: '色彩系统', link: '/guide/colors' },
               { text: '国际化', link: '/guide/i18n' },
@@ -181,6 +183,7 @@ export default defineConfig({
             items: [
               { text: '安装指南', link: '/guide/installation' },
               { text: 'Wevu Registry', link: '/guide/shadcn-mode' },
+              { text: '零售工程接入', link: '/guide/retail-starter' },
               { text: '主题配置', link: '/guide/theme' },
               { text: '色彩系统', link: '/guide/colors' },
               { text: '国际化配置', link: '/guide/i18n' },
@@ -335,6 +338,10 @@ export default defineConfig({
             items: [{ text: '跨端演示', link: '/examples/' }],
           },
           {
+            text: '商业提案',
+            items: [{ text: '零售前端模板（未开售）', link: '/commercial/retail-starter' }],
+          },
+          {
             text: '社区',
             items: [{ text: '如何贡献', link: '/guide/contributing' }],
           },
@@ -378,10 +385,12 @@ export default defineConfig({
           { text: 'Blocks', link: '/en/blocks/build-your-own' },
           { text: 'AI Agent', link: '/en/ai/' },
           {
-            text: 'Docs & Resources',
+            text: 'Docs',
             items: [
               { text: 'Primitives', link: '/en/primitives/' },
               { text: 'Cross-platform Examples', link: '/en/examples/' },
+              { text: 'Retail Starter integration', link: '/en/guide/retail-starter' },
+              { text: 'Commercial proposal (not on sale)', link: '/en/commercial/retail-starter' },
               { text: 'Theme', link: '/en/guide/theme' },
               { text: 'Color System', link: '/en/guide/colors' },
               { text: 'Internationalization', link: '/en/guide/i18n' },
@@ -395,6 +404,7 @@ export default defineConfig({
             items: [
               { text: 'Installation', link: '/en/guide/installation' },
               { text: 'Wevu Registry', link: '/en/guide/shadcn-mode' },
+              { text: 'Retail Starter integration', link: '/en/guide/retail-starter' },
               { text: 'Theme', link: '/en/guide/theme' },
               { text: 'Color System', link: '/en/guide/colors' },
               { text: 'Internationalization', link: '/en/guide/i18n' },
@@ -547,6 +557,10 @@ export default defineConfig({
           {
             text: 'Examples',
             items: [{ text: 'Cross-platform Demo', link: '/en/examples/' }],
+          },
+          {
+            text: 'Commercial proposal',
+            items: [{ text: 'Retail Starter (not on sale)', link: '/en/commercial/retail-starter' }],
           },
           {
             text: 'Community',

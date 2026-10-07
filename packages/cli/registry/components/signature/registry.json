@@ -1,0 +1,41 @@
+{
+  "name": "signature",
+  "type": "component",
+  "title": "VSignature",
+  "description": "Controlled signature pad with normalized stroke data, clear action, H5 pointer input, and native mini-program canvas input.",
+  "exportName": "VSignature",
+  "targets": [
+    "h5",
+    "weapp"
+  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
+  "registryDependencies": [
+    "themes/base"
+  ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/signature/h5.ts",
+      "to": "src/components/ui/signature.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/signature/v-signature.vue",
+      "to": "src/components/ui/v-signature.vue"
+    }
+  ],
+  "docs": "/components/signature"
+}

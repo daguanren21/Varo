@@ -346,7 +346,7 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentCommandSearch v-else-if="component === 'command-search'" v-model="searchQuery" :items="searchItems" @select="done($event.label)" />
         <AgentFlowchart v-else-if="component === 'flowchart'" title="发布工作流" :nodes="flowNodes" @select="done($event.label)" @add="done('添加步骤')" />
         <AgentFineTune v-else-if="component === 'fine-tune'" v-model:controls="fineTuneControls" title="调整 Agent Card" @apply="done('已应用调整')" />
-        <AgentChat v-else-if="component === 'agent-chat'" v-model="prompt" title="Varo Agent" :messages="messages" :snapshot="eventSnapshot" :suggestions="['分析需求', '生成计划']" @submit="done($event)" />
+        <AgentChat v-else-if="component === 'agent-chat'" v-model="prompt" class="agent-component-demo__chat" title="Varo Agent" :messages="messages" :snapshot="eventSnapshot" :suggestions="['分析需求', '生成计划']" @submit="done($event)" />
       </div>
     </div>
 
@@ -525,6 +525,18 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
   animation: varo-agent-demo-enter 180ms ease-out both;
 }
 
+.agent-component-demo__chat > :deep(header h2),
+.agent-component-demo__chat > :deep(header p) {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.agent-component-demo__chat > :deep(header h2) {
+  color: inherit;
+  letter-spacing: normal;
+}
+
 .agent-component-demo__stage :deep(button) {
   cursor: pointer;
   transition:
@@ -675,7 +687,20 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
 :global(.dark)
   .agent-component-demo__stage
   :deep(
-    button:not(.agent-code-block button, .agent-rag__source, .agent-tool-result__header, .agent-tool-result__retry, .agent-artifact__open, .agent-insight-card__action, .agent-insight-card__nav-btn, .agent-selection-actions__action, .agent-sidebar__item, .agent-sidebar__create, .agent-command-search__item)) {
+    button:not(
+      .agent-code-block button,
+      .agent-rag__source,
+      .agent-tool-result__header,
+      .agent-tool-result__retry,
+      .agent-artifact__open,
+      .agent-insight-card__action,
+      .agent-insight-card__nav-btn,
+      .agent-selection-actions__action,
+      .agent-sidebar__item,
+      .agent-sidebar__create,
+      .agent-command-search__item
+    )
+  ) {
   color: inherit;
 }
 

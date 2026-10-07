@@ -76,9 +76,9 @@ function close(event: { stopPropagation?: () => void }) {
     :data-variant="safeVariant"
     @click="click"
   >
-    <text class="varo-tag__content">
+    <view class="varo-tag__content">
       <slot>{{ safeLabel }}</slot>
-    </text>
+    </view>
     <button v-if="closeable" class="varo-tag__close" type="button" :disabled="disabled" aria-label="Remove" @click="close">
       <VIcon name="close" :size="12" />
     </button>

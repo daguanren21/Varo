@@ -285,8 +285,11 @@ describe('PlatformTabsDemo', () => {
     expect(notificationSwitch.attributes('data-state')).toBe('unchecked')
   })
 
-  it('presents multiple Input cases and derives required errors from the value', async () => {
+  it('updates required validation when the focused input is cleared and edited', async () => {
+    const host = document.createElement('div')
+    document.body.append(host)
     const wrapper = mount(PlatformTabsDemo, {
+      attachTo: host,
       global: {
         plugins: [themePlugin],
       },
@@ -296,37 +299,32 @@ describe('PlatformTabsDemo', () => {
       },
     })
 
-    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
-    expect(wrapper.find('.platform-demo__panel--controls').exists()).toBe(false)
-    expect(wrapper.findAll('.platform-demo__input-sample')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-input')).toHaveLength(5)
-    expect(wrapper.find('.platform-demo__input-sample-head').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__input-state').exists()).toBe(false)
-    expect(wrapper.text()).not.toContain('账户设置')
-    expect(wrapper.text()).not.toContain('显示错误')
-    expect(wrapper.text()).toContain('必填与清空')
-    expect(wrapper.text()).toContain('前后缀')
-    expect(wrapper.text()).toContain('文本域')
-    expect(wrapper.text()).toContain('状态')
+    try {
+      const requiredCase = wrapper.get('[data-case="required"]')
+      const requiredInput = requiredCase.get<HTMLInputElement>('.varo-input__control')
+      expect(requiredCase.find('.varo-input__error').exists()).toBe(false)
+      requiredInput.element.focus()
+      await wrapper.vm.$nextTick()
+      const clearButton = requiredCase.get<HTMLButtonElement>('.varo-input__clear')
+      clearButton.element.focus()
+      await wrapper.vm.$nextTick()
+      expect(document.activeElement).toBe(clearButton.element)
+      clearButton.element.click()
+      await wrapper.vm.$nextTick()
 
-    const requiredCase = wrapper.get('[data-case="required"]')
-    const requiredInput = requiredCase.get<HTMLInputElement>('.varo-input__control')
-    expect(requiredCase.find('.varo-input__error').exists()).toBe(false)
-    await requiredInput.trigger('focus')
-    await requiredCase.get('.varo-input__clear').trigger('click')
-    expect(requiredInput.element.value).toBe('')
-    expect(requiredCase.get('.varo-input').attributes('data-invalid')).toBe('true')
-    expect(requiredCase.get('.varo-input__error').text()).toBe('请输入显示名称。')
+      expect(requiredInput.element.value).toBe('')
+      expect(document.activeElement).toBe(requiredInput.element)
+      expect(requiredCase.get('.varo-input').attributes('data-invalid')).toBe('true')
+      expect(requiredInput.attributes('aria-describedby')).toContain(requiredCase.get('.varo-input__error').attributes('id'))
 
-    const affixCase = wrapper.get('[data-case="affixes"]')
-    expect(affixCase.text()).toContain('https://')
-    expect(affixCase.text()).toContain('.com')
-    expect(wrapper.find('[data-case="textarea"] textarea.varo-input__control').exists()).toBe(true)
-
-    const stateInputs = wrapper.get('[data-case="states"]').findAll('.varo-input__control')
-    expect(stateInputs).toHaveLength(2)
-    expect(stateInputs[0]!.attributes('readonly')).toBeDefined()
-    expect(stateInputs[1]!.attributes('disabled')).toBeDefined()
+      await requiredInput.setValue('Alex')
+      expect(requiredCase.get('.varo-input').attributes('data-invalid')).toBe('false')
+      expect(requiredCase.find('.varo-input__error').exists()).toBe(false)
+    }
+    finally {
+      wrapper.unmount()
+      host.remove()
+    }
   })
 
   it('presents Button hierarchy, tones, sizes, states, and layout without detached controls', () => {

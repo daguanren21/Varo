@@ -56,25 +56,24 @@ async function copyCommand() {
       <img
         :src="previewSource"
         :alt="previewAlt"
-        width="780"
-        height="1688"
+        width="375"
         loading="lazy"
       >
-      <a
-        class="varo-block-card__evidence"
-        :href="previewSource"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span>{{ previewAsset.target === 'weapp' ? 'Weapp DevTools Verified' : 'H5 Preview Asset' }}</span>
-        <time v-if="previewAsset.target === 'weapp'" :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
-      </a>
-      <p v-if="previewMismatch" class="varo-block-card__preview-note">
-        {{ locale === 'zh'
-          ? `${targetLabel} 仅切换安装命令与使用代码；当前图片仍是 Weapp DevTools Verified 证据。`
-          : `${targetLabel} changes the install command and usage code only; this image remains Weapp DevTools Verified evidence.` }}
-      </p>
     </div>
+    <a
+      class="varo-block-card__evidence"
+      :href="previewSource"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span>{{ previewAsset.target === 'weapp' ? 'Weapp DevTools Verified' : 'H5 Preview Asset' }}</span>
+      <time v-if="previewAsset.target === 'weapp'" :datetime="blockGalleryCaptureDate">{{ blockGalleryCaptureDate }}</time>
+    </a>
+    <p v-if="previewMismatch" class="varo-block-card__preview-note">
+      {{ locale === 'zh'
+        ? `${targetLabel} 仅切换安装命令与使用代码；当前图片仍是 Weapp DevTools Verified 证据。`
+        : `${targetLabel} changes the install command and usage code only; this image remains Weapp DevTools Verified evidence.` }}
+    </p>
 
     <div class="varo-block-card__body">
       <header class="varo-block-card__heading">
@@ -158,53 +157,39 @@ async function copyCommand() {
 .varo-block-card__preview img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  transition: transform 180ms ease;
-}
-
-.varo-block-card:hover .varo-block-card__preview img {
-  transform: scale(1.012);
+  max-width: 375px;
+  height: auto;
+  margin: 0 auto;
 }
 
 .varo-block-card__evidence {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: inline-flex;
-  gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   align-items: center;
-  min-height: 36px;
-  padding: 0 10px;
-  font-size: 10px;
-  font-weight: 760;
-  color: #fff;
+  min-height: 44px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--varo-foreground);
   text-decoration: none;
-  background: rgb(15 23 34 / 88%);
-  border: 1px solid rgb(255 255 255 / 22%);
-  border-radius: 999px;
-  backdrop-filter: blur(10px);
+  background: var(--varo-surface-strong);
+  border-bottom: 1px solid var(--varo-border);
 }
 
 .varo-block-card__evidence time {
   font-variant-numeric: tabular-nums;
-  color: rgb(255 255 255 / 72%);
+  color: var(--varo-muted);
 }
 
 .varo-block-card__preview-note {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  left: 12px;
-  padding: 8px 10px;
+  padding: 8px 16px;
   margin: 0;
-  font-size: 11px;
-  line-height: 1.45;
-  color: #fff;
-  background: rgb(15 23 34 / 90%);
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--varo-muted);
+  background: var(--varo-surface-strong);
+  border-bottom: 1px solid var(--varo-border);
 }
 
 .varo-block-card__heading > span {
@@ -440,12 +425,6 @@ summary:focus-visible {
   .varo-block-card__target-tabs button,
   .varo-block-card__evidence {
     min-height: 44px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .varo-block-card__preview img {
-    transition: none;
   }
 }
 </style>

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.temp/
+.swc/
+.env
+.env.*
+!.env.example
+project.config.json
+project.private.config.json
+.DS_Store

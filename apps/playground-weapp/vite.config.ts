@@ -21,7 +21,10 @@ const weappJsonBlockTestPlugin = {
   },
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  define: {
+    'import.meta.env.VARO_ROBOT_CHAT_ENABLED': JSON.stringify(process.env.WEAPP_ROBOT_CHAT === '1'),
+  },
   plugins: isTest
     ? [
         vue({
@@ -35,7 +38,9 @@ export default defineConfig({
       ]
     : [],
   build: {
-    outDir: isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
+    outDir: mode === 'browser-preview'
+      ? 'dist/browser/mp-weixin'
+      : isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
     minify: 'esbuild',
   },
   esbuild: {
@@ -45,7 +50,6 @@ export default defineConfig({
   resolve: {
     alias: {
       ...(isTest ? { wevu: resolve(root, 'test/wevu.ts') } : {}),
-      '@varo-ui/weapp/source/style.css': resolve(root, '../../packages/ui-weapp/src/style.css'),
       '@varo-ui/ai': resolve(import.meta.dirname, '../../packages/agent-core/src/index.ts'),
       '@varo/hooks': resolve(import.meta.dirname, '../../packages/hooks/src/index.ts'),
       '@varo-ui/headless': resolve(import.meta.dirname, '../../packages/primitives-core/src/index.ts'),
@@ -91,4 +95,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

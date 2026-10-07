@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useNumberFieldRoot } from '@varo-ui/headless'
-import { computed, shallowRef, toRef, watch } from 'wevu'
+import { computed, nextTick, shallowRef, toRef, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import VIcon from './v-icon.vue'
 
@@ -51,7 +51,10 @@ const localValue = shallowRef(typeof props.value === 'number' ? props.value : 0)
 watch(
   () => props.value,
   (nextValue) => {
-    if (typeof nextValue === 'number') { localValue.value = nextValue }
+    if (typeof nextValue === 'number' && nextValue !== localValue.value) {
+      localValue.value = nextValue
+      void reconcileInput()
+    }
   },
 )
 const numberField = useNumberFieldRoot({
@@ -71,6 +74,20 @@ const fieldDisabled = computed(() => numberField.state.disabled.value)
 const interactive = computed(() => numberField.state.interactive.value)
 const readonly = computed(() => numberField.state.readonly.value)
 const value = computed(() => numberField.state.value.value)
+const draft = shallowRef(String(value.value))
+let draftVersion = 0
+
+watch(
+  [minValue, maxValue, precisionValue, interactive],
+  () => { void reconcileInput() },
+)
+
+async function reconcileInput() {
+  const version = ++draftVersion
+  // Publish the raw text before restoring it, even when input and blur share a flush.
+  await nextTick()
+  if (version === draftVersion) { draft.value = String(value.value) }
+}
 
 function update(nextValue: number) {
   emit('update:value', nextValue)
@@ -78,18 +95,31 @@ function update(nextValue: number) {
 }
 
 function commit(nextValue: number) {
-  if (!interactive.value || !Number.isFinite(nextValue)) { return }
-  const normalized = numberField.api.normalize(nextValue)
-  if (normalized !== value.value) {
-    localValue.value = normalized
-    update(normalized)
+  if (interactive.value && Number.isFinite(nextValue)) {
+    const normalized = numberField.api.normalize(nextValue)
+    if (normalized !== value.value) {
+      localValue.value = normalized
+      update(normalized)
+    }
   }
+  void reconcileInput()
 }
 
-function input(event: Event) {
-  const miniEvent = event as Event & { detail?: { value?: string } }
-  const target = event.target as HTMLInputElement | null
-  commit(Number(miniEvent.detail?.value ?? target?.value))
+function eventValue(event: unknown) {
+  const nativeEvent = event as { detail?: { value?: string }, target?: { value?: string } }
+  return nativeEvent.detail?.value ?? nativeEvent.target?.value ?? draft.value
+}
+
+function input(event: unknown) {
+  if (!interactive.value) { return String(value.value) }
+  draftVersion += 1
+  draft.value = eventValue(event)
+  return draft.value
+}
+
+function blur(event: unknown) {
+  draft.value = eventValue(event)
+  commit(Number(draft.value))
 }
 
 function decrement() {
@@ -113,9 +143,10 @@ function increment() {
       class="varo-input-number__input"
       :aria-label="props.inputAriaLabel"
       type="digit"
-      :value="String(value)"
+      :value="draft"
       :disabled="!interactive"
-      @blur="input"
+      @input="input"
+      @blur="blur"
     >
     <button v-if="canIncrease" class="varo-input-number__plus" :aria-label="props.increaseAriaLabel" @tap="increment">
       <VIcon name="plus" :size="14" />

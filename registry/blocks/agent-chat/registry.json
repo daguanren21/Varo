@@ -18,6 +18,9 @@
     "components/agent-conversation",
     "components/button"
   ],
+  "targetRegistryDependencies": {
+    "weapp": ["utils/primitives"]
+  },
   "files": [
     {
       "target": "h5",

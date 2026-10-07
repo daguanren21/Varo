@@ -33,14 +33,33 @@
 
 .varo-checkbox[data-checked] {
   box-sizing: border-box;
+  justify-content: center;
   width: fit-content;
+  min-width: 44px;
+  max-width: 100%;
+  min-height: 44px;
   padding: 0;
   margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  white-space: normal;
+  background: transparent;
+}
+
+.varo-checkbox::after {
+  border: 0;
+}
+
+.varo-checkbox__label {
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .varo-checkbox__icon {
   position: relative;
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 20px;

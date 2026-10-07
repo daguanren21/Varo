@@ -72,6 +72,58 @@ describe('ui-h5 input', () => {
     expect((wrapper.find('input').element as HTMLInputElement).value).toBe('')
   })
 
+  it('keeps the clear action focused within the input and restores input focus after clearing', async () => {
+    const host = document.createElement('div')
+    const nextControl = document.createElement('button')
+    document.body.append(host)
+    const wrapper = mount(VInput, {
+      attachTo: host,
+      props: {
+        defaultValue: 'Varo',
+        clearable: true,
+      },
+    })
+    host.append(nextControl)
+
+    try {
+      const input = wrapper.get('input')
+      input.element.focus()
+      await wrapper.vm.$nextTick()
+
+      const clearControl = wrapper.get('.varo-input__clear').element as HTMLButtonElement
+      clearControl.focus()
+      await wrapper.vm.$nextTick()
+
+      expect(document.activeElement).toBe(clearControl)
+      expect(wrapper.emitted('blur')).toHaveLength(1)
+
+      clearControl.click()
+      await wrapper.vm.$nextTick()
+
+      expect(input.element.value).toBe('')
+      expect(document.activeElement).toBe(input.element)
+      expect(wrapper.find('.varo-input__clear').exists()).toBe(false)
+      expect(wrapper.emitted('update:value')).toEqual([['']])
+      expect(wrapper.emitted('valueChange')).toEqual([['']])
+      expect(wrapper.emitted('clear')).toHaveLength(1)
+      expect(wrapper.emitted('focus')).toHaveLength(2)
+
+      await input.setValue('Draft')
+      ;(wrapper.get('.varo-input__clear').element as HTMLButtonElement).focus()
+      await wrapper.vm.$nextTick()
+      nextControl.focus()
+      await wrapper.vm.$nextTick()
+
+      expect(document.activeElement).toBe(nextControl)
+      expect(wrapper.find('.varo-input__clear').exists()).toBe(false)
+      expect(input.element.value).toBe('Draft')
+    }
+    finally {
+      wrapper.unmount()
+      host.remove()
+    }
+  })
+
   it('passes formatter, readonly, textarea, and error state to the primitive control', async () => {
     const wrapper = mount(VInput, {
       props: {

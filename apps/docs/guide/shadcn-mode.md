@@ -2,7 +2,7 @@
 
 CLI 把目标 profile 准入的原生 Wevu 组件源码复制到项目中。安装后直接从 `src/components/ui/*` 导入并按业务修改；完整 profile 列表与实验性支持范围见 [安装指南](/guide/installation#安装-profile-与支持边界)。
 
-## 一次性接入 Wevu 7 工程
+## 一次性接入 Wevu 工程
 
 以下全局样式与 Tailwind 配置每个工程只需完成一次，不需要在每个组件页面重复配置。
 
@@ -13,7 +13,7 @@ pnpm add wevu clsx @weapp-tailwindcss/merge
 pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 ```
 
-CLI 会递归复制 Registry 文件并输出 npm 的 `Dependencies:` 和 `Dev dependencies:`，但不会修改 `package.json` 或执行包管理器。每次运行 `add` 后，都要使用 `pnpm add` / `pnpm add -D` 安装输出中尚未存在的全部依赖；不同组件还可能报告 `@varo-ui/headless`、`@varo-ui/weapp` 等依赖。
+CLI 会递归复制 Registry 文件并输出 npm 的 `Dependencies:` 和 `Dev dependencies:`，但不会修改 `package.json` 或执行包管理器。每次运行 `add` 后，都要使用 `pnpm add` / `pnpm add -D` 安装输出中尚未存在的全部依赖；不同组件还可能报告 `@varo-ui/headless`、`@varo-ui/theme` 等依赖。原生 Registry 源码不依赖 `@varo-ui/weapp` 的 Vue 渲染器；该包只提供另一种原生源码消费入口。
 
 ### 创建 Tailwind 样式入口
 

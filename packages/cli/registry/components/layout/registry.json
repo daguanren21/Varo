@@ -8,14 +8,25 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "@varo-ui/headless",
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/headless",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/layout-utils"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +35,13 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/layout/layout.ts",
-      "to": "src/components/ui/layout.ts"
+      "from": "registry/components/layout/v-row.vue",
+      "to": "src/components/ui/v-row.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/layout/v-col.vue",
+      "to": "src/components/ui/v-col.vue"
     }
   ],
   "docs": "/components/layout"

@@ -20,6 +20,7 @@
     "dev:playground-h5": "pnpm --filter @varo/playground-h5 dev",
     "dev:playground-weapp": "pnpm --filter @varo/playground-weapp dev",
     "lint": "turbo run lint",
+    "retail:export": "node apps/playground-weapp/scripts/export-retail-starter.mjs",
     "release": "pnpm change",
     "release:prepare": "repo release stable prepare",
     "release:publish": "repo release stable publish",

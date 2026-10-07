@@ -1,0 +1,35 @@
+{
+  "name": "varo-retail-starter",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.24.0",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite --project-config dist/dev/project.config.json",
+    "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
+    "verify": "node scripts/verify-devtools-project.mjs",
+    "prepare:weapp": "weapp-vite prepare"
+  },
+  "dependencies": {
+    "@weapp-tailwindcss/merge": "2.2.3",
+    "clsx": "2.1.1",
+    "wevu": "7.4.0"
+  },
+  "devDependencies": {
+    "@babel/core": "8.0.1",
+    "@types/node": "26.1.0",
+    "esbuild": "0.28.2",
+    "miniprogram-api-typings": "5.2.3",
+    "postcss-selector-parser": "7.1.6",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vite": "8.2.2",
+    "vue": "3.5.42",
+    "weapp-tailwindcss": "5.5.3",
+    "weapp-vite": "7.4.0"
+  }
+}

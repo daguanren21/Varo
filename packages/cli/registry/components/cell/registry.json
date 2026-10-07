@@ -8,14 +8,28 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "@varo-ui/headless",
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/headless",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
-    "themes/base",
-    "utils/primitives"
+    "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "h5": [
+      "utils/primitives"
+    ],
+    "weapp": [
+      "components/icon",
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +38,13 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/cell/cell.ts",
-      "to": "src/components/ui/cell.ts"
+      "from": "registry/components/cell/v-cell.vue",
+      "to": "src/components/ui/v-cell.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/cell/v-cell-group.vue",
+      "to": "src/components/ui/v-cell-group.vue"
     }
   ],
   "docs": "/components/cell"

@@ -15,11 +15,15 @@
   "targetDependencies": {
     "h5": [
       "vue"
+    ],
+    "weapp": [
+      "wevu"
     ]
   },
   "registryDependencies": [
     "themes/base",
-    "utils/primitives"
+    "utils/primitives",
+    "components/icon"
   ],
   "files": [
     {

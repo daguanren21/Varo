@@ -10,12 +10,21 @@
   ],
   "dependencies": [],
   "targetDependencies": {
-    "h5": ["vue"],
-    "weapp": ["wevu", "vue"]
+    "h5": [
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
   },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,13 +33,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/loading/weapp-vite.vue",
+      "from": "registry/components/loading/v-loading.vue",
       "to": "src/components/ui/v-loading.vue"
-    },
-    {
-      "target": "weapp",
-      "from": "registry/components/loading/loading.ts",
-      "to": "src/components/ui/loading.ts"
     }
   ],
   "docs": "/guide/shadcn-mode"

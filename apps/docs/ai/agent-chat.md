@@ -27,6 +27,8 @@ import AgentChat from '@/components/blocks/agent-chat.vue'
 </template>
 ```
 
+`v-model` 是可选的。未绑定时，Block 保存初始为空的本地草稿；绑定后由父级管理草稿，空字符串也是有效的受控值。`submit` 发送去除首尾空白的文本，但不自动清空草稿；父级可在接受提交后将绑定值设为 `''`。忙碌或纯空白输入不会提交。
+
 ## Props
 
 | Prop          | Type                         | Default      | 说明         |

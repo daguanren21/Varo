@@ -8,14 +8,25 @@
     "h5",
     "weapp"
   ],
-  "dependencies": [
-    "@varo-ui/headless",
-    "vue"
-  ],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/headless",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base",
     "utils/layout-utils"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +35,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/space/space.ts",
-      "to": "src/components/ui/space.ts"
+      "from": "registry/components/space/v-space.vue",
+      "to": "src/components/ui/v-space.vue"
     }
   ],
   "docs": "/components/space"

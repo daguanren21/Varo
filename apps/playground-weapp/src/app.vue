@@ -57,7 +57,86 @@ page {
 }
 
 .retail-page-enter {
+  --varo-ui-bg: #f7f4ee;
+  --varo-ui-surface: #fffdf8;
+  --varo-ui-surface-muted: #efeae1;
+  --varo-ui-surface-overlay: #fffdf8;
+  --varo-ui-text: #292722;
+  --varo-ui-text-regular: #625e55;
+  --varo-ui-text-muted: #625e55;
+  --varo-ui-text-placeholder: #6c665d;
+  --varo-ui-text-disabled: #8d8780;
+  --varo-ui-border: #dcd6cb;
+  --varo-ui-border-strong: #8f8373;
+  --varo-ui-border-dark: #c4bbae;
+  --varo-ui-border-light: #e4ded3;
+  --varo-ui-border-lighter: #e9e3d9;
+  --varo-ui-fill: #efeae1;
+  --varo-ui-fill-darker: #dfd7cb;
+  --varo-ui-fill-light: #f3eee5;
+  --varo-ui-primary: #86543c;
+  --varo-ui-primary-dark: #73432e;
+  --varo-ui-primary-hover: #6f432e;
+  --varo-ui-primary-soft: #efe4da;
+  --varo-ui-primary-text: #71452f;
+  --varo-ui-button-radius: 3px;
+  --varo-ui-input-radius: 3px;
+  --varo-ui-button-height-sm: 44px;
+  --varo-ui-input-height-sm: 44px;
+  --varo-ui-radius: 3px;
+  --varo-ui-radius-sm: 3px;
+  --varo-ui-shadow-sm: none;
+  --varo-ui-shadow-md: none;
+  --varo-ui-ring: rgb(134 84 60 / 20%);
+  --varo-ui-focus: #86543c;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--varo-ui-text);
+  background: var(--varo-ui-bg);
   animation: retail-page-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.retail-page-enter .retail-heading {
+  font-family: 'Songti SC', 'Noto Serif CJK SC', STSong, serif;
+  font-weight: 600;
+}
+
+.retail-page-enter .retail-price {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.retail-page-enter .varo-button,
+.retail-page-enter .varo-input__label {
+  font-size: 15px;
+}
+
+.retail-page-enter .varo-input,
+.retail-page-enter .varo-input-number {
+  font-size: 16px;
+}
+
+.retail-page-enter .varo-input,
+.retail-page-enter .varo-input-number,
+.retail-page-enter .varo-checkbox,
+.retail-page-enter .varo-switch {
+  --varo-ui-border: var(--varo-ui-border-strong);
+}
+
+.retail-page-enter .varo-checkbox {
+  min-width: 44px;
+}
+
+.retail-page-enter .varo-input__clear.varo-input__clear {
+  width: 44px;
+  height: 44px;
+}
+
+.retail-page-enter .varo-empty__visual {
+  background: transparent;
+  box-shadow: none;
 }
 
 .retail-section-enter {
@@ -95,7 +174,7 @@ page {
   transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.retail-product-card.varo-card--pressed .varo-image__img {
+.retail-product-card .varo-button--pressed .varo-image__img {
   transform: scale(0.975);
 }
 
@@ -112,7 +191,7 @@ page {
 @keyframes retail-section-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(6px);
   }
 
   to {
@@ -136,131 +215,3 @@ page {
   }
 }
 </style>
-
-<json lang="jsonc">
-{
-  "$schema": "https://vite.icebreaker.top/app.json",
-  "pages": [
-    "pages/retail-home/index",
-    "pages/retail-category/index",
-    "pages/retail-cart/index",
-    "pages/retail-profile/index",
-    "pages/mall/index",
-    "pages/form-showcase/index",
-    "pages/robot-chat-showcase/index",
-    "pages/agent-workspace/index",
-    "pages/web-preview/index",
-    "pages/web-preview-dialog/index",
-    "pages/web-preview-agent/index",
-    "pages/web-preview-map/index",
-    "pages/web-preview-robot-chat/index",
-    "pages/web-preview-rag/index",
-    "pages/index/index"
-  ],
-  "subPackages": [
-    {
-      "root": "retail-goods",
-      "pages": [
-        "list/index",
-        "details/index",
-        "search/index",
-        "result/index",
-        "comments/index",
-        "comments/create/index"
-      ]
-    },
-    {
-      "root": "retail-order",
-      "pages": [
-        "order-confirm/index",
-        "receipt/index",
-        "pay-result/index",
-        "order-list/index",
-        "order-detail/index",
-        "apply-service/index",
-        "after-service-list/index",
-        "after-service-detail/index",
-        "fill-tracking-no/index",
-        "delivery-detail/index",
-        "invoice/index"
-      ]
-    },
-    {
-      "root": "retail-coupon",
-      "pages": [
-        "coupon-list/index",
-        "coupon-detail/index",
-        "coupon-activity-goods/index"
-      ]
-    },
-    {
-      "root": "retail-promotion",
-      "pages": ["promotion-detail/index"]
-    },
-    {
-      "root": "retail-showcase",
-      "pages": ["index/index"]
-    },
-    {
-      "root": "retail-user",
-      "pages": [
-        "person-info/index",
-        "address/list/index",
-        "address/edit/index",
-        "name-edit/index"
-      ]
-    },
-    {
-      "root": "registry-catalog",
-      "pages": ["index/index"]
-    }
-  ],
-  "plugins": {
-    "varoRobot": {
-      "version": "1.1.15",
-      "provider": "wx8c631f7e9f2465e1"
-    }
-  },
-  "tabBar": {
-    "color": "#94a3b8",
-    "selectedColor": "#0f766e",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "white",
-    "list": [
-      {
-        "pagePath": "pages/retail-home/index",
-        "text": "首页",
-        "iconPath": "assets/tabbar/home.png",
-        "selectedIconPath": "assets/tabbar/home-active.png"
-      },
-      {
-        "pagePath": "pages/retail-category/index",
-        "text": "分类",
-        "iconPath": "assets/tabbar/category.png",
-        "selectedIconPath": "assets/tabbar/category-active.png"
-      },
-      {
-        "pagePath": "pages/retail-cart/index",
-        "text": "购物车",
-        "iconPath": "assets/tabbar/cart.png",
-        "selectedIconPath": "assets/tabbar/cart-active.png"
-      },
-      {
-        "pagePath": "pages/retail-profile/index",
-        "text": "我的",
-        "iconPath": "assets/tabbar/profile.png",
-        "selectedIconPath": "assets/tabbar/profile-active.png"
-      }
-    ]
-  },
-  "window": {
-    "navigationBarTitleText": "Varo Retail",
-    "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTextStyle": "black",
-    "backgroundColor": "#f4f6f8"
-  },
-  "style": "v2",
-  "componentFramework": "glass-easel",
-  "lazyCodeLoading": "requiredComponents"
-}
-</json>

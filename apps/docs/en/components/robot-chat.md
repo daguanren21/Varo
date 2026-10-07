@@ -25,6 +25,23 @@ Enable the plugin for the Mini Program, then declare it under the fixed `varoRob
 Use the plugin version enabled for the Mini Program. See the [chatbotwidget plugin documentation](https://mp.weixin.qq.com/wxopen/plugindevdoc?appid=wx8c631f7e9f2465e1) for configuration details.
 :::
 
+## Enable the playground demo
+
+The plugin and both robot routes are off by default, with a disabled overview entry. Retail pages and Blocks need no plugin authorization.
+
+Enable `chatbotwidget` for your Mini Program, then opt in from the repository root:
+
+```bash
+WEAPP_ROBOT_CHAT=1 pnpm --filter @varo/playground-weapp build
+pnpm --filter @varo/playground-weapp open
+```
+
+For development, use `WEAPP_ROBOT_CHAT=1 pnpm --filter @varo/playground-weapp dev`. Remove the variable and rebuild to disable it.
+
+`provider` is the plugin provider's AppID, not your Mini Program AppID or `options.appid` (the robot application ID); do not replace it. Keep your AppID in ignored `project.local.json` or `WEAPP_APP_ID`. Test-account sign-in grants no plugin authorization.
+
+Browser-preview `pnpm --filter @varo/playground-weapp-preview dev` / `build` writes separate `dist/browser/mp-weixin` output without overwriting `devtools/build/mp-weixin`. Its configuration has no AppID and cannot be used for DevTools sign-in. Preview proves neither plugin authorization nor device behavior.
+
 ## Usage
 
 ```vue

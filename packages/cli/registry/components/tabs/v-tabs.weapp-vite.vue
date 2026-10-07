@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TabName, TabRegistration, VaroTabsContext } from './tabs-context'
-import { computed, provide, shallowRef } from 'wevu'
+import { computed, provide, shallowRef, useAttrs } from 'wevu'
 import {
   createTabsRootId,
   getTabsPanelId,
@@ -19,13 +19,11 @@ const props = withDefaults(
   defineProps<{
     active?: TabName
     ariaLabel?: string
-    id?: string
     type?: TabsType
   }>(),
   {
     active: undefined,
     ariaLabel: undefined,
-    id: undefined,
     type: 'line',
   },
 )
@@ -36,10 +34,12 @@ const emit = defineEmits<{
   'update:active': [name: TabName]
 }>()
 
-const rootId = props.id || createTabsRootId()
+const attrs = useAttrs()
+const generatedRootId = createTabsRootId()
+const rootId = typeof attrs.id === 'string' && attrs.id ? attrs.id : generatedRootId
 const active = computed(() => props.active)
 const registrations = shallowRef<TabRegistration[]>([])
-const focusedName = shallowRef<TabName>()
+const focusedName = shallowRef<TabName | undefined>(undefined)
 const activeData = computed(() => String(props.active ?? ''))
 
 function registerTab(tab: TabRegistration) {
@@ -70,8 +70,8 @@ const renderedTabs = computed(() => {
   return registrations.value.map(tab => ({
     ...tab,
     active: tab.name === props.active,
-    ariaDisabled: tab.disabled ? 'true' : undefined,
-    ariaSelected: String(tab.name === props.active),
+    ariaDisabled: Boolean(tab.disabled),
+    ariaSelected: tab.name === props.active,
     dataActive: String(tab.name === props.active),
     dataDisabled: String(tab.disabled),
     focus: tab.name === focusName,
@@ -101,11 +101,12 @@ function getKeyboardTarget(key: string, currentIndex: number) {
   return enabledIndices[(currentEnabledIndex + offset + enabledIndices.length) % enabledIndices.length]
 }
 
-function handleKeydown(event: KeyboardLikeEvent, index: number) {
-  const key = event.key ?? event.detail?.key ?? ''
+function handleKeydown(event: unknown, index: number) {
+  const keyboardEvent = event as KeyboardLikeEvent
+  const key = keyboardEvent.key ?? keyboardEvent.detail?.key ?? ''
   const targetIndex = getKeyboardTarget(key, index)
   if (targetIndex === undefined) { return }
-  event.preventDefault?.()
+  keyboardEvent.preventDefault?.()
 
   const target = registrations.value[targetIndex]
   if (target) { select(target) }

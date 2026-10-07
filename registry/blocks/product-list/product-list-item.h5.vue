@@ -26,48 +26,68 @@ const emit = defineEmits<{
 }>()
 
 const priceLabel = computed(() => `${props.currency}${(props.item.price / 100).toFixed(2)}`)
+const itemAriaLabel = computed(() => `查看 ${props.item.name}`)
+const actionLabel = computed(() => props.item.inventory === 0 ? '已售罄' : '加入购物车')
+const actionAriaLabel = computed(() => props.item.inventory === 0 ? `${props.item.name} 已售罄` : `将 ${props.item.name} 加入购物车`)
 const rootClass = computed(() =>
-  cn('grid grid-cols-[88px_minmax(0,1fr)] gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm', props.className),
+  cn('grid min-w-0 grid-cols-[96px_minmax(0,1fr)] gap-4 border-b border-[var(--varo-ui-border-lighter)] py-5', props.className),
 )
 </script>
 
 <template>
   <article :class="rootClass">
-    <VButton size="sm" variant="ghost" tone="default" class="!aspect-square !h-auto !min-h-0 !overflow-hidden !rounded-xl !bg-slate-100 !p-0" :aria-label="`查看 ${item.name}`" @click="emit('select', item)">
-      <VImage :src="item.image" :alt="item.name" width="100%" height="100%" fit="cover" error-text="暂无图片" />
+    <VButton
+      size="sm"
+      variant="ghost"
+      tone="default"
+      class="!h-24 !min-h-24 !w-24 !overflow-hidden !rounded-lg !bg-[var(--varo-ui-surface-muted)] !p-0 !shadow-none"
+      :aria-label="itemAriaLabel"
+      @click="emit('select', item)"
+    >
+      <VImage :src="item.image" :alt="item.name" width="96px" height="96px" fit="cover" error-text="暂无图片" />
     </VButton>
 
-    <div class="flex min-w-0 flex-col">
-      <div class="flex items-start justify-between gap-2">
-        <h3 class="m-0 line-clamp-2 text-sm font-bold leading-5 text-slate-950">
-          <VButton size="sm" variant="ghost" tone="default" class="!min-h-11 !bg-transparent !px-2 !py-0 !text-left !text-inherit" @click="emit('select', item)">
-            {{ item.name }}
-          </VButton>
-        </h3>
-        <VBadge v-if="item.badge" tone="primary" variant="soft">
-          {{ item.badge }}
-        </VBadge>
-      </div>
-      <p v-if="item.description" class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">
-        {{ item.description }}
-      </p>
-
-      <div class="mt-auto flex items-end justify-between gap-3 pt-3">
-        <div>
-          <strong class="text-lg text-red-600">{{ priceLabel }}</strong>
-          <p v-if="item.inventory !== undefined" class="m-0 text-[11px] text-slate-400">
-            库存 {{ item.inventory }}
-          </p>
-        </div>
+    <div class="min-w-0">
+      <h3 class="m-0 text-sm font-semibold leading-6">
         <VButton
           size="sm"
-          :disabled="item.inventory === 0"
-          :loading="loading"
-          @click.stop="emit('addToCart', item)"
+          variant="ghost"
+          tone="default"
+          class="!h-auto !min-h-11 !w-full !justify-start !whitespace-normal !break-words !rounded-lg !bg-transparent !p-0 !text-left !text-sm !font-semibold !leading-6 !text-[var(--varo-ui-text)] !shadow-none"
+          :aria-label="itemAriaLabel"
+          @click="emit('select', item)"
         >
-          {{ item.inventory === 0 ? '已售罄' : '加入购物车' }}
+          <span class="block w-full min-w-0 break-words">{{ item.name }}</span>
         </VButton>
+      </h3>
+      <VBadge v-if="item.badge" tone="default" variant="soft" class="mt-1 !max-w-full !whitespace-normal !break-words !text-xs !leading-5 !text-[var(--varo-ui-text-regular)]">
+        <span class="block min-w-0 break-words">{{ item.badge }}</span>
+      </VBadge>
+      <p v-if="item.description" class="mb-0 mt-2 break-words text-sm leading-6 text-[var(--varo-ui-text-regular)]">
+        {{ item.description }}
+      </p>
+    </div>
+
+    <div class="col-span-2 flex flex-wrap items-center justify-between gap-3">
+      <div class="min-w-0">
+        <strong class="break-words text-lg font-semibold tabular-nums text-[var(--varo-ui-text)]">{{ priceLabel }}</strong>
+        <p v-if="item.inventory !== undefined" class="mb-0 mt-1 text-xs leading-5 text-[var(--varo-ui-text-regular)]">
+          库存 {{ item.inventory }}
+        </p>
       </div>
+      <VButton
+        tone="default"
+        color="var(--varo-ui-text)"
+        foreground-color="var(--varo-ui-surface)"
+        class="!min-h-11 !rounded-lg !px-4 !shadow-none"
+        :aria-label="actionAriaLabel"
+        :disabled="item.inventory === 0"
+        :loading="loading"
+        loading-text="加购中…"
+        @click.stop="emit('addToCart', item)"
+      >
+        {{ actionLabel }}
+      </VButton>
     </div>
   </article>
 </template>

@@ -135,6 +135,7 @@ function backHome() {
 <style scoped>
 .robot-demo {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   padding: 18px;
   margin: 24px 0 32px;
@@ -167,10 +168,12 @@ function backHome() {
 .robot-demo dt {
   margin: 0;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .robot-demo__surface {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-content: start;
   min-height: 240px;
@@ -224,6 +227,7 @@ function backHome() {
   font-size: 12px;
   font-weight: 700;
   color: var(--varo-foreground);
+  white-space: nowrap;
   cursor: pointer;
   background: var(--varo-surface);
   border: 1px solid var(--varo-demo-border);

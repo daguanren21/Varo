@@ -3,7 +3,7 @@ import RetailProductCollection from '../../components/retail/RetailProductCollec
 </script>
 
 <template>
-  <RetailProductCollection eyebrow="VARO SELECTION" title="全部商品" />
+  <RetailProductCollection title="全部商品" />
 </template>
 
 <json lang="jsonc">

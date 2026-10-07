@@ -2,7 +2,7 @@
 
 The CLI copies native Wevu source admitted for the selected profile into your project. Import it from `src/components/ui/*` and edit it as application code. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for the exact profiles and experimental scope.
 
-## One-Time Wevu 7 Project Setup
+## One-Time Wevu Project Setup
 
 Complete this global stylesheet and Tailwind setup once per project. Do not repeat it on individual component pages.
 
@@ -13,7 +13,7 @@ pnpm add wevu clsx @weapp-tailwindcss/merge
 pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 ```
 
-The CLI recursively copies Registry files and prints npm `Dependencies:` and `Dev dependencies:`, but it does not modify `package.json` or run a package manager. After every `add`, use `pnpm add` / `pnpm add -D` to install every reported package that is not already present. Depending on the selected components, the output can also include packages such as `@varo-ui/headless` and `@varo-ui/weapp`.
+The CLI recursively copies Registry files and prints npm `Dependencies:` and `Dev dependencies:`, but it does not modify `package.json` or run a package manager. After every `add`, use `pnpm add` / `pnpm add -D` to install every reported package that is not already present. Depending on the selected components, the output can also include packages such as `@varo-ui/headless` and `@varo-ui/theme`. Native Registry source does not depend on a Vue renderer from `@varo-ui/weapp`; that package provides an alternative native source consumption path.
 
 ### Create The Tailwind Stylesheet Entry
 

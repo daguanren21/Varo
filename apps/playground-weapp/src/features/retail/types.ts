@@ -19,12 +19,33 @@ export interface RetailCartItem {
 
 export type RetailOrderStatus = 'pending-payment' | 'pending-delivery' | 'pending-receipt' | 'completed' | 'after-sale'
 
-export interface RetailOrder {
-  createdAt: string
-  id: string
+export interface RetailOrderItem {
+  readonly productId: string
+  readonly quantity: number
+  readonly name: string
+  readonly image: string
+  readonly unitPrice: number
+}
+
+export interface RetailCheckoutInput {
   items: Array<{ productId: string, quantity: number }>
-  status: RetailOrderStatus
-  total: number
+  addressId: string
+}
+
+export interface RetailCheckoutQuote {
+  readonly items: readonly RetailOrderItem[]
+  readonly address: Readonly<RetailAddress>
+  readonly subtotal: number
+  readonly discount: number
+  readonly shipping: number
+  readonly total: number
+}
+
+export interface RetailOrder extends RetailCheckoutQuote {
+  readonly createdAt: string
+  readonly id: string
+  readonly status: RetailOrderStatus
+  readonly simulation: true
 }
 
 export interface RetailAddress {
@@ -44,3 +65,13 @@ export interface RetailCoupon {
   title: string
   validUntil: string
 }
+
+export interface RetailSnapshot {
+  products: RetailProduct[]
+  cart: RetailCartItem[]
+  orders: RetailOrder[]
+  addresses: RetailAddress[]
+  coupons: RetailCoupon[]
+}
+
+export type RetailScenario = 'default' | 'loading' | 'empty' | 'retry' | 'error' | 'stock' | 'validation' | 'pending' | 'submit-error'

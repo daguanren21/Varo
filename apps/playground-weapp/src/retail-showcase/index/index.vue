@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { RetailOrderSummary } from '../../lib/retail'
-import { computed, onLoad, shallowRef } from 'wevu'
+import type { RetailCartLine, RetailOrderSummary } from '../../lib/retail'
+import { computed, onLoad, shallowRef, watch } from 'wevu'
 import bannerImage from '../../assets/retail/banner.jpg'
 import AgentChat from '../../components/blocks/agent-chat.vue'
 import LoginForm from '../../components/blocks/login-form.vue'
@@ -10,7 +10,9 @@ import ProfileCard from '../../components/blocks/profile-card.vue'
 import ProfileEdit from '../../components/blocks/profile-edit.vue'
 import VButton from '../../components/ui/v-button.vue'
 import { retailCategories } from '../../features/retail/data'
+import { errorMessage } from '../../features/retail/service'
 import { useRetailStore } from '../../features/retail/store'
+import { normalizeRetailProduct } from '../../lib/retail'
 import RetailCart from '../components/retail-cart.vue'
 import RetailCategory from '../components/retail-category.vue'
 import RetailCheckout from '../components/retail-checkout.vue'
@@ -62,6 +64,13 @@ const safeCartCount = computed(() => retail.cartCount.value)
 const safeCartTotal = computed(() => retail.cartTotal.value)
 const safeCouponCount = computed(() => retail.coupons.value.length)
 const safeSelectedCount = computed(() => retail.selectedCartItems.value.length)
+const checkoutLoading = computed(() => retail.loading.value || retail.checkoutLoading.value)
+const checkoutSubmitting = computed(() => retail.submitting.value)
+const checkoutError = computed(() => retail.loadError.value || retail.checkoutError.value || retail.submitError.value)
+const checkoutUnavailable = computed(() => !retail.checkoutQuote.value)
+const checkoutDiscount = computed(() => retail.checkoutQuote.value?.discount ?? 0)
+const checkoutShipping = computed(() => retail.checkoutQuote.value?.shipping ?? 0)
+const checkoutTotal = computed(() => retail.checkoutQuote.value?.subtotal ?? retail.cartTotal.value)
 const tabs = computed(() => blockDefinitions.map(tab => ({
   ...tab,
   variant: active.value === tab.id ? 'solid' as const : 'ghost' as const,
@@ -112,20 +121,37 @@ const cartLines = computed(() => retail.cartItems.value.map(item => ({
   selected: item.selected,
 })))
 const checkoutAddress = computed(() => {
-  const address = retail.defaultAddress.value
-  return {
-    detail: address ? `${address.city} ${address.district} ${address.detail}` : '请选择收货地址',
-    isDefault: Boolean(address?.isDefault),
-    name: address?.name ?? '未选择地址',
-    phone: address?.phone ?? '',
-  }
+  const address = retail.checkoutQuote.value?.address ?? retail.selectedAddress.value
+  return address
+    ? {
+        detail: `${address.city} ${address.district} ${address.detail}`,
+        isDefault: address.isDefault,
+        name: address.name,
+        phone: address.phone,
+      }
+    : undefined
 })
-const selectedCartLines = computed(() => cartLines.value.filter(item => item.selected))
+const checkoutLines = computed<RetailCartLine[]>(() => (retail.checkoutQuote.value?.items ?? []).map(item => ({
+  product: normalizeRetailProduct({
+    ...retail.products.value.find(product => product.id === item.productId),
+    id: item.productId,
+    name: item.name,
+    image: item.image,
+    price: item.unitPrice,
+  }),
+  quantity: item.quantity,
+  selected: true,
+})))
 const orderSummaries = computed<RetailOrderSummary[]>(() => retail.orders.value.map(order => ({
   createdAt: order.createdAt,
   id: order.id,
   itemCount: order.items.reduce((total, item) => total + item.quantity, 0),
-  preview: retail.products.value.find(product => product.id === order.items[0]?.productId) ?? retail.products.value[0],
+  preview: normalizeRetailProduct({
+    id: order.items[0]?.productId,
+    name: order.items[0]?.name,
+    image: order.items[0]?.image,
+    price: order.items[0]?.unitPrice,
+  }),
   status: order.status,
   total: order.total,
 })))
@@ -134,12 +160,76 @@ const orderCounts = computed(() => retail.orders.value.reduce<Record<string, num
   [order.status]: (counts[order.status] ?? 0) + 1,
 }), {}))
 
-onLoad((options) => {
+onLoad(async (options) => {
+  try {
+    await retail.load()
+  }
+  catch (error) {
+    notify(errorMessage(error))
+  }
   const requested = String(options?.block ?? '')
   const matched = blockDefinitions.find(tab => tab.id === requested)
   if (matched) { active.value = matched.id }
   captureMode.value = String(options?.capture ?? '') === '1'
 })
+
+watch(active, (block) => {
+  if (block === 'retail-checkout') { void prepareCheckout() }
+})
+
+async function prepareCheckout() {
+  try {
+    await retail.load()
+    await retail.prepareCheckout()
+  }
+  catch (error) {
+    notify(errorMessage(error))
+  }
+}
+
+async function submitOrder() {
+  try {
+    await retail.createOrder()
+    active.value = 'retail-order-list'
+  }
+  catch (error) {
+    notify(errorMessage(error))
+  }
+}
+
+function addProduct(productId: string, quantity = 1, openCheckout = false) {
+  try {
+    retail.addToCart(productId, quantity)
+    if (openCheckout) { active.value = 'retail-checkout' }
+  }
+  catch (error) {
+    notify(errorMessage(error))
+  }
+}
+
+function changeQuantity(productId: string, quantity: number) {
+  try {
+    if (quantity === 0) { retail.removeCartItem(productId) }
+    else { retail.updateCartQuantity(productId, quantity) }
+  }
+  catch (error) {
+    notify(errorMessage(error))
+  }
+}
+
+function toggleCartItem(productId: string) {
+  try {
+    retail.toggleCartItem(productId)
+  }
+  catch (error) {
+    notify(errorMessage(error))
+  }
+}
+
+function selectCategory(category: { id: string }) {
+  activeCategory.value = category.id
+  active.value = 'retail-category'
+}
 
 function notify(title: string) {
   wx.showToast({ title, icon: 'none' })
@@ -188,7 +278,7 @@ function notify(title: string) {
         description="直接安装到项目并继续修改的商品列表 Block。"
         :items="showcaseProducts"
         @select="notify($event.item.name)"
-        @add-to-cart="retail.addToCart($event.item.id)"
+        @add-to-cart="addProduct($event.item.id)"
       />
       <OrderFilter
         v-else-if="active === 'order-filter'"
@@ -211,9 +301,9 @@ function notify(title: string) {
         :products="retailProducts"
         @search="notify(`搜索：${$event}`)"
         @cart="active = 'retail-cart'"
-        @category="activeCategory = $event.id; active = 'retail-category'"
+        @category="selectCategory"
         @select="notify($event.name)"
-        @add="retail.addToCart($event.id)"
+        @add="addProduct($event.id)"
       />
       <RetailCategory
         v-else-if="active === 'retail-category'"
@@ -221,15 +311,15 @@ function notify(title: string) {
         :categories="retailCategories"
         :products="retailProducts"
         @select="notify($event.name)"
-        @add="retail.addToCart($event.id)"
+        @add="addProduct($event.id)"
       />
       <RetailCart
         v-else-if="active === 'retail-cart'"
         :items="cartLines"
         :selected-count="safeSelectedCount"
         :total="safeCartTotal"
-        @select="retail.toggleCartItem($event.productId)"
-        @quantity-change="retail.updateCartQuantity($event.productId, $event.quantity)"
+        @select="toggleCartItem($event.productId)"
+        @quantity-change="changeQuantity($event.productId, $event.quantity)"
         @view="notify($event)"
         @checkout="active = 'retail-checkout'"
         @continue="active = 'retail-home'"
@@ -241,21 +331,27 @@ function notify(title: string) {
         :cart-count="safeCartCount"
         @back="active = 'retail-home'"
         @cart="active = 'retail-cart'"
-        @add="retail.addToCart($event.product.id, $event.quantity)"
-        @buy="retail.addToCart($event.product.id, $event.quantity); active = 'retail-checkout'"
+        @add="addProduct($event.product.id, $event.quantity)"
+        @buy="addProduct($event.product.id, $event.quantity, true)"
       />
       <RetailCheckout
         v-else-if="active === 'retail-checkout'"
         :address="checkoutAddress"
         :coupon-count="safeCouponCount"
-        :discount="1000"
-        :items="selectedCartLines"
-        :total="safeCartTotal"
+        :discount="checkoutDiscount"
+        :shipping="checkoutShipping"
+        :loading="checkoutLoading"
+        :submitting="checkoutSubmitting"
+        :error="checkoutError"
+        :disabled="checkoutUnavailable"
+        :items="checkoutLines"
+        :total="checkoutTotal"
         @address="notify('选择地址')"
         @coupon="notify('选择优惠券')"
         @invoice="notify('填写发票')"
         @view="notify($event)"
-        @submit="retail.createOrder(); active = 'retail-order-list'"
+        @retry="prepareCheckout"
+        @submit="submitOrder"
       />
       <RetailOrderList
         v-else-if="active === 'retail-order-list'"

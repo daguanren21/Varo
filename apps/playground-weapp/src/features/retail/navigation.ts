@@ -9,9 +9,12 @@ export function navigateRetail(path: string, query?: Record<string, string>) {
   const search = query
     ? Object.entries(query).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&')
     : ''
-  wx.navigateTo({ url: search ? `${path}?${search}` : path })
+  wx.navigateTo({
+    url: search ? `${path}?${search}` : path,
+    fail: () => wx.showToast({ title: '页面打开失败，请重试', icon: 'none' }),
+  })
 }
 
 export function switchRetailTab(path: keyof typeof retailRoutes) {
-  wx.switchTab({ url: retailRoutes[path] })
+  wx.switchTab({ url: retailRoutes[path], fail: () => wx.showToast({ title: '页面切换失败，请重试', icon: 'none' }) })
 }

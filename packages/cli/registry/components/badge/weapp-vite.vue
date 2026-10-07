@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import type { PropType } from 'wevu'
 import { computed } from 'wevu'
 
-const props = defineProps({
-  content: { type: null as unknown as PropType<number | string | undefined>, default: undefined },
-  dot: { type: Boolean, default: false },
-  max: { type: Number, default: 99 },
-  showZero: { type: Boolean, default: false },
-  tone: {
-    type: String as PropType<'default' | 'primary' | 'success' | 'warning' | 'danger'>,
-    default: 'danger',
-  },
-  variant: {
-    type: String as PropType<'solid' | 'soft' | 'outline'>,
-    default: 'solid',
+// WeChat validates union props against one native type before Wevu normalizes them.
+defineOptions({
+  properties: {
+    content: { type: null },
   },
 })
+
+const props = withDefaults(
+  defineProps<{
+    content?: number | string
+    dot?: boolean
+    max?: number
+    showZero?: boolean
+    tone?: 'default' | 'primary' | 'success' | 'warning' | 'danger'
+    variant?: 'solid' | 'soft' | 'outline'
+  }>(),
+  {
+    dot: false,
+    max: 99,
+    showZero: false,
+    tone: 'danger',
+    variant: 'solid',
+  },
+)
 
 const displayContent = computed(() => {
   if (props.dot) { return '' }

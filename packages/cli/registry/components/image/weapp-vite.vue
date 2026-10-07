@@ -1,25 +1,45 @@
 <script setup lang="ts">
 import type { ReactiveRuntime } from '@varo-ui/headless'
-import type { PropType } from 'wevu'
 import { useImageRoot } from '@varo-ui/headless'
 import { computed, shallowRef, watch } from 'wevu'
 
 type ImageFit = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
 
-const props = defineProps({
-  alt: { type: null as unknown as PropType<string>, default: '' },
-  errorText: { type: String, default: '' },
-  fit: { type: String as PropType<ImageFit>, default: 'fill' },
-  height: { type: [Number, String] as PropType<number | string | undefined>, default: undefined },
-  lazyLoad: { type: Boolean, default: false },
-  loadingText: { type: String, default: '' },
-  radius: { type: [Number, String] as PropType<number | string | undefined>, default: undefined },
-  round: { type: Boolean, default: false },
-  showError: { type: Boolean, default: true },
-  showLoading: { type: Boolean, default: true },
-  src: { type: null as unknown as PropType<string>, default: '' },
-  width: { type: [Number, String] as PropType<number | string | undefined>, default: undefined },
+// WeChat validates initial child bindings before Wevu applies setup defaults.
+defineOptions({
+  properties: {
+    alt: { type: null, value: '' },
+    src: { type: null, value: '' },
+  },
 })
+
+const props = withDefaults(
+  defineProps<{
+    alt?: string
+    errorText?: string
+    fit?: ImageFit
+    height?: number | string
+    lazyLoad?: boolean
+    loadingText?: string
+    radius?: number | string
+    round?: boolean
+    showError?: boolean
+    showLoading?: boolean
+    src?: string
+    width?: number | string
+  }>(),
+  {
+    alt: '',
+    errorText: '',
+    fit: 'fill',
+    lazyLoad: false,
+    loadingText: '',
+    round: false,
+    showError: true,
+    showLoading: true,
+    src: '',
+  },
+)
 const emit = defineEmits<{
   error: [event: unknown]
   load: [event: unknown]

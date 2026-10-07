@@ -36,7 +36,7 @@ const rootClass = computed(() => [
 
 function itemClass(choice: AgentChoice) {
   return [
-    'agent-radio__item relative z-10 flex w-full items-center gap-3 border-0 bg-transparent text-left text-[var(--varo-agent-text)] transition-[transform,color] duration-200',
+    'agent-native-button agent-native-button--block agent-radio__item relative z-10 flex items-center gap-3 border-0 bg-transparent text-left text-[var(--varo-agent-text)] transition-[transform,color] duration-200',
     props.orientation === 'horizontal' ? 'min-h-11 justify-center px-2.5 py-1.5 text-center' : 'min-h-14 px-3.5 py-2',
     choice.value === props.value && 'text-[var(--varo-agent-foreground)]',
     choice.disabled && 'agent-radio__item--disabled',

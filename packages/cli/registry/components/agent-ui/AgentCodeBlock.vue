@@ -51,14 +51,14 @@ function lineClass(line: number) {
           {{ language }}
         </text>
       </view>
-      <button class="min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[11px] font-semibold text-[var(--varo-agent-muted)]" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
+      <button class="agent-native-button min-h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 text-[11px] font-semibold text-[var(--varo-agent-muted)]" hover-class="bg-slate-800" :hover-start-time="20" :hover-stay-time="70" type="button" @click="emit('copy', code)">
         Copy
       </button>
     </view>
 
     <scroll-view class="py-2.5" scroll-x :show-scrollbar="false">
       <view class="grid min-w-max">
-        <view v-for="(line, index) in lines" :key="index" :class="lineClass(index + 1)">
+        <view v-for="(line, index) in lines" :class="lineClass(index + 1)">
           <text v-if="lineNumbers" class="w-7 flex-none select-none text-right tabular-nums text-[var(--varo-agent-text)]" aria-hidden="true">
             {{ index + 1 }}
           </text>
@@ -74,11 +74,7 @@ function lineClass(line: number) {
   </view>
 </template>
 
-<style scoped>
-.agent-code-block button::after {
-  border: 0;
-}
-
+<style>
 .agent-code-block__cursor {
   animation: agent-code-cursor 0.75s steps(1) infinite;
 }

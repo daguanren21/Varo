@@ -57,9 +57,9 @@ page {
 }
 
 .agent-composer__submit.agent-composer__submit {
-  width: 42px;
-  min-width: 42px;
-  height: 42px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
   padding: 0;
   margin: 0;
 }

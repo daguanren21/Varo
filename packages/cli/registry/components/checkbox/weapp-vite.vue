@@ -4,15 +4,18 @@ import { useCheckboxRoot } from '@varo-ui/headless'
 import { computed, inject } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { checkboxGroupKey } from './selection-context'
+import VIcon from './v-icon.vue'
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     checked?: boolean
     disabled?: boolean
     label?: string
     value?: CheckboxValue
   }>(),
   {
+    ariaLabel: '',
     checked: false,
     disabled: false,
     label: '',
@@ -39,7 +42,6 @@ const checkbox = useCheckboxRoot({
 const checked = computed(() => checkbox.state.checked.value)
 const checkboxDisabled = computed(() => checkbox.state.disabled.value)
 const interactive = computed(() => checkbox.state.interactive.value)
-const checkmark = computed(() => checkbox.state.checked.value ? '✓' : '')
 
 function update(checked: boolean) {
   if (group) {
@@ -58,6 +60,7 @@ function toggle() {
 <template>
   <button
     class="varo-checkbox"
+    :aria-label="props.ariaLabel"
     type="button"
     role="checkbox"
     :disabled="!interactive"
@@ -67,12 +70,12 @@ function toggle() {
     :data-disabled="String(checkboxDisabled)"
     @click="toggle"
   >
-    <text class="varo-checkbox__icon" aria-hidden="true">
-      {{ checkmark }}
-    </text>
-    <text class="varo-checkbox__label">
+    <view class="varo-checkbox__icon" aria-hidden="true">
+      <VIcon v-if="checked" name="check" :size="14" />
+    </view>
+    <view v-if="props.label || $slots.default" class="varo-checkbox__label">
       <slot>{{ props.label }}</slot>
-    </text>
+    </view>
   </button>
 </template>
 

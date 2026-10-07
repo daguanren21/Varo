@@ -121,6 +121,14 @@
 </template>
 ```
 
+Weapp：将 `native-type="submit"` / `"reset"` 的 `VButton` 放入原生 `<form>`，用 `@submit` / `@reset` 处理结果。[`wx://form-field-button`](https://developers.weixin.qq.com/miniprogram/dev/component/form.html#使用内置-behaviors) 负责关联表单，无需另加 `@click` 提交。
+
+浏览器兼容预览支持表单值、提交和重置；`tap` 取消仅在触摸前的鼠标、触摸、键盘（含触摸后键盘）操作中已验证。不提供微信 `formId` 上报，也不等于开发者工具或真机验证。
+
+::: warning 未修复：触摸后切换物理鼠标
+同一预览会话先触摸、再用物理鼠标时，`glass-easel@1.1.0` 会抑制鼠标 `tap`，取消处理器不运行。本应取消的提交或重置仍可能执行，重置会清空已编辑字段；此场景未通过验证。
+:::
+
 ## Props
 
 | Prop              | 类型                                                           | 默认值      | 描述                                       |
@@ -147,6 +155,8 @@
 | --------- | -------------------------------------- |
 | `default` | 按钮内容                               |
 | `icon`    | 自定义图标内容，优先级高于 `icon` prop |
+
+Weapp 的默认插槽和 `icon` 插槽使用 `view` 容器，可以组合原生 `view`、`image` 和组件内容，不限于纯文本。
 
 ## Data Attributes
 

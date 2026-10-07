@@ -59,7 +59,7 @@ function lineClass(line: number) {
 
     <scroll-view class="py-2.5" scroll-x :show-scrollbar="false">
       <view class="grid min-w-max">
-        <view v-for="(line, index) in lines" :key="index" :class="lineClass(index + 1)">
+        <view v-for="(line, index) in lines" :class="lineClass(index + 1)">
           <text v-if="lineNumbers" class="w-7 flex-none select-none text-right tabular-nums text-[var(--varo-agent-text)]" aria-hidden="true">
             {{ index + 1 }}
           </text>

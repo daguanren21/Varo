@@ -1,7 +1,9 @@
 .varo-input {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   width: 100%;
+  min-width: 0;
   color: var(--varo-ui-text);
 }
 

@@ -146,7 +146,7 @@ onMounted(restoreGalleryQuery)
 
     <div class="varo-block-gallery__result">
       <span>{{ locale === 'zh' ? `显示 ${visibleBlocks.length} 个 Block` : `Showing ${visibleBlocks.length} Blocks` }}</span>
-      <small>{{ locale === 'zh' ? `图片证据：Weapp DevTools Verified · ${blockGalleryCaptureDate}` : `Image evidence: Weapp DevTools Verified · ${blockGalleryCaptureDate}` }}</small>
+      <small>{{ locale === 'zh' ? `H5 浏览器截图 · Weapp 开发者工具截图 ${blockGalleryCaptureDate}` : `H5 browser captures · Weapp DevTools captures ${blockGalleryCaptureDate}` }}</small>
     </div>
 
     <div v-if="visibleBlocks.length" class="varo-block-gallery__grid">

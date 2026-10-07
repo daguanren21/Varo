@@ -9,13 +9,25 @@
     "weapp"
   ],
   "dependencies": [
-    "@varo-ui/headless",
-    "@varo-ui/theme",
-    "vue"
+    "@varo-ui/headless"
   ],
+  "targetDependencies": {
+    "h5": [
+      "@varo-ui/theme",
+      "vue"
+    ],
+    "weapp": [
+      "wevu"
+    ]
+  },
   "registryDependencies": [
     "themes/base"
   ],
+  "targetRegistryDependencies": {
+    "weapp": [
+      "utils/cn"
+    ]
+  },
   "files": [
     {
       "target": "h5",
@@ -24,8 +36,8 @@
     },
     {
       "target": "weapp",
-      "from": "registry/components/rate/rate.ts",
-      "to": "src/components/ui/rate.ts"
+      "from": "registry/components/rate/v-rate.vue",
+      "to": "src/components/ui/v-rate.vue"
     }
   ],
   "docs": "/components/rate"

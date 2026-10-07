@@ -2,7 +2,7 @@
   "name": "retail-category",
   "type": "block",
   "title": "Retail Category",
-  "description": "Two-column retail category block with active navigation, product grid, tags, prices, selection, and cart actions.",
+  "description": "Retail category block with wrapping navigation, product grid, tags, prices, selection, and separate cart actions.",
   "targets": ["weapp"],
   "dependencies": [],
   "targetDependencies": {
@@ -12,8 +12,7 @@
     "utils/retail",
     "components/button",
     "components/card",
-    "components/image",
-    "components/tag"
+    "components/image"
   ],
   "files": [
     {

@@ -25,52 +25,71 @@ const emit = defineEmits<{
 }>()
 
 const priceLabel = computed(() => `${props.currency}${(props.item.price / 100).toFixed(2)}`)
+const itemAriaLabel = computed(() => `查看 ${props.item.name}`)
+const actionLabel = computed(() => props.item.inventory === 0 ? '已售罄' : '加入购物车')
+const actionAriaLabel = computed(() => props.item.inventory === 0 ? `${props.item.name} 已售罄` : `将 ${props.item.name} 加入购物车`)
 const rootClass = computed(() =>
-  cn('grid grid-cols-[112px_minmax(0,1fr)] gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm', props.className),
+  cn('grid min-w-0 grid-cols-[96px_minmax(0,1fr)] gap-4 border-b border-[var(--varo-ui-border-lighter)] py-5', props.className),
 )
 </script>
 
 <template>
   <view :class="rootClass">
-    <view class="h-28 w-28 overflow-hidden rounded-xl bg-slate-100">
-      <VButton block size="sm" variant="ghost" tone="default" class-name="!h-28 !min-h-28 !w-28 !overflow-hidden !rounded-xl !bg-slate-100 !p-0" :aria-label="`查看 ${item.name}`" @click="emit('select', item)">
-        <VImage :src="item.image || ''" :alt="item.name || ''" width="112px" height="112px" fit="cover" error-text="暂无图片" />
+    <VButton
+      size="sm"
+      variant="ghost"
+      tone="default"
+      class-name="!h-24 !min-h-24 !w-24 !overflow-hidden !rounded-lg !bg-[var(--varo-ui-surface-muted)] !p-0 !shadow-none"
+      :aria-label="itemAriaLabel"
+      @click="emit('select', item)"
+    >
+      <VImage :src="item.image || ''" :alt="item.name || ''" width="96px" height="96px" fit="cover" error-text="暂无图片" />
+    </VButton>
+
+    <view class="min-w-0">
+      <VButton
+        block
+        size="sm"
+        variant="ghost"
+        tone="default"
+        class-name="!h-auto !min-h-11 !min-w-0 !w-full !whitespace-normal !rounded-lg !bg-transparent !p-0 !text-left !text-sm !font-semibold !text-[var(--varo-ui-text)] !shadow-none"
+        :aria-label="itemAriaLabel"
+        @click="emit('select', item)"
+      >
+        <text class="block w-full break-words text-left text-sm font-semibold leading-6">
+          {{ item.name }}
+        </text>
       </VButton>
+      <text v-if="item.badge" class="mt-1 inline-block max-w-full break-words rounded-md bg-[var(--varo-ui-surface-muted)] px-2 py-1 text-xs leading-5 text-[var(--varo-ui-text-regular)]">
+        {{ item.badge }}
+      </text>
+      <text v-if="item.description" class="mt-2 block break-words text-sm leading-6 text-[var(--varo-ui-text-regular)]">
+        {{ item.description }}
+      </text>
     </view>
 
-    <view class="grid min-w-0 content-between gap-2">
-      <view class="grid gap-1">
-        <view class="flex min-w-0 items-start gap-2">
-          <VButton block size="sm" variant="ghost" tone="default" class-name="!block !min-h-0 !min-w-0 !flex-1 !bg-transparent !p-0 !text-left !text-sm !font-bold !leading-5 !text-slate-950" @click="emit('select', item)">
-            {{ item.name }}
-          </VButton>
-          <text v-if="item.badge" class="flex-none rounded-md bg-teal-50 px-1.5 py-0.5 text-[9px] font-bold text-teal-700">
-            {{ item.badge }}
-          </text>
-        </view>
-        <text v-if="item.description" class="line-clamp-2 text-xs leading-5 text-slate-500">
-          {{ item.description }}
+    <view class="col-span-2 flex flex-wrap items-center justify-between gap-3">
+      <view class="min-w-0">
+        <text class="block break-words text-lg font-semibold tabular-nums text-[var(--varo-ui-text)]">
+          {{ priceLabel }}
+        </text>
+        <text v-if="item.inventory !== undefined" class="mt-1 block text-xs leading-5 text-[var(--varo-ui-text-regular)]">
+          库存 {{ item.inventory }}
         </text>
       </view>
-
-      <view class="flex items-end justify-between gap-3">
-        <view>
-          <text class="text-lg font-bold text-red-600">
-            {{ priceLabel }}
-          </text>
-          <text v-if="item.inventory !== undefined" class="block text-[11px] text-slate-400">
-            库存 {{ item.inventory }}
-          </text>
-        </view>
-        <VButton
-          size="sm"
-          :disabled="item.inventory === 0"
-          :loading="loading"
-          @click.stop="emit('addToCart', item)"
-        >
-          {{ item.inventory === 0 ? '已售罄' : '加入购物车' }}
-        </VButton>
-      </view>
+      <VButton
+        tone="default"
+        color="var(--varo-ui-text)"
+        foreground-color="var(--varo-ui-surface)"
+        class-name="!min-h-11 !rounded-lg !px-4 !shadow-none"
+        :aria-label="actionAriaLabel"
+        :disabled="item.inventory === 0"
+        :loading="loading"
+        loading-text="加购中…"
+        @click.stop="emit('addToCart', item)"
+      >
+        {{ actionLabel }}
+      </VButton>
     </view>
   </view>
 </template>

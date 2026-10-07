@@ -16,6 +16,21 @@ function disabled(target: EventTarget | null): boolean {
 
 export class PreviewBackend extends glassEasel.CurrentWindowBackendContext {
   private nativeListener: NativeEventListener | undefined
+  private canceledPointerTarget: Element | null = null
+
+  private readonly clearPointerCancellation = () => {
+    this.canceledPointerTarget = null
+  }
+
+  private readonly pointerClick = (event: MouseEvent) => {
+    const canceled = this.canceledPointerTarget
+    this.canceledPointerTarget = null
+    const target = event.target
+    if (event.detail === 0 || !canceled || !(target instanceof Element)) { return }
+    if (target === canceled || target.contains(canceled) || canceled.contains(target)) {
+      event.preventDefault()
+    }
+  }
 
   private readonly keyboardClick = (event: MouseEvent) => {
     if (event.detail !== 0 || event.button !== 0 || disabled(event.target) || !this.nativeListener) { return }
@@ -52,6 +67,9 @@ export class PreviewBackend extends glassEasel.CurrentWindowBackendContext {
 
   constructor() {
     super()
+    document.body.addEventListener('mousedown', this.clearPointerCancellation, true)
+    document.body.addEventListener('touchstart', this.clearPointerCancellation, true)
+    document.body.addEventListener('click', this.pointerClick, true)
     document.body.addEventListener('click', this.keyboardClick)
     document.body.addEventListener('keydown', this.semanticKey)
   }
@@ -62,13 +80,36 @@ export class PreviewBackend extends glassEasel.CurrentWindowBackendContext {
       // The framework already synthesizes pointer taps. Native component click
       // events must come from triggerEvent, not a second bubbling DOM click.
       if (type === 'click') { return }
+      const owner = element.getBackendContext()
+      const originalEvent = options.originalEvent
+      // Upstream shares the first touchend/cancel handler across backends in a
+      // document. It must reach the element's live owner even after remount.
+      const terminalTouch = (type === 'tap' || type === 'canceltap')
+        && originalEvent instanceof Event
+        && (originalEvent.type === 'touchend' || originalEvent.type === 'touchcancel')
+      if (!(owner instanceof PreviewBackend) || (owner !== this && !terminalTouch)) { return }
+      const activeListener = owner.nativeListener
+      if (!activeListener) { return }
       if (type === 'tap' && (disabled(target as unknown as EventTarget)
         || (options.originalEvent instanceof MouseEvent && options.originalEvent.button !== 0))) { return }
-      return listener(element, type, detail, options, target)
+      const pointerTarget = type === 'tap' && target instanceof Element
+        ? target.closest('button, a, input, label, summary') ?? target
+        : null
+      const status = activeListener(element, type, detail, options, target)
+      if (type === 'tap' && status === EVENT_BUBBLE_NO_DEFAULT && pointerTarget && owner.nativeListener === activeListener) {
+        // Pointer taps originate from mouseup/touchend; their later click owns
+        // the HTML default action, so cancellation must cross that boundary.
+        owner.canceledPointerTarget = pointerTarget
+      }
+      return status
     })
   }
 
   override destroy() {
+    document.body.removeEventListener('mousedown', this.clearPointerCancellation, true)
+    document.body.removeEventListener('touchstart', this.clearPointerCancellation, true)
+    document.body.removeEventListener('click', this.pointerClick, true)
+    this.canceledPointerTarget = null
     document.body.removeEventListener('click', this.keyboardClick)
     document.body.removeEventListener('keydown', this.semanticKey)
     this.nativeListener = undefined

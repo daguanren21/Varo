@@ -35,11 +35,11 @@ The H5 tab runs real, directly operable `@varo-ui/h5` browser components. The na
 
 ## Weapp DevTools Verified: Compiled Blocks {#weapp-devtools-evidence}
 
-The images below were captured through WeChat DevTools automation from Block pages built by `weapp-vite`. The evidence snapshot is dated **2026-08-28**; inspect the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and a [representative original image](../../blocks/login-form.png). Every card also links directly to its original image.
+All **13 native Blocks** were recaptured on **2026-10-05** in the **375px WeChat DevTools simulator**, using pages built by `weapp-vite` and executed in the native runtime. System bars and simulator edges are cropped out. See the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and an [example screenshot](../../blocks/login-form.png); the link beneath each card opens its full-resolution image.
+
+The six dual-renderer Blocks have H5 browser captures updated on **2026-10-05**. Selecting H5 changes the image, install command, and usage code together. Captures cover only the version at capture time; images from one target are not runtime evidence for another.
 
 These dated historical screenshots are not a live regression run for the current source cutover and do not certify the six experimental profiles or devices. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for exact current admission and compiler-check scope.
-
-Selecting H5 changes the install command and usage code only. When the repository has no published H5 image for that Block, the card continues to identify the image as **Weapp DevTools Verified** instead of implying that the H5 selector changed it.
 
 <MiniProgramBlocksGallery locale="en" />
 
