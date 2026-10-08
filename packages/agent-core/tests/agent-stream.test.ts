@@ -268,6 +268,60 @@ describe('agent stream controller', () => {
 })
 
 describe('SSE transport', () => {
+  it.each([
+    { name: 'LF strings', ending: '\n', bytes: false },
+    { name: 'CRLF strings', ending: '\r\n', bytes: false },
+    { name: 'CR strings', ending: '\r', bytes: false },
+    { name: 'LF bytes', ending: '\n', bytes: true },
+    { name: 'CRLF bytes', ending: '\r\n', bytes: true },
+    { name: 'CR bytes', ending: '\r', bytes: true },
+  ])('dispatches $name events across every chunk boundary before transport end', async ({ ending, bytes }) => {
+    const transport = createAgentSseEventSource()
+    const payload = [
+      ': heartbeat',
+      'data: {"type":"data",',
+      'data: "name":"first","value":"你好"}',
+      '',
+      'data: {"type":"data","name":"second","value":2}',
+      '',
+      'data: [DONE]',
+      '',
+      '',
+    ].join(ending)
+
+    if (bytes) {
+      for (const byte of new TextEncoder().encode(payload)) transport.feed(Uint8Array.of(byte))
+    } else {
+      for (const character of payload) transport.feed(character)
+    }
+
+    const events: AgentStreamEvent[] = []
+    for await (const event of transport.source) events.push(event)
+    expect(events).toEqual([
+      { name: 'first', type: 'data', value: '你好' },
+      { name: 'second', type: 'data', value: 2 },
+      { type: 'done' },
+    ])
+  })
+
+  it('preserves a split CRLF through empty chunks and mixed line endings', async () => {
+    const transport = createAgentSseEventSource()
+    const iterator = transport.source[Symbol.asyncIterator]()
+
+    transport.feed(': heartbeat\r\ndata: {"type":"data",\r')
+    transport.feed('')
+    transport.feed(new Uint8Array(0))
+    transport.feed('\ndata: "name":"mixed","value":true}\n\r')
+
+    await expect(iterator.next()).resolves.toEqual({
+      done: false,
+      value: { name: 'mixed', type: 'data', value: true },
+    })
+    transport.feed('\ndata: [DONE]\r\r')
+    await expect(iterator.next()).resolves.toEqual({ done: false, value: { type: 'done' } })
+    await expect(iterator.next()).resolves.toEqual({ done: true, value: undefined })
+  })
+
   it('decodes UTF-8 split across chunks and validates the event payload', async () => {
     const transport = createAgentSseEventSource()
     const eventsPromise = (async () => {
@@ -299,11 +353,11 @@ describe('SSE transport', () => {
     controller.destroy()
   })
 
-  it('ignores feed after SSE [DONE] for later source iteration', async () => {
+  it.each(['\n', '\r\n', '\r'])('ignores feed after SSE [DONE] with %j line endings', async (ending) => {
     const transport = createAgentSseEventSource()
     const iterator = transport.source[Symbol.asyncIterator]()
 
-    transport.feed('data: [DONE]\n\n')
+    transport.feed(`data: [DONE]${ending}${ending}`)
     await expect(iterator.next()).resolves.toEqual({
       done: false,
       value: { type: 'done' },
@@ -316,11 +370,11 @@ describe('SSE transport', () => {
     await expect(laterIterator.next()).resolves.toEqual({ done: true, value: undefined })
   })
 
-  it('ignores feed after a protocol error for later source iteration', async () => {
+  it.each(['\n', '\r\n', '\r'])('ignores feed after a protocol error with %j line endings', async (ending) => {
     const transport = createAgentSseEventSource()
     const iterator = transport.source[Symbol.asyncIterator]()
 
-    transport.feed('data: {"type":"error","message":"Upstream failed"}\n\n')
+    transport.feed(`data: {"type":"error","message":"Upstream failed"}${ending}${ending}`)
     await expect(iterator.next()).resolves.toMatchObject({
       done: false,
       value: { message: 'Upstream failed', type: 'error' },
