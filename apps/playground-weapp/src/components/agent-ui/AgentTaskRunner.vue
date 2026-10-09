@@ -6,11 +6,13 @@ import AgentTaskList from './AgentTaskList.vue'
 const props = withDefaults(
   defineProps<{
     busy?: boolean
+    disabled?: boolean
     tasks?: AgentTask[]
     title?: string
   }>(),
   {
     busy: false,
+    disabled: false,
     tasks: () => [],
     title: '执行计划',
   },
@@ -37,6 +39,22 @@ const actionableTasks = computed(() => {
 })
 const canCancel = computed(() => props.busy || props.tasks.some(task => task.status === 'running'))
 const showControls = computed(() => actionableTasks.value.length > 0 || canCancel.value)
+
+function requestTask(action: 'approve' | 'retry', id: string) {
+  if (props.disabled || props.busy) { return }
+  const task = props.tasks.find(item => item.id === id)
+  if (!task) { return }
+  if (action === 'approve' && task.status === 'waiting' && task.requiresApproval) {
+    emit('approve', task)
+  }
+  if (action === 'retry' && task.status === 'failed' && task.retryable) {
+    emit('retry', task)
+  }
+}
+
+function cancel() {
+  if (!props.disabled && canCancel.value) { emit('cancel') }
+}
 </script>
 
 <template>
@@ -66,11 +84,12 @@ const showControls = computed(() => actionableTasks.value.length > 0 || canCance
             v-if="entry.task.status === 'failed'"
             class="agent-native-button agent-workspace-card__action agent-workspace-card__action--primary"
             type="button"
+            :disabled="disabled"
             :aria-label="entry.retryLabel"
             hover-class="agent-workspace-card__action--pressed"
             :hover-start-time="20"
             :hover-stay-time="70"
-            @click="emit('retry', entry.task)"
+            @click="requestTask('retry', entry.task.id)"
           >
             重试
           </button>
@@ -78,11 +97,12 @@ const showControls = computed(() => actionableTasks.value.length > 0 || canCance
             v-else
             class="agent-native-button agent-workspace-card__action agent-workspace-card__action--primary"
             type="button"
+            :disabled="disabled"
             :aria-label="entry.approveLabel"
             hover-class="agent-workspace-card__action--pressed"
             :hover-start-time="20"
             :hover-stay-time="70"
-            @click="emit('approve', entry.task)"
+            @click="requestTask('approve', entry.task.id)"
           >
             批准
           </button>
@@ -96,11 +116,12 @@ const showControls = computed(() => actionableTasks.value.length > 0 || canCance
         <button
           class="agent-native-button agent-workspace-card__action agent-workspace-card__action--danger"
           type="button"
+          :disabled="disabled"
           aria-label="取消当前任务"
           hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
-          @click="emit('cancel')"
+          @click="cancel"
         >
           取消
         </button>

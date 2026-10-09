@@ -1,0 +1,15 @@
+{
+  "name": "retail-reviews",
+  "type": "block",
+  "title": "Retail Reviews",
+  "description": "Controlled review draft, injected ratings, application validation and guarded helpful intents.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/empty", "components/input-number", "components/textarea"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/retail-reviews/weapp-vite.vue", "to": "src/components/blocks/retail-reviews.vue" },
+    { "target": "weapp", "from": "registry/blocks/retail-reviews/retail-reviews.types.ts", "to": "src/components/blocks/retail-reviews.types.ts" }
+  ],
+  "docs": "/blocks/retail-tools"
+}

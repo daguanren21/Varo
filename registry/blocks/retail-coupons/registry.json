@@ -1,0 +1,15 @@
+{
+  "name": "retail-coupons",
+  "type": "block",
+  "title": "Retail Coupons",
+  "description": "Injected coupon eligibility, guarded claim and controlled selection intents.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["utils/retail", "components/button", "components/empty"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/retail-coupons/weapp-vite.vue", "to": "src/components/blocks/retail-coupons.vue" },
+    { "target": "weapp", "from": "registry/blocks/retail-coupons/retail-coupons.types.ts", "to": "src/components/blocks/retail-coupons.types.ts" }
+  ],
+  "docs": "/blocks/retail-tools"
+}

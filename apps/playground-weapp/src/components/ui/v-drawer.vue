@@ -14,6 +14,7 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<{
+    ariaLabel?: string
     className?: ClassValue
     customStyle?: string | Record<string, string | number>
     defaultOpen?: boolean
@@ -64,7 +65,7 @@ const drawer = useDrawerRoot({
 
 const currentOpen = computed(() => drawer.state.open.value)
 const dataState = computed(() => currentOpen.value ? 'open' : 'closed')
-const drawerLabel = computed(() => props.closeable ? 'Drawer' : undefined)
+const drawerLabel = computed(() => props.ariaLabel ?? (props.closeable ? 'Drawer' : undefined))
 const dataRound = computed(() => String(Boolean(props.round)))
 const dataSafeAreaInsetBottom = computed(() => String(Boolean(props.safeAreaInsetBottom)))
 const classes = computed(() => cn('varo-drawer', props.className))

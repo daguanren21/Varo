@@ -1,0 +1,747 @@
+{
+  "web": [
+    {
+      "file": "tests/h5/blocks.e2e.ts",
+      "titlePath": [
+        "H5 installed ProductList delivers distinct select and cart intents to its consumer"
+      ],
+      "target": "h5",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/h5/chat-blocks.e2e.ts",
+      "titlePath": [
+        "H5 B1 Chat Blocks",
+        "real long-context submit can be stopped from the sheet"
+      ],
+      "target": "h5",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/h5/chat-blocks.e2e.ts",
+      "titlePath": [
+        "H5 B1 Chat Blocks",
+        "pre-message failure remains visible and retry produces a real response"
+      ],
+      "target": "h5",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/h5/chat-blocks.e2e.ts",
+      "titlePath": [
+        "H5 B1 Chat Blocks",
+        "history and new conversation preserve controlled input and disabled behavior"
+      ],
+      "target": "h5",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/h5/chat-blocks.e2e.ts",
+      "titlePath": [
+        "H5 B1 Chat Blocks",
+        "sheet context, expand/back/close and explicit insertion preserve the draft"
+      ],
+      "target": "h5",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-preview/motion-controls.e2e.ts",
+      "titlePath": [
+        "preview motion controls, toast transitions, reduced motion and layout"
+      ],
+      "target": "weapp-preview",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-preview/preview.e2e.ts",
+      "titlePath": [
+        "preview controls, lifecycle, responsive frame, recovery, streaming and plugins"
+      ],
+      "target": "weapp-preview",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-preview/preview.e2e.ts",
+      "titlePath": [
+        "preview native Markdown table contrast and contained horizontal scrolling"
+      ],
+      "target": "weapp-preview",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-preview/pull-refresh.e2e.ts",
+      "titlePath": [
+        "preview pull-refresh cancel, scroll gate, threshold and loading lifecycle"
+      ],
+      "target": "weapp-preview",
+      "disposition": "run"
+    },
+    { "file": "tests/h5/source-chat.e2e.ts", "titlePath": ["H5 B2 Source Chat", "source availability and connection require explicit scope selection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/source-chat.e2e.ts", "titlePath": ["H5 B2 Source Chat", "retrieval progress settles into visible receipts and application-opened citations"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/source-chat.e2e.ts", "titlePath": ["H5 B2 Source Chat", "failure retry, empty and out-of-scope results emit one ticket intent per application grant"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/source-chat.e2e.ts", "titlePath": ["H5 B2 Source Chat", "unbound prompt survives submit and disabled stop remains a cancellation escape"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/workspace.e2e.ts", "titlePath": ["H5 B2 Workspace", "branch select pin and disabled controls preserve application-owned versions"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/workspace.e2e.ts", "titlePath": ["H5 B2 Workspace", "approval decisions and retry compute a local result without optimistic completion"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/workspace.e2e.ts", "titlePath": ["H5 B2 Workspace", "busy cancel stops local work and requires a new approval"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/activity.e2e.ts", "titlePath": ["H5 B2 Activity Block", "six states have distinct labels and state-appropriate actions"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/activity.e2e.ts", "titlePath": ["H5 B2 Activity Block", "controlled start approval retry completion and cancellation follow legal sequences"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/activity.e2e.ts", "titlePath": ["H5 B2 Activity Block", "current prop eligibility disabled items and empty activity reject unavailable actions"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "settings accept controlled changes and preserve rejected values"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "onboarding bounds navigation and keeps close available while pending"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "multi-step form validates preserves values and adds a real local summary row"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "timeline retry validates input and records the actual local import"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "summary period error retry and empty states retain honest context"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "booking rechecks local availability rejects conflicts and cancels accepted records"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "people paging filters grants and confirmed mutations update local records"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/application-blocks.e2e.ts", "titlePath": ["H5 B4 Application Blocks", "injected disabled pending and empty states preserve evidence without mutations"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "chart derives values shows zero and detail accepts twelve and rejects thirteen categories"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "schedule bounds day week navigation and disabled dates preserve controlled selection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "schedule rejects occupied slots applies date filters and retains unavailable selection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "board allowed rejected and approved moves change cards and derived chart totals"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "grid preserves base columns expansion filtering grouping and bounded pages"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "grid editing preserves drafts on field and application rejection then updates real records"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/data-workspace.e2e.ts", "titlePath": ["H5 B5 mobile data workspace", "all blocks retain evidence across disabled loading busy error empty and invalid states"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "hero grants open a real local guide and reject unavailable actions"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "articles paginate without truncation and open eligible current details"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "plan selection waits for host acceptance and preserves rejection evidence"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "FAQ supports keyboard disclosure stable IDs and long answers"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "contact validates actual input and saves only explicitly accepted local receipts"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "process actions advance only the local instruction exploration"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/marketing-blocks.e2e.ts", "titlePath": ["H5 B4 Marketing Blocks", "loading empty error and disabled states retain content and recover through real controls"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "controlled selections reject unavailable disabled duplicate and no-op choices"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "catalog loading error empty and revoked availability block new work"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "shared prompt honors controlled rejection reset and absent local ownership"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "one-side failure allows independent retry continuation and honest supplied metrics"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "disabled input preserves side-specific stop while the other producer continues"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "closing active comparison releases both iterators and pending timers"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/model-compare.e2e.ts", "titlePath": ["H5 B3 Model Compare", "standalone selector composes with ordinary Chat without a comparison stream"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "CRM: bounded pages, distinct local task, approval and filters"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "CRM: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "AI Ops: bounded pages, distinct local task, approval and filters"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "AI Ops: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Dev Ops: bounded pages, distinct local task, approval and filters"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Dev Ops: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Agents: bounded pages, distinct local task, approval and filters"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Agents: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Analytics: bounded pages, distinct local task, approval and filters"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Analytics: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Files: bounded pages, distinct local task, approval and filters"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "Files: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "current grants, stale removal confirmation and confirmed removal preserve correct records"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "analytics derives bounded samples and accepts a repaired sparse snapshot"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/operations.e2e.ts", "titlePath": ["H5 B5 mobile operations", "loading, busy, disabled, error and invalid bounds retain evidence and permit closing"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/activity.e2e.ts", "titlePath": ["H5 B2 Activity Block", "application rejection never optimistically changes controlled activity"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "selection is not upload and exact persisted bytes and digest gate message submission"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "invalid type size and count reject the whole selection without truncation"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "real HTTP rejection remains blocked until explicit service recovery and retry"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "server content validation rejects binary bytes despite an allowed extension"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "fault-injected invalid 2xx acknowledgements keep receipts and submission blocked"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "disabled input preserves cancellation and removed attempts never regain a receipt"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "disposing an active transfer releases owned handles and suppresses late results"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "cancelling a pending chooser releases its real input without selecting files"], "target": "h5", "disposition": "run" },
+    { "file": "tests/h5/attachments.e2e.ts", "titlePath": ["H5 B3 Attachment Transfer", "text ownership preserves controlled rejection external reset and uncontrolled submission"], "target": "h5", "disposition": "run" }
+  ],
+  "weapp": [
+    {
+      "file": "tests/weapp-native/chat-prompt.e2e.ts",
+      "titlePath": [
+        "native Chat prompt ownership",
+        "absent native model owns the draft while busy only rejects submission"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-prompt.e2e.ts",
+      "titlePath": [
+        "native Chat prompt ownership",
+        "controlled empty model rejects unaccepted drafts and reflects acceptance and reset"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capabilities.e2e.ts",
+      "titlePath": [
+        "native capabilities reject unavailable keyboard and screenshot paths"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "real submit streams and stop cancels the producer without later chunks"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "pre-message error stays visible and real retry completes a response"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "history and new-conversation intents preserve controlled empty input and layout"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "sheet quote removal, expand/back/close and selected response insertion"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/retail.e2e.ts",
+      "titlePath": [
+        "native retail",
+        "cold entry and cached cart return: /retail-goods/list/index"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/retail.e2e.ts",
+      "titlePath": [
+        "native retail",
+        "cold entry and cached cart return: /retail-goods/result/index"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/retail.e2e.ts",
+      "titlePath": [
+        "native retail",
+        "browse, quantity, address, checkout, result and immutable order history"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/runtime.e2e.ts",
+      "titlePath": [
+        "native runtime",
+        "region selection stays open until commit and backdrop dismissal preserves the committed value"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/runtime.e2e.ts",
+      "titlePath": [
+        "native runtime",
+        "real theme toggle updates provider and visible tokens"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/runtime.e2e.ts",
+      "titlePath": [
+        "native runtime",
+        "Agent real controls stream, request approval, then create one paid order"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "source availability and connection require explicit scope selection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "retrieval progress settles into visible receipts and application-opened citations"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "failure retry, empty and out-of-scope results emit one ticket intent per application grant"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "unbound prompt survives submit and disabled stop remains a cancellation escape"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "branch select pin and disabled controls preserve application-owned versions"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "approval decisions and retry compute a local result without optimistic completion"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "busy cancel stops local work and requires a new approval"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "six states have distinct labels and state-appropriate actions"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "controlled start approval retry completion and cancellation follow legal sequences"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "current prop eligibility disabled items and empty activity reject unavailable actions"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "settings accept controlled changes and preserve rejected values"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "onboarding bounds navigation and keeps close available while pending"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "multi-step form validates preserves values and adds a real local summary row"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "timeline retry validates input and records the actual local import"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "summary period error retry and empty states retain honest context"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "booking rechecks local availability rejects conflicts and cancels accepted records"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "people paging filters grants and confirmed mutations update local records"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "injected disabled pending and empty states preserve evidence without mutations"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "chart derives values shows zero and detail accepts twelve and rejects thirteen categories"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "schedule bounds day week navigation and disabled dates preserve controlled selection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "schedule rejects occupied slots applies date filters and retains unavailable selection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "board allowed rejected and approved moves change cards and derived chart totals"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "grid preserves base columns expansion filtering grouping and bounded pages"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "grid editing preserves drafts on field and application rejection then updates real records"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "all blocks retain evidence across disabled loading busy error empty and invalid states"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "hero grants open a real local guide and reject unavailable actions"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "articles paginate without truncation and open eligible current details"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "plan selection waits for host acceptance and preserves rejection evidence"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "FAQ supports native tap disclosure stable IDs and long answers"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "contact validates actual input and saves only explicitly accepted local receipts"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "process actions advance only the local instruction exploration"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "loading empty error and disabled states retain content and recover through real controls"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "controlled selections reject unavailable disabled duplicate and no-op choices"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "catalog loading error empty and revoked availability block new work"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "shared prompt honors controlled rejection reset and absent local ownership"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "one-side failure allows independent retry continuation and honest supplied metrics"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "disabled input preserves side-specific stop while the other producer continues"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "closing active comparison releases both iterators and pending timers"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "standalone selector composes with ordinary Chat without a comparison stream"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "CRM: bounded pages, distinct local task, approval and filters"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "CRM: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "AI Ops: bounded pages, distinct local task, approval and filters"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "AI Ops: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Dev Ops: bounded pages, distinct local task, approval and filters"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Dev Ops: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Agents: bounded pages, distinct local task, approval and filters"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Agents: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Analytics: bounded pages, distinct local task, approval and filters"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Analytics: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Files: bounded pages, distinct local task, approval and filters"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Files: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "current grants, stale removal confirmation and confirmed removal preserve correct records"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "analytics derives bounded samples and accepts a repaired sparse snapshot"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "loading, busy, disabled, error and invalid bounds retain evidence and permit closing"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "coupons: application claim acceptance, stale eligibility rejection and controlled selection"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: explicit grants, rejected and accepted local after-sale, no payment or download success"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: application validation, retained rejected draft, accepted local list and helpful guard"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "wishlist: reused product controls, stock and permission denial, application rejection and membership removal"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "comparison: every field remains readable, fourth product rejected visibly and removable"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "filters: draft isolation, cancel, reset, rejected category and accepted sorted stock results"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "优惠券示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "凭证示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "评价示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "收藏示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "比较示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "filters: loading, empty, error, long choices and busy/disabled cancellation stays available"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "application rejection never optimistically changes controlled activity"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/attachments.e2e.ts", "titlePath": ["native B3 Attachment Transfer prerequisites", "missing native service remains explicit without fabricated attachments or acknowledgement"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/attachments.e2e.ts", "titlePath": ["native B3 Attachment Transfer prerequisites", "text ownership preserves controlled rejection external reset and uncontrolled submission"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/attachments.e2e.ts", "titlePath": ["native B3 Attachment Transfer prerequisites", "native disabled composition preserves draft and cannot accept a message"], "target": "weapp-headless", "disposition": "run" }
+  ],
+  "devtools": [
+    {
+      "file": "tests/weapp-native/chat-prompt.e2e.ts",
+      "titlePath": [
+        "native Chat prompt ownership",
+        "absent native model owns the draft while busy only rejects submission"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-prompt.e2e.ts",
+      "titlePath": [
+        "native Chat prompt ownership",
+        "controlled empty model rejects unaccepted drafts and reflects acceptance and reset"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "login-form: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "profile-card: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "profile-edit: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "product-list: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "order-filter: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "agent-chat: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-home: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-category: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-cart: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-product-detail: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-checkout: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-order-list: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/blocks.e2e.ts",
+      "titlePath": [
+        "native Block controls",
+        "retail-profile: native entry and control invariants"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block login-form"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block profile-card"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block profile-edit"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block product-list"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block order-filter"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block agent-chat"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-home"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-category"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-cart"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-product-detail"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-checkout"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-order-list"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture Block retail-profile"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture mall Agent closed"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture mall Agent open"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capture.e2e.ts",
+      "titlePath": [
+        "native screenshot entries",
+        "capture mall Agent streaming"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "real submit streams and stop cancels the producer without later chunks"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "pre-message error stays visible and real retry completes a response"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "history and new-conversation intents preserve controlled empty input and layout"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/chat-blocks.e2e.ts",
+      "titlePath": [
+        "native B1 Chat Blocks",
+        "sheet quote removal, expand/back/close and selected response insertion"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/runtime.e2e.ts",
+      "titlePath": [
+        "native runtime",
+        "region selection stays open until commit and backdrop dismissal preserves the committed value"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/runtime.e2e.ts",
+      "titlePath": [
+        "native runtime",
+        "real theme toggle updates provider and visible tokens"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/runtime.e2e.ts",
+      "titlePath": [
+        "native runtime",
+        "Agent real controls stream, request approval, then create one paid order"
+      ],
+      "target": "weapp-devtools",
+      "disposition": "run"
+    },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "source availability and connection require explicit scope selection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "retrieval progress settles into visible receipts and application-opened citations"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "failure retry, empty and out-of-scope results emit one ticket intent per application grant"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/source-chat.e2e.ts", "titlePath": ["native B2 Source Chat", "unbound prompt survives submit and disabled stop remains a cancellation escape"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "branch select pin and disabled controls preserve application-owned versions"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "approval decisions and retry compute a local result without optimistic completion"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "busy cancel stops local work and requires a new approval"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "six states have distinct labels and state-appropriate actions"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "controlled start approval retry completion and cancellation follow legal sequences"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "current prop eligibility disabled items and empty activity reject unavailable actions"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "settings accept controlled changes and preserve rejected values"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "onboarding bounds navigation and keeps close available while pending"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "multi-step form validates preserves values and adds a real local summary row"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "timeline retry validates input and records the actual local import"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "summary period error retry and empty states retain honest context"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "booking rechecks local availability rejects conflicts and cancels accepted records"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "people paging filters grants and confirmed mutations update local records"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/application-blocks.e2e.ts", "titlePath": ["native B4 Application Blocks", "injected disabled pending and empty states preserve evidence without mutations"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "chart derives values shows zero and detail accepts twelve and rejects thirteen categories"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "schedule bounds day week navigation and disabled dates preserve controlled selection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "schedule rejects occupied slots applies date filters and retains unavailable selection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "board allowed rejected and approved moves change cards and derived chart totals"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "grid preserves base columns expansion filtering grouping and bounded pages"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "grid editing preserves drafts on field and application rejection then updates real records"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/data-workspace.e2e.ts", "titlePath": ["native B5 mobile data workspace", "all blocks retain evidence across disabled loading busy error empty and invalid states"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "hero grants open a real local guide and reject unavailable actions"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "articles paginate without truncation and open eligible current details"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "plan selection waits for host acceptance and preserves rejection evidence"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "FAQ supports native tap disclosure stable IDs and long answers"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "contact validates actual input and saves only explicitly accepted local receipts"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "process actions advance only the local instruction exploration"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/marketing-blocks.e2e.ts", "titlePath": ["native B4 Marketing Blocks", "loading empty error and disabled states retain content and recover through real controls"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "controlled selections reject unavailable disabled duplicate and no-op choices"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "catalog loading error empty and revoked availability block new work"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "shared prompt honors controlled rejection reset and absent local ownership"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "one-side failure allows independent retry continuation and honest supplied metrics"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "disabled input preserves side-specific stop while the other producer continues"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "closing active comparison releases both iterators and pending timers"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/model-compare.e2e.ts", "titlePath": ["native B3 Model Compare", "standalone selector composes with ordinary Chat without a comparison stream"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "CRM: bounded pages, distinct local task, approval and filters"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "CRM: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "AI Ops: bounded pages, distinct local task, approval and filters"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "AI Ops: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Dev Ops: bounded pages, distinct local task, approval and filters"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Dev Ops: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Agents: bounded pages, distinct local task, approval and filters"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Agents: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Analytics: bounded pages, distinct local task, approval and filters"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Analytics: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Files: bounded pages, distinct local task, approval and filters"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "Files: application rejects invalid approval, repairs data and records a reviewer rejection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "current grants, stale removal confirmation and confirmed removal preserve correct records"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "analytics derives bounded samples and accepts a repaired sparse snapshot"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native B5 mobile operations", "loading, busy, disabled, error and invalid bounds retain evidence and permit closing"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/operations.e2e.ts", "titlePath": ["native operations screenshot", "capture real local CRM detail"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "coupons: application claim acceptance, stale eligibility rejection and controlled selection"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: explicit grants, rejected and accepted local after-sale, no payment or download success"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: application validation, retained rejected draft, accepted local list and helpful guard"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "wishlist: reused product controls, stock and permission denial, application rejection and membership removal"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "comparison: every field remains readable, fourth product rejected visibly and removable"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "filters: draft isolation, cancel, reset, rejected category and accepted sorted stock results"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "优惠券示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "凭证示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "评价示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "收藏示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "比较示例: loading, empty, error, disabled, busy and long content"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "filters: loading, empty, error, long choices and busy/disabled cancellation stays available"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "application rejection never optimistically changes controlled activity"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/attachments.e2e.ts", "titlePath": ["native B3 Attachment Transfer prerequisites", "missing native service remains explicit without fabricated attachments or acknowledgement"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/attachments.e2e.ts", "titlePath": ["native B3 Attachment Transfer prerequisites", "text ownership preserves controlled rejection external reset and uncontrolled submission"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/attachments.e2e.ts", "titlePath": ["native B3 Attachment Transfer prerequisites", "native disabled composition preserves draft and cannot accept a message"], "target": "weapp-devtools", "disposition": "run" }
+  ]
+}

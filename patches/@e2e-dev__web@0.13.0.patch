@@ -1,0 +1,71 @@
+diff --git a/dist/engine.js b/dist/engine.js
+index 0f481518c709ad99d653f359a7c226d8bffbb960..465d09edfceb12f381068d17511d69bf92cf3e02 100644
+--- a/dist/engine.js
++++ b/dist/engine.js
+@@ -56,6 +56,9 @@ export function web(options = {}) {
+         validateInitScripts(options.initScripts);
+     if (options.screencast !== undefined)
+         validateScreencast(options.screencast);
++    if (options.fullPageScreenshots !== undefined && typeof options.fullPageScreenshots !== 'boolean') {
++        throw new ConfigurationError('INVALID_CONFIG', 'web({ fullPageScreenshots }) must be a boolean');
++    }
+     const reconnecting = options.connect?.reconnectEndpoint !== undefined;
+     if (reconnecting && typeof options.connect?.reconnectEndpoint !== 'function') {
+         throw new ConfigurationError('INVALID_CONFIG', 'connect.reconnectEndpoint must be a function');
+@@ -128,6 +131,7 @@ export function web(options = {}) {
+ const WEB_OPTION_KEYS = Object.keys({
+     browser: true,
+     viewport: true,
++    fullPageScreenshots: true,
+     screencast: true,
+     connect: true,
+     headers: true,
+diff --git a/dist/surface.d.ts b/dist/surface.d.ts
+index f4b0aa12053860d107e130cc2ab8d7403d2b3fd4..f6f94bc35580aedd61320d7c0c71054da89653cb 100644
+--- a/dist/surface.d.ts
++++ b/dist/surface.d.ts
+@@ -85,6 +85,8 @@ export interface WebOptions {
+      * `browser.setViewport` still fixes one for the rest of the attempt.
+      */
+     readonly viewport?: ViewportSize | null;
++    /** Capture the full document in screenshot artifacts; observation pixels stay viewport-sized. Defaults to false. */
++    readonly fullPageScreenshots?: boolean;
+     /**
+      * How the engine's own screencast records an attempt that records video.
+      * A browser provider that records (`BrowserProvider.record`) records in
+@@ -172,6 +174,7 @@ export declare class PlaywrightSurface {
+     private session;
+     private readonly usedContexts;
+     private readonly viewport;
++    private readonly fullPageScreenshots;
+     private readonly screencast;
+     /** Injected request headers, names lowercased so they replace the browser's own of the same name. */
+     private readonly headers;
+diff --git a/dist/surface.js b/dist/surface.js
+index 2d07c2be7ff614a9f840c8fb14336a8fd2347056..180823ac105be8b4bb32320af69126d466a06a88 100644
+--- a/dist/surface.js
++++ b/dist/surface.js
+@@ -57,6 +57,7 @@ export class PlaywrightSurface {
+     session;
+     usedContexts = new Set();
+     viewport;
++    fullPageScreenshots;
+     screencast;
+     /** Injected request headers, names lowercased so they replace the browser's own of the same name. */
+     headers;
+@@ -85,6 +86,7 @@ export class PlaywrightSurface {
+         this.leases = typeof options.browser === 'object' && options.browser !== null ? new LeasedBrowsers(options.browser) : undefined;
+         this.connect = options.connect;
+         this.viewport = options.viewport === undefined ? DEFAULT_VIEWPORT : options.viewport;
++        this.fullPageScreenshots = options.fullPageScreenshots ?? false;
+         this.screencast = options.screencast ?? {};
+         this.headers = options.headers === undefined ? undefined : lowercaseNames(options.headers);
+         this.basicAuth = options.basicAuth;
+@@ -668,6 +670,7 @@ export class PlaywrightSurface {
+             await page.screenshot({
+                 path: absolute,
+                 timeout: currentOperation.timeoutMs,
++                fullPage: this.fullPageScreenshots,
+                 ...maskOptions(secureFieldMasks(page)),
+             });
+             return relative;

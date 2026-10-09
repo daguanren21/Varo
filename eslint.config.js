@@ -40,12 +40,18 @@ export default await defineEslintConfig({
       },
     },
     {
-      name: 'varo/native-composer-events',
+      name: 'varo/native-event-names',
       files: [
-        'registry/blocks/{agent-chat,agent-workspace}/weapp-vite.vue',
+        'apps/playground-weapp/src/**/*.vue',
+        'registry/blocks/**/weapp-vite.vue',
+        'registry/blocks/**/*.weapp-vite.vue',
+        'registry/components/**/weapp-vite.vue',
+        'registry/components/**/*.weapp-vite.vue',
+        'registry/components/**/v-*.vue',
+        'registry/components/agent-ui/Agent*.vue',
       ],
       rules: {
-        // The pinned native compiler distinguishes modelValue from model-value.
+        // Native event names are exact; Vue hyphenation rewrites break emitted-name/listener pairs.
         'vue/v-on-event-hyphenation': 'off',
       },
     },

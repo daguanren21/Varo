@@ -15,3 +15,5 @@ apps/docs/.vitepress/cache/
 .worktrees/
 apps/playground-weapp/devtools/
 apps/playground-weapp/project.local.json
+apps/e2e/.e2e/
+packages/agent-core/runtime/

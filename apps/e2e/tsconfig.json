@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true
+  },
+  "include": ["e2e.config.ts", "engines/**/*.ts", "tests/**/*.ts", "scripts/*.mjs"],
+  "exclude": ["node_modules", ".e2e"]
+}

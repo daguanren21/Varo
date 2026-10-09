@@ -14,12 +14,12 @@
     "prepare:weapp": "weapp-vite prepare",
     "lint": "echo weapp playground lint pending",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config vite.config.ts --environment jsdom --dir . --passWithNoTests",
+    "test": "vitest run --config vite.config.ts --environment jsdom --dir src --passWithNoTests",
     "smoke:blocks": "node e2e/block-runtime-smoke.mjs",
     "smoke:runtime": "node e2e/runtime-smoke.mjs",
     "smoke:theme": "node e2e/theme-runtime-smoke.mjs",
     "smoke:retail": "node e2e/retail-runtime-smoke.mjs",
-    "test:e2e": "vitest run e2e --config vite.config.ts --environment jsdom --dir . --passWithNoTests"
+    "test:contracts": "vitest run --config ../../vitest.config.ts --dir contracts --environment node --passWithNoTests=false"
   },
   "dependencies": {
     "@varo-ui/ai": "workspace:^",

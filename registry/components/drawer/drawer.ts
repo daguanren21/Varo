@@ -17,6 +17,7 @@ function elevatedZIndex(value: DrawerDimension) {
 export const VDrawer = defineComponent({
   name: 'VDrawer',
   props: {
+    ariaLabel: String,
     defaultOpen: Boolean,
     open: { type: Boolean as PropType<boolean | undefined>, default: undefined },
     placement: { type: String as PropType<DrawerPlacement>, default: 'right' },
@@ -71,6 +72,7 @@ export const VDrawer = defineComponent({
               ? h(DrawerOverlay, { class: 'varo-drawer__overlay', onClick: () => emit('clickOverlay') })
               : null,
             h(DrawerContent, {
+              'aria-label': props.ariaLabel,
               'class': 'varo-drawer__content',
               'data-round': String(props.round),
               'data-safe-area-inset-bottom': String(props.safeAreaInsetBottom),

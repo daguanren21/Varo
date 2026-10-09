@@ -1,4 +1,5 @@
-import { readdirSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { readdirSync, realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'weapp-vite/config'
@@ -24,6 +25,7 @@ const weappJsonBlockTestPlugin = {
 export default defineConfig(({ mode }) => ({
   define: {
     'import.meta.env.VARO_ROBOT_CHAT_ENABLED': JSON.stringify(process.env.WEAPP_ROBOT_CHAT === '1'),
+    'import.meta.env.VARO_E2E_PROJECT_ID': JSON.stringify(createHash('sha256').update(resolve(realpathSync(root), 'devtools/build')).digest('hex')),
   },
   plugins: isTest
     ? [
@@ -42,6 +44,20 @@ export default defineConfig(({ mode }) => ({
       ? 'dist/browser/mp-weixin'
       : isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
     minify: 'esbuild',
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [{
+            // Claim virtual/resolved compiler helpers before a demo's common group absorbs their closure.
+            name: 'weapp-vendors/compiler-helpers',
+            test: /@oxc-project(?:\/|\+)runtime(?:@[^/]+)?\/(?:src\/)?helpers\//,
+            priority: 1,
+            minShareCount: 1,
+            includeDependenciesRecursively: true,
+          }],
+        },
+      },
+    },
   },
   esbuild: {
     keepNames: true,
@@ -62,6 +78,10 @@ export default defineConfig(({ mode }) => ({
     autoImportComponents: false,
     srcRoot: 'src',
     platform: 'weapp',
+    chunks: {
+      // Shared image URL modules belong with their main-package assets, not a demo's common chunk.
+      sharedOverrides: [{ test: 'assets/retail/*.jpg', mode: 'path' }],
+    },
     styles: [
       { source: 'styles.css', include: 'app.vue' },
       ...registryStyles.map(name => ({ source: `styles/${name}`, include: 'app.vue' })),

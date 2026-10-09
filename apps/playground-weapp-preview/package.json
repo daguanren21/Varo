@@ -8,9 +8,6 @@
     "dev": "pnpm run prepare:artifacts && vite",
     "build": "pnpm run prepare:artifacts && vite build",
     "preview": "vite preview",
-    "smoke:browser": "node scripts/smoke-preview.mjs",
-    "smoke:pull-refresh": "node scripts/smoke-pull-refresh.mjs",
-    "smoke:motion-controls": "node scripts/smoke-motion-controls.mjs",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
@@ -20,7 +17,6 @@
     "vue": "^3.5.43"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0",
     "@varo/playground-weapp": "workspace:*",
     "@vitejs/plugin-vue": "^6.0.9",
     "typescript": "^6.0.3",

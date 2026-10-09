@@ -1,0 +1,15 @@
+{
+  "name": "retail-filters",
+  "type": "block",
+  "title": "Retail Filters",
+  "description": "Controlled mobile product-filter Drawer with separate draft, reset, apply and cancel intents.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/checkbox", "components/drawer", "components/input-number"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/retail-filters/weapp-vite.vue", "to": "src/components/blocks/retail-filters.vue" },
+    { "target": "weapp", "from": "registry/blocks/retail-filters/retail-filters.types.ts", "to": "src/components/blocks/retail-filters.types.ts" }
+  ],
+  "docs": "/blocks/retail-tools"
+}

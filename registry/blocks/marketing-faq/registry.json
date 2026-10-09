@@ -1,0 +1,16 @@
+{
+  "name": "marketing-faq",
+  "type": "block",
+  "title": "Marketing FAQ",
+  "description": "Stable-ID controlled question disclosure with keyboard-accessible H5 buttons and native tap actions.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/marketing-faq/h5.vue", "to": "src/components/blocks/marketing-faq.vue" },
+    { "target": "weapp", "from": "registry/blocks/marketing-faq/weapp-vite.vue", "to": "src/components/blocks/marketing-faq.vue" },
+    { "target": "h5", "from": "registry/blocks/marketing-faq/marketing-faq.types.ts", "to": "src/components/blocks/marketing-faq.types.ts" },
+    { "target": "weapp", "from": "registry/blocks/marketing-faq/marketing-faq.types.ts", "to": "src/components/blocks/marketing-faq.types.ts" }
+  ],
+  "docs": "/blocks/marketing-blocks"
+}

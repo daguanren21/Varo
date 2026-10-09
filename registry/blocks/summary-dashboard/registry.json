@@ -1,0 +1,17 @@
+{
+  "name": "summary-dashboard",
+  "type": "block",
+  "title": "Summary Dashboard",
+  "description": "Mobile metric and contextual summary presentation with controlled periods and explicit retry grants.",
+  "docs": "/blocks/application-blocks#summary-dashboard",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/summary-dashboard/h5.vue", "to": "src/components/blocks/summary-dashboard.vue" },
+    { "target": "weapp", "from": "registry/blocks/summary-dashboard/weapp-vite.vue", "to": "src/components/blocks/summary-dashboard.vue" },
+    { "target": "h5", "from": "registry/blocks/summary-dashboard/summary-dashboard-actions.ts", "to": "src/components/blocks/summary-dashboard-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/summary-dashboard/summary-dashboard-actions.ts", "to": "src/components/blocks/summary-dashboard-actions.ts" }
+  ]
+}

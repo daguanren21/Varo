@@ -24,3 +24,8 @@ allowBuilds:
   vue-demi: true
   workerd: true
   '@parcel/watcher': true
+
+patchedDependencies:
+  '@devframes/agentic@1.2.3': patches/@devframes__agentic@1.2.3.patch
+  '@e2e-dev/web@0.13.0': patches/@e2e-dev__web@0.13.0.patch
+  devframe@1.2.3: patches/devframe@1.2.3.patch

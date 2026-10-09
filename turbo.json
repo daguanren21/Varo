@@ -5,6 +5,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@varo-ui/ai#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "runtime/**"]
+    },
     "@varo/playground-weapp#build": {
       "cache": false,
       "dependsOn": ["^build"],
@@ -32,11 +36,18 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
+    "@varo/devtools#typecheck": {
+      "dependsOn": ["^build", "^typecheck"]
+    },
+    "@varo/devtools#test": {
+      "dependsOn": ["^build", "^test"],
+      "outputs": ["coverage/**"]
+    },
     "test": {
       "dependsOn": ["^test"],
       "outputs": ["coverage/**"]
     },
-    "test:e2e": {
+    "test:contracts": {
       "cache": false
     }
   }

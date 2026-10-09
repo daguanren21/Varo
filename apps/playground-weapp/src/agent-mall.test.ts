@@ -87,6 +87,26 @@ describe('Varo Agent UI contracts', () => {
     composer.unmount()
   })
 
+  it('blocks native confirmation and suggestions until pending receipts are accepted', async () => {
+    const composer = mount(AgentComposer, {
+      props: { modelValue: '草稿', submitDisabled: true, suggestions: ['推荐商品'] },
+    })
+    try {
+      const input = composer.get('textarea')
+      const suggestion = composer.findAll('button').find(button => button.text() === '推荐商品')!
+      expect(input.attributes('disabled')).toBeUndefined()
+      expect(composer.get('button[aria-label="发送消息"]').attributes('disabled')).toBeDefined()
+      expect(suggestion.attributes('disabled')).toBeDefined()
+      await input.trigger('confirm')
+      await suggestion.trigger('click')
+      expect(composer.emitted('submit')).toBeUndefined()
+      await composer.setProps({ submitDisabled: false })
+      await input.trigger('confirm')
+      expect(composer.emitted('submit')).toEqual([['草稿']])
+    }
+    finally { composer.unmount() }
+  })
+
   it('uses rich-text only for safe inline Markdown and preserves link events', async () => {
     const inline = mount(AgentMarkdown, {
       props: {

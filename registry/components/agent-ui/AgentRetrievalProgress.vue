@@ -4,10 +4,12 @@ import { computed } from 'wevu'
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean
     items?: AgentRetrievalItem[]
     title?: string
   }>(),
   {
+    disabled: false,
     items: () => [],
     title: '检索进度',
   },
@@ -43,6 +45,12 @@ const displayItems = computed(() => props.items.map((item, index) => ({
   showPulse: item.status === 'reading',
   statusLabel: statusLabel(item.status),
 })))
+
+function retry(id: string) {
+  if (props.disabled) { return }
+  const item = props.items.find(entry => entry.id === id)
+  if (item?.status === 'failed' && item.retryable) { emit('retry', item) }
+}
 </script>
 
 <template>
@@ -91,11 +99,12 @@ const displayItems = computed(() => props.items.map((item, index) => ({
           v-if="entry.canRetry"
           class="agent-native-button agent-workspace-card__action agent-workspace-card__action--primary"
           type="button"
+          :disabled="disabled"
           :aria-label="entry.retryLabel"
           hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
-          @click="emit('retry', entry.item)"
+          @click="retry(entry.item.id)"
         >
           重试
         </button>

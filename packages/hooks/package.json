@@ -39,8 +39,7 @@
     "dev": "tsdown --watch",
     "lint": "echo hooks lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
-    "test:e2e": "echo hooks has no e2e"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
     "@varo/shared": "workspace:*",

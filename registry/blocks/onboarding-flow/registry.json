@@ -1,0 +1,17 @@
+{
+  "name": "onboarding-flow",
+  "type": "block",
+  "title": "Onboarding Flow",
+  "description": "Controlled bounded onboarding with back, next, finish and close intents.",
+  "docs": "/blocks/application-blocks#onboarding-flow",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/onboarding-flow/h5.vue", "to": "src/components/blocks/onboarding-flow.vue" },
+    { "target": "weapp", "from": "registry/blocks/onboarding-flow/weapp-vite.vue", "to": "src/components/blocks/onboarding-flow.vue" },
+    { "target": "h5", "from": "registry/blocks/onboarding-flow/onboarding-flow-actions.ts", "to": "src/components/blocks/onboarding-flow-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/onboarding-flow/onboarding-flow-actions.ts", "to": "src/components/blocks/onboarding-flow-actions.ts" }
+  ]
+}

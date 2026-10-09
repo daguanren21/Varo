@@ -256,7 +256,29 @@ const lines = [
   'agent-chat': {
     name: 'AgentChat',
     importPath: '@/components/blocks/agent-chat.vue',
-    example: '<AgentChat v-model="prompt" :messages="messages" :snapshot="snapshot" @submit="send" />',
-    code: '<script setup lang="ts">\nimport AgentChat from \'@/components/blocks/agent-chat.vue\'\n</script>\n\n<template>\n  <AgentChat v-model="prompt" :messages="messages" :snapshot="snapshot" @submit="send" />\n</template>',
+    example: '<AgentChat v-if="open" v-model="prompt" :messages="messages" @submit="send" @new-conversation="newConversation" @close="open = false" />',
+    code: `<script setup lang="ts">
+import type { AgentConversationMessage } from '@/components/agent-ui/types'
+import { shallowRef } from 'vue'
+import AgentChat from '@/components/blocks/agent-chat.vue'
+
+const open = shallowRef(true)
+const prompt = shallowRef('')
+const messages = shallowRef<AgentConversationMessage[]>([])
+let sequence = 0
+function send(content: string) {
+  messages.value = [...messages.value, { id: String(++sequence), role: 'user', content }]
+  prompt.value = ''
+}
+function newConversation() {
+  messages.value = []
+  prompt.value = ''
+}
+</script>
+
+<template>
+  <AgentChat v-if="open" v-model="prompt" :messages="messages" @submit="send" @new-conversation="newConversation" @close="open = false" />
+  <button v-else type="button" @click="open = true">打开会话</button>
+</template>`,
   },
 }

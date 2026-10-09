@@ -1,0 +1,36 @@
+{
+  "name": "agent-assistant-sheet",
+  "type": "block",
+  "title": "Agent Assistant Sheet",
+  "description": "Context-aware assistant with a floating entry, expandable drawer, explicit quote removal, busy stop intent, and typed response insertion into an application-owned draft.",
+  "targets": ["h5", "weapp"],
+  "dependencies": ["@varo-ui/ai", "@varo-ui/headless"],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp": ["wevu"]
+  },
+  "registryDependencies": ["blocks/agent-chat", "components/drawer", "components/button", "utils/primitives"],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-assistant-sheet/h5.vue",
+      "to": "src/components/blocks/agent-assistant-sheet.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/blocks/agent-assistant-sheet/weapp-vite.vue",
+      "to": "src/components/blocks/agent-assistant-sheet.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-assistant-sheet/agent-assistant-sheet.types.ts",
+      "to": "src/components/blocks/agent-assistant-sheet.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/blocks/agent-assistant-sheet/agent-assistant-sheet.types.ts",
+      "to": "src/components/blocks/agent-assistant-sheet.types.ts"
+    }
+  ],
+  "docs": "/blocks/build-your-own"
+}

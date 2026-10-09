@@ -1,12 +1,14 @@
-import { access, readFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { access, readdir, readFile, stat } from 'node:fs/promises'
+import { dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import selectorParser from 'postcss-selector-parser'
+import ts from 'typescript'
 import { postcss } from 'weapp-tailwindcss/core'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(projectRoot, 'devtools/build/mp-weixin')
 const requiredComponentExtensions = ['.js', '.json', '.wxml']
+const mainPackageLimit = 2 * 1024 * 1024
 const requiredRegistryCatalogComponents = [
   'v-action-sheet',
   'v-cell',
@@ -87,6 +89,68 @@ function componentBasePath(ownerPath, componentPath) {
     : resolve(dirname(ownerPath), componentPath)
 }
 
+function outputName(path) {
+  return relative(outputRoot, path).split(sep).join('/')
+}
+
+function assertPackageReference(ownerPath, targetPath) {
+  const name = outputName(targetPath)
+  if (!name || name === '..' || name.startsWith('../') || isAbsolute(name)) {
+    throw new Error(`Native reference escapes output: ${outputName(ownerPath)} -> ${name}`)
+  }
+  const owner = packageOwner(ownerPath)
+  const target = packageOwner(targetPath)
+  if (owner !== target && (target || owner?.independent)) {
+    throw new Error(`Forbidden synchronous package reference: ${outputName(ownerPath)} (${owner?.root ?? 'main'}) -> ${name} (${target?.root ?? 'main'})`)
+  }
+}
+
+async function collectOutputFiles(directory, files = new Map()) {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = resolve(directory, entry.name)
+    if (entry.isDirectory()) { await collectOutputFiles(path, files) }
+    else if (entry.isFile()) { files.set(path, (await stat(path)).size) }
+    else { throw new Error(`Unsupported compiled artifact: ${outputName(path)}`) }
+  }
+  return files
+}
+
+async function verifyScriptReferences(files) {
+  let count = 0
+  for (const path of files.keys()) {
+    if (!/\.(?:js|wxs)$/.test(path)) { continue }
+    const source = ts.createSourceFile(path, await readFile(path, 'utf8'), ts.ScriptTarget.Latest, false, ts.ScriptKind.JS)
+    if (source.parseDiagnostics.length) { throw new Error(`Invalid compiled JavaScript: ${outputName(path)}`) }
+    const references = new Set()
+    function visit(node) {
+      if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+        if (node.moduleSpecifier && ts.isStringLiteralLike(node.moduleSpecifier)) { references.add(node.moduleSpecifier.text) }
+      }
+      if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'require') {
+        const argument = node.arguments[0]
+        if (!argument || !ts.isStringLiteralLike(argument)) {
+          throw new Error(`Cannot verify dynamic synchronous script dependency in ${outputName(path)}`)
+        }
+        references.add(argument.text)
+      }
+      ts.forEachChild(node, visit)
+    }
+    visit(source)
+    for (const reference of references) {
+      if (!reference.startsWith('.') && !reference.startsWith('/')) {
+        throw new Error(`Unbundled script dependency in ${outputName(path)}: ${reference}`)
+      }
+      const target = componentBasePath(path, extname(reference) ? reference : `${reference}${extname(path)}`)
+      assertPackageReference(path, target)
+      if (!files.has(target)) {
+        throw new Error(`Missing compiled script dependency: ${outputName(path)} -> ${reference}`)
+      }
+      count++
+    }
+  }
+  return count
+}
+
 const devtoolsProjectPath = resolve(projectRoot, 'devtools/build/project.config.json')
 const devtoolsProject = JSON.parse(await readFile(devtoolsProjectPath, 'utf8'))
 if (devtoolsProject.appid && !/^wx[0-9a-f]{16}$/i.test(devtoolsProject.appid)) {
@@ -95,6 +159,38 @@ if (devtoolsProject.appid && !/^wx[0-9a-f]{16}$/i.test(devtoolsProject.appid)) {
 
 const appJsonPath = resolve(outputRoot, 'app.json')
 const appJson = JSON.parse(await readFile(appJsonPath, 'utf8'))
+const subPackages = [...(appJson.subPackages ?? appJson.subpackages ?? [])]
+  .sort((left, right) => right.root.length - left.root.length)
+function packageOwner(path) {
+  const name = outputName(path)
+  return subPackages.find(pkg => name.startsWith(`${pkg.root}/`))
+}
+const outputFiles = await collectOutputFiles(outputRoot)
+let mainPackageBytes = 0
+for (const [path, size] of outputFiles) {
+  if (!packageOwner(path)) { mainPackageBytes += size }
+}
+if (mainPackageBytes > mainPackageLimit) {
+  throw new Error(`Main package exceeds 2 MiB: ${mainPackageBytes} > ${mainPackageLimit} bytes`)
+}
+const scriptReferenceCount = await verifyScriptReferences(outputFiles)
+for (const pagePath of pageJsonPaths(appJson)) {
+  for (const extension of requiredComponentExtensions) {
+    const path = pagePath.replace(/\.json$/, extension)
+    if (!outputFiles.has(path)) { throw new Error(`Missing compiled page artifact: ${outputName(path)}`) }
+  }
+}
+if (!outputFiles.has(resolve(outputRoot, 'app.js'))) { throw new Error('Compiled app.js is missing') }
+for (const tab of appJson.tabBar?.list ?? []) {
+  if (!appJson.pages.includes(tab.pagePath) || packageOwner(resolve(outputRoot, tab.pagePath))) {
+    throw new Error(`Tab page must remain in main: ${tab.pagePath}`)
+  }
+  for (const icon of [tab.iconPath, tab.selectedIconPath].filter(Boolean)) {
+    const path = resolve(outputRoot, icon)
+    assertPackageReference(appJsonPath, path)
+    if (!outputFiles.has(path)) { throw new Error(`Missing tab icon: ${icon}`) }
+  }
+}
 const registryCatalogPageJsonPath = resolve(outputRoot, 'registry-catalog/index/index.json')
 if (!await exists(registryCatalogPageJsonPath)) {
   throw new Error('Compiled Registry catalog page is missing')
@@ -109,7 +205,7 @@ if (missingCatalogComponents.length > 0) {
 const queue = [appJsonPath, ...pageJsonPaths(appJson)]
 const visited = new Set()
 const missing = []
-const styleQueue = [{ path: resolve(outputRoot, 'app.wxss'), component: false }]
+const styleQueue = [{ path: resolve(outputRoot, 'app.wxss'), component: false, app: true }]
 
 while (queue.length > 0) {
   const ownerPath = queue.shift()
@@ -121,9 +217,9 @@ while (queue.length > 0) {
   }
 
   const json = JSON.parse(await readFile(ownerPath, 'utf8'))
-  if (json.component === true) {
+  if (ownerPath !== appJsonPath) {
     const stylePath = ownerPath.replace(/\.json$/, '.wxss')
-    if (await exists(stylePath)) { styleQueue.push({ path: stylePath, component: true }) }
+    if (await exists(stylePath)) { styleQueue.push({ path: stylePath, component: json.component === true }) }
   }
   const componentReferences = [
     ...Object.entries(json.usingComponents ?? {}),
@@ -137,6 +233,7 @@ while (queue.length > 0) {
     if (typeof componentPath !== 'string') { continue }
     const basePath = componentBasePath(ownerPath, componentPath)
     if (!basePath) { continue }
+    assertPackageReference(ownerPath, basePath)
     for (const extension of requiredComponentExtensions) {
       const targetPath = `${basePath}${extension}`
 
@@ -174,17 +271,17 @@ let hasFlexUtility = false
 while (styleQueue.length > 0) {
   const entry = styleQueue.shift()
   if (!entry || !entry.path) { continue }
-  const { path: stylePath, component } = entry
-  const visitKey = `${component ? 'component' : 'app'}:${stylePath}`
+  const { path: stylePath, component, app } = entry
+  const visitKey = `${component ? 'component' : app ? 'app' : 'page'}:${stylePath}`
   if (visitedStyles.has(visitKey)) { continue }
   visitedStyles.add(visitKey)
   const styles = postcss.parse(await readFile(stylePath, 'utf8'), { from: stylePath })
-  if (!component) {
+  if (app) {
     styles.walkRules('.flex', (rule) => {
       hasFlexUtility ||= rule.nodes.some(node => node.type === 'decl' && node.prop === 'display' && node.value === 'flex')
     })
   }
-  else {
+  else if (component) {
     styles.walkRules((rule) => {
       if (rule.parent.type === 'atrule' && /keyframes$/i.test(rule.parent.name)) { return }
       componentSelectorParser.astSync(rule.selector).walk((node) => {
@@ -200,7 +297,12 @@ while (styleQueue.length > 0) {
   })
   styles.walkAtRules('import', (rule) => {
     const importedPath = rule.params.match(/^(['"])(.+)\1$/)?.[2]
-    if (importedPath) { styleQueue.push({ path: componentBasePath(stylePath, importedPath), component }) }
+    if (importedPath) {
+      const target = componentBasePath(stylePath, importedPath)
+      if (!target) { throw new Error(`Unsupported style import in ${outputName(stylePath)}: ${importedPath}`) }
+      assertPackageReference(stylePath, target)
+      styleQueue.push({ path: target, component, app })
+    }
   })
 }
 if (invalidComponentSelectors.length > 0) {
@@ -210,4 +312,4 @@ if (!hasFlexUtility) {
   throw new Error('Compiled app.wxss is missing the flex layout utility; check the Tailwind CSS entry import')
 }
 
-console.log('Verified mini-program component paths and compiled styles')
+console.log(`Verified mini-program component paths and compiled styles; main ${mainPackageBytes}/${mainPackageLimit} bytes; ${scriptReferenceCount} synchronous script references`)

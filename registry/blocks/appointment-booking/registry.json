@@ -1,0 +1,17 @@
+{
+  "name": "appointment-booking",
+  "type": "block",
+  "title": "Appointment Booking",
+  "description": "Injected date and time availability, controlled selection and application-owned booking and cancellation intents.",
+  "docs": "/blocks/application-blocks#appointment-booking",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/appointment-booking/h5.vue", "to": "src/components/blocks/appointment-booking.vue" },
+    { "target": "weapp", "from": "registry/blocks/appointment-booking/weapp-vite.vue", "to": "src/components/blocks/appointment-booking.vue" },
+    { "target": "h5", "from": "registry/blocks/appointment-booking/appointment-booking-actions.ts", "to": "src/components/blocks/appointment-booking-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/appointment-booking/appointment-booking-actions.ts", "to": "src/components/blocks/appointment-booking-actions.ts" }
+  ]
+}

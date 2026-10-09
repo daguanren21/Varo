@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { AgentConversationMessage } from './agent-ui'
 import { computed, nextTick, shallowRef } from 'vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
 import { useRagPipelineDemo } from '../composables/useRagPipelineDemo'
@@ -149,6 +150,54 @@ const eventSnapshot: AgentStreamSnapshot = {
   reasoning: [{ content: '已读取组件清单', id: 'reason', status: 'completed', title: '检查 Registry' }],
   status: 'waiting',
   tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '44 surfaces' }],
+}
+const chatOpen = shallowRef(true)
+const chatMessages = shallowRef<AgentConversationMessage[]>(messages)
+const chatSnapshot = shallowRef<AgentStreamSnapshot | undefined>(eventSnapshot)
+const chatBusy = computed(() => chatSnapshot.value?.status === 'waiting')
+let chatSequence = 0
+
+function stopChat() {
+  const current = chatSnapshot.value
+  if (!current || !chatBusy.value) { return }
+  chatSnapshot.value = { ...current, approval: undefined, status: 'cancelled' }
+}
+
+function closeChat() {
+  stopChat()
+  chatOpen.value = false
+}
+
+function newChatConversation() {
+  stopChat()
+  chatSnapshot.value = undefined
+  chatMessages.value = []
+  prompt.value = ''
+}
+
+function sendChat(value: string) {
+  if (chatBusy.value) { return }
+  const answer = chatSnapshot.value?.message
+  chatMessages.value = [
+    ...chatMessages.value,
+    ...answer?.source ? [{ id: answer.id, role: answer.role, content: answer.source }] : [],
+    { id: `prompt-${++chatSequence}`, role: 'user', content: value },
+  ]
+  chatSnapshot.value = undefined
+  prompt.value = ''
+  done(value)
+}
+
+function resolveChatApproval(value: string) {
+  const current = chatSnapshot.value
+  if (!current?.approval || !chatBusy.value) { return }
+  chatSnapshot.value = {
+    ...current,
+    approval: { ...current.approval, status: 'completed', resolvedValue: value },
+    message: current.message ? { ...current.message, final: true } : undefined,
+    status: 'completed',
+  }
+  done(value === 'reject' ? '已取消演示审批' : '已记录演示审批；未执行外部操作')
 }
 const code = `const controller = createAgentStreamController({\n  text: { targetLatencyMs: 620 }\n})\n\nawait controller.connect(events)`
 const markdownContent = `## 安全 Markdown
@@ -346,7 +395,12 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentCommandSearch v-else-if="component === 'command-search'" v-model="searchQuery" :items="searchItems" @select="done($event.label)" />
         <AgentFlowchart v-else-if="component === 'flowchart'" title="发布工作流" :nodes="flowNodes" @select="done($event.label)" @add="done('添加步骤')" />
         <AgentFineTune v-else-if="component === 'fine-tune'" v-model:controls="fineTuneControls" title="调整 Agent Card" @apply="done('已应用调整')" />
-        <AgentChat v-else-if="component === 'agent-chat'" v-model="prompt" class="agent-component-demo__chat" title="Varo Agent" :messages="messages" :snapshot="eventSnapshot" :suggestions="['分析需求', '生成计划']" @submit="done($event)" />
+        <template v-else-if="component === 'agent-chat'">
+          <AgentChat v-if="chatOpen" v-model="prompt" class="agent-component-demo__chat" title="Varo Agent" :busy="chatBusy" :messages="chatMessages" :snapshot="chatSnapshot" :suggestions="['分析需求', '生成计划']" @submit="sendChat" @new-conversation="newChatConversation" @stop="stopChat" @close="closeChat" @approve="resolveChatApproval" @reject="resolveChatApproval('reject')" />
+          <button v-else type="button" @click="chatOpen = true">
+            打开会话
+          </button>
+        </template>
       </div>
     </div>
 

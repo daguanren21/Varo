@@ -1,0 +1,16 @@
+{
+  "name": "marketing-pricing",
+  "type": "block",
+  "title": "Marketing Pricing and Comparison",
+  "description": "Controlled periods and plan choices with readable feature comparisons, without billing execution.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/marketing-pricing/h5.vue", "to": "src/components/blocks/marketing-pricing.vue" },
+    { "target": "weapp", "from": "registry/blocks/marketing-pricing/weapp-vite.vue", "to": "src/components/blocks/marketing-pricing.vue" },
+    { "target": "h5", "from": "registry/blocks/marketing-pricing/marketing-pricing.types.ts", "to": "src/components/blocks/marketing-pricing.types.ts" },
+    { "target": "weapp", "from": "registry/blocks/marketing-pricing/marketing-pricing.types.ts", "to": "src/components/blocks/marketing-pricing.types.ts" }
+  ],
+  "docs": "/blocks/marketing-blocks"
+}

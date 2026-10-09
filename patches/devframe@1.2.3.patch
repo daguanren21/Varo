@@ -1,0 +1,59 @@
+diff --git a/dist/context-BvaYawdU.d.mts b/dist/context-BvaYawdU.d.mts
+index ee33475eee91f0b1de3909da3fc7174a96978c25..e72427066be6bda283d65791371f63199ad1f337 100644
+--- a/dist/context-BvaYawdU.d.mts
++++ b/dist/context-BvaYawdU.d.mts
+@@ -143,7 +143,7 @@ interface AgentToolInput {
+     description?: string;
+   }[];
+   /** Invoked when the tool is called. Receives args as provided by the caller. */
+-  handler: (args: any) => unknown | Promise<unknown>;
++  handler: (args: any, context?: { signal: AbortSignal }) => unknown | Promise<unknown>;
+ }
+ /**
+  * Serializable description of an agent-readable resource. Resources
+@@ -272,7 +272,7 @@ interface DevframeAgentHost {
+    * Invoke any tool by id. Routes to the underlying RPC handler for
+    * `kind === 'rpc'`, or to the registered handler for `kind === 'tool'`.
+    */
+-  invoke: (id: string, args: unknown) => Promise<unknown>;
++  invoke: (id: string, args: unknown, context?: { signal: AbortSignal }) => Promise<unknown>;
+   /** Read a resource by id. */
+   read: (id: string) => Promise<AgentResourceContent>;
+   /** Look up a tool by id (returns the serializable projection). */
+diff --git a/dist/host-agent-mIbQ6Qi5.mjs b/dist/host-agent-mIbQ6Qi5.mjs
+index 92ef5bb1438ebccf89e96740c92feedfed743d0b..cbbdaa32f6d7134c62bb1b8332c279c9ef2ac729 100644
+--- a/dist/host-agent-mIbQ6Qi5.mjs
++++ b/dist/host-agent-mIbQ6Qi5.mjs
+@@ -192,16 +192,16 @@ var DevframeAgentHost = class {
+ 	getResource(id) {
+ 		return this.resources.get(id)?.resource;
+ 	}
+-	async invoke(id, args) {
++	async invoke(id, args, context) {
+ 		const plain = this.tools.get(id);
+-		if (plain?.handler) return await plain.handler(args);
++		if (plain?.handler) return await plain.handler(args, context);
+ 		const rpcDef = this._findRpcDefinition(id);
+ 		if (rpcDef) {
+ 			const positional = toolInputToRpcArgs(args, rpcDef.args?.length);
+ 			return await this.context.rpc.invokeLocal(id, ...positional);
+ 		}
+ 		const provided = this._collectProviderTools().find((t) => t.tool.id === id);
+-		if (provided) return await provided.input.handler(args);
++		if (provided) return await provided.input.handler(args, context);
+ 		throw new Error(`[devframe/agent] tool "${id}" not found`);
+ 	}
+ 	async read(id) {
+diff --git a/dist/internal/index.d.mts b/dist/internal/index.d.mts
+index 4a8919c6ba98963fd0bfce588a3b198de70ca9e6..c9241ffade65045fae9f762f6ee1a0e18a2d813b 100644
+--- a/dist/internal/index.d.mts
++++ b/dist/internal/index.d.mts
+@@ -408,7 +408,7 @@ export declare class DevframeAgentHost implements DevframeAgentHost$1 {
+   hasSurface(): boolean;
+   getTool(id: string): AgentTool | undefined;
+   getResource(id: string): AgentResource | undefined;
+-  invoke(id: string, args: unknown): Promise<unknown>;
++  invoke(id: string, args: unknown, context?: { signal: AbortSignal }): Promise<unknown>;
+   read(id: string): Promise<AgentResourceContent>;
+   /** @internal */
+   _dispose(): void;

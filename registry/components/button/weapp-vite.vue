@@ -9,11 +9,15 @@ import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 defineOptions({
   behaviors: ['wx://form-field-button'],
+  properties: {
+    ariaPressed: { type: null, value: null },
+  },
 })
 
 const props = withDefaults(
   defineProps<{
     ariaLabel?: string
+    ariaPressed?: boolean
     block?: boolean
     className?: ClassValue
     color?: string
@@ -33,6 +37,7 @@ const props = withDefaults(
   }>(),
   {
     ariaLabel: '',
+    ariaPressed: undefined,
     block: false,
     disabled: false,
     hairline: false,
@@ -110,6 +115,7 @@ const classes = computed(() =>
 )
 const formType = computed(() => (props.nativeType === 'submit' || props.nativeType === 'reset' ? props.nativeType : undefined))
 const hoverClass = computed(() => (pressable.state.interactive.value ? 'varo-button--pressed' : 'none'))
+const ariaPressed = computed(() => props.ariaPressed == null ? undefined : props.ariaPressed ? 'true' : 'false')
 
 function click(event: unknown) {
   if (pressable.events.click(event as PressableEvent)) { emit('click', event) }
@@ -133,6 +139,7 @@ function pressCancel() {
     :class="classes"
     :style="customStyle"
     :aria-label="props.ariaLabel"
+    :aria-pressed="ariaPressed"
     :disabled="!interactive"
     :form-type="formType"
     :hover-class="hoverClass"

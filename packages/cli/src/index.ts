@@ -32,8 +32,14 @@ export interface RegistryInstallPlan {
   warnings?: string[]
 }
 
+export interface RegistryInstallPreview extends RegistryInstallPlan {
+  conflicts: string[]
+}
+
 export interface ResolveRegistryOptions {
   registryRoot?: string
+  /** Canonical resolves only the local authored Registry, ignoring standard catalogs. */
+  registryFormat?: 'auto' | 'canonical'
   target?: RegistryTarget
   projectRoot?: string
 }
@@ -171,15 +177,20 @@ function resolveProjectTarget(canonicalRoot: string, to: string): string {
 
 export async function resolveRegistryItems(names: string[], options: ResolveRegistryOptions = {}): Promise<RegistryInstallPlan> {
   const selectedProfile = options.target === undefined ? undefined : getRegistryProfile(options.target)
-  if (options.registryRoot !== undefined) {
+  const registryRoot = options.registryRoot ?? defaultRegistryRoot
+  const canonical = options.registryFormat === 'canonical'
+  if (canonical && ((/^[a-z][a-z\d+.-]*:/i.test(registryRoot) && !/^[a-z]:[\\/]/i.test(registryRoot))
+    || /^[\\/]{2}/.test(registryRoot))) {
+    throw new Error('Canonical registry resolution requires a local filesystem root')
+  }
+  if (!canonical && options.registryRoot !== undefined) {
     const standardPlan = await resolveStandardRegistryItems(names, options)
     if (standardPlan !== undefined) {
       return standardPlan
     }
   }
 
-  const registryRoot = options.registryRoot ?? defaultRegistryRoot
-  const remoteRoot = getRemoteRegistryRoot(registryRoot)
+  const remoteRoot = canonical ? undefined : getRemoteRegistryRoot(registryRoot)
   const profile = selectedProfile ?? getRegistryProfile('weapp')
   const { id: target, renderer } = profile
   const items: RegistryItem[] = []
@@ -325,9 +336,8 @@ export async function exportRegistryItem(name: string, options: ResolveRegistryO
   }
 }
 
-export async function installRegistryItems(names: string[], options: InstallRegistryOptions): Promise<RegistryInstallPlan> {
-  const plan = await resolveRegistryItems(names, options)
-  const canonicalProjectRoot = realpathSync(options.projectRoot)
+function preflightRegistryTargets(plan: RegistryInstallPlan, projectRoot: string) {
+  const canonicalProjectRoot = realpathSync(projectRoot)
   const plannedTargets = plan.files.map((file) => {
     const targetPath = resolveProjectTarget(canonicalProjectRoot, file.to)
     const hadOriginal = existsSync(targetPath)
@@ -340,6 +350,25 @@ export async function installRegistryItems(names: string[], options: InstallRegi
     }
   })
   assertUniqueTargets(plannedTargets)
+  return { canonicalProjectRoot, plannedTargets }
+}
+
+/** Resolve and check destinations without creating directories or writing files. */
+export async function previewRegistryInstall(
+  names: string[],
+  options: ResolveRegistryOptions & { projectRoot: string },
+): Promise<RegistryInstallPreview> {
+  const plan = await resolveRegistryItems(names, options)
+  const { plannedTargets } = preflightRegistryTargets(plan, options.projectRoot)
+  return {
+    ...plan,
+    conflicts: plannedTargets.filter(target => target.hadOriginal).map(target => target.file.to),
+  }
+}
+
+export async function installRegistryItems(names: string[], options: InstallRegistryOptions): Promise<RegistryInstallPlan> {
+  const plan = await resolveRegistryItems(names, options)
+  const { canonicalProjectRoot, plannedTargets } = preflightRegistryTargets(plan, options.projectRoot)
   for (const { file, hadOriginal } of plannedTargets) {
     if (hadOriginal && !options.force) {
       throw new Error(`Refusing to overwrite existing file: ${file.to}`)

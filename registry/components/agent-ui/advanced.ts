@@ -3,6 +3,7 @@ import type { PropType, VNodeChild } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type {
   AgentActivityItem,
+  AgentActivityStatus,
   AgentCitationItem,
   AgentCodeBlockStatus,
   AgentContextChunk,
@@ -41,6 +42,7 @@ import './agent-artifact.css'
 
 export type {
   AgentActivityItem,
+  AgentActivityStatus,
   AgentCitationItem,
   AgentCodeBlockStatus,
   AgentCodeLine,
@@ -69,14 +71,16 @@ function eventValue(event: Event) {
   return miniEvent.detail?.value ?? target?.value ?? ''
 }
 
-function statusLabel(status: AgentPartStatus) {
+function statusLabel(status: AgentActivityStatus) {
   if (status === 'completed') { return 'Completed' }
   if (status === 'failed') { return 'Failed' }
   if (status === 'running') { return 'Running' }
+  if (status === 'queued') { return 'Queued' }
+  if (status === 'cancelled') { return 'Cancelled' }
   return 'Waiting'
 }
 
-function renderStatus(status: AgentPartStatus) {
+function renderStatus(status: AgentActivityStatus) {
   return h('span', { 'class': 'agent-advanced__status', 'data-status': status }, [
     h('i', { 'class': 'agent-advanced__status-dot', 'aria-hidden': 'true' }),
     statusLabel(status),
@@ -742,18 +746,26 @@ export const AgentCitations = defineComponent({
   name: 'AgentCitations',
   props: {
     defaultOpen: Boolean,
+    disabled: Boolean,
     items: { type: Array as PropType<AgentCitationItem[]>, default: () => [] },
     title: { type: String, default: 'Sources' },
   },
   emits: { 'open': (_item: AgentCitationItem) => true, 'update:open': (_value: boolean) => true },
   setup(props, { emit }) {
     const open = shallowRef(props.defaultOpen)
+    function openItem(id: string) {
+      if (props.disabled) { return }
+      const item = props.items.find(entry => entry.id === id)
+      if (item) { emit('open', item) }
+    }
     return () => h('section', { 'class': 'agent-citations', 'data-open': String(open.value) }, [
       h('button', {
         'class': 'agent-citations__trigger',
+        'disabled': props.disabled,
         'type': 'button',
         'aria-expanded': String(open.value),
         'onClick': () => {
+          if (props.disabled) { return }
           open.value = !open.value
           emit('update:open', open.value)
         },
@@ -766,7 +778,7 @@ export const AgentCitations = defineComponent({
       ]),
       open.value
         ? h('ol', { class: 'agent-citations__list' }, props.items.map(item => h('li', { key: item.id }, [
-            h('button', { class: 'agent-citations__item', type: 'button', onClick: () => emit('open', item) }, [
+            h('button', { class: 'agent-citations__item', disabled: props.disabled, type: 'button', onClick: () => openItem(item.id) }, [
               h('span', { 'class': 'agent-citations__mark', 'aria-hidden': 'true' }, citationMark(item)),
               h('span', { class: 'agent-citations__copy' }, [
                 h('strong', item.title),
@@ -789,13 +801,20 @@ export const AgentActivity = defineComponent({
   setup(props) {
     const completed = computed(() => props.items.filter(item => item.status === 'completed').length)
     const current = computed(() => props.items.find(item => item.status === 'running' || item.status === 'failed'))
+    const headingHint = computed(() => {
+      if (current.value?.status === 'failed') { return `阻塞于 ${current.value.title}` }
+      if (current.value) { return `正在执行 ${current.value.title}` }
+      if (!props.items.length) { return '暂无活动' }
+      if (completed.value === props.items.length) { return '全部完成' }
+      if (props.items.some(item => item.status === 'waiting')) { return '等待确认' }
+      if (props.items.some(item => item.status === 'queued')) { return '排队中' }
+      return '活动已结束'
+    })
     return () => h('section', { 'class': 'agent-activity', 'aria-live': 'polite' }, [
       h('header', { class: 'agent-activity__header' }, [
         h('span', { class: 'agent-activity__heading' }, [
           h('strong', props.title),
-          current.value
-            ? h('small', current.value.status === 'failed' ? `阻塞于 ${current.value.title}` : `正在执行 ${current.value.title}`)
-            : h('small', completed.value === props.items.length && props.items.length ? '全部完成' : '等待开始'),
+          h('small', headingHint.value),
         ]),
         h('span', { class: 'agent-activity__count' }, `${completed.value}/${props.items.length}`),
       ]),

@@ -66,7 +66,18 @@ async function mountFormFixture(behaviorLocation: 'component' | 'behavior' = 'co
         <input name="ignored" value="secret" disabled="{{true}}" />
         <input value="unnamed" />
         ${insideForm ? action : ''}
-        <button class="ordinary">Ordinary</button>
+        <button
+          class="ordinary"
+          role="{{buttonSemantics.role}}"
+          aria-label="{{buttonSemantics.label}}"
+          aria-busy="{{buttonSemantics.busy}}"
+          aria-checked="{{buttonSemantics.checked}}"
+          aria-disabled="{{buttonSemantics.disabled}}"
+          aria-pressed="{{buttonSemantics.pressed}}"
+          aria-readonly="{{buttonSemantics.readonly}}"
+          tabindex="{{buttonSemantics.tabindex}}"
+          hidden="{{buttonHidden}}"
+        >Ordinary</button>
       </form-shell>
       <form-shell form-id="other"><input name="other" value="Elsewhere" /></form-shell>
       ${insideForm ? '' : action}
@@ -101,7 +112,24 @@ async function mountFormFixture(behaviorLocation: 'component' | 'behavior' = 'co
       'app.js': (_require, _module, _exports, globals) => { register(globals, 'App', {}) },
       'pages/form.js': (_require, _module, _exports, globals) => {
         register(globals, 'Component', {
-          data: { action: 'submit', disabled: false, cancel: false, target: '', preventReset: false },
+          data: {
+            action: 'submit',
+            disabled: false,
+            cancel: false,
+            target: '',
+            preventReset: false,
+            buttonHidden: false,
+            buttonSemantics: {
+              role: null,
+              label: null,
+              busy: null,
+              checked: null,
+              disabled: null,
+              pressed: null,
+              readonly: null,
+              tabindex: null,
+            },
+          },
           lifetimes: { created(this: Instance) { instances.page = this } },
         })
       },
@@ -180,7 +208,7 @@ async function mountFormFixture(behaviorLocation: 'component' | 'behavior' = 'co
   return { button, forms, input, textarea, mount, events, errors, lifetimes, close, instance, getTaps: () => taps }
 }
 
-function pointerActivate(button: HTMLButtonElement, click = true) {
+function pointerActivate(button: HTMLElement, click = true) {
   const options = { bubbles: true, cancelable: true, button: 0, detail: 1 }
   button.dispatchEvent(new MouseEvent('mousedown', options))
   button.dispatchEvent(new MouseEvent('mouseup', options))
@@ -244,14 +272,90 @@ describe('native form-field-button behavior', () => {
     expect(fixture.lifetimes.slice(-2)).toEqual(['behavior:detached', 'component:detached'])
   })
 
+  it('keeps button semantics on the control and removes absent states without inventing a toggle', async () => {
+    const fixture = await mountFormFixture()
+    const button = fixture.mount.querySelector<HTMLButtonElement>('wx-button.ordinary > button')
+    const host = button?.parentElement
+    if (!button || !host) { throw new Error('Missing ordinary native button') }
+    const attributes = ['role', 'aria-label', 'aria-busy', 'aria-checked', 'aria-disabled', 'aria-pressed', 'aria-readonly', 'tabindex']
+    for (const element of [host, button]) {
+      for (const name of attributes) { expect(element.getAttribute(name)).toBeNull() }
+    }
+    expect(button.textContent).toBe('Ordinary')
+
+    fixture.instance.setData({
+      buttonSemantics: {
+        role: 'switch',
+        label: 'Notifications',
+        busy: false,
+        checked: false,
+        disabled: false,
+        readonly: false,
+        tabindex: 0,
+      },
+    })
+    expect(button.getAttribute('role')).toBe('switch')
+    expect(button.getAttribute('aria-label')).toBe('Notifications')
+    expect(button.getAttribute('tabindex')).toBe('0')
+    for (const name of ['aria-busy', 'aria-checked', 'aria-disabled', 'aria-readonly']) {
+      expect(button.getAttribute(name)).toBe('false')
+    }
+    expect(button.hasAttribute('aria-pressed')).toBe(false)
+    for (const name of attributes) { expect(host.getAttribute(name)).toBeNull() }
+    fixture.instance.setData({ 'buttonSemantics.checked': true })
+    expect(button.getAttribute('aria-checked')).toBe('true')
+
+    fixture.instance.setData({ buttonSemantics: { role: 'button', label: 'Pin', pressed: false } })
+    expect(button.getAttribute('aria-pressed')).toBe('false')
+    expect(button.hasAttribute('aria-checked')).toBe(false)
+    fixture.instance.setData({ 'buttonSemantics.pressed': true })
+    expect(button.getAttribute('aria-pressed')).toBe('true')
+
+    for (const absent of [null, undefined, '']) {
+      fixture.instance.setData({
+        buttonSemantics: {
+          role: absent,
+          label: absent,
+          busy: absent,
+          checked: absent,
+          disabled: absent,
+          pressed: absent,
+          readonly: absent,
+          tabindex: absent,
+        },
+      })
+      for (const element of [host, button]) {
+        for (const name of attributes) { expect(element.getAttribute(name)).toBeNull() }
+      }
+    }
+
+    fixture.instance.setData({ buttonHidden: true })
+    expect(host.hidden).toBe(true)
+    expect(button.hidden).toBe(true)
+    fixture.instance.setData({ buttonHidden: false })
+    expect(host.hidden).toBe(false)
+    expect(button.hidden).toBe(false)
+    expect(fixture.errors).toEqual([])
+  })
+
   it('honors disabled controls, canceled taps and non-submit actions before invoking the form', async () => {
     const fixture = await mountFormFixture()
+    const host = fixture.button.closest('wx-button')
+    if (!(host instanceof HTMLElement)) { throw new TypeError('Missing native button host') }
     fixture.instance.setData({ disabled: true })
+    expect(fixture.button.disabled).toBe(true)
+    expect(host.hasAttribute('disabled')).toBe(true)
+    pointerActivate(fixture.button)
+    touchActivate(fixture.button)
+    pointerActivate(host)
+    host.click()
     fixture.button.click()
     expect(fixture.getTaps()).toBe(0)
     expect(fixture.events).toEqual([])
 
     fixture.instance.setData({ disabled: false, cancel: true })
+    expect(fixture.button.disabled).toBe(false)
+    expect(host.hasAttribute('disabled')).toBe(false)
     fixture.button.click()
     expect(fixture.getTaps()).toBe(1)
     expect(fixture.events).toEqual([])
