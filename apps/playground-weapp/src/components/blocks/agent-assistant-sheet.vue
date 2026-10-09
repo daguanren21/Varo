@@ -121,9 +121,11 @@ function insert() {
           插入到草稿
         </VButton>
       </view>
-      <view class="min-h-0 min-w-0" style="
+      <view
+        class="min-h-0 min-w-0" style="
 
---varo-agent-chat-height: 100%">
+--varo-agent-chat-height: 100%"
+      >
         <AgentChat :model-value="currentPrompt" fixed layout="page" close-label="关闭助手" :title="title" subtitle="只使用你明确引用的上下文；回答由应用决定是否插入。" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="suggestions" @update:modelValue="updatePrompt" @close="updateOpen(false)" @submit="emit('submit', $event)" @stop="emit('stop')" @historySelect="emit('historySelect', $event)" @newConversation="emit('newConversation')" @approve="emit('approve', $event)" @reject="emit('reject')" @retry="emit('retry')">
           <template #context>
             <view v-if="context" class="grid min-w-0 gap-2 rounded-lg border border-[var(--varo-ui-border-lighter)] bg-[var(--varo-ui-surface-muted)] p-3" aria-label="引用上下文">

@@ -116,9 +116,11 @@ function insert() {
           插入到草稿
         </VButton>
       </div>
-      <AgentChat v-model="prompt" class="min-h-0" style="
+      <AgentChat
+        v-model="prompt" class="min-h-0" style="
 
---varo-agent-chat-height: 100%" layout="page" close-label="关闭助手" :title="title" subtitle="只使用你明确引用的上下文；回答由应用决定是否插入。" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="suggestions" @close="updateOpen(false)" @submit="emit('submit', $event)" @stop="emit('stop')" @history-select="emit('historySelect', $event)" @new-conversation="emit('newConversation')" @approve="emit('approve', $event)" @reject="emit('reject')" @retry="emit('retry')">
+--varo-agent-chat-height: 100%" layout="page" close-label="关闭助手" :title="title" subtitle="只使用你明确引用的上下文；回答由应用决定是否插入。" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="suggestions" @close="updateOpen(false)" @submit="emit('submit', $event)" @stop="emit('stop')" @history-select="emit('historySelect', $event)" @new-conversation="emit('newConversation')" @approve="emit('approve', $event)" @reject="emit('reject')" @retry="emit('retry')"
+      >
         <template #context>
           <aside v-if="context" class="grid min-w-0 gap-2 rounded-lg border border-[var(--varo-ui-border-lighter)] bg-[var(--varo-ui-surface-muted)] p-3" aria-label="引用上下文">
             <div class="flex items-start justify-between gap-2">
