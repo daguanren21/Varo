@@ -43,6 +43,8 @@ pnpm check:full
 
 Real E2E uses no model or retry and writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json` plus framework artifacts. A failing or blocked run stays nonzero; do not substitute an earlier report. Structural checks are `pnpm test:contracts`, not runtime E2E. CI installs Chromium with `--with-deps` before running the same runtime suites.
 
+The H5/preview `app.command` resolves each playground's installed Vite CLI and launches it with the current Node executable. Dependencies must be installed beforehand; app startup does not invoke a package manager or install hooks. Do not run installs or builds concurrently with real E2E: rebuilding shared runtime modules can invalidate active browser sessions.
+
 DevTools scenarios use `pnpm test:e2e:devtools` separately and require an authenticated WeChat DevTools automation endpoint and a registered local AppID. Browser glass-easel preview, headless interaction checks, compiler artifacts, and DevTools execution are distinct evidence; none certifies a physical device.
 
 The three compiler-backed CLI consumer tests run real `vue-tsc` processes with a 30-second subprocess timeout and a 60-second test limit for installation and assertions. These are integration bounds, not a five-second compiler performance requirement. Compiler errors still fail the tests; ordinary unit-test timeouts are unchanged.

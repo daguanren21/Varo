@@ -1,4 +1,6 @@
 import type { E2EConfig, Target, TargetApp } from 'e2e'
+import { createRequire } from 'node:module'
+import { dirname, resolve } from 'node:path'
 import { varoWeb } from './engines/web.ts'
 import { wechat } from './engines/wechat/index.ts'
 
@@ -17,14 +19,19 @@ function browserApp(name: 'h5' | 'weapp-preview', providedUrl: string | undefine
     }
     return { url: providedUrl, identity: `varo-${name}`, environment: 'test' }
   }
+  const cwd = name === 'h5' ? '../playground-h5' : '../playground-weapp-preview'
+  const appRequire = createRequire(new URL(`${cwd}/package.json`, import.meta.url))
+  const viteManifestPath = appRequire.resolve('vite/package.json')
+  const viteManifest = appRequire(viteManifestPath) as { bin: { vite: string } }
+  // App processes have a restricted environment; starting them must not reinstall dependencies.
   return {
     url: 'http://127.0.0.1:0/',
     identity: `varo-${name}`,
     environment: 'test',
     command: {
-      executable: 'pnpm',
-      args: ['exec', 'vite', '--host', '127.0.0.1', '--port', '{port}', '--strictPort'],
-      cwd: name === 'h5' ? '../playground-h5' : '../playground-weapp-preview',
+      executable: process.execPath,
+      args: [resolve(dirname(viteManifestPath), viteManifest.bin.vite), '--host', '127.0.0.1', '--port', '{port}', '--strictPort'],
+      cwd,
       startupTimeout: 60_000,
       shutdownTimeout: 10_000,
       log: `${output}/${name}-app.log`,
