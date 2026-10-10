@@ -4327,10 +4327,16 @@ textarea.varo-input__control {
   z-index: 1200;
   display: grid;
   align-items: end;
+}
+
+.varo-region-picker__backdrop {
+  position: absolute;
+  inset: 0;
   background: rgb(0 0 0 / 48%);
 }
 
 .varo-region-picker__panel {
+  position: relative;
   box-sizing: border-box;
   width: min(100%, 560px);
   max-height: min(78vh, 680px);

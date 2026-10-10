@@ -2,7 +2,7 @@
   "name": "agent-chat",
   "type": "block",
   "title": "Agent Chat",
-  "description": "Production Agent conversation shell with history, incremental event rendering, approvals, response actions, and prompt composition.",
+  "description": "Panel or full-page Agent conversation with an empty welcome, injected history, busy-only stop intent, event rendering, and prompt composition.",
   "targets": [
     "h5",
     "weapp"
@@ -16,11 +16,9 @@
   },
   "registryDependencies": [
     "components/agent-conversation",
-    "components/button"
+    "components/button",
+    "utils/primitives"
   ],
-  "targetRegistryDependencies": {
-    "weapp": ["utils/primitives"]
-  },
   "files": [
     {
       "target": "h5",
@@ -31,7 +29,17 @@
       "target": "weapp",
       "from": "registry/blocks/agent-chat/weapp-vite.vue",
       "to": "src/components/blocks/agent-chat.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-chat/agent-chat.types.ts",
+      "to": "src/components/blocks/agent-chat.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/blocks/agent-chat/agent-chat.types.ts",
+      "to": "src/components/blocks/agent-chat.types.ts"
     }
   ],
-  "docs": "/blocks/build-your-own"
+  "docs": "/ai/agent-chat"
 }

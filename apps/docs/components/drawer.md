@@ -35,20 +35,21 @@ const open = ref(false)
 
 ## Props
 
-| Prop                  | 类型                                     | 默认值      | 描述                   |
-| --------------------- | ---------------------------------------- | ----------- | ---------------------- |
-| `open`                | `boolean \| undefined`                   | `undefined` | 受控打开状态           |
-| `defaultOpen`         | `boolean`                                | `false`     | 非受控初始状态         |
-| `placement`           | `'top' \| 'right' \| 'bottom' \| 'left'` | `'right'`   | 抽屉方向               |
-| `overlay`             | `boolean`                                | `true`      | 是否显示遮罩           |
-| `closeable`           | `boolean`                                | `false`     | 是否显示关闭按钮       |
-| `closeIcon`           | `string`                                 | `'×'`       | 关闭按钮内容           |
-| `round`               | `boolean`                                | `false`     | 是否使用方向对应的圆角 |
-| `safeAreaInsetBottom` | `boolean`                                | `false`     | 是否增加底部安全区     |
-| `lockScroll`          | `boolean`                                | `true`      | H5 是否锁定页面滚动    |
-| `closeOnClickOverlay` | `boolean`                                | `true`      | 点击遮罩是否关闭       |
-| `disabled`            | `boolean`                                | `false`     | 禁止打开和关闭         |
-| `zIndex`              | `number \| string`                       | `undefined` | 自定义层级             |
+| Prop                  | 类型                                     | 默认值      | 描述                                             |
+| --------------------- | ---------------------------------------- | ----------- | ------------------------------------------------ |
+| `open`                | `boolean \| undefined`                   | `undefined` | 受控打开状态                                     |
+| `defaultOpen`         | `boolean`                                | `false`     | 非受控初始状态                                   |
+| `ariaLabel`           | `string`                                 | `undefined` | 应用于实际 dialog 的可访问名称；省略时保留原行为 |
+| `placement`           | `'top' \| 'right' \| 'bottom' \| 'left'` | `'right'`   | 抽屉方向                                         |
+| `overlay`             | `boolean`                                | `true`      | 是否显示遮罩                                     |
+| `closeable`           | `boolean`                                | `false`     | 是否显示关闭按钮                                 |
+| `closeIcon`           | `string`                                 | `'×'`       | 关闭按钮内容                                     |
+| `round`               | `boolean`                                | `false`     | 是否使用方向对应的圆角                           |
+| `safeAreaInsetBottom` | `boolean`                                | `false`     | 是否增加底部安全区                               |
+| `lockScroll`          | `boolean`                                | `true`      | H5 是否锁定页面滚动                              |
+| `closeOnClickOverlay` | `boolean`                                | `true`      | 点击遮罩是否关闭                                 |
+| `disabled`            | `boolean`                                | `false`     | 禁止打开和关闭                                   |
+| `zIndex`              | `number \| string`                       | `undefined` | 自定义层级                                       |
 
 ## Events
 

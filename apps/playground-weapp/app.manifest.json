@@ -4,18 +4,77 @@
     "pages/retail-home/index",
     "pages/retail-category/index",
     "pages/retail-cart/index",
-    "pages/retail-profile/index",
-    "pages/mall/index",
-    "pages/form-showcase/index",
-    "pages/agent-workspace/index",
-    "pages/web-preview/index",
-    "pages/web-preview-agent/index",
-    "pages/web-preview-dialog/index",
-    "pages/web-preview-map/index",
-    "pages/web-preview-rag/index",
-    "pages/index/index"
+    "pages/retail-profile/index"
   ],
   "subPackages": [
+    {
+      "root": "pages/mall",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/form-showcase",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/agent-workspace",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/chat-blocks",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/chat-prompt",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/source-chat",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/agent-workspace-demo",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/agent-activity-demo",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/web-preview",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/web-preview-agent",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/web-preview-dialog",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/web-preview-map",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/web-preview-rag",
+      "pages": ["index"]
+    },
+    {
+      "root": "pages/index",
+      "pages": ["index"]
+    },
+    {
+      "root": "blocks-lab",
+      "pages": [
+        "model-compare/index",
+        "operations/index",
+        "data-workspace/index",
+        "retail/index",
+        "application/index",
+        "marketing/index",
+        "attachments/index"
+      ]
+    },
     {
       "root": "retail-goods",
       "pages": [

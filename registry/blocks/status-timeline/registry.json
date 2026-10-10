@@ -1,0 +1,17 @@
+{
+  "name": "status-timeline",
+  "type": "block",
+  "title": "Status Timeline",
+  "description": "Injected ordered history and status evidence with guarded retry and detail intents.",
+  "docs": "/blocks/application-blocks#status-timeline",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/status-timeline/h5.vue", "to": "src/components/blocks/status-timeline.vue" },
+    { "target": "weapp", "from": "registry/blocks/status-timeline/weapp-vite.vue", "to": "src/components/blocks/status-timeline.vue" },
+    { "target": "h5", "from": "registry/blocks/status-timeline/status-timeline-actions.ts", "to": "src/components/blocks/status-timeline-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/status-timeline/status-timeline-actions.ts", "to": "src/components/blocks/status-timeline-actions.ts" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@varo/e2e",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": "^24.11.0 || >=26.0.0"
+  },
+  "scripts": {
+    "test:e2e": "node scripts/run.mjs",
+    "test:runner": "vitest run --config ../../vitest.config.ts --dir tests/runner --passWithNoTests=false",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@e2e-dev/web": "0.13.0",
+    "@weapp-vite/miniprogram-automator": "1.2.23",
+    "e2e": "0.18.0",
+    "playwright-core": "1.63.0"
+  }
+}

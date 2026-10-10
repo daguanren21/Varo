@@ -7,7 +7,9 @@ import type {
   AgentSourceReceiptItem,
   AgentWorkspacePlacement,
 } from '../agent-ui/workspace-types'
+import { useControllableState } from '@varo-ui/headless'
 import { computed } from 'vue'
+import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { AgentComposer, AgentConversation } from '../agent-ui/conversation'
 import {
   AgentComposerScope,
@@ -23,9 +25,11 @@ const props = withDefaults(
     activeVersionId?: string
     busy?: boolean
     contextUsage?: number
+    disabled?: boolean
     messages?: AgentConversationMessage[]
     open?: boolean
     placement?: AgentWorkspacePlacement
+    prompt?: string
     receipts?: AgentSourceReceiptItem[]
     retrieval?: AgentRetrievalItem[]
     sources?: AgentContextSource[]
@@ -38,6 +42,7 @@ const props = withDefaults(
     activeVersionId: undefined,
     busy: false,
     contextUsage: 0,
+    disabled: false,
     messages: () => [],
     open: true,
     placement: 'page',
@@ -52,29 +57,66 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  approveTask: [task: AgentTask]
-  branchVersion: [version: AgentThreadVersion]
-  cancelTask: []
-  close: []
-  connectReceipt: [receipt: AgentSourceReceiptItem]
-  connectSource: [source: AgentContextSource]
-  openReceipt: [receipt: AgentSourceReceiptItem]
-  pinVersion: [version: AgentThreadVersion]
-  retryRetrieval: [item: AgentRetrievalItem]
-  retryTask: [task: AgentTask]
-  selectVersion: [version: AgentThreadVersion]
-  submit: [prompt: string]
-  toggleSource: [source: AgentContextSource, enabled: boolean]
+  'approveTask': [task: AgentTask]
+  'branchVersion': [version: AgentThreadVersion]
+  'cancelTask': []
+  'close': []
+  'connectReceipt': [receipt: AgentSourceReceiptItem]
+  'connectSource': [source: AgentContextSource]
+  'openReceipt': [receipt: AgentSourceReceiptItem]
+  'pinVersion': [version: AgentThreadVersion]
+  'retryRetrieval': [item: AgentRetrievalItem]
+  'retryTask': [task: AgentTask]
+  'selectVersion': [version: AgentThreadVersion]
+  'submit': [prompt: string]
+  'toggleSource': [source: AgentContextSource, enabled: boolean]
+  'update:prompt': [value: string]
 }>()
 
-const prompt = defineModel<string>('prompt', { default: '' })
+const promptState = useControllableState<string>({
+  runtime: varoReactiveRuntime,
+  controlled: computed(() => props.prompt != null),
+  defaultValue: '',
+  value: computed(() => props.prompt ?? ''),
+  onUpdate: value => emit('update:prompt', value),
+})
+const currentPrompt = computed(() => promptState.current.value)
+const actionsDisabled = computed(() => props.disabled || props.busy)
 const statusClass = computed(() => props.busy
   ? 'bg-[var(--varo-agent-primary)]'
   : 'bg-[var(--varo-agent-success)]')
 const statusLabel = computed(() => props.busy ? 'Agent 正在处理' : 'Agent 已就绪')
 
+function updatePrompt(value: string) {
+  if (props.disabled || props.busy || value === currentPrompt.value) { return }
+  promptState.current.value = value
+}
+
 function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
-  emit('toggleSource', source, enabled)
+  const current = props.sources.find(item => item.id === source.id)
+  if (actionsDisabled.value || !current || (current.status ?? 'available') !== 'available' || current.enabled === enabled) { return }
+  emit('toggleSource', current, enabled)
+}
+
+function connectSource(source: AgentContextSource) {
+  const current = props.sources.find(item => item.id === source.id)
+  if (!actionsDisabled.value && current?.status === 'unavailable') { emit('connectSource', current) }
+}
+
+function retryRetrieval(item: AgentRetrievalItem) {
+  const current = props.retrieval.find(entry => entry.id === item.id)
+  if (!actionsDisabled.value && current?.status === 'failed' && current.retryable) { emit('retryRetrieval', current) }
+}
+
+function receiptIntent(action: 'connectReceipt' | 'openReceipt', receipt: AgentSourceReceiptItem) {
+  if (actionsDisabled.value) { return }
+  const current = props.receipts.find(item => item.id === receipt.id)
+  if (action === 'openReceipt' && current?.status === 'read') { emit('openReceipt', current) }
+  if (action === 'connectReceipt' && current?.status === 'failed') { emit('connectReceipt', current) }
+}
+
+function submit(value: string) {
+  if (!actionsDisabled.value && value.trim()) { emit('submit', value.trim()) }
 }
 </script>
 
@@ -102,14 +144,15 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
 
       <div class="grid min-h-0 min-w-0 content-start gap-3 p-3 sm:p-4">
         <AgentComposerScope
-          :disabled="busy"
+          :disabled="actionsDisabled"
           :sources="sources"
           :usage-percent="contextUsage"
-          @connect="emit('connectSource', $event)"
+          @connect="connectSource"
           @toggle="forwardSourceToggle"
         />
         <AgentThreadVersions
           :active-id="activeVersionId"
+          :disabled="actionsDisabled"
           :versions="versions"
           @branch="emit('branchVersion', $event)"
           @pin="emit('pinVersion', $event)"
@@ -118,29 +161,34 @@ function forwardSourceToggle(source: AgentContextSource, enabled: boolean) {
         <slot name="execution">
           <AgentConversation :messages="messages" />
           <AgentRetrievalProgress
+            :disabled="actionsDisabled"
             :items="retrieval"
-            @retry="emit('retryRetrieval', $event)"
+            @retry="retryRetrieval"
           />
           <AgentTaskRunner
             :busy="busy"
+            :disabled="disabled"
             :tasks="tasks"
             @approve="emit('approveTask', $event)"
             @cancel="emit('cancelTask')"
             @retry="emit('retryTask', $event)"
           />
           <AgentSourceReceipt
+            :disabled="actionsDisabled"
             :items="receipts"
-            @connect="emit('connectReceipt', $event)"
-            @open="emit('openReceipt', $event)"
+            @connect="receiptIntent('connectReceipt', $event)"
+            @open="receiptIntent('openReceipt', $event)"
           />
         </slot>
       </div>
 
       <footer class="border-t border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-3">
         <AgentComposer
-          v-model="prompt"
+          :model-value="currentPrompt"
           :busy="busy"
-          @submit="emit('submit', $event)"
+          :disabled="disabled"
+          @update:model-value="updatePrompt"
+          @submit="submit"
         />
       </footer>
     </section>

@@ -1,0 +1,15 @@
+{
+  "name": "retail-comparison",
+  "type": "block",
+  "title": "Retail Comparison",
+  "description": "Up to three mobile products compared field by field, with visible overflow recovery and guarded intents.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["utils/retail", "components/button", "components/empty"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/retail-comparison/weapp-vite.vue", "to": "src/components/blocks/retail-comparison.vue" },
+    { "target": "weapp", "from": "registry/blocks/retail-comparison/retail-comparison.types.ts", "to": "src/components/blocks/retail-comparison.types.ts" }
+  ],
+  "docs": "/blocks/retail-tools"
+}

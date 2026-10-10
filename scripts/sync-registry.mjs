@@ -19,7 +19,7 @@ function output(path, content) {
 }
 
 async function sourcePlan(names, target) {
-  const plan = await resolveRegistryItems(names, { registryRoot, target })
+  const plan = await resolveRegistryItems(names, { registryRoot, registryFormat: 'canonical', target })
   const destinations = new Set()
   for (const file of plan.files) {
     if (destinations.has(file.to)) { throw new Error(`Duplicate Registry source owner: ${target}:${file.to}`) }
@@ -83,7 +83,7 @@ for (const [app, target] of [['playground-h5', 'h5'], ['playground-weapp', 'weap
   const plan = await sourcePlan(names, target)
   for (const file of plan.files) { output(`apps/${app}/${file.to}`, await readFile(file.sourcePath)) }
 }
-const docsAgent = await sourcePlan(['components/agent-ui'], 'h5')
+const docsAgent = await sourcePlan(['components/agent-ui', 'blocks/agent-chat'], 'h5')
 for (const file of docsAgent.files) {
   output(`apps/docs/${file.to}`, await readFile(file.sourcePath))
 }

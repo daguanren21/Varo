@@ -274,7 +274,7 @@ const controlStyle = computed(() => {
     return declarations.join(';')
   }
 
-  if (typeof props.autosize === 'object') {
+  if (props.autosize != null && typeof props.autosize === 'object') {
     const minRows = normalizeRows(props.autosize.minRows)
     const maxRows = normalizeRows(props.autosize.maxRows)
 

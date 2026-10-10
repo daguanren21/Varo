@@ -1,0 +1,16 @@
+{
+  "name": "marketing-articles",
+  "type": "block",
+  "title": "Marketing Articles",
+  "description": "Three-card pages with injected article media and guarded detail-open intents.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/image"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/marketing-articles/h5.vue", "to": "src/components/blocks/marketing-articles.vue" },
+    { "target": "weapp", "from": "registry/blocks/marketing-articles/weapp-vite.vue", "to": "src/components/blocks/marketing-articles.vue" },
+    { "target": "h5", "from": "registry/blocks/marketing-articles/marketing-articles.types.ts", "to": "src/components/blocks/marketing-articles.types.ts" },
+    { "target": "weapp", "from": "registry/blocks/marketing-articles/marketing-articles.types.ts", "to": "src/components/blocks/marketing-articles.types.ts" }
+  ],
+  "docs": "/blocks/marketing-blocks"
+}

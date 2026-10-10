@@ -3,6 +3,9 @@ import type { AgentPartStatus } from '@varo-ui/ai'
 export type AgentCodeBlockStatus = 'complete' | 'streaming'
 export type AgentImageGenerationStatus = 'completed' | 'failed' | 'generating' | 'queued'
 
+/** Activity presentation only; does not extend the Agent transport protocol. */
+export type AgentActivityStatus = 'queued' | 'running' | 'waiting' | 'failed' | 'cancelled' | 'completed'
+
 export interface AgentCodeLine {
   content: string
   number?: number
@@ -22,7 +25,7 @@ export interface AgentActivityItem {
   duration?: string
   id: string
   kind: 'reasoning' | 'search' | 'tool' | 'trace'
-  status: AgentPartStatus
+  status: AgentActivityStatus
   title: string
 }
 

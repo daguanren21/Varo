@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AgentConversationMessage } from '../../components/agent-ui/types'
 import type { RetailCartLine, RetailOrderSummary } from '../../lib/retail'
 import { computed, onLoad, shallowRef, watch } from 'wevu'
 import bannerImage from '../../assets/retail/banner.jpg'
@@ -111,9 +112,22 @@ const cities = [
   { label: '杭州', value: 'hangzhou' },
   { label: '深圳', value: 'shenzhen' },
 ]
-const agentMessages = [
-  { content: '今天想找什么？我可以比较商品、整理订单并在操作前请你确认。', id: 'welcome', label: 'Varo Agent', role: 'assistant' as const },
-]
+const agentPrompt = shallowRef('')
+const agentMessages = shallowRef<AgentConversationMessage[]>([
+  { content: '今天想找什么？我可以比较商品、整理订单并在操作前请你确认。', id: 'welcome', label: 'Varo Agent', role: 'assistant' },
+])
+let agentMessageSequence = 0
+
+function sendAgent(value: string) {
+  agentMessages.value = [...agentMessages.value, { id: `prompt-${++agentMessageSequence}`, role: 'user', content: value }]
+  agentPrompt.value = ''
+  notify(value)
+}
+
+function newAgentConversation() {
+  agentMessages.value = []
+  agentPrompt.value = ''
+}
 const agentSuggestions = ['推荐三件通勤单品', '查看待收货订单']
 const cartLines = computed(() => retail.cartItems.value.map(item => ({
   product: item.product,
@@ -288,9 +302,12 @@ function notify(title: string) {
       />
       <AgentChat
         v-else-if="active === 'agent-chat'"
+        v-model="agentPrompt"
         :messages="agentMessages"
         :suggestions="agentSuggestions"
-        @submit="notify($event)"
+        @submit="sendAgent"
+        @newConversation="newAgentConversation"
+        @close="active = 'retail-home'"
       />
       <RetailHome
         v-else-if="active === 'retail-home'"

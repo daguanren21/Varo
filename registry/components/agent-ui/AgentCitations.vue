@@ -9,11 +9,13 @@ const props = withDefaults(
   defineProps<{
     className?: ClassValue
     defaultOpen?: boolean
+    disabled?: boolean
     items?: AgentCitationItem[]
     title?: string
   }>(),
   {
     defaultOpen: false,
+    disabled: false,
     items: () => [],
     title: 'Sources',
   },
@@ -37,11 +39,13 @@ const displayItems = computed(() =>
 )
 
 function toggle() {
+  if (props.disabled) { return }
   open.value = !open.value
   emit('update:open', open.value)
 }
 
 function openItem(id: string) {
+  if (props.disabled) { return }
   const item = props.items.find(entry => entry.id === id)
   if (item) {
     emit('open', item)
@@ -51,7 +55,7 @@ function openItem(id: string) {
 
 <template>
   <view :class="rootClass" :data-open="openAttr">
-    <button class="agent-native-button agent-native-button--block agent-citations__trigger" type="button" :aria-expanded="open" @click="toggle">
+    <button class="agent-native-button agent-native-button--block agent-citations__trigger" type="button" :disabled="disabled" :aria-expanded="open" @click="toggle">
       <view class="agent-citations__heading">
         <text class="agent-citations__title">
           {{ title }}
@@ -74,6 +78,7 @@ function openItem(id: string) {
         :key="item.id"
         class="agent-native-button agent-native-button--block agent-citations__item"
         type="button"
+        :disabled="disabled"
         @click="openItem(item.id)"
       >
         <text class="agent-citations__mark" aria-hidden="true">

@@ -1,0 +1,17 @@
+{
+  "name": "step-form",
+  "type": "block",
+  "title": "Step Form",
+  "description": "Controlled multi-step text, choice and boolean form; validation, navigation acceptance and submission belong to the application.",
+  "docs": "/blocks/application-blocks#step-form",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/input", "components/switch"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/step-form/h5.vue", "to": "src/components/blocks/step-form.vue" },
+    { "target": "weapp", "from": "registry/blocks/step-form/weapp-vite.vue", "to": "src/components/blocks/step-form.vue" },
+    { "target": "h5", "from": "registry/blocks/step-form/step-form-actions.ts", "to": "src/components/blocks/step-form-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/step-form/step-form-actions.ts", "to": "src/components/blocks/step-form-actions.ts" }
+  ]
+}

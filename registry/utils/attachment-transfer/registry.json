@@ -1,0 +1,16 @@
+{
+  "name": "attachment-transfer",
+  "type": "util",
+  "title": "Attachment Transfer",
+  "description": "Application-owned, cancellable file selection and acknowledged multipart transfer with separate browser and WeChat host adapters.",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    { "target": "h5", "from": "registry/utils/attachment-transfer/attachment-transfer.ts", "to": "src/lib/attachment-transfer/attachment-transfer.ts" },
+    { "target": "weapp", "from": "registry/utils/attachment-transfer/attachment-transfer.ts", "to": "src/lib/attachment-transfer/attachment-transfer.ts" },
+    { "target": "h5", "from": "registry/utils/attachment-transfer/attachment-transfer.h5.ts", "to": "src/lib/attachment-transfer/attachment-transfer.h5.ts" },
+    { "target": "weapp", "from": "registry/utils/attachment-transfer/attachment-transfer.weapp.ts", "to": "src/lib/attachment-transfer/attachment-transfer.weapp.ts" }
+  ],
+  "docs": "/ai/agent-attachment-composer"
+}

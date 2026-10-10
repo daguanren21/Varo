@@ -35,20 +35,21 @@ const open = ref(false)
 
 ## Props
 
-| Prop                  | Type                                     | Default     | Description                       |
-| --------------------- | ---------------------------------------- | ----------- | --------------------------------- |
-| `open`                | `boolean \| undefined`                   | `undefined` | Controlled open state             |
-| `defaultOpen`         | `boolean`                                | `false`     | Uncontrolled initial state        |
-| `placement`           | `'top' \| 'right' \| 'bottom' \| 'left'` | `'right'`   | Drawer direction                  |
-| `overlay`             | `boolean`                                | `true`      | Show the backdrop                 |
-| `closeable`           | `boolean`                                | `false`     | Show a close button               |
-| `closeIcon`           | `string`                                 | `'×'`       | Close button content              |
-| `round`               | `boolean`                                | `false`     | Apply directional rounded corners |
-| `safeAreaInsetBottom` | `boolean`                                | `false`     | Add bottom safe-area padding      |
-| `lockScroll`          | `boolean`                                | `true`      | Lock page scrolling on H5         |
-| `closeOnClickOverlay` | `boolean`                                | `true`      | Close on backdrop click           |
-| `disabled`            | `boolean`                                | `false`     | Prevent opening and closing       |
-| `zIndex`              | `number \| string`                       | `undefined` | Custom layer index                |
+| Prop                  | Type                                     | Default     | Description                                                                |
+| --------------------- | ---------------------------------------- | ----------- | -------------------------------------------------------------------------- |
+| `open`                | `boolean \| undefined`                   | `undefined` | Controlled open state                                                      |
+| `defaultOpen`         | `boolean`                                | `false`     | Uncontrolled initial state                                                 |
+| `ariaLabel`           | `string`                                 | `undefined` | Accessible name on the actual dialog; omission preserves existing behavior |
+| `placement`           | `'top' \| 'right' \| 'bottom' \| 'left'` | `'right'`   | Drawer direction                                                           |
+| `overlay`             | `boolean`                                | `true`      | Show the backdrop                                                          |
+| `closeable`           | `boolean`                                | `false`     | Show a close button                                                        |
+| `closeIcon`           | `string`                                 | `'×'`       | Close button content                                                       |
+| `round`               | `boolean`                                | `false`     | Apply directional rounded corners                                          |
+| `safeAreaInsetBottom` | `boolean`                                | `false`     | Add bottom safe-area padding                                               |
+| `lockScroll`          | `boolean`                                | `true`      | Lock page scrolling on H5                                                  |
+| `closeOnClickOverlay` | `boolean`                                | `true`      | Close on backdrop click                                                    |
+| `disabled`            | `boolean`                                | `false`     | Prevent opening and closing                                                |
+| `zIndex`              | `number \| string`                       | `undefined` | Custom layer index                                                         |
 
 ## Events
 

@@ -1,0 +1,17 @@
+{
+  "name": "schedule-calendar",
+  "type": "block",
+  "title": "Schedule Calendar",
+  "description": "Bounded ISO calendar-date day/week lists with controlled navigation, date and available-slot selection.",
+  "docs": "/blocks/data-workspace#schedule-calendar",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "utils/date-utils"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/schedule-calendar/h5.vue", "to": "src/components/blocks/schedule-calendar.vue" },
+    { "target": "weapp", "from": "registry/blocks/schedule-calendar/weapp-vite.vue", "to": "src/components/blocks/schedule-calendar.vue" },
+    { "target": "h5", "from": "registry/blocks/schedule-calendar/schedule-calendar-actions.ts", "to": "src/components/blocks/schedule-calendar-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/schedule-calendar/schedule-calendar-actions.ts", "to": "src/components/blocks/schedule-calendar-actions.ts" }
+  ]
+}

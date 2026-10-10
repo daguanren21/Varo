@@ -15,17 +15,21 @@ const props = withDefaults(
     ariaLabel?: string
     busy?: boolean
     disabled?: boolean
+    fixed?: boolean
     modelValue?: string
     placeholder?: string
     suggestions?: string[]
+    submitDisabled?: boolean
   }>(),
   {
     ariaLabel: 'Agent 输入',
     busy: false,
     disabled: false,
+    fixed: false,
     modelValue: '',
     placeholder: '告诉 Agent 你想买什么、退什么或查看什么',
     suggestions: () => [],
+    submitDisabled: false,
   },
 )
 
@@ -36,18 +40,19 @@ const emit = defineEmits<{
 
 const promptValue = computed(() => props.modelValue || '')
 const promptSuggestions = computed(() => Array.isArray(props.suggestions) ? props.suggestions : [])
-const canSubmit = computed(() => promptValue.value.trim().length > 0 && !props.busy && !props.disabled)
+const canSubmit = computed(() => promptValue.value.trim().length > 0 && !props.busy && !props.disabled && !props.submitDisabled)
 const submitClass = computed(() => canSubmit.value
   ? 'bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)]'
   : 'bg-[var(--varo-agent-border)] text-[var(--varo-agent-muted)]')
 
 function submit(prompt = promptValue.value) {
   const value = prompt.trim()
-  if (!value || props.busy || props.disabled) { return }
+  if (!value || props.busy || props.disabled || props.submitDisabled) { return }
   emit('submit', value)
 }
 
 function update(event: unknown) {
+  if (props.disabled) { return }
   const nativeEvent = event as { detail?: { value?: string }, target?: { value?: string } }
   emit('update:modelValue', nativeEvent.detail?.value ?? nativeEvent.target?.value ?? '')
 }
@@ -58,7 +63,7 @@ function update(event: unknown) {
     <AgentPromptSuggestions
       v-if="promptSuggestions.length"
       :suggestions="promptSuggestions"
-      :disabled="busy || disabled"
+      :disabled="busy || disabled || submitDisabled"
       @select="submit"
     />
 
@@ -69,6 +74,7 @@ function update(event: unknown) {
         :aria-label="ariaLabel"
         :value="promptValue"
         :disabled="disabled"
+        :fixed="fixed"
         :placeholder="placeholder"
         :maxlength="500"
         :auto-height="false"

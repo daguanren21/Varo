@@ -18,6 +18,7 @@ import { VCheckbox } from './components/ui/checkbox'
 import { VInput } from './components/ui/input'
 import { VSwitch } from './components/ui/switch'
 import { VTag } from './components/ui/tag'
+import ChatBlocksDemo from './features/ChatBlocksDemo.vue'
 import { useAgentDemo } from './features/useAgentDemo'
 
 const name = shallowRef('Varo')
@@ -32,16 +33,24 @@ const toastType = shallowRef<'text' | 'success' | 'loading'>('success')
 const toastMessage = shallowRef('保存成功')
 let toastDismissTimer: number | undefined
 let toastSuccessTimer: number | undefined
+const agentChatOpen = shallowRef(true)
 const {
   approve: approveAgent,
   busy: agentBusy,
   messages: agentMessages,
+  newConversation: newAgentConversation,
   prompt: agentPrompt,
   reject: rejectAgent,
   retry: retryAgent,
   send: sendAgent,
   snapshot: agentSnapshot,
+  stop: stopAgent,
 } = useAgentDemo()
+
+function closeAgentChat() {
+  stopAgent()
+  agentChatOpen.value = false
+}
 const cities = [
   { label: '上海', value: 'shanghai' },
   { label: '杭州', value: 'hangzhou' },
@@ -180,6 +189,18 @@ function record(message: string) {
           </div>
         </header>
 
+        <nav class="pg__links" aria-label="Block scenarios">
+          <a href="?demo=source-chat">Source Chat</a>
+          <a href="?demo=workspace">Workspace</a>
+          <a href="?demo=activity">Activity</a>
+          <a href="?demo=application-blocks">Application Blocks</a>
+          <a href="?demo=marketing-blocks">Marketing Blocks</a>
+          <a href="?demo=model-compare">Model Compare</a>
+          <a href="?demo=operations">Mobile Operations</a>
+          <a href="?demo=data-workspace">Data Workspace</a>
+          <a href="?demo=attachments">Attachments</a>
+        </nav>
+
         <div class="pg__block-grid">
           <LoginForm
             class-name="max-w-none"
@@ -230,6 +251,7 @@ function record(message: string) {
 
         <div class="pg__agent-grid">
           <AgentChat
+            v-if="agentChatOpen"
             v-model="agentPrompt"
             class="pg__agent-chat"
             title="双端 Agent 交付建议"
@@ -238,10 +260,12 @@ function record(message: string) {
             :snapshot="agentSnapshot"
             :suggestions="['分析双端 Agent 方案', '生成发布计划']"
             @approve="approveAgent"
-            @close="record('关闭 Agent Chat Block')"
+            @close="closeAgentChat"
             @reject="rejectAgent"
             @retry="retryAgent"
             @submit="sendAgent"
+            @stop="stopAgent"
+            @new-conversation="newAgentConversation"
           >
             <template #actions>
               <AgentResponseActions
@@ -253,6 +277,9 @@ function record(message: string) {
               />
             </template>
           </AgentChat>
+          <VButton v-else variant="outline" @click="agentChatOpen = true">
+            打开 Agent 会话
+          </VButton>
 
           <aside class="pg__agent-assets">
             <AgentArtifact :artifact="agentArtifact" @open="record('打开传输适配器产物')" />
@@ -262,6 +289,8 @@ function record(message: string) {
 
         <AgentWorkspaceDemo />
       </section>
+
+      <ChatBlocksDemo />
 
       <section class="pg__qa" aria-labelledby="base-qa-heading">
         <header class="pg__qa-intro">

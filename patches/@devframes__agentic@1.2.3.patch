@@ -1,0 +1,22 @@
+diff --git a/dist/mcp/index.mjs b/dist/mcp/index.mjs
+index 8d2d64dbe9397f74ccb8b9640605e0b1b38a3d40..62389498d416eae47358d8bc58e299c117e6b7b6 100644
+--- a/dist/mcp/index.mjs
++++ b/dist/mcp/index.mjs
+@@ -199,7 +199,7 @@ function registerToolHandlers(server, ctx, exposeSharedState) {
+ 		if (stateFilter && !byName.has(READ_STATE_NAME)) tools.push(readStateToolProjection());
+ 		return { tools };
+ 	});
+-	server.setRequestHandler("tools/call", async (request) => {
++	server.setRequestHandler("tools/call", async (request, requestContext) => {
+ 		const { name, arguments: args } = request.params;
+ 		try {
+ 			const tool = resolveTool(name);
+@@ -215,7 +215,7 @@ function registerToolHandlers(server, ctx, exposeSharedState) {
+ 				};
+ 			}
+ 			const outputSchema = tool ? usableOutputSchema(tool.outputSchema ?? computeOutputSchema(tool, ctx)) : void 0;
+-			const result = await ctx.agent.invoke(tool?.id ?? name, args ?? {});
++			const result = await ctx.agent.invoke(tool?.id ?? name, args ?? {}, { signal: requestContext.mcpReq.signal });
+ 			return {
+ 				content: [{
+ 					type: "text",

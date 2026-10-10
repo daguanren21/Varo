@@ -2,7 +2,7 @@ import type { AgentPartStatus, AgentStreamSnapshot, AgentStreamStatus, AgentTool
 import type { PropType } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type { AgentChoice, AgentConversationMessage, AgentTraceStep } from './types'
-import { computed, defineComponent, h, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import { AgentMarkdown } from './AgentMarkdown'
 import { agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
@@ -273,11 +273,20 @@ export const AgentApproval = defineComponent({
 })
 export const AgentPromptSuggestions = defineComponent({
   name: 'AgentPromptSuggestions',
-  props: { suggestions: { type: Array as PropType<string[]>, default: () => [] } },
+  props: {
+    disabled: Boolean,
+    suggestions: { type: Array as PropType<string[]>, default: () => [] },
+  },
   emits: { select: (_value: string) => true },
   setup(props, { emit }) {
     return () => h('div', { class: 'flex max-w-full gap-2 overflow-x-auto pb-1' }, props.suggestions.map(suggestion =>
-      h('button', { class: 'min-h-9 flex-none rounded-full border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-semibold text-[var(--varo-agent-text)] hover:border-[var(--varo-agent-primary)] hover:text-[var(--varo-agent-primary)]', key: suggestion, type: 'button', onClick: () => emit('select', suggestion) }, suggestion),
+      h('button', {
+        class: 'min-h-9 flex-none rounded-full border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-semibold text-[var(--varo-agent-text)] hover:border-[var(--varo-agent-primary)] hover:text-[var(--varo-agent-primary)] disabled:cursor-not-allowed disabled:opacity-45',
+        disabled: props.disabled,
+        key: suggestion,
+        type: 'button',
+        onClick: () => { if (!props.disabled) { emit('select', suggestion) } },
+      }, suggestion),
     ))
   },
 })
@@ -287,37 +296,55 @@ export const AgentComposer = defineComponent({
   props: {
     ariaLabel: { type: String, default: 'Agent 输入' },
     busy: Boolean,
+    disabled: Boolean,
     maxLength: { type: Number, default: 4000 },
     modelValue: { type: String, default: '' },
     placeholder: { type: String, default: '给 Agent 发送消息…' },
     suggestions: { type: Array as PropType<string[]>, default: () => [] },
+    submitDisabled: Boolean,
   },
   emits: {
     'submit': (_value: string) => true,
     'update:modelValue': (_value: string) => true,
   },
   setup(props, { emit, slots }) {
+    let composing = false
+    const reconcileInput = (input: HTMLTextAreaElement) => {
+      void nextTick(() => {
+        if (!composing && input.value !== props.modelValue) { input.value = props.modelValue }
+      })
+    }
     const submit = (value = props.modelValue) => {
       const normalized = value.trim()
-      if (!normalized || props.busy) { return }
+      if (!normalized || props.busy || props.disabled || props.submitDisabled) { return }
       emit('submit', normalized)
     }
     return () => h('div', { class: 'agent-composer grid w-full min-w-0 grid-cols-1 gap-2.5' }, [
-      h(AgentPromptSuggestions, { suggestions: props.suggestions, onSelect: submit }),
+      h(AgentPromptSuggestions, { disabled: props.busy || props.disabled || props.submitDisabled, suggestions: props.suggestions, onSelect: submit }),
       h('div', { class: 'agent-composer__shell flex min-h-14 min-w-0 items-center gap-2 rounded-[18px] border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-2 shadow-lg' }, [
         slots.leading?.(),
         h('textarea', {
           'aria-label': props.ariaLabel,
           'class': 'max-h-40 min-h-10 min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2.5 text-sm leading-5 text-[var(--varo-agent-foreground)] outline-none placeholder:text-[var(--varo-agent-muted)]',
-          'disabled': props.busy,
+          'disabled': props.busy || props.disabled,
           'maxlength': props.maxLength,
           'placeholder': props.placeholder,
           'rows': 1,
           'value': props.modelValue,
           'onInput': (event: Event) => {
-            if (event.target instanceof HTMLTextAreaElement) { emit('update:modelValue', event.target.value) }
+            if (props.busy || props.disabled) { return }
+            if (event.target instanceof HTMLTextAreaElement) {
+              emit('update:modelValue', event.target.value)
+              reconcileInput(event.target)
+            }
+          },
+          'onCompositionstart': () => { composing = true },
+          'onCompositionend': (event: CompositionEvent) => {
+            composing = false
+            if (event.target instanceof HTMLTextAreaElement) { reconcileInput(event.target) }
           },
           'onKeydown': (event: KeyboardEvent) => {
+            if (props.busy || props.disabled || event.isComposing) { return }
             if (event.key === 'Enter' && !event.shiftKey) {
               event.preventDefault()
               submit()
@@ -330,7 +357,7 @@ export const AgentComposer = defineComponent({
           {
             'aria-label': props.busy ? 'Agent 正在处理' : '发送',
             'class': 'grid h-11 w-11 flex-none place-items-center self-center rounded-full bg-[var(--varo-agent-primary)] text-lg font-bold text-[var(--varo-agent-primary-foreground)] shadow-sm transition-transform active:translate-y-px disabled:opacity-45',
-            'disabled': props.busy || !props.modelValue.trim(),
+            'disabled': props.busy || props.disabled || props.submitDisabled || !props.modelValue.trim(),
             'type': 'button',
             'onClick': () => submit(),
           },
@@ -428,7 +455,7 @@ export const AgentEventRenderer = defineComponent({
     return () => h('div', { 'class': 'grid gap-3', 'data-status': props.snapshot.status }, [
       props.snapshot.reasoning.length > 0 ? h(AgentThinking, { label: '推理过程', defaultOpen: props.snapshot.status === 'streaming', steps: props.snapshot.reasoning }) : null,
       props.snapshot.tools.length > 0 ? h('div', { class: 'flex flex-wrap gap-2' }, props.snapshot.tools.map(tool => h(AgentToolChip, { key: tool.id, tool }))) : null,
-      props.snapshot.message ? h(AgentMessage, { role: props.snapshot.message.role }, { default: () => h(AgentStream, { content: props.snapshot.message?.visible, error: props.snapshot.error?.message, final: props.snapshot.message?.final, status: props.snapshot.status, onRetry: () => emit('retry') }, { actions: slots.actions }) }) : null,
+      props.snapshot.message || props.snapshot.error ? h(AgentMessage, { role: props.snapshot.message?.role ?? 'assistant' }, { default: () => h(AgentStream, { content: props.snapshot.message?.visible, error: props.snapshot.error?.message, final: props.snapshot.message?.final, status: props.snapshot.status, onRetry: () => emit('retry') }, { actions: slots.actions }) }) : null,
       props.snapshot.status === 'streaming' && !props.snapshot.message?.visible ? h(AgentLoading, { label: '正在生成回答' }) : null,
       props.snapshot.approval?.status === 'waiting'
         ? h(AgentApproval, {

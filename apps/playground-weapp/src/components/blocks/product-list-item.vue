@@ -8,14 +8,18 @@ import VImage from '../ui/v-image.vue'
 
 const props = withDefaults(
   defineProps<{
+    cartDisabled?: boolean
     className?: ClassValue
     currency?: string
     item: ProductListItemData
     loading?: boolean
+    viewDisabled?: boolean
   }>(),
   {
     currency: '¥',
+    cartDisabled: false,
     loading: false,
+    viewDisabled: false,
   },
 )
 
@@ -31,6 +35,16 @@ const actionAriaLabel = computed(() => props.item.inventory === 0 ? `${props.ite
 const rootClass = computed(() =>
   cn('grid min-w-0 grid-cols-[96px_minmax(0,1fr)] gap-4 border-b border-[var(--varo-ui-border-lighter)] py-5', props.className),
 )
+
+function select() {
+  if (!props.item?.id || props.viewDisabled || props.loading) { return }
+  emit('select', props.item)
+}
+
+function addToCart() {
+  if (!props.item?.id || props.cartDisabled || props.loading || (props.item.inventory != null && props.item.inventory <= 0)) { return }
+  emit('addToCart', props.item)
+}
 </script>
 
 <template>
@@ -41,7 +55,8 @@ const rootClass = computed(() =>
       tone="default"
       class-name="!h-24 !min-h-24 !w-24 !overflow-hidden !rounded-lg !bg-[var(--varo-ui-surface-muted)] !p-0 !shadow-none"
       :aria-label="itemAriaLabel"
-      @click="emit('select', item)"
+      :disabled="viewDisabled || loading"
+      @click="select"
     >
       <VImage :src="item.image || ''" :alt="item.name || ''" width="96px" height="96px" fit="cover" error-text="暂无图片" />
     </VButton>
@@ -54,7 +69,8 @@ const rootClass = computed(() =>
         tone="default"
         class-name="!h-auto !min-h-11 !min-w-0 !w-full !whitespace-normal !rounded-lg !bg-transparent !p-0 !text-left !text-sm !font-semibold !text-[var(--varo-ui-text)] !shadow-none"
         :aria-label="itemAriaLabel"
-        @click="emit('select', item)"
+        :disabled="viewDisabled || loading"
+        @click="select"
       >
         <text class="block w-full break-words text-left text-sm font-semibold leading-6">
           {{ item.name }}
@@ -83,10 +99,10 @@ const rootClass = computed(() =>
         foreground-color="var(--varo-ui-surface)"
         class-name="!min-h-11 !rounded-lg !px-4 !shadow-none"
         :aria-label="actionAriaLabel"
-        :disabled="item.inventory === 0"
+        :disabled="cartDisabled || (item.inventory != null && item.inventory <= 0)"
         :loading="loading"
         loading-text="加购中…"
-        @click.stop="emit('addToCart', item)"
+        @click.stop="addToCart"
       >
         {{ actionLabel }}
       </VButton>

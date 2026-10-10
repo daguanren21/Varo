@@ -1,0 +1,17 @@
+{
+  "name": "task-board",
+  "type": "block",
+  "title": "Task Board",
+  "description": "Bounded mobile task columns with current-card grants and application-owned select, move and approval intents.",
+  "docs": "/blocks/data-workspace#task-board",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/task-board/h5.vue", "to": "src/components/blocks/task-board.vue" },
+    { "target": "weapp", "from": "registry/blocks/task-board/weapp-vite.vue", "to": "src/components/blocks/task-board.vue" },
+    { "target": "h5", "from": "registry/blocks/task-board/task-board-actions.ts", "to": "src/components/blocks/task-board-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/task-board/task-board-actions.ts", "to": "src/components/blocks/task-board-actions.ts" }
+  ]
+}

@@ -31,6 +31,7 @@ const props = withDefaults(
     activeVersionId?: string
     busy?: boolean
     contextUsage?: number
+    disabled?: boolean
     messages?: AgentConversationMessage[]
     open?: boolean
     placement?: AgentWorkspacePlacement
@@ -48,6 +49,7 @@ const props = withDefaults(
     activeVersionId: undefined,
     busy: false,
     contextUsage: 0,
+    disabled: false,
     messages: () => [],
     open: true,
     placement: 'page',
@@ -89,17 +91,42 @@ const promptState = useControllableState<string>({
   },
 })
 const currentPrompt = computed(() => promptState.current.value)
+const actionsDisabled = computed(() => props.disabled || props.busy)
 const statusClass = computed(() => props.busy
   ? 'bg-[var(--varo-agent-primary)]'
   : 'bg-[var(--varo-agent-success)]')
 const statusLabel = computed(() => props.busy ? 'Agent 正在处理' : 'Agent 已就绪')
 
 function updatePrompt(value: string) {
+  if (props.disabled || value === currentPrompt.value) { return }
   promptState.current.value = value
 }
 
-function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
-  emit('toggleSource', payload)
+function forwardSourceToggle([source, enabled]: [AgentContextSource, boolean]) {
+  const current = props.sources.find(item => item.id === source.id)
+  if (actionsDisabled.value || !current || (current.status ?? 'available') !== 'available' || current.enabled === enabled) { return }
+  emit('toggleSource', [current, enabled])
+}
+
+function connectSource(source: AgentContextSource) {
+  const current = props.sources.find(item => item.id === source.id)
+  if (!actionsDisabled.value && current?.status === 'unavailable') { emit('connectSource', current) }
+}
+
+function retryRetrieval(item: AgentRetrievalItem) {
+  const current = props.retrieval.find(entry => entry.id === item.id)
+  if (!actionsDisabled.value && current?.status === 'failed' && current.retryable) { emit('retryRetrieval', current) }
+}
+
+function receiptIntent(action: 'connectReceipt' | 'openReceipt', receipt: AgentSourceReceiptItem) {
+  if (actionsDisabled.value) { return }
+  const current = props.receipts.find(item => item.id === receipt.id)
+  if (action === 'openReceipt' && current?.status === 'read') { emit('openReceipt', current) }
+  if (action === 'connectReceipt' && current?.status === 'failed') { emit('connectReceipt', current) }
+}
+
+function submit(value: string) {
+  if (!actionsDisabled.value && value.trim()) { emit('submit', value.trim()) }
 }
 </script>
 
@@ -129,15 +156,16 @@ function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
       <view class="box-border grid min-h-0 w-full min-w-0 max-w-full content-start gap-3 overflow-hidden p-3">
         <AgentComposerScope
           class="block w-full min-w-0 max-w-full overflow-hidden"
-          :disabled="busy"
+          :disabled="actionsDisabled"
           :sources="sources"
           :usage-percent="contextUsage"
-          @connect="emit('connectSource', $event)"
+          @connect="connectSource"
           @toggle="forwardSourceToggle"
         />
         <AgentThreadVersions
           class="block w-full min-w-0 max-w-full overflow-hidden"
           :active-id="activeVersionId"
+          :disabled="actionsDisabled"
           :versions="versions"
           @branch="emit('branchVersion', $event)"
           @pin="emit('pinVersion', $event)"
@@ -147,12 +175,14 @@ function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
           <AgentConversation class="block w-full min-w-0 max-w-full overflow-hidden" :messages="messages" />
           <AgentRetrievalProgress
             class="block w-full min-w-0 max-w-full overflow-hidden"
+            :disabled="actionsDisabled"
             :items="retrieval"
-            @retry="emit('retryRetrieval', $event)"
+            @retry="retryRetrieval"
           />
           <AgentTaskRunner
             class="block w-full min-w-0 max-w-full overflow-hidden"
             :busy="busy"
+            :disabled="disabled"
             :tasks="tasks"
             @approve="emit('approveTask', $event)"
             @cancel="emit('cancelTask')"
@@ -160,9 +190,10 @@ function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
           />
           <AgentSourceReceipt
             class="block w-full min-w-0 max-w-full overflow-hidden"
+            :disabled="actionsDisabled"
             :items="receipts"
-            @connect="emit('connectReceipt', $event)"
-            @open="emit('openReceipt', $event)"
+            @connect="receiptIntent('connectReceipt', $event)"
+            @open="receiptIntent('openReceipt', $event)"
           />
         </slot>
       </view>
@@ -172,8 +203,9 @@ function forwardSourceToggle(payload: [AgentContextSource, boolean]) {
           :model-value="currentPrompt"
           class="block w-full min-w-0 max-w-full overflow-hidden"
           :busy="busy"
+          :disabled="disabled"
           @update:modelValue="updatePrompt"
-          @submit="emit('submit', $event)"
+          @submit="submit"
         />
       </view>
     </view>

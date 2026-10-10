@@ -965,9 +965,11 @@ function attachHover(component: NativeComponent, target: HTMLElement, isDisabled
 
 function syncButton(state: ButtonState, options: NativeElementRegistrationOptions) {
   if (!isButtonStateCurrent(state)) { return }
-  const { component, control } = state
+  const { component, control, host } = state
   syncSemanticAttributes(component, control)
   control.disabled = booleanProperty(component, 'disabled')
+  host.toggleAttribute('disabled', control.disabled)
+  host.hidden = control.hidden
   setOptionalAttribute(control, 'name', stringProperty(component, 'name'))
   setOptionalAttribute(control, 'form', stringProperty(component, 'form'))
 
@@ -2119,7 +2121,8 @@ function registerButtonDefinition(
 ) {
   return space
     .define('button')
-    .options(componentOptions())
+    // The inner button owns semantics; raw host reflection stringifies absent ARIA values.
+    .options({ ...componentOptions(), reflectToAttributes: false })
     .definition({
       properties: {
         ...semanticProperties,

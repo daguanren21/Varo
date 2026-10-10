@@ -1,0 +1,16 @@
+{
+  "name": "agent-model-selector",
+  "type": "component",
+  "title": "Agent Model Selector",
+  "description": "Controlled, availability-aware VSelect composition; model execution remains application-owned.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/select"],
+  "files": [
+    { "target": "h5", "from": "registry/components/agent-model-selector/h5.vue", "to": "src/components/agent-ui/AgentModelSelector.vue" },
+    { "target": "weapp", "from": "registry/components/agent-model-selector/weapp-vite.vue", "to": "src/components/agent-ui/AgentModelSelector.vue" },
+    { "target": "h5", "from": "registry/components/agent-model-selector/agent-model-selector.types.ts", "to": "src/components/agent-ui/agent-model-selector.types.ts" },
+    { "target": "weapp", "from": "registry/components/agent-model-selector/agent-model-selector.types.ts", "to": "src/components/agent-ui/agent-model-selector.types.ts" }
+  ],
+  "docs": "/ai/agent-model-compare"
+}

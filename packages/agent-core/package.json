@@ -33,20 +33,26 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "files": [
+    "THIRD_PARTY_NOTICES.txt",
     "dist",
+    "runtime",
     "src"
   ],
   "scripts": {
-    "build": "tsdown",
-    "clean": "rimraf dist",
-    "dev": "tsdown --watch",
+    "build": "pnpm build:runtime && tsdown",
+    "build:runtime": "tsdown --config tsdown.runtime.config.ts",
+    "clean": "rimraf dist runtime",
+    "dev": "pnpm build:runtime && tsdown --watch",
+    "prepack": "pnpm build",
     "lint": "echo agent-core lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
-    "test:e2e": "echo agent-core has no e2e"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
     "markstream-core": "^2.0.12",
-    "stream-markdown-parser": "^1.2.16"
+    "stream-markdown-parser": "1.2.18"
+  },
+  "devDependencies": {
+    "base64-js": "1.5.1"
   }
 }
