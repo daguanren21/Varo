@@ -16,6 +16,10 @@
   intents:
     - canonical-native-source-cutover
     - cool-bars-wave
+"@varo-ui/ai@2.2.1":
+  dir: packages/agent-core
+  intents:
+    - all-eels-laugh
 "@varo-ui/cli@1.0.0":
   dir: packages/cli
   intents:
@@ -149,6 +153,10 @@
     - canonical-native-source-cutover
     - cool-bars-wave
     - soft-fields-pulse
+"@varo-ui/headless@2.2.1":
+  dir: packages/primitives-core
+  intents:
+    - wacky-adults-vanish
 "@varo-ui/theme@1.0.0":
   dir: packages/theme
   intents:
