@@ -51,6 +51,73 @@ describe('form hooks', () => {
     expect(result.errors.email).toBe('email 请输入有效邮箱')
   })
 
+  it.each(['g', 'y'])('validates unchanged values repeatedly with a %s pattern', async (flags) => {
+    const form = useForm({
+      initialValues: { name: 'Varo' },
+      rules: { name: { pattern: new RegExp('^Varo$', flags) } },
+    })
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      await expect(form.validateField('name')).resolves.toEqual({ errors: [], valid: true })
+    }
+  })
+
+  it.each(['g', 'y'])('allows fields to share a %s pattern', async (flags) => {
+    const pattern = new RegExp('^Varo$', flags)
+    const form = useForm({
+      initialValues: { first: 'Varo', second: 'Varo' },
+      rules: { first: { pattern }, second: { pattern } },
+    })
+
+    await expect(form.validate()).resolves.toMatchObject({ errors: {}, valid: true })
+    expect(pattern.lastIndex).toBe(0)
+  })
+
+  it.each(['g', 'y'])('preserves a caller-owned %s pattern cursor', async (flags) => {
+    const pattern = new RegExp('^Varo$', flags)
+    pattern.lastIndex = 2
+    const form = useForm({
+      initialValues: { name: 'Varo' },
+      rules: { name: { pattern } },
+    })
+
+    await expect(form.validateField('name')).resolves.toEqual({ errors: [], valid: true })
+    expect(pattern.lastIndex).toBe(2)
+
+    form.setFieldValue('name', 'Other')
+    await expect(form.validateField('name')).resolves.toEqual({
+      errors: ['name 格式不正确'],
+      valid: false,
+    })
+    expect(pattern.lastIndex).toBe(2)
+
+    form.setFieldValue('name', '')
+    await expect(form.validateField('name')).resolves.toEqual({ errors: [], valid: true })
+    expect(pattern.lastIndex).toBe(2)
+  })
+
+  it.each([
+    { label: 'string patterns', pattern: '^Varo$', value: 'Varo', valid: true },
+    { label: 'nonmatching strings', pattern: '^Varo$', value: 'Other', valid: false },
+    { label: 'case-insensitive matching', pattern: /^varo$/i, value: 'Varo', valid: true },
+    { label: 'multiline matching', pattern: /^Varo$/m, value: 'Other\nVaro', valid: true },
+    { label: 'Unicode matching', pattern: /^.$/u, value: '🌱', valid: true },
+    { label: 'dot-all matching', pattern: /^Varo.Other$/s, value: 'Varo\nOther', valid: true },
+    { label: 'global search', pattern: /Varo/g, value: 'Other Varo', valid: true },
+    { label: 'sticky matching', pattern: /Varo/y, value: 'Other Varo', valid: false },
+    { label: 'empty optional values', pattern: /^Varo$/g, value: '', valid: true },
+  ])('preserves $label for pattern rules', async ({ pattern, value, valid }) => {
+    const form = useForm({
+      initialValues: { name: value },
+      rules: { name: { pattern } },
+    })
+
+    await expect(form.validateField('name')).resolves.toEqual({
+      errors: valid ? [] : ['name 格式不正确'],
+      valid,
+    })
+  })
+
   it('supports custom rules and useField helpers', async () => {
     defineRule('startsWithV', (value) => {
       return String(value).startsWith('V') || 'Name must start with V'
