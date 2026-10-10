@@ -1,7 +1,7 @@
 {
   "name": "@varo-ui/weapp",
   "type": "module",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Canonical native Wevu SFC sources and Registry component resolver.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",

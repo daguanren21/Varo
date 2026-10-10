@@ -1,5 +1,11 @@
 # @varo-ui/headless
 
+## 2.2.1
+
+### Patch Changes
+
+- Keep form pattern validation repeatable for global and sticky regular expressions without changing caller-owned lastIndex.
+
 ## 2.2.0
 
 ### Minor Changes
