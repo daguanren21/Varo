@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { RetailReview, RetailReviewDraft } from '../../components/blocks/retail-reviews.types'
+import type { RetailReview, RetailReviewDraft } from '../components/blocks/retail-reviews.types'
 import { computed, shallowRef } from 'wevu'
-import RetailReviews from '../../components/blocks/retail-reviews.vue'
 import VButton from '../../components/ui/v-button.vue'
+import RetailReviews from '../components/blocks/retail-reviews.vue'
 import { longRetailCopy } from './retail-demo-data'
 import RetailDemoStates from './RetailDemoStates.vue'
 
@@ -16,7 +16,8 @@ const pending = shallowRef<RetailReviewDraft | null>(null)
 const draftError = shallowRef('')
 const result = shallowRef('本地评价数：2')
 let nextId = 3
-const blocked = computed(() => ['loading', 'disabled', 'busy'].includes(mode.value) || pending.value != null)
+const modeBlocked = computed(() => ['loading', 'disabled', 'busy'].includes(mode.value))
+const blocked = computed(() => modeBlocked.value || pending.value != null)
 const visibleItems = computed(() => mode.value === 'empty' ? [] : items.value.map(item => ({ ...item, body: mode.value === 'long' ? longRetailCopy : item.body })))
 const ratingSummary = computed(() => {
   if (!visibleItems.value.length) { return '尚无评分' }
@@ -36,7 +37,7 @@ function decide(accept: boolean) {
   const value = pending.value
   if (!value) { return }
   pending.value = null
-  if (!accept) { draftError.value = '应用拒绝本次提交；草稿已保留。'; result.value = `本地评价数：${items.value.length}`; return }
+  if (!accept || modeBlocked.value) { draftError.value = '应用拒绝本次提交；草稿已保留。'; result.value = `本地评价数：${items.value.length}`; return }
   items.value = [...items.value, { id: `review-${nextId++}`, author: '本地体验者', rating: value.rating, body: value.body, createdAt: '刚刚在本地接受', helpfulCount: 0, helpfulByViewer: false, canHelpful: false }]
   draft.value = { rating: 0, body: '' }
   mode.value = 'ready'

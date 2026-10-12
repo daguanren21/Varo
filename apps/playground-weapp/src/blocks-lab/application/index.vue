@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import AppointmentBooking from '../../components/blocks/appointment-booking.vue'
-import OnboardingFlow from '../../components/blocks/onboarding-flow.vue'
-import PeopleManager from '../../components/blocks/people-manager.vue'
-import SettingsPanel from '../../components/blocks/settings-panel.vue'
-import StatusTimeline from '../../components/blocks/status-timeline.vue'
-import StepForm from '../../components/blocks/step-form.vue'
-import SummaryDashboard from '../../components/blocks/summary-dashboard.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VInput from '../../components/ui/v-input.vue'
 import VSwitch from '../../components/ui/v-switch.vue'
+import AppointmentBooking from '../components/blocks/appointment-booking.vue'
+import OnboardingFlow from '../components/blocks/onboarding-flow.vue'
+import PeopleManager from '../components/blocks/people-manager.vue'
+import SettingsPanel from '../components/blocks/settings-panel.vue'
+import StatusTimeline from '../components/blocks/status-timeline.vue'
+import StepForm from '../components/blocks/step-form.vue'
+import SummaryDashboard from '../components/blocks/summary-dashboard.vue'
 import { useApplicationBlocksDemo } from './use-application-demo'
 
 const {
@@ -119,7 +119,7 @@ const {
         {{ formResult }}
       </text>
       <text class="block text-xs text-[var(--varo-ui-text-regular)]">
-        This workflow uses the existing native form-container pattern. It does not validate or repair the independent native VForm plain-slot blocker.
+        This workflow uses the native form-container pattern, separate from VForm provider validation. Headless form-submit default-action support remains a distinct runtime requirement.
       </text>
     </view>
     <view v-else-if="active === 'Timeline'" class="grid gap-3">

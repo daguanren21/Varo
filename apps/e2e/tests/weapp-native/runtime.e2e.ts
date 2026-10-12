@@ -9,11 +9,16 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     await miniProgram.reLaunch('/pages/form-showcase/index')
     await screen.getByRole('button', { name: '请选择活动区域' }).tap()
     const dialog = screen.getByRole('dialog', { name: '选择活动区域' })
+    const confirm = screen.getByRole('button', { name: '确定', exact: true })
+    await expect(confirm).toBeDisabled()
     for (const name of ['中国', '浙江省', '杭州市', '西湖区']) {
-      await screen.getByRole('option', { name }).tap()
+      const option = screen.getByRole('option', { name })
+      await expect(option).toBeEnabled()
+      await option.tap()
       await expect(dialog).toBeVisible()
     }
-    await screen.getByRole('button', { name: '确定', exact: true }).tap()
+    await expect(confirm).toBeEnabled()
+    await confirm.tap()
     await expect(dialog).not.toBeVisible()
     const selection = screen.getByRole('button', { name: '中国 / 浙江省 / 杭州市 / 西湖区' })
     await expect(selection).toBeVisible()

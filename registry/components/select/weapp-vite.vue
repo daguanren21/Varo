@@ -81,7 +81,8 @@ const selectedValues = computed<SelectValue[]>(() => {
 })
 const filteredOptions = computed(() => {
   const query = (keyword.value ?? '').trim().toLocaleLowerCase()
-  return query ? props.options.filter(option => option.label.toLocaleLowerCase().includes(query)) : props.options
+  const options = query ? props.options.filter(option => option.label.toLocaleLowerCase().includes(query)) : props.options
+  return options.map(option => ({ ...option, disabled: Boolean(option.disabled) }))
 })
 const valueClass = computed(() => selectedValues.value.length ? 'varo-select__value' : 'varo-select__placeholder')
 const filterInputValue = computed(() => {

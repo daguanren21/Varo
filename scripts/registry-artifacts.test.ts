@@ -16,7 +16,7 @@ import {
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { projectFiles } from './registry-artifacts.mjs'
+import { importSpecifiers, projectFiles, relocateModuleSpecifier, rewriteModuleSpecifiers, rewriteSourceModuleSpecifiers } from './registry-artifacts.mjs'
 
 const roots: string[] = []
 const inventory = 'scripts/registry-projections.json'
@@ -46,6 +46,114 @@ function sync(root: string, files: Map<string, string>, check = false, owner = '
 
 afterEach(() => {
   for (const root of roots.splice(0)) { rmSync(root, { recursive: true, force: true }) }
+})
+
+describe('projection module specifiers', () => {
+  const block = 'src/components/blocks/example.vue'
+  const relocatedBlock = 'src/blocks-lab/components/blocks/example.vue'
+  const shared = 'src/components/agent-ui/types.ts'
+  const destinations = new Map([
+    [block, relocatedBlock],
+    ['src/components/blocks/example.types.ts', 'src/blocks-lab/components/blocks/example.types.ts'],
+    ['src/components/blocks/detail.vue', 'src/blocks-lab/components/blocks/detail.vue'],
+    ['src/components/ui/v-button.vue', 'src/components/ui/v-button.vue'],
+    ['src/lib/varo-primitives.ts', 'src/lib/varo-primitives.ts'],
+    ['src/styles/varo.css', 'src/styles/varo.css'],
+    [shared, shared],
+  ])
+  const relocate = (specifier: string) => relocateModuleSpecifier(specifier, block, destinations)
+
+  it.each([
+    ['../ui/v-button.vue', '../../../components/ui/v-button.vue'],
+    ['../ui/v-button', '../../../components/ui/v-button'],
+    ['../../lib/varo-primitives', '../../../lib/varo-primitives'],
+    ['../../lib/varo-primitives.ts', '../../../lib/varo-primitives.ts'],
+    ['../agent-ui/types', '../../../components/agent-ui/types'],
+    ['../../styles/varo.css', '../../../styles/varo.css'],
+    ['./example.types', './example.types'],
+    ['./example.types.ts', './example.types.ts'],
+    ['./detail.vue', './detail.vue'],
+    ['wevu', 'wevu'],
+  ])('remaps %s to %s without changing extension style', (specifier, expected) => {
+    expect(relocate(specifier)).toBe(expected)
+  })
+
+  it('rewrites only static, dynamic, require and type module specifiers', () => {
+    const source = [
+      'import Button from "../ui/v-button.vue"',
+      'export { value } from "../../lib/varo-primitives"',
+      'const lazy = import("../ui/v-button.vue")',
+      'const required = require("../../lib/varo-primitives.ts")',
+      'type Agent = import("../agent-ui/types").Agent',
+      'const text = "../ui/v-button.vue"',
+      '// import Ignored from "../ui/v-button.vue"',
+      '/* export * from "../../lib/varo-primitives" */',
+      'const template = `../ui/v-button.vue`',
+      'import { computed } from "wevu"',
+    ].join('\n')
+    expect(rewriteModuleSpecifiers(source, 'example.ts', relocate)).toBe([
+      'import Button from "../../../components/ui/v-button.vue"',
+      'export { value } from "../../../lib/varo-primitives"',
+      'const lazy = import("../../../components/ui/v-button.vue")',
+      'const required = require("../../../lib/varo-primitives.ts")',
+      'type Agent = import("../../../components/agent-ui/types").Agent',
+      'const text = "../ui/v-button.vue"',
+      '// import Ignored from "../ui/v-button.vue"',
+      '/* export * from "../../lib/varo-primitives" */',
+      'const template = `../ui/v-button.vue`',
+      'import { computed } from "wevu"',
+    ].join('\n'))
+    expect(rewriteSourceModuleSpecifiers(source, 'example.ts', relocate))
+      .toBe(rewriteModuleSpecifiers(source, 'example.ts', relocate))
+  })
+
+  it('splices both Vue script blocks without changing template, style, prose or custom blocks', () => {
+    const template = '<template><view title="../ui/v-button.vue">src/components/blocks/example.vue</view></template>'
+    const style = '<style scoped>/* ../ui/v-button.vue */ .example { content: "../ui/v-button.vue"; }</style>'
+    const config = '<config lang="json">{ "component": true }</config>'
+    const source = [
+      '<!-- import Example from "../ui/v-button.vue" -->',
+      template,
+      '<script setup lang="ts">',
+      'import Button from "../ui/v-button.vue"',
+      'const literal = "../ui/v-button.vue"',
+      '// import Unchanged from "../../lib/varo-primitives"',
+      '</script>',
+      style,
+      '<script lang="ts">',
+      'export { value } from "../../lib/varo-primitives.ts"',
+      'export { detail } from "./example.types"',
+      '</script>',
+      config,
+    ].join('\r\n')
+    expect(rewriteSourceModuleSpecifiers(source, block, relocate)).toBe([
+      '<!-- import Example from "../ui/v-button.vue" -->',
+      template,
+      '<script setup lang="ts">',
+      'import Button from "../../../components/ui/v-button.vue"',
+      'const literal = "../ui/v-button.vue"',
+      '// import Unchanged from "../../lib/varo-primitives"',
+      '</script>',
+      style,
+      '<script lang="ts">',
+      'export { value } from "../../../lib/varo-primitives.ts"',
+      'export { detail } from "./example.types"',
+      '</script>',
+      config,
+    ].join('\r\n'))
+  })
+
+  it('retains unchanged shared imports and resolves shared callers through the complete map', () => {
+    expect(relocateModuleSpecifier('../ui/../ui/v-button.vue', shared, destinations)).toBe('../ui/../ui/v-button.vue')
+    expect(relocateModuleSpecifier('../blocks/example.vue', shared, destinations)).toBe('../../blocks-lab/components/blocks/example.vue')
+    expect(() => relocate('../ui/missing.vue')).toThrow('import is not owned by its Registry closure')
+    expect(() => relocateModuleSpecifier('./example.types', 'missing.ts', destinations)).toThrow('Missing projection destination')
+  })
+
+  it('keeps existing extracted Vue-script callers and rejects malformed SFC input', () => {
+    expect(importSpecifiers('import Button from "../ui/v-button.vue"', block)).toEqual(['../ui/v-button.vue'])
+    expect(() => rewriteSourceModuleSpecifiers('<script setup>import "./example.types"', block, relocate)).toThrow()
+  })
 })
 
 describe('generated projection reconciliation', () => {
@@ -150,6 +258,46 @@ describe('generated projection reconciliation', () => {
     await expect(sync(root, new Map([[keptPath, 'component\n']]), true)).resolves.toBe(0)
   })
 
+  it('relocates native Block ownership without claiming its authored subpackage neighbors', async () => {
+    const root = temporaryRoot()
+    const oldBlock = 'apps/playground-weapp/src/components/blocks/example.vue'
+    const newBlock = 'apps/playground-weapp/src/blocks-lab/components/blocks/example.vue'
+    const shared = 'apps/playground-weapp/src/components/ui/v-button.vue'
+    const page = 'apps/playground-weapp/src/blocks-lab/application/index.vue'
+    await sync(root, new Map([[oldBlock, 'generated block\n'], [shared, 'shared UI\n']]))
+    write(root, page, 'authored page\n')
+    const current = new Map([[newBlock, 'relocated block\n'], [shared, 'shared UI\n']])
+
+    await expect(sync(root, current, true)).rejects.toThrow(`${oldBlock} (obsolete)`)
+    expect(existsSync(join(root, newBlock))).toBe(false)
+    expect(read(root, oldBlock)).toBe('generated block\n')
+    await sync(root, current)
+    expect(existsSync(join(root, oldBlock))).toBe(false)
+    expect(read(root, newBlock)).toBe('relocated block\n')
+    expect(read(root, shared)).toBe('shared UI\n')
+    expect(read(root, page)).toBe('authored page\n')
+    expect(Object.keys(JSON.parse(read(root, inventory)).owners.registry).sort()).toEqual([...current.keys()].sort())
+    await expect(sync(root, current, true)).resolves.toBe(0)
+  })
+
+  it.each(['modified original', 'authored destination'])('rejects a native Block relocation with %s before any mutation', async (conflict) => {
+    const root = temporaryRoot()
+    const oldBlock = 'apps/playground-weapp/src/components/blocks/example.vue'
+    const newBlock = 'apps/playground-weapp/src/blocks-lab/components/blocks/example.vue'
+    await sync(root, new Map([[oldBlock, 'generated block\n']]))
+    const conflictingPath = conflict === 'modified original' ? oldBlock : newBlock
+    write(root, conflictingPath, 'local customization\n')
+    const inventoryBefore = read(root, inventory)
+
+    await expect(sync(root, new Map([[newBlock, 'relocated block\n']]))).rejects.toThrow(
+      conflict === 'modified original' ? /Obsolete projection was locally modified/ : /Unowned projection/,
+    )
+    expect(read(root, conflictingPath)).toBe('local customization\n')
+    expect(read(root, inventory)).toBe(inventoryBefore)
+    if (conflict === 'modified original') { expect(existsSync(join(root, newBlock))).toBe(false) }
+    else { expect(read(root, oldBlock)).toBe('generated block\n') }
+  })
+
   it.each([
     '../outside.ts',
     '/absolute.ts',
@@ -158,6 +306,10 @@ describe('generated projection reconciliation', () => {
     'packages/ui-h5/src//aliased.ts',
     'README.md',
     'packages/ui-h5/src/style.css',
+    'apps/playground-weapp/src/blocks-lab/application/index.vue',
+    'apps/playground-weapp/src/blocks-lab/components/ui/v-button.vue',
+    'apps/playground-weapp/src/blocks-lab/components/blocks-other/example.vue',
+    'apps/playground-h5/src/blocks-lab/components/blocks/example.vue',
   ])('rejects an unsafe or differently owned destination %s before mutation', async (unsafe) => {
     const root = temporaryRoot()
     await expect(sync(root, new Map([[keptPath, 'must not be written\n'], [unsafe, 'unsafe\n']])))

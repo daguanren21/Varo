@@ -38,7 +38,7 @@ function allowDialogClose() {
 <template>
   <view class="box-border min-h-screen bg-[var(--varo-ui-bg)] px-3 py-4 text-[var(--varo-ui-text)]">
     <text class="mb-3 block text-sm text-[var(--varo-ui-text-muted)]">
-      Dialog 诊断：受上游 weapp-vite #1172 的 plain-slot 上下文问题阻塞，尚未通过运行验证。
+      Dialog 诊断：验证 7.5 原生 plain-slot 上下文、同步取消关闭与允许关闭；浏览器预览不等于 IDE/真机认证。
     </text>
     <VCard class-name="mb-3" variant="outline">
       <template #title>

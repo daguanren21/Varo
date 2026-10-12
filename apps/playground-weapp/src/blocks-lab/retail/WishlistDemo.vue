@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { RetailWishlistEntry } from '../../components/blocks/retail-wishlist.types'
+import type { RetailWishlistEntry } from '../components/blocks/retail-wishlist.types'
 import { computed, shallowRef } from 'wevu'
-import RetailWishlist from '../../components/blocks/retail-wishlist.vue'
 import VButton from '../../components/ui/v-button.vue'
+import RetailWishlist from '../components/blocks/retail-wishlist.vue'
 import { demoProducts, longRetailCopy } from './retail-demo-data'
 import RetailDemoStates from './RetailDemoStates.vue'
 

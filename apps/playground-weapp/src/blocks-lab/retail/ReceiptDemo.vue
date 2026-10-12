@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { RetailReceipt, RetailReceiptAction } from '../../components/blocks/retail-receipt.types'
+import type { RetailReceipt, RetailReceiptAction } from '../components/blocks/retail-receipt.types'
 import { computed, shallowRef } from 'wevu'
-import RetailReceiptBlock from '../../components/blocks/retail-receipt.vue'
 import VButton from '../../components/ui/v-button.vue'
+import RetailReceiptBlock from '../components/blocks/retail-receipt.vue'
 import { demoProducts, longRetailCopy } from './retail-demo-data'
 import RetailDemoStates from './RetailDemoStates.vue'
 
@@ -26,8 +26,9 @@ const result = shallowRef('尚未请求凭证操作')
 const supportOpen = shallowRef(false)
 const visibleReceipt = computed(() => mode.value === 'empty' ? null : { ...receipt.value, details: receipt.value.details.map(item => ({ ...item, value: mode.value === 'long' ? longRetailCopy : item.value })) })
 const shownError = computed(() => mode.value === 'error' ? '本地凭证读取失败，保留现有订单证据。' : error.value)
+const modeBlocked = computed(() => ['loading', 'disabled', 'busy', 'empty'].includes(mode.value))
 function action(payload: { receiptId: string, orderId: string, action: RetailReceiptAction }) {
-  if (payload.receiptId !== receipt.value.id || payload.orderId !== receipt.value.orderId || !receipt.value.grants[payload.action] || pending.value || ['loading', 'disabled', 'busy', 'empty'].includes(mode.value)) { return }
+  if (payload.receiptId !== receipt.value.id || payload.orderId !== receipt.value.orderId || !receipt.value.grants[payload.action] || pending.value || modeBlocked.value) { return }
   error.value = ''
   if (payload.action === 'refund') { pending.value = true; result.value = '本地售后请求待确认，实付金额未改变' }
   else if (payload.action === 'contact') { supportOpen.value = true; result.value = '已打开本地联系说明，未联系真实商家' }
@@ -36,7 +37,7 @@ function action(payload: { receiptId: string, orderId: string, action: RetailRec
 function decide(accept: boolean) {
   if (!pending.value) { return }
   pending.value = false
-  if (!accept || !receipt.value.grants.refund) { error.value = '应用拒绝本地售后请求；订单未改变。'; result.value = '售后请求被拒绝'; return }
+  if (!accept || modeBlocked.value || !receipt.value.grants.refund) { error.value = '应用拒绝本地售后请求；订单未改变。'; result.value = '售后请求被拒绝'; return }
   receipt.value = { ...receipt.value, orderStatus: 'after-sale', grants: { ...receipt.value.grants, refund: false }, actionReason: '本地售后已登记，不代表资金退款。' }
   result.value = '本地售后已登记；没有执行退款'
 }

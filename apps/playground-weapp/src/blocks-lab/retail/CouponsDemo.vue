@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { RetailCoupon } from '../../components/blocks/retail-coupons.types'
+import type { RetailCoupon } from '../components/blocks/retail-coupons.types'
 import { computed, shallowRef } from 'wevu'
-import RetailCoupons from '../../components/blocks/retail-coupons.vue'
 import VButton from '../../components/ui/v-button.vue'
+import RetailCoupons from '../components/blocks/retail-coupons.vue'
 import { longRetailCopy } from './retail-demo-data'
 import RetailDemoStates from './RetailDemoStates.vue'
 

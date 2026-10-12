@@ -396,3 +396,27 @@ P0 ─┬─ E-1 → E-2 ──────────────┐
 用户文档和 `.changeset/thirty-papers-knock.md` 已更新。三组旧浏览器 runner 已删除；完整原生 smoke parity、DevTools/真机、B5-3 与联网模型/语音服务仍未验收。本次仅获用户授权提交、推送分支并创建 Draft PR，不包含合并或发布。原生编译、headless 和浏览器产物预览不代替设备证明；保留已知上游/宿主阻塞，不用兼容桥、状态回显或假数据掩盖。
 
 重复风险的约束放在本方案的验收清单：不混淆源码许可、不混淆测试层次、不混淆展示与真实执行、不引入第二作者源。无需为本次设计修改全局 agent/skill 规则。
+
+## 8. 已发布 7.5.0 的集成修复
+
+- 工具链采用 `weapp-vite` / `wevu` 7.5.0 和 automator 1.3.0，根与独立 Realworld 锁文件、Wevu retail starter 及双语安装说明同步；公开 native peer 范围不变。
+- 未修改产品源的 7.5 主包为 2,284,940 bytes。原生 minifier、取消名称保留和 Terser 实验均未通过 2 MiB 门禁，全部撤回。25 个仅由 `blocks-lab` 使用的 Block 的 52 份应用投影移入既有分包，由原 Registry 生成器重写 TS/SFC import 并删除摘要匹配的旧投影；公共安装路径、H5/docs/npm 投影位置和页面路由不变。
+- 首次迁移构建识别出 `v-date-field.js` 从主包引用 `blocks-lab/common.js` 的非法同步边。只设置 shared path 模式未解决实际代码归属；随后复用现有 Rolldown 分组机制，把主包 UI 工具模块明确保留在主包。递归组件/样式与 315 条同步脚本引用通过，完整 JS 引用扫描没有非法跨包边。Form 模型修复后的生产主包为 **1,989,897 / 2,097,152 bytes**。此处是分包归属修正，不宣称删掉了相同数量的应用总代码或提升了运行时速度。
+- Region、Select、AgentRadioGroup 在 canonical 渲染模型归一化可选 `disabled`，不放宽 headless/DevTools 布尔属性守卫。独立 verifier 用真实 CLI 安装、7.5 编译和 SDK 动作验证三个组件的缺省/false/true、挂载后禁用/恢复、选中态、事件次数与 no-op。最初 Region 探针的原生监听器大小写错误保留为失败记录，仅修复临时 fixture 后重跑 Region；先前通过的 Select/Radio 未重做。
+- 原 Region 路径越过禁用判断后，确认动作暴露 `reactive` 对象与生成的 `model.value.*` setter 不匹配。单一页面表单 owner 改为 deep ref，六个模板绑定不变，脚本读写统一到 `model.value`；未增加上下文桥、事件注入或重复状态。原完整 Region 场景的 30 个记录步骤通过，包含确认、回显、快捷草稿/遮罩取消、保留原值、重开选中态和错误断言。
+- Card 的 H5/native canonical 样式移除无条件裁剪；显式媒体裁剪仍由调用者保留，AgentApproval 的冗余覆盖移除。ego browser 在 375×812 用普通指针选择 Menu 来源 B 成功；Ego 截图接口仍超时。随后新增必需浏览器回归，实际 Chromium 截图已检查：菜单越过 Card 边界显示且普通点击完成选择，不以键盘成功冒充指针成功。
+- 最新完整 Web run `5cc4aaa3-af03-4200-aea1-c0d8cb67c27b`：**74/74 passed**，无 skipped/flaky/interrupted。完整 native run `484849fa-d740-4409-9784-dbb196123a3f`：**79/84，5 failed**，无 skipped/flaky/interrupted；原必需断言没有跳过或改写。
+- 剩余五项归于 automator 1.3.0 的两个 headless 能力缺口：一个原生 form 默认提交、四个 rich-text 文本观测。无 Varo 组件/编译器的最小原生工程观察到正常 button tap 计数为 1、submit 计数为 0；普通 text 有内容而 rich-text.text() 为空，nodes 属性为 `[object Object]`，无 runtime error。查询公开 latest 仍是 1.3.0。本次没有提供授权 DevTools endpoint；不以读取业务状态、手动触发 submit、跳过或伪造文本转绿。
+- `check:generated`、537 文件架构检查、workspace typecheck、生成器 45 项及 workspace 单测、生产构建、17 项原生产物契约、5 项 runner 反例通过。六个新鲜 tarball/source/package 消费者与七个 native 编译/产物 profile 通过；独立导出的 29 页、127 文件 Wevu retail starter 在 frozen install 后编译与递归路径/样式检查通过。以上都不是 SDK 签名、IDE 或设备认证。
+- 独立源码审查已接受本次 Boolean、Card、投影和 Form owner 修复的有界结论；整体 native Gate 仍失败。Jev 两次辅助评分不替代这些实际结果，也不作为全流程放行依据。原失败 run、被拒绝的压缩实验和 SDK 最小反例继续保留。
+
+## 9. 恢复 G-5 源审查后的接受边界修复
+
+- 原先因 provider certificate 错误中断的 Retail 与 Application/Marketing 源审查已重新执行。canonical Blocks 未发现新增实现缺陷，但应用示例有两类接受时校验遗漏：售后/评价请求在等待期间切入禁用等状态后仍可接受；异步表单校验结束后未重新核对当前 owner。
+- Retail 的七个真实 native 场景在未修产品前全部失败（run `retail-acceptance-before-92a6632b-fb2b-4fc3-8c4b-945565e6d2fd`）。Receipt 覆盖 disabled/loading/busy/empty，Reviews 覆盖其原有 disabled/loading/busy 策略；取消路径先通过，再在被阻止状态下接受时观察到订单变为售后或评价数从 2 变为 3。修复仅让接受边界复用当前 mode 守卫，保留退款 grant 检查、取消和草稿；不靠禁用全部示例按钮隐藏问题。相同七项在 `retail-acceptance-after-60decce0-340f-417f-859c-3a444fc2ee93` 全部通过，并验证恢复正常状态后的新请求仍可接受。
+- H5/native Application owner 各新增 36 个异步契约场景，未修前各 30 failed / 6 passed。修复捕获步骤身份/id/位置、原值对象与值快照，await 后先检查当前权限、步骤/导航资格和值身份/内容，再发布错误或提交；保留 finally 和对当前应用行的重复名检查。完整对应文件验证为 H5 57/57、native owner 40/40；后者使用既有组件测试适配器，不认证 native form 默认动作。
+- 另用实际 Vue/Wevu 模块而非测试适配器执行 Node API 冒烟：权限撤销拒绝推进，原地改值拒绝旧提交，随后新请求正常保存，busy 均释放。探针首次错误导入未直接声明的 esbuild、随后错误读取未导出的内部 applications 字段；两次探针失败保留，改为解析实际安装工具和公开 visibleSummaries 后两端通过。没有修改产品或降低断言去适配探针。
+- 新 Retail 场景同时加入 headless/DevTools 必需 test-target 清单。这里的定向通过不覆写之前完整 native 79/84 的五项 SDK 失败；没有注入 submit、读取业务状态伪装 rich-text 或宣称设备认证。
+- 恢复后的两个源码 reviewer 均已批准各自范围。独立 Retail verifier 在新 headless 会话中完成 9 个场景、122 次公共动作、74 个渲染检查点，包含权限在接受前恢复的正向边界。独立 Form verifier 使用实际生产 Vue/Wevu 运行时完成最终 **272/272 API 场景**；额外覆盖字段变为不可枚举，最终实现以 `propertyIsEnumerable.call` 对齐快照语义，不要求 ES2022 `Object.hasOwn`，也没有 lint 屏蔽。该证明仍不等于 native form 默认动作或指针事件交错证明。
+- 扩展后的完整 native run `09d85c2c-31ab-46fe-a95a-b960689724b6`：**86/91 passed、5 failed**，无 skipped/flaky/interrupted；新加入的七项全部通过，剩余仍是已单独复现的一个默认提交和四个 rich-text 观测失败。最后的可枚举属性兼容性调整另有上述 272 项独立 API 重放和两端单测/类型/lint 证据；不覆写旧 run。
+- 最后重建 native/H5 表面后，完整 Web run `4e3a3469-e6ce-4b62-8fd0-ee3240445782` 再次 **74/74 passed**，无 skipped/flaky/interrupted。主包仍为 1,989,897 bytes；原生同步引用检查通过。最终源码 lint 为 0 errors，既有 use-before-define warnings 保留；没有用占位 workspace lint 作为证明。两类接受边界的 Jev 辅助评估及复评已记录，仅作为质量信号。

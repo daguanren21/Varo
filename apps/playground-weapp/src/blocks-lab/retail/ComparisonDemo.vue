@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { RetailComparisonEntry, RetailComparisonField } from '../../components/blocks/retail-comparison.types'
+import type { RetailComparisonEntry, RetailComparisonField } from '../components/blocks/retail-comparison.types'
 import { computed, shallowRef } from 'wevu'
-import RetailComparison from '../../components/blocks/retail-comparison.vue'
 import VButton from '../../components/ui/v-button.vue'
+import RetailComparison from '../components/blocks/retail-comparison.vue'
 import { demoProducts, longRetailCopy } from './retail-demo-data'
 import RetailDemoStates from './RetailDemoStates.vue'
 

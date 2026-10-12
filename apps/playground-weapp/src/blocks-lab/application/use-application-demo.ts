@@ -1,18 +1,18 @@
-import type { BookingDate, BookingIntent, BookingSlot } from '../../components/blocks/appointment-booking-actions'
-import type { OnboardingIntent, OnboardingStep } from '../../components/blocks/onboarding-flow-actions'
-import type { ManagedPerson, PeopleFilter, PeopleIntent } from '../../components/blocks/people-manager-actions'
-import type { SettingChange, SettingEntry } from '../../components/blocks/settings-panel-actions'
-import type { TimelineEntry, TimelineIntent } from '../../components/blocks/status-timeline-actions'
-import type { StepFormIntent, StepFormStep, StepFormValues } from '../../components/blocks/step-form-actions'
-import type { SummaryIntent, SummaryMetric, SummaryPeriod, SummaryRow } from '../../components/blocks/summary-dashboard-actions'
+import type { BookingDate, BookingIntent, BookingSlot } from '../components/blocks/appointment-booking-actions'
+import type { OnboardingIntent, OnboardingStep } from '../components/blocks/onboarding-flow-actions'
+import type { ManagedPerson, PeopleFilter, PeopleIntent } from '../components/blocks/people-manager-actions'
+import type { SettingChange, SettingEntry } from '../components/blocks/settings-panel-actions'
+import type { TimelineEntry, TimelineIntent } from '../components/blocks/status-timeline-actions'
+import type { StepFormIntent, StepFormStep, StepFormValues } from '../components/blocks/step-form-actions'
+import type { SummaryIntent, SummaryMetric, SummaryPeriod, SummaryRow } from '../components/blocks/summary-dashboard-actions'
 import { computed, shallowRef, watch } from 'wevu'
-import { canSelectBookingSlot } from '../../components/blocks/appointment-booking-actions'
-import { canNavigateOnboarding } from '../../components/blocks/onboarding-flow-actions'
-import { canRequestPerson } from '../../components/blocks/people-manager-actions'
-import { canChangeSetting } from '../../components/blocks/settings-panel-actions'
-import { canRequestTimeline } from '../../components/blocks/status-timeline-actions'
-import { canChangeStepField, canNavigateStepForm } from '../../components/blocks/step-form-actions'
-import { canSelectSummaryPeriod } from '../../components/blocks/summary-dashboard-actions'
+import { canSelectBookingSlot } from '../components/blocks/appointment-booking-actions'
+import { canNavigateOnboarding } from '../components/blocks/onboarding-flow-actions'
+import { canRequestPerson } from '../components/blocks/people-manager-actions'
+import { canChangeSetting } from '../components/blocks/settings-panel-actions'
+import { canRequestTimeline } from '../components/blocks/status-timeline-actions'
+import { canChangeStepField, canNavigateStepForm } from '../components/blocks/step-form-actions'
+import { canSelectSummaryPeriod } from '../components/blocks/summary-dashboard-actions'
 
 export function useApplicationBlocksDemo() {
   const panels = ['Settings', 'Onboarding', 'Form', 'Timeline', 'Summary', 'Booking', 'People']
@@ -75,7 +75,8 @@ export function useApplicationBlocksDemo() {
   const formResult = shallowRef('No local application submitted')
   const applications = shallowRef([{ id: 'seed', name: 'River', team: 'design', period: 'earlier' }])
   async function formIntent(intent: StepFormIntent) {
-    const step = formSteps[formPosition.value]
+    const position = formPosition.value
+    const step = formSteps[position]
     if (!step || step.id !== intent.stepId || blocked.value || formBusy.value) { return }
     if (intent.action === 'change') {
       const field = step.fields.find(item => item.id === intent.fieldId)
@@ -85,11 +86,13 @@ export function useApplicationBlocksDemo() {
       formError.value = ''
       return
     }
-    if (intent.position !== formPosition.value || !canNavigateStepForm(formSteps, formPosition.value, intent.action)) { return }
+    if (intent.position !== position || !canNavigateStepForm(formSteps, position, intent.action)) { return }
     if (intent.action === 'previous') { formPosition.value -= 1; return }
     formBusy.value = true
     try {
-      const values = { ...formValues.value }
+      const stepId = step.id
+      const sourceValues = formValues.value
+      const values = { ...sourceValues }
       const errors = await Promise.resolve().then(() => {
         const result: Record<string, string> = {}
         if (typeof values.name !== 'string' || !values.name.trim()) { result.name = 'Enter an applicant name.' }
@@ -97,6 +100,20 @@ export function useApplicationBlocksDemo() {
         if (intent.action === 'submit' && values.consent !== true) { result.consent = 'Consent is required for local processing.' }
         return result
       })
+      const currentValues = formValues.value
+      if (blocked.value
+        || formPosition.value !== position
+        || formSteps[position] !== step
+        || step.id !== stepId
+        || !canNavigateStepForm(formSteps, position, intent.action)
+        || currentValues !== sourceValues) { return }
+      // Match the submitted enumerable fields without requiring ES2022 Object.hasOwn.
+      for (const key in values) {
+        if (!Object.prototype.propertyIsEnumerable.call(currentValues, key) || currentValues[key] !== values[key]) { return }
+      }
+      for (const key in currentValues) {
+        if (Object.prototype.propertyIsEnumerable.call(currentValues, key) && !Object.prototype.propertyIsEnumerable.call(values, key)) { return }
+      }
       formErrors.value = errors
       if (Object.keys(errors).length) { formError.value = 'Correct the highlighted fields; your values are preserved.'; return }
       const name = String(values.name).trim()

@@ -167,6 +167,7 @@ const renderedOptions = computed(() => currentOptions.value.map((option) => {
   const selected = draftPath.value[level.value] === option.value
   return {
     ...option,
+    disabled: Boolean(option.disabled),
     hasChildren: regionOptionHasChildren(option),
     selected,
     selectedData: String(selected),

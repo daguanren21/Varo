@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { spawnSync } from 'node:child_process'
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const playgroundRoot = resolve(__dirname, '..')
@@ -21,7 +21,55 @@ function registeredRoutes(app: AppRoutes): string[] {
   ]
 }
 
-function runArtifactVerifier(mutate?: (outputRoot: string) => void) {
+function createPackageGraphFixture(appRoot: string) {
+  const outputRoot = resolve(appRoot, 'devtools/build/mp-weixin')
+  function write(path: string, content: string | object) {
+    const destination = resolve(outputRoot, path)
+    mkdirSync(dirname(destination), { recursive: true })
+    writeFileSync(destination, typeof content === 'string' ? content : JSON.stringify(content))
+  }
+  function nativeUnit(path: string, json: object, script = '', styles = '') {
+    write(`${path}.json`, json)
+    write(`${path}.js`, script)
+    write(`${path}.wxml`, '<view />')
+    write(`${path}.wxss`, styles)
+  }
+
+  write('../project.config.json', { appid: '' })
+  write('app.json', {
+    pages: ['pages/home/index'],
+    subPackages: [
+      { root: 'blocks-lab', pages: ['index'] },
+      { root: 'other-lab', pages: ['index'] },
+      { root: 'registry-catalog', pages: ['index/index'] },
+    ],
+  })
+  write('app.js', '')
+  write('app.wxss', '.flex { display: flex; }')
+  nativeUnit('components/ui/v-button', { component: true })
+  nativeUnit('pages/home/index', {
+    usingComponents: { button: '/components/ui/v-button' },
+  }, 'require("../../components/ui/v-button.js");')
+  nativeUnit('blocks-lab/index', {
+    usingComponents: { block: './components/blocks/task-board' },
+  }, 'require("./components/blocks/task-board.js");')
+  nativeUnit('blocks-lab/components/blocks/task-board', {
+    component: true,
+    usingComponents: { button: '../../../components/ui/v-button' },
+    componentGenerics: { content: { default: '/components/ui/v-button' } },
+  }, 'require("../../../components/ui/v-button.js");', '@import "../../../components/ui/v-button.wxss";')
+  nativeUnit('other-lab/index', {
+    usingComponents: { button: '/components/ui/v-button' },
+  }, 'require("../components/ui/v-button.js");')
+
+  // Reuse the build's catalog names without duplicating the verifier's required list or copying its component tree.
+  const catalog = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/registry-catalog/index/index.json')
+  nativeUnit('registry-catalog/index/index', {
+    usingComponents: Object.fromEntries(Object.keys(catalog.usingComponents).map(name => [name, '/components/ui/v-button'])),
+  })
+}
+
+function runArtifactVerifier(mutate?: (outputRoot: string) => void, fixtureKind: 'build' | 'package-graph' = 'build') {
   const fixture = mkdtempSync(resolve(tmpdir(), 'varo-native-artifacts-'))
   const appRoot = resolve(fixture, 'apps/playground-weapp')
   try {
@@ -29,7 +77,8 @@ function runArtifactVerifier(mutate?: (outputRoot: string) => void) {
     symlinkSync(resolve(playgroundRoot, '../../node_modules'), resolve(fixture, 'node_modules'), 'dir')
     symlinkSync(resolve(playgroundRoot, 'node_modules'), resolve(appRoot, 'node_modules'), 'dir')
     cpSync(resolve(playgroundRoot, 'scripts/verify-devtools-project.mjs'), resolve(appRoot, 'scripts/verify-devtools-project.mjs'))
-    cpSync(resolve(playgroundRoot, 'devtools/build'), resolve(appRoot, 'devtools/build'), { recursive: true })
+    if (fixtureKind === 'package-graph') { createPackageGraphFixture(appRoot) }
+    else { cpSync(resolve(playgroundRoot, 'devtools/build'), resolve(appRoot, 'devtools/build'), { recursive: true }) }
     mutate?.(resolve(appRoot, 'devtools/build/mp-weixin'))
     const result = spawnSync(process.execPath, ['scripts/verify-devtools-project.mjs'], { cwd: appRoot, encoding: 'utf8' })
     expect(result.error).toBeUndefined()
@@ -132,15 +181,34 @@ describe('playground-weapp delivery contract', () => {
     expect(result.stderr).toContain(owner)
   })
 
-  it('rejects a main-to-subpackage component reference', () => {
-    const result = runArtifactVerifier((outputRoot) => {
-      const path = resolve(outputRoot, 'app.json')
-      const app = JSON.parse(readFileSync(path, 'utf8'))
-      app.usingComponents = { ...app.usingComponents, 'ownership-probe': '/blocks-lab/retail/index' }
-      writeFileSync(path, JSON.stringify(app))
+  it('accepts a fresh relocated Block graph with own-package and parent-main dependencies', () => {
+    const result = runArtifactVerifier(undefined, 'package-graph')
+    expect(result.status, result.stderr).toBe(0)
+    expect(result.stdout).toContain('4 synchronous script references')
+  })
+
+  describe.each(['usingComponents', 'componentGenerics'] as const)('%s package ownership', (referenceKind) => {
+    it.each([
+      ['main', 'app.json', '/blocks-lab/components/blocks/task-board'],
+      ['other-lab', 'other-lab/index.json', '../blocks-lab/../blocks-lab/components/blocks/task-board'],
+      ['main', 'components/ui/v-button.json', '../../blocks-lab/components/blocks/task-board'],
+    ])('rejects %s owner %s reaching an existing Block', (owner, ownerPath, reference) => {
+      const target = 'blocks-lab/components/blocks/task-board'
+      const result = runArtifactVerifier((outputRoot) => {
+        for (const extension of ['.js', '.json', '.wxml', '.wxss']) {
+          expect(existsSync(resolve(outputRoot, `${target}${extension}`))).toBe(true)
+        }
+        const path = resolve(outputRoot, ownerPath)
+        const json = JSON.parse(readFileSync(path, 'utf8'))
+        json[referenceKind] = {
+          ...json[referenceKind],
+          probe: referenceKind === 'usingComponents' ? reference : { default: reference },
+        }
+        writeFileSync(path, JSON.stringify(json))
+      }, 'package-graph')
+      expect(result.status).not.toBe(0)
+      expect(result.stderr).toContain(`Forbidden synchronous package reference: ${ownerPath} (${owner}) -> ${target} (blocks-lab)`)
     })
-    expect(result.status).not.toBe(0)
-    expect(result.stderr).toContain('Forbidden synchronous package reference: app.json')
   })
 
   it('rejects a main-to-subpackage stylesheet import', () => {

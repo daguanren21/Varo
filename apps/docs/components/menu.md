@@ -4,8 +4,8 @@
 
 <PlatformTabsDemo example="menu" locale="zh" />
 
-::: warning 原生组合运行验证暂缓
-仓库的 `weapp-vite` / `wevu` 7.4.0 plain-slot 编译产物预览中，点击原生 Menu 后仍未展开，选项与 `select` 事件没有出现；上下文边界跟踪于 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172)。以下 H5 示例和原生事件类型不是该原生场景的运行证明。暂缓该场景验收，等待上游反馈；不修改插槽配置或添加兼容桥，也不推断 IDE/真机结果。
+::: info 原生组合运行边界
+仓库使用 `weapp-vite` / `wevu` 7.5.0，在微信目标、编译后的 Wevu 组件和默认 attached setup 下保留 plain-slot 上下文。编译产物浏览器预览已通过真实指针展开菜单、选择来源并观察 `select` 载荷；不代表 IDE/真机认证。Card 默认不裁剪后代弹出内容；仅在确实需要裁剪媒体时显式使用 `overflow-hidden`，不要把需要溢出的菜单放入裁剪容器。
 :::
 
 ## 基础用法

@@ -1,7 +1,7 @@
 import type { AgentStreamEvent } from '@varo-ui/ai'
 import type { AgentModelOption } from '../../components/agent-ui/agent-model-selector.types'
 import type { AgentConversationMessage } from '../../components/agent-ui/types'
-import type { AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../../components/blocks/agent-model-compare.types'
+import type { AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../components/blocks/agent-model-compare.types'
 import { createAgentStreamController } from '@varo-ui/ai'
 import { computed, onBeforeUnmount, shallowRef } from 'wevu'
 import { availableModel } from '../../components/agent-ui/agent-model-selector.types'

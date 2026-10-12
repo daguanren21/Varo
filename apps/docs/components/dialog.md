@@ -39,8 +39,8 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 
 ### 原生 Weapp（Wevu）
 
-::: warning 原生组合运行验证暂缓
-在仓库的 `weapp-vite` / `wevu` 7.4.0、`scopedSlotsRequireProps: true` 编译产物预览中，跨普通插槽的上下文查找会报 `Dialog parts must be used inside VDialogRoot`，跟踪于 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172)。以下是原生事件的消费契约，不表示该组合场景已通过运行验收。该诊断保留在独立 `dialog` 预览场景，等待上游反馈；未加入兼容桥，也不能据此推断 IDE/真机结果。H5 示例不受此限制。
+::: info 原生组合运行边界
+仓库使用 `weapp-vite` / `wevu` 7.5.0；微信目标、编译后的 Wevu 组件、`scopedSlotsRequireProps: true` 和默认 attached setup 下已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) 的上下文支持。独立 `dialog` 编译产物预览已验证打开、同步取消关闭和允许关闭，没有下游上下文桥。这不扩展到 created setup、其他平台或 IDE/真机认证。
 :::
 
 原生事件只传递一个 `detail` 参数；`openChange` 的该参数是 `[open, details]` 元组，处理器必须解构元组，而不是声明两个独立参数。使用 `wevu` 的响应式 API：

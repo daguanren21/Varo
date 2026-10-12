@@ -2,8 +2,8 @@
 import { computed } from 'wevu'
 import AgentModelSelector from '../../components/agent-ui/AgentModelSelector.vue'
 import AgentChat from '../../components/blocks/agent-chat.vue'
-import AgentModelCompare from '../../components/blocks/agent-model-compare.vue'
 import VButton from '../../components/ui/v-button.vue'
+import AgentModelCompare from '../components/blocks/agent-model-compare.vue'
 import { useModelCompareDemo } from './useModelCompareDemo'
 
 const { models, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close } = useModelCompareDemo()

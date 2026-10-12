@@ -2951,7 +2951,6 @@ textarea.varo-input__control {
 
 /* registry/themes/components/card/weapp-vite.css */
 .varo-card {
-  overflow: hidden;
   color: var(--varo-ui-text);
   background: var(--varo-ui-surface);
   border: 1px solid transparent;

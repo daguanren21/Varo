@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import MarketingArticles from '../../components/blocks/marketing-articles.vue'
-import MarketingContact from '../../components/blocks/marketing-contact.vue'
-import MarketingFaq from '../../components/blocks/marketing-faq.vue'
-import MarketingHero from '../../components/blocks/marketing-hero.vue'
-import MarketingPricing from '../../components/blocks/marketing-pricing.vue'
-import MarketingProcess from '../../components/blocks/marketing-process.vue'
 import VButton from '../../components/ui/v-button.vue'
+import MarketingArticles from '../components/blocks/marketing-articles.vue'
+import MarketingContact from '../components/blocks/marketing-contact.vue'
+import MarketingFaq from '../components/blocks/marketing-faq.vue'
+import MarketingHero from '../components/blocks/marketing-hero.vue'
+import MarketingPricing from '../components/blocks/marketing-pricing.vue'
+import MarketingProcess from '../components/blocks/marketing-process.vue'
 import { useMarketingBlocksDemo } from './useMarketingBlocksDemo'
 
 const { modes, mode, setMode, loading, disabled, sourceError, available, hero, articles, openedArticle, guide, openHero, openArticle, periods, features, plans, periodId, selectedPlanId, pendingChoice, pricingError, pricingMessage, changePeriod, choosePlan, decidePlan, expandedIds, faqs, values, errors, pendingContact, receipts, contactMessage, acknowledgement, updateContact, submitContact, decideContact, cancelContact, steps, processAction, diagnostic } = useMarketingBlocksDemo()

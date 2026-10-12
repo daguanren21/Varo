@@ -150,3 +150,18 @@ test('preview native Markdown table contrast and contained horizontal scrolling'
   await app.screenshot('native-agent')
   await expectPreviewDiagnostics(webRuntime)
 })
+
+test('preview native Menu selects overflowed options by pointer', { platforms: ['weapp-preview'] }, async ({ app, browser, screen, webRuntime }) => {
+  await browser.setViewport({ width: 375, height: 812 })
+  await app.open('/runtime.html?scenario=agent')
+  await expect(browser.locator('#runtime-status')).toBeHidden()
+  await screen.getByRole('button', { name: '选择来源', exact: true }).click()
+  const option = screen.getByRole('option', { name: '来源 B', exact: true })
+  await expect(option).toBeVisible()
+  await option.scrollIntoView()
+  await app.screenshot('native-menu-open')
+  await option.click()
+  await expect(screen.getByText('value=source-b;payload=source-b:来源 B', { exact: true })).toBeVisible()
+  await expect(screen.getByRole('listbox')).not.toBeVisible()
+  await expectPreviewDiagnostics(webRuntime)
+})

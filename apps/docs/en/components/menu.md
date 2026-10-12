@@ -4,8 +4,8 @@
 
 <PlatformTabsDemo example="menu" locale="en" />
 
-::: warning Native compound runtime verification deferred
-In the repository's `weapp-vite` / `wevu` 7.4.0 plain-slot artifact preview, clicking native Menu leaves it closed, with no options or `select` event. The context boundary is tracked in [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172). The H5 example and native event types below are not runtime proof for that native scenario. Verification is deferred pending upstream feedback; no slot-configuration workaround or compatibility bridge is added, and no IDE/device result is inferred.
+::: info Native compound runtime boundary
+The repository uses `weapp-vite` / `wevu` 7.5.0 with plain-slot context for compiled Wevu components on WeChat and default attached setup. Real pointer input in the compiled-artifact browser preview has opened the menu, selected a source and produced its `select` payload; this is not IDE/device certification. Card no longer clips descendant popups by default. Use explicit `overflow-hidden` only for intentional media clipping, not around menus that need to overflow.
 :::
 
 ## Basic Usage

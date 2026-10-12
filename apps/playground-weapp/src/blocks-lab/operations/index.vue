@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import MobileOperations from '../../components/blocks/mobile-operations.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VSwitch from '../../components/ui/v-switch.vue'
+import MobileOperations from '../components/blocks/mobile-operations.vue'
 import { useOperationsDemo } from './use-operations-demo'
 
 const { domainNames, domain, filters, page, selectedId, loading, busy, disabled, error, invalidPage, result, preview, removal, statuses, categories, records, total, title, workspaceError, suppliedPageSize, repairLabel, needsRepair, blocked, changeDomain, handleIntent, repair, confirmRemoval, revokeApproval } = useOperationsDemo()

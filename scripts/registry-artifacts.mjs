@@ -1,9 +1,10 @@
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 import { lstat, mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises'
-import { dirname, isAbsolute, relative, resolve } from 'node:path'
+import { dirname, isAbsolute, posix, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
+import { parse } from 'vue/compiler-sfc'
 import { validateRegistryItem } from '../packages/registry/src/index.ts'
 
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -60,6 +61,33 @@ export function rewriteModuleSpecifiers(source, filename, rewrite) {
   return source
 }
 
+// SFC offsets keep templates, styles and custom blocks outside the script transform.
+export function rewriteSourceModuleSpecifiers(source, filename, rewrite) {
+  if (!filename.endsWith('.vue')) { return rewriteModuleSpecifiers(source, filename, rewrite) }
+  const { descriptor, errors } = parse(source, { filename })
+  if (errors.length) { throw new Error(`${filename}: ${errors.join('; ')}`) }
+  const scripts = [descriptor.script, descriptor.scriptSetup].filter(Boolean)
+  for (const script of scripts.sort((a, b) => b.loc.start.offset - a.loc.start.offset)) {
+    const content = rewriteModuleSpecifiers(script.content, filename, rewrite)
+    source = source.slice(0, script.loc.start.offset) + content + source.slice(script.loc.end.offset)
+  }
+  return source
+}
+
+export function relocateModuleSpecifier(specifier, filename, destinations) {
+  if (!specifier.startsWith('.')) { return specifier }
+  const destination = destinations.get(filename)
+  if (!destination) { throw new Error(`Missing projection destination: ${filename}`) }
+  const original = posix.normalize(posix.join(posix.dirname(filename), specifier))
+  const extension = ['', '.ts', '.vue', '.css'].find(suffix => destinations.has(original + suffix))
+  if (extension === undefined) { throw new Error(`${filename}: import is not owned by its Registry closure: ${specifier}`) }
+  const mapped = destinations.get(original + extension)
+  if (filename === destination && mapped === original + extension) { return specifier }
+  let next = posix.relative(posix.dirname(destination), mapped)
+  if (extension && next.endsWith(extension)) { next = next.slice(0, -extension.length) }
+  return next.startsWith('.') ? next : `./${next}`
+}
+
 export function importSpecifiers(source, filename) {
   const imports = []
   rewriteModuleSpecifiers(source, filename, (specifier) => {
@@ -81,6 +109,7 @@ const stylePaths = [
 const registryDirectories = [
   'packages/ui-h5/src/',
   'packages/ui-weapp/native/src/',
+  'apps/playground-weapp/src/blocks-lab/components/blocks/',
   ...['docs', 'playground-h5', 'playground-weapp'].flatMap(app =>
     ['components/ui/', 'components/blocks/', 'components/agent-ui/', 'lib/', 'styles/']
       .map(directory => `apps/${app}/src/${directory}`)),

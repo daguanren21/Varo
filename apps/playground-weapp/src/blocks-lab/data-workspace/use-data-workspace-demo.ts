@@ -1,11 +1,11 @@
-import type { DataGridProps, GridColumn, GridDraft, GridIntent } from '../../components/blocks/data-grid-actions'
-import type { MetricCategory, MetricsChartIntent } from '../../components/blocks/metrics-chart-actions'
-import type { ScheduleCalendarProps, ScheduleEvent, ScheduleIntent } from '../../components/blocks/schedule-calendar-actions'
-import type { BoardColumn, BoardIntent, TaskBoardProps } from '../../components/blocks/task-board-actions'
+import type { DataGridProps, GridColumn, GridDraft, GridIntent } from '../components/blocks/data-grid-actions'
+import type { MetricCategory, MetricsChartIntent } from '../components/blocks/metrics-chart-actions'
+import type { ScheduleCalendarProps, ScheduleEvent, ScheduleIntent } from '../components/blocks/schedule-calendar-actions'
+import type { BoardColumn, BoardIntent, TaskBoardProps } from '../components/blocks/task-board-actions'
 import { computed, shallowRef } from 'wevu'
-import { gridIntentAllowed } from '../../components/blocks/data-grid-actions'
-import { canChooseEvent, canSelectDate, isCalendarDate } from '../../components/blocks/schedule-calendar-actions'
-import { canActOnCard, canMoveCard } from '../../components/blocks/task-board-actions'
+import { gridIntentAllowed } from '../components/blocks/data-grid-actions'
+import { canChooseEvent, canSelectDate, isCalendarDate } from '../components/blocks/schedule-calendar-actions'
+import { canActOnCard, canMoveCard } from '../components/blocks/task-board-actions'
 
 interface LocalTask { id: string, title: string, hours: number, owner: string, date: string, columnId: string, approved: boolean, locked?: boolean }
 export function useDataWorkspaceDemo() {

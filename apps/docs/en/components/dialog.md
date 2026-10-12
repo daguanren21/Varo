@@ -39,8 +39,8 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 
 ### Native Weapp (Wevu)
 
-::: warning Native compound runtime verification deferred
-With the repository's `weapp-vite` / `wevu` 7.4.0 fixture and `scopedSlotsRequireProps: true`, compiled-artifact preview reports `Dialog parts must be used inside VDialogRoot` when resolving context across plain slots. See [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172). The example below documents the native event contract, not a passed runtime acceptance. The diagnostic remains in the separate `dialog` preview scenario pending upstream feedback; no compatibility bridge is added, and no IDE/device result is inferred. H5 examples are unaffected.
+::: info Native compound runtime boundary
+The repository uses `weapp-vite` / `wevu` 7.5.0, including [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) for compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup. The separate `dialog` compiled-artifact preview has exercised opening, synchronous close cancellation and accepted closing without a downstream context bridge. This does not extend to created setup, other platforms, or IDE/device certification.
 :::
 
 Native events deliver one `detail` argument. For `openChange`, it is an `[open, details]` tuple: destructure it instead of declaring two separate parameters. Use the reactive APIs from `wevu`:

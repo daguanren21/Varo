@@ -68,7 +68,7 @@
     "vue": "^3.5.43",
     "vue-tsc": "^3.3.11",
     "weapp-tailwindcss": "^5.5.6",
-    "weapp-vite": "7.4.0",
-    "wevu": "7.4.0"
+    "weapp-vite": "7.5.0",
+    "wevu": "7.5.0"
   }
 }

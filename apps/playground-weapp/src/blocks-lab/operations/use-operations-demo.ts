@@ -1,6 +1,6 @@
-import type { OperationAction, OperationChoice, OperationFilters, OperationRecord, OperationsIntent } from '../../components/blocks/mobile-operations-actions'
+import type { OperationAction, OperationChoice, OperationFilters, OperationRecord, OperationsIntent } from '../components/blocks/mobile-operations-actions'
 import { computed, shallowRef } from 'wevu'
-import { canRequestOperation, canViewOperation, operationFilterChanged } from '../../components/blocks/mobile-operations-actions'
+import { canRequestOperation, canViewOperation, operationFilterChanged } from '../components/blocks/mobile-operations-actions'
 
 type Domain = 'CRM' | 'AI Ops' | 'Dev Ops' | 'Agents' | 'Analytics' | 'Files'
 interface LocalEntry { domain: Domain, record: OperationRecord, issue: string, samples: number[], cases: { actual: string, expected: string | null }[], content: string }

@@ -69,6 +69,14 @@
       "disposition": "run"
     },
     {
+      "file": "tests/weapp-preview/preview.e2e.ts",
+      "titlePath": [
+        "preview native Menu selects overflowed options by pointer"
+      ],
+      "target": "weapp-preview",
+      "disposition": "run"
+    },
+    {
       "file": "tests/weapp-preview/pull-refresh.e2e.ts",
       "titlePath": [
         "preview pull-refresh cancel, scroll gate, threshold and loading lifecycle"
@@ -164,6 +172,14 @@
       "file": "tests/weapp-native/capabilities.e2e.ts",
       "titlePath": [
         "native capabilities reject unavailable keyboard and screenshot paths"
+      ],
+      "target": "weapp-headless",
+      "disposition": "run"
+    },
+    {
+      "file": "tests/weapp-native/capabilities.e2e.ts",
+      "titlePath": [
+        "native Boolean guards preserve absent and false state and reject disabled or hidden actions"
       ],
       "target": "weapp-headless",
       "disposition": "run"
@@ -315,6 +331,13 @@
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "coupons: application claim acceptance, stale eligibility rejection and controlled selection"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: explicit grants, rejected and accepted local after-sale, no payment or download success"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: application validation, retained rejected draft, accepted local list and helpful guard"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks disabled mode without mutating the receipt"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks loading mode without mutating the receipt"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks busy mode without mutating the receipt"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks empty mode without mutating the receipt"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: pending acceptance rechecks disabled mode without mutating the list or draft"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: pending acceptance rechecks loading mode without mutating the list or draft"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: pending acceptance rechecks busy mode without mutating the list or draft"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "wishlist: reused product controls, stock and permission denial, application rejection and membership removal"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "comparison: every field remains readable, fourth product rejected visibly and removable"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "filters: draft isolation, cancel, reset, rejected category and accepted sorted stock results"], "target": "weapp-headless", "disposition": "run" },
@@ -730,6 +753,13 @@
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "coupons: application claim acceptance, stale eligibility rejection and controlled selection"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: explicit grants, rejected and accepted local after-sale, no payment or download success"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: application validation, retained rejected draft, accepted local list and helpful guard"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks disabled mode without mutating the receipt"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks loading mode without mutating the receipt"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks busy mode without mutating the receipt"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "receipt: pending acceptance rechecks empty mode without mutating the receipt"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: pending acceptance rechecks disabled mode without mutating the list or draft"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: pending acceptance rechecks loading mode without mutating the list or draft"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "reviews: pending acceptance rechecks busy mode without mutating the list or draft"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "wishlist: reused product controls, stock and permission denial, application rejection and membership removal"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "comparison: every field remains readable, fourth product rejected visibly and removable"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/retail-tools.e2e.ts", "titlePath": ["native retail tools", "filters: draft isolation, cancel, reset, rejected category and accepted sorted stock results"], "target": "weapp-devtools", "disposition": "run" },

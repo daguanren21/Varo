@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { RetailFilterCategory, RetailFilterSortOption, RetailFilterValue } from '../../components/blocks/retail-filters.types'
+import type { RetailFilterCategory, RetailFilterSortOption, RetailFilterValue } from '../components/blocks/retail-filters.types'
 import { computed, shallowRef } from 'wevu'
-import RetailFilters from '../../components/blocks/retail-filters.vue'
 import VButton from '../../components/ui/v-button.vue'
 import { formatRetailMoney } from '../../lib/retail'
+import RetailFilters from '../components/blocks/retail-filters.vue'
 import { demoProducts, longRetailCopy } from './retail-demo-data'
 import RetailDemoStates from './RetailDemoStates.vue'
 

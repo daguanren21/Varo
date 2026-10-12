@@ -5,13 +5,13 @@ Native Wevu `.vue` component source and a resolver for Varo mini-program project
 ## Install
 
 ```bash
-pnpm add @varo-ui/weapp wevu@7.4.0
-pnpm add -D weapp-vite@7.4.0
+pnpm add @varo-ui/weapp wevu@7.5.0
+pnpm add -D weapp-vite@7.5.0
 ```
 
-The repository fixtures use `weapp-vite` and `wevu` 7.4.0. Both package peers remain `>=7.2.1 <8`; versions before 7.2.1 are outside the supported peer range.
+The repository fixtures use `weapp-vite` and `wevu` 7.5.0. Both package peers remain `>=7.2.1 <8`; versions before 7.2.1 are outside the supported peer range.
 
-The upgrade does not resolve provider-context inheritance through plain native slots retained by `scopedSlotsRequireProps: true`. The observed compiled-output preview limitation is tracked in [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172); browser preview evidence is not WeChat IDE or device verification.
+For provider-context inheritance through plain native slots (`scopedSlotsRequireProps: true`), use 7.5.0 or later with compiled Wevu components, the WeChat target, and default attached setup. This is the bounded protocol described in [the 7.5 release notes](https://github.com/weapp-vite/weapp-vite/releases/tag/wevu%407.5.0), not a guarantee for created setup, uncompiled third-party components, other platforms, or every device. Headless and browser preview checks do not replace WeChat IDE/device verification.
 
 ## Usage
 

@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { extname, posix } from 'node:path'
 import { resolveRegistryItems } from '../packages/cli/src/index.ts'
 import { registryProfiles } from '../packages/registry/src/index.ts'
-import { projectFiles, registryItems, registryRoot, rewriteModuleSpecifiers } from './registry-artifacts.mjs'
+import { projectFiles, registryItems, registryRoot, relocateModuleSpecifier, rewriteModuleSpecifiers, rewriteSourceModuleSpecifiers } from './registry-artifacts.mjs'
 
 const check = process.argv.includes('--check')
 if (process.argv.slice(2).some(arg => arg !== '--check')) { throw new Error('Usage: node scripts/sync-registry.mjs [--check]') }
@@ -77,11 +77,69 @@ for (const file of h5.files) {
 }
 
 // These are repository-maintained integration consumers, not downstream user projects.
+const blocksLabNames = [
+  'appointment-booking',
+  'onboarding-flow',
+  'people-manager',
+  'settings-panel',
+  'status-timeline',
+  'step-form',
+  'summary-dashboard',
+  'data-grid',
+  'metrics-chart',
+  'schedule-calendar',
+  'task-board',
+  'marketing-articles',
+  'marketing-contact',
+  'marketing-faq',
+  'marketing-hero',
+  'marketing-pricing',
+  'marketing-process',
+  'retail-comparison',
+  'retail-coupons',
+  'retail-filters',
+  'retail-receipt',
+  'retail-reviews',
+  'retail-wishlist',
+  'mobile-operations',
+  'agent-model-compare',
+]
+// Only each selected Block's own native files move; its dependency closure stays shared.
+const blocksLabFiles = new Set(blocksLabNames.flatMap((name) => {
+  const item = items.find(item => item.id === `blocks/${name}`)
+  if (!item) { throw new Error(`Missing blocks-lab Registry item: ${name}`) }
+  return item.files.filter(file => file.target === 'weapp').map((file) => {
+    if (!file.to.startsWith('src/components/blocks/')) { throw new Error(`Unexpected blocks-lab destination: ${file.to}`) }
+    return file.to
+  })
+}))
 for (const [app, target] of [['playground-h5', 'h5'], ['playground-weapp', 'weapp']]) {
   const names = items.filter(item => item.targets.includes(target)
     && ((item.type === 'component' && !item.name.startsWith('agent-')) || item.name === 'agent-ui' || item.type === 'block')).map(item => item.id)
   const plan = await sourcePlan(names, target)
-  for (const file of plan.files) { output(`apps/${app}/${file.to}`, await readFile(file.sourcePath)) }
+  if (target !== 'weapp') {
+    for (const file of plan.files) { output(`apps/${app}/${file.to}`, await readFile(file.sourcePath)) }
+    continue
+  }
+  const destinations = new Map(plan.files.map(file => [
+    file.to,
+    blocksLabFiles.has(file.to) ? file.to.replace('src/', 'src/blocks-lab/') : file.to,
+  ]))
+  for (const file of plan.files) {
+    const destination = destinations.get(file.to)
+    let source = await readFile(file.sourcePath)
+    if (/\.(?:ts|vue)$/.test(file.to)) {
+      source = rewriteSourceModuleSpecifiers(source.toString('utf8'), file.to, (specifier) => {
+        const next = relocateModuleSpecifier(specifier, file.to, destinations)
+        if (!destination.startsWith('src/blocks-lab/') && next.startsWith('.')
+          && posix.normalize(posix.join(posix.dirname(destination), next)).startsWith('src/blocks-lab/')) {
+          throw new Error(`${file.to}: shared source cannot import a blocks-lab projection: ${specifier}`)
+        }
+        return next
+      })
+    }
+    output(`apps/${app}/${destination}`, source)
+  }
 }
 const docsAgent = await sourcePlan(['components/agent-ui', 'blocks/agent-chat'], 'h5')
 for (const file of docsAgent.files) {

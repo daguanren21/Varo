@@ -111,7 +111,7 @@ const {
       <StepForm :steps="visibleSteps" :position="formPosition" :values="formValues" :errors="formErrors" :error="formError" :busy="formBusy || loading" :disabled="disabled" @intent="formIntent" />
       <output aria-live="polite" data-application-result="form">{{ formResult }}</output>
       <p class="text-xs text-[var(--varo-ui-text-regular)]">
-        This workflow uses the existing native form-container pattern. It does not validate or repair the independent native VForm plain-slot blocker.
+        This workflow uses the native form-container pattern, separate from VForm provider validation. Headless form-submit default-action support remains a distinct runtime requirement.
       </p>
     </div>
     <div v-else-if="active === 'Timeline'" class="grid gap-3">

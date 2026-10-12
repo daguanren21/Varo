@@ -140,9 +140,9 @@ type StepFormIntent
 3. await 后重新确认步骤和数据版本，`finally` 清理 busy。
 4. 校验通过后才更新 position。通过应用服务或本地数据所有者执行提交，不把收到事件当成成功。
 
-**原生 Form 边界：** 本 Block 沿用已有 login/profile 的宿主 form 容器 + VInput/VSwitch 组合，不使用 VForm 校验 provider，也不验证或修复独立的原生 **VForm plain-slot** 问题。该集成仍然阻塞；没有上下文桥、slot 配置修改或模拟宿主几何。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 与 VButton 已支持的 submit 行为。
+**原生 Form 边界：** 本 Block 沿用已有 login/profile 的宿主 form 容器 + VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 plain-slot 上下文已在 7.5.0 的受支持编译配置下验证，与本 Block 的宿主 form 默认动作是不同边界。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 与 VButton 的 submit 行为，不增加上下文桥或模拟宿主几何。
 
-另一个独立限制：当前 `@weapp-vite/miniprogram-automator` 1.2.23 的 headless `tap()` 不执行原生 form submit 默认动作，多步表单的必需 E2E 因未触发校验而失败。保留真实 `<form>` 提交与失败断言，不通过调用页面方法、直接触发 submit 或增加仅为 headless 服务的 click 提交来绕过。需在具备该默认动作的公开驱动或授权 DevTools/设备上完成此流程；这与 VForm provider 上下文问题不是同一个故障。
+当前 `@weapp-vite/miniprogram-automator` 1.3.0 的 headless `tap()` 仍不执行原生 form submit 默认动作，多步表单的必需 E2E 因未触发校验而失败；无 Varo 组件的最小原生工程也观察到 tap 计数增加而 submit 计数不变。保留真实 `<form>` 提交与失败断言，不通过调用页面方法、直接触发 submit 或增加仅为 headless 服务的 click 提交来绕过。需在具备该默认动作的公开驱动或授权 DevTools/设备上完成此流程。
 
 ## status-timeline
 

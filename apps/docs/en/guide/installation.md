@@ -113,7 +113,7 @@ Each of the six new profiles requires explicit admission in the item manifest an
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-The repository's `pnpm check:platforms` runs real compiler/artifact checks for all seven native profiles, writing `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The current integrated compiler is 7.4.0. Donut uses the WeChat compiler with real per-host metadata. **Compiler/artifact success is not device certification.** Consumers supply AppIDs, signing, host SDKs, IDE access, and device validation; no credentials are fabricated.
+The repository's `pnpm check:platforms` runs real compiler/artifact checks for all seven native profiles, writing `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The current integrated compiler is 7.5.0. Donut uses the WeChat compiler with real per-host metadata. **Compiler/artifact success is not device certification.** Consumers supply AppIDs, signing, host SDKs, IDE access, and device validation; no credentials are fabricated.
 
 ## Agent streaming
 
@@ -204,6 +204,6 @@ Execution accepts only fixed enums: preview `h5` / `weapp-preview`, check `gener
 
 ## Version strategy
 
-- The current native integration uses `weapp-vite` / `wevu` 7.4.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
+- The current native integration uses `weapp-vite` / `wevu` 7.5.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
 - Production projects should follow their lockfile, package `peerDependencies`, and CI build result
 - VitePress, Vue, and TypeScript move with the workspace upgrade policy

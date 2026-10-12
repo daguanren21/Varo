@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import DataGrid from '../../components/blocks/data-grid.vue'
-import MetricsChart from '../../components/blocks/metrics-chart.vue'
-import ScheduleCalendar from '../../components/blocks/schedule-calendar.vue'
-import TaskBoard from '../../components/blocks/task-board.vue'
 import VButton from '../../components/ui/v-button.vue'
+import DataGrid from '../components/blocks/data-grid.vue'
+import MetricsChart from '../components/blocks/metrics-chart.vue'
+import ScheduleCalendar from '../components/blocks/schedule-calendar.vue'
+import TaskBoard from '../components/blocks/task-board.vue'
 import { useDataWorkspaceDemo } from './use-data-workspace-demo'
 
 const { panels, active, disabled, loading, busy, empty, showError, invalid, presentationError, metrics, chartId, twelveCategories, chartIntent, scheduleProps, scheduleIntent, scheduleResult, occupied, replaceAvailability, boardProps, boardIntent, boardResult, gridProps, gridIntent, gridResult, dateFilter, applyDateFilter, clearDateFilter, toggleEmpty, draft } = useDataWorkspaceDemo()

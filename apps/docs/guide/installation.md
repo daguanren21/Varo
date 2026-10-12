@@ -113,7 +113,7 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-仓库的 `pnpm check:platforms` 覆盖七个原生 profile 的真实编译与产物检查，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前集成编译器为 7.4.0；Donut 使用微信编译器，并携带各宿主的真实元数据。**编译/产物通过不等于真机认证**；AppID、签名、宿主 SDK、IDE 和设备验收由消费项目提供，不生成虚假凭证。
+仓库的 `pnpm check:platforms` 覆盖七个原生 profile 的真实编译与产物检查，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前集成编译器为 7.5.0；Donut 使用微信编译器，并携带各宿主的真实元数据。**编译/产物通过不等于真机认证**；AppID、签名、宿主 SDK、IDE 和设备验收由消费项目提供，不生成虚假凭证。
 
 ## Agent 流式接入
 
@@ -204,6 +204,6 @@ MCP 客户端启动该进程并保持 stdin/stdout 连接。工具为 `varo_bloc
 
 ## 版本策略
 
-- 当前原生集成使用 `weapp-vite` / `wevu` 7.4.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
+- 当前原生集成使用 `weapp-vite` / `wevu` 7.5.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
 - 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
 - VitePress、Vue 与 TypeScript 跟随 workspace 统一升级

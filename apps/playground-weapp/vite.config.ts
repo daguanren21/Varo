@@ -54,6 +54,12 @@ export default defineConfig(({ mode }) => ({
             priority: 1,
             minShareCount: 1,
             includeDependenciesRecursively: true,
+          }, {
+            // Main-owned native UI entries cannot synchronously load a Block subpackage's helpers.
+            name: 'weapp-vendors/ui-helpers',
+            test: /\/src\/components\/ui\/[^/?]+\.ts(?:\?|$)/,
+            priority: 1,
+            minShareCount: 1,
           }],
         },
       },

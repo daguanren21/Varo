@@ -61,6 +61,52 @@ test.describe('native retail tools', { platforms: nativePlatforms, requires: ['m
     await expect(result(miniProgram, 'receipt')).toContainText('未连接文件适配器，未下载文件')
   })
 
+  for (const scenario of [
+    { mode: 'disabled', label: '禁用状态' },
+    { mode: 'loading', label: '加载状态' },
+    { mode: 'busy', label: '忙碌状态' },
+    { mode: 'empty', label: '空数据状态' },
+  ]) {
+    test(`receipt: pending acceptance rechecks ${scenario.mode} mode without mutating the receipt`, async ({ miniProgram, screen }) => {
+      await enter(miniProgram)
+      await screen.getByRole('button', { name: '凭证示例', exact: true }).tap()
+      for (const decision of ['拒绝本地售后', '接受本地售后']) {
+        await screen.getByRole('button', { name: '申请退款', exact: true }).tap()
+        await expect(result(miniProgram, 'receipt')).toContainText('本地售后请求待确认，实付金额未改变')
+        await screen.getByRole('button', { name: scenario.label, exact: true }).tap()
+        await expect(screen.getByRole('button', { name: '拒绝本地售后', exact: true })).toBeEnabled()
+        await expect(screen.getByRole('button', { name: '接受本地售后', exact: true })).toBeEnabled()
+        await screen.getByRole('button', { name: decision, exact: true }).tap()
+        await expect(screen.getByRole('button', { name: '接受本地售后', exact: true })).toHaveCount(0)
+        await expect(screen.getByRole('button', { name: '拒绝本地售后', exact: true })).toHaveCount(0)
+        await expect(screen.getByText(`本地显示状态：${scenario.mode}`, { exact: true })).toBeVisible()
+        await expect(screen.getByRole('button', { name: scenario.label, exact: true })).toBeDisabled()
+        if (scenario.mode === 'empty') {
+          await expect(screen.getByText('暂无凭证', { exact: true })).toBeVisible()
+        }
+        else {
+          await expect(screen.getByText('已完成 · 已支付', { exact: true })).toBeVisible()
+          await expect(screen.getByText('实付 ¥173.00', { exact: true })).toBeVisible()
+          await expect(screen.getByRole('button', { name: '申请退款', exact: true })).toBeDisabled()
+        }
+        await screen.getByRole('button', { name: '正常状态', exact: true }).tap()
+        await expect(screen.getByText('已完成 · 已支付', { exact: true })).toBeVisible()
+        await expect(screen.getByText('实付 ¥173.00', { exact: true })).toBeVisible()
+        await expect(screen.getByRole('button', { name: '申请退款', exact: true })).toBeEnabled()
+        await expect(screen.getByRole('button', { name: '联系商家', exact: true })).toBeEnabled()
+        await expect(screen.getByRole('button', { name: '下载凭证', exact: true })).toBeDisabled()
+      }
+      await screen.getByRole('button', { name: '申请退款', exact: true }).tap()
+      await screen.getByRole('button', { name: '接受本地售后', exact: true }).tap()
+      await expect(result(miniProgram, 'receipt')).toContainText('本地售后已登记；没有执行退款')
+      await expect(screen.getByText('售后中 · 已支付', { exact: true })).toBeVisible()
+      await expect(screen.getByText('实付 ¥173.00', { exact: true })).toBeVisible()
+      await expect(screen.getByRole('button', { name: '申请退款', exact: true })).toBeDisabled()
+      await expect(screen.getByRole('button', { name: '联系商家', exact: true })).toBeEnabled()
+      await expect(screen.getByRole('button', { name: '下载凭证', exact: true })).toBeDisabled()
+    })
+  }
+
   test('reviews: application validation, retained rejected draft, accepted local list and helpful guard', async ({ miniProgram, screen }) => {
     await enter(miniProgram)
     await screen.getByRole('button', { name: '评价示例', exact: true }).tap()
@@ -85,6 +131,52 @@ test.describe('native retail tools', { platforms: nativePlatforms, requires: ['m
     await expect(screen.getByRole('button', { name: '认为 本地读者 的评价有帮助', exact: true })).toBeDisabled()
     await expect(screen.getByRole('button', { name: '认为 受限读者 的评价有帮助', exact: true })).toBeDisabled()
   })
+
+  for (const scenario of [
+    { mode: 'disabled', label: '禁用状态' },
+    { mode: 'loading', label: '加载状态' },
+    { mode: 'busy', label: '忙碌状态' },
+  ]) {
+    test(`reviews: pending acceptance rechecks ${scenario.mode} mode without mutating the list or draft`, async ({ miniProgram, screen }) => {
+      await enter(miniProgram)
+      await screen.getByRole('button', { name: '评价示例', exact: true }).tap()
+      const draft = '状态变化后仍应保留的本地评价草稿'
+      const rating = miniProgram.locator('//input[@aria-label="评价评分"]')
+      const body = miniProgram.locator('//textarea[@aria-label="评价内容"]')
+      await miniProgram.commitNumber('//input[@aria-label="评价评分"]', 5)
+      await body.fill(draft)
+      for (const decision of ['拒绝本地评价', '接受本地评价']) {
+        await screen.getByRole('button', { name: '提交评价', exact: true }).tap()
+        await expect(result(miniProgram, 'reviews')).toContainText('尚未加入列表')
+        await screen.getByRole('button', { name: scenario.label, exact: true }).tap()
+        await expect(screen.getByRole('button', { name: '拒绝本地评价', exact: true })).toBeEnabled()
+        await expect(screen.getByRole('button', { name: '接受本地评价', exact: true })).toBeEnabled()
+        await screen.getByRole('button', { name: decision, exact: true }).tap()
+        await expect(result(miniProgram, 'reviews')).toContainText('本地评价数：2')
+        await expect(screen.getByText('2 条本地评价 · 均分 3.5/5', { exact: true })).toBeVisible()
+        await expect(screen.getByText('本地体验者 · 5/5', { exact: true })).toHaveCount(0)
+        await expect(body).toHaveValue(draft)
+        await expect(rating).toHaveValue('5')
+        await expect(screen.getByText(`本地显示状态：${scenario.mode}`, { exact: true })).toBeVisible()
+        await expect(screen.getByRole('button', { name: scenario.label, exact: true })).toBeDisabled()
+        await expect(body).toBeDisabled()
+        await expect(rating).toBeDisabled()
+        await expect(screen.getByRole('button', { name: '提交评价', exact: true })).toBeDisabled()
+        await expect(screen.getByRole('button', { name: '接受本地评价', exact: true })).toHaveCount(0)
+        await expect(screen.getByRole('button', { name: '拒绝本地评价', exact: true })).toHaveCount(0)
+        await screen.getByRole('button', { name: '正常状态', exact: true }).tap()
+        await expect(body).toBeEnabled()
+        await expect(screen.getByRole('button', { name: '提交评价', exact: true })).toBeEnabled()
+      }
+      await screen.getByRole('button', { name: '提交评价', exact: true }).tap()
+      await screen.getByRole('button', { name: '接受本地评价', exact: true }).tap()
+      await expect(result(miniProgram, 'reviews')).toContainText('已加入本地评价；本地评价数：3')
+      await expect(screen.getByText(draft, { exact: true })).toBeVisible()
+      await expect(screen.getByText('本地体验者 · 5/5', { exact: true })).toHaveCount(1)
+      await expect(body).toHaveValue('')
+      await expect(rating).toHaveValue('0')
+    })
+  }
 
   test('wishlist: reused product controls, stock and permission denial, application rejection and membership removal', async ({ miniProgram, screen }) => {
     await enter(miniProgram)
