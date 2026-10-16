@@ -222,7 +222,7 @@ function failed(payload: unknown) {
       :shortcuts="shortcuts"
       title="选择活动区域"
       @confirm="confirmRegion"
-      @update:model-value="updateField('regionPath', $event)"
+      @update:modelValue="updateField('regionPath', $event)"
     />
   </view>
 </template>

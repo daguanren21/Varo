@@ -101,7 +101,7 @@ export class NativeSemantics {
     const attrs = openingAttributes(String(wxml))
     if (handle.tagName === 'input' || handle.tagName === 'textarea') { attrs.value = String(await handle.value() ?? '') }
     if (!rect || ![rect.left, rect.top, rect.width, rect.height].every(value => value != null && Number.isFinite(Number(value)))) { throw failure('NODE_STALE', 'Native node disappeared during geometry read') }
-    const hidden = truth(attrs.hidden) || attrs['aria-hidden'] === 'true' || display === 'none' || visibility === 'hidden' || Number(rect.width) <= 0 || Number(rect.height) <= 0
+    const hidden = truth(attrs.hidden) || display === 'none' || visibility === 'hidden' || Number(rect.width) <= 0 || Number(rect.height) <= 0
     const semantic = this.semantic(id, handle.tagName, attrs, String(text ?? ''), hidden, bounded)
     if (attrs.id && !attrs['aria-label'] && NATIVE_ROLES[handle.tagName]) {
       const labels = await page.getElementsByXpath(`//label[@for=${xpathLiteral(attrs.id)}]`, { fallback: false })
@@ -133,7 +133,7 @@ export class NativeSemantics {
       if (attrs.for) { labels.set(attrs.for, node.text ?? '') }
       if (attrs.id) { editable.push(node) }
     }
-    const hiddenByAttrs = (attrs: Record<string, string>) => truth(attrs.hidden) || attrs['aria-hidden'] === 'true' || /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden)\s*(?:;|$)/.test(attrs.style ?? '')
+    const hiddenByAttrs = (attrs: Record<string, string>) => truth(attrs.hidden) || /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden)\s*(?:;|$)/.test(attrs.style ?? '')
     let children: SemanticNode[]
     if (!(page instanceof Page)) {
       const snapshot = await page.snapshot()
@@ -192,11 +192,13 @@ export class NativeSemantics {
     return { location: page.path, root: { ref: { id: ROOT, revision: '' }, role: 'window', children }, viewport: { width, height }, truncated }
   }
 
-  private queryView(node: SemanticNode): SemanticNode {
+  private queryView(node: SemanticNode, ancestorAriaHidden = false): SemanticNode {
+    const ariaHidden = ancestorAriaHidden || node.attributes?.['aria-hidden'] === 'true'
+    const role = ariaHidden ? undefined : node.role
     let children: SemanticNode[] | undefined
     for (let index = 0; index < (node.children?.length ?? 0); index++) {
       const child = node.children![index]!
-      const queryChild = this.queryView(child)
+      const queryChild = this.queryView(child, ariaHidden)
       if (queryChild !== child) {
         children ??= [...node.children!]
         children[index] = queryChild
@@ -209,8 +211,8 @@ export class NativeSemantics {
       const { placeholder: _placeholder, ...queryAttributes } = attributes
       attributes = queryAttributes
     }
-    return children || attributes !== node.attributes
-      ? { ...node, attributes, children: children ?? node.children }
+    return children || attributes !== node.attributes || role !== node.role
+      ? { ...node, role, attributes, children: children ?? node.children }
       : node
   }
 
@@ -228,7 +230,8 @@ export class NativeSemantics {
       if (query.kind === 'role' && query.value.kind === 'string') {
         const wantedRole = query.value.value
         const tags = Object.entries(NATIVE_ROLES).filter(([, role]) => role === wantedRole).map(([tag]) => `//${tag}[not(@role)]`)
-        direct = [`//*[@role=${xpathLiteral(wantedRole)}]`, ...tags].join(' | ')
+        const candidates = [`//*[@role=${xpathLiteral(wantedRole)}]`, ...tags].join(' | ')
+        direct = `(${candidates})[not(ancestor-or-self::*[@aria-hidden="true"])]`
       }
       else if (query.kind === 'placeholder') {
         direct = '//input[@placeholder] | //textarea[@placeholder]'
