@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsdown'
 
-export default defineConfig({
-  clean: true,
+export default defineConfig(options => ({
+  clean: !options.watch,
   // Load source-only workspace types before bundling the runtime graph.
   dts: { eager: true },
   deps: {
@@ -11,4 +11,4 @@ export default defineConfig({
   format: 'esm',
   outDir: 'dist',
   sourcemap: true,
-})
+}))

@@ -8,7 +8,8 @@ import {
 
   resolveDemoContent,
 } from './demo'
-import NativeSourcePreview from './NativeSourcePreview.vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
+import NativeComponentPreview from './NativeComponentPreview.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -850,1344 +851,1338 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <NativeSourcePreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" />
+      <NativeComponentPreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" framed />
       <section v-else class="platform-demo__panel platform-demo__panel--preview">
         <div class="platform-demo__evidence" data-level="browser-runtime">
           <strong>H5 Live</strong>
           <span>{{ locale === 'en' ? 'Interactive browser runtime' : '浏览器运行时实时交互' }}</span>
         </div>
-        <div class="platform-demo__phone-frame" :data-platform="activePlatform">
-          <div class="platform-demo__phone-bezel">
-            <div class="platform-demo__phone-screen">
-              <div class="platform-demo__phone-content">
-                <div class="platform-demo__preview-content" :data-example="example">
-                  <template v-if="example === 'button'">
-                    <section class="platform-demo__button-sample">
-                      <div class="platform-demo__button-cases">
-                        <section class="platform-demo__button-case" data-case="hierarchy">
-                          <h3>{{ buttonSampleCopy.hierarchy }}</h3>
-                          <div class="platform-demo__button-row">
-                            <component :is="runtime.Button" native-type="button">
-                              {{ buttonSampleCopy.primary }}
-                            </component>
-                            <component
-                              :is="runtime.Button"
-                              native-type="button"
-                              tone="default"
-                              variant="outline"
-                            >
-                              {{ buttonSampleCopy.secondary }}
-                            </component>
-                            <component
-                              :is="runtime.Button"
-                              native-type="button"
-                              tone="default"
-                              variant="ghost"
-                            >
-                              {{ buttonSampleCopy.tertiary }}
-                            </component>
-                            <component
-                              :is="runtime.Button"
-                              native-type="button"
-                              tone="primary"
-                              variant="text"
-                            >
-                              {{ buttonSampleCopy.textAction }}
-                            </component>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__button-case" data-case="tones">
-                          <h3>{{ buttonSampleCopy.tones }}</h3>
-                          <div class="platform-demo__button-row">
-                            <component
-                              :is="runtime.Button"
-                              native-type="button"
-                              tone="success"
-                            >
-                              {{ buttonSampleCopy.success }}
-                            </component>
-                            <component
-                              :is="runtime.Button"
-                              native-type="button"
-                              tone="warning"
-                            >
-                              {{ buttonSampleCopy.warning }}
-                            </component>
-                            <component
-                              :is="runtime.Button"
-                              native-type="button"
-                              tone="danger"
-                            >
-                              {{ buttonSampleCopy.danger }}
-                            </component>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__button-case" data-case="sizes">
-                          <h3>{{ buttonSampleCopy.sizes }}</h3>
-                          <div class="platform-demo__button-row platform-demo__button-row--baseline">
-                            <component :is="runtime.Button" native-type="button" size="sm" variant="outline">
-                              {{ buttonSampleCopy.small }}
-                            </component>
-                            <component :is="runtime.Button" native-type="button" size="md" variant="outline">
-                              {{ buttonSampleCopy.medium }}
-                            </component>
-                            <component :is="runtime.Button" native-type="button" size="lg" variant="outline">
-                              {{ buttonSampleCopy.large }}
-                            </component>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__button-case" data-case="states">
-                          <h3>{{ buttonSampleCopy.states }}</h3>
-                          <div class="platform-demo__button-row">
-                            <component
-                              :is="runtime.Button"
-                              loading
-                              :loading-text="buttonSampleCopy.loading"
-                              native-type="button"
-                            />
-                            <component
-                              :is="runtime.Button"
-                              disabled
-                              native-type="button"
-                              tone="default"
-                              variant="outline"
-                            >
-                              {{ buttonSampleCopy.disabled }}
-                            </component>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__button-case" data-case="layout">
-                          <h3>{{ buttonSampleCopy.layout }}</h3>
-                          <div class="platform-demo__button-layout">
-                            <div class="platform-demo__button-row">
-                              <component :is="runtime.Button" native-type="button" shape="round">
-                                <template #icon>
-                                  <svg
-                                    class="platform-demo__button-icon"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    aria-hidden="true"
-                                  >
-                                    <path d="M8 3v10M3 8h10" />
-                                  </svg>
-                                </template>
-                                {{ buttonSampleCopy.create }}
-                              </component>
-                              <component
-                                :is="runtime.Button"
-                                native-type="button"
-                                shape="square"
-                                tone="default"
-                                variant="outline"
-                              >
-                                {{ buttonSampleCopy.square }}
-                              </component>
-                            </div>
-                            <component :is="runtime.Button" block native-type="button">
-                              {{ buttonSampleCopy.continue }}
-                            </component>
-                          </div>
-                        </section>
-                      </div>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'badge'">
-                    <section class="platform-demo__badge-sample">
-                      <div class="platform-demo__badge-cases">
-                        <section class="platform-demo__badge-case" data-case="anchors">
-                          <h3>{{ badgeSampleCopy.anchors }}</h3>
-                          <div class="platform-demo__badge-anchors">
-                            <span class="platform-demo__badge-anchor">
-                              <span class="platform-demo__badge-anchor-label">
-                                {{ badgeSampleCopy.messages }}
-                                <component
-                                  :is="runtime.Badge"
-                                  :aria-label="badgeSampleCopy.messagesLabel"
-                                  :content="3"
-                                  class="platform-demo__badge-anchor-mark"
-                                />
-                              </span>
-                            </span>
-                            <span class="platform-demo__badge-anchor">
-                              <span class="platform-demo__badge-anchor-label">
-                                {{ badgeSampleCopy.notifications }}
-                                <component
-                                  :is="runtime.Badge"
-                                  :aria-label="badgeSampleCopy.notificationsLabel"
-                                  class="platform-demo__badge-anchor-mark"
-                                  dot
-                                  tone="danger"
-                                />
-                              </span>
-                            </span>
-                          </div>
-                        </section>
-                        <section class="platform-demo__badge-case" data-case="counts">
-                          <h3>{{ badgeSampleCopy.counts }}</h3>
-                          <div class="platform-demo__badge-counts">
-                            <div>
-                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.inbox }}</span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.inboxLabel"
-                                :content="3"
-                              />
-                            </div>
-                            <div>
-                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.tasks }}</span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.tasksLabel"
-                                :content="12"
-                                tone="primary"
-                              />
-                            </div>
-                            <div>
-                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.mentions }}</span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.mentionsLabel"
-                                :content="120"
-                                :max="99"
-                                tone="warning"
-                              />
-                            </div>
-                            <div>
-                              <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.drafts }}</span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.draftsLabel"
-                                :content="0"
-                                show-zero
-                                tone="default"
-                              />
-                            </div>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__badge-case" data-case="statuses">
-                          <h3>{{ badgeSampleCopy.statuses }}</h3>
-                          <div class="platform-demo__badge-statuses">
-                            <span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.online"
-                                dot
-                                tone="success"
-                              />
-                              {{ badgeSampleCopy.online }}
-                            </span>
-                            <span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.syncing"
-                                dot
-                                tone="warning"
-                              />
-                              {{ badgeSampleCopy.syncing }}
-                            </span>
-                            <span>
-                              <component
-                                :is="runtime.Badge"
-                                :aria-label="badgeSampleCopy.offline"
-                                dot
-                                tone="default"
-                              />
-                              {{ badgeSampleCopy.offline }}
-                            </span>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__badge-case" data-case="variants">
-                          <h3>{{ badgeSampleCopy.variants }}</h3>
-                          <div class="platform-demo__badge-variants">
-                            <component :is="runtime.Badge" tone="primary">
-                              {{ badgeSampleCopy.new }}
-                            </component>
-                            <component :is="runtime.Badge" tone="success" variant="soft">
-                              {{ badgeSampleCopy.stable }}
-                            </component>
-                            <component :is="runtime.Badge" tone="warning" variant="outline">
-                              {{ badgeSampleCopy.review }}
-                            </component>
-                          </div>
-                        </section>
-                      </div>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'popover'">
-                    <section class="platform-demo__popover-sample">
-                      <div class="platform-demo__popover-cases">
-                        <section class="platform-demo__popover-case" data-case="context">
-                          <h3>{{ popoverSampleCopy.context }}</h3>
-                          <div class="platform-demo__popover-canvas">
-                            <component :is="runtime.PopoverRoot" class="platform-demo__popover-root" default-open>
-                              <component
-                                :is="runtime.PopoverTrigger"
-                                class="platform-demo__popover-trigger"
-                                type="button"
-                              >
-                                {{ popoverSampleCopy.trigger }}
-                              </component>
-                              <component
-                                :is="runtime.PopoverContent"
-                                align="center"
-                                class="platform-demo__popover-card"
-                                side="bottom"
-                              >
-                                <header>
-                                  <strong>{{ popoverSampleCopy.order }}</strong>
-                                  <small>{{ popoverSampleCopy.meta }}</small>
-                                </header>
-                                <div class="platform-demo__popover-actions">
-                                  <button type="button">
-                                    {{ popoverSampleCopy.details }}
-                                  </button>
-                                  <button type="button">
-                                    {{ popoverSampleCopy.duplicate }}
-                                  </button>
-                                  <component
-                                    :is="runtime.PopoverClose"
-                                    class="platform-demo__popover-danger"
-                                    type="button"
-                                  >
-                                    {{ popoverSampleCopy.cancel }}
-                                  </component>
-                                </div>
-                                <component
-                                  :is="runtime.PopoverClose"
-                                  class="platform-demo__popover-done"
-                                  type="button"
-                                >
-                                  {{ popoverSampleCopy.done }}
-                                </component>
-                              </component>
-                            </component>
-                          </div>
-                        </section>
-
-                        <section class="platform-demo__popover-case" data-case="placement">
-                          <h3>{{ popoverSampleCopy.placement }}</h3>
-                          <div class="platform-demo__popover-placements">
-                            <component :is="runtime.PopoverRoot">
-                              <component
-                                :is="runtime.PopoverTrigger"
-                                class="platform-demo__popover-trigger"
-                                type="button"
-                              >
-                                {{ popoverSampleCopy.top }}
-                              </component>
-                              <component
-                                :is="runtime.PopoverContent"
-                                class="platform-demo__popover-tip"
-                                side="top"
-                              >
-                                <span>{{ popoverSampleCopy.topHint }}</span>
-                                <component :is="runtime.PopoverClose" type="button">
-                                  {{ popoverSampleCopy.close }}
-                                </component>
-                              </component>
-                            </component>
-                            <component :is="runtime.PopoverRoot">
-                              <component
-                                :is="runtime.PopoverTrigger"
-                                class="platform-demo__popover-trigger"
-                                type="button"
-                              >
-                                {{ popoverSampleCopy.right }}
-                              </component>
-                              <component
-                                :is="runtime.PopoverContent"
-                                class="platform-demo__popover-tip"
-                                side="right"
-                              >
-                                <span>{{ popoverSampleCopy.rightHint }}</span>
-                                <component :is="runtime.PopoverClose" type="button">
-                                  {{ popoverSampleCopy.close }}
-                                </component>
-                              </component>
-                            </component>
-                          </div>
-                        </section>
-                      </div>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'input'">
-                    <section class="platform-demo__input-sample" :data-invalid="String(inputInvalid)">
-                      <div class="platform-demo__input-cases">
-                        <label
-                          class="platform-demo__input-case platform-demo__input-case--wide"
-                          data-case="required"
-                        >
-                          <span class="platform-demo__input-label">
-                            <strong>{{ inputSampleCopy.clearable }}</strong>
-                            <small>{{ inputSampleCopy.required }}</small>
-                          </span>
-                          <component
-                            :is="runtime.Input"
-                            v-model:value="inputValue"
-                            clearable
-                            :error-message="inputInvalid ? inputSampleCopy.error : undefined"
-                            :invalid="inputInvalid"
-                            :max-length="16"
-                            :placeholder="platformDemo.placeholder"
-                            show-word-limit
-                          />
-                        </label>
-
-                        <label class="platform-demo__input-case" data-case="affixes">
-                          <span class="platform-demo__input-label">
-                            <strong>{{ inputSampleCopy.affixes }}</strong>
-                          </span>
-                          <component
-                            :is="runtime.Input"
-                            v-model:value="inputUrl"
-                            clearable
-                            :placeholder="inputSampleCopy.urlPlaceholder"
-                          >
-                            <template #prefix>
-                              <span class="platform-demo__input-affix">https://</span>
-                            </template>
-                            <template #suffix>
-                              <span class="platform-demo__input-affix">.com</span>
-                            </template>
-                          </component>
-                        </label>
-
-                        <section class="platform-demo__input-case" data-case="states">
-                          <span class="platform-demo__input-label">
-                            <strong>{{ inputSampleCopy.states }}</strong>
-                          </span>
-                          <div class="platform-demo__input-state-grid">
-                            <label>
-                              <small>{{ inputSampleCopy.readonly }}</small>
-                              <component
-                                :is="runtime.Input"
-                                :default-value="inputSampleCopy.readonlyValue"
-                                readonly
-                              />
-                            </label>
-                            <label>
-                              <small>{{ inputSampleCopy.disabled }}</small>
-                              <component
-                                :is="runtime.Input"
-                                :default-value="inputSampleCopy.disabledValue"
-                                disabled
-                              />
-                            </label>
-                          </div>
-                        </section>
-
-                        <label
-                          class="platform-demo__input-case platform-demo__input-case--wide"
-                          data-case="textarea"
-                        >
-                          <span class="platform-demo__input-label">
-                            <strong>{{ inputSampleCopy.textarea }}</strong>
-                          </span>
-                          <component
-                            :is="runtime.Input"
-                            v-model:value="inputBio"
-                            :max-length="60"
-                            :placeholder="inputSampleCopy.textareaPlaceholder"
-                            :rows="3"
-                            show-word-limit
-                            type="textarea"
-                          />
-                        </label>
-                      </div>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'cell'">
-                    <div class="platform-demo__cell-demo">
-                      <component
-                        :is="runtime.CellGroup"
-                        :desc="cellDemoCopy.accountGroupDesc"
-                        :title="cellDemoCopy.accountGroup"
-                      >
-                        <component
-                          :is="runtime.Cell"
-                          center
-                          :desc="cellDemoCopy.edit"
-                          is-link
-                          size="large"
-                          :sub-title="cellDemoCopy.profileSubtitle"
-                          :title="cellDemoCopy.profile"
-                          @click="cellLastAction = cellDemoCopy.profile"
-                        >
-                          <template #icon>
-                            <span class="platform-demo__cell-avatar" aria-hidden="true">
-                              {{ locale === 'en' ? 'A' : '林' }}
-                            </span>
-                          </template>
-                        </component>
-                        <component
-                          :is="runtime.Cell"
-                          center
-                          is-link
-                          :sub-title="cellDemoCopy.securitySubtitle"
-                          :title="cellDemoCopy.security"
-                          @click="cellLastAction = cellDemoCopy.security"
-                        >
-                          <template #icon>
-                            <span class="platform-demo__cell-icon" aria-hidden="true">
-                              <svg viewBox="0 0 24 24">
-                                <path d="M12 3 5.5 5.7v5.1c0 4.2 2.7 8.1 6.5 9.2 3.8-1.1 6.5-5 6.5-9.2V5.7L12 3Z" />
-                                <path d="m9.2 11.7 1.8 1.8 3.8-4" />
-                              </svg>
-                            </span>
-                          </template>
-                          <template #desc>
-                            <span class="platform-demo__cell-status">{{ cellDemoCopy.secure }}</span>
-                          </template>
-                        </component>
-                        <component
-                          :is="runtime.Cell"
-                          center
-                          :sub-title="cellDemoCopy.notificationsSubtitle"
-                          :title="cellDemoCopy.notifications"
-                        >
-                          <template #icon>
-                            <span class="platform-demo__cell-icon" aria-hidden="true">
-                              <svg viewBox="0 0 24 24">
-                                <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8Z" />
-                                <path d="M10 21h4" />
-                              </svg>
-                            </span>
-                          </template>
-                          <template #link>
-                            <component
-                              :is="runtime.Switch"
-                              v-model="cellNotificationsEnabled"
-                              :aria-label="cellDemoCopy.notifications"
-                            />
-                          </template>
-                        </component>
+        <DocsDeviceFrame :overflow="example === 'sticky'">
+          <div class="platform-demo__preview-content" :data-example="example">
+            <template v-if="example === 'button'">
+              <section class="platform-demo__button-sample">
+                <div class="platform-demo__button-cases">
+                  <section class="platform-demo__button-case" data-case="hierarchy">
+                    <h3>{{ buttonSampleCopy.hierarchy }}</h3>
+                    <div class="platform-demo__button-row">
+                      <component :is="runtime.Button" native-type="button">
+                        {{ buttonSampleCopy.primary }}
                       </component>
-
                       <component
-                        :is="runtime.CellGroup"
-                        :desc="cellDemoCopy.preferencesGroupDesc"
-                        :title="cellDemoCopy.preferencesGroup"
+                        :is="runtime.Button"
+                        native-type="button"
+                        tone="default"
+                        variant="outline"
                       >
-                        <component
-                          :is="runtime.Cell"
-                          :desc="cellDemoCopy.system"
-                          is-link
-                          :title="cellDemoCopy.appearance"
-                          @click="cellLastAction = cellDemoCopy.appearance"
-                        />
-                        <component
-                          :is="runtime.Cell"
-                          :desc="cellDemoCopy.english"
-                          is-link
-                          :title="cellDemoCopy.language"
-                          @click="cellLastAction = cellDemoCopy.language"
-                        />
-                        <component
-                          :is="runtime.Cell"
-                          :desc="cellDemoCopy.standard"
-                          is-link
-                          :title="cellDemoCopy.privacy"
-                          @click="cellLastAction = cellDemoCopy.privacy"
-                        />
+                        {{ buttonSampleCopy.secondary }}
                       </component>
-
-                      <p
-                        v-if="cellActionMessage"
-                        class="platform-demo__cell-feedback"
-                        role="status"
+                      <component
+                        :is="runtime.Button"
+                        native-type="button"
+                        tone="default"
+                        variant="ghost"
                       >
-                        {{ cellActionMessage }}
-                      </p>
+                        {{ buttonSampleCopy.tertiary }}
+                      </component>
+                      <component
+                        :is="runtime.Button"
+                        native-type="button"
+                        tone="primary"
+                        variant="text"
+                      >
+                        {{ buttonSampleCopy.textAction }}
+                      </component>
                     </div>
-                  </template>
+                  </section>
 
-                  <template v-else-if="example === 'image'">
-                    <section class="platform-demo__image-demo">
-                      <div class="platform-demo__image-feature">
-                        <component
-                          :is="runtime.Image"
-                          src="/blocks/retail-home.png"
-                          alt="Varo retail storefront"
-                          width="100%"
-                          :height="176"
-                          :fit="imageFit"
-                          lazy-load
-                          radius="18px"
-                        />
-                        <div class="platform-demo__image-caption">
-                          <strong>{{ copy.imageBasic }}</strong>
-                          <span>{{ imageFit }} · 16:9</span>
-                        </div>
-                      </div>
-
-                      <div
-                        class="platform-demo__image-toolbar"
-                        role="group"
-                        :aria-label="locale === 'en' ? 'Image fit' : '图片填充模式'"
+                  <section class="platform-demo__button-case" data-case="tones">
+                    <h3>{{ buttonSampleCopy.tones }}</h3>
+                    <div class="platform-demo__button-row">
+                      <component
+                        :is="runtime.Button"
+                        native-type="button"
+                        tone="success"
                       >
-                        <span>{{ locale === 'en' ? 'Fit' : '填充模式' }}</span>
-                        <div class="platform-demo__image-fit-options">
-                          <component
-                            :is="runtime.Button"
-                            v-for="option in imageFitOptions"
-                            :key="option.value"
-                            :aria-pressed="imageFit === option.value"
-                            size="sm"
-                            :tone="imageFit === option.value ? 'primary' : 'default'"
-                            :variant="imageFit === option.value ? 'soft' : 'ghost'"
-                            @click="imageFit = option.value"
-                          >
-                            {{ option.label }}
-                          </component>
-                        </div>
-                      </div>
-
-                      <div class="platform-demo__image-state-grid">
-                        <article class="platform-demo__image-item" data-state="brand">
-                          <component
-                            :is="runtime.Image"
-                            src="/brand-assets/varo-app-icon.png"
-                            alt="Varo"
-                            :width="72"
-                            :height="72"
-                            fit="cover"
-                            round
-                          />
-                          <span>{{ copy.imageRound }}</span>
-                        </article>
-
-                        <article class="platform-demo__image-item" data-state="error">
-                          <component
-                            :is="runtime.Image"
-                            src="/not-found.png"
-                            alt=""
-                            :width="72"
-                            :height="72"
-                            error-text=""
-                            fit="cover"
-                          >
-                            <template #error>
-                              <svg
-                                class="platform-demo__broken-image"
-                                viewBox="0 0 48 48"
-                                fill="none"
-                                aria-hidden="true"
-                              >
-                                <path d="M7 7h34v34H7z" />
-                                <path d="m7 34 9-9 7 7 5-5 13 12" />
-                                <circle cx="34" cy="16" r="4" />
-                                <path d="m25 7-4 9 6 5-5 8" />
-                              </svg>
-                            </template>
-                          </component>
-                          <span>{{ copy.imageError }}</span>
-                        </article>
-                      </div>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'divider'">
-                    <section class="platform-demo__divider-demo">
-                      <article class="platform-demo__divider-order">
-                        <header>
-                          <strong>{{ dividerSampleCopy.order }}</strong>
-                          <span>{{ dividerSampleCopy.paid }}</span>
-                        </header>
-                        <div class="platform-demo__divider-prices">
-                          <span>{{ dividerSampleCopy.goods }}</span>
-                          <strong>{{ dividerSampleCopy.goodsAmount }}</strong>
-                          <span>{{ dividerSampleCopy.discount }}</span>
-                          <strong class="platform-demo__divider-discount">
-                            {{ dividerSampleCopy.discountAmount }}
-                          </strong>
-                        </div>
-                        <component :is="runtime.Divider" :spacing="12" />
-                        <div class="platform-demo__divider-total">
-                          <strong>{{ dividerSampleCopy.total }}</strong>
-                          <strong>{{ dividerSampleCopy.totalAmount }}</strong>
-                        </div>
-
-                        <component
-                          :is="runtime.Divider"
-                          content-position="left"
-                          dashed
-                          :spacing="16"
-                        >
-                          {{ dividerSampleCopy.logistics }}
-                        </component>
-
-                        <div class="platform-demo__divider-timeline">
-                          <div>
-                            <span aria-hidden="true" />
-                            <p>
-                              <strong>{{ dividerSampleCopy.shipped }}</strong>
-                              <small>{{ dividerSampleCopy.shippedHint }}</small>
-                            </p>
-                          </div>
-                          <component :is="runtime.Divider" :spacing="8" />
-                          <div>
-                            <span aria-hidden="true" />
-                            <p>
-                              <strong>{{ dividerSampleCopy.arrival }}</strong>
-                              <small>{{ dividerSampleCopy.arrivalHint }}</small>
-                            </p>
-                          </div>
-                        </div>
-
-                        <footer>
-                          <button type="button">
-                            {{ dividerSampleCopy.contact }}
-                          </button>
-                          <component :is="runtime.Divider" vertical />
-                          <button type="button">
-                            {{ dividerSampleCopy.track }}
-                          </button>
-                        </footer>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'grid'">
-                    <section class="platform-demo__grid-demo">
-                      <article class="platform-demo__grid-service">
-                        <header>
-                          <div>
-                            <strong>{{ gridSampleCopy.title }}</strong>
-                            <span>{{ gridSampleCopy.hint }}</span>
-                          </div>
-                          <span>8</span>
-                        </header>
-                        <component
-                          :is="runtime.Grid"
-                          :border="false"
-                          :column-num="4"
-                          :gutter="8"
-                          clickable
-                        >
-                          <component
-                            :is="runtime.GridItem"
-                            v-for="item in gridSampleCopy.items"
-                            :key="item.label"
-                            :aria-label="item.label"
-                            :badge="item.badge"
-                            :dot="item.dot"
-                            :text="item.label"
-                            @click="gridLastAction = item.label"
-                          >
-                            <template #icon>
-                              <svg
-                                class="platform-demo__grid-icon"
-                                viewBox="0 0 24 24"
-                                aria-hidden="true"
-                              >
-                                <path :d="item.path" />
-                              </svg>
-                            </template>
-                          </component>
-                        </component>
-                        <p
-                          v-if="gridActionMessage"
-                          class="platform-demo__grid-result"
-                          role="status"
-                        >
-                          {{ gridActionMessage }}
-                        </p>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'layout'">
-                    <section class="platform-demo__layout-demo">
-                      <article class="platform-demo__layout-overview">
-                        <header>
-                          <strong>{{ layoutSampleCopy.title }}</strong>
-                          <span>{{ layoutSampleCopy.period }}</span>
-                        </header>
-                        <component :is="runtime.Row" :gutter="[8, 8]" align="stretch">
-                          <component :is="runtime.Col" :span="16">
-                            <article class="platform-demo__layout-card platform-demo__layout-card--primary">
-                              <span>{{ layoutSampleCopy.revenue }}</span>
-                              <strong>{{ layoutSampleCopy.revenueValue }}</strong>
-                              <small>{{ layoutSampleCopy.revenueTrend }}</small>
-                            </article>
-                          </component>
-                          <component :is="runtime.Col" :span="8">
-                            <article class="platform-demo__layout-card">
-                              <span>{{ layoutSampleCopy.orders }}</span>
-                              <strong>{{ layoutSampleCopy.ordersValue }}</strong>
-                            </article>
-                          </component>
-                          <component :is="runtime.Col" :span="8">
-                            <article class="platform-demo__layout-card">
-                              <span>{{ layoutSampleCopy.visitors }}</span>
-                              <strong>{{ layoutSampleCopy.visitorsValue }}</strong>
-                            </article>
-                          </component>
-                          <component :is="runtime.Col" :span="8">
-                            <article class="platform-demo__layout-card">
-                              <span>{{ layoutSampleCopy.conversion }}</span>
-                              <strong>{{ layoutSampleCopy.conversionValue }}</strong>
-                            </article>
-                          </component>
-                          <component :is="runtime.Col" :span="8">
-                            <article class="platform-demo__layout-card">
-                              <span>{{ layoutSampleCopy.refunds }}</span>
-                              <strong>{{ layoutSampleCopy.refundsValue }}</strong>
-                            </article>
-                          </component>
-                        </component>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'space'">
-                    <section class="platform-demo__space-demo">
-                      <article class="platform-demo__space-filter">
-                        <header>
-                          <strong>{{ spaceSampleCopy.title }}</strong>
-                          <span>{{ spaceSampleCopy.hint }}</span>
-                        </header>
-                        <component :is="runtime.Space" class="platform-demo__space-tags" :size="[8, 8]" wrap>
-                          <component
-                            :is="runtime.Button"
-                            v-for="filter in spaceSampleCopy.filters"
-                            :key="filter.value"
-                            :aria-pressed="spaceDraft === filter.value"
-                            size="sm"
-                            :tone="spaceDraft === filter.value ? 'primary' : 'default'"
-                            :variant="spaceDraft === filter.value ? 'soft' : 'outline'"
-                            @click="spaceDraft = filter.value"
-                          >
-                            {{ filter.label }}
-                          </component>
-                        </component>
-                        <component
-                          :is="runtime.Space"
-                          class="platform-demo__space-actions"
-                          direction="vertical"
-                          fill
-                          :size="[8, 8]"
-                        >
-                          <component
-                            :is="runtime.Button"
-                            size="sm"
-                            @click="spaceApplied = spaceDraft"
-                          >
-                            {{ spaceSampleCopy.apply }}
-                          </component>
-                          <component
-                            :is="runtime.Button"
-                            size="sm"
-                            tone="default"
-                            variant="outline"
-                            @click="spaceDraft = 'all'; spaceApplied = 'all'"
-                          >
-                            {{ spaceSampleCopy.reset }}
-                          </component>
-                        </component>
-                        <p role="status">
-                          {{ spaceSampleCopy.current }}：{{ spaceAppliedLabel }}
-                        </p>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'sticky'">
-                    <section class="platform-demo__sticky-demo">
-                      <article class="platform-demo__sticky-feed">
-                        <p class="platform-demo__sticky-hint">
-                          {{ stickySampleCopy.hint }}
-                        </p>
-                        <component
-                          :is="runtime.Sticky"
-                          :offset-top="72"
-                          :z-index="4"
-                          @change="stickyFixed = $event"
-                          @scroll="stickyScrollTop = $event.scrollTop"
-                        >
-                          <template #default="{ fixed }">
-                            <header
-                              class="platform-demo__sticky-bar"
-                              :data-fixed="String(fixed)"
-                            >
-                              <div>
-                                <strong>{{ stickySampleCopy.title }}</strong>
-                                <span>{{ stickySampleCopy.count }}</span>
-                              </div>
-                              <span>{{ fixed ? stickySampleCopy.fixed : stickySampleCopy.normal }}</span>
-                            </header>
-                          </template>
-                        </component>
-                        <div class="platform-demo__sticky-list">
-                          <article
-                            v-for="item in stickySampleCopy.items"
-                            :key="item.id"
-                          >
-                            <div>
-                              <strong>{{ item.id }}</strong>
-                              <span>{{ item.status }}</span>
-                            </div>
-                            <strong>{{ item.amount }}</strong>
-                          </article>
-                        </div>
-                        <p class="platform-demo__sticky-result" role="status">
-                          {{ stickyFixed ? stickySampleCopy.fixed : stickySampleCopy.normal }}
-                          · {{ stickySampleCopy.scroll }} {{ stickyScrollTop }}px
-                        </p>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'elevator'">
-                    <section class="platform-demo__nav-demo platform-demo__elevator-demo">
-                      <article class="platform-demo__elevator-directory">
-                        <header>
-                          <div>
-                            <strong>{{ elevatorSampleCopy.title }}</strong>
-                            <span>{{ elevatorSampleCopy.hint }}</span>
-                          </div>
-                          <output>{{ elevatorSampleCopy.selected }}：{{ elevatorSelected }}</output>
-                        </header>
-                        <component
-                          :is="runtime.Elevator"
-                          :active-index="elevatorActive"
-                          :indexes="copy.elevatorGroups"
-                          @click-item="selectElevatorItem"
-                          @update:active-index="elevatorActive = $event"
-                        />
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'fixed-nav'">
-                    <section class="platform-demo__nav-demo platform-demo__fixed-nav-demo">
-                      <article class="platform-demo__fixed-nav-product">
-                        <span>{{ fixedNavSampleCopy.eyebrow }}</span>
-                        <h3>{{ fixedNavSampleCopy.title }}</h3>
-                        <p>{{ fixedNavSampleCopy.description }}</p>
-                        <div>
-                          <strong>{{ fixedNavSampleCopy.price }}</strong>
-                          <span>{{ fixedNavSampleCopy.priceSuffix }}</span>
-                        </div>
-                        <ul>
-                          <li v-for="feature in fixedNavSampleCopy.features" :key="feature">
-                            {{ feature }}
-                          </li>
-                        </ul>
-                        <p
-                          v-if="fixedNavSelected"
-                          class="platform-demo__fixed-nav-result"
-                          role="status"
-                        >
-                          {{ fixedNavSampleCopy.selected }}：{{ fixedNavSelected }}
-                        </p>
-                      </article>
-                      <component
-                        :is="runtime.FixedNav"
-                        :visible="fixedNavVisible"
-                        :nav-list="fixedNavSampleCopy.items"
-                        :active-text="fixedNavSampleCopy.action"
-                        @select="selectFixedNavItem"
-                        @update:visible="fixedNavVisible = $event"
-                      />
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'indicator'">
-                    <section class="platform-demo__nav-demo platform-demo__indicator-demo">
-                      <article class="platform-demo__indicator-slide" :style="indicatorSlideStyle">
-                        <header>
-                          <span>{{ currentIndicatorItem.tag }}</span>
-                          <span>{{ String(indicatorCurrent + 1).padStart(2, '0') }} / 04</span>
-                        </header>
-                        <strong>{{ currentIndicatorItem.title }}</strong>
-                        <p>{{ currentIndicatorItem.body }}</p>
-                      </article>
-                      <div class="platform-demo__indicator-controls">
-                        <div>
-                          <span>{{ indicatorSampleCopy.dots }}</span>
-                          <component
-                            :is="runtime.Indicator"
-                            :aria-label="indicatorSampleCopy.navigationLabel"
-                            :item-aria-label="indicatorSampleCopy.itemLabel"
-                            :total="indicatorSampleCopy.items.length"
-                            :current="indicatorCurrent"
-                            @update:current="indicatorCurrent = $event"
-                          />
-                        </div>
-                        <div>
-                          <span>{{ indicatorSampleCopy.lines }}</span>
-                          <component
-                            :is="runtime.Indicator"
-                            :aria-label="indicatorSampleCopy.navigationLabel"
-                            :item-aria-label="indicatorSampleCopy.itemLabel"
-                            :total="indicatorSampleCopy.items.length"
-                            :current="indicatorCurrent"
-                            type="line"
-                            @update:current="indicatorCurrent = $event"
-                          />
-                        </div>
-                      </div>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'menu'">
-                    <section class="platform-demo__nav-demo platform-demo__menu-demo">
-                      <article class="platform-demo__menu-catalog">
-                        <header>
-                          <strong>{{ menuSampleCopy.title }}</strong>
-                          <span>{{ menuSampleCopy.count }}</span>
-                        </header>
-                        <component
-                          :is="runtime.Menu"
-                          :active-name="menuActiveName"
-                          @update:active-name="menuActiveName = $event"
-                        >
-                          <component
-                            :is="runtime.MenuItem"
-                            :model-value="menuValue"
-                            name="sort"
-                            :title="menuSampleCopy.sort"
-                            :options="menuSampleCopy.sortOptions"
-                            @update:model-value="menuValue = $event"
-                          />
-                          <component
-                            :is="runtime.MenuItem"
-                            :model-value="menuStockValue"
-                            name="stock"
-                            :title="menuSampleCopy.stock"
-                            :options="menuSampleCopy.stockOptions"
-                            @update:model-value="menuStockValue = $event"
-                          />
-                        </component>
-                        <p class="platform-demo__menu-result" role="status">
-                          <span>{{ menuSampleCopy.result }}</span>
-                          <strong>{{ menuSortLabel }} · {{ menuStockLabel }}</strong>
-                        </p>
-                        <div class="platform-demo__menu-products">
-                          <article v-for="product in menuSampleCopy.products" :key="product.name">
-                            <div>
-                              <strong>{{ product.name }}</strong>
-                              <span>{{ product.meta }}</span>
-                            </div>
-                            <strong>{{ product.price }}</strong>
-                          </article>
-                        </div>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'navbar'">
-                    <section class="platform-demo__nav-demo platform-demo__navbar-demo">
-                      <component
-                        :is="runtime.Navbar"
-                        :title="navbarSampleCopy.title"
-                        :left-text="navbarSampleCopy.back"
-                        :left-aria-label="navbarSampleCopy.back"
-                        :right-text="navbarSampleCopy.help"
-                        :right-aria-label="navbarSampleCopy.help"
-                        left-arrow
-                        @click-left="navbarAction = navbarSampleCopy.back"
-                        @click-right="navbarAction = navbarSampleCopy.help"
-                      />
-                      <article class="platform-demo__navbar-order">
-                        <header>
-                          <span>{{ navbarSampleCopy.status }}</span>
-                          <small>{{ navbarSampleCopy.statusHint }}</small>
-                        </header>
-                        <dl>
-                          <div>
-                            <dt>{{ navbarSampleCopy.order }}</dt>
-                            <dd>{{ navbarSampleCopy.orderValue }}</dd>
-                          </div>
-                          <div>
-                            <dt>{{ navbarSampleCopy.recipient }}</dt>
-                            <dd>{{ navbarSampleCopy.recipientValue }}</dd>
-                          </div>
-                          <div>
-                            <dt>{{ navbarSampleCopy.total }}</dt>
-                            <dd>{{ navbarSampleCopy.totalValue }}</dd>
-                          </div>
-                        </dl>
-                        <p v-if="navbarAction" role="status">
-                          {{ navbarSampleCopy.action }}：{{ navbarAction }}
-                        </p>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'pagination'">
-                    <section class="platform-demo__nav-demo platform-demo__pagination-demo">
-                      <article class="platform-demo__pagination-orders">
-                        <header>
-                          <strong>{{ paginationSampleCopy.title }}</strong>
-                          <span>{{ paginationSampleCopy.total }}</span>
-                        </header>
-                        <div>
-                          <article v-for="order in paginationOrders" :key="order.id">
-                            <div>
-                              <strong>{{ order.id }}</strong>
-                              <span>{{ order.status }}</span>
-                            </div>
-                            <strong>{{ order.amount }}</strong>
-                          </article>
-                        </div>
-                        <p role="status">
-                          {{ paginationSampleCopy.page }} {{ paginationPage }}
-                          {{ paginationSampleCopy.pageSuffix }}
-                        </p>
-                        <component
-                          :is="runtime.Pagination"
-                          :aria-label="paginationSampleCopy.navigationLabel"
-                          :item-aria-label="paginationSampleCopy.itemLabel"
-                          :model-value="paginationPage"
-                          :page-count="5"
-                          @update:model-value="paginationPage = $event"
-                        />
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'side-navbar'">
-                    <section class="platform-demo__nav-demo platform-demo__side-navbar-demo">
-                      <component
-                        :is="runtime.SideNavbar"
-                        :aria-label="sideNavbarSampleCopy.navigationLabel"
-                        :model-value="sideNavActive"
-                        @update:model-value="sideNavActive = $event"
-                      >
-                        <component
-                          :is="runtime.SideNavbarItem"
-                          v-for="item in sideNavbarSampleCopy.items"
-                          :key="item.name"
-                          :name="item.name"
-                          :title="item.title"
-                          :badge="item.badge"
-                        />
+                        {{ buttonSampleCopy.success }}
                       </component>
-                      <article class="platform-demo__side-navbar-panel">
-                        <header>
-                          <div>
-                            <strong>{{ currentSideNavbarItem.heading }}</strong>
-                            <span>{{ currentSideNavbarItem.body }}</span>
-                          </div>
-                          <strong>{{ currentSideNavbarItem.metric }}</strong>
-                        </header>
-                        <ul>
-                          <li v-for="detail in currentSideNavbarItem.details" :key="detail">
-                            {{ detail }}
-                          </li>
-                        </ul>
-                      </article>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'tabbar'">
-                    <section class="platform-demo__nav-demo platform-demo__tabbar-demo">
-                      <article class="platform-demo__tabbar-page">
-                        <span>{{ currentTabbarItem.title }}</span>
-                        <strong>{{ currentTabbarItem.title }}</strong>
-                        <p>{{ currentTabbarItem.body }}</p>
-                      </article>
                       <component
-                        :is="runtime.Tabbar"
-                        :aria-label="tabbarSampleCopy.navigationLabel"
-                        :model-value="tabbarActive"
-                        @update:model-value="tabbarActive = $event"
+                        :is="runtime.Button"
+                        native-type="button"
+                        tone="warning"
                       >
-                        <component
-                          :is="runtime.TabbarItem"
-                          v-for="item in tabbarSampleCopy.items"
-                          :key="item.name"
-                          :name="item.name"
-                          :badge="item.badge"
-                          :dot="item.dot"
-                        >
+                        {{ buttonSampleCopy.warning }}
+                      </component>
+                      <component
+                        :is="runtime.Button"
+                        native-type="button"
+                        tone="danger"
+                      >
+                        {{ buttonSampleCopy.danger }}
+                      </component>
+                    </div>
+                  </section>
+
+                  <section class="platform-demo__button-case" data-case="sizes">
+                    <h3>{{ buttonSampleCopy.sizes }}</h3>
+                    <div class="platform-demo__button-row platform-demo__button-row--baseline">
+                      <component :is="runtime.Button" native-type="button" size="sm" variant="outline">
+                        {{ buttonSampleCopy.small }}
+                      </component>
+                      <component :is="runtime.Button" native-type="button" size="md" variant="outline">
+                        {{ buttonSampleCopy.medium }}
+                      </component>
+                      <component :is="runtime.Button" native-type="button" size="lg" variant="outline">
+                        {{ buttonSampleCopy.large }}
+                      </component>
+                    </div>
+                  </section>
+
+                  <section class="platform-demo__button-case" data-case="states">
+                    <h3>{{ buttonSampleCopy.states }}</h3>
+                    <div class="platform-demo__button-row">
+                      <component
+                        :is="runtime.Button"
+                        loading
+                        :loading-text="buttonSampleCopy.loading"
+                        native-type="button"
+                      />
+                      <component
+                        :is="runtime.Button"
+                        disabled
+                        native-type="button"
+                        tone="default"
+                        variant="outline"
+                      >
+                        {{ buttonSampleCopy.disabled }}
+                      </component>
+                    </div>
+                  </section>
+
+                  <section class="platform-demo__button-case" data-case="layout">
+                    <h3>{{ buttonSampleCopy.layout }}</h3>
+                    <div class="platform-demo__button-layout">
+                      <div class="platform-demo__button-row">
+                        <component :is="runtime.Button" native-type="button" shape="round">
                           <template #icon>
                             <svg
-                              class="platform-demo__tabbar-icon"
-                              viewBox="0 0 24 24"
+                              class="platform-demo__button-icon"
+                              viewBox="0 0 16 16"
+                              fill="none"
                               aria-hidden="true"
                             >
-                              <path :d="item.path" />
+                              <path d="M8 3v10M3 8h10" />
                             </svg>
                           </template>
-                          {{ item.title }}
+                          {{ buttonSampleCopy.create }}
                         </component>
-                      </component>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'tabs'">
-                    <section class="platform-demo__nav-demo platform-demo__tabs-demo">
-                      <component
-                        :is="runtime.Tabs"
-                        :aria-label="tabsNavigationLabel"
-                        :active="tabsActive"
-                        @update:active="tabsActive = $event"
-                      >
-                        <component
-                          :is="runtime.Tab"
-                          v-for="item in copy.tabsItems"
-                          :key="item.name"
-                          :name="item.name"
-                          :title="item.title"
-                        >
-                          <div class="platform-demo__tabs-panel">
-                            <strong>{{ item.title }}</strong>
-                            <span>{{ item.body }}</span>
-                          </div>
-                        </component>
-                      </component>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'overlay'">
-                    <section class="platform-demo__overlay-demo">
-                      <div class="platform-demo__card-head">
-                        <span>{{ copy.overlayPanel }}</span>
-                        <small>{{ platformDemo.overlayText }}</small>
-                      </div>
-                      <component :is="runtime.Button" size="sm" type="button" @click="overlayVisible = true">
-                        {{ platformDemo.overlayOpenText }}
-                      </component>
-                      <component
-                        :is="runtime.Overlay"
-                        v-model:visible="overlayVisible"
-                        class="platform-demo__inner-overlay"
-                        :z-index="12"
-                        :duration="0.18"
-                      >
-                        <span>{{ platformDemo.overlayText }}</span>
-                      </component>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'popup'">
-                    <section class="platform-demo__popup-demo">
-                      <div class="platform-demo__card-head">
-                        <span>{{ copy.popupPanel }}</span>
-                        <small>{{ platformDemo.popupTitle }}</small>
-                      </div>
-                      <component :is="runtime.Button" size="sm" type="button" @click="popupVisible = true">
-                        {{ platformDemo.popupOpenText }}
-                      </component>
-                      <component
-                        :is="runtime.Popup"
-                        v-model:visible="popupVisible"
-                        closeable
-                        round
-                        class="platform-demo__inner-popup"
-                        :z-index="20"
-                        :duration="0.18"
-                      >
-                        <div class="platform-demo__popup-body">
-                          <h4>{{ platformDemo.popupTitle }}</h4>
-                          <p>{{ platformDemo.popupBody }}</p>
-                          <component :is="runtime.Button" size="sm" variant="outline" type="button" @click="popupVisible = false">
-                            {{ platformDemo.popupCloseText }}
-                          </component>
-                        </div>
-                      </component>
-                    </section>
-                  </template>
-
-                  <template v-else-if="example === 'dialog'">
-                    <section class="platform-demo__card platform-demo__card--dialog">
-                      <div class="platform-demo__card-head">
-                        <span>Dialog</span>
-                        <small>{{ platformDemo.dialogHint }}</small>
-                      </div>
-
-                      <component :is="runtime.DialogRoot">
-                        <component :is="runtime.DialogTrigger" class="platform-demo__trigger" type="button">
-                          {{ platformDemo.dialogOpenText }}
-                        </component>
-                        <component :is="runtime.DialogOverlay" as="div" class="platform-demo__overlay" />
-                        <component :is="runtime.DialogContent" as="div" class="platform-demo__dialog">
-                          <h4>{{ platformDemo.dialogTitle }}</h4>
-                          <p>{{ platformDemo.dialogBody }}</p>
-                          <div class="platform-demo__dialog-actions">
-                            <component :is="runtime.DialogClose" class="platform-demo__dialog-close" type="button">
-                              {{ platformDemo.dialogCloseText }}
-                            </component>
-                          </div>
-                        </component>
-                      </component>
-                    </section>
-                  </template>
-
-                  <template v-else>
-                    <section class="platform-demo__card">
-                      <label class="platform-demo__field">
-                        <span>{{ platformDemo.controlledLabel }}</span>
-                        <component
-                          :is="runtime.Input"
-                          v-model:value="inputValue"
-                          clearable
-                          :invalid="overviewInputInvalid"
-                          :max-length="16"
-                          :placeholder="platformDemo.placeholder"
-                          show-word-limit
-                        />
-                      </label>
-                      <small class="platform-demo__caption">
-                        {{ copy.currentValueLabel }}: {{ inputValue || copy.emptyValue }}
-                      </small>
-                    </section>
-
-                    <section class="platform-demo__card">
-                      <div class="platform-demo__stack">
                         <component
                           :is="runtime.Button"
+                          native-type="button"
+                          shape="square"
+                          tone="default"
+                          variant="outline"
+                        >
+                          {{ buttonSampleCopy.square }}
+                        </component>
+                      </div>
+                      <component :is="runtime.Button" block native-type="button">
+                        {{ buttonSampleCopy.continue }}
+                      </component>
+                    </div>
+                  </section>
+                </div>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'badge'">
+              <section class="platform-demo__badge-sample">
+                <div class="platform-demo__badge-cases">
+                  <section class="platform-demo__badge-case" data-case="anchors">
+                    <h3>{{ badgeSampleCopy.anchors }}</h3>
+                    <div class="platform-demo__badge-anchors">
+                      <span class="platform-demo__badge-anchor">
+                        <span class="platform-demo__badge-anchor-label">
+                          {{ badgeSampleCopy.messages }}
+                          <component
+                            :is="runtime.Badge"
+                            :aria-label="badgeSampleCopy.messagesLabel"
+                            :content="3"
+                            class="platform-demo__badge-anchor-mark"
+                          />
+                        </span>
+                      </span>
+                      <span class="platform-demo__badge-anchor">
+                        <span class="platform-demo__badge-anchor-label">
+                          {{ badgeSampleCopy.notifications }}
+                          <component
+                            :is="runtime.Badge"
+                            :aria-label="badgeSampleCopy.notificationsLabel"
+                            class="platform-demo__badge-anchor-mark"
+                            dot
+                            tone="danger"
+                          />
+                        </span>
+                      </span>
+                    </div>
+                  </section>
+                  <section class="platform-demo__badge-case" data-case="counts">
+                    <h3>{{ badgeSampleCopy.counts }}</h3>
+                    <div class="platform-demo__badge-counts">
+                      <div>
+                        <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.inbox }}</span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.inboxLabel"
+                          :content="3"
+                        />
+                      </div>
+                      <div>
+                        <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.tasks }}</span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.tasksLabel"
+                          :content="12"
+                          tone="primary"
+                        />
+                      </div>
+                      <div>
+                        <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.mentions }}</span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.mentionsLabel"
+                          :content="120"
+                          :max="99"
+                          tone="warning"
+                        />
+                      </div>
+                      <div>
+                        <span class="platform-demo__badge-count-label">{{ badgeSampleCopy.drafts }}</span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.draftsLabel"
+                          :content="0"
+                          show-zero
+                          tone="default"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="platform-demo__badge-case" data-case="statuses">
+                    <h3>{{ badgeSampleCopy.statuses }}</h3>
+                    <div class="platform-demo__badge-statuses">
+                      <span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.online"
+                          dot
+                          tone="success"
+                        />
+                        {{ badgeSampleCopy.online }}
+                      </span>
+                      <span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.syncing"
+                          dot
+                          tone="warning"
+                        />
+                        {{ badgeSampleCopy.syncing }}
+                      </span>
+                      <span>
+                        <component
+                          :is="runtime.Badge"
+                          :aria-label="badgeSampleCopy.offline"
+                          dot
+                          tone="default"
+                        />
+                        {{ badgeSampleCopy.offline }}
+                      </span>
+                    </div>
+                  </section>
+
+                  <section class="platform-demo__badge-case" data-case="variants">
+                    <h3>{{ badgeSampleCopy.variants }}</h3>
+                    <div class="platform-demo__badge-variants">
+                      <component :is="runtime.Badge" tone="primary">
+                        {{ badgeSampleCopy.new }}
+                      </component>
+                      <component :is="runtime.Badge" tone="success" variant="soft">
+                        {{ badgeSampleCopy.stable }}
+                      </component>
+                      <component :is="runtime.Badge" tone="warning" variant="outline">
+                        {{ badgeSampleCopy.review }}
+                      </component>
+                    </div>
+                  </section>
+                </div>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'popover'">
+              <section class="platform-demo__popover-sample">
+                <div class="platform-demo__popover-cases">
+                  <section class="platform-demo__popover-case" data-case="context">
+                    <h3>{{ popoverSampleCopy.context }}</h3>
+                    <div class="platform-demo__popover-canvas">
+                      <component :is="runtime.PopoverRoot" class="platform-demo__popover-root" default-open>
+                        <component
+                          :is="runtime.PopoverTrigger"
+                          class="platform-demo__popover-trigger"
                           type="button"
                         >
-                          {{ platformDemo.primaryText }}
+                          {{ popoverSampleCopy.trigger }}
                         </component>
-                        <component :is="runtime.Button" size="sm" variant="outline" type="button">
-                          {{ platformDemo.secondaryText }}
-                        </component>
-                      </div>
-                    </section>
-
-                    <section class="platform-demo__card platform-demo__card--dialog">
-                      <div class="platform-demo__card-head">
-                        <span>{{ copy.dialogSection }}</span>
-                        <small>{{ platformDemo.dialogHint }}</small>
-                      </div>
-
-                      <component :is="runtime.DialogRoot">
-                        <component :is="runtime.DialogTrigger" class="platform-demo__trigger" type="button">
-                          {{ platformDemo.dialogOpenText }}
-                        </component>
-                        <component :is="runtime.DialogOverlay" as="div" class="platform-demo__overlay" />
-                        <component :is="runtime.DialogContent" as="div" class="platform-demo__dialog">
-                          <h4>{{ platformDemo.dialogTitle }}</h4>
-                          <p>{{ platformDemo.dialogBody }}</p>
-                          <div class="platform-demo__dialog-actions">
-                            <component :is="runtime.DialogClose" class="platform-demo__dialog-close" type="button">
-                              {{ platformDemo.dialogCloseText }}
+                        <component
+                          :is="runtime.PopoverContent"
+                          align="center"
+                          class="platform-demo__popover-card"
+                          side="bottom"
+                        >
+                          <header>
+                            <strong>{{ popoverSampleCopy.order }}</strong>
+                            <small>{{ popoverSampleCopy.meta }}</small>
+                          </header>
+                          <div class="platform-demo__popover-actions">
+                            <button type="button">
+                              {{ popoverSampleCopy.details }}
+                            </button>
+                            <button type="button">
+                              {{ popoverSampleCopy.duplicate }}
+                            </button>
+                            <component
+                              :is="runtime.PopoverClose"
+                              class="platform-demo__popover-danger"
+                              type="button"
+                            >
+                              {{ popoverSampleCopy.cancel }}
                             </component>
                           </div>
+                          <component
+                            :is="runtime.PopoverClose"
+                            class="platform-demo__popover-done"
+                            type="button"
+                          >
+                            {{ popoverSampleCopy.done }}
+                          </component>
                         </component>
                       </component>
-                    </section>
-                  </template>
+                    </div>
+                  </section>
+
+                  <section class="platform-demo__popover-case" data-case="placement">
+                    <h3>{{ popoverSampleCopy.placement }}</h3>
+                    <div class="platform-demo__popover-placements">
+                      <component :is="runtime.PopoverRoot">
+                        <component
+                          :is="runtime.PopoverTrigger"
+                          class="platform-demo__popover-trigger"
+                          type="button"
+                        >
+                          {{ popoverSampleCopy.top }}
+                        </component>
+                        <component
+                          :is="runtime.PopoverContent"
+                          class="platform-demo__popover-tip"
+                          side="top"
+                        >
+                          <span>{{ popoverSampleCopy.topHint }}</span>
+                          <component :is="runtime.PopoverClose" type="button">
+                            {{ popoverSampleCopy.close }}
+                          </component>
+                        </component>
+                      </component>
+                      <component :is="runtime.PopoverRoot">
+                        <component
+                          :is="runtime.PopoverTrigger"
+                          class="platform-demo__popover-trigger"
+                          type="button"
+                        >
+                          {{ popoverSampleCopy.right }}
+                        </component>
+                        <component
+                          :is="runtime.PopoverContent"
+                          class="platform-demo__popover-tip"
+                          side="right"
+                        >
+                          <span>{{ popoverSampleCopy.rightHint }}</span>
+                          <component :is="runtime.PopoverClose" type="button">
+                            {{ popoverSampleCopy.close }}
+                          </component>
+                        </component>
+                      </component>
+                    </div>
+                  </section>
                 </div>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'input'">
+              <section class="platform-demo__input-sample" :data-invalid="String(inputInvalid)">
+                <div class="platform-demo__input-cases">
+                  <label
+                    class="platform-demo__input-case platform-demo__input-case--wide"
+                    data-case="required"
+                  >
+                    <span class="platform-demo__input-label">
+                      <strong>{{ inputSampleCopy.clearable }}</strong>
+                      <small>{{ inputSampleCopy.required }}</small>
+                    </span>
+                    <component
+                      :is="runtime.Input"
+                      v-model:value="inputValue"
+                      clearable
+                      :error-message="inputInvalid ? inputSampleCopy.error : undefined"
+                      :invalid="inputInvalid"
+                      :max-length="16"
+                      :placeholder="platformDemo.placeholder"
+                      show-word-limit
+                    />
+                  </label>
+
+                  <label class="platform-demo__input-case" data-case="affixes">
+                    <span class="platform-demo__input-label">
+                      <strong>{{ inputSampleCopy.affixes }}</strong>
+                    </span>
+                    <component
+                      :is="runtime.Input"
+                      v-model:value="inputUrl"
+                      clearable
+                      :placeholder="inputSampleCopy.urlPlaceholder"
+                    >
+                      <template #prefix>
+                        <span class="platform-demo__input-affix">https://</span>
+                      </template>
+                      <template #suffix>
+                        <span class="platform-demo__input-affix">.com</span>
+                      </template>
+                    </component>
+                  </label>
+
+                  <section class="platform-demo__input-case" data-case="states">
+                    <span class="platform-demo__input-label">
+                      <strong>{{ inputSampleCopy.states }}</strong>
+                    </span>
+                    <div class="platform-demo__input-state-grid">
+                      <label>
+                        <small>{{ inputSampleCopy.readonly }}</small>
+                        <component
+                          :is="runtime.Input"
+                          :default-value="inputSampleCopy.readonlyValue"
+                          readonly
+                        />
+                      </label>
+                      <label>
+                        <small>{{ inputSampleCopy.disabled }}</small>
+                        <component
+                          :is="runtime.Input"
+                          :default-value="inputSampleCopy.disabledValue"
+                          disabled
+                        />
+                      </label>
+                    </div>
+                  </section>
+
+                  <label
+                    class="platform-demo__input-case platform-demo__input-case--wide"
+                    data-case="textarea"
+                  >
+                    <span class="platform-demo__input-label">
+                      <strong>{{ inputSampleCopy.textarea }}</strong>
+                    </span>
+                    <component
+                      :is="runtime.Input"
+                      v-model:value="inputBio"
+                      :max-length="60"
+                      :placeholder="inputSampleCopy.textareaPlaceholder"
+                      :rows="3"
+                      show-word-limit
+                      type="textarea"
+                    />
+                  </label>
+                </div>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'cell'">
+              <div class="platform-demo__cell-demo">
+                <component
+                  :is="runtime.CellGroup"
+                  :desc="cellDemoCopy.accountGroupDesc"
+                  :title="cellDemoCopy.accountGroup"
+                >
+                  <component
+                    :is="runtime.Cell"
+                    center
+                    :desc="cellDemoCopy.edit"
+                    is-link
+                    size="large"
+                    :sub-title="cellDemoCopy.profileSubtitle"
+                    :title="cellDemoCopy.profile"
+                    @click="cellLastAction = cellDemoCopy.profile"
+                  >
+                    <template #icon>
+                      <span class="platform-demo__cell-avatar" aria-hidden="true">
+                        {{ locale === 'en' ? 'A' : '林' }}
+                      </span>
+                    </template>
+                  </component>
+                  <component
+                    :is="runtime.Cell"
+                    center
+                    is-link
+                    :sub-title="cellDemoCopy.securitySubtitle"
+                    :title="cellDemoCopy.security"
+                    @click="cellLastAction = cellDemoCopy.security"
+                  >
+                    <template #icon>
+                      <span class="platform-demo__cell-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 3 5.5 5.7v5.1c0 4.2 2.7 8.1 6.5 9.2 3.8-1.1 6.5-5 6.5-9.2V5.7L12 3Z" />
+                          <path d="m9.2 11.7 1.8 1.8 3.8-4" />
+                        </svg>
+                      </span>
+                    </template>
+                    <template #desc>
+                      <span class="platform-demo__cell-status">{{ cellDemoCopy.secure }}</span>
+                    </template>
+                  </component>
+                  <component
+                    :is="runtime.Cell"
+                    center
+                    :sub-title="cellDemoCopy.notificationsSubtitle"
+                    :title="cellDemoCopy.notifications"
+                  >
+                    <template #icon>
+                      <span class="platform-demo__cell-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8Z" />
+                          <path d="M10 21h4" />
+                        </svg>
+                      </span>
+                    </template>
+                    <template #link>
+                      <component
+                        :is="runtime.Switch"
+                        v-model="cellNotificationsEnabled"
+                        :aria-label="cellDemoCopy.notifications"
+                      />
+                    </template>
+                  </component>
+                </component>
+
+                <component
+                  :is="runtime.CellGroup"
+                  :desc="cellDemoCopy.preferencesGroupDesc"
+                  :title="cellDemoCopy.preferencesGroup"
+                >
+                  <component
+                    :is="runtime.Cell"
+                    :desc="cellDemoCopy.system"
+                    is-link
+                    :title="cellDemoCopy.appearance"
+                    @click="cellLastAction = cellDemoCopy.appearance"
+                  />
+                  <component
+                    :is="runtime.Cell"
+                    :desc="cellDemoCopy.english"
+                    is-link
+                    :title="cellDemoCopy.language"
+                    @click="cellLastAction = cellDemoCopy.language"
+                  />
+                  <component
+                    :is="runtime.Cell"
+                    :desc="cellDemoCopy.standard"
+                    is-link
+                    :title="cellDemoCopy.privacy"
+                    @click="cellLastAction = cellDemoCopy.privacy"
+                  />
+                </component>
+
+                <p
+                  v-if="cellActionMessage"
+                  class="platform-demo__cell-feedback"
+                  role="status"
+                >
+                  {{ cellActionMessage }}
+                </p>
               </div>
-            </div>
+            </template>
+
+            <template v-else-if="example === 'image'">
+              <section class="platform-demo__image-demo">
+                <div class="platform-demo__image-feature">
+                  <component
+                    :is="runtime.Image"
+                    src="/blocks/retail-home.png"
+                    alt="Varo retail storefront"
+                    width="100%"
+                    :height="176"
+                    :fit="imageFit"
+                    lazy-load
+                    radius="18px"
+                  />
+                  <div class="platform-demo__image-caption">
+                    <strong>{{ copy.imageBasic }}</strong>
+                    <span>{{ imageFit }} · 16:9</span>
+                  </div>
+                </div>
+
+                <div
+                  class="platform-demo__image-toolbar"
+                  role="group"
+                  :aria-label="locale === 'en' ? 'Image fit' : '图片填充模式'"
+                >
+                  <span>{{ locale === 'en' ? 'Fit' : '填充模式' }}</span>
+                  <div class="platform-demo__image-fit-options">
+                    <component
+                      :is="runtime.Button"
+                      v-for="option in imageFitOptions"
+                      :key="option.value"
+                      :aria-pressed="imageFit === option.value"
+                      size="sm"
+                      :tone="imageFit === option.value ? 'primary' : 'default'"
+                      :variant="imageFit === option.value ? 'soft' : 'ghost'"
+                      @click="imageFit = option.value"
+                    >
+                      {{ option.label }}
+                    </component>
+                  </div>
+                </div>
+
+                <div class="platform-demo__image-state-grid">
+                  <article class="platform-demo__image-item" data-state="brand">
+                    <component
+                      :is="runtime.Image"
+                      src="/brand-assets/varo-app-icon.png"
+                      alt="Varo"
+                      :width="72"
+                      :height="72"
+                      fit="cover"
+                      round
+                    />
+                    <span>{{ copy.imageRound }}</span>
+                  </article>
+
+                  <article class="platform-demo__image-item" data-state="error">
+                    <component
+                      :is="runtime.Image"
+                      src="/not-found.png"
+                      alt=""
+                      :width="72"
+                      :height="72"
+                      error-text=""
+                      fit="cover"
+                    >
+                      <template #error>
+                        <svg
+                          class="platform-demo__broken-image"
+                          viewBox="0 0 48 48"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path d="M7 7h34v34H7z" />
+                          <path d="m7 34 9-9 7 7 5-5 13 12" />
+                          <circle cx="34" cy="16" r="4" />
+                          <path d="m25 7-4 9 6 5-5 8" />
+                        </svg>
+                      </template>
+                    </component>
+                    <span>{{ copy.imageError }}</span>
+                  </article>
+                </div>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'divider'">
+              <section class="platform-demo__divider-demo">
+                <article class="platform-demo__divider-order">
+                  <header>
+                    <strong>{{ dividerSampleCopy.order }}</strong>
+                    <span>{{ dividerSampleCopy.paid }}</span>
+                  </header>
+                  <div class="platform-demo__divider-prices">
+                    <span>{{ dividerSampleCopy.goods }}</span>
+                    <strong>{{ dividerSampleCopy.goodsAmount }}</strong>
+                    <span>{{ dividerSampleCopy.discount }}</span>
+                    <strong class="platform-demo__divider-discount">
+                      {{ dividerSampleCopy.discountAmount }}
+                    </strong>
+                  </div>
+                  <component :is="runtime.Divider" :spacing="12" />
+                  <div class="platform-demo__divider-total">
+                    <strong>{{ dividerSampleCopy.total }}</strong>
+                    <strong>{{ dividerSampleCopy.totalAmount }}</strong>
+                  </div>
+
+                  <component
+                    :is="runtime.Divider"
+                    content-position="left"
+                    dashed
+                    :spacing="16"
+                  >
+                    {{ dividerSampleCopy.logistics }}
+                  </component>
+
+                  <div class="platform-demo__divider-timeline">
+                    <div>
+                      <span aria-hidden="true" />
+                      <p>
+                        <strong>{{ dividerSampleCopy.shipped }}</strong>
+                        <small>{{ dividerSampleCopy.shippedHint }}</small>
+                      </p>
+                    </div>
+                    <component :is="runtime.Divider" :spacing="8" />
+                    <div>
+                      <span aria-hidden="true" />
+                      <p>
+                        <strong>{{ dividerSampleCopy.arrival }}</strong>
+                        <small>{{ dividerSampleCopy.arrivalHint }}</small>
+                      </p>
+                    </div>
+                  </div>
+
+                  <footer>
+                    <button type="button">
+                      {{ dividerSampleCopy.contact }}
+                    </button>
+                    <component :is="runtime.Divider" vertical />
+                    <button type="button">
+                      {{ dividerSampleCopy.track }}
+                    </button>
+                  </footer>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'grid'">
+              <section class="platform-demo__grid-demo">
+                <article class="platform-demo__grid-service">
+                  <header>
+                    <div>
+                      <strong>{{ gridSampleCopy.title }}</strong>
+                      <span>{{ gridSampleCopy.hint }}</span>
+                    </div>
+                    <span>8</span>
+                  </header>
+                  <component
+                    :is="runtime.Grid"
+                    :border="false"
+                    :column-num="4"
+                    :gutter="8"
+                    clickable
+                  >
+                    <component
+                      :is="runtime.GridItem"
+                      v-for="item in gridSampleCopy.items"
+                      :key="item.label"
+                      :aria-label="item.label"
+                      :badge="item.badge"
+                      :dot="item.dot"
+                      :text="item.label"
+                      @click="gridLastAction = item.label"
+                    >
+                      <template #icon>
+                        <svg
+                          class="platform-demo__grid-icon"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path :d="item.path" />
+                        </svg>
+                      </template>
+                    </component>
+                  </component>
+                  <p
+                    v-if="gridActionMessage"
+                    class="platform-demo__grid-result"
+                    role="status"
+                  >
+                    {{ gridActionMessage }}
+                  </p>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'layout'">
+              <section class="platform-demo__layout-demo">
+                <article class="platform-demo__layout-overview">
+                  <header>
+                    <strong>{{ layoutSampleCopy.title }}</strong>
+                    <span>{{ layoutSampleCopy.period }}</span>
+                  </header>
+                  <component :is="runtime.Row" :gutter="[8, 8]" align="stretch">
+                    <component :is="runtime.Col" :span="16">
+                      <article class="platform-demo__layout-card platform-demo__layout-card--primary">
+                        <span>{{ layoutSampleCopy.revenue }}</span>
+                        <strong>{{ layoutSampleCopy.revenueValue }}</strong>
+                        <small>{{ layoutSampleCopy.revenueTrend }}</small>
+                      </article>
+                    </component>
+                    <component :is="runtime.Col" :span="8">
+                      <article class="platform-demo__layout-card">
+                        <span>{{ layoutSampleCopy.orders }}</span>
+                        <strong>{{ layoutSampleCopy.ordersValue }}</strong>
+                      </article>
+                    </component>
+                    <component :is="runtime.Col" :span="8">
+                      <article class="platform-demo__layout-card">
+                        <span>{{ layoutSampleCopy.visitors }}</span>
+                        <strong>{{ layoutSampleCopy.visitorsValue }}</strong>
+                      </article>
+                    </component>
+                    <component :is="runtime.Col" :span="8">
+                      <article class="platform-demo__layout-card">
+                        <span>{{ layoutSampleCopy.conversion }}</span>
+                        <strong>{{ layoutSampleCopy.conversionValue }}</strong>
+                      </article>
+                    </component>
+                    <component :is="runtime.Col" :span="8">
+                      <article class="platform-demo__layout-card">
+                        <span>{{ layoutSampleCopy.refunds }}</span>
+                        <strong>{{ layoutSampleCopy.refundsValue }}</strong>
+                      </article>
+                    </component>
+                  </component>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'space'">
+              <section class="platform-demo__space-demo">
+                <article class="platform-demo__space-filter">
+                  <header>
+                    <strong>{{ spaceSampleCopy.title }}</strong>
+                    <span>{{ spaceSampleCopy.hint }}</span>
+                  </header>
+                  <component :is="runtime.Space" class="platform-demo__space-tags" :size="[8, 8]" wrap>
+                    <component
+                      :is="runtime.Button"
+                      v-for="filter in spaceSampleCopy.filters"
+                      :key="filter.value"
+                      :aria-pressed="spaceDraft === filter.value"
+                      size="sm"
+                      :tone="spaceDraft === filter.value ? 'primary' : 'default'"
+                      :variant="spaceDraft === filter.value ? 'soft' : 'outline'"
+                      @click="spaceDraft = filter.value"
+                    >
+                      {{ filter.label }}
+                    </component>
+                  </component>
+                  <component
+                    :is="runtime.Space"
+                    class="platform-demo__space-actions"
+                    direction="vertical"
+                    fill
+                    :size="[8, 8]"
+                  >
+                    <component
+                      :is="runtime.Button"
+                      size="sm"
+                      @click="spaceApplied = spaceDraft"
+                    >
+                      {{ spaceSampleCopy.apply }}
+                    </component>
+                    <component
+                      :is="runtime.Button"
+                      size="sm"
+                      tone="default"
+                      variant="outline"
+                      @click="spaceDraft = 'all'; spaceApplied = 'all'"
+                    >
+                      {{ spaceSampleCopy.reset }}
+                    </component>
+                  </component>
+                  <p role="status">
+                    {{ spaceSampleCopy.current }}：{{ spaceAppliedLabel }}
+                  </p>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'sticky'">
+              <section class="platform-demo__sticky-demo">
+                <article class="platform-demo__sticky-feed">
+                  <p class="platform-demo__sticky-hint">
+                    {{ stickySampleCopy.hint }}
+                  </p>
+                  <component
+                    :is="runtime.Sticky"
+                    :offset-top="72"
+                    :z-index="4"
+                    @change="stickyFixed = $event"
+                    @scroll="stickyScrollTop = $event.scrollTop"
+                  >
+                    <template #default="{ fixed }">
+                      <header
+                        class="platform-demo__sticky-bar"
+                        :data-fixed="String(fixed)"
+                      >
+                        <div>
+                          <strong>{{ stickySampleCopy.title }}</strong>
+                          <span>{{ stickySampleCopy.count }}</span>
+                        </div>
+                        <span>{{ fixed ? stickySampleCopy.fixed : stickySampleCopy.normal }}</span>
+                      </header>
+                    </template>
+                  </component>
+                  <div class="platform-demo__sticky-list">
+                    <article
+                      v-for="item in stickySampleCopy.items"
+                      :key="item.id"
+                    >
+                      <div>
+                        <strong>{{ item.id }}</strong>
+                        <span>{{ item.status }}</span>
+                      </div>
+                      <strong>{{ item.amount }}</strong>
+                    </article>
+                  </div>
+                  <p class="platform-demo__sticky-result" role="status">
+                    {{ stickyFixed ? stickySampleCopy.fixed : stickySampleCopy.normal }}
+                    · {{ stickySampleCopy.scroll }} {{ stickyScrollTop }}px
+                  </p>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'elevator'">
+              <section class="platform-demo__nav-demo platform-demo__elevator-demo">
+                <article class="platform-demo__elevator-directory">
+                  <header>
+                    <div>
+                      <strong>{{ elevatorSampleCopy.title }}</strong>
+                      <span>{{ elevatorSampleCopy.hint }}</span>
+                    </div>
+                    <output>{{ elevatorSampleCopy.selected }}：{{ elevatorSelected }}</output>
+                  </header>
+                  <component
+                    :is="runtime.Elevator"
+                    :active-index="elevatorActive"
+                    :indexes="copy.elevatorGroups"
+                    @click-item="selectElevatorItem"
+                    @update:active-index="elevatorActive = $event"
+                  />
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'fixed-nav'">
+              <section class="platform-demo__nav-demo platform-demo__fixed-nav-demo">
+                <article class="platform-demo__fixed-nav-product">
+                  <span>{{ fixedNavSampleCopy.eyebrow }}</span>
+                  <h3>{{ fixedNavSampleCopy.title }}</h3>
+                  <p>{{ fixedNavSampleCopy.description }}</p>
+                  <div>
+                    <strong>{{ fixedNavSampleCopy.price }}</strong>
+                    <span>{{ fixedNavSampleCopy.priceSuffix }}</span>
+                  </div>
+                  <ul>
+                    <li v-for="feature in fixedNavSampleCopy.features" :key="feature">
+                      {{ feature }}
+                    </li>
+                  </ul>
+                  <p
+                    v-if="fixedNavSelected"
+                    class="platform-demo__fixed-nav-result"
+                    role="status"
+                  >
+                    {{ fixedNavSampleCopy.selected }}：{{ fixedNavSelected }}
+                  </p>
+                </article>
+                <component
+                  :is="runtime.FixedNav"
+                  :visible="fixedNavVisible"
+                  :nav-list="fixedNavSampleCopy.items"
+                  :active-text="fixedNavSampleCopy.action"
+                  @select="selectFixedNavItem"
+                  @update:visible="fixedNavVisible = $event"
+                />
+              </section>
+            </template>
+
+            <template v-else-if="example === 'indicator'">
+              <section class="platform-demo__nav-demo platform-demo__indicator-demo">
+                <article class="platform-demo__indicator-slide" :style="indicatorSlideStyle">
+                  <header>
+                    <span>{{ currentIndicatorItem.tag }}</span>
+                    <span>{{ String(indicatorCurrent + 1).padStart(2, '0') }} / 04</span>
+                  </header>
+                  <strong>{{ currentIndicatorItem.title }}</strong>
+                  <p>{{ currentIndicatorItem.body }}</p>
+                </article>
+                <div class="platform-demo__indicator-controls">
+                  <div>
+                    <span>{{ indicatorSampleCopy.dots }}</span>
+                    <component
+                      :is="runtime.Indicator"
+                      :aria-label="indicatorSampleCopy.navigationLabel"
+                      :item-aria-label="indicatorSampleCopy.itemLabel"
+                      :total="indicatorSampleCopy.items.length"
+                      :current="indicatorCurrent"
+                      @update:current="indicatorCurrent = $event"
+                    />
+                  </div>
+                  <div>
+                    <span>{{ indicatorSampleCopy.lines }}</span>
+                    <component
+                      :is="runtime.Indicator"
+                      :aria-label="indicatorSampleCopy.navigationLabel"
+                      :item-aria-label="indicatorSampleCopy.itemLabel"
+                      :total="indicatorSampleCopy.items.length"
+                      :current="indicatorCurrent"
+                      type="line"
+                      @update:current="indicatorCurrent = $event"
+                    />
+                  </div>
+                </div>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'menu'">
+              <section class="platform-demo__nav-demo platform-demo__menu-demo">
+                <article class="platform-demo__menu-catalog">
+                  <header>
+                    <strong>{{ menuSampleCopy.title }}</strong>
+                    <span>{{ menuSampleCopy.count }}</span>
+                  </header>
+                  <component
+                    :is="runtime.Menu"
+                    :active-name="menuActiveName"
+                    @update:active-name="menuActiveName = $event"
+                  >
+                    <component
+                      :is="runtime.MenuItem"
+                      :model-value="menuValue"
+                      name="sort"
+                      :title="menuSampleCopy.sort"
+                      :options="menuSampleCopy.sortOptions"
+                      @update:model-value="menuValue = $event"
+                    />
+                    <component
+                      :is="runtime.MenuItem"
+                      :model-value="menuStockValue"
+                      name="stock"
+                      :title="menuSampleCopy.stock"
+                      :options="menuSampleCopy.stockOptions"
+                      @update:model-value="menuStockValue = $event"
+                    />
+                  </component>
+                  <p class="platform-demo__menu-result" role="status">
+                    <span>{{ menuSampleCopy.result }}</span>
+                    <strong>{{ menuSortLabel }} · {{ menuStockLabel }}</strong>
+                  </p>
+                  <div class="platform-demo__menu-products">
+                    <article v-for="product in menuSampleCopy.products" :key="product.name">
+                      <div>
+                        <strong>{{ product.name }}</strong>
+                        <span>{{ product.meta }}</span>
+                      </div>
+                      <strong>{{ product.price }}</strong>
+                    </article>
+                  </div>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'navbar'">
+              <section class="platform-demo__nav-demo platform-demo__navbar-demo">
+                <component
+                  :is="runtime.Navbar"
+                  :title="navbarSampleCopy.title"
+                  :left-text="navbarSampleCopy.back"
+                  :left-aria-label="navbarSampleCopy.back"
+                  :right-text="navbarSampleCopy.help"
+                  :right-aria-label="navbarSampleCopy.help"
+                  left-arrow
+                  @click-left="navbarAction = navbarSampleCopy.back"
+                  @click-right="navbarAction = navbarSampleCopy.help"
+                />
+                <article class="platform-demo__navbar-order">
+                  <header>
+                    <span>{{ navbarSampleCopy.status }}</span>
+                    <small>{{ navbarSampleCopy.statusHint }}</small>
+                  </header>
+                  <dl>
+                    <div>
+                      <dt>{{ navbarSampleCopy.order }}</dt>
+                      <dd>{{ navbarSampleCopy.orderValue }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ navbarSampleCopy.recipient }}</dt>
+                      <dd>{{ navbarSampleCopy.recipientValue }}</dd>
+                    </div>
+                    <div>
+                      <dt>{{ navbarSampleCopy.total }}</dt>
+                      <dd>{{ navbarSampleCopy.totalValue }}</dd>
+                    </div>
+                  </dl>
+                  <p v-if="navbarAction" role="status">
+                    {{ navbarSampleCopy.action }}：{{ navbarAction }}
+                  </p>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'pagination'">
+              <section class="platform-demo__nav-demo platform-demo__pagination-demo">
+                <article class="platform-demo__pagination-orders">
+                  <header>
+                    <strong>{{ paginationSampleCopy.title }}</strong>
+                    <span>{{ paginationSampleCopy.total }}</span>
+                  </header>
+                  <div>
+                    <article v-for="order in paginationOrders" :key="order.id">
+                      <div>
+                        <strong>{{ order.id }}</strong>
+                        <span>{{ order.status }}</span>
+                      </div>
+                      <strong>{{ order.amount }}</strong>
+                    </article>
+                  </div>
+                  <p role="status">
+                    {{ paginationSampleCopy.page }} {{ paginationPage }}
+                    {{ paginationSampleCopy.pageSuffix }}
+                  </p>
+                  <component
+                    :is="runtime.Pagination"
+                    :aria-label="paginationSampleCopy.navigationLabel"
+                    :item-aria-label="paginationSampleCopy.itemLabel"
+                    :model-value="paginationPage"
+                    :page-count="5"
+                    @update:model-value="paginationPage = $event"
+                  />
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'side-navbar'">
+              <section class="platform-demo__nav-demo platform-demo__side-navbar-demo">
+                <component
+                  :is="runtime.SideNavbar"
+                  :aria-label="sideNavbarSampleCopy.navigationLabel"
+                  :model-value="sideNavActive"
+                  @update:model-value="sideNavActive = $event"
+                >
+                  <component
+                    :is="runtime.SideNavbarItem"
+                    v-for="item in sideNavbarSampleCopy.items"
+                    :key="item.name"
+                    :name="item.name"
+                    :title="item.title"
+                    :badge="item.badge"
+                  />
+                </component>
+                <article class="platform-demo__side-navbar-panel">
+                  <header>
+                    <div>
+                      <strong>{{ currentSideNavbarItem.heading }}</strong>
+                      <span>{{ currentSideNavbarItem.body }}</span>
+                    </div>
+                    <strong>{{ currentSideNavbarItem.metric }}</strong>
+                  </header>
+                  <ul>
+                    <li v-for="detail in currentSideNavbarItem.details" :key="detail">
+                      {{ detail }}
+                    </li>
+                  </ul>
+                </article>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'tabbar'">
+              <section class="platform-demo__nav-demo platform-demo__tabbar-demo">
+                <article class="platform-demo__tabbar-page">
+                  <span>{{ currentTabbarItem.title }}</span>
+                  <strong>{{ currentTabbarItem.title }}</strong>
+                  <p>{{ currentTabbarItem.body }}</p>
+                </article>
+                <component
+                  :is="runtime.Tabbar"
+                  :aria-label="tabbarSampleCopy.navigationLabel"
+                  :model-value="tabbarActive"
+                  @update:model-value="tabbarActive = $event"
+                >
+                  <component
+                    :is="runtime.TabbarItem"
+                    v-for="item in tabbarSampleCopy.items"
+                    :key="item.name"
+                    :name="item.name"
+                    :badge="item.badge"
+                    :dot="item.dot"
+                  >
+                    <template #icon>
+                      <svg
+                        class="platform-demo__tabbar-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path :d="item.path" />
+                      </svg>
+                    </template>
+                    {{ item.title }}
+                  </component>
+                </component>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'tabs'">
+              <section class="platform-demo__nav-demo platform-demo__tabs-demo">
+                <component
+                  :is="runtime.Tabs"
+                  :aria-label="tabsNavigationLabel"
+                  :active="tabsActive"
+                  @update:active="tabsActive = $event"
+                >
+                  <component
+                    :is="runtime.Tab"
+                    v-for="item in copy.tabsItems"
+                    :key="item.name"
+                    :name="item.name"
+                    :title="item.title"
+                  >
+                    <div class="platform-demo__tabs-panel">
+                      <strong>{{ item.title }}</strong>
+                      <span>{{ item.body }}</span>
+                    </div>
+                  </component>
+                </component>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'overlay'">
+              <section class="platform-demo__overlay-demo">
+                <div class="platform-demo__card-head">
+                  <span>{{ copy.overlayPanel }}</span>
+                  <small>{{ platformDemo.overlayText }}</small>
+                </div>
+                <component :is="runtime.Button" size="sm" type="button" @click="overlayVisible = true">
+                  {{ platformDemo.overlayOpenText }}
+                </component>
+                <component
+                  :is="runtime.Overlay"
+                  v-model:visible="overlayVisible"
+                  class="platform-demo__inner-overlay"
+                  :z-index="12"
+                  :duration="0.18"
+                >
+                  <span>{{ platformDemo.overlayText }}</span>
+                </component>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'popup'">
+              <section class="platform-demo__popup-demo">
+                <div class="platform-demo__card-head">
+                  <span>{{ copy.popupPanel }}</span>
+                  <small>{{ platformDemo.popupTitle }}</small>
+                </div>
+                <component :is="runtime.Button" size="sm" type="button" @click="popupVisible = true">
+                  {{ platformDemo.popupOpenText }}
+                </component>
+                <component
+                  :is="runtime.Popup"
+                  v-model:visible="popupVisible"
+                  closeable
+                  round
+                  class="platform-demo__inner-popup"
+                  :z-index="20"
+                  :duration="0.18"
+                >
+                  <div class="platform-demo__popup-body">
+                    <h4>{{ platformDemo.popupTitle }}</h4>
+                    <p>{{ platformDemo.popupBody }}</p>
+                    <component :is="runtime.Button" size="sm" variant="outline" type="button" @click="popupVisible = false">
+                      {{ platformDemo.popupCloseText }}
+                    </component>
+                  </div>
+                </component>
+              </section>
+            </template>
+
+            <template v-else-if="example === 'dialog'">
+              <section class="platform-demo__card platform-demo__card--dialog">
+                <div class="platform-demo__card-head">
+                  <span>Dialog</span>
+                  <small>{{ platformDemo.dialogHint }}</small>
+                </div>
+
+                <component :is="runtime.DialogRoot">
+                  <component :is="runtime.DialogTrigger" class="platform-demo__trigger" type="button">
+                    {{ platformDemo.dialogOpenText }}
+                  </component>
+                  <component :is="runtime.DialogOverlay" as="div" class="platform-demo__overlay" />
+                  <component :is="runtime.DialogContent" as="div" class="platform-demo__dialog">
+                    <h4>{{ platformDemo.dialogTitle }}</h4>
+                    <p>{{ platformDemo.dialogBody }}</p>
+                    <div class="platform-demo__dialog-actions">
+                      <component :is="runtime.DialogClose" class="platform-demo__dialog-close" type="button">
+                        {{ platformDemo.dialogCloseText }}
+                      </component>
+                    </div>
+                  </component>
+                </component>
+              </section>
+            </template>
+
+            <template v-else>
+              <section class="platform-demo__card">
+                <label class="platform-demo__field">
+                  <span>{{ platformDemo.controlledLabel }}</span>
+                  <component
+                    :is="runtime.Input"
+                    v-model:value="inputValue"
+                    clearable
+                    :invalid="overviewInputInvalid"
+                    :max-length="16"
+                    :placeholder="platformDemo.placeholder"
+                    show-word-limit
+                  />
+                </label>
+                <small class="platform-demo__caption">
+                  {{ copy.currentValueLabel }}: {{ inputValue || copy.emptyValue }}
+                </small>
+              </section>
+
+              <section class="platform-demo__card">
+                <div class="platform-demo__stack">
+                  <component
+                    :is="runtime.Button"
+                    type="button"
+                  >
+                    {{ platformDemo.primaryText }}
+                  </component>
+                  <component :is="runtime.Button" size="sm" variant="outline" type="button">
+                    {{ platformDemo.secondaryText }}
+                  </component>
+                </div>
+              </section>
+
+              <section class="platform-demo__card platform-demo__card--dialog">
+                <div class="platform-demo__card-head">
+                  <span>{{ copy.dialogSection }}</span>
+                  <small>{{ platformDemo.dialogHint }}</small>
+                </div>
+
+                <component :is="runtime.DialogRoot">
+                  <component :is="runtime.DialogTrigger" class="platform-demo__trigger" type="button">
+                    {{ platformDemo.dialogOpenText }}
+                  </component>
+                  <component :is="runtime.DialogOverlay" as="div" class="platform-demo__overlay" />
+                  <component :is="runtime.DialogContent" as="div" class="platform-demo__dialog">
+                    <h4>{{ platformDemo.dialogTitle }}</h4>
+                    <p>{{ platformDemo.dialogBody }}</p>
+                    <div class="platform-demo__dialog-actions">
+                      <component :is="runtime.DialogClose" class="platform-demo__dialog-close" type="button">
+                        {{ platformDemo.dialogCloseText }}
+                      </component>
+                    </div>
+                  </component>
+                </component>
+              </section>
+            </template>
           </div>
-        </div>
+        </DocsDeviceFrame>
 
         <div class="platform-demo__code-disclosure">
           <button
@@ -2432,105 +2427,45 @@ onBeforeUnmount(() => {
   outline-offset: 2px;
 }
 
-.platform-demo__phone-frame {
-  display: flex;
-  justify-content: center;
-  padding: 12px 0 6px;
-}
-
-.platform-demo__phone-bezel {
-  position: relative;
-  box-sizing: border-box;
-  width: min(100%, 397px);
-  padding: 10px;
-  background: linear-gradient(145deg, #34363a 0%, #111214 34%, #050506 100%);
-  border: 1px solid color-mix(in srgb, #fff 18%, transparent);
-  border-radius: 54px;
-  box-shadow:
-    0 24px 56px rgb(0 0 0 / 28%),
-    inset 0 0 0 1px rgb(255 255 255 / 6%);
-}
-
-.platform-demo__phone-bezel::before {
-  position: absolute;
-  top: 18px;
-  left: 50%;
-  z-index: 3;
-  width: 96px;
-  height: 25px;
-  content: '';
-  background: #050506;
-  border-radius: 999px;
-  transform: translateX(-50%);
-}
-
-.platform-demo__phone-bezel::after {
-  position: absolute;
-  bottom: 17px;
-  left: 50%;
-  z-index: 3;
-  width: 112px;
-  height: 4px;
-  content: '';
-  background: color-mix(in srgb, var(--vp-c-text-1) 58%, transparent);
-  border-radius: 999px;
-  transform: translateX(-50%);
-}
-
-.platform-demo__phone-screen {
-  position: relative;
-  min-height: 667px;
-  overflow: hidden;
-  color: var(--vp-c-text-1);
-  background: var(--demo-phone-screen);
-  border-radius: 44px;
-}
-
-.platform-demo__phone-content {
-  position: relative;
-  z-index: 1;
-  padding: 52px 16px 38px;
-}
-
 .platform-demo__preview-content {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
-.platform-demo__phone-bezel .platform-demo__button-sample,
-.platform-demo__phone-bezel .platform-demo__badge-sample,
-.platform-demo__phone-bezel .platform-demo__popover-sample,
-.platform-demo__phone-bezel .platform-demo__input-sample {
+.platform-demo__preview-content .platform-demo__button-sample,
+.platform-demo__preview-content .platform-demo__badge-sample,
+.platform-demo__preview-content .platform-demo__popover-sample,
+.platform-demo__preview-content .platform-demo__input-sample {
   padding: 16px;
 }
 
-.platform-demo__phone-bezel .platform-demo__button-row {
+.platform-demo__preview-content .platform-demo__button-row {
   gap: 8px;
 }
 
-.platform-demo__phone-bezel .platform-demo__badge-counts,
-.platform-demo__phone-bezel .platform-demo__input-state-grid {
+.platform-demo__preview-content .platform-demo__badge-counts,
+.platform-demo__preview-content .platform-demo__input-state-grid {
   grid-template-columns: minmax(0, 1fr);
 }
 
-.platform-demo__phone-bezel .platform-demo__badge-statuses,
-.platform-demo__phone-bezel .platform-demo__badge-variants {
+.platform-demo__preview-content .platform-demo__badge-statuses,
+.platform-demo__preview-content .platform-demo__badge-variants {
   gap: 12px;
 }
 
-.platform-demo__phone-bezel .platform-demo__popover-canvas {
+.platform-demo__preview-content .platform-demo__popover-canvas {
   min-height: 250px;
   padding: 18px;
 }
 
-.platform-demo__phone-bezel .platform-demo__popover-placements {
+.platform-demo__preview-content .platform-demo__popover-placements {
   gap: 28px;
   min-height: 132px;
   padding: 26px 40px;
 }
 
-.platform-demo__phone-bezel .platform-demo__popover-tip[data-side='right'] {
+.platform-demo__preview-content .platform-demo__popover-tip[data-side='right'] {
   top: calc(100% + 8px);
   right: auto;
   left: 50%;
@@ -2768,14 +2703,6 @@ onBeforeUnmount(() => {
 
   .platform-demo__evidence {
     justify-content: flex-start;
-  }
-
-  .platform-demo__phone-bezel {
-    width: 100%;
-  }
-
-  .platform-demo__phone-screen {
-    min-height: 480px;
   }
 }
 
@@ -4346,10 +4273,6 @@ onBeforeUnmount(() => {
   color: var(--varo-text-secondary);
 }
 
-.platform-demo__phone-frame:has(.platform-demo__sticky-demo) .platform-demo__phone-screen {
-  overflow: visible;
-}
-
 .platform-demo__sticky-demo {
   overflow: visible;
 }
@@ -5841,8 +5764,7 @@ onBeforeUnmount(() => {
   }
 }
 
-.platform-demo__phone-content
-  > .platform-demo__preview-content
+.platform-demo__preview-content
   > :is(
     .platform-demo__button-sample,
     .platform-demo__badge-sample,
@@ -5869,7 +5791,7 @@ onBeforeUnmount(() => {
   box-shadow: none;
 }
 
-.platform-demo__phone-content
+.platform-demo__preview-content
   :is(
     .platform-demo__divider-order,
     .platform-demo__grid-service,

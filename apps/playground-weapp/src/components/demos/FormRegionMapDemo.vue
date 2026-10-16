@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FormValues } from '@varo-ui/headless'
 import type { VaroMapMarker } from '../ui/map.types'
 import type { VaroRegionOption, VaroRegionSelection, VaroRegionShortcut } from '../ui/region-picker.types'
 import { computed, ref, shallowRef } from 'wevu'
@@ -106,6 +107,14 @@ const markers = computed<VaroMapMarker[]>(() => [{
   },
 }])
 
+function updateModel(values: FormValues) {
+  Object.assign(model.value, values)
+}
+
+function updateField<Key extends keyof typeof model.value>(name: Key, value: (typeof model.value)[Key]) {
+  model.value[name] = value
+}
+
 function confirmRegion(selection: VaroRegionSelection) {
   model.value.regionLabel = selection.labels.join(' / ')
   if (selection.latitude !== undefined) { model.value.latitude = selection.latitude }
@@ -132,7 +141,7 @@ function failed(payload: unknown) {
       </text>
     </view>
 
-    <VForm :model="model" :rules="rules" @submit="submit" @failed="failed">
+    <VForm :model="model" :rules="rules" @update:model="updateModel" @submit="submit" @failed="failed">
       <VCard class-name="mb-3" variant="outline">
         <view class="mb-3 grid gap-1">
           <text class="text-base font-black">
@@ -143,13 +152,13 @@ function failed(payload: unknown) {
           </text>
         </view>
         <VFormItem name="nickName" label="昵称">
-          <VInput v-model:value="model.nickName" placeholder="请输入昵称" clearable />
+          <VInput :value="model.nickName" placeholder="请输入昵称" clearable @update:value="updateField('nickName', $event)" />
         </VFormItem>
         <VFormItem name="phoneNumber" label="手机号">
-          <VInput v-model:value="model.phoneNumber" type="tel" placeholder="请输入手机号" />
+          <VInput :value="model.phoneNumber" type="tel" placeholder="请输入手机号" @update:value="updateField('phoneNumber', $event)" />
         </VFormItem>
         <VFormItem name="email" label="邮箱">
-          <VInput v-model:value="model.email" placeholder="选填" />
+          <VInput :value="model.email" placeholder="选填" @update:value="updateField('email', $event)" />
         </VFormItem>
       </VCard>
 
@@ -168,7 +177,7 @@ function failed(payload: unknown) {
           </VButton>
         </VFormItem>
         <VFormItem name="detailAddress" label="详细地址">
-          <VInput v-model:value="model.detailAddress" placeholder="楼栋、门牌等" />
+          <VInput :value="model.detailAddress" placeholder="楼栋、门牌等" @update:value="updateField('detailAddress', $event)" />
         </VFormItem>
         <VMap
           map-id="formShowcaseMap"
@@ -188,11 +197,12 @@ function failed(payload: unknown) {
       <VCard class-name="mb-3" variant="outline">
         <VFormItem name="feedback" label="反馈内容">
           <VInput
-            v-model:value="model.feedback"
+            :value="model.feedback"
             type="textarea"
             :max-length="200"
             show-word-limit
             placeholder="请输入反馈内容"
+            @update:value="updateField('feedback', $event)"
           />
         </VFormItem>
       </VCard>
@@ -207,11 +217,12 @@ function failed(payload: unknown) {
 
     <VRegionPicker
       v-model:visible="regionVisible"
-      v-model="model.regionPath"
+      :model-value="model.regionPath"
       :options="regionOptions"
       :shortcuts="shortcuts"
       title="选择活动区域"
       @confirm="confirmRegion"
+      @update:model-value="updateField('regionPath', $event)"
     />
   </view>
 </template>

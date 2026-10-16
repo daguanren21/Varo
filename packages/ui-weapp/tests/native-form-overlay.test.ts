@@ -1,4 +1,4 @@
-import type { DialogOpenChangeDetails } from '@varo-ui/headless'
+import type { DialogOpenChangeDetails, FormValues, StandardSchemaV1 } from '@varo-ui/headless'
 import { enableAutoUnmount, flushPromises, mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { h, reactive } from 'vue'
@@ -158,8 +158,9 @@ describe('native form and overlay accepted transitions', () => {
     const model = reactive({ name: 'Ada' })
     const onSubmit = vi.fn()
     const onFailed = vi.fn()
+    const onUpdateModel = vi.fn((values: FormValues) => { Object.assign(model, values) })
     const wrapper = mount(VForm, {
-      props: { disabled: true, model, rules: { name: 'required' }, onSubmit, onFailed },
+      props: { 'disabled': true, model, 'rules': { name: 'required' }, onSubmit, onFailed, 'onUpdate:model': onUpdateModel },
       slots: {
         default: () => h(VFormItem, { name: 'name' }, {
           default: ({ field, setValue }: { field: { value: { value: string } }, setValue: (value: string) => void }) =>
@@ -177,6 +178,7 @@ describe('native form and overlay accepted transitions', () => {
     expect(model.name).toBe('Ada')
     expect(onSubmit).not.toHaveBeenCalled()
     expect(onFailed).not.toHaveBeenCalled()
+    expect(onUpdateModel).not.toHaveBeenCalled()
 
     await wrapper.setProps({ disabled: false })
     await input.trigger('input', { detail: { value: '' } })
@@ -187,7 +189,55 @@ describe('native form and overlay accepted transitions', () => {
     await wrapper.get('form').trigger('submit')
     await flushPromises()
     expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ values: { name: 'Grace' } }))
+    expect(onUpdateModel).toHaveBeenCalledWith({ name: 'Grace' })
     expect(form.submitCount.value).toBe(2)
+  })
+
+  it('retains consecutive writes and reset values before controlled model feedback', async () => {
+    const model = Object.freeze({ name: 'Ada', contact: Object.freeze({ email: 'ada@example.com' }) })
+    const initialValues = { name: 'Initial', contact: { email: 'initial@example.com' } }
+    const wrapper = mount(VForm, { props: { model, initialValues } })
+    const form = wrapper.vm.form
+
+    form.setFieldValue('name', 'Grace')
+    form.setFieldValue('contact.email', 'grace@example.com')
+    expect(form.values.value).toEqual({ name: 'Grace', contact: { email: 'grace@example.com' } })
+    expect(wrapper.emitted('update:model')).toEqual([
+      [{ name: 'Grace', contact: { email: 'ada@example.com' } }],
+      [{ name: 'Grace', contact: { email: 'grace@example.com' } }],
+    ])
+    expect(model).toEqual({ name: 'Ada', contact: { email: 'ada@example.com' } })
+
+    wrapper.vm.reset()
+    expect(form.values.value).toEqual(initialValues)
+    expect(wrapper.emitted('reset')).toEqual([[{ errors: {}, values: initialValues }]])
+    expect(wrapper.emitted('update:model')?.at(-1)).toEqual([initialValues])
+
+    const feedback = { name: 'Parent', contact: { email: 'parent@example.com' } }
+    await wrapper.setProps({ model: feedback })
+    expect(form.values.value).toEqual(feedback)
+  })
+
+  it('submits schema-transformed values before controlled model feedback', async () => {
+    const model = Object.freeze({ name: '  Ada  ' })
+    const validationSchema: StandardSchemaV1<FormValues> = {
+      '~standard': {
+        version: 1,
+        vendor: 'native-form-test',
+        validate(value) {
+          return { value: { name: String((value as FormValues).name).trim() } }
+        },
+      },
+    }
+    const onSubmit = vi.fn()
+    const wrapper = mount(VForm, { props: { model, validationSchema, onSubmit } })
+
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ errors: {}, values: { name: 'Ada' } }))
+    expect(wrapper.vm.form.values.value).toEqual({ name: 'Ada' })
+    expect(wrapper.emitted('update:model')).toEqual([[{ name: 'Ada' }]])
+    expect(model.name).toBe('  Ada  ')
   })
 
   it('does not emit popup close again when already closed', async () => {
@@ -226,5 +276,32 @@ describe('native form and overlay accepted transitions', () => {
     await wrapper.get('input').trigger('input', { detail: { value: '0a1234' } })
     expect(events).toEqual(['update:0123', 'change:0123', 'complete:0123'])
     expect(wrapper.findAll('.varo-input-otp__cell').map(cell => cell.text())).toEqual(['0', '1', '2', '3'])
+  })
+  it('retains a pressed clear control through blur and cancels an abandoned press', async () => {
+    vi.useFakeTimers()
+    try {
+      const wrapper = mount(VInput, { props: { value: nativeUnset, defaultValue: 'Original', clearable: true } })
+      const input = wrapper.get('input')
+      await input.trigger('focus')
+      let clear = wrapper.get('.varo-input__clear')
+      await clear.trigger('touchstart')
+      await input.trigger('blur')
+      expect(wrapper.find('.varo-input__clear').exists()).toBe(true)
+      await clear.trigger('touchend')
+      await clear.trigger('click')
+      expect(wrapper.emitted('update:value')).toEqual([['']])
+      expect(wrapper.emitted('clear')).toHaveLength(1)
+
+      await input.trigger('input', { detail: { value: 'Retained' } })
+      await input.trigger('focus')
+      clear = wrapper.get('.varo-input__clear')
+      await clear.trigger('touchstart')
+      await input.trigger('blur')
+      await clear.trigger('touchcancel')
+      expect(wrapper.find('.varo-input__clear').exists()).toBe(false)
+      expect(wrapper.emitted('update:value')?.at(-1)).toEqual(['Retained'])
+      expect(wrapper.emitted('clear')).toHaveLength(1)
+    }
+    finally { vi.useRealTimers() }
   })
 })

@@ -159,7 +159,9 @@ pnpm --filter @varo/playground-weapp-preview preview
 
 仓库 lockfile 记录该运行链需要的 SDK 版本；CLI 不会把这些依赖安装到外部业务项目。微信专属能力、真机性能与最终视觉仍需在微信环境验收。
 
-文档演示的 H5 标签页是浏览器交互；原生标签页展示目标源码与支持证据，不把 H5/Vue 组件伪装成小程序实时运行。编译产物浏览器预览与真实设备验收是另外两类证据。
+文档的 H5 与小程序标签页共享示例分组、语言、主题和设备框架。已注册的普通组件与 Primitive 小程序示例运行真实 Wevu 编译产物，支持输入、选择、表单校验、动态数组、文件选择和错误重试；安装命令与原生源码可在「查看代码」中展开。仅支持 H5 的组件保留明确的平台边界。编译产物浏览器预览不代表真实设备验收。
+
+`pnpm --filter @varo/docs dev` 和 `pnpm --filter @varo/docs build` 会自动构建原生预览依赖。文档将预览完整托管在 `${DOCS_BASE}weapp-preview/`，无需单独启动预览服务。开发模式使用启动时生成的产物；修改原生示例或预览运行时后，重新启动文档开发服务。对运行中的文档执行 `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` 可检查全部注册场景、320/390px 窄屏布局及交互回归，包括中英文、明暗主题和表单提交。生产预览使用实际地址，例如 `http://localhost:4173/Varo/`；子路径部署时保留 URL 中的路径。可用 `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` 只运行指定场景。
 
 ### 确定性 E2E 与证据边界
 

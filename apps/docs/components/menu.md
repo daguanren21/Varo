@@ -5,7 +5,7 @@
 <PlatformTabsDemo example="menu" locale="zh" />
 
 ::: info 原生组合运行边界
-仓库使用 `weapp-vite` / `wevu` 7.5.0，在微信目标、编译后的 Wevu 组件和默认 attached setup 下保留 plain-slot 上下文。编译产物浏览器预览已通过真实指针展开菜单、选择来源并观察 `select` 载荷；不代表 IDE/真机认证。Card 默认不裁剪后代弹出内容；仅在确实需要裁剪媒体时显式使用 `overflow-hidden`，不要把需要溢出的菜单放入裁剪容器。
+小程序页签使用 `weapp-vite` / `wevu` 7.5.0 的真实编译产物，复用与 H5 对应的筛选示例。普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)适用于微信目标、编译后的 Wevu 组件和默认 attached setup；浏览器预览不代替 IDE/真机验证。Card 默认不裁剪后代弹出内容；仅在确实需要裁剪媒体时显式使用 `overflow-hidden`，不要把需要溢出的菜单放入裁剪容器。
 :::
 
 ## 基础用法

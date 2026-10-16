@@ -24,7 +24,7 @@ function assetUrl(artifacts: NativeArtifactBundle, path: string): string {
     if (url.username || url.password) { throw new Error('预览图片地址不能包含凭据') }
     return url.href
   }
-  if (/^data:image\/(?:png|jpeg|gif|webp|svg\+xml);/i.test(path)) { return path }
+  if (/^data:image\/(?:png|jpeg|gif|webp|svg\+xml)[;,]/i.test(path)) { return path }
   if (/^[a-z][a-z\d+.-]*:/i.test(path) || path.startsWith('//')) {
     throw new Error(`不支持的预览资源地址：${path}`)
   }
@@ -41,6 +41,7 @@ function assetUrl(artifacts: NativeArtifactBundle, path: string): string {
 export async function mountWeappWebPreview(options: MountWeappWebPreviewOptions): Promise<() => void> {
   const { mount, artifacts, session } = options
   const harness = resolveWeappWebHarness(options.harness)
+  const query = session.query ?? {}
   let root: Root | undefined
   let nativeHost: NativeHost | undefined
   let closed = false
@@ -57,12 +58,19 @@ export async function mountWeappWebPreview(options: MountWeappWebPreviewOptions)
     if (closed || !root) { return }
     root.getComponent().triggerPageLifetime('resize', [{ size: { windowWidth: window.innerWidth, windowHeight: window.innerHeight } }])
   }
+  const onScroll = () => {
+    if (closed || !root) { return }
+    const page = root.get()
+    const handler: unknown = Reflect.get(page, 'onPageScroll')
+    if (typeof handler === 'function') { Reflect.apply(handler, page, [{ scrollTop: window.scrollY }]) }
+  }
   const close = () => {
     if (closed) { return }
     closed = true
     session.signal.removeEventListener('abort', close)
     document.removeEventListener('visibilitychange', onVisibility)
     window.removeEventListener('resize', onResize)
+    window.removeEventListener('scroll', onScroll)
     try {
       if (root) {
         root.getComponent().triggerPageLifetime('hide', [])
@@ -101,10 +109,12 @@ export async function mountWeappWebPreview(options: MountWeappWebPreviewOptions)
       space.addCompiledTemplate(path, component.template)
       if (!Object.hasOwn(artifacts.styles, path)) { space.addStyleSheet(path, undefined, component.styleScope) }
     }
-    nativeHost = createNativeHost(artifacts, space, session.pagePath, error => session.fail(error), harness)
+    nativeHost = createNativeHost(artifacts, space, session.pagePath, error => session.fail(error), harness, query)
     nativeHost.register()
     if (closed) { throw new Error('小程序预览初始化已中断') }
-    const createdRoot = associated.createRoot('wx-page', space, session.pagePath)
+    const pageQuery = Object.entries(query).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&')
+    const pageUrl = pageQuery ? `${session.pagePath}?${pageQuery}` : session.pagePath
+    const createdRoot = associated.createRoot('wx-page', space, pageUrl)
     if (closed) {
       createdRoot.release()
       throw new Error('小程序预览初始化已中断')
@@ -116,9 +126,16 @@ export async function mountWeappWebPreview(options: MountWeappWebPreviewOptions)
     const parentElement = mount as unknown as glassEasel.GeneralBackendElement
     const placeholderElement = placeholder as unknown as glassEasel.GeneralBackendElement
     root.attach(parentElement, placeholderElement)
+    if (closed) { throw new Error('小程序预览初始化已中断') }
+    const page = root.get()
+    const onLoad: unknown = Reflect.get(page, 'onLoad')
+    if (typeof onLoad === 'function') { Reflect.apply(onLoad, page, [query]) }
+    if (closed) { throw new Error('小程序预览初始化已中断') }
     root.getComponent().triggerPageLifetime('show', [])
+    if (closed) { throw new Error('小程序预览初始化已中断') }
     document.addEventListener('visibilitychange', onVisibility)
     window.addEventListener('resize', onResize)
+    window.addEventListener('scroll', onScroll, { passive: true })
     await new Promise<void>((resolve, reject) => backend.render(error => error ? reject(error) : resolve()))
     await nativeHost.whenReady()
     if (!closed) { session.ready(artifacts.digest) }

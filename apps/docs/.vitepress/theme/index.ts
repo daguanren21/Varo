@@ -27,22 +27,24 @@ import {
   VUploader,
 } from '@varo-ui/h5'
 import DefaultTheme from 'vitepress/theme'
+import AdditionalComponentDemo from '../../src/components/AdditionalComponentDemo.vue'
 import AgentComponentDemo from '../../src/components/AgentComponentDemo.vue'
 import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
 import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
+import ComponentPlatformDemo from '../../src/components/ComponentPlatformDemo.vue'
 import DateFieldDemo from '../../src/components/DateFieldDemo.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import ListDemo from '../../src/components/ListDemo.vue'
-import MapDemo from '../../src/components/MapDemo.vue'
 import MiniProgramBlocksGallery from '../../src/components/MiniProgramBlocksGallery.vue'
+import NativeComponentPreview from '../../src/components/NativeComponentPreview.vue'
 import PlatformTabsDemo from '../../src/components/PlatformTabsDemo.vue'
 import PrimitiveCatalog from '../../src/components/PrimitiveCatalog.vue'
 import PrimitiveExample from '../../src/components/PrimitiveExample.vue'
 import PrimitiveInteractionDemo from '../../src/components/PrimitiveInteractionDemo.vue'
 import PullRefreshDemo from '../../src/components/PullRefreshDemo.vue'
+import RegionPickerDemo from '../../src/components/RegionPickerDemo.vue'
 import RegistryCoverageEvidence from '../../src/components/RegistryCoverageEvidence.vue'
-import RobotChatDemo from '../../src/components/RobotChatDemo.vue'
 import SignatureDemo from '../../src/components/SignatureDemo.vue'
 import ToastDemo from '../../src/components/ToastDemo.vue'
 import WatermarkDemo from '../../src/components/WatermarkDemo.vue'
@@ -56,6 +58,8 @@ const theme: Theme = {
   extends: DefaultTheme,
   Layout: DocsLayout,
   enhanceApp({ app }) {
+    app.component('AdditionalComponentDemo', AdditionalComponentDemo)
+    app.component('ComponentPlatformDemo', ComponentPlatformDemo)
     app.component('AgentComponentsDemo', AgentComponentsDemo)
     app.component('AgentComponentDemo', AgentComponentDemo)
     app.component('DateFieldDemo', DateFieldDemo)
@@ -64,8 +68,7 @@ const theme: Theme = {
     app.component('ListDemo', ListDemo)
     app.component('ComponentCatalog', ComponentCatalog)
     app.component('MiniProgramBlocksGallery', MiniProgramBlocksGallery)
-    app.component('MapDemo', MapDemo)
-    app.component('RobotChatDemo', RobotChatDemo)
+    app.component('NativeComponentPreview', NativeComponentPreview)
     app.component('PlatformTabsDemo', PlatformTabsDemo)
     app.component('PullRefreshDemo', PullRefreshDemo)
     app.component('PrimitiveCatalog', PrimitiveCatalog)
@@ -74,6 +77,7 @@ const theme: Theme = {
     app.component('WatermarkDemo', WatermarkDemo)
     app.component('ToastDemo', ToastDemo)
     app.component('RegistryCoverageEvidence', RegistryCoverageEvidence)
+    app.component('RegionPickerDemo', RegionPickerDemo)
     app.component('PrimitiveInteractionDemo', PrimitiveInteractionDemo)
     app.component('VCalendar', VCalendar)
     app.component('VCalendarCard', VCalendarCard)

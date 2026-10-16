@@ -118,9 +118,9 @@ Native Blocks used exclusively by `blocks-lab` are projected into `apps/playgrou
 pnpm run docs:dev
 ```
 
-This starts VitePress at `http://localhost:5173`. In-page H5 examples are browser interactions; native source tabs show source, not a simulated native renderer. The separate glass-easel preview is trusted compiled-artifact tooling. Its same-origin iframe is not a security sandbox, and a browser artifact preview is not IDE/device proof.
+This starts VitePress at `http://localhost:5173` and prepares the native preview artifacts. The H5 and Mini Program tabs share device framing, example cases, language, and theme. Mini Program examples run compiled Wevu SFCs through glass-easel; their editable source remains available under **View code**. H5-only components retain explicit platform support boundaries.
 
-The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.5.0 fixture baseline includes [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172): compiled Wevu components on WeChat can inherit the nearest Provider through plain native slots with `scopedSlotsRequireProps: true` and default attached setup. This does not extend the protocol to created setup or other platforms, and browser preview remains distinct from IDE/device verification.
+The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.5.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174) for compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup; it does not extend the protocol to created setup or other platforms. All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
 
 ## Verification
 

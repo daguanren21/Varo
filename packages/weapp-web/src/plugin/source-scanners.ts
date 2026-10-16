@@ -223,6 +223,8 @@ export function scanCss(source: string): CssScanResult {
 
 interface WxmlAttribute {
   name: string
+  start: number
+  end: number
   value?: string
 }
 
@@ -269,9 +271,10 @@ function readWxmlTag(source: string, offset: number): WxmlTag | null {
     while (isWxmlNameCharacter(source[cursor])) { cursor += 1 }
     if (cursor === attributeStart) { throw new Error(`Unexpected token in <${name}>`) }
     const attributeName = source.slice(attributeStart, cursor).toLowerCase()
+    const attributeNameEnd = cursor
     cursor = skipWhitespace(source, cursor)
     if (source[cursor] !== '=') {
-      attributes.push({ name: attributeName })
+      attributes.push({ name: attributeName, start: attributeStart, end: attributeNameEnd })
       continue
     }
     cursor = skipWhitespace(source, cursor + 1)
@@ -281,10 +284,51 @@ function readWxmlTag(source: string, offset: number): WxmlTag | null {
     cursor = valueStart
     while (cursor < source.length && source[cursor] !== quote) { cursor += 1 }
     if (source[cursor] !== quote) { throw new Error(`Unterminated ${attributeName} attribute on <${name}>`) }
-    attributes.push({ name: attributeName, value: source.slice(valueStart, cursor) })
+    attributes.push({ name: attributeName, value: source.slice(valueStart, cursor), start: attributeStart, end: cursor + 1 })
     cursor += 1
   }
   throw new Error(`Unterminated <${name}> tag`)
+}
+
+export function normalizeWevuCaptureAttributes(source: string): string {
+  let cursor = 0
+  let keptFrom = 0
+  let normalized = ''
+  while (cursor < source.length) {
+    const tagStart = source.indexOf('<', cursor)
+    if (tagStart < 0) { break }
+    const tag = readWxmlTag(source, tagStart)
+    if (!tag) {
+      cursor = tagStart + 1
+      continue
+    }
+    cursor = tag.end
+    let captures: Map<string, WxmlAttribute> | undefined
+    for (const attribute of tag.attributes) {
+      const name = source.slice(attribute.start, attribute.start + attribute.name.length)
+      if (!/^data-wv-[si]\d+$/.test(name)) { continue }
+      const previous = captures?.get(name)
+      if (!previous) {
+        captures ??= new Map()
+        captures.set(name, attribute)
+        continue
+      }
+      if (previous.value !== attribute.value) {
+        throw new Error(`Conflicting Wevu capture attribute ${name} on <${tag.name}>`)
+      }
+      // Only valued compiler metadata is normalized; ordinary duplicate attributes stay compiler input.
+      if (attribute.value === undefined) { continue }
+      normalized += source.slice(keptFrom, attribute.start)
+      keptFrom = attribute.end
+    }
+    if (tag.name === 'wxs' && !tag.selfClosing) {
+      const closingTag = '</wxs>'
+      const closingOffset = source.indexOf(closingTag, cursor)
+      if (closingOffset < 0) { throw new Error('Inline <wxs> is missing its closing tag') }
+      cursor = closingOffset + closingTag.length
+    }
+  }
+  return keptFrom === 0 ? source : normalized + source.slice(keptFrom)
 }
 
 export function looksLikeAssetReference(value: string): boolean {

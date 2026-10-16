@@ -6,7 +6,9 @@ A watermark is a visual marker, not a substitute for access control, encryption,
 
 ## Demo
 
-<WatermarkDemo locale="en" />
+<ComponentPlatformDemo component="watermark" locale="en">
+  <WatermarkDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## Props
 

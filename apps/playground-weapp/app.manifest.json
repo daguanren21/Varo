@@ -44,6 +44,10 @@
       "pages": ["index"]
     },
     {
+      "root": "pages/web-preview-button",
+      "pages": ["index"]
+    },
+    {
       "root": "pages/web-preview-agent",
       "pages": ["index"]
     },
@@ -73,6 +77,20 @@
         "application/index",
         "marketing/index",
         "attachments/index"
+      ]
+    },
+    {
+      "root": "docs-preview",
+      "pages": [
+        "docs-basics/index",
+        "docs-layout/index",
+        "docs-navigation/index",
+        "docs-input/index",
+        "docs-selection/index",
+        "docs-overlays/index",
+        "docs-feedback/index",
+        "docs-primitives/index",
+        "docs-native-only/index"
       ]
     },
     {

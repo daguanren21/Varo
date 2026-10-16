@@ -8,10 +8,13 @@ on:
       - .github/workflows/docs.yml
       - wrangler.jsonc
       - apps/docs/**
+      - apps/playground-weapp/**
+      - apps/playground-weapp-preview/**
       - packages/**
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - turbo.json
   workflow_dispatch:
 
 permissions:

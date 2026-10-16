@@ -1,3 +1,5 @@
+import { docsPreviewScenarios } from './docs-scenarios'
+
 export const previewChannel = 'varo-weapp-preview'
 
 export const previewScenarios = [
@@ -8,10 +10,16 @@ export const previewScenarios = [
     description: '按钮、受控输入、插槽与组件生命周期',
   },
   {
+    id: 'button',
+    title: 'Button 按钮',
+    page: 'pages/web-preview-button/index',
+    description: '按钮样式、尺寸、点击计数与禁用及加载状态',
+  },
+  {
     id: 'dialog',
-    title: 'Dialog 阻塞诊断',
+    title: 'Dialog 对话框',
     page: 'pages/web-preview-dialog/index',
-    description: '受上游 weapp-vite #1172 plain-slot 上下文问题阻塞；未通过运行验证',
+    description: '原生 Dialog 组合、同步取消关闭和状态更新顺序',
   },
   {
     id: 'agent',
@@ -37,6 +45,7 @@ export const previewScenarios = [
     page: 'pages/web-preview-rag/index',
     description: '五阶段检索增强生成与来源引用',
   },
+  ...docsPreviewScenarios,
 ] as const
 
 export type PreviewScenarioId = (typeof previewScenarios)[number]['id']
@@ -44,6 +53,7 @@ export type PreviewScenarioId = (typeof previewScenarios)[number]['id']
 export type PreviewFrameMessage
   = | { channel: typeof previewChannel, type: 'ready', session: string, scenario: PreviewScenarioId, artifact: string }
     | { channel: typeof previewChannel, type: 'error', session: string, scenario: PreviewScenarioId, message: string }
+    | { channel: typeof previewChannel, type: 'height', session: string, scenario: PreviewScenarioId, height: number }
 
 export function isPreviewScenario(value: unknown): value is PreviewScenarioId {
   return previewScenarios.some(scenario => scenario.id === value)
@@ -55,4 +65,5 @@ export function isPreviewFrameMessage(value: unknown): value is PreviewFrameMess
   if (candidate.channel !== previewChannel || typeof candidate.session !== 'string' || !isPreviewScenario(candidate.scenario)) { return false }
   return (candidate.type === 'ready' && typeof candidate.artifact === 'string')
     || (candidate.type === 'error' && typeof candidate.message === 'string')
+    || (candidate.type === 'height' && typeof candidate.height === 'number' && Number.isFinite(candidate.height) && candidate.height > 0)
 }

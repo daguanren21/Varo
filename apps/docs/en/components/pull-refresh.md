@@ -4,7 +4,9 @@
 
 ## Demo
 
-<PullRefreshDemo locale="en" />
+<ComponentPlatformDemo component="pull-refresh" locale="en">
+  <PullRefreshDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## Props
 

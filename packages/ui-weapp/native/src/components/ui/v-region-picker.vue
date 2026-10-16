@@ -232,7 +232,7 @@ function selectLevel(nextLevel: number) {
 
 <template>
   <view v-if="visible" class="varo-region-picker" role="presentation">
-    <view class="varo-region-picker__backdrop" @click="close" />
+    <view class="varo-region-picker__backdrop" aria-hidden="true" @click="close" />
     <view class="varo-region-picker__panel" role="dialog" aria-modal="true" :aria-label="title">
       <view class="varo-region-picker__header">
         <button class="varo-region-picker__cancel" type="button" @click="close">

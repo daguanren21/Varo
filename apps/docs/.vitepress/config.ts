@@ -1,6 +1,9 @@
 import type { DefaultTheme } from 'vitepress'
+import { cp } from 'node:fs/promises'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
+import sirv from 'sirv'
 import { defineConfig } from 'vitepress'
 import { createComponentSidebarGroups } from '../src/component-catalog.js'
 
@@ -8,6 +11,7 @@ const workspacePath = (relativePath: string) => fileURLToPath(new URL(relativePa
 const docsBase = process.env.DOCS_BASE || '/'
 const docsAsset = (path: string) => `${docsBase}${path.replace(/^\/+/, '')}`
 const docsPort = Number(process.env.DOCS_PORT || 5173)
+const weappPreviewDir = workspacePath('../../playground-weapp-preview/dist')
 
 type LocalSearchRender = NonNullable<DefaultTheme.LocalSearchOptions['_render']>
 const searchRenderFlag = '__varoSearchRenderWithoutCode'
@@ -56,6 +60,9 @@ export default defineConfig({
   base: docsBase,
   cleanUrls: true,
   lastUpdated: true,
+  async buildEnd({ outDir }) {
+    await cp(weappPreviewDir, join(outDir, 'weapp-preview'), { recursive: true })
+  },
   markdown: {
     languages: ['bash', 'css', 'json', 'ts', 'vue'],
   },
@@ -68,7 +75,15 @@ export default defineConfig({
   ],
   vite: {
     server: { host: 'localhost', port: docsPort, strictPort: true },
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'varo-docs-weapp-preview',
+        configureServer(server) {
+          server.middlewares.use(`${docsBase}weapp-preview`, sirv(weappPreviewDir, { dev: true }))
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@varo-ui/ai': workspacePath('../../../packages/agent-core/src/index.ts'),

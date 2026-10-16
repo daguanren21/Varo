@@ -16,7 +16,7 @@
     "check:full": "pnpm check:generated && pnpm check:architecture && pnpm exec repo check --full && pnpm test:contracts && pnpm test:e2e:runner && pnpm test:e2e && pnpm check:consumers && pnpm check:platforms",
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run build --filter=@varo/playground-weapp-preview && turbo run dev --parallel --concurrency=20",
     "docs:dev": "pnpm --dir apps/docs dev",
     "dev:playground-h5": "pnpm --filter @varo/playground-h5 dev",
     "dev:playground-weapp": "pnpm --filter @varo/playground-weapp dev",

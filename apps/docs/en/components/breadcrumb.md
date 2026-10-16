@@ -1,5 +1,9 @@
 # Breadcrumb
 
+## Demo
+
+<AdditionalComponentDemo component="breadcrumb" locale="en" />
+
 ## Basic Usage
 
 ```vue

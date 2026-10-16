@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsdown'
 
-export default defineConfig({
-  clean: true,
+export default defineConfig(options => ({
+  clean: !options.watch,
   dts: true,
   deps: {
     alwaysBundle: [/^@varo\/(?:hooks|primitives-h5|registry|shared|utils)(?:\/|$)/],
@@ -10,4 +10,4 @@ export default defineConfig({
   format: 'esm',
   outDir: 'dist',
   sourcemap: true,
-})
+}))

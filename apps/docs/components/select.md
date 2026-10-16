@@ -24,6 +24,8 @@ H5 Registry 入口与完整 Vue 封装默认使用 `picker` 模式，受控契�
 
 H5 的 `filterable` 只读字段使用原生只读输入语义。
 
+通过 `aria-label` 或 `aria-labelledby` 为字段命名；标签会应用到实际的 `combobox` 按钮或搜索输入框，选中值保持独立。
+
 ### Props
 
 | Prop           | 类型                                          | 默认值       | 描述                                 |

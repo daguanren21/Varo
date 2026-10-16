@@ -5,7 +5,7 @@
 <PlatformTabsDemo example="menu" locale="en" />
 
 ::: info Native compound runtime boundary
-The repository uses `weapp-vite` / `wevu` 7.5.0 with plain-slot context for compiled Wevu components on WeChat and default attached setup. Real pointer input in the compiled-artifact browser preview has opened the menu, selected a source and produced its `select` payload; this is not IDE/device certification. Card no longer clips descendant popups by default. Use explicit `overflow-hidden` only for intentional media clipping, not around menus that need to overflow.
+The Mini Program tab runs actual `weapp-vite` / `wevu` 7.5.0 artifacts with the corresponding H5 filter example. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat and default attached setup; browser preview does not replace IDE/device validation. Card no longer clips descendant popups by default. Use explicit `overflow-hidden` only for intentional media clipping, not around menus that need to overflow.
 :::
 
 ## Basic Usage

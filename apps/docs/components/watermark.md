@@ -6,7 +6,9 @@
 
 ## 演示
 
-<WatermarkDemo locale="zh" />
+<ComponentPlatformDemo component="watermark" locale="zh">
+  <WatermarkDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## Props
 

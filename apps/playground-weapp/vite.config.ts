@@ -62,6 +62,9 @@ export default defineConfig(({ mode }) => ({
             minShareCount: 1,
           }],
         },
+        assetFileNames: asset => asset.originalFileNames.some(path => path.includes('src/docs-preview/assets/'))
+          ? 'docs-preview/assets/[name]-[hash][extname]'
+          : '[name]-[hash][extname]',
       },
     },
   },

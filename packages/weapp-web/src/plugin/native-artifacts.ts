@@ -9,7 +9,7 @@ import { TmplGroup } from 'glass-easel-template-compiler'
 import * as ts from 'typescript'
 import { nativeTemplates } from '../runtime/native-templates.ts'
 import { assertNativeArtifactsOptions, nativeArtifactModuleId, resolvedNativeArtifactModuleId, resolvePluginPath } from './options.ts'
-import { looksLikeAssetReference, scanCss, scanWxml } from './source-scanners.ts'
+import { looksLikeAssetReference, normalizeWevuCaptureAttributes, scanCss, scanWxml } from './source-scanners.ts'
 
 const nativeTagPrefix = 'wx-'
 
@@ -302,19 +302,15 @@ function resolveMiniProgramKey(importerKey: string, specifier: string, kind: str
 function resolveComponentKey(importerKey: string, specifier: string): string {
   const key = resolveMiniProgramKey(importerKey, specifier, 'component')
   const extension = posix.extname(key)
-  if (!extension) { return key }
-  if (extension === '.js' || extension === '.json' || extension === '.wxml') { return key.slice(0, -extension.length) }
-  throw new Error(`[varo-native-artifacts] Component path must omit its extension: ${specifier} (referenced by ${importerKey})`)
+  return extension === '.js' || extension === '.json' || extension === '.wxml'
+    ? key.slice(0, -extension.length)
+    : key
 }
 
 function resolveModuleCandidates(importerKey: string, specifier: string): string[] {
   const key = resolveMiniProgramKey(importerKey, specifier, 'CommonJS module')
   const extension = posix.extname(key)
-  if (!extension) { return [`${key}.js`, `${key}/index.js`] }
-  if (extension !== '.js') {
-    throw new Error(`[varo-native-artifacts] CommonJS dependency must resolve to .js: ${specifier} (required by ${importerKey})`)
-  }
-  return [key]
+  return extension === '.js' ? [key] : [`${key}.js`, `${key}/index.js`]
 }
 
 function splitPathSuffix(specifier: string): { path: string, suffix: string } {
@@ -688,14 +684,16 @@ async function compileBusinessTemplates(
         ?? await reader.readText(`${key}.wxml`)
       templateSources.set(key, templateFile)
       let scan
+      let templateSource: string
       try {
-        scan = scanWxml(templateFile.content)
+        templateSource = normalizeWevuCaptureAttributes(templateFile.content)
+        scan = scanWxml(templateSource)
       }
       catch (error) {
         throw new Error(`[varo-native-artifacts] Cannot scan ${templateFile.relativePath}: ${describeError(error)}`)
       }
       for (const assetReference of scan.assets) { await assets.add(assetReference, templateFile.relativePath) }
-      const rawDiagnostics: unknown = group.addTmpl(key, templateFile.content)
+      const rawDiagnostics: unknown = group.addTmpl(key, templateSource)
       reportCompilerDiagnostics(compilerDiagnostics(rawDiagnostics), templateFile.relativePath, warn)
       addedTemplates.add(key)
       const scannedTemplateDependencies = scan.dependencies

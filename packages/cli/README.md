@@ -26,7 +26,7 @@ pnpm dlx @varo-ui/cli add --target donut-ios button input form drawer
 
 The representative admitted components for the six experimental profiles are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, plus their required utilities/themes. The manifests are authoritative; the rest of the catalog and Agent units are not implicitly admitted.
 
-Use the repository baseline `weapp-vite`/`wevu` 7.4.0 for native compilation (`@varo-ui/weapp` peers remain `>=7.2.1 <8`). Donut uses `weapp` compilation with separate `mini-android`, `mini-ios`, or `mini-ohos` metadata; SDK/native packaging and signing are not performed by source installation.
+Use the repository baseline `weapp-vite`/`wevu` 7.5.0 for native compilation (`@varo-ui/weapp` peers remain `>=7.2.1 <8`). Donut uses `weapp` compilation with separate `mini-android`, `mini-ios`, or `mini-ohos` metadata; SDK/native packaging and signing are not performed by source installation.
 
 Native manifests retain renderer-family `targets`, `files[].target`, `targetDependencies`, `targetDevDependencies`, and `targetRegistryDependencies` (`h5` or `weapp`). To admit additional deployment profiles, authors explicitly add `platforms`, for example:
 

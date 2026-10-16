@@ -4,7 +4,9 @@
 
 ## 演示
 
-<PullRefreshDemo locale="zh" />
+<ComponentPlatformDemo component="pull-refresh" locale="zh">
+  <PullRefreshDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## Props
 

@@ -219,7 +219,9 @@ const defaultRuleRegistry: Record<string, RuleValidator> = {
   },
   pattern(value, context) {
     if (isEmpty(value)) { return true }
-    const pattern = context.params instanceof RegExp ? context.params : new RegExp(String(context.params))
+    const pattern = context.params instanceof RegExp
+      ? new RegExp(context.params.source, context.params.flags)
+      : new RegExp(String(context.params))
     return pattern.test(String(value)) || `${fieldName(context)} 格式不正确`
   },
 }

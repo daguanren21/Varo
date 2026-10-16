@@ -3,10 +3,13 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "exports": {
+    "./docs-scenarios": "./src/docs-scenarios.ts"
+  },
   "scripts": {
-    "prepare:artifacts": "pnpm exec turbo run build:preview --filter=@varo/playground-weapp",
-    "dev": "pnpm run prepare:artifacts && vite",
-    "build": "pnpm run prepare:artifacts && vite build",
+    "prepare:artifacts": "node scripts/prepare-artifacts.mjs",
+    "dev": "node scripts/prepare-artifacts.mjs && vite",
+    "build": "node scripts/prepare-artifacts.mjs && vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"

@@ -10,6 +10,7 @@ import {
 
 type TabsType = 'line' | 'card'
 interface KeyboardLikeEvent {
+  currentTarget?: { dataset?: { tabIndex?: number | string } }
   detail?: { key?: string }
   key?: string
   preventDefault?: () => void
@@ -74,7 +75,7 @@ const renderedTabs = computed(() => {
     ariaSelected: tab.name === props.active,
     dataActive: String(tab.name === props.active),
     dataDisabled: String(tab.disabled),
-    focus: tab.name === focusName,
+    focus: focusedName.value !== undefined && tab.name === focusName,
     panelId: getTabsPanelId(rootId, tab.name),
     tabindex: tab.name === focusName && !tab.disabled ? 0 : -1,
     triggerId: getTabsTriggerId(rootId, tab.name),
@@ -89,6 +90,12 @@ function select(tab: TabRegistration) {
   emit('clickTab', { name: tab.name, title: tab.title })
 }
 
+function handleClick(event: unknown) {
+  const index = Number((event as KeyboardLikeEvent).currentTarget?.dataset?.tabIndex)
+  const tab = registrations.value[index]
+  if (tab) { select(tab) }
+}
+
 function getKeyboardTarget(key: string, currentIndex: number) {
   const enabledIndices = registrations.value.flatMap((tab, index) => tab.disabled ? [] : [index])
   if (enabledIndices.length === 0) { return undefined }
@@ -101,8 +108,10 @@ function getKeyboardTarget(key: string, currentIndex: number) {
   return enabledIndices[(currentEnabledIndex + offset + enabledIndices.length) % enabledIndices.length]
 }
 
-function handleKeydown(event: unknown, index: number) {
+function handleKeydown(event: unknown) {
   const keyboardEvent = event as KeyboardLikeEvent
+  const index = Number(keyboardEvent.currentTarget?.dataset?.tabIndex)
+  if (!registrations.value[index]) { return }
   const key = keyboardEvent.key ?? keyboardEvent.detail?.key ?? ''
   const targetIndex = getKeyboardTarget(key, index)
   if (targetIndex === undefined) { return }
@@ -138,11 +147,12 @@ function handleKeydown(event: unknown, index: number) {
         :aria-selected="tab.ariaSelected"
         :data-active="tab.dataActive"
         :data-disabled="tab.dataDisabled"
+        :data-tab-index="index"
         :disabled="tab.disabled"
         :focus="tab.focus"
         :tabindex="tab.tabindex"
-        @click="select(tab)"
-        @keydown="handleKeydown($event, index)"
+        @click="handleClick"
+        @keydown="handleKeydown"
       >
         {{ tab.title }}
       </button>

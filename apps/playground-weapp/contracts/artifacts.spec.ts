@@ -112,7 +112,7 @@ describe('playground-weapp delivery contract', () => {
     const routes = registeredRoutes(app)
     const expectedRoutes = registeredRoutes(manifest)
     if (process.env.WEAPP_ROBOT_CHAT === '1') {
-      expectedRoutes.push('pages/robot-chat-showcase/index', 'pages/web-preview-robot-chat/index')
+      expectedRoutes.push('pages/robot-chat-showcase/index', 'pages/web-preview-robot-chat/index', 'pages/docs-robot-chat/index')
     }
     expect([...routes].sort()).toEqual([...expectedRoutes].sort())
     expect(new Set(routes).size).toBe(routes.length)
@@ -139,6 +139,7 @@ describe('playground-weapp delivery contract', () => {
       })
       expect(routes).toContain('pages/robot-chat-showcase/index')
       expect(routes).toContain('pages/web-preview-robot-chat/index')
+      expect(routes).toContain('pages/docs-robot-chat/index')
       const robotPage = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/pages/robot-chat-showcase/index.json')
       const robotChat = readJson<{ usingComponents: Record<string, string> }>('devtools/build/mp-weixin/components/ui/v-robot-chat.json')
       const robotChatWxml = readFileSync(resolve(outputRoot, 'components/ui/v-robot-chat.wxml'), 'utf8')
@@ -153,6 +154,7 @@ describe('playground-weapp delivery contract', () => {
       expect(app.plugins).toBeUndefined()
       expect(routes).not.toContain('pages/robot-chat-showcase/index')
       expect(routes).not.toContain('pages/web-preview-robot-chat/index')
+      expect(routes).not.toContain('pages/docs-robot-chat/index')
     }
     ;[retailPage, mallPage].flatMap(page => Object.values(page.usingComponents)).filter(componentPath => componentPath.startsWith('/components/')).forEach((componentPath) => {
       expect(existsSync(resolve(outputRoot, `${componentPath.slice(1)}.json`))).toBe(true)

@@ -7,6 +7,10 @@ import { formContextKey } from './form-context'
 
 type FormLabelAlign = 'left' | 'center' | 'right'
 
+defineOptions({
+  properties: { validateOnChange: { type: null, value: null } },
+})
+
 const props = withDefaults(
   defineProps<{
     colon?: boolean
@@ -34,34 +38,28 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  failed: [payload: FormSubmitPayload]
-  reset: [payload: { errors: Record<string, string>, values: FormValues }]
-  submit: [payload: FormSubmitPayload]
+  'failed': [payload: FormSubmitPayload]
+  'reset': [payload: { errors: Record<string, string>, values: FormValues }]
+  'submit': [payload: FormSubmitPayload]
+  'update:model': [values: FormValues]
 }>()
 
-const localValues = shallowRef<FormValues>({ ...(props.initialValues ?? {}) })
-function replaceValues(target: FormValues, nextValues: FormValues) {
-  Object.keys(target).forEach((key) => {
-    if (!(key in nextValues)) { delete target[key] }
-  })
-  Object.assign(target, nextValues)
-}
+const localValues = shallowRef<FormValues>({ ...(props.model ?? props.initialValues ?? {}) })
 
 const values = computed<FormValues>({
-  get: () => props.model ?? localValues.value,
+  get: () => localValues.value,
   set: (nextValues) => {
-    if (props.model) {
-      replaceValues(props.model, nextValues)
-      return
-    }
     localValues.value = nextValues
+    if (props.model != null) {
+      emit('update:model', nextValues)
+    }
   },
 })
 const form = useForm({
   initialValues: (props.model ?? props.initialValues ?? {}) as FormValues,
   rules: props.rules,
   runtime: varoReactiveRuntime,
-  validateOnChange: props.validateOnChange,
+  validateOnChange: props.validateOnChange ?? undefined,
   validationSchema: props.validationSchema,
   values,
 })
@@ -71,6 +69,13 @@ const labelWidth = computed(() => {
 })
 const formStyle = computed(() => `--varo-form-label-width:${labelWidth.value}`)
 
+watch(
+  () => props.model,
+  (model) => {
+    if (model != null) { localValues.value = { ...model } }
+  },
+  { deep: true },
+)
 watch(
   () => props.rules,
   rules => form.setRules(rules),

@@ -92,11 +92,13 @@ export function createAgentSseEventSource(): AgentSseEventSource {
   const decoder = createUtf8Decoder()
   const dataLines: string[] = []
   let textBuffer = ''
+  let skipLineFeed = false
   let ended = false
 
   function clearBufferedInput() {
     dataLines.length = 0
     textBuffer = ''
+    skipLineFeed = false
   }
 
   function closeSource() {
@@ -155,14 +157,28 @@ export function createAgentSseEventSource(): AgentSseEventSource {
 
   function appendText(value: string) {
     if (ended) return
-    textBuffer += value
-    let lineEnd = textBuffer.indexOf('\n')
-    while (lineEnd >= 0) {
-      processLine(textBuffer.slice(0, lineEnd))
+    let lineStart = 0
+    for (let index = 0; index < value.length; index += 1) {
+      const character = value[index]
+      if (skipLineFeed) {
+        skipLineFeed = false
+        if (character === '\n') {
+          lineStart = index + 1
+          continue
+        }
+      }
+      if (character !== '\r' && character !== '\n') continue
+
+      const line = textBuffer + value.slice(lineStart, index)
+      textBuffer = ''
+      // A CR completes the line now; a following LF belongs to the same ending,
+      // even when it arrives in another chunk.
+      skipLineFeed = character === '\r'
+      processLine(line)
       if (ended) return
-      textBuffer = textBuffer.slice(lineEnd + 1)
-      lineEnd = textBuffer.indexOf('\n')
+      lineStart = index + 1
     }
+    textBuffer += value.slice(lineStart)
   }
 
   return {

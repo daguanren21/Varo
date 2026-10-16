@@ -19,6 +19,7 @@ type NativeTag
     | 'input'
     | 'textarea'
     | 'label'
+    | 'navigator'
     | 'canvas'
     | 'image'
     | 'scroll-view'
@@ -56,6 +57,7 @@ interface HoverState extends ManagedState {
 interface ButtonState extends ManagedState {
   component: NativeComponent
   control: HTMLButtonElement
+  focusProperty: boolean
   host: HTMLElement
 }
 
@@ -67,6 +69,12 @@ interface FormState extends ManagedState {
 interface LabelState extends ManagedState {
   component: NativeComponent
   control: HTMLLabelElement
+}
+
+interface NavigatorState extends ManagedState {
+  component: NativeComponent
+  control: HTMLAnchorElement
+  failure: string | undefined
 }
 
 interface ImageState extends ManagedState {
@@ -145,6 +153,7 @@ const formStates = new WeakMap<NativeComponent, FormState>()
 const hoverStates = new WeakMap<NativeComponent, HoverState>()
 const viewTransitionCleanups = new WeakMap<NativeComponent, () => void>()
 const labelStates = new WeakMap<NativeComponent, LabelState>()
+const navigatorStates = new WeakMap<NativeComponent, NavigatorState>()
 const canvasStates = new WeakMap<NativeComponent, CanvasState>()
 const canvasStatesById = new Map<string, Set<CanvasState>>()
 const imageStates = new WeakMap<NativeComponent, ImageState>()
@@ -157,12 +166,14 @@ let activeRobotChat: RobotChatElementState | undefined
 
 const semanticProperties = {
   ariaAtomic: { type: null, value: '' },
+  ariaAutocomplete: { type: null, value: '' },
   ariaBusy: { type: null, value: '' },
   ariaChecked: { type: null, value: '' },
   ariaControls: { type: null, value: '' },
   ariaDisabled: { type: null, value: '' },
   ariaDescribedby: { type: null, value: '' },
   ariaExpanded: { type: null, value: '' },
+  ariaHaspopup: { type: null, value: '' },
   ariaHidden: { type: null, value: '' },
   ariaInvalid: { type: null, value: '' },
   ariaLabel: { type: null, value: '' },
@@ -170,6 +181,8 @@ const semanticProperties = {
   ariaLive: { type: null, value: '' },
   ariaPressed: { type: null, value: '' },
   ariaReadonly: { type: null, value: '' },
+  ariaRequired: { type: null, value: '' },
+  ariaSelected: { type: null, value: '' },
   hidden: { type: Boolean, value: false },
   role: { type: null, value: '' },
   tabindex: { type: null, value: '' },
@@ -178,12 +191,14 @@ const semanticProperties = {
 
 const semanticAttributes = [
   ['ariaAtomic', 'aria-atomic'],
+  ['ariaAutocomplete', 'aria-autocomplete'],
   ['ariaBusy', 'aria-busy'],
   ['ariaChecked', 'aria-checked'],
   ['ariaControls', 'aria-controls'],
   ['ariaDisabled', 'aria-disabled'],
   ['ariaDescribedby', 'aria-describedby'],
   ['ariaExpanded', 'aria-expanded'],
+  ['ariaHaspopup', 'aria-haspopup'],
   ['ariaHidden', 'aria-hidden'],
   ['ariaInvalid', 'aria-invalid'],
   ['ariaLabel', 'aria-label'],
@@ -191,6 +206,8 @@ const semanticAttributes = [
   ['ariaLive', 'aria-live'],
   ['ariaPressed', 'aria-pressed'],
   ['ariaReadonly', 'aria-readonly'],
+  ['ariaRequired', 'aria-required'],
+  ['ariaSelected', 'aria-selected'],
   ['role', 'role'],
   ['tabindex', 'tabindex'],
   ['title', 'title'],
@@ -389,6 +406,13 @@ function labelElement(component: NativeComponent, options: NativeElementRegistra
   return undefined
 }
 
+function navigatorElement(component: NativeComponent, options: NativeElementRegistrationOptions) {
+  const backend = internalBackendElement(component)
+  if (typeof HTMLAnchorElement !== 'undefined' && backend instanceof HTMLAnchorElement) { return backend }
+  reportBackendError(options, 'navigator', 'anchor')
+  return undefined
+}
+
 function imageElement(component: NativeComponent, options: NativeElementRegistrationOptions) {
   const backend = internalBackendElement(component)
   if (typeof HTMLImageElement !== 'undefined' && backend instanceof HTMLImageElement) { return backend }
@@ -522,12 +546,17 @@ function cleanState(state: ManagedState) {
 }
 
 function syncSemanticAttributes(component: NativeComponent, control: HTMLElement) {
+  const backend = component.getBackendElement()
+  const wrapper = backend instanceof HTMLElement && backend !== control ? backend : undefined
   for (const [propertyName, attributeName] of semanticAttributes) {
     const value = stringProperty(component, propertyName)
     if (value) {
       control.setAttribute(attributeName, value)
     }
     else { control.removeAttribute(attributeName) }
+    // Glass-Easel reflects properties before data observers. Only the real
+    // control owns semantics; slot-only native elements keep them on their host.
+    wrapper?.removeAttribute(attributeName)
   }
   control.hidden = booleanProperty(component, 'hidden')
 }
@@ -968,8 +997,14 @@ function syncButton(state: ButtonState, options: NativeElementRegistrationOption
   const { component, control, host } = state
   syncSemanticAttributes(component, control)
   control.disabled = booleanProperty(component, 'disabled')
-  host.toggleAttribute('disabled', control.disabled)
+  // The preview event backend also receives taps on the wrapper's padding.
+  host.toggleAttribute('disabled', control.disabled || stringProperty(component, 'ariaDisabled') === 'true')
   host.hidden = control.hidden
+  const focus = booleanProperty(component, 'focus')
+  if (focus && !state.focusProperty && !control.disabled) {
+    control.focus({ preventScroll: true })
+  }
+  state.focusProperty = focus
   setOptionalAttribute(control, 'name', stringProperty(component, 'name'))
   setOptionalAttribute(control, 'form', stringProperty(component, 'form'))
 
@@ -1008,6 +1043,7 @@ function attachButton(component: NativeComponent, options: NativeElementRegistra
     cleanups: [],
     component,
     control,
+    focusProperty: false,
     host,
     reported: new Set(),
   }
@@ -1024,6 +1060,7 @@ function attachButton(component: NativeComponent, options: NativeElementRegistra
 }
 
 function syncForm(state: FormState, options: NativeElementRegistrationOptions) {
+  if (formStates.get(state.component) !== state) { return }
   syncSemanticAttributes(state.component, state.control)
   reportUnsupportedProperty(state, options, state.component, 'reportSubmit', 'WeChat formId reporting')
   reportUnsupportedProperty(state, options, state.component, 'reportSubmitTimeout', 'WeChat formId reporting timeout')
@@ -1071,7 +1108,7 @@ function attachForm(component: NativeComponent, options: NativeElementRegistrati
 function syncLabel(state: LabelState) {
   if (labelStates.get(state.component) !== state) { return }
   syncSemanticAttributes(state.component, state.control)
-  state.control.htmlFor = stringProperty(state.component, 'for')
+  setOptionalAttribute(state.control, 'for', stringProperty(state.component, 'for'))
 }
 
 function detachLabel(component: NativeComponent) {
@@ -1108,6 +1145,72 @@ function attachLabel(component: NativeComponent, options: NativeElementRegistrat
     target.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement>('input, textarea, button')?.focus()
   })
   syncLabel(state)
+}
+
+function syncNavigator(state: NavigatorState) {
+  if (navigatorStates.get(state.component) !== state) { return }
+  const { component, control } = state
+  syncSemanticAttributes(component, control)
+  const openType = stringProperty(component, 'openType') || 'navigate'
+  const target = stringProperty(component, 'target') || 'self'
+  const url = stringProperty(component, 'url').trim()
+  state.failure = undefined
+  control.removeAttribute('href')
+  if (openType !== 'navigate') {
+    state.failure = `Navigator open-type "${openType}" is not supported by the browser preview adapter`
+  }
+  else if (target !== 'self') {
+    state.failure = `Navigator target "${target}" is not supported by the browser preview adapter`
+  }
+  else if (!/^https?:\/\//i.test(url) && !url.startsWith('#')) {
+    state.failure = 'Navigator requires an absolute HTTP(S) URL or a document fragment; native page navigation is not supported'
+  }
+  else {
+    try {
+      const resolved = new URL(url, control.ownerDocument.location.href)
+      if (!['http:', 'https:'].includes(resolved.protocol) || resolved.username || resolved.password) {
+        state.failure = 'Navigator URL must use HTTP(S) without credentials'
+      }
+      else { control.href = resolved.href }
+    }
+    catch {
+      state.failure = 'Navigator URL is invalid'
+    }
+  }
+  if (!control.hasAttribute('href')) {
+    control.setAttribute('role', 'link')
+    if (!control.hasAttribute('tabindex')) { control.tabIndex = 0 }
+  }
+  syncHover(component)
+}
+
+function detachNavigator(component: NativeComponent) {
+  const state = navigatorStates.get(component)
+  if (!state) { return }
+  navigatorStates.delete(component)
+  detachHover(component)
+  cleanState(state)
+}
+
+function attachNavigator(component: NativeComponent, options: NativeElementRegistrationOptions) {
+  detachNavigator(component)
+  const control = navigatorElement(component, options)
+  if (!control) { return }
+  const state: NavigatorState = { cleanups: [], component, control, failure: undefined, reported: new Set() }
+  navigatorStates.set(component, state)
+  attachHover(component, control, () => false)
+  // Observe after the backend's body listener so native tap cancellation is respected.
+  addDomListener(state, control.ownerDocument, 'click', (event) => {
+    if (navigatorStates.get(component) !== state || !(event.target instanceof Node) || !control.contains(event.target)) { return }
+    if (event.defaultPrevented || (event instanceof MouseEvent && event.button !== 0)) { return }
+    const failure = state.failure
+    const detail = { errMsg: failure ? `navigator:fail ${failure}` : 'navigator:ok' }
+    if (failure) { event.preventDefault() }
+    component.triggerEvent(failure ? 'fail' : 'success', detail, { bubbles: false, composed: false, originalEvent: event })
+    component.triggerEvent('complete', detail, { bubbles: false, composed: false, originalEvent: event })
+    if (failure) { reportOnce(state, options, `navigation:${failure}`, failure) }
+  })
+  syncNavigator(state)
 }
 
 function isImageStateCurrent(state: ImageState) {
@@ -1448,6 +1551,7 @@ function isScrollStateCurrent(state: ScrollState) {
 function syncScrollConfig(state: ScrollState) {
   if (!isScrollStateCurrent(state)) { return }
   const { component, host } = state
+  syncSemanticAttributes(component, host)
   const refresherEnabled = booleanProperty(component, 'refresherEnabled')
   const refresherTriggered = booleanProperty(component, 'refresherTriggered')
   host.dataset.nativeScrollX = String(booleanProperty(component, 'scrollX'))
@@ -2127,6 +2231,7 @@ function registerButtonDefinition(
       properties: {
         ...semanticProperties,
         disabled: { type: Boolean, value: false },
+        focus: { type: Boolean, value: false },
         form: { type: null, value: '' },
         formType: { type: null, value: '' },
         ...hoverProperties,
@@ -2203,6 +2308,34 @@ function registerLabelDefinition(
     .observer('**', function () {
       const state = labelStates.get(this.general())
       if (state) { syncLabel(state) }
+    })
+    .template(template)
+    .registerComponent()
+    .general()
+}
+
+function registerNavigatorDefinition(
+  space: glassEasel.ComponentSpace,
+  template: glassEasel.template.ComponentTemplate,
+  options: NativeElementRegistrationOptions,
+) {
+  return space
+    .define('navigator')
+    .options(componentOptions())
+    .definition({
+      properties: {
+        ...semanticProperties,
+        ...hoverProperties,
+        openType: { type: String, value: 'navigate' },
+        target: { type: String, value: 'self' },
+        url: { type: String, value: '' },
+      },
+      attached() { attachNavigator(this.general(), options) },
+      detached() { detachNavigator(this.general()) },
+    })
+    .observer('**', function () {
+      const state = navigatorStates.get(this.general())
+      if (state) { syncNavigator(state) }
     })
     .template(template)
     .registerComponent()
@@ -2447,6 +2580,7 @@ export function registerNativeElements(
     'input': registerTextControlDefinition(space, 'input', templateFor(templates, 'input'), options),
     'textarea': registerTextControlDefinition(space, 'textarea', templateFor(templates, 'textarea'), options),
     'label': registerLabelDefinition(space, templateFor(templates, 'label'), options),
+    'navigator': registerNavigatorDefinition(space, templateFor(templates, 'navigator'), options),
     'canvas': registerCanvasDefinition(space, templateFor(templates, 'canvas'), options),
     'image': registerImageDefinition(space, templateFor(templates, 'image'), options),
     'scroll-view': registerScrollDefinition(space, templateFor(templates, 'scroll-view'), options),

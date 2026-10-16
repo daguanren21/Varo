@@ -4,7 +4,9 @@
 
 ## Demo
 
-<ListDemo locale="en" />
+<ComponentPlatformDemo component="list" locale="en">
+  <ListDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## Props
 

@@ -6,6 +6,38 @@
 
 <FormComponentDemo example="form-array" locale="zh" />
 
+## 原生 Weapp 数据绑定
+
+原生属性传递的是数据快照。控件绑定页面自己的 `model`，并接收 `VForm` 的 `update:model` 事件，让重置和表单方法的修改回到页面状态：
+
+```vue
+<script setup lang="ts">
+import type { FormValues } from '@varo-ui/headless'
+import { reactive } from 'wevu'
+import VFormItem from '@/components/ui/v-form-item.vue'
+import VForm from '@/components/ui/v-form.vue'
+import VInput from '@/components/ui/v-input.vue'
+
+const model = reactive({ name: '' })
+function updateModel(values: FormValues) {
+  Object.assign(model, values)
+}
+function updateName(value: string) {
+  model.name = value
+}
+</script>
+
+<template>
+  <VForm :model="model" @update:model="updateModel">
+    <VFormItem name="name" label="名称" required>
+      <VInput :value="model.name" @update:value="updateName" />
+    </VFormItem>
+  </VForm>
+</template>
+```
+
+动态数组通过脚本处理器更新页面模型的完整路径，例如 `model.companies[index].name`。原生模板使用显式 `:value` / `@update:value` 绑定。需要按输入或失焦时机校验时，通过表单组件 ref 调用 `validateField(path, 'change' | 'blur')`；等待 `nextTick()` 使模型先同步到原生属性。
+
 ## Hooks
 
 ```ts
@@ -89,11 +121,12 @@ configureForm({
 
 ## Events
 
-| Event    | Payload              | 描述               |
-| -------- | -------------------- | ------------------ |
-| `submit` | `SubmitPayload`      | 校验通过后触发一次 |
-| `failed` | `SubmitPayload`      | 校验失败后触发一次 |
-| `reset`  | `{ values, errors }` | 重置               |
+| Event          | Payload              | 描述                         |
+| -------------- | -------------------- | ---------------------------- |
+| `submit`       | `SubmitPayload`      | 校验通过后触发一次           |
+| `failed`       | `SubmitPayload`      | 校验失败后触发一次           |
+| `reset`        | `{ values, errors }` | 重置                         |
+| `update:model` | `FormValues`         | 原生受控表单请求替换页面模型 |
 
 `submit` / `failed` 接收 `@varo-ui/headless` 导出的具名 `SubmitPayload`，组件的 `FormSubmitPayload` 是它的类型别名，不是原始 DOM 事件，也不从具体函数的 `ReturnType` 推导：
 

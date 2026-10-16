@@ -4,11 +4,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "vitepress build .",
+    "build": "node scripts/prepare-weapp-preview.mjs && vitepress build .",
     "clean": "rimraf .vitepress/dist dist",
-    "dev": "vitepress dev .",
+    "dev": "node scripts/prepare-weapp-preview.mjs && vitepress dev .",
     "lint": "echo docs lint pending",
     "preview": "vitepress preview .",
+    "smoke:native-preview": "node scripts/smoke-native-preview.mjs",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
@@ -24,8 +25,11 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "4.3.3",
+    "@varo/playground-weapp-preview": "workspace:*",
     "@varo/primitives-h5": "workspace:*",
+    "sirv": "^3.0.2",
     "tailwindcss": "4.3.3"
   }
 }

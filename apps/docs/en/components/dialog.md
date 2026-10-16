@@ -40,7 +40,7 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 ### Native Weapp (Wevu)
 
 ::: info Native compound runtime boundary
-The repository uses `weapp-vite` / `wevu` 7.5.0, including [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) for compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup. The separate `dialog` compiled-artifact preview has exercised opening, synchronous close cancellation and accepted closing without a downstream context bridge. This does not extend to created setup, other platforms, or IDE/device certification.
+The Mini Program tab runs actual `weapp-vite` / `wevu` 7.5.0 artifacts. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup, without a downstream context bridge. The separate `dialog` preview has exercised opening, synchronous close cancellation and accepted closing. This does not extend to created setup, other platforms, or IDE/device certification.
 :::
 
 Native events deliver one `detail` argument. For `openChange`, it is an `[open, details]` tuple: destructure it instead of declaring two separate parameters. Use the reactive APIs from `wevu`:

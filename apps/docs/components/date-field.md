@@ -4,7 +4,9 @@
 
 ## 演示
 
-<DateFieldDemo locale="zh" />
+<ComponentPlatformDemo component="date-field" locale="zh">
+  <DateFieldDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## Props
 

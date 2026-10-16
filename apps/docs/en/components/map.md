@@ -4,9 +4,9 @@
 
 ## Demo
 
-<MapDemo locale="en" />
+<NativeComponentPreview component="map" locale="en" />
 
-This is a standalone browser map illustration, not the native `VMap` SFC or a compiled-artifact preview. It uses Tencent Map JS API / raster tiles and local state to illustrate center, markers, and `regionchange` interaction. The docs cannot run WeChat's native map view; location permission and Map Context require the WeChat host. This is not evidence of other profiles or device support.
+This preview runs the compiled native `VMap` scene. The browser host presents map capabilities through Tencent Map JS API / raster tiles. Location permission, Map Context, and WeChat's native map view still require verification in the WeChat host. The browser preview is not evidence of other profiles or device support.
 
 ## Usage
 

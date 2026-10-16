@@ -6,6 +6,10 @@ import { createFormItemId, formContextKey, formItemControlContextKey } from './f
 
 type FormValidateTrigger = 'submit' | 'change' | 'blur'
 
+defineOptions({
+  properties: { showError: { type: null, value: null } },
+})
+
 const props = withDefaults(
   defineProps<{
     colon?: boolean
@@ -150,9 +154,9 @@ function onBlur(event?: unknown) {
         <slot
           :error-message="slotErrorMessage"
           :field="slotField"
-          :on-blur="onBlur"
-          :set-value="setValue"
-          :validate="slotValidate"
+          :on-blur="(event?: unknown) => onBlur(event)"
+          :set-value="(value: unknown) => setValue(value)"
+          :validate="(trigger?: FormValidateTrigger) => slotValidate(trigger)"
           :value="slotValue"
         />
       </view>
@@ -162,7 +166,7 @@ function onBlur(event?: unknown) {
         </slot>
       </view>
       <view v-if="errorVisible" :id="errorId" class="varo-form-item__error">
-        {{ field.errorMessage.value }}
+        {{ slotErrorMessage }}
       </view>
     </view>
   </view>

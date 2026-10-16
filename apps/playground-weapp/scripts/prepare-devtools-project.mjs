@@ -7,7 +7,7 @@ const sourcePath = resolve(projectRoot, 'project.config.json')
 const localConfigPath = resolve(projectRoot, 'project.local.json')
 const targetPaths = [
   resolve(projectRoot, 'devtools/build/project.config.json'),
-  resolve(projectRoot, 'dist/dev/project.config.json')
+  resolve(projectRoot, 'dist/dev/project.config.json'),
 ]
 const projectConfig = JSON.parse(await readFile(sourcePath, 'utf8'))
 const localConfig = JSON.parse(await readFile(localConfigPath, 'utf8').catch(() => '{}'))
@@ -27,3 +27,13 @@ await Promise.all(targetPaths.map(async (targetPath) => {
   await mkdir(dirname(targetPath), { recursive: true })
   await writeFile(targetPath, `${JSON.stringify(projectConfig, null, 2)}\n`)
 }))
+
+// The compiler resolves native output roots from cwd, whereas DevTools resolves
+// them from its project directory. Keep compiler cleanup on the watcher output.
+const compilerConfigPath = resolve(projectRoot, '.weapp-vite/project.dev.config.json')
+await mkdir(dirname(compilerConfigPath), { recursive: true })
+await writeFile(compilerConfigPath, `${JSON.stringify({
+  ...projectConfig,
+  miniprogramRoot: 'dist/dev/mp-weixin/',
+  srcMiniprogramRoot: 'dist/dev/mp-weixin/',
+}, null, 2)}\n`)

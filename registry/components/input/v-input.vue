@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import { createVariantClass, useFieldRoot } from '@varo-ui/headless'
-import { computed, getCurrentInstance, inject, shallowRef, toRef, useSlots, watch } from 'wevu'
+import { computed, getCurrentInstance, inject, onUnmounted, shallowRef, toRef, useSlots, watch } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import VIcon from './v-icon.vue'
@@ -179,6 +179,8 @@ function mergeAriaTokens(...values: Array<string | undefined>) {
 const slots = useSlots()
 const focused = shallowRef(false)
 const focusRequested = shallowRef(false)
+const clearPressed = shallowRef(false)
+let clearReleaseTimer: ReturnType<typeof setTimeout> | undefined
 const value = computed(() => props.value ?? '')
 const valueControlled = computed(() => props.value != null)
 const formItemControl = inject<FormItemControlContext | null>(formItemControlContextKey, null)
@@ -322,7 +324,7 @@ const showClear = computed(
     && currentValue.value.length > 0
     && field.state.interactive.value
     && !props.readonly
-    && (props.clearTrigger === 'always' || focused.value),
+    && (props.clearTrigger === 'always' || focused.value || clearPressed.value),
 )
 const wordLimit = computed(() => {
   const length = currentValue.value.length
@@ -406,7 +408,26 @@ function blur(event: unknown) {
   emit('blur', event)
 }
 
+function releaseClearPress() {
+  if (clearReleaseTimer !== undefined) { clearTimeout(clearReleaseTimer) }
+  clearReleaseTimer = undefined
+  clearPressed.value = false
+}
+
+function pressClear() {
+  releaseClearPress()
+  clearPressed.value = true
+}
+
+function finishClearPress() {
+  // A native tap follows touchend; retain its target if the input has blurred.
+  clearReleaseTimer = setTimeout(releaseClearPress, 0)
+}
+
+onUnmounted(releaseClearPress)
+
 function clear(event: unknown) {
+  releaseClearPress()
   if (!field.state.interactive.value) {
     return
   }
@@ -611,6 +632,9 @@ function touchstart(event: unknown) {
         type="button"
         aria-label="Clear input"
         @click="clear"
+        @touchstart="pressClear"
+        @touchend="finishClearPress"
+        @touchcancel="releaseClearPress"
       >
         <VIcon name="danger" :size="16" />
       </button>
