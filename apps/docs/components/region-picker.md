@@ -4,7 +4,9 @@
 
 ## 演示
 
-<RegionPickerDemo />
+<ComponentPlatformDemo component="region-picker" locale="zh">
+  <RegionPickerDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## 使用
 

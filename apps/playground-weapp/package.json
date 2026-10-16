@@ -7,9 +7,9 @@
     "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
     "build:preview": "WEAPP_ROBOT_CHAT=1 weapp-vite build --mode browser-preview --project-config project.browser.json",
     "clean": "rimraf dist devtools .weapp-vite",
-    "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite",
+    "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite --project-config .weapp-vite/project.dev.config.json",
     "capture:blocks": "node e2e/capture-blocks.mjs",
-    "dev:ai": "node scripts/prepare-devtools-project.mjs && weapp-vite --open",
+    "dev:ai": "node scripts/prepare-devtools-project.mjs && weapp-vite --project-config .weapp-vite/project.dev.config.json --open",
     "open": "node scripts/prepare-devtools-project.mjs && weapp-vite open devtools/build",
     "prepare:weapp": "weapp-vite prepare",
     "lint": "echo weapp playground lint pending",
@@ -28,7 +28,7 @@
     "@varo-ui/weapp": "workspace:*",
     "@weapp-tailwindcss/merge": "^2.2.4",
     "clsx": "^2.1.1",
-    "wevu": "7.4.0"
+    "wevu": "7.5.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.9",
@@ -39,6 +39,6 @@
     "vite": "8.3.0",
     "vue": "^3.5.43",
     "weapp-tailwindcss": "^5.5.6",
-    "weapp-vite": "7.4.0"
+    "weapp-vite": "7.5.0"
   }
 }

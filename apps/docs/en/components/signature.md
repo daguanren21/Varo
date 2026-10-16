@@ -4,7 +4,9 @@
 
 ## Demo
 
-<SignatureDemo locale="en" />
+<ComponentPlatformDemo component="signature" locale="en">
+  <SignatureDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## Props
 

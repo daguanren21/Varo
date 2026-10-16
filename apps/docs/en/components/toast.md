@@ -4,7 +4,9 @@
 
 ## Demo
 
-<ToastDemo locale="en" />
+<ComponentPlatformDemo component="toast" locale="en">
+  <ToastDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## VToast Props
 

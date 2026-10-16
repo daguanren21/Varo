@@ -113,7 +113,7 @@ Each of the six new profiles requires explicit admission in the item manifest an
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-The repository's `pnpm check:platforms` runs real compiler/artifact checks for all seven native profiles, writing `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The current integrated compiler is 7.4.0. Donut uses the WeChat compiler with real per-host metadata. **Compiler/artifact success is not device certification.** Consumers supply AppIDs, signing, host SDKs, IDE access, and device validation; no credentials are fabricated.
+The repository's `pnpm check:platforms` runs real compiler/artifact checks for all seven native profiles, writing `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The current integrated compiler is 7.5.0. Donut uses the WeChat compiler with real per-host metadata. **Compiler/artifact success is not device certification.** Consumers supply AppIDs, signing, host SDKs, IDE access, and device validation; no credentials are fabricated.
 
 ## Agent streaming
 
@@ -161,7 +161,9 @@ The production preview defaults to `http://127.0.0.1:4182`; deployable files are
 
 The repository lockfile records the SDK versions required by this pipeline. The CLI does not automatically install those dependencies into external consumer projects. WeChat-specific capabilities, device performance, and final native visuals still require validation in WeChat.
 
-Documentation H5 tabs provide browser interaction. Native tabs show target source and support evidence, not H5/Vue components masquerading as a live mini program. Compiled-artifact browser previews and device validation are separate evidence categories.
+The H5 and Mini Program documentation tabs share example groups, locale, theme, and device framing. Registered component and Primitive Mini Program examples run compiled Wevu artifacts with input, selection, validation, dynamic arrays, file selection, and error recovery. Expand **View code** for installation commands and native source. H5-only components retain explicit platform boundaries. Browser artifact previews do not establish device validation.
+
+`pnpm --filter @varo/docs dev` and `pnpm --filter @varo/docs build` prepare the native preview dependencies automatically. Docs serve the complete preview at `${DOCS_BASE}weapp-preview/`, with no separate preview server. Development uses artifacts prepared at startup; restart the docs development server after editing native demos or the preview runtime. Run `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` to check every registered scene, 320/390px layouts, and interaction regressions including both languages, light/dark themes, and form submission. For production previews, use the actual address, such as `http://localhost:4173/Varo/`, retaining any deployment subpath. Set `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` to run selected cases.
 
 ## Engineering notes
 
@@ -171,6 +173,6 @@ Documentation H5 tabs provide browser interaction. Native tabs show target sourc
 
 ## Version strategy
 
-- The current native integration uses `weapp-vite` / `wevu` 7.4.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
+- The current native integration uses `weapp-vite` / `wevu` 7.5.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
 - Production projects should follow their lockfile, package `peerDependencies`, and CI build result
 - VitePress, Vue, and TypeScript move with the workspace upgrade policy

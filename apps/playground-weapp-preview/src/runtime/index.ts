@@ -19,6 +19,7 @@ export async function mountPreview(session: RuntimeSession): Promise<() => void>
     artifacts,
     session: {
       pagePath,
+      query: { ...(scenario && 'query' in scenario ? scenario.query : {}), ...session.query },
       signal: session.signal,
       ready: session.ready,
       fail: session.fail,

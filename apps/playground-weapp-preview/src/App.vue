@@ -3,13 +3,21 @@ import type { PreviewScenarioId } from './protocol'
 import { computed, shallowRef } from 'vue'
 import PreviewFrame from './components/PreviewFrame.vue'
 import PreviewToolbar from './components/PreviewToolbar.vue'
-import { previewScenarios } from './protocol'
+import { isPreviewScenario, previewChannel, previewScenarios } from './protocol'
 
 type PreviewWidth = 320 | 390 | 430
 
-const scenario = shallowRef<PreviewScenarioId>('controls')
+const parameters = new URLSearchParams(window.location.search)
+const requestedScenario = parameters.get('scenario')
+const embed = parameters.get('embed') === '1'
+const docs = parameters.get('docs') === '1'
+const locale = parameters.get('locale') === 'en' ? 'en' : 'zh'
+const theme = parameters.get('theme') === 'dark' ? 'dark' : 'light'
+const parentSession = parameters.get('session') ?? globalThis.crypto.randomUUID()
+const scenario = shallowRef<PreviewScenarioId>(isPreviewScenario(requestedScenario) ? requestedScenario : 'controls')
 const width = shallowRef<PreviewWidth>(390)
-const session = shallowRef(globalThis.crypto.randomUUID())
+const session = shallowRef(parentSession)
+document.documentElement.classList.toggle('preview-docs', docs)
 
 const activeScenario = computed(() =>
   previewScenarios.find(item => item.id === scenario.value) ?? previewScenarios[0],
@@ -17,6 +25,17 @@ const activeScenario = computed(() =>
 
 function renewSession() {
   session.value = globalThis.crypto.randomUUID()
+}
+
+function reportContentHeight(height: number) {
+  if (!docs || window.parent === window) { return }
+  window.parent.postMessage({
+    channel: previewChannel,
+    type: 'height',
+    session: parentSession,
+    scenario: scenario.value,
+    height,
+  }, window.location.origin)
 }
 
 function selectScenario(nextScenario: PreviewScenarioId) {
@@ -34,7 +53,20 @@ function selectWidth(nextWidth: PreviewWidth) {
 </script>
 
 <template>
-  <div class="preview-app">
+  <main v-if="embed || docs" class="preview-app-embed" :lang="locale" :aria-label="locale === 'en' ? 'Mini Program preview' : '小程序组件预览'">
+    <PreviewFrame
+      embed
+      :presentation="docs ? 'docs' : 'default'"
+      :locale="locale"
+      :theme="theme"
+      :scenario="scenario"
+      :session="session"
+      :width="width"
+      @reset="renewSession"
+      @content-height="reportContentHeight"
+    />
+  </main>
+  <div v-else class="preview-app">
     <header class="preview-app__header">
       <div class="preview-app__heading">
         <p class="preview-app__eyebrow">
@@ -104,6 +136,8 @@ function selectWidth(nextWidth: PreviewWidth) {
           :scenario="scenario"
           :session="session"
           :width="width"
+          :locale="locale"
+          :theme="theme"
           @reset="renewSession"
         />
       </section>
@@ -112,6 +146,19 @@ function selectWidth(nextWidth: PreviewWidth) {
 </template>
 
 <style scoped>
+:global(html.preview-docs),
+:global(.preview-docs body),
+:global(.preview-docs #app) {
+  background: transparent;
+}
+
+.preview-app-embed {
+  width: 100%;
+  min-width: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
+
 .preview-app {
   width: min(1240px, calc(100% - 40px));
   min-width: 0;

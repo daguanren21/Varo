@@ -4,7 +4,9 @@
 
 ## Demo
 
-<RegionPickerDemo />
+<ComponentPlatformDemo component="region-picker" locale="en">
+  <RegionPickerDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## Usage
 

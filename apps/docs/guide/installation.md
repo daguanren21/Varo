@@ -113,7 +113,7 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-仓库的 `pnpm check:platforms` 覆盖七个原生 profile 的真实编译与产物检查，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前集成编译器为 7.4.0；Donut 使用微信编译器，并携带各宿主的真实元数据。**编译/产物通过不等于真机认证**；AppID、签名、宿主 SDK、IDE 和设备验收由消费项目提供，不生成虚假凭证。
+仓库的 `pnpm check:platforms` 覆盖七个原生 profile 的真实编译与产物检查，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前集成编译器为 7.5.0；Donut 使用微信编译器，并携带各宿主的真实元数据。**编译/产物通过不等于真机认证**；AppID、签名、宿主 SDK、IDE 和设备验收由消费项目提供，不生成虚假凭证。
 
 ## Agent 流式接入
 
@@ -161,7 +161,9 @@ pnpm --filter @varo/playground-weapp-preview smoke:browser
 
 仓库 lockfile 记录该运行链需要的 SDK 版本；CLI 不会把这些依赖安装到外部业务项目。微信专属能力、真机性能与最终视觉仍需在微信环境验收。
 
-文档演示的 H5 标签页是浏览器交互；原生标签页展示目标源码与支持证据，不把 H5/Vue 组件伪装成小程序实时运行。编译产物浏览器预览与真实设备验收是另外两类证据。
+文档的 H5 与小程序标签页共享示例分组、语言、主题和设备框架。已注册的普通组件与 Primitive 小程序示例运行真实 Wevu 编译产物，支持输入、选择、表单校验、动态数组、文件选择和错误重试；安装命令与原生源码可在「查看代码」中展开。仅支持 H5 的组件保留明确的平台边界。编译产物浏览器预览不代表真实设备验收。
+
+`pnpm --filter @varo/docs dev` 和 `pnpm --filter @varo/docs build` 会自动构建原生预览依赖。文档将预览完整托管在 `${DOCS_BASE}weapp-preview/`，无需单独启动预览服务。开发模式使用启动时生成的产物；修改原生示例或预览运行时后，重新启动文档开发服务。对运行中的文档执行 `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` 可检查全部注册场景、320/390px 窄屏布局及交互回归，包括中英文、明暗主题和表单提交。生产预览使用实际地址，例如 `http://localhost:4173/Varo/`；子路径部署时保留 URL 中的路径。可用 `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` 只运行指定场景。
 
 ## 工程化建议
 
@@ -171,6 +173,6 @@ pnpm --filter @varo/playground-weapp-preview smoke:browser
 
 ## 版本策略
 
-- 当前原生集成使用 `weapp-vite` / `wevu` 7.4.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
+- 当前原生集成使用 `weapp-vite` / `wevu` 7.5.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
 - 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
 - VitePress、Vue 与 TypeScript 跟随 workspace 统一升级

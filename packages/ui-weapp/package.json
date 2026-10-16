@@ -59,7 +59,7 @@
     "clsx": "^2.1.1"
   },
   "devDependencies": {
-    "weapp-vite": "7.4.0",
-    "wevu": "7.4.0"
+    "weapp-vite": "7.5.0",
+    "wevu": "7.5.0"
   }
 }

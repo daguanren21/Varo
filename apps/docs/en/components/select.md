@@ -24,6 +24,8 @@ Use `filterable` to type and filter local options directly in the Select field; 
 
 On H5, a readonly `filterable` field uses the native readonly input contract.
 
+Name the field with `aria-label` or `aria-labelledby`. These attributes label the actual `combobox` button or search input, keeping its selected value separate.
+
 ### Props
 
 | Prop           | Type                                          | Default      | Description                                          |

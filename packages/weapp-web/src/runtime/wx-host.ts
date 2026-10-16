@@ -1,7 +1,9 @@
+import { createPreviewFilePicker } from './file-picker.ts'
 import { createPreviewCanvasContext, findPreviewSelectorElement } from './native-elements.ts'
 
 export interface WxHostOptions {
   pagePath: string
+  query?: Record<string, string>
   getPage: () => Record<string, unknown> | undefined
   enqueue: (callback: () => void) => void
   apis?: Record<string, unknown>
@@ -34,9 +36,10 @@ function callback(options: Record<string, unknown> | undefined, name: string, va
   if (typeof handler === 'function') { Reflect.apply(handler, undefined, [value]) }
 }
 
-export function createWxHost({ pagePath, getPage, enqueue, apis }: WxHostOptions) {
+export function createWxHost({ pagePath, query = {}, getPage, enqueue, apis }: WxHostOptions) {
+  const filePicker = createPreviewFilePicker()
   const resizeListeners = new Set<(value: unknown) => void>()
-  const launchOptions = () => ({ path: pagePath, query: {} })
+  const launchOptions = () => ({ path: pagePath, query })
   const windowInfo = () => ({
     pixelRatio: window.devicePixelRatio,
     screenWidth: window.innerWidth,
@@ -106,6 +109,7 @@ export function createWxHost({ pagePath, getPage, enqueue, apis }: WxHostOptions
     return query
   }
   const supported: Record<string, unknown> = {
+    chooseMessageFile: filePicker.chooseMessageFile,
     getWindowInfo: windowInfo,
     getSystemInfoSync: systemInfo,
     getDeviceInfo: () => ({ platform: 'web', model: 'Varo Web Preview', system: navigator.userAgent }),
@@ -166,6 +170,7 @@ export function createWxHost({ pagePath, getPage, enqueue, apis }: WxHostOptions
     dispose() {
       window.removeEventListener('resize', onResize)
       resizeListeners.clear()
+      filePicker.dispose()
     },
   }
 }

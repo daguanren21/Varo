@@ -4,8 +4,8 @@
 
 <PlatformTabsDemo example="menu" locale="zh" />
 
-::: warning 原生组合运行验证暂缓
-仓库的 `weapp-vite` / `wevu` 7.4.0 plain-slot 编译产物预览中，点击原生 Menu 后仍未展开，选项与 `select` 事件没有出现；上下文边界跟踪于 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172)。以下 H5 示例和原生事件类型不是该原生场景的运行证明。暂缓该场景验收，等待上游反馈；不修改插槽配置或添加兼容桥，也不推断 IDE/真机结果。
+::: tip 原生预览
+小程序页签使用 `weapp-vite` / `wevu` 7.5.0 的真实编译产物，复用与 H5 对应的筛选示例。普通插槽上下文由[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)提供；浏览器预览不代替微信 IDE 或真机验证。
 :::
 
 ## 基础用法

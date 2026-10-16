@@ -7,7 +7,7 @@ import {
   normalizeSelectArray,
   toggleSelectValue,
 } from '@varo-ui/headless'
-import { computed, defineComponent, h, shallowRef, useId, watch } from 'vue'
+import { computed, defineComponent, h, mergeProps, shallowRef, useId, watch } from 'vue'
 import { VIcon } from './icon'
 import '../../styles/varo.css'
 import '../../styles/varo-icon.css'
@@ -18,6 +18,7 @@ type ActivePreference = 'first' | 'last' | 'selected'
 
 export const VSelect = defineComponent({
   name: 'VSelect',
+  inheritAttrs: false,
   props: {
     value: {
       type: [String, Number, Array] as PropType<VSelectValueProp>,
@@ -392,6 +393,8 @@ export const VSelect = defineComponent({
       if (props.filterable) {
         return h('div', triggerAttrs, [
           h('input', {
+            'aria-label': attrs['aria-label'],
+            'aria-labelledby': attrs['aria-labelledby'],
             'aria-activedescendant': activeOptionId.value,
             'aria-disabled': props.disabled || undefined,
             'aria-autocomplete': 'list',
@@ -416,6 +419,8 @@ export const VSelect = defineComponent({
 
       return h('div', triggerAttrs, [
         h('button', {
+          'aria-label': attrs['aria-label'],
+          'aria-labelledby': attrs['aria-labelledby'],
           'aria-activedescendant': activeOptionId.value,
           'aria-disabled': props.disabled || undefined,
           'aria-controls': listboxId,
@@ -504,9 +509,10 @@ export const VSelect = defineComponent({
     return () =>
       h(
         'div',
-        {
-          ...attrs,
-          'class': ['varo-select', `varo-select--${props.mode}`, attrs.class],
+        mergeProps(attrs, {
+          'aria-label': undefined,
+          'aria-labelledby': undefined,
+          'class': ['varo-select', `varo-select--${props.mode}`],
           'data-disabled': String(props.disabled),
           'data-readonly': String(props.readonly),
           'data-multiple': String(props.multiple),
@@ -514,19 +520,9 @@ export const VSelect = defineComponent({
           'ref': (element: unknown) => {
             rootElement.value = element instanceof HTMLElement ? element : null
           },
-          'onFocusout': (event: FocusEvent) => {
-            if (typeof attrs.onFocusout === 'function') {
-              attrs.onFocusout(event)
-            }
-            handleRootFocusout(event)
-          },
-          'onKeydown': (event: KeyboardEvent) => {
-            if (typeof attrs.onKeydown === 'function') {
-              attrs.onKeydown(event)
-            }
-            handleRootKeydown(event)
-          },
-        },
+          'onFocusout': handleRootFocusout,
+          'onKeydown': handleRootKeydown,
+        }),
         [
           renderTrigger(),
           renderPanel(),

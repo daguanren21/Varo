@@ -11,10 +11,15 @@ interface Props {
   scenario: PreviewScenarioId
   session: string
   width: PreviewWidth
+  embed?: boolean
+  presentation?: 'default' | 'docs'
+  locale?: 'zh' | 'en'
+  theme?: 'light' | 'dark'
 }
 
 interface Emits {
   reset: []
+  contentHeight: [height: number]
 }
 
 const props = defineProps<Props>()
@@ -29,31 +34,45 @@ const state = shallowRef<PreviewState>('loading')
 const artifact = shallowRef('')
 const errorMessage = shallowRef('')
 
+const docsPresentation = computed(() => props.presentation === 'docs')
+const embedded = computed(() => props.embed || docsPresentation.value)
+const en = computed(() => props.locale === 'en')
 const scenarioDetails = computed(() =>
   previewScenarios.find(item => item.id === props.scenario) ?? previewScenarios[0],
 )
-const frameUrl = computed(
-  () => `./runtime.html?scenario=${props.scenario}&session=${encodeURIComponent(props.session)}`,
-)
+const pageScroll = computed(() => docsPresentation.value
+  && 'query' in scenarioDetails.value
+  && scenarioDetails.value.query.component === 'sticky')
+const frameUrl = computed(() => {
+  const parameters = new URLSearchParams({ scenario: props.scenario, session: props.session })
+  if (docsPresentation.value) { parameters.set('docs', '1') }
+  if (props.locale) { parameters.set('locale', props.locale) }
+  if (props.theme) { parameters.set('theme', props.theme) }
+  return `./runtime.html?${parameters}`
+})
 const scale = computed(() => availableWidth.value > 0 ? Math.min(1, availableWidth.value / (props.width + 2)) : 1)
-const frameStyle = computed(() => ({ inlineSize: `${props.width}px`, transform: `scale(${scale.value})` }))
-const fitStyle = computed(() => ({ inlineSize: `${(props.width + 2) * scale.value}px`, blockSize: `${deviceHeight.value * scale.value}px` }))
+const frameStyle = computed(() => embedded.value
+  ? { inlineSize: '100%', blockSize: '100%' }
+  : { inlineSize: `${props.width}px`, transform: `scale(${scale.value})` })
+const fitStyle = computed(() => embedded.value
+  ? undefined
+  : { inlineSize: `${(props.width + 2) * scale.value}px`, blockSize: `${deviceHeight.value * scale.value}px` })
 const scaleLabel = computed(() => `${Math.round(scale.value * 100)}%`)
-const frameTitle = computed(() => `${scenarioDetails.value.title} Wevu Web 兼容预览`)
+const frameTitle = computed(() => `${scenarioDetails.value.title} ${en.value ? 'Mini Program preview' : '小程序预览'}`)
 const stateLabel = computed(() => {
   if (state.value === 'ready') {
-    return '已就绪'
+    return en.value ? 'Ready' : '已就绪'
   }
 
   if (state.value === 'error') {
-    return '载入失败'
+    return en.value ? 'Failed to load' : '载入失败'
   }
 
-  return '正在加载'
+  return en.value ? 'Loading' : '正在加载'
 })
 
 watch(
-  [() => props.session, () => props.scenario],
+  frameUrl,
   () => {
     state.value = 'loading'
     artifact.value = ''
@@ -76,6 +95,11 @@ function receiveFrameMessage(event: MessageEvent<unknown>) {
   }
 
   if (event.data.session !== props.session || event.data.scenario !== props.scenario) {
+    return
+  }
+
+  if (event.data.type === 'height') {
+    if (docsPresentation.value && state.value === 'ready') { emit('contentHeight', event.data.height) }
     return
   }
 
@@ -113,32 +137,36 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <article class="preview-frame" :data-state="state">
-    <header class="preview-frame__header">
-      <div class="preview-frame__route">
+  <article class="preview-frame" :class="{ 'preview-frame--embed': embedded, 'preview-frame--docs': docsPresentation }" :data-state="state">
+    <header v-if="!docsPresentation" class="preview-frame__header">
+      <div v-if="!embedded" class="preview-frame__route">
         <span>Native page</span>
         <code>{{ scenarioDetails.page }}</code>
       </div>
 
-      <div class="preview-frame__status" :data-state="state">
+      <div class="preview-frame__status" :data-state="state" role="status">
         <span class="preview-frame__status-dot" aria-hidden="true" />
         <span>{{ stateLabel }}</span>
       </div>
+      <VButton v-if="props.embed" native-type="button" size="sm" variant="outline" aria-label="重置预览" @click="emit('reset')">
+        重置预览
+      </VButton>
     </header>
 
     <div ref="frameStage" class="preview-frame__stage">
       <div class="preview-frame__fit" :style="fitStyle">
         <div ref="frameDevice" class="preview-frame__device" :style="frameStyle">
-          <div class="preview-frame__device-bar" aria-hidden="true">
+          <div v-if="!embedded" class="preview-frame__device-bar" aria-hidden="true">
             <span>{{ scenarioDetails.title }}</span>
             <span>{{ props.width }} px · {{ scaleLabel }}</span>
           </div>
 
           <div class="preview-frame__canvas" :aria-busy="state === 'loading'">
             <iframe
-              :key="props.session"
+              :key="frameUrl"
               ref="runtimeFrame"
               class="preview-frame__iframe"
+              :class="{ 'preview-frame__iframe--page-scroll': pageScroll }"
               :src="frameUrl"
               :title="frameTitle"
               :tabindex="state === 'ready' ? 0 : -1"
@@ -147,16 +175,18 @@ onBeforeUnmount(() => {
 
             <div v-if="state === 'loading'" class="preview-frame__overlay" role="status" aria-live="polite">
               <span class="preview-frame__state-mark" aria-hidden="true" />
-              <strong>正在启动 Web 兼容运行时</strong>
-              <p>等待 glass-easel 装载当前 Wevu 原生构建产物。</p>
+              <strong>{{ embedded ? (en ? 'Loading preview' : '正在加载预览') : '正在启动 Web 兼容运行时' }}</strong>
+              <p v-if="!embedded">
+                等待 glass-easel 装载当前 Wevu 原生构建产物。
+              </p>
             </div>
 
             <div v-else-if="state === 'error'" class="preview-frame__overlay" role="alert">
               <span class="preview-frame__state-mark" aria-hidden="true" />
-              <strong>预览无法启动</strong>
+              <strong>{{ en ? 'Unable to start preview' : '预览无法启动' }}</strong>
               <p>{{ errorMessage }}</p>
               <VButton native-type="button" tone="danger" @click="emit('reset')">
-                重置并重试
+                {{ en ? 'Reset and retry' : '重置并重试' }}
               </VButton>
             </div>
           </div>
@@ -164,7 +194,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <footer class="preview-frame__artifact" aria-live="polite">
+    <footer v-if="!embedded" class="preview-frame__artifact" aria-live="polite">
       <span>运行产物</span>
       <output v-if="state === 'ready'">{{ artifact }}</output>
       <p v-else-if="state === 'error'">
@@ -334,6 +364,12 @@ onBeforeUnmount(() => {
   background: var(--varo-ui-surface);
 }
 
+.preview-frame[data-state='error'] .preview-frame__overlay {
+  align-content: start;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
 .preview-frame__overlay strong {
   font-size: 17px;
   color: var(--varo-ui-text);
@@ -375,6 +411,55 @@ onBeforeUnmount(() => {
 
 .preview-frame__artifact p {
   text-align: right;
+}
+
+.preview-frame--embed {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.preview-frame--embed .preview-frame__header {
+  flex: none;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.preview-frame--embed .preview-frame__stage {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+}
+
+.preview-frame--embed .preview-frame__fit {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.preview-frame--embed .preview-frame__device {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.preview-frame--embed .preview-frame__canvas {
+  height: 100%;
+}
+
+.preview-frame--docs,
+.preview-frame--docs .preview-frame__stage,
+.preview-frame--docs .preview-frame__device,
+.preview-frame--docs .preview-frame__canvas,
+.preview-frame--docs .preview-frame__iframe {
+  background: transparent;
+}
+
+.preview-frame__iframe--page-scroll {
+  height: 100vh;
 }
 
 @media (max-width: 620px) {

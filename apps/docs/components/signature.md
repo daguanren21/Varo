@@ -4,7 +4,9 @@
 
 ## 演示
 
-<SignatureDemo locale="zh" />
+<ComponentPlatformDemo component="signature" locale="zh">
+  <SignatureDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## Props
 

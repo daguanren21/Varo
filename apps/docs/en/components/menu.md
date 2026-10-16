@@ -4,8 +4,8 @@
 
 <PlatformTabsDemo example="menu" locale="en" />
 
-::: warning Native compound runtime verification deferred
-In the repository's `weapp-vite` / `wevu` 7.4.0 plain-slot artifact preview, clicking native Menu leaves it closed, with no options or `select` event. The context boundary is tracked in [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172). The H5 example and native event types below are not runtime proof for that native scenario. Verification is deferred pending upstream feedback; no slot-configuration workaround or compatibility bridge is added, and no IDE/device result is inferred.
+::: tip Native preview
+The Mini Program tab runs actual `weapp-vite` / `wevu` 7.5.0 artifacts with the corresponding H5 filter example. Plain-slot context comes from the [upstream implementation](https://github.com/weapp-vite/weapp-vite/pull/1174); browser preview does not replace WeChat IDE or device validation.
 :::
 
 ## Basic Usage

@@ -1,5 +1,9 @@
 # Drawer
 
+## Demo
+
+<AdditionalComponentDemo component="drawer" locale="en" />
+
 ## Basic usage
 
 ```vue

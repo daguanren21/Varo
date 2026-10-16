@@ -6,6 +6,7 @@ export const nativeTemplates: Record<string, string> = {
   'input': '<input id="control" class="varo-native-input__control" />',
   'textarea': '<textarea id="control" class="varo-native-textarea__control"></textarea>',
   'label': '<label id="control" class="varo-native-label__control"><slot /></label>',
+  'navigator': '<a id="control" class="varo-native-navigator__control"><slot /></a>',
   'canvas': '<canvas id="control" class="varo-native-canvas__control"></canvas>',
   'image': '<img id="control" class="varo-native-image__control" />',
   'scroll-view': '<slot />',

@@ -4,7 +4,9 @@
 
 ## 演示
 
-<ToastDemo locale="zh" />
+<ComponentPlatformDemo component="toast" locale="zh">
+  <ToastDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## VToast Props
 

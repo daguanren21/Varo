@@ -4,9 +4,9 @@
 
 ## Demo
 
-<RobotChatDemo locale="en" />
+<NativeComponentPreview component="robot-chat" locale="en" />
 
-This is a local browser interaction illustration, not a native SFC, compiled-artifact preview, or connected chatbotwidget plugin. Welcome text, replies, connection state, and the `queryCallback` count are generated locally by the example; they do not indicate a real service connection, successful request, or WeChat Dialog Open Platform callback. Configure and verify the plugin, permissions, and product AppID in the real WeChat host. This illustration is not device support evidence.
+This preview runs the compiled native `VRobotChat` scene. The browser host presents the plugin conversation, input area, and callback interactions locally. Replies and connection states do not indicate a successful request to a real robot service. Configure and verify the plugin, permissions, and product AppID in the real WeChat host.
 
 ::: warning Mini-program configuration
 Enable the plugin for the Mini Program, then declare it under the fixed `varoRobot` alias in `app.json`:
@@ -27,7 +27,7 @@ Use the plugin version enabled for the Mini Program. See the [chatbotwidget plug
 
 ## Enable the playground demo
 
-The plugin and both robot routes are off by default, with a disabled overview entry. Retail pages and Blocks need no plugin authorization.
+The plugin and robot routes, including the documentation demo, are off by default, with a disabled overview entry. Retail pages, Blocks, and the map documentation page need no plugin authorization.
 
 Enable `chatbotwidget` for your Mini Program, then opt in from the repository root:
 

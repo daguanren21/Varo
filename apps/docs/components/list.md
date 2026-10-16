@@ -4,7 +4,9 @@
 
 ## 演示
 
-<ListDemo locale="zh" />
+<ComponentPlatformDemo component="list" locale="zh">
+  <ListDemo locale="zh" />
+</ComponentPlatformDemo>
 
 ## Props
 

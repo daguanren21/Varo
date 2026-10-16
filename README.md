@@ -58,7 +58,7 @@ Author component renderers in `registry/components/**`, Blocks in `registry/bloc
 
 The six experimental profiles require explicit admission for every item in the selected transitive closure. Missing admission fails before writes; the CLI never falls back to Weapp. The representative admitted component set is `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with required utilities/themes. Manifests remain authoritative; this is not certification of the wider catalog or Agent UI on those profiles.
 
-Use `weapp-vite` and `wevu` **7.4.0** for the repository fixtures. The native package peers remain `>=7.2.1 <8`. Donut uses WeChat compilation plus separate `mini-android`, `mini-ios`, or `mini-ohos` host metadata, not an Android/iOS/OpenHarmony compiler target. SDK installation, signing, AppIDs, vendor IDEs, and device execution remain separate prerequisites; no identities or credentials are fabricated.
+Use `weapp-vite` and `wevu` **7.5.0** for the repository fixtures. The native package peers remain `>=7.2.1 <8`. Donut uses WeChat compilation plus separate `mini-android`, `mini-ios`, or `mini-ohos` host metadata, not an Android/iOS/OpenHarmony compiler target. SDK installation, signing, AppIDs, vendor IDEs, and device execution remain separate prerequisites; no identities or credentials are fabricated.
 
 ## Install editable source
 
@@ -116,9 +116,9 @@ pnpm --filter @varo/playground-weapp dev:ai
 pnpm run docs:dev
 ```
 
-This starts VitePress at `http://localhost:5173`. In-page H5 examples are browser interactions; native source tabs show source, not a simulated native renderer. The separate glass-easel preview is trusted compiled-artifact tooling. Its same-origin iframe is not a security sandbox, and a browser artifact preview is not IDE/device proof.
+This starts VitePress at `http://localhost:5173` and prepares the native preview artifacts. The H5 and Mini Program tabs share device framing, example cases, language, and theme. Mini Program examples run compiled Wevu SFCs through glass-easel; their editable source remains available under **View code**. H5-only components retain explicit platform support boundaries.
 
-The preview keeps native Dialog diagnostics in a separate `dialog` scenario so its known context failure does not prevent base-control and Drawer checks. Plain-slot Dialog/Menu context remains blocked by [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) on the 7.4.0 fixture baseline; this is not a device-runtime conclusion or a downstream compatibility workaround.
+The 7.5.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174). All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
 
 ## Verification
 

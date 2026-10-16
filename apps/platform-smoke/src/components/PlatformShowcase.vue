@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormRules } from '@varo-ui/headless'
+import type { FormRules, FormValues } from '@varo-ui/headless'
 import { computed, reactive, shallowRef } from 'wevu'
 import VButton from './ui/v-button.vue'
 import VCard from './ui/v-card.vue'
@@ -36,6 +36,14 @@ const disabledLabel = computed(() => disabled.value ? 'Enable controls' : 'Disab
 const readonlyLabel = computed(() => readonly.value ? 'Allow editing' : 'Make read-only')
 const modeLabel = computed(() => disabled.value ? 'disabled' : readonly.value ? 'read-only' : 'editable')
 const drawerState = computed(() => drawerOpen.value ? 'open' : 'closed')
+
+function updateModel(values: FormValues) {
+  Object.assign(model, values)
+}
+
+function updateField<Key extends keyof typeof model>(name: Key, value: (typeof model)[Key]) {
+  model[name] = value
+}
 
 function submit(payload: { values: Record<string, unknown> }) {
   submitted.value = JSON.stringify(payload.values)
@@ -78,26 +86,27 @@ function closed() {
     </view>
 
     <VCard variant="outline">
-      <VForm :model="model" :rules="rules" :disabled="disabled" @submit="submit" @failed="failed" @reset="reset">
+      <VForm :model="model" :rules="rules" :disabled="disabled" @update:model="updateModel" @submit="submit" @failed="failed" @reset="reset">
         <VFormItem name="name" label="Name" required>
           <VInput
-            v-model:value="model.name"
+            :value="model.name"
             input-id="smoke-name"
             aria-label="Name"
             placeholder="At least two characters"
             clearable
             :disabled="disabled"
             :readonly="readonly"
+            @update:value="updateField('name', $event)"
           />
         </VFormItem>
         <VFormItem name="consent" label="Preference">
-          <VCheckbox v-model:checked="model.consent" label="Remember my preference" aria-label="Remember my preference" :disabled="disabled" :readonly="readonly" />
+          <VCheckbox :checked="model.consent" label="Remember my preference" aria-label="Remember my preference" :disabled="disabled" :readonly="readonly" @update:checked="updateField('consent', $event)" />
         </VFormItem>
         <VFormItem name="notifications" label="Notifications">
-          <VSwitch v-model="model.notifications" aria-label="Enable notifications" :disabled="disabled" :readonly="readonly" />
+          <VSwitch :model-value="model.notifications" aria-label="Enable notifications" :disabled="disabled" :readonly="readonly" @update:model-value="updateField('notifications', $event)" />
         </VFormItem>
         <VFormItem name="otp" label="Four-digit code" required>
-          <VInputOtp v-model:value="model.otp" :length="4" input-aria-label="Four-digit code" :disabled="disabled" :readonly="readonly" @complete="complete" />
+          <VInputOtp :value="model.otp" :length="4" input-aria-label="Four-digit code" :disabled="disabled" :readonly="readonly" @complete="complete" @update:value="updateField('otp', $event)" />
         </VFormItem>
         <view class="mt-4 flex flex-wrap gap-2">
           <VButton native-type="submit" :disabled="disabled">

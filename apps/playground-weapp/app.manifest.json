@@ -9,6 +9,7 @@
     "pages/form-showcase/index",
     "pages/agent-workspace/index",
     "pages/web-preview/index",
+    "pages/web-preview-button/index",
     "pages/web-preview-agent/index",
     "pages/web-preview-dialog/index",
     "pages/web-preview-map/index",
@@ -16,6 +17,20 @@
     "pages/index/index"
   ],
   "subPackages": [
+    {
+      "root": "docs-preview",
+      "pages": [
+        "docs-basics/index",
+        "docs-layout/index",
+        "docs-navigation/index",
+        "docs-input/index",
+        "docs-selection/index",
+        "docs-overlays/index",
+        "docs-feedback/index",
+        "docs-primitives/index",
+        "docs-native-only/index"
+      ]
+    },
     {
       "root": "retail-goods",
       "pages": [

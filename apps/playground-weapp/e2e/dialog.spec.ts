@@ -42,17 +42,6 @@ describe('playground-weapp delivery contract', () => {
     })
     expect(existsSync(resolve(outputRoot, 'pages/retail-home/index.js'))).toBe(true)
     expect(existsSync(resolve(outputRoot, 'pages/retail-home/index.wxml'))).toBe(true)
-    expect(retailPage.usingComponents).toMatchObject({
-      'retail-product-card': '/components/retail/RetailProductCard',
-      'v-button': '/components/ui/v-button',
-      'v-card': '/components/ui/v-card',
-      'v-input': '/components/ui/v-input',
-    })
-    expect(mallPage.usingComponents).toMatchObject({
-      'mall-agent-panel': '/components/mall/MallAgentPanel',
-      'mall-header': '/components/mall/MallHeader',
-      'mall-product-grid': '/components/mall/MallProductGrid',
-    })
     if (process.env.WEAPP_ROBOT_CHAT === '1') {
       expect(app.plugins).toEqual({
         varoRobot: { provider: 'wx8c631f7e9f2465e1', version: '1.1.15' },

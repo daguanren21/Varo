@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Locale, PrimitiveExampleName } from './primitiveExamples'
 import { computed, onBeforeUnmount, ref } from 'vue'
-import NativeSourcePreview from './NativeSourcePreview.vue'
+import NativeComponentPreview from './NativeComponentPreview.vue'
 import PrimitiveExamplePreview from './PrimitiveExamplePreview.vue'
 import {
 
@@ -174,7 +174,7 @@ onBeforeUnmount(() => resetCopy())
       <strong>{{ activePackage }}</strong>
     </div>
 
-    <NativeSourcePreview v-if="platform === 'weapp'" :component="name" :locale="locale" />
+    <NativeComponentPreview v-if="platform === 'weapp'" :component="name" :locale="locale" :preview="showPreview" surface="primitive" />
     <div v-else-if="showPreview" class="primitive-example__preview" data-platform="h5">
       <PrimitiveExamplePreview :name="name" />
       <table class="primitive-example__contract-table">

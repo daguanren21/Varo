@@ -1,5 +1,9 @@
 # Drawer
 
+## 演示
+
+<AdditionalComponentDemo component="drawer" locale="zh" />
+
 ## 基础用法
 
 ```vue

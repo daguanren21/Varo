@@ -182,7 +182,9 @@ async function mountFormFixture(behaviorLocation: 'component' | 'behavior' = 'co
 
 function pointerActivate(button: HTMLButtonElement, click = true) {
   const options = { bubbles: true, cancelable: true, button: 0, detail: 1 }
+  button.dispatchEvent(new PointerEvent('pointerdown', { ...options, pointerId: 1, pointerType: 'mouse' }))
   button.dispatchEvent(new MouseEvent('mousedown', options))
+  button.dispatchEvent(new PointerEvent('pointerup', { ...options, pointerId: 1, pointerType: 'mouse' }))
   button.dispatchEvent(new MouseEvent('mouseup', options))
   if (click) { button.dispatchEvent(new MouseEvent('click', options)) }
 }
