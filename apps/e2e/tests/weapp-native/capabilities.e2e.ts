@@ -111,10 +111,19 @@ test('native Boolean guards preserve absent and false state and reject disabled 
     await tap('//*[@id="absent"]')
     await tap('//*[@id="false"]')
     expect(await page.data('taps')).toBe(2)
-    for (const id of ['bare-disabled', 'true-disabled', 'bare-hidden', 'true-hidden', 'aria-disabled', 'aria-hidden', 'ancestor-hidden']) {
+    for (const id of ['bare-disabled', 'true-disabled', 'bare-hidden', 'true-hidden', 'aria-disabled', 'ancestor-hidden']) {
       await rejectedTap(`//*[@id="${id}"]`)
       expect(await page.data('taps')).toBe(2)
     }
+    const accessibleButtons = await semantics.locate(native, {
+      kind: 'query',
+      query: { kind: 'role', value: { kind: 'string', value: 'button', exact: true } },
+    }, context)
+    expect(accessibleButtons.map(node => node.attributes?.id)).toContain('absent')
+    expect(accessibleButtons.some(node => node.attributes?.id === 'aria-hidden')).toBe(false)
+    expect((await one('//*[@id="aria-hidden"]')).states?.hidden).toBe(false)
+    await tap('//*[@id="aria-hidden"]')
+    expect(await page.data('taps')).toBe(3)
     for (const prefix of ['bare', 'true']) {
       const field = await one(`//*[@id="${prefix}-password"]`)
       expect(field.states?.secure).toBe(true)
