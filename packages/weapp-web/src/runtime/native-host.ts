@@ -65,6 +65,7 @@ export function createNativeHost(
   pagePath: string,
   reportError: (error: Error) => void,
   harness?: Partial<WeappWebHarness>,
+  query: Record<string, string> = {},
 ): NativeHost {
   const resolvedHarness = resolveWeappWebHarness(harness)
   let disposed = false
@@ -142,9 +143,9 @@ export function createNativeHost(
   const setPage = (value: unknown) => {
     currentPage = record(value, '小程序页面实例')
     Object.defineProperty(currentPage, 'route', { configurable: true, writable: true, value: pagePath })
-    Object.defineProperty(currentPage, 'options', { configurable: true, writable: true, value: {} })
+    Object.defineProperty(currentPage, 'options', { configurable: true, writable: true, value: query })
   }
-  const wxHost = resolvedHarness.createWxHost({ pagePath, getPage: () => currentPage, enqueue })
+  const wxHost = resolvedHarness.createWxHost({ pagePath, query, getPage: () => currentPage, enqueue })
   const sharedEnv = space.componentEnv('__preview_shared__', value => value)
 
   function component(...args: unknown[]) {
@@ -160,6 +161,10 @@ export function createNativeHost(
         ...definition,
         properties: nativeProperties(definition.properties),
         behaviors: nativeBehaviors(definition.behaviors),
+        // The adapter only installs methods; Wevu declares page onLoad at the top level.
+        methods: isPage && typeof definition.onLoad === 'function'
+          ? { ...(definition.methods ? record(definition.methods, '组件方法') : {}), onLoad: definition.onLoad }
+          : definition.methods,
         lifetimes: {
           ...lifetimes,
           created(this: unknown, ...values: unknown[]) {
@@ -218,11 +223,11 @@ export function createNativeHost(
   const application = (value: unknown) => {
     if (app) { throw new Error('小程序 App 不能重复注册') }
     app = { globalData: {}, ...record(value, 'App 定义') }
-    const launch = invoke(app, 'onLaunch', [{ path: pagePath, query: {} }])
+    const launch = invoke(app, 'onLaunch', [{ path: pagePath, query }])
     if (launch && typeof launch === 'object' && 'then' in launch) {
       void Promise.resolve(launch).catch(error => reportError(asError(error)))
     }
-    invoke(app, 'onShow', [{ path: pagePath, query: {} }])
+    invoke(app, 'onShow', [{ path: pagePath, query }])
   }
 
   for (const name of [
@@ -329,7 +334,7 @@ export function createNativeHost(
       for (const path of Object.keys(bundle.components)) { loader.load(`${path}.js`) }
     },
     emitAppVisibility(visible) {
-      invoke(app, visible ? 'onShow' : 'onHide', visible ? [{ path: pagePath, query: {} }] : [])
+      invoke(app, visible ? 'onShow' : 'onHide', visible ? [{ path: pagePath, query }] : [])
     },
     whenReady() {
       if (disposed || (!pendingReady.size && !readyQueued)) { return Promise.resolve() }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { VSelect } from '@varo-ui/h5'
 import { computed, shallowRef, watch } from 'vue'
 import catalog from '../registry-catalog.json'
 
@@ -10,6 +11,8 @@ const entries = computed(() => ids.value.map(id => catalog.components[id as keyo
 const files = computed(() => entries.value.flatMap(item => item.nativeFiles))
 const targets = computed(() => Object.keys(catalog.profiles).filter(id => id !== 'h5' && entries.value.length === ids.value.length
   && entries.value.every(item => (item.platforms as readonly string[]).includes(id))))
+const profileLabel = computed(() => props.locale === 'en' ? 'Install profile' : '安装 profile')
+const profileOptions = computed(() => targets.value.map(value => ({ value, label: value === 'weapp' ? value : `${value} · experimental` })))
 const target = shallowRef('weapp')
 const loaded = shallowRef<Array<{ path: string, content: string }>>([])
 const loading = shallowRef(false)
@@ -52,14 +55,10 @@ watch(files, async (next, _previous, onCleanup) => {
       {{ locale === 'en' ? 'This component does not declare a native Registry implementation.' : '该组件未声明原生 Registry 实现。' }}
     </p>
     <template v-else>
-      <label>
-        {{ locale === 'en' ? 'Install profile' : '安装 profile' }}
-        <select v-model="target">
-          <option v-for="id in targets" :key="id" :value="id">
-            {{ id }}{{ id === 'weapp' ? '' : ' · experimental' }}
-          </option>
-        </select>
-      </label>
+      <div class="native-source-preview__profile">
+        <span aria-hidden="true">{{ profileLabel }}</span>
+        <VSelect v-model:value="target" class="native-source-preview__field" mode="dropdown" :options="profileOptions" :aria-label="profileLabel" />
+      </div>
       <pre><code>{{ command }}</code></pre>
       <p v-if="target !== 'weapp'">
         {{ locale === 'en' ? 'Experimental source admission is not native host certification.' : '实验性源码准入不代表已经通过该宿主的真机认证。' }}
@@ -92,17 +91,16 @@ watch(files, async (next, _previous, onCleanup) => {
   margin-top: 0;
 }
 
-.native-source-preview label {
+.native-source-preview__profile {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
 }
 
-.native-source-preview select {
-  padding: 6px 10px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
+.native-source-preview__field {
+  width: min(100%, 20rem);
+  min-width: 0;
 }
 
 .native-source-preview pre {
@@ -122,7 +120,6 @@ watch(files, async (next, _previous, onCleanup) => {
   cursor: pointer;
 }
 
-.native-source-preview select:focus-visible,
 .native-source-preview summary:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 3px;

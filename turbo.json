@@ -5,6 +5,11 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@varo/docs#build": {
+      "dependsOn": ["^build"],
+      "env": ["DOCS_BASE"],
+      "outputs": [".vitepress/dist/**"]
+    },
     "@varo/playground-weapp#build": {
       "cache": false,
       "dependsOn": ["^build"],
@@ -16,6 +21,11 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/browser/mp-weixin/**"]
     },
+    "@varo/playground-weapp-preview#build": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
     "@varo/weapp-web#build": {
       "cache": false
     },
@@ -23,6 +33,17 @@
       "cache": false
     },
     "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "@varo/docs#dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": ["DOCS_BASE", "DOCS_PORT"]
+    },
+    "@varo/playground-weapp-preview#dev": {
+      "dependsOn": ["build"],
       "cache": false,
       "persistent": true
     },

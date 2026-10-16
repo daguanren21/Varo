@@ -28,7 +28,7 @@ import {
 } from '@varo-ui/h5'
 import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
 import { z } from 'zod'
-import NativeSourcePreview from './NativeSourcePreview.vue'
+import NativeComponentPreview from './NativeComponentPreview.vue'
 
 type FormDemoKind
   = | 'calendar'
@@ -1399,7 +1399,7 @@ function onFormArrayFailed() {
         role="tabpanel"
         :aria-labelledby="platformTabId(activePlatform)"
       >
-        <NativeSourcePreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" />
+        <NativeComponentPreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" />
         <template v-else>
           <section
             v-if="example === 'checkbox'"

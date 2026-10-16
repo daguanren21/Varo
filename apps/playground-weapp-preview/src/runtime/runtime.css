@@ -35,3 +35,21 @@ wx-page {
   display: block;
   min-height: 100vh;
 }
+
+html.runtime-docs,
+.runtime-docs body,
+.runtime-docs #runtime-root,
+.runtime-docs #runtime-root > wx-page,
+/* The native compiler wraps pages in the app's viewport-sized shell. */
+.runtime-docs #runtime-root .app-root {
+  min-height: 0;
+}
+
+.runtime-docs #runtime-root {
+  position: relative;
+  display: flow-root;
+}
+
+.runtime-docs #runtime-root > wx-page {
+  background: transparent;
+}

@@ -42,6 +42,13 @@ export default defineConfig(({ mode }) => ({
       ? 'dist/browser/mp-weixin'
       : isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
     minify: 'esbuild',
+    rolldownOptions: {
+      output: {
+        assetFileNames: asset => asset.originalFileNames.some(path => path.includes('src/docs-preview/assets/'))
+          ? 'docs-preview/assets/[name]-[hash][extname]'
+          : '[name]-[hash][extname]',
+      },
+    },
   },
   esbuild: {
     keepNames: true,

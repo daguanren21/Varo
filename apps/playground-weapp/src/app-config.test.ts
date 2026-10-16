@@ -20,14 +20,16 @@ describe('native optional plugin admission', () => {
     expect(app.pages).toContain('pages/retail-home/index')
     expect(app.pages).not.toContain('pages/robot-chat-showcase/index')
     expect(app.pages).not.toContain('pages/web-preview-robot-chat/index')
+    expect(app.pages).not.toContain('pages/docs-robot-chat/index')
     expect(app.tabBar?.list.every(tab => app.pages?.includes(tab.pagePath))).toBe(true)
   })
 
-  it('admits both plugin consumers only for an explicit opt-in, without mutating the base manifest', async () => {
+  it('admits plugin consumers only for an explicit opt-in, without mutating the base manifest', async () => {
     const enabled = await loadApp('1')
 
     expect(enabled.pages).toContain('pages/robot-chat-showcase/index')
     expect(enabled.pages).toContain('pages/web-preview-robot-chat/index')
+    expect(enabled.pages).toContain('pages/docs-robot-chat/index')
     expect(enabled.plugins).toEqual({
       varoRobot: { provider: 'wx8c631f7e9f2465e1', version: '1.1.15' },
     })
@@ -36,5 +38,6 @@ describe('native optional plugin admission', () => {
     expect(disabled.plugins).toBeUndefined()
     expect(disabled.pages).not.toContain('pages/robot-chat-showcase/index')
     expect(disabled.pages).not.toContain('pages/web-preview-robot-chat/index')
+    expect(disabled.pages).not.toContain('pages/docs-robot-chat/index')
   })
 })

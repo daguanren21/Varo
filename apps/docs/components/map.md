@@ -4,9 +4,9 @@
 
 ## 演示
 
-<MapDemo locale="zh" />
+<NativeComponentPreview component="map" locale="zh" />
 
-这是独立的浏览器地图示意，不是 `VMap` 原生 SFC 或编译产物预览：它使用腾讯地图 JS API / 栅格瓦片与本地状态展示中心点、标记和 `regionchange` 交互。文档站不能运行微信同层地图；定位权限和 Map Context 只能在微信宿主中验证。它不构成其他 profile 或真机支持证据。
+此预览运行 `VMap` 的原生编译场景。浏览器宿主使用腾讯地图 JS API / 栅格瓦片呈现地图能力，不是微信客户端同层地图；定位权限和 Map Context 仍需在微信宿主中验证。浏览器预览不构成其他 profile 或真机支持证据。
 
 ## 使用
 

@@ -95,7 +95,7 @@ export default defineConfig({
 
 The plugin transforms source CSS before preprocessing and appends `page { --varo-ui-* }` declarations after native CSS emission, so styles loaded through native sidecars retain the configured theme overrides.
 
-This generates theme variables, not the complete component style closure. Use `weapp-vite`/`wevu` 7.4.0 for the repository baseline. For Registry source installs, configure `weapp.styles` to include **every installed `src/styles/*.css`** in `app.vue`, with `varo.css` first and your application overrides afterward. For npm-native components, put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and globally register `{ source: 'package.css', include: 'app.vue' }` instead; an absolute package path is not a supported `weapp.styles.source`.
+This generates theme variables, not the complete component style closure. Use `weapp-vite`/`wevu` 7.5.0 for the repository baseline. For Registry source installs, configure `weapp.styles` to include **every installed `src/styles/*.css`** in `app.vue`, with `varo.css` first and your application overrides afterward. For npm-native components, put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and globally register `{ source: 'package.css', include: 'app.vue' }` instead; an absolute package path is not a supported `weapp.styles.source`.
 
 Do not import page/global CSS into component-local WXSS of `apply-shared` SFCs. H5 installed source imports its dependency CSS automatically; native source deliberately leaves global loading to the application. See the [native stylesheet configuration](../ui-weapp/README.md#global-npm-stylesheet) and repository `apps/platform-smoke/vite.config.mjs`.
 

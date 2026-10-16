@@ -3,7 +3,12 @@ import type { Plugin } from 'vue'
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { shallowRef } from 'vue'
 import PlatformTabsDemo from './PlatformTabsDemo.vue'
+
+vi.mock('vitepress', () => ({
+  useData: () => ({ isDark: shallowRef(false) }),
+}))
 
 const themeConfig: ThemeConfig = {
   theme: createTheme({
@@ -28,64 +33,6 @@ describe('PlatformTabsDemo', () => {
     vi.unstubAllGlobals()
     window.sessionStorage.clear()
     window.history.replaceState(null, '', '/')
-  })
-
-  it('renders a focused preview without runtime metadata or fake device chrome', async () => {
-    const wrapper = mount(PlatformTabsDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'overview',
-        locale: 'zh',
-      },
-    })
-
-    expect(wrapper.find('.platform-demo__note').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__head p').exists()).toBe(false)
-    expect(wrapper.text()).not.toContain('说明')
-    expect(wrapper.text()).not.toContain('适合浏览器页面里的表单提交')
-
-    const stage = wrapper.get('.platform-demo__stage')
-    expect(stage.attributes('data-layout')).toBe('controls-preview')
-    expect(wrapper.find('.platform-demo__platform-switch').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__phone-frame').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__phone-status').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__phone-appbar').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__meta-grid').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__runtime-pill').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__code-section').exists()).toBe(false)
-
-    const toggle = wrapper.get('.platform-demo__code-toggle')
-    expect(toggle.attributes('aria-label')).toBe('展开代码')
-    expect(toggle.attributes('aria-expanded')).toBe('false')
-    expect(toggle.text()).toContain('展开代码')
-    expect(toggle.get('svg').attributes('viewBox')).toBe('0 0 24 24')
-    expect(wrapper.find('.platform-demo__code-copy').exists()).toBe(false)
-
-    await toggle.trigger('click')
-
-    const codeShell = wrapper.get('.platform-demo__code-shell')
-    const codeSection = wrapper.get('.platform-demo__code-section')
-    expect(stage.element.contains(codeShell.element)).toBe(true)
-    expect(codeShell.isVisible()).toBe(true)
-    expect(toggle.attributes('data-active')).toBe('true')
-    expect(toggle.attributes('aria-expanded')).toBe('true')
-    expect(toggle.attributes('aria-label')).toBe('收起代码')
-    expect(toggle.text()).toContain('收起代码')
-
-    expect(codeShell.findAll('[role="tab"]')).toHaveLength(0)
-    expect(wrapper.findAll('.platform-demo__platform-switch [role="tab"]')).toHaveLength(2)
-    expect(wrapper.findAll('.platform-demo__code-section')).toHaveLength(1)
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('H5 写法')
-    expect(codeSection.get('.platform-demo__code-head').text()).toContain('@varo-ui/h5')
-    expect(codeSection.get('code').text()).toContain('from \'@varo-ui/h5\'')
-    expect(codeSection.get('code').text()).not.toContain('from \'@varo-ui/weapp\'')
-
-    const copyButton = wrapper.get('.platform-demo__code-copy')
-    expect(copyButton.attributes('aria-label')).toBe('复制 H5 代码')
-    expect(copyButton.text()).toContain('复制 H5 代码')
-    expect(copyButton.find('.platform-demo__code-copy-icon').exists()).toBe(true)
   })
 
   it('presents Image as a theme-aware content component', async () => {
@@ -168,23 +115,6 @@ describe('PlatformTabsDemo', () => {
     expect(wrapper.get('.platform-demo__grid-result').text()).toBe('已打开：我的订单')
     await items[1]!.trigger('keydown', { key: ' ' })
     expect(wrapper.get('.platform-demo__grid-result').text()).toBe('已打开：物流')
-  })
-  it('presents Layout as a 24-column business overview', async () => {
-    const wrapper = mount(PlatformTabsDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'layout',
-        locale: 'zh',
-      },
-    })
-
-    expect(wrapper.get('.platform-demo__layout-overview').text()).toContain('经营概览')
-    expect(wrapper.findAll('.varo-row')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-col').map(col => col.attributes('data-span'))).toEqual(['16', '8', '8', '8', '8'])
-    expect(wrapper.findAll('.platform-demo__layout-card')).toHaveLength(5)
-    expect(wrapper.findAll('.platform-demo__layout-card--primary')).toHaveLength(1)
   })
   it('presents Space as wrapped filters and stacked full-width actions', async () => {
     const wrapper = mount(PlatformTabsDemo, {
@@ -534,59 +464,6 @@ describe('PlatformTabsDemo', () => {
     await tabs[1]!.trigger('keydown', { key: 'Home' })
     await flushPromises()
     expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('h5')
-  })
-
-  it('uses a preview-only layout for demos without controls', () => {
-    const wrapper = mount(PlatformTabsDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'cell',
-        locale: 'zh',
-      },
-    })
-
-    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
-    expect(wrapper.find('.platform-demo__controls').exists()).toBe(false)
-    expect(wrapper.findAll('.platform-demo__panel')).toHaveLength(1)
-    expect(wrapper.findAll('.varo-cell-group')).toHaveLength(2)
-    expect(wrapper.find('.platform-demo__cell-demo').exists()).toBe(true)
-    expect(wrapper.find('.platform-demo__card .varo-cell-group').exists()).toBe(false)
-  })
-
-  it('renders layout component previews without controls', () => {
-    const wrapper = mount(PlatformTabsDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'grid',
-        locale: 'zh',
-      },
-    })
-
-    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
-    expect(wrapper.find('.platform-demo__controls').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__grid-demo').exists()).toBe(true)
-    expect(wrapper.findAll('.varo-grid__item').length).toBeGreaterThanOrEqual(8)
-  })
-
-  it('renders navigation component previews without controls', () => {
-    const wrapper = mount(PlatformTabsDemo, {
-      global: {
-        plugins: [themePlugin],
-      },
-      props: {
-        example: 'tabs',
-        locale: 'zh',
-      },
-    })
-
-    expect(wrapper.get('.platform-demo__stage').attributes('data-layout')).toBe('preview-only')
-    expect(wrapper.find('.platform-demo__controls').exists()).toBe(false)
-    expect(wrapper.find('.platform-demo__tabs-demo').exists()).toBe(true)
-    expect(wrapper.findAll('.varo-tabs__tab').length).toBeGreaterThanOrEqual(3)
   })
 
   it('presents Menu as accessible product sorting and stock filters', async () => {

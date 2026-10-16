@@ -214,4 +214,77 @@ page {
     transition: none;
   }
 }
+
+.docs-demo {
+  display: block;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--varo-ui-text);
+}
+
+.docs-demo__section {
+  min-width: 0;
+  padding: 20px 0;
+  border-top: 1px solid var(--varo-ui-border);
+}
+
+.docs-demo__section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.docs-demo__heading {
+  display: block;
+  margin: 0;
+  font-size: 13.44px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.docs-demo__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.docs-demo__stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+}
+
+.docs-demo__muted {
+  font-size: 12px;
+  color: var(--varo-ui-text-muted);
+}
+
+.docs-demo__value {
+  display: block;
+  font-size: 12px;
+  color: var(--varo-ui-text-regular);
+  overflow-wrap: anywhere;
+}
+
+.docs-demo__card {
+  min-width: 0;
+  padding: 16px;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: 16px;
+}
+
+.docs-demo__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.docs-demo__image {
+  display: block;
+  width: 100%;
+}
 </style>

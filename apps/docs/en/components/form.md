@@ -6,6 +6,38 @@
 
 <FormComponentDemo example="form-array" locale="en" />
 
+## Native Weapp model binding
+
+Native properties carry snapshots. Bind controls to the page-owned `model` and handle `VForm`'s `update:model` event so resets and form methods update that page state:
+
+```vue
+<script setup lang="ts">
+import type { FormValues } from '@varo-ui/headless'
+import { reactive } from 'wevu'
+import VFormItem from '@/components/ui/v-form-item.vue'
+import VForm from '@/components/ui/v-form.vue'
+import VInput from '@/components/ui/v-input.vue'
+
+const model = reactive({ name: '' })
+function updateModel(values: FormValues) {
+  Object.assign(model, values)
+}
+function updateName(value: string) {
+  model.name = value
+}
+</script>
+
+<template>
+  <VForm :model="model" @update:model="updateModel">
+    <VFormItem name="name" label="Name" required>
+      <VInput :value="model.name" @update:value="updateName" />
+    </VFormItem>
+  </VForm>
+</template>
+```
+
+For dynamic arrays, update the complete page-model path in a script handler, such as `model.companies[index].name`. Native templates use explicit `:value` / `@update:value` bindings. To validate on input or blur, call `validateField(path, 'change' | 'blur')` through the form component ref after `nextTick()` has synchronized the native properties.
+
 ## Hooks
 
 ```ts
@@ -89,11 +121,12 @@ SSR applications should configure each isolated application process during boots
 
 ## Events
 
-| Event    | Payload              | Description                              |
-| -------- | -------------------- | ---------------------------------------- |
-| `submit` | `SubmitPayload`      | Emitted once after successful validation |
-| `failed` | `SubmitPayload`      | Emitted once after failed validation     |
-| `reset`  | `{ values, errors }` | Form reset                               |
+| Event          | Payload              | Description                                                   |
+| -------------- | -------------------- | ------------------------------------------------------------- |
+| `submit`       | `SubmitPayload`      | Emitted once after successful validation                      |
+| `failed`       | `SubmitPayload`      | Emitted once after failed validation                          |
+| `reset`        | `{ values, errors }` | Form reset                                                    |
+| `update:model` | `FormValues`         | Native controlled form requests replacement of the page model |
 
 `submit` / `failed` receive the named `SubmitPayload` exported by `@varo-ui/headless`. The component's `FormSubmitPayload` is an alias of that contract, not a raw DOM event or a type inferred through `ReturnType` of a concrete function:
 

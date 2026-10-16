@@ -1,5 +1,9 @@
 # InputOtp
 
+## Demo
+
+<AdditionalComponentDemo component="input-otp" locale="en" />
+
 ## Basic usage
 
 ```vue

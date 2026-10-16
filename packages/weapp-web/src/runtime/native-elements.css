@@ -105,6 +105,34 @@ wx-label > .varo-native-label__control {
   color: inherit;
 }
 
+wx-navigator {
+  box-sizing: border-box;
+  display: block;
+  min-width: 0;
+}
+
+wx-navigator > .varo-native-navigator__control {
+  box-sizing: border-box;
+  display: inherit;
+  flex: 1 1 auto;
+  flex-direction: inherit;
+  flex-wrap: inherit;
+  gap: inherit;
+  align-items: inherit;
+  justify-content: inherit;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: inherit;
+}
+
+wx-navigator > .varo-native-navigator__control:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 3px;
+}
+
 wx-image {
   box-sizing: border-box;
   display: inline-block;

@@ -4,7 +4,9 @@ Year / month / day columns composed from `VPicker`. Keep the month grid on [Cale
 
 ## Demo
 
-<DateFieldDemo locale="en" />
+<ComponentPlatformDemo component="date-field" locale="en">
+  <DateFieldDemo locale="en" />
+</ComponentPlatformDemo>
 
 ## Props
 

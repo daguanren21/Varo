@@ -1,5 +1,9 @@
 # Breadcrumb 面包屑
 
+## 演示
+
+<AdditionalComponentDemo component="breadcrumb" locale="zh" />
+
 ## 基础用法
 
 ```vue
