@@ -142,7 +142,7 @@ type StepFormIntent
 
 **原生 Form 边界：** 本 Block 沿用已有 login/profile 的宿主 form 容器 + VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 plain-slot 上下文已在 7.5.0 的受支持编译配置下验证，与本 Block 的宿主 form 默认动作是不同边界。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 与 VButton 的 submit 行为，不增加上下文桥或模拟宿主几何。
 
-当前 `@weapp-vite/miniprogram-automator` 1.3.0 的 headless `tap()` 仍不执行原生 form submit 默认动作，多步表单的必需 E2E 因未触发校验而失败；无 Varo 组件的最小原生工程也观察到 tap 计数增加而 submit 计数不变。保留真实 `<form>` 提交与失败断言，不通过调用页面方法、直接触发 submit 或增加仅为 headless 服务的 click 提交来绕过。需在具备该默认动作的公开驱动或授权 DevTools/设备上完成此流程。
+仓库的原生 E2E 使用针对 `@weapp-vite/miniprogram-automator` 1.3.0 的 pnpm patch，在模拟器的原生默认动作层执行 form submit，并保留多步表单的校验与本地提交断言。补丁范围和升级验证要求见[安装指南](/guide/installation#确定性-e2e-与证据边界)；微信开发者工具与设备验收仍是独立步骤。
 
 ## status-timeline
 

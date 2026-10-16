@@ -119,7 +119,7 @@ const {
         {{ formResult }}
       </text>
       <text class="block text-xs text-[var(--varo-ui-text-regular)]">
-        This workflow uses the native form-container pattern, separate from VForm provider validation. Headless form-submit default-action support remains a distinct runtime requirement.
+        This workflow uses the native form-container pattern, separate from VForm provider validation.
       </text>
     </view>
     <view v-else-if="active === 'Timeline'" class="grid gap-3">

@@ -177,7 +177,9 @@ pnpm test:e2e:weapp
 
 Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试，用例和目标缺失、失败或意外跳过都会拒绝验收。每次运行生成唯一 `apps/e2e/.e2e/runs/<run-id>/run.json`；截图和框架报告位于该 run 的目录，不复用上次报告。三组旧浏览器 smoke 已在断言等价、错误诊断和全页安全遮罩验收后删除；尚未完成宿主验收的旧原生 smoke 与截图入口仍保留。
 
-Headless 不是微信客户端：不提供真实像素、键盘、触摸几何或完整 `rich-text` 文本观察。相关断言不能用页面状态冒充渲染结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
+Headless 通过仓库内的 `@weapp-vite/miniprogram-automator@1.3.0` pnpm patch 支持 `rich-text` 数组/HTML 的渲染树文本观察，以及原生提交按钮的表单默认动作。补丁位于 `patches/@weapp-vite__miniprogram-automator@1.3.0.patch`，只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 覆盖文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。升级 SDK 时须重新验证这些场景，确认上游已覆盖后再移除补丁。
+
+Headless 不是微信客户端：不提供真实像素、键盘或触摸几何。渲染文本断言必须读取渲染树，不能用页面状态冒充结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
 
 全仓门禁为 `pnpm check:full`，先检查源投影与架构，再运行 repoctl 基础检查/构建、结构契约、runner 反例、真实 E2E、独立消费者和原生 profile 产物验证。它不会把缺少宿主前置条件解释为通过。
 

@@ -142,7 +142,7 @@ An application submission handler should:
 
 **Native Form boundary:** this Block follows the existing login/profile form-container + VInput/VSwitch pattern and does not use VForm's validation provider. The separate VForm plain-slot context has been exercised with the supported 7.5.0 compiler configuration; it is distinct from this Block's host form default action. H5 uses a semantic `<form>` and submit prevention; native uses a host `<form>` and VButton's submit behavior, without a context bridge or simulated host geometry.
 
-Headless `tap()` in `@weapp-vite/miniprogram-automator` 1.3.0 still does not perform the native form-submit default action, so the required multi-step-form E2E fails before validation runs. A minimal raw-native project without Varo components also increments its tap count without incrementing submit count. The actual `<form>` submission and failing assertion remain intact; no page-method calls, manually dispatched submit events or headless-only click-submission path bypass the failure. This flow needs a public driver implementing that default action or authorized DevTools/device execution.
+The repository's native E2E uses a pnpm patch for `@weapp-vite/miniprogram-automator` 1.3.0 to execute form submission in the simulator's native default-action layer, preserving the multi-step validation and local submission assertions. See the [installation guide](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for patch ownership and upgrade checks. WeChat DevTools and device acceptance remain separate.
 
 ## status-timeline
 
