@@ -1,5 +1,11 @@
 # @varo-ui/ai
 
+## 2.3.0
+
+### Patch Changes
+
+- Accept CR line endings in streamed SSE events while preserving split CRLF framing and terminal-event behavior.
+
 ## 2.2.0
 
 ### Minor Changes

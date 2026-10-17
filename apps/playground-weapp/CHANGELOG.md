@@ -1,5 +1,14 @@
 # @varo/playground-weapp
 
+## 0.1.0
+
+### Patch Changes
+
+- Updated dependencies:
+  - @varo-ui/headless@2.3.0
+  - @varo-ui/theme@2.3.0
+  - @varo-ui/weapp@2.3.0
+
 ## Unreleased
 
 - Keep the four retail tabs in the main package and load the fourteen existing non-tab demo directories, the native button preview, and the documentation previews as ordinary subpackages, without changing route URLs or removing existing subpackages. Register the new `blocks-lab/attachments/index` demo. Robot pages remain opt-in through the browser-preview profile.
