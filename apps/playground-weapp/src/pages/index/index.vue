@@ -46,6 +46,18 @@ defineOptions({
 })
 
 const robotChatEnabled = import.meta.env.VARO_ROBOT_CHAT_ENABLED === true
+const blockDemos = [
+  { label: 'Source Chat', route: '/pages/source-chat/index' },
+  { label: 'Workspace', route: '/pages/agent-workspace-demo/index' },
+  { label: 'Activity', route: '/pages/agent-activity-demo/index' },
+  { label: 'Model Compare', route: '/blocks-lab/model-compare/index' },
+  { label: 'Retail Tools', route: '/blocks-lab/retail/index' },
+  { label: 'Application Blocks', route: '/blocks-lab/application/index' },
+  { label: 'Marketing Blocks', route: '/blocks-lab/marketing/index' },
+  { label: 'Mobile Operations', route: '/blocks-lab/operations/index' },
+  { label: 'Data Workspace', route: '/blocks-lab/data-workspace/index' },
+  { label: 'Attachments', route: '/blocks-lab/attachments/index' },
+]
 
 type MaybeRef<T> = T | { value: T }
 
@@ -180,6 +192,10 @@ function toggleTheme() {
   alternateThemeEnabled.value = !alternateThemeEnabled.value
 }
 
+function openBlockDemo(route: string) {
+  void wx.navigateTo({ url: route })
+}
+
 function openFormShowcase() {
   void wx.navigateTo({ url: '/pages/form-showcase/index' })
 }
@@ -213,6 +229,15 @@ function openRobotChatShowcase() {
       <text v-if="!robotChatEnabled" class="desc">
         机器人演示未启用。需使用已开通 chatbotwidget 插件的小程序，按文档显式启用后重新构建。
       </text>
+
+      <view class="card">
+        <text class="card-title">
+          可交互 Blocks
+        </text>
+        <VButton v-for="demo in blockDemos" :key="demo.route" block variant="outline" @click="openBlockDemo(demo.route)">
+          {{ demo.label }}
+        </VButton>
+      </view>
 
       <view class="card">
         <text class="card-title">

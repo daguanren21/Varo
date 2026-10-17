@@ -1,10 +1,9 @@
+import type { GetMarkdownOptions, ParsedNode } from 'stream-markdown-parser'
 import {
   getMarkdown,
   isUnsafeHtmlUrl,
   parseMarkdownToStructure,
-  type GetMarkdownOptions,
-  type ParsedNode
-} from 'stream-markdown-parser'
+} from '../runtime/markdown-parser.mjs'
 
 export interface StreamingMarkdownParserOptions {
   customHtmlTags?: readonly string[]
@@ -22,7 +21,7 @@ export interface StreamingMarkdownParser {
 let parserId = 0
 
 export function createStreamingMarkdownParser(
-  options: StreamingMarkdownParserOptions = {}
+  options: StreamingMarkdownParserOptions = {},
 ): StreamingMarkdownParser {
   parserId += 1
   const validateLink = options.validateLink ?? ((url: string) => !isUnsafeHtmlUrl(url))
@@ -34,8 +33,8 @@ export function createStreamingMarkdownParser(
       html: false,
       linkify: true,
       ...options.markdownItOptions,
-      validateLink
-    }
+      validateLink,
+    },
   })
 
   return {
@@ -46,12 +45,12 @@ export function createStreamingMarkdownParser(
         includeSourceMap: options.includeSourceMap ?? false,
         reuseStableTopLevelNodes: true,
         streamParse: 'auto',
-        validateLink
+        validateLink,
       })
     },
     reset() {
       markdown.stream?.reset?.()
-    }
+    },
   }
 }
 

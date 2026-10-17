@@ -58,7 +58,7 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 
 六个 experimental profile 要求所选传递依赖闭包中的每个条目显式准入。缺失准入时在写入前拒绝，不会回退到 Weapp。代表性准入组件为 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及所需工具/主题；manifest 始终是准确信息源。这不代表完整 catalog 或 Agent UI 已获得这些平台认证。
 
-仓库 fixture 使用 `weapp-vite` 与 `wevu` **7.4.0**；原生包 peer 范围保持 `>=7.2.1 <8`。Donut 使用微信编译器并附加独立的 `mini-android`、`mini-ios` 或 `mini-ohos` 宿主元数据，不是 Android/iOS/OpenHarmony 编译 target。SDK 安装、签名、AppID、厂商 IDE 与真机执行仍是独立前提；不伪造身份或凭据。
+仓库 fixture 使用 `weapp-vite` 与 `wevu` **7.5.0**；原生包 peer 范围保持 `>=7.2.1 <8`。Donut 使用微信编译器并附加独立的 `mini-android`、`mini-ios` 或 `mini-ohos` 宿主元数据，不是 Android/iOS/OpenHarmony 编译 target。SDK 安装、签名、AppID、厂商 IDE 与真机执行仍是独立前提；不伪造身份或凭据。
 
 ## 安装可编辑源码
 
@@ -110,6 +110,8 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 `dev:ai` 会准备微信开发者工具项目、启动 MCP HTTP 服务，并将 DevTools console 与未捕获异常转发到当前终端。
 
+仅供 `blocks-lab` 使用的原生 Block 投影到 `apps/playground-weapp/src/blocks-lab/components/blocks/`；共享 UI、Agent 组件和工具仍留在主包源码树。`pnpm sync:registry` 负责这一应用专用位置映射和 import 改写，公共 Registry 安装路径仍为 `src/components/blocks/`。生产构建保持 2 MiB 主包限制，并拒绝指向不可用兄弟分包的同步引用。
+
 ## 文档开发
 
 ```bash
@@ -118,7 +120,7 @@ pnpm run docs:dev
 
 该命令在 `http://localhost:5173` 启动 VitePress。页内 H5 示例是浏览器交互；原生源码 tab 只展示源码，不模拟原生 renderer。独立 glass-easel 预览属于可信编译产物工具，其同源 iframe 不是安全沙箱，浏览器中的产物预览也不是 IDE/真机证明。
 
-预览将原生 Dialog 诊断放在独立的 `dialog` 场景，避免其已知上下文错误阻断基础控件和 Drawer 检查。7.4.0 fixture 中的 plain-slot Dialog/Menu 上下文仍受 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) 阻塞；这不是真机运行时结论，也没有加入下游兼容桥。
+预览将原生 Dialog 诊断放在独立的 `dialog` 场景。7.5.0 fixture 已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172)：微信目标上编译后的 Wevu 组件，在 `scopedSlotsRequireProps: true` 和默认 attached setup 下可通过普通原生插槽继承最近 Provider。该协议不扩展到 created setup 或其他平台，浏览器预览仍不等于 IDE/真机验证。
 
 ## 验证
 

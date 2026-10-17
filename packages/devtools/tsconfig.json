@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
+    "rootDir": ".",
+    "allowImportingTsExtensions": true,
+    "outDir": "dist"
+  },
+  "include": ["src", "tests"]
+}

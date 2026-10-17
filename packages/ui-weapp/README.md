@@ -11,7 +11,7 @@ pnpm add -D weapp-vite@7.5.0
 
 The repository fixtures use `weapp-vite` and `wevu` 7.5.0. Both package peers remain `>=7.2.1 <8`; versions before 7.2.1 are outside the supported peer range.
 
-Use the 7.5.0 baseline for compound components compiled with `scopedSlotsRequireProps: true`. It includes upstream provider-context inheritance through plain native slots ([weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174)). The repository's compiled-artifact preview exercises these components; browser evidence does not certify WeChat IDE or device behavior.
+For provider-context inheritance through plain native slots (`scopedSlotsRequireProps: true`), use 7.5.0 or later with compiled Wevu components, the WeChat target, and default attached setup. This includes the [upstream implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) within the bounded protocol described in [the 7.5 release notes](https://github.com/weapp-vite/weapp-vite/releases/tag/wevu%407.5.0), not a guarantee for created setup, uncompiled third-party components, other platforms, or every device. Headless and browser preview checks do not replace WeChat IDE/device verification.
 
 ## Usage
 

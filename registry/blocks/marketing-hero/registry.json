@@ -1,0 +1,16 @@
+{
+  "name": "marketing-hero",
+  "type": "block",
+  "title": "Marketing Hero",
+  "description": "Injected hero copy, media and guarded host-owned action intents.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/image"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/marketing-hero/h5.vue", "to": "src/components/blocks/marketing-hero.vue" },
+    { "target": "weapp", "from": "registry/blocks/marketing-hero/weapp-vite.vue", "to": "src/components/blocks/marketing-hero.vue" },
+    { "target": "h5", "from": "registry/blocks/marketing-hero/marketing-hero.types.ts", "to": "src/components/blocks/marketing-hero.types.ts" },
+    { "target": "weapp", "from": "registry/blocks/marketing-hero/marketing-hero.types.ts", "to": "src/components/blocks/marketing-hero.types.ts" }
+  ],
+  "docs": "/blocks/marketing-blocks"
+}

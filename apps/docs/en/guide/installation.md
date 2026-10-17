@@ -148,22 +148,57 @@ Native Registry components consume application-global styles through `styleIsola
 
 The private `@varo/weapp-web` package is development tooling for trusted compiled artifacts: its Vite plugin compiles Wevu artifacts into `virtual:varo-native-artifacts`, and the harness handles `wx` APIs and native elements. It is not published and must not become a production UI dependency. The host runs Wevu-generated JS, JSON, WXML, and WXSS through glass-easel's DOM backend rather than substituting H5 business components. Narrow windows scale the presentation while preserving the selected native viewport width. **A same-origin iframe is not a security sandbox, a WeChat client, or device proof.** Do not load untrusted artifacts. Unsupported capabilities such as login and payment fail explicitly instead of returning fabricated success.
 
-Build and verify the production surface:
+Build and preview the production surface manually:
 
 ```bash
 pnpm exec turbo run build --filter=@varo/playground-weapp-preview
 pnpm --filter @varo/playground-weapp-preview preview
-# Run in another terminal; a local Chrome installation is required
-pnpm --filter @varo/playground-weapp-preview smoke:browser
 ```
 
-The production preview defaults to `http://127.0.0.1:4182`; deployable files are in `apps/playground-weapp-preview/dist`. The browser smoke exercises native interaction, event counts, context, stream stop/resume, layout boundaries, and error recovery, and writes screenshots to a temporary directory. Set `PREVIEW_URL` to test another running preview.
+The production preview defaults to `http://127.0.0.1:4182`; deployable files are in `apps/playground-weapp-preview/dist`. Deterministic browser regression now uses `pnpm test:e2e:web` below. The runner starts and cleans up its own services, covering compiled-native interaction, event counts, context, stream stop/resume, layout boundaries, and error recovery.
 
 The repository lockfile records the SDK versions required by this pipeline. The CLI does not automatically install those dependencies into external consumer projects. WeChat-specific capabilities, device performance, and final native visuals still require validation in WeChat.
 
 The H5 and Mini Program documentation tabs share example groups, locale, theme, and device framing. Registered component and Primitive Mini Program examples run compiled Wevu artifacts with input, selection, validation, dynamic arrays, file selection, and error recovery. Expand **View code** for installation commands and native source. H5-only components retain explicit platform boundaries. Browser artifact previews do not establish device validation.
 
 `pnpm --filter @varo/docs dev` and `pnpm --filter @varo/docs build` prepare the native preview dependencies automatically. Docs serve the complete preview at `${DOCS_BASE}weapp-preview/`, with no separate preview server. Development uses artifacts prepared at startup; restart the docs development server after editing native demos or the preview runtime. Run `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` to check every registered scene, 320/390px layouts, and interaction regressions including both languages, light/dark themes, and form submission. For production previews, use the actual address, such as `http://localhost:4173/Varo/`, retaining any deployment subpath. Set `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` to run selected cases.
+
+### Deterministic E2E and evidence boundaries
+
+The workspace's private `@varo/e2e` package is development tooling, not a Registry install or component-runtime dependency. Run real E2E separately from structural contracts:
+
+```bash
+pnpm --filter @varo/e2e exec playwright-core install chromium
+pnpm build
+pnpm test:contracts
+pnpm test:e2e:web
+pnpm test:e2e:weapp
+```
+
+The Web suite covers H5 and glass-easel preview; the Weapp suite uses a headless host for native compiled artifacts. Neither uses a model or retries. Missing cases/targets, failures, and unexpected skips reject acceptance. Each run writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json`, with screenshots and framework reports in that run's directory rather than reusing a previous report. The three legacy browser smokes were removed after assertion parity, error diagnostics, and full-page secure-field masking passed. Legacy native smokes and capture entrypoints remain pending their host acceptance.
+
+The repository's pnpm patch for `@weapp-vite/miniprogram-automator@1.3.0` adds rendered-tree text observation for `rich-text` arrays/HTML and the native submit-button form default action. The patch lives at `patches/@weapp-vite__miniprogram-automator@1.3.0.patch` and applies only to a development test dependency. `apps/e2e/tests/runner/native-runtime.test.ts` exercises the real Launcher for entities, content updates, unsupported node/event filtering, named field values, custom form behaviors, and disabled buttons. Revalidate these scenarios when upgrading the SDK and remove the patch once upstream provides the behavior.
+
+Headless is not a WeChat client: it does not provide real pixels, keyboard input, or touch geometry. Rendered-text assertions must read the rendered tree rather than application state. `pnpm test:e2e:devtools` separately requires authenticated WeChat DevTools, its automation port, and a valid local AppID. Device capabilities and final native visuals still require separate acceptance.
+
+The full repository gate is `pnpm check:full`: source projections and architecture first, then repoctl's basic checks/build, structural contracts, runner negative controls, real E2E, isolated consumers, and native profile artifacts. Missing host prerequisites do not count as passing.
+
+## Local Devframe MCP
+
+Private `@varo/devtools` exposes workspace development tools through the real Devframe stdio adapter. It exposes neither HTTP nor shared state and is not a production dependency. After workspace installation, launch from the repository root with Node 24:
+
+```bash
+# Read-only by default: Block catalog/manifests/source and installation plans
+node packages/devtools/src/cli.ts
+# Explicitly enable fixed preview/check/E2E commands, not arbitrary shell execution
+node packages/devtools/src/cli.ts --allow-execution
+```
+
+An MCP client launches the process and keeps its stdin/stdout connection open. Tools are `varo_blocks_list`, `varo_blocks_get`, `varo_blocks_source`, `varo_install_plan`, `varo_preview_open`, `varo_checks_run`, `varo_e2e_run`, and `varo_evidence_read`. Read-only install planning reuses CLI profile, dependency, and conflict checks without copying files or installing npm dependencies.
+
+Execution accepts only fixed enums: preview `h5` / `weapp-preview`, check `generated` / `architecture`, and E2E suite `web` / `weapp` / `devtools`. Previews bind loopback only; request cancellation or server shutdown cleans up owned processes. A successful E2E MCP call is not a passing test verdict: inspect the returned `status` and `exitCode`.
+
+`varo_evidence_read` accepts only a `runId` created by that server session and artifact kind `run` / `report`. Arbitrary paths, foreign-session runs, and modified evidence are rejected. Responses are capped at 256 KiB. Larger framework reports can be registered as run evidence up to 16 MiB, but oversized reads are rejected while the `run` summary remains readable.
 
 ## Engineering notes
 

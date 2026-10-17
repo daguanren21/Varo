@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { promisify } from 'node:util'
 import { afterEach, describe, expect, it } from 'vitest'
-import { exportRegistryItem, installRegistryItems, resolveRegistryItems } from '../src/index.ts'
+import { exportRegistryItem, installRegistryItems, previewRegistryInstall, resolveRegistryItems } from '../src/index.ts'
 
 const execute = promisify(execFile)
 const cli = resolve(__dirname, '../src/index.ts')
@@ -66,6 +66,28 @@ afterEach(async () => {
 })
 
 describe('third-party registries', () => {
+  it.each(['directory', 'document'] as const)('rejects a remote %s in canonical mode before any request, preserving auto resolution', async (format) => {
+    const { url, requests } = await serve({
+      '/components/custom/registry.json': JSON.stringify(item('custom')),
+      '/registry.json': JSON.stringify({
+        name: 'custom',
+        type: 'registry:file',
+        files: [{ path: 'source.ts', type: 'registry:file', target: '~/src/custom.ts', content: 'export const custom = true\n' }],
+      }),
+    })
+    const projectRoot = temporaryProject()
+    const registryRoot = format === 'directory' ? url : `${url}/registry.json`
+    const options = { projectRoot, registryRoot, target: 'h5' as const, registryFormat: 'canonical' as const }
+    await expect(resolveRegistryItems(['custom'], options)).rejects.toThrow('requires a local filesystem root')
+    await expect(previewRegistryInstall(['custom'], options)).rejects.toThrow('requires a local filesystem root')
+    await expect(installRegistryItems(['custom'], options)).rejects.toThrow('requires a local filesystem root')
+    await expect(exportRegistryItem('custom', options)).rejects.toThrow('requires a local filesystem root')
+    expect(requests).toEqual([])
+    expect(readdirSync(projectRoot)).toEqual([])
+    expect((await resolveRegistryItems(['custom'], { ...options, registryFormat: 'auto' })).items.map(item => item.name)).toEqual(['custom'])
+    expect(requests).toEqual([format === 'directory' ? '/components/custom/registry.json' : '/registry.json'])
+  })
+
   it('installs from the selected HTTP root, scopes dependencies there, and encodes source paths', async () => {
     const custom = item('custom', {
       registryDependencies: ['helper'],

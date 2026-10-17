@@ -5,11 +5,13 @@ import { agentReceiptIcon } from './agent-icons'
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean
     items?: AgentSourceReceiptItem[]
     summary?: string
     title?: string
   }>(),
   {
+    disabled: false,
     items: () => [],
     summary: '',
     title: '来源回执',
@@ -43,6 +45,18 @@ const displayItems = computed(() => props.items.map((item) => {
     statusLabel,
   }
 }))
+
+function openReceipt(id: string) {
+  if (props.disabled) { return }
+  const item = props.items.find(entry => entry.id === id)
+  if (item?.status === 'read') { emit('open', item) }
+}
+
+function connectReceipt(id: string) {
+  if (props.disabled) { return }
+  const item = props.items.find(entry => entry.id === id)
+  if (item?.status === 'failed') { emit('connect', item) }
+}
 </script>
 
 <template>
@@ -91,11 +105,12 @@ const displayItems = computed(() => props.items.map((item) => {
           v-if="entry.canOpen"
           class="agent-native-button agent-workspace-card__action"
           type="button"
+          :disabled="disabled"
           :aria-label="entry.openLabel"
           hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
-          @click="emit('open', entry.item)"
+          @click="openReceipt(entry.item.id)"
         >
           查看
         </button>
@@ -104,10 +119,11 @@ const displayItems = computed(() => props.items.map((item) => {
           class="agent-native-button agent-workspace-card__action agent-workspace-card__action--primary"
           type="button"
           :aria-label="entry.connectLabel"
+          :disabled="disabled"
           hover-class="agent-workspace-card__action--pressed"
           :hover-start-time="20"
           :hover-stay-time="70"
-          @click="emit('connect', entry.item)"
+          @click="connectReceipt(entry.item.id)"
         >
           连接
         </button>

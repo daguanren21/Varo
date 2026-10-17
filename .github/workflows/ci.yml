@@ -45,11 +45,28 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Smoke e2e contracts
-        run: pnpm test:e2e
-
       - name: Build packages and apps
         run: pnpm build
+
+      - name: Verify fresh native build contracts
+        run: pnpm test:contracts
+
+      - name: Install deterministic Chromium runtime
+        run: pnpm --filter @varo/e2e exec playwright-core install --with-deps chromium
+
+      - name: Verify E2E failure and cancellation gates
+        run: pnpm test:e2e:runner
+
+      - name: Run browser and native headless E2E
+        run: pnpm test:e2e
+
+      - name: Preserve real E2E evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-evidence
+          path: apps/e2e/.e2e/runs
+          if-no-files-found: ignore
 
       - name: Verify isolated package and source consumers
         run: pnpm check:consumers

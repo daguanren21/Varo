@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentActivityItem } from './advanced-types'
+import type { AgentActivityItem, AgentActivityStatus } from './advanced-types'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import { agentSearchIcon, agentSparklesIcon, agentToolIcon } from './agent-icons'
@@ -28,11 +27,20 @@ const headingHint = computed(() => {
   if (currentItem.value) {
     return `正在执行 ${currentItem.value.title}`
   }
-  if (props.items.length && completedCount.value === props.items.length) {
-    return '全部完成'
-  }
-  return '等待开始'
+  if (!props.items.length) { return '暂无活动' }
+  if (completedCount.value === props.items.length) { return '全部完成' }
+  if (props.items.some(item => item.status === 'waiting')) { return '等待确认' }
+  if (props.items.some(item => item.status === 'queued')) { return '排队中' }
+  return '活动已结束'
 })
+const statusLabels: Record<AgentActivityStatus, string> = {
+  queued: 'Queued',
+  running: 'Running',
+  waiting: 'Waiting',
+  failed: 'Failed',
+  cancelled: 'Cancelled',
+  completed: 'Completed',
+}
 const displayItems = computed(() =>
   props.items.map((item) => {
     const ariaCurrent: 'step' | undefined = item.status === 'running' ? 'step' : undefined
@@ -53,18 +61,12 @@ const displayItems = computed(() =>
           ? agentToolIcon
           : agentSparklesIcon,
       statusChipClass: `agent-advanced__status is-${item.status}`,
-      statusLabel: item.status === 'completed'
-        ? 'Completed'
-        : item.status === 'failed'
-          ? 'Failed'
-          : item.status === 'running'
-            ? 'Running'
-            : 'Waiting',
+      statusLabel: statusLabels[item.status],
     }
   }),
 )
 
-function statusDotClass(status: AgentPartStatus) {
+function statusDotClass(status: AgentActivityStatus) {
   return cn(
     'agent-activity__status-dot',
     `is-${status}`,

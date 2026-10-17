@@ -47,8 +47,7 @@
     "postpack": "rimraf registry",
     "prepack": "node scripts/sync-registry.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
-    "test:e2e": "echo cli has no e2e"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
     "@vue/compiler-sfc": "3.5.43",

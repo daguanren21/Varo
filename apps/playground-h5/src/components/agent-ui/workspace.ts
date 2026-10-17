@@ -262,6 +262,7 @@ export const AgentComposerScope = defineComponent({
 export const AgentRetrievalProgress = defineComponent({
   name: 'AgentRetrievalProgress',
   props: {
+    disabled: Boolean,
     items: { type: Array as PropType<AgentRetrievalItem[]>, default: () => [] },
     title: { type: String, default: '检索进度' },
   },
@@ -277,6 +278,11 @@ export const AgentRetrievalProgress = defineComponent({
       if (props.items.length && settled.value === props.items.length) { return '检索已完成' }
       return '等待检索'
     })
+    function retry(id: string) {
+      if (props.disabled) { return }
+      const item = props.items.find(entry => entry.id === id)
+      if (item?.status === 'failed' && item.retryable) { emit('retry', item) }
+    }
     return () => h('section', { 'class': 'agent-retrieval', 'aria-atomic': 'false', 'aria-live': 'polite' }, [
       h('header', { class: 'agent-workspace-card__header' }, [
         h('span', { class: 'agent-workspace-card__heading' }, [
@@ -299,8 +305,9 @@ export const AgentRetrievalProgress = defineComponent({
               ? h('button', {
                   'aria-label': `重试${item.title}`,
                   'class': workspaceActionClass('primary'),
+                  'disabled': props.disabled,
                   'type': 'button',
-                  'onClick': () => emit('retry', item),
+                  'onClick': () => retry(item.id),
                 }, '重试')
               : null,
           ])))
@@ -312,6 +319,7 @@ export const AgentRetrievalProgress = defineComponent({
 export const AgentSourceReceipt = defineComponent({
   name: 'AgentSourceReceipt',
   props: {
+    disabled: Boolean,
     items: { type: Array as PropType<AgentSourceReceiptItem[]>, default: () => [] },
     summary: { type: String, default: '' },
     title: { type: String, default: '来源回执' },
@@ -329,6 +337,16 @@ export const AgentSourceReceipt = defineComponent({
       if (props.items.length && readCount.value === props.items.length) { return '全部来源已核对' }
       return '回答完成后核对来源'
     })
+    function openReceipt(id: string) {
+      if (props.disabled) { return }
+      const item = props.items.find(entry => entry.id === id)
+      if (item?.status === 'read') { emit('open', item) }
+    }
+    function connectReceipt(id: string) {
+      if (props.disabled) { return }
+      const item = props.items.find(entry => entry.id === id)
+      if (item?.status === 'failed') { emit('connect', item) }
+    }
     return () => h('section', { 'class': 'agent-source-receipt', 'aria-label': props.title }, [
       h('header', { class: 'agent-workspace-card__header' }, [
         h('span', { class: 'agent-workspace-card__heading' }, [
@@ -352,15 +370,17 @@ export const AgentSourceReceipt = defineComponent({
               ? h('button', {
                   'aria-label': `查看${item.label}`,
                   'class': workspaceActionClass(),
+                  'disabled': props.disabled,
                   'type': 'button',
-                  'onClick': () => emit('open', item),
+                  'onClick': () => openReceipt(item.id),
                 }, '查看')
               : item.status === 'failed'
                 ? h('button', {
                     'aria-label': `连接${item.label}`,
                     'class': workspaceActionClass('primary'),
+                    'disabled': props.disabled,
                     'type': 'button',
-                    'onClick': () => emit('connect', item),
+                    'onClick': () => connectReceipt(item.id),
                   }, '连接')
                 : null,
           ])))
@@ -373,6 +393,7 @@ export const AgentTaskRunner = defineComponent({
   name: 'AgentTaskRunner',
   props: {
     busy: Boolean,
+    disabled: Boolean,
     tasks: { type: Array as PropType<AgentTask[]>, default: () => [] },
     title: { type: String, default: '执行计划' },
   },
@@ -390,6 +411,20 @@ export const AgentTaskRunner = defineComponent({
       )
     })
     const canCancel = computed(() => props.busy || props.tasks.some(task => task.status === 'running'))
+    function requestTask(action: 'approve' | 'retry', id: string) {
+      if (props.disabled || props.busy) { return }
+      const task = props.tasks.find(item => item.id === id)
+      if (!task) { return }
+      if (action === 'approve' && task.status === 'waiting' && task.requiresApproval) {
+        emit('approve', task)
+      }
+      if (action === 'retry' && task.status === 'failed' && task.retryable) {
+        emit('retry', task)
+      }
+    }
+    function cancel() {
+      if (!props.disabled && canCancel.value) { emit('cancel') }
+    }
     return () => h('section', { class: 'agent-task-runner' }, [
       h(AgentTaskList, { tasks: props.tasks, title: props.title }),
       actionableTasks.value.length || canCancel.value
@@ -406,13 +441,15 @@ export const AgentTaskRunner = defineComponent({
                         'aria-label': `重试${task.title}`,
                         'class': workspaceActionClass('primary'),
                         'type': 'button',
-                        'onClick': () => emit('retry', task),
+                        'disabled': props.disabled,
+                        'onClick': () => requestTask('retry', task.id),
                       }, '重试')
                     : h('button', {
                         'aria-label': `批准${task.title}`,
                         'class': workspaceActionClass('primary'),
                         'type': 'button',
-                        'onClick': () => emit('approve', task),
+                        'disabled': props.disabled,
+                        'onClick': () => requestTask('approve', task.id),
                       }, '批准'),
                 ])))
               : null,
@@ -423,7 +460,8 @@ export const AgentTaskRunner = defineComponent({
                     'aria-label': '取消当前任务',
                     'class': workspaceActionClass('danger'),
                     'type': 'button',
-                    'onClick': () => emit('cancel'),
+                    'disabled': props.disabled,
+                    'onClick': cancel,
                   }, '取消'),
                 ])
               : null,
@@ -437,6 +475,7 @@ export const AgentThreadVersions = defineComponent({
   name: 'AgentThreadVersions',
   props: {
     activeId: { type: String, default: '' },
+    disabled: Boolean,
     title: { type: String, default: '会话版本' },
     versions: { type: Array as PropType<readonly AgentThreadVersion[]>, default: () => [] },
   },
@@ -459,6 +498,14 @@ export const AgentThreadVersions = defineComponent({
       }))
     })
     const active = computed(() => displayVersions.value.find(entry => entry.active))
+    function requestVersion(action: 'branch' | 'pin' | 'select', id: string) {
+      if (props.disabled) { return }
+      const version = props.versions.find(item => item.id === id)
+      if (!version || (action === 'select' && id === props.activeId) || (action === 'pin' && version.pinned)) { return }
+      if (action === 'branch') { emit('branch', version) }
+      else if (action === 'pin') { emit('pin', version) }
+      else { emit('select', version) }
+    }
     return () => h('section', { 'class': 'agent-thread-versions', 'aria-label': props.title }, [
       h('header', { class: 'agent-workspace-card__header' }, [
         h('span', { class: 'agent-workspace-card__heading' }, [
@@ -496,13 +543,15 @@ export const AgentThreadVersions = defineComponent({
                       'aria-label': `选择${entry.label}`,
                       'class': workspaceActionClass('primary'),
                       'type': 'button',
-                      'onClick': () => emit('select', entry.version),
+                      'disabled': props.disabled,
+                      'onClick': () => requestVersion('select', entry.version.id),
                     }, '选择'),
                 h('button', {
                   'aria-label': `从${entry.label}创建分支`,
                   'class': workspaceActionClass(),
                   'type': 'button',
-                  'onClick': () => emit('branch', entry.version),
+                  'disabled': props.disabled,
+                  'onClick': () => requestVersion('branch', entry.version.id),
                 }, '分支'),
                 entry.version.pinned
                   ? null
@@ -510,7 +559,8 @@ export const AgentThreadVersions = defineComponent({
                       'aria-label': `固定${entry.label}`,
                       'class': workspaceActionClass(),
                       'type': 'button',
-                      'onClick': () => emit('pin', entry.version),
+                      'disabled': props.disabled,
+                      'onClick': () => requestVersion('pin', entry.version.id),
                     }, '固定'),
               ]),
             ]),

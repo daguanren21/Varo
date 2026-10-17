@@ -167,6 +167,7 @@ const renderedOptions = computed(() => currentOptions.value.map((option) => {
   const selected = draftPath.value[level.value] === option.value
   return {
     ...option,
+    disabled: Boolean(option.disabled),
     hasChildren: regionOptionHasChildren(option),
     selected,
     selectedData: String(selected),
@@ -231,8 +232,8 @@ function selectLevel(nextLevel: number) {
 
 <template>
   <view v-if="visible" class="varo-region-picker" role="presentation">
-    <view class="absolute inset-0" aria-hidden="true" @click="close" />
-    <view class="varo-region-picker__panel relative" role="dialog" aria-modal="true" :aria-label="title">
+    <view class="varo-region-picker__backdrop" aria-hidden="true" @click="close" />
+    <view class="varo-region-picker__panel" role="dialog" aria-modal="true" :aria-label="title">
       <view class="varo-region-picker__header">
         <button class="varo-region-picker__cancel" type="button" @click="close">
           {{ cancelText }}

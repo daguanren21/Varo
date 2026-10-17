@@ -1,0 +1,17 @@
+{
+  "name": "agent-attachment-composer",
+  "type": "component",
+  "title": "Agent Attachment Composer",
+  "description": "Receipt-gated composition of AgentComposer and attachment action controls; application-owned transfer state.",
+  "targets": ["h5", "weapp"],
+  "dependencies": ["@varo-ui/headless"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/agent-conversation", "components/button", "utils/primitives", "utils/attachment-transfer"],
+  "files": [
+    { "target": "h5", "from": "registry/components/agent-attachment-composer/h5.vue", "to": "src/components/agent-ui/AgentAttachmentComposer.vue" },
+    { "target": "weapp", "from": "registry/components/agent-attachment-composer/weapp-vite.vue", "to": "src/components/agent-ui/AgentAttachmentComposer.vue" },
+    { "target": "h5", "from": "registry/components/agent-attachment-composer/agent-attachment-composer.types.ts", "to": "src/components/agent-ui/agent-attachment-composer.types.ts" },
+    { "target": "weapp", "from": "registry/components/agent-attachment-composer/agent-attachment-composer.types.ts", "to": "src/components/agent-ui/agent-attachment-composer.types.ts" }
+  ],
+  "docs": "/ai/agent-attachment-composer"
+}

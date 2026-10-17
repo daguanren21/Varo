@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="200" viewBox="0 0 640 200" fill="none">
+  <title>Varo source ownership</title>
+  <rect width="640" height="200" rx="16" fill="#f3f6f4"/>
+  <g stroke="#32694c" stroke-width="2">
+    <rect x="24" y="56" width="168" height="88" rx="8" fill="#fff"/>
+    <path d="M192 100h76m0 0V54h92m-92 46v46h92"/>
+    <rect x="360" y="24" width="256" height="60" rx="8" fill="#fff"/>
+    <rect x="360" y="116" width="256" height="60" rx="8" fill="#fff"/>
+  </g>
+  <g fill="#244936" font-family="sans-serif" font-size="18" text-anchor="middle">
+    <text x="108" y="96">VARO</text><text x="108" y="122" font-size="14">Registry source</text>
+    <text x="488" y="61">Your H5 application</text><text x="488" y="153">Your native application</text>
+  </g>
+</svg>

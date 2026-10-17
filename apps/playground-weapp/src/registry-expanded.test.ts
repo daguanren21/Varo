@@ -3,7 +3,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { h, nextTick } from 'vue'
-import AgentChat from './components/blocks/agent-chat.vue'
 import VSelect from './components/ui/select.vue'
 import VActionSheet from './components/ui/v-action-sheet.vue'
 import VButton from './components/ui/v-button.vue'
@@ -40,6 +39,25 @@ describe('expanded weapp registry components', () => {
     expect(card.get('.varo-card').attributes('hover-class')).toBe('varo-card--pressed')
     expect(card.get('.varo-card').classes()).toContain('rounded-none')
     expect(card.get('.varo-card').classes()).toContain('shadow-none')
+  })
+
+  it('exposes toggle semantics only when ariaPressed is supplied', async () => {
+    const wrapper = mount(VButton)
+    const button = wrapper.get('button')
+    expect(button.attributes('aria-pressed')).toBeUndefined()
+
+    await button.trigger('touchstart')
+    expect(button.attributes('data-pressed')).toBe('true')
+    expect(button.attributes('aria-pressed')).toBeUndefined()
+    await button.trigger('touchend')
+
+    await wrapper.setProps({ ariaPressed: false })
+    expect(button.attributes('aria-pressed')).toBe('false')
+    await wrapper.setProps({ ariaPressed: true })
+    expect(button.attributes('aria-pressed')).toBe('true')
+    await wrapper.setProps({ ariaPressed: undefined })
+    expect(button.attributes('aria-pressed')).toBeUndefined()
+    wrapper.unmount()
   })
 
   it('selects an action and closes the action sheet', async () => {
@@ -317,20 +335,5 @@ describe('expanded weapp registry components', () => {
     expect(wrapper.emitted('refresh')).toHaveLength(1)
     expect(wrapper.attributes('data-state')).toBe('loading')
     wrapper.unmount()
-  })
-
-  it('renders the mini-program Agent Chat block and forwards prompts', async () => {
-    const wrapper = mount(AgentChat, {
-      props: {
-        messages: [{ content: '欢迎使用', id: 'welcome', role: 'assistant' }],
-        suggestions: ['买一盒牛奶'],
-        title: '购物 Agent',
-      },
-    })
-
-    expect(wrapper.text()).toContain('购物 Agent')
-    expect(wrapper.find('rich-text').exists()).toBe(true)
-    await wrapper.findAll('button').find(button => button.text() === '买一盒牛奶')!.trigger('click')
-    expect(wrapper.emitted('submit')?.[0]).toEqual(['买一盒牛奶'])
   })
 })

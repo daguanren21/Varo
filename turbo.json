@@ -5,6 +5,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@varo-ui/ai#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "runtime/**"]
+    },
     "@varo/docs#build": {
       "dependsOn": ["^build"],
       "env": ["DOCS_BASE"],
@@ -53,11 +57,18 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
+    "@varo/devtools#typecheck": {
+      "dependsOn": ["^build", "^typecheck"]
+    },
+    "@varo/devtools#test": {
+      "dependsOn": ["^build", "^test"],
+      "outputs": ["coverage/**"]
+    },
     "test": {
       "dependsOn": ["^test"],
       "outputs": ["coverage/**"]
     },
-    "test:e2e": {
+    "test:contracts": {
       "cache": false
     }
   }

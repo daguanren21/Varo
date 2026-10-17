@@ -999,6 +999,7 @@ function syncButton(state: ButtonState, options: NativeElementRegistrationOption
   control.disabled = booleanProperty(component, 'disabled')
   // The preview event backend also receives taps on the wrapper's padding.
   host.toggleAttribute('disabled', control.disabled || stringProperty(component, 'ariaDisabled') === 'true')
+  host.hidden = control.hidden
   const focus = booleanProperty(component, 'focus')
   if (focus && !state.focusProperty && !control.disabled) {
     control.focus({ preventScroll: true })
@@ -2224,7 +2225,8 @@ function registerButtonDefinition(
 ) {
   return space
     .define('button')
-    .options(componentOptions())
+    // The inner button owns semantics; raw host reflection stringifies absent ARIA values.
+    .options({ ...componentOptions(), reflectToAttributes: false })
     .definition({
       properties: {
         ...semanticProperties,

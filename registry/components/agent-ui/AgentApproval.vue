@@ -64,7 +64,7 @@ function approve() {
 </script>
 
 <template>
-  <VCard class="agent-approval !overflow-visible" :padding="false" variant="outline" role="group" :aria-label="title">
+  <VCard class="agent-approval" :padding="false" variant="outline" role="group" :aria-label="title">
     <view class="agent-approval__body">
       <view class="agent-approval__header">
         <view class="agent-approval__icon" aria-hidden="true">

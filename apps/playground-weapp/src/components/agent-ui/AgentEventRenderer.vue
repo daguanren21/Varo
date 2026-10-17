@@ -22,6 +22,9 @@ const emptyChoices: AgentChoice[] = []
 const choices = computed<AgentChoice[]>(() => props.snapshot.approval?.choices ?? emptyChoices)
 const messageContent = computed(() => String(props.snapshot.message?.visible ?? ''))
 const messageError = computed(() => String(props.snapshot.error?.message ?? ''))
+const showMessage = computed(() => props.snapshot.message != null || props.snapshot.error != null)
+const messageRole = computed(() => props.snapshot.message?.role ?? 'assistant')
+const messageFinal = computed(() => Boolean(props.snapshot.message?.final))
 const approvalDescription = computed(() => String(props.snapshot.approval?.description ?? ''))
 const approvalTitle = computed(() => String(props.snapshot.approval?.title ?? ''))
 const approvalId = computed(() => props.snapshot.approval?.id ?? '')
@@ -37,12 +40,12 @@ const showApproval = computed(() => props.snapshot.approval?.status === 'waiting
     </view>
 
     <AgentMessage
-      v-if="snapshot.message"
-      :role="snapshot.message.role"
-      stream
+      v-if="showMessage"
+      :role="messageRole"
+      :stream="true"
       :stream-content="messageContent"
       :stream-error="messageError"
-      :stream-final="Boolean(snapshot.message.final)"
+      :stream-final="messageFinal"
       :stream-status="snapshot.status"
       @retry="emit('retry')"
     />

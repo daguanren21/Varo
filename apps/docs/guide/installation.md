@@ -148,22 +148,57 @@ pnpm add clsx @weapp-tailwindcss/merge
 
 私有包 `@varo/weapp-web` 是可信编译产物的开发预览工具：Vite 插件把 Wevu 产物编进 `virtual:varo-native-artifacts`，harness 承接 `wx` API 和原生元素；包暂不对外发布，也不应成为生产 UI 依赖。宿主通过 glass-easel 的 DOM 后端运行 Wevu 生成的 JS、JSON、WXML 和 WXSS，不替换成 H5 业务组件。窄窗口缩放画面但保留选定的原生视口宽度。**同源 iframe 不是安全沙箱，也不是微信客户端或真机证明**，不要加载不受信任的产物；登录、支付等未支持能力会失败，不会伪造成功结果。
 
-生产构建与真实浏览器回归：
+生产构建与手动预览：
 
 ```bash
 pnpm exec turbo run build --filter=@varo/playground-weapp-preview
 pnpm --filter @varo/playground-weapp-preview preview
-# 在另一个终端运行；需要本机安装 Chrome
-pnpm --filter @varo/playground-weapp-preview smoke:browser
 ```
 
-生产预览默认使用 `http://127.0.0.1:4182`，可部署产物位于 `apps/playground-weapp-preview/dist`。浏览器回归覆盖原生交互、事件次数、上下文、流式取消/继续、样式边界与错误恢复，并将截图写入临时目录。可用 `PREVIEW_URL` 指定其他已启动的预览地址。
+生产预览默认使用 `http://127.0.0.1:4182`，可部署产物位于 `apps/playground-weapp-preview/dist`。确定性浏览器回归统一使用下方的 `pnpm test:e2e:web`；runner 启动并清理自己拥有的服务，覆盖原生产物交互、事件次数、上下文、流式取消/继续、样式边界与错误恢复。
 
 仓库 lockfile 记录该运行链需要的 SDK 版本；CLI 不会把这些依赖安装到外部业务项目。微信专属能力、真机性能与最终视觉仍需在微信环境验收。
 
 文档的 H5 与小程序标签页共享示例分组、语言、主题和设备框架。已注册的普通组件与 Primitive 小程序示例运行真实 Wevu 编译产物，支持输入、选择、表单校验、动态数组、文件选择和错误重试；安装命令与原生源码可在「查看代码」中展开。仅支持 H5 的组件保留明确的平台边界。编译产物浏览器预览不代表真实设备验收。
 
 `pnpm --filter @varo/docs dev` 和 `pnpm --filter @varo/docs build` 会自动构建原生预览依赖。文档将预览完整托管在 `${DOCS_BASE}weapp-preview/`，无需单独启动预览服务。开发模式使用启动时生成的产物；修改原生示例或预览运行时后，重新启动文档开发服务。对运行中的文档执行 `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` 可检查全部注册场景、320/390px 窄屏布局及交互回归，包括中英文、明暗主题和表单提交。生产预览使用实际地址，例如 `http://localhost:4173/Varo/`；子路径部署时保留 URL 中的路径。可用 `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` 只运行指定场景。
+
+### 确定性 E2E 与证据边界
+
+仓库内的 `@varo/e2e` 是私有开发工具，不随 Registry 安装，也不进入组件运行时。真实 E2E 与结构契约分别运行：
+
+```bash
+pnpm --filter @varo/e2e exec playwright-core install chromium
+pnpm build
+pnpm test:contracts
+pnpm test:e2e:web
+pnpm test:e2e:weapp
+```
+
+Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试，用例和目标缺失、失败或意外跳过都会拒绝验收。每次运行生成唯一 `apps/e2e/.e2e/runs/<run-id>/run.json`；截图和框架报告位于该 run 的目录，不复用上次报告。三组旧浏览器 smoke 已在断言等价、错误诊断和全页安全遮罩验收后删除；尚未完成宿主验收的旧原生 smoke 与截图入口仍保留。
+
+Headless 通过仓库内的 `@weapp-vite/miniprogram-automator@1.3.0` pnpm patch 支持 `rich-text` 数组/HTML 的渲染树文本观察，以及原生提交按钮的表单默认动作。补丁位于 `patches/@weapp-vite__miniprogram-automator@1.3.0.patch`，只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 覆盖文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。升级 SDK 时须重新验证这些场景，确认上游已覆盖后再移除补丁。
+
+Headless 不是微信客户端：不提供真实像素、键盘或触摸几何。渲染文本断言必须读取渲染树，不能用页面状态冒充结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
+
+全仓门禁为 `pnpm check:full`，先检查源投影与架构，再运行 repoctl 基础检查/构建、结构契约、runner 反例、真实 E2E、独立消费者和原生 profile 产物验证。它不会把缺少宿主前置条件解释为通过。
+
+## 本地 Devframe MCP
+
+私有 `@varo/devtools` 通过真实 Devframe stdio adapter 提供仓库开发工具，不暴露 HTTP 或共享状态，也不进入生产依赖。安装 workspace 后，用 Node 24 从仓库根目录启动：
+
+```bash
+# 默认只读：列出/读取 Block、读取 manifest 声明的源码、预览安装计划
+node packages/devtools/src/cli.ts
+# 显式允许固定 preview/check/E2E 命令；不是任意 shell 权限
+node packages/devtools/src/cli.ts --allow-execution
+```
+
+MCP 客户端启动该进程并保持 stdin/stdout 连接。工具为 `varo_blocks_list`、`varo_blocks_get`、`varo_blocks_source`、`varo_install_plan`、`varo_preview_open`、`varo_checks_run`、`varo_e2e_run` 和 `varo_evidence_read`。只读安装计划复用 CLI 的 profile/依赖/冲突检查，不复制文件或安装 npm 依赖。
+
+执行参数只接受固定枚举：preview 为 `h5` / `weapp-preview`，check 为 `generated` / `architecture`，E2E suite 为 `web` / `weapp` / `devtools`。preview 仅监听 loopback；取消请求或关闭服务会清理它拥有的进程。真实 E2E 的 MCP 调用成功不代表测试通过，必须检查返回的 `status` 和 `exitCode`。
+
+`varo_evidence_read` 只接收本服务会话创建的 `runId` 和 `run` / `report` 类型，拒绝任意路径、跨会话 run 和被修改的证据。单次输出上限为 256 KiB；较大的框架报告仍可登记为 run 证据（上限 16 MiB），但超限的读取会拒绝，`run` 摘要仍可读取。
 
 ## 工程化建议
 

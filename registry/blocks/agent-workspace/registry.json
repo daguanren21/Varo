@@ -13,11 +13,9 @@
   },
   "registryDependencies": [
     "components/agent-conversation",
-    "components/agent-workspace"
+    "components/agent-workspace",
+    "utils/primitives"
   ],
-  "targetRegistryDependencies": {
-    "weapp": ["utils/primitives"]
-  },
   "files": [
     {
       "target": "h5",
@@ -30,5 +28,5 @@
       "to": "src/components/blocks/agent-workspace.vue"
     }
   ],
-  "docs": "/blocks/build-your-own"
+  "docs": "/ai/agent-workspace"
 }

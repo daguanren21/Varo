@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { VSelect } from '@varo-ui/h5'
 import { computed, shallowRef, watch } from 'vue'
 import catalog from '../registry-catalog.json'
 
@@ -9,22 +8,16 @@ const componentNames: Record<string, string> = { 'number-field': 'input-number',
 const ids = computed(() => props.component === 'overview' ? ['button', 'input', 'dialog'] : [componentNames[props.component] ?? props.component])
 const entries = computed(() => ids.value.map(id => catalog.components[id as keyof typeof catalog.components]).filter(item => item?.targets.includes('weapp')))
 const files = computed(() => entries.value.flatMap(item => item.nativeFiles))
-const targets = computed(() => Object.keys(catalog.profiles).filter(id => id !== 'h5' && entries.value.length === ids.value.length
-  && entries.value.every(item => (item.platforms as readonly string[]).includes(id))))
-const profileLabel = computed(() => props.locale === 'en' ? 'Install profile' : '安装 profile')
-const profileOptions = computed(() => targets.value.map(value => ({ value, label: value === 'weapp' ? value : `${value} · experimental` })))
-const target = shallowRef('weapp')
 const loaded = shallowRef<Array<{ path: string, content: string }>>([])
 const loading = shallowRef(false)
 const error = shallowRef('')
-const command = computed(() => `pnpm dlx @varo-ui/cli add ${ids.value.join(' ')} --target ${target.value}`)
+const command = computed(() => `pnpm dlx @varo-ui/cli add ${ids.value.join(' ')} --target weapp`)
 
 watch(files, async (next, _previous, onCleanup) => {
   let current = true
   onCleanup(() => { current = false })
   loaded.value = []
   error.value = ''
-  target.value = 'weapp'
   loading.value = next.length > 0
   try {
     const result = await Promise.all(next.map(async (file) => {
@@ -55,14 +48,7 @@ watch(files, async (next, _previous, onCleanup) => {
       {{ locale === 'en' ? 'This component does not declare a native Registry implementation.' : '该组件未声明原生 Registry 实现。' }}
     </p>
     <template v-else>
-      <div class="native-source-preview__profile">
-        <span aria-hidden="true">{{ profileLabel }}</span>
-        <VSelect v-model:value="target" class="native-source-preview__field" mode="dropdown" :options="profileOptions" :aria-label="profileLabel" />
-      </div>
       <pre><code>{{ command }}</code></pre>
-      <p v-if="target !== 'weapp'">
-        {{ locale === 'en' ? 'Experimental source admission is not native host certification.' : '实验性源码准入不代表已经通过该宿主的真机认证。' }}
-      </p>
       <p v-if="loading" role="status">
         {{ locale === 'en' ? 'Loading source…' : '正在加载源码…' }}
       </p>
@@ -89,18 +75,6 @@ watch(files, async (next, _previous, onCleanup) => {
 
 .native-source-preview h3 {
   margin-top: 0;
-}
-
-.native-source-preview__profile {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.native-source-preview__field {
-  width: min(100%, 20rem);
-  min-width: 0;
 }
 
 .native-source-preview pre {

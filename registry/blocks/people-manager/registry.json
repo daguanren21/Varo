@@ -1,0 +1,17 @@
+{
+  "name": "people-manager",
+  "type": "block",
+  "title": "People Manager",
+  "description": "Application-paged people list, controlled filters and inline detail with explicit role, status, approval and removal grants.",
+  "docs": "/blocks/application-blocks#people-manager",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/people-manager/h5.vue", "to": "src/components/blocks/people-manager.vue" },
+    { "target": "weapp", "from": "registry/blocks/people-manager/weapp-vite.vue", "to": "src/components/blocks/people-manager.vue" },
+    { "target": "h5", "from": "registry/blocks/people-manager/people-manager-actions.ts", "to": "src/components/blocks/people-manager-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/people-manager/people-manager-actions.ts", "to": "src/components/blocks/people-manager-actions.ts" }
+  ]
+}

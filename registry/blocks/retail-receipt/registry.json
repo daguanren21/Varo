@@ -1,0 +1,15 @@
+{
+  "name": "retail-receipt",
+  "type": "block",
+  "title": "Retail Receipt",
+  "description": "Application-owned order and payment evidence with explicit refund, contact and download grants.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["utils/retail", "components/button", "components/empty"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/retail-receipt/weapp-vite.vue", "to": "src/components/blocks/retail-receipt.vue" },
+    { "target": "weapp", "from": "registry/blocks/retail-receipt/retail-receipt.types.ts", "to": "src/components/blocks/retail-receipt.types.ts" }
+  ],
+  "docs": "/blocks/retail-tools"
+}

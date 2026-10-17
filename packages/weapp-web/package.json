@@ -46,8 +46,7 @@
     "dev": "echo @varo/weapp-web ships source until a public release",
     "lint": "echo weapp-web lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
-    "test:e2e": "echo weapp-web has no e2e"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "peerDependencies": {
     "vite": "^8.2.2"

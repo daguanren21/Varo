@@ -46,8 +46,7 @@
     "dev": "vite build --watch",
     "lint": "echo ui-h5 lint pending",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests",
-    "test:e2e": "echo ui-h5 has no e2e"
+    "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
     "@varo-ui/headless": "workspace:*",

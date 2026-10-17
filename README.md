@@ -110,6 +110,8 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 `dev:ai` prepares the WeChat DevTools project, starts the MCP HTTP service, and forwards DevTools console output and uncaught errors to the active terminal.
 
+Native Blocks used exclusively by `blocks-lab` are projected into `apps/playground-weapp/src/blocks-lab/components/blocks/`; shared UI, Agent components, and helpers remain in the main source tree. `pnpm sync:registry` owns this app-only placement and import rewriting. Public Registry installs still use `src/components/blocks/`. The production build rejects a main package above 2 MiB and any synchronous reference into an unavailable sibling subpackage.
+
 ## Documentation development
 
 ```bash
@@ -118,7 +120,7 @@ pnpm run docs:dev
 
 This starts VitePress at `http://localhost:5173` and prepares the native preview artifacts. The H5 and Mini Program tabs share device framing, example cases, language, and theme. Mini Program examples run compiled Wevu SFCs through glass-easel; their editable source remains available under **View code**. H5-only components retain explicit platform support boundaries.
 
-The 7.5.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174). All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
+The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.5.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174) for compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup; it does not extend the protocol to created setup or other platforms. All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
 
 ## Verification
 
@@ -137,6 +139,8 @@ pnpm check:platforms
 - `check:architecture` checks neutral/runtime/tooling import boundaries and rejects obsolete Vue-native renderer imports.
 - After generation and builds, `check:consumers` exercises packed public packages and fresh CLI source installs in isolated consumers. It checks published dependency/entrypoint isolation, H5/native compilation, source/style closure, minimal Agent Chat installs, and fail-closed profile roundtrips; it is not a device test.
 - `check:platforms` builds and checks all seven native compiler/artifact profiles. To select one, use `pnpm --filter @varo/platform-smoke build:alipay` (or another native profile). `verify:alipay` checks existing artifacts without rebuilding.
+- `test:e2e:runner` checks runner gates and native locator semantics. `aria-hidden` excludes nodes and descendants from role queries without hiding their pixels or blocking explicit XPath actions; visually hidden and disabled controls remain non-actionable.
+- Native custom-event listeners must preserve the declared event spelling, such as `@update:modelValue`. Wevu normalizes colon events to lowercase with `:` replaced by `-`; adding a hyphen inside `modelValue` changes the event name and prevents the model update.
 
 The native fixture IDE/artifact root is exactly `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`; application files are in its nested `dist/`. Checks follow reachable component files, platform markup/event bindings, global style closure, IDE paths, and Donut host metadata. These commands do **not** prove simulator/device behavior, SDK packaging, signing, or approval by an independent verifier. To open an artifact, use the corresponding `open:<profile>` command with your registered AppID and installed vendor tools; missing prerequisites fail explicitly.
 

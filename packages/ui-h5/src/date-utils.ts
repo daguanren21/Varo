@@ -20,34 +20,31 @@ export function parseDate(value: string | undefined, fallback = new Date()): Dat
 }
 
 export function normalizeMonth(value?: string): string {
-  const date = parseDate(value)
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}`
+  const [year, month] = parseDateFieldValue(value)
+  return `${year}-${pad(month)}`
 }
 
 export function shiftMonth(value: string | undefined, offset: number): string {
-  const date = parseDate(normalizeMonth(value))
-  date.setMonth(date.getMonth() + offset)
-  return normalizeMonth(toDateString(date))
+  const [year, month] = parseDateFieldValue(value)
+  const date = new Date(Date.UTC(year, month - 1 + offset, 1))
+  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`
 }
 
 export function shiftYear(value: string | undefined, offset: number): string {
-  const date = parseDate(normalizeMonth(value))
-  date.setFullYear(date.getFullYear() + offset)
-  return normalizeMonth(toDateString(date))
+  const [year, month] = parseDateFieldValue(value)
+  const date = new Date(Date.UTC(year + offset, month - 1, 1))
+  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`
 }
 
 export function buildMonthDays(month?: string): CalendarDay[] {
   const normalized = normalizeMonth(month)
   const [year, monthNumber] = normalized.split('-').map(Number)
-  const first = new Date(year, monthNumber - 1, 1)
-  const last = new Date(year, monthNumber, 0)
+  const count = daysInMonth(year, monthNumber)
   const days: CalendarDay[] = []
 
-  for (let day = 1; day <= last.getDate(); day += 1) {
-    const date = new Date(first)
-    date.setDate(day)
+  for (let day = 1; day <= count; day += 1) {
     days.push({
-      date: toDateString(date),
+      date: `${normalized}-${pad(day)}`,
       day,
       inMonth: true,
     })
@@ -62,7 +59,7 @@ export interface DateFieldOption {
 }
 
 export function daysInMonth(year: number, month: number): number {
-  return new Date(year, month, 0).getDate()
+  return new Date(Date.UTC(year, month, 0)).getUTCDate()
 }
 
 export function clampDateParts(year: number, month: number, day: number): [number, number, number] {
@@ -76,9 +73,14 @@ export function dateFieldValue(year: number, month: number, day: number): string
   return `${nextYear}-${pad(nextMonth)}-${pad(nextDay)}`
 }
 
-export function parseDateFieldValue(value: string | undefined, fallback = new Date()): [number, number, number] {
-  const date = parseDate(value, fallback)
-  return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+export function parseDateFieldValue(value: string | undefined, fallback?: Date): [number, number, number] {
+  if (!value) {
+    const date = fallback ?? new Date()
+    return [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+  }
+  const [year, month = '1', day = '1'] = value.split('-')
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)))
+  return [date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate()]
 }
 
 export function buildDateFieldColumns(

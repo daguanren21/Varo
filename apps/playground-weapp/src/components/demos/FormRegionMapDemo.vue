@@ -2,7 +2,7 @@
 import type { FormValues } from '@varo-ui/headless'
 import type { VaroMapMarker } from '../ui/map.types'
 import type { VaroRegionOption, VaroRegionSelection, VaroRegionShortcut } from '../ui/region-picker.types'
-import { computed, reactive, shallowRef } from 'wevu'
+import { computed, ref, shallowRef } from 'wevu'
 import markerIcon from '../../assets/map/region-marker.png'
 import { VForm, VFormItem } from '../ui/form'
 import VButton from '../ui/v-button.vue'
@@ -61,7 +61,7 @@ const shortcuts: VaroRegionShortcut[] = [
   { label: '新加坡', path: ['overseas', 'singapore', 'central'] },
 ]
 
-const model = reactive({
+const model = ref({
   nickName: '',
   phoneNumber: '',
   email: '',
@@ -91,16 +91,16 @@ const rules = {
     { max: 200, message: '反馈内容最多 200 个字符' },
   ],
 }
-const regionDisplay = computed(() => model.regionLabel || '请选择活动区域')
+const regionDisplay = computed(() => model.value.regionLabel || '请选择活动区域')
 const markers = computed<VaroMapMarker[]>(() => [{
   id: 1,
-  latitude: model.latitude,
-  longitude: model.longitude,
+  latitude: model.value.latitude,
+  longitude: model.value.longitude,
   iconPath: markerIcon,
   width: 28,
   height: 28,
   callout: {
-    content: model.regionLabel || '当前选择',
+    content: model.value.regionLabel || '当前选择',
     display: 'ALWAYS',
     padding: 6,
     borderRadius: 8,
@@ -108,20 +108,20 @@ const markers = computed<VaroMapMarker[]>(() => [{
 }])
 
 function updateModel(values: FormValues) {
-  Object.assign(model, values)
+  Object.assign(model.value, values)
 }
 
-function updateField<Key extends keyof typeof model>(name: Key, value: (typeof model)[Key]) {
-  model[name] = value
+function updateField<Key extends keyof typeof model.value>(name: Key, value: (typeof model.value)[Key]) {
+  model.value[name] = value
 }
 
 function confirmRegion(selection: VaroRegionSelection) {
-  model.regionLabel = selection.labels.join(' / ')
-  if (selection.latitude !== undefined) { model.latitude = selection.latitude }
-  if (selection.longitude !== undefined) { model.longitude = selection.longitude }
+  model.value.regionLabel = selection.labels.join(' / ')
+  if (selection.latitude !== undefined) { model.value.latitude = selection.latitude }
+  if (selection.longitude !== undefined) { model.value.longitude = selection.longitude }
 }
 function submit() {
-  submitResult.value = `已提交：${model.nickName} · ${model.regionLabel}`
+  submitResult.value = `已提交：${model.value.nickName} · ${model.value.regionLabel}`
 }
 
 function failed(payload: unknown) {
@@ -222,7 +222,7 @@ function failed(payload: unknown) {
       :shortcuts="shortcuts"
       title="选择活动区域"
       @confirm="confirmRegion"
-      @update:model-value="updateField('regionPath', $event)"
+      @update:modelValue="updateField('regionPath', $event)"
     />
   </view>
 </template>

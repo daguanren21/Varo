@@ -7,10 +7,6 @@ import {
 } from '@varo-ui/ai'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
 
-function sleep(duration: number) {
-  return new Promise<void>(resolve => setTimeout(resolve, duration))
-}
-
 function messageId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
@@ -62,6 +58,39 @@ export function useAgentDemo() {
   let activeChannel: AgentEventChannel | undefined
   let activeMessageId = ''
   let awaitingApproval = false
+  let producerTimer: ReturnType<typeof setTimeout> | undefined
+  let wakeProducer: (() => void) | undefined
+
+  function sleep(duration: number) {
+    return new Promise<void>((resolve) => {
+      wakeProducer = resolve
+      producerTimer = setTimeout(() => {
+        producerTimer = undefined
+        wakeProducer = undefined
+        resolve()
+      }, duration)
+    })
+  }
+
+  function stop() {
+    controller.cancel('已停止生成')
+    activeChannel?.end()
+    activeChannel = undefined
+    awaitingApproval = false
+    clearTimeout(producerTimer)
+    producerTimer = undefined
+    wakeProducer?.()
+    wakeProducer = undefined
+  }
+
+  function newConversation() {
+    stop()
+    controller.reset()
+    messages.value = []
+    prompt.value = ''
+    lastPrompt.value = ''
+    activeMessageId = ''
+  }
 
   function archiveCurrentResponse() {
     const message = snapshot.value.message
@@ -81,10 +110,12 @@ export function useAgentDemo() {
     try {
       channel.push({ id: 'intent', title: '理解请求', type: 'reasoning.start' })
       await sleep(180)
+      if (activeChannel !== channel) { return }
       channel.push({ delta: `识别到“${request}”`, id: 'intent', type: 'reasoning.delta' })
       channel.push({ durationMs: 180, id: 'intent', type: 'reasoning.end' })
       channel.push({ id: 'docs', name: 'varo.registry.inspect', summary: '读取双端 Registry 能力', type: 'tool.start' })
       await sleep(220)
+      if (activeChannel !== channel) { return }
       channel.push({ id: 'docs', output: { targets: ['h5', 'weapp'] }, summary: '确认双端源码与运行时', type: 'tool.result' })
       channel.push({ id: 'plan', title: '生成回答', type: 'reasoning.start' })
       channel.push({ delta: '组织组件、流式协议与发布边界', id: 'plan', type: 'reasoning.delta' })
@@ -97,6 +128,7 @@ export function useAgentDemo() {
       const chunks = response.match(/[\s\S]{1,12}/g) ?? [response]
       for (const chunk of chunks) {
         await sleep(42)
+        if (activeChannel !== channel) { return }
         channel.push({ delta: chunk, messageId: id, type: 'text.delta' })
       }
 
@@ -173,8 +205,7 @@ export function useAgentDemo() {
   }
 
   onBeforeUnmount(() => {
-    controller.cancel('Agent demo unmounted')
-    activeChannel?.end()
+    stop()
     unsubscribe()
     controller.destroy()
   })
@@ -183,10 +214,12 @@ export function useAgentDemo() {
     approve,
     busy,
     messages,
+    newConversation,
     prompt,
     reject,
     retry,
     send,
     snapshot,
+    stop,
   }
 }

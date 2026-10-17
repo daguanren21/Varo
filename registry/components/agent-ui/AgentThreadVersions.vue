@@ -6,11 +6,13 @@ import { agentBranchIcon } from './agent-icons'
 const props = withDefaults(
   defineProps<{
     activeId?: string
+    disabled?: boolean
     title?: string
     versions?: readonly AgentThreadVersion[]
   }>(),
   {
     activeId: '',
+    disabled: false,
     title: '会话版本',
     versions: () => [],
   },
@@ -49,6 +51,15 @@ const headingHint = computed(() => {
   return active ? `当前 ${active.label}` : '选择一个会话版本'
 })
 const countLabel = computed(() => `${props.versions.length} 个版本`)
+
+function requestVersion(action: 'branch' | 'pin' | 'select', id: string) {
+  if (props.disabled) { return }
+  const version = props.versions.find(item => item.id === id)
+  if (!version || (action === 'select' && id === props.activeId) || (action === 'pin' && version.pinned)) { return }
+  if (action === 'branch') { emit('branch', version) }
+  else if (action === 'pin') { emit('pin', version) }
+  else { emit('select', version) }
+}
 </script>
 
 <template>
@@ -104,22 +115,24 @@ const countLabel = computed(() => `${props.versions.length} 个版本`)
             v-if="!entry.active"
             class="agent-native-button agent-workspace-card__action agent-workspace-card__action--primary"
             type="button"
+            :disabled="disabled"
             :aria-label="entry.selectLabel"
             hover-class="agent-workspace-card__action--pressed"
             :hover-start-time="20"
             :hover-stay-time="70"
-            @click="emit('select', entry.version)"
+            @click="requestVersion('select', entry.version.id)"
           >
             选择
           </button>
           <button
             class="agent-native-button agent-workspace-card__action"
             type="button"
+            :disabled="disabled"
             :aria-label="entry.branchLabel"
             hover-class="agent-workspace-card__action--pressed"
             :hover-start-time="20"
             :hover-stay-time="70"
-            @click="emit('branch', entry.version)"
+            @click="requestVersion('branch', entry.version.id)"
           >
             分支
           </button>
@@ -127,11 +140,12 @@ const countLabel = computed(() => `${props.versions.length} 个版本`)
             v-if="!entry.version.pinned"
             class="agent-native-button agent-workspace-card__action"
             type="button"
+            :disabled="disabled"
             :aria-label="entry.pinLabel"
             hover-class="agent-workspace-card__action--pressed"
             :hover-start-time="20"
             :hover-stay-time="70"
-            @click="emit('pin', entry.version)"
+            @click="requestVersion('pin', entry.version.id)"
           >
             固定
           </button>

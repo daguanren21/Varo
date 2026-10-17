@@ -320,7 +320,7 @@ onUnmounted(cleanup)
       <template #description>
         Wevu 使用单个 tuple 载荷；这里运行实际 ComposerScope、FileDiff 和 Menu 组件，不调用外部服务。
       </template>
-      <view class="grid gap-4">
+      <view class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
         <text data-preview-field="source-toggle-state" :data-preview-value="sourceDiagnostic">
           {{ sourceDiagnostic }}
         </text>

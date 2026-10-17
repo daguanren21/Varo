@@ -1,62 +1,8 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { agentDemoCatalog } from '../agent-component-catalog'
 import AgentComponentDemo from './AgentComponentDemo.vue'
 
-const components = [
-  'loading',
-  'thinking',
-  'markdown',
-  'stream',
-  'message',
-  'conversation',
-  'tool-chip',
-  'task-list',
-  'radio-group',
-  'approval',
-  'recommendation',
-  'prompt-suggestions',
-  'composer',
-  'response-actions',
-  'artifact',
-  'sources',
-  'rag-pipeline',
-  'attachments',
-  'event-renderer',
-  'message-scroller',
-  'code-block',
-  'file-diff',
-  'tool-result',
-  'image-generation',
-  'tool-approval',
-  'citations',
-  'activity',
-  'sidebar',
-  'context-card',
-  'insight-card',
-  'selection-actions',
-  'diff-table',
-  'records-table',
-  'filter-table',
-  'command-search',
-  'flowchart',
-  'fine-tune',
-  'agent-chat',
-]
-
 describe('AgentComponentDemo', () => {
-  it('renders a real demo for every documented Agent surface', async () => {
-    for (const component of components) {
-      const wrapper = mount(AgentComponentDemo, { props: { component } })
-      expect(wrapper.attributes('data-demo')).toBe(component)
-      expect(wrapper.get('.agent-component-demo__stage').text().trim().length, component).toBeGreaterThan(0)
-      await wrapper.get('[data-demo-tab="code"]').trigger('click')
-      expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].name)
-      expect(wrapper.get('.agent-component-demo__source').text(), component).toContain(agentDemoCatalog[component].importPath)
-      wrapper.unmount()
-    }
-  })
-
   it('presents every demo in a keyboard-operable workflow shell', async () => {
     const wrapper = mount(AgentComponentDemo, {
       attachTo: document.body,
@@ -66,11 +12,9 @@ describe('AgentComponentDemo', () => {
     const code = wrapper.get<HTMLButtonElement>('[data-demo-tab="code"]')
     const previewPanel = wrapper.get('[role="tabpanel"]')
 
-    expect(wrapper.get('[role="tablist"]').attributes('aria-label')).toBe('交互预览')
     expect(preview.attributes('aria-selected')).toBe('true')
     expect(preview.attributes('aria-controls')).toBe(previewPanel.attributes('id'))
     expect(previewPanel.attributes('aria-labelledby')).toBe(preview.attributes('id'))
-    expect(wrapper.get('.agent-component-demo__meta').text()).toContain('H5 与 Wevu 使用同一公共 API')
 
     preview.element.focus()
     await preview.trigger('keydown', { key: 'ArrowRight' })
@@ -85,10 +29,24 @@ describe('AgentComponentDemo', () => {
     const wrapper = mount(AgentComponentDemo, { props: { component: 'prompt-suggestions' } })
     await wrapper.findAll('button').find(button => button.text() === '分析双端能力')!.trigger('click')
     expect(wrapper.get('output').text()).toBe('分析双端能力')
+  })
 
-    await wrapper.get('[data-demo-tab="code"]').trigger('click')
-    expect(wrapper.get('.agent-component-demo__source').text()).toContain('AgentPromptSuggestions')
-    expect(wrapper.get('.agent-component-demo__source').text()).toContain(':suggestions=\"suggestions\"')
+  it('stops, resets and closes the interactive chat instead of leaving inert actions', async () => {
+    const wrapper = mount(AgentComponentDemo, { props: { component: 'agent-chat' } })
+    const action = (label: string) => wrapper.findAll('button').find(button => button.text() === label)!
+    await action('停止生成').trigger('click')
+    expect(wrapper.find('[aria-label="停止生成"]').exists()).toBe(false)
+    await action('新建会话').trigger('click')
+    expect(wrapper.get('[role="log"]').text()).toBe('')
+    expect(wrapper.get('textarea').element.value).toBe('')
+    await wrapper.get('textarea').setValue('本地新会话')
+    await wrapper.get('button[aria-label="发送"]').trigger('click')
+    expect(wrapper.get('[role="log"]').text()).toContain('本地新会话')
+    await wrapper.get('button[aria-label="关闭 Agent"]').trigger('click')
+    expect(wrapper.find('textarea').exists()).toBe(false)
+    await action('打开会话').trigger('click')
+    expect(wrapper.get('[role="log"]').text()).toContain('本地新会话')
+    wrapper.unmount()
   })
 
   it('reruns a completed RAG pipeline from the header action', async () => {

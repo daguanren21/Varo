@@ -1,0 +1,17 @@
+{
+  "name": "data-grid",
+  "type": "block",
+  "title": "Basic Data Grid",
+  "description": "Mobile primary-field pages, column choice, controlled edits and errors, detail expansion, filtering and injected groups.",
+  "docs": "/blocks/data-workspace#data-grid",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/input"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/data-grid/h5.vue", "to": "src/components/blocks/data-grid.vue" },
+    { "target": "weapp", "from": "registry/blocks/data-grid/weapp-vite.vue", "to": "src/components/blocks/data-grid.vue" },
+    { "target": "h5", "from": "registry/blocks/data-grid/data-grid-actions.ts", "to": "src/components/blocks/data-grid-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/data-grid/data-grid-actions.ts", "to": "src/components/blocks/data-grid-actions.ts" }
+  ]
+}

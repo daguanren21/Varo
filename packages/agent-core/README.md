@@ -28,6 +28,14 @@ The application must call `transport.end()` on normal transport completion or `t
 
 The root export provides the compiled protocol/controller API; `@varo-ui/ai/source` remains an explicit source entry. Neither entry is a provider SDK or a renderer. Shared presentation types/helpers live in the Registry `agent-presentation` unit, while target lifecycle/render code remains in H5 or native source.
 
+### Markdown runtime portability
+
+Both package entries use the same private `runtime/markdown-parser.mjs` bundle, shipped in the npm archive. The upstream parser initializes its entity trie through browser `atob` and encodes HTML details code blocks through `btoa`; native hosts need not provide either global. The private build injects local base64 decoding and encoding instead of modifying `globalThis` or requiring Node `Buffer`. Consumers do not need a polyfill or an extra build step.
+
+In this workspace, installation prepares that generated bundle. After cleaning `packages/agent-core/runtime`, run `pnpm --filter @varo-ui/ai build:runtime` before consuming the source entry. `pnpm --filter @varo-ui/ai build` and package `prepack` rebuild it as well. Author changes in `build/` and the tsdown configurations, never in generated `runtime/`.
+
+The parser dependency is pinned so consumer-visible node types match the bundled runtime. Bundled dependency licenses, including the parser's embedded dependencies, are preserved in `THIRD_PARTY_NOTICES.txt`; update that inventory when upgrading the parser or base64 implementation.
+
 ## Thread versions
 
 ```ts

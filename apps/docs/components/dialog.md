@@ -39,8 +39,8 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 
 ### 原生 Weapp（Wevu）
 
-::: tip 原生预览
-小程序页签使用 `weapp-vite` / `wevu` 7.5.0 的真实编译产物。该版本包含普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)，无需下游 context bridge。浏览器预览不代替微信 IDE 或真机验证。
+::: info 原生组合运行边界
+小程序页签使用 `weapp-vite` / `wevu` 7.5.0 的真实编译产物。普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)适用于微信目标、编译后的 Wevu 组件、`scopedSlotsRequireProps: true` 和默认 attached setup，无需下游 context bridge。独立 `dialog` 预览已验证打开、同步取消关闭和允许关闭。这不扩展到 created setup、其他平台或 IDE/真机认证。
 :::
 
 原生事件只传递一个 `detail` 参数；`openChange` 的该参数是 `[open, details]` 元组，处理器必须解构元组，而不是声明两个独立参数。使用 `wevu` 的响应式 API：

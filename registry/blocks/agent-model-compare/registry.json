@@ -1,0 +1,19 @@
+{
+  "name": "agent-model-compare",
+  "type": "block",
+  "title": "Agent Model Compare",
+  "description": "Two controlled model selections, a shared optional-controlled prompt, independently supplied streams and side-specific run/retry/stop intents.",
+  "targets": ["h5", "weapp"],
+  "dependencies": ["@varo-ui/ai", "@varo-ui/headless"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/agent-model-selector", "components/agent-conversation", "components/button", "utils/primitives"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/agent-model-compare/h5.vue", "to": "src/components/blocks/agent-model-compare.vue" },
+    { "target": "weapp", "from": "registry/blocks/agent-model-compare/weapp-vite.vue", "to": "src/components/blocks/agent-model-compare.vue" },
+    { "target": "h5", "from": "registry/blocks/agent-model-compare/agent-model-compare.types.ts", "to": "src/components/blocks/agent-model-compare.types.ts" },
+    { "target": "weapp", "from": "registry/blocks/agent-model-compare/agent-model-compare.types.ts", "to": "src/components/blocks/agent-model-compare.types.ts" },
+    { "target": "h5", "from": "registry/blocks/agent-model-compare/agent-model-compare-actions.ts", "to": "src/components/blocks/agent-model-compare-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/agent-model-compare/agent-model-compare-actions.ts", "to": "src/components/blocks/agent-model-compare-actions.ts" }
+  ],
+  "docs": "/ai/agent-model-compare"
+}

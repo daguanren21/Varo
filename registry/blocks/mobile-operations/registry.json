@@ -1,0 +1,19 @@
+{
+  "name": "mobile-operations",
+  "type": "block",
+  "title": "Mobile Operations",
+  "description": "Controlled bounded list, filters, paging, details and granted application/host action intents for mobile operations workspaces.",
+  "docs": "/blocks/mobile-operations",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/input"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/mobile-operations/h5.vue", "to": "src/components/blocks/mobile-operations.vue" },
+    { "target": "h5", "from": "registry/blocks/mobile-operations/mobile-operations-detail.h5.vue", "to": "src/components/blocks/mobile-operations-detail.vue" },
+    { "target": "h5", "from": "registry/blocks/mobile-operations/mobile-operations-actions.ts", "to": "src/components/blocks/mobile-operations-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/mobile-operations/weapp-vite.vue", "to": "src/components/blocks/mobile-operations.vue" },
+    { "target": "weapp", "from": "registry/blocks/mobile-operations/mobile-operations-detail.weapp-vite.vue", "to": "src/components/blocks/mobile-operations-detail.vue" },
+    { "target": "weapp", "from": "registry/blocks/mobile-operations/mobile-operations-actions.ts", "to": "src/components/blocks/mobile-operations-actions.ts" }
+  ]
+}

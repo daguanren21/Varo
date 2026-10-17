@@ -22,6 +22,7 @@ const emit = defineEmits<{
   'update:value': [value: string]
 }>()
 
+const renderedChoices = computed(() => props.choices.map(choice => ({ ...choice, disabled: Boolean(choice.disabled) })))
 const selectedIndex = computed(() => Math.max(0, props.choices.findIndex(choice => choice.value === props.value)))
 const rootStyle = computed(() => ({
   '--agent-choice-count': String(Math.max(1, props.choices.length)),
@@ -67,7 +68,7 @@ function select(choice: AgentChoice) {
   >
     <text v-if="choices.length" class="agent-radio__indicator absolute z-20 rounded-full bg-[var(--varo-agent-primary)] pointer-events-none" aria-hidden="true" />
     <button
-      v-for="choice in choices"
+      v-for="choice in renderedChoices"
       :key="choice.value"
       :class="itemClass(choice)"
       type="button"

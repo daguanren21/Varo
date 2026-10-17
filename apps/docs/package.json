@@ -25,6 +25,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "4.3.3",
     "@varo/playground-weapp-preview": "workspace:*",
     "@varo/primitives-h5": "workspace:*",

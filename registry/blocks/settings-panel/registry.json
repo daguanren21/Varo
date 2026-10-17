@@ -1,0 +1,17 @@
+{
+  "name": "settings-panel",
+  "type": "block",
+  "title": "Settings Panel",
+  "description": "Controlled boolean, choice and read-only settings with application-owned persistence and rejection.",
+  "docs": "/blocks/application-blocks#settings-panel",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/switch"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/settings-panel/h5.vue", "to": "src/components/blocks/settings-panel.vue" },
+    { "target": "weapp", "from": "registry/blocks/settings-panel/weapp-vite.vue", "to": "src/components/blocks/settings-panel.vue" },
+    { "target": "h5", "from": "registry/blocks/settings-panel/settings-panel-actions.ts", "to": "src/components/blocks/settings-panel-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/settings-panel/settings-panel-actions.ts", "to": "src/components/blocks/settings-panel-actions.ts" }
+  ]
+}

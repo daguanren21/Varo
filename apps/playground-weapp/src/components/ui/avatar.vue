@@ -41,7 +41,7 @@ const dimension = computed(() => {
   <view
     class="varo-avatar"
     role="img"
-    :aria-label="safeAlt || undefined"
+    :aria-label="safeAlt"
     :data-shape="props.shape"
     :style="{ width: dimension, height: dimension }"
   >

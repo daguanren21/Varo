@@ -2,13 +2,15 @@
   "name": "agent-ui",
   "type": "component",
   "title": "Varo Agent UI",
-  "description": "Intentional full Agent UI suite composing conversation, workspace, advanced and RAG source units.",
+  "description": "Intentional full Agent UI suite composing conversation, workspace, advanced, RAG, model selection and attachment source units.",
   "targets": ["h5", "weapp"],
   "registryDependencies": [
     "components/agent-conversation",
     "components/agent-workspace",
     "components/agent-advanced",
-    "components/agent-rag"
+    "components/agent-rag",
+    "components/agent-model-selector",
+    "components/agent-attachment-composer"
   ],
   "files": [
     { "target": "h5", "from": "registry/components/agent-ui/h5/index.ts", "to": "src/components/agent-ui/index.ts" },

@@ -1,0 +1,15 @@
+{
+  "name": "retail-wishlist",
+  "type": "block",
+  "title": "Retail Wishlist",
+  "description": "Controlled RetailProduct membership using the existing product row and application action grants.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["utils/retail", "blocks/product-list"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/retail-wishlist/weapp-vite.vue", "to": "src/components/blocks/retail-wishlist.vue" },
+    { "target": "weapp", "from": "registry/blocks/retail-wishlist/retail-wishlist.types.ts", "to": "src/components/blocks/retail-wishlist.types.ts" }
+  ],
+  "docs": "/blocks/retail-tools"
+}

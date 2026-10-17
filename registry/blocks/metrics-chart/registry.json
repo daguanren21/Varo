@@ -1,0 +1,17 @@
+{
+  "name": "metrics-chart",
+  "type": "block",
+  "title": "Metrics Chart",
+  "description": "Bounded signed bar comparison with explicit units, controlled category detail and configuration rejection.",
+  "docs": "/blocks/data-workspace#metrics-chart",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/metrics-chart/h5.vue", "to": "src/components/blocks/metrics-chart.vue" },
+    { "target": "weapp", "from": "registry/blocks/metrics-chart/weapp-vite.vue", "to": "src/components/blocks/metrics-chart.vue" },
+    { "target": "h5", "from": "registry/blocks/metrics-chart/metrics-chart-actions.ts", "to": "src/components/blocks/metrics-chart-actions.ts" },
+    { "target": "weapp", "from": "registry/blocks/metrics-chart/metrics-chart-actions.ts", "to": "src/components/blocks/metrics-chart-actions.ts" }
+  ]
+}

@@ -8,9 +8,12 @@ const props = defineProps<{
   variables?: ThemeCssVariableOverrides
 }>()
 
-const themeStyle = computed(() => createWeappThemeStyle(props.theme, {
-  variables: props.variables,
-}))
+// Native properties begin as null before the parent's binding reaches this component.
+const themeStyle = computed(() => props.theme == null
+  ? ''
+  : createWeappThemeStyle(props.theme, {
+      variables: props.variables,
+    }))
 </script>
 
 <template>

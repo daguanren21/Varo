@@ -100,6 +100,63 @@ describe('H5 Agent UI', () => {
     expect(composer.emitted('submit')?.[1]).toEqual(['生成发布计划'])
   })
 
+  it('reconciles rejected controlled edits before displaying or submitting a draft', async () => {
+    const composer = mount(AgentComposer, { props: { modelValue: 'accepted draft' } })
+    try {
+      const input = composer.get('textarea')
+      await input.setValue('rejected replacement')
+      expect(input.element.value).toBe('accepted draft')
+      await input.trigger('keydown', { key: 'Enter' })
+      expect(composer.emitted('submit')).toEqual([['accepted draft']])
+
+      await composer.setProps({ modelValue: '' })
+      await input.setValue('rejected empty replacement')
+      expect(input.element.value).toBe('')
+      expect(composer.get('button[aria-label="发送"]').attributes('disabled')).toBeDefined()
+      await input.trigger('keydown', { key: 'Enter' })
+      expect(composer.emitted('submit')).toEqual([['accepted draft']])
+    }
+    finally { composer.unmount() }
+  })
+
+  it('preserves an active IME composition and reconciles only its committed edit', async () => {
+    const composer = mount(AgentComposer, { props: { modelValue: '已接受' } })
+    try {
+      const input = composer.get('textarea')
+      await input.trigger('compositionstart')
+      await input.setValue('正在组合')
+      expect(input.element.value).toBe('正在组合')
+      await input.trigger('keydown', { key: 'Enter', isComposing: true })
+      expect(composer.emitted('submit')).toBeUndefined()
+      await input.trigger('compositionend')
+      expect(input.element.value).toBe('已接受')
+      await input.trigger('keydown', { key: 'Enter' })
+      expect(composer.emitted('submit')).toEqual([['已接受']])
+    }
+    finally { composer.unmount() }
+  })
+
+  it('blocks every submit path without disabling editing while a receipt is pending', async () => {
+    const composer = mount(AgentComposer, {
+      props: { modelValue: 'draft', submitDisabled: true, suggestions: ['Suggested prompt'] },
+    })
+    try {
+      const input = composer.get('textarea')
+      const send = composer.get('button[aria-label="发送"]')
+      const suggestion = composer.findAll('button').find(button => button.text() === 'Suggested prompt')!
+      expect(input.attributes('disabled')).toBeUndefined()
+      expect(send.attributes('disabled')).toBeDefined()
+      expect(suggestion.attributes('disabled')).toBeDefined()
+      await input.trigger('keydown', { key: 'Enter' })
+      await suggestion.trigger('click')
+      expect(composer.emitted('submit')).toBeUndefined()
+      await composer.setProps({ submitDisabled: false, modelValue: 'ready to send' })
+      await input.trigger('keydown', { key: 'Enter' })
+      expect(composer.emitted('submit')).toEqual([['ready to send']])
+    }
+    finally { composer.unmount() }
+  })
+
   it('reviews diffs in unified and split layouts', async () => {
     const lines = [
       { content: '@@ -17,2 +17,3 @@ stream', type: 'hunk' as const },

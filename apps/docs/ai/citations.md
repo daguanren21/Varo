@@ -20,11 +20,12 @@ import { AgentCitations } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type                  | Default   | 说明     |
-| ------------- | --------------------- | --------- | -------- |
-| `items`       | `AgentCitationItem[]` | `[]`      | 引用     |
-| `title`       | `string`              | `Sources` | 标题     |
-| `defaultOpen` | `boolean`             | `false`   | 默认展开 |
+| Prop          | Type                  | Default   | 说明                                 |
+| ------------- | --------------------- | --------- | ------------------------------------ |
+| `items`       | `AgentCitationItem[]` | `[]`      | 引用                                 |
+| `title`       | `string`              | `Sources` | 标题                                 |
+| `defaultOpen` | `boolean`             | `false`   | 默认展开                             |
+| `disabled`    | `boolean`             | `false`   | 禁用展开与打开引用；保留当前可见引用 |
 
 ## Events
 

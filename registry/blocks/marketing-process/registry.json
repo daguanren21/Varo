@@ -1,0 +1,16 @@
+{
+  "name": "marketing-process",
+  "type": "block",
+  "title": "Marketing Process",
+  "description": "Ordered injected steps, explicit progress and guarded host-owned call-to-action intents.",
+  "targets": ["h5", "weapp"],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["components/button"],
+  "files": [
+    { "target": "h5", "from": "registry/blocks/marketing-process/h5.vue", "to": "src/components/blocks/marketing-process.vue" },
+    { "target": "weapp", "from": "registry/blocks/marketing-process/weapp-vite.vue", "to": "src/components/blocks/marketing-process.vue" },
+    { "target": "h5", "from": "registry/blocks/marketing-process/marketing-process.types.ts", "to": "src/components/blocks/marketing-process.types.ts" },
+    { "target": "weapp", "from": "registry/blocks/marketing-process/marketing-process.types.ts", "to": "src/components/blocks/marketing-process.types.ts" }
+  ],
+  "docs": "/blocks/marketing-blocks"
+}

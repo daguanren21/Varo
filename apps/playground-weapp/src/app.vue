@@ -1,4 +1,11 @@
-<script setup lang="ts">
+<script lang="ts">
+import { createApp } from 'wevu'
+
+createApp({
+  globalData: {
+    varoE2eProjectId: import.meta.env.VARO_E2E_PROJECT_ID,
+  },
+})
 </script>
 
 <template>

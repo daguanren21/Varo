@@ -69,7 +69,9 @@ describe('registry catalog', () => {
         expect(fileExists(file.from), `${registryPath} source ${file.from}`).toBe(true)
       })
 
-      const docsPage = `${item.docs.replace(/^\//, '')}.md`
+      // A fragment selects a heading within the page, not a different Markdown file.
+      const docsPath = new URL(item.docs, 'https://varo.test').pathname
+      const docsPage = `${docsPath.replace(/^\//, '')}.md`
       expect(fileExists(`apps/docs/${docsPage}`), `${registryPath} docs route ${item.docs}`).toBe(true)
     })
   })

@@ -1,0 +1,42 @@
+{
+  "name": "agent-source-chat",
+  "type": "block",
+  "title": "Agent Source Chat",
+  "description": "Knowledge-scoped conversation with application-owned source connections, retrieval, receipts, citations and ticket escalation intents.",
+  "targets": ["h5", "weapp"],
+  "dependencies": ["@varo-ui/headless"],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp": ["wevu"]
+  },
+  "registryDependencies": [
+    "blocks/agent-chat",
+    "components/agent-workspace",
+    "components/agent-advanced",
+    "components/button",
+    "utils/primitives"
+  ],
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-source-chat/h5.vue",
+      "to": "src/components/blocks/agent-source-chat.vue"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/blocks/agent-source-chat/weapp-vite.vue",
+      "to": "src/components/blocks/agent-source-chat.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/blocks/agent-source-chat/agent-source-chat.types.ts",
+      "to": "src/components/blocks/agent-source-chat.types.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/blocks/agent-source-chat/agent-source-chat.types.ts",
+      "to": "src/components/blocks/agent-source-chat.types.ts"
+    }
+  ],
+  "docs": "/ai/agent-source-chat"
+}

@@ -93,8 +93,21 @@ export const blockGalleryDefinitions: BlockGalleryDefinition[] = [
     targets: ['weapp', 'h5'],
     title: { zh: 'Agent 对话', en: 'Agent Chat' },
     description: { zh: '增量 Markdown、工具状态、审批与输入组合。', en: 'Incremental Markdown, tool state, approvals, and composer.' },
-    usage: '<AgentChat :messages="messages" @submit="runAgent" />',
-    setup: 'const messages = [{ id: \'welcome\', role: \'assistant\', content: \'你好\' }]\nfunction runAgent(prompt: string) {\n  console.log(prompt)\n}',
+    usage: '<AgentChat v-if="open" v-model="prompt" :messages="messages" @submit="send" @newConversation="newConversation" @close="open = false" />\n  <button v-else @click="open = true">打开会话</button>',
+    setup: `import type { AgentConversationMessage } from '@/components/agent-ui/types'
+
+const open = shallowRef(true)
+const prompt = shallowRef('')
+const messages = shallowRef<AgentConversationMessage[]>([])
+let sequence = 0
+function send(content: string) {
+  messages.value = [...messages.value, { id: String(++sequence), role: 'user', content }]
+  prompt.value = ''
+}
+function newConversation() {
+  messages.value = []
+  prompt.value = ''
+}`,
   },
   {
     category: 'retail',
