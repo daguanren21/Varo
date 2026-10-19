@@ -185,6 +185,52 @@
   color: var(--agent-thinking-muted);
 }
 
+.agent-thinking__step-meta {
+  display: inline-flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.agent-thinking__step-trigger {
+  width: 100%;
+  min-height: 36px;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+}
+
+.agent-thinking__step-trigger:focus-visible {
+  outline: 2px solid var(--varo-agent-primary);
+  outline-offset: 3px;
+}
+
+.agent-thinking__step-trigger strong,
+.agent-thinking__detail {
+  overflow-wrap: anywhere;
+}
+
+.agent-thinking__row-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--agent-thinking-muted);
+}
+
+.agent-thinking__row-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.agent-thinking__detail[hidden] {
+  display: none;
+}
+
 @media (max-width: 640px) {
   .agent-thinking .agent-thinking__trigger {
     min-height: 60px;

@@ -25,7 +25,7 @@ export function normalizePickerColumns(columns: PickerColumn | PickerColumn[]): 
 }
 
 function firstEnabledValue(column: PickerColumn): string | number | undefined {
-  return column.find(option => !option.disabled)?.value ?? column[0]?.value
+  return column.find(option => !option.disabled)?.value
 }
 
 export function normalizePickerValue(
@@ -53,6 +53,7 @@ export const VPicker = defineComponent({
       type: Array as PropType<PickerColumn | PickerColumn[]>,
       default: () => [],
     },
+    confirmDisabled: Boolean,
     confirmText: {
       type: String,
       default: 'Confirm',
@@ -74,10 +75,11 @@ export const VPicker = defineComponent({
     const rootElement = shallowRef<HTMLElement | null>(null)
 
     watch(
-      [() => props.value, resolvedColumns],
+      [() => props.value, resolvedColumns, () => props.visible],
       () => {
         selectedValues.value = normalizePickerValue(props.value, resolvedColumns.value)
       },
+      { deep: true },
     )
 
     const selectedOptions = computed(() =>
@@ -85,6 +87,8 @@ export const VPicker = defineComponent({
         column.find(option => option.value === selectedValues.value[index]),
       ),
     )
+    const canConfirm = computed(() => !props.confirmDisabled
+      && selectedOptions.value.every(option => option !== undefined && !option.disabled))
 
     function syncColumnScroll() {
       if (!props.visible) {
@@ -96,7 +100,8 @@ export const VPicker = defineComponent({
           if (!selected) {
             return
           }
-          column.scrollTop = Math.max(0, selected.offsetTop - (column.clientHeight - selected.offsetHeight) / 2)
+          const selectedTop = column.scrollTop + selected.getBoundingClientRect().top - column.getBoundingClientRect().top - column.clientTop
+          column.scrollTop = Math.max(0, selectedTop - (column.clientHeight - selected.offsetHeight) / 2)
         })
       })
     }
@@ -123,6 +128,9 @@ export const VPicker = defineComponent({
     }
 
     function confirm() {
+      if (!props.visible || !canConfirm.value) {
+        return
+      }
       const option = resolvedColumns.value.length === 1 ? selectedOptions.value[0] : selectedOptions.value
       const value = resolvedColumns.value.length === 1 ? selectedValues.value[0] : selectedValues.value
       emit('update:value', value)
@@ -148,7 +156,7 @@ export const VPicker = defineComponent({
             h('div', { class: 'varo-picker__toolbar' }, [
               h('button', { class: 'varo-picker__cancel', type: 'button', onClick: cancel }, props.cancelText),
               props.title ? h('strong', { class: 'varo-picker__title' }, props.title) : null,
-              h('button', { class: 'varo-picker__confirm', type: 'button', onClick: confirm }, props.confirmText),
+              h('button', { class: 'varo-picker__confirm', type: 'button', disabled: !canConfirm.value, onClick: confirm }, props.confirmText),
             ]),
             h(
               'div',

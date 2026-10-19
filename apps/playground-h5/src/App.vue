@@ -199,6 +199,11 @@ function record(message: string) {
           <a href="?demo=operations">Mobile Operations</a>
           <a href="?demo=data-workspace">Data Workspace</a>
           <a href="?demo=attachments">Attachments</a>
+          <a href="?demo=component-navigation">Navigation</a>
+          <a href="?demo=time-field">Time Field</a>
+          <a href="?demo=file-type">File Type</a>
+          <a href="?demo=agent-disclosure">Agent Disclosure</a>
+          <a href="?demo=signature-history">Signature History</a>
         </nav>
 
         <div class="pg__block-grid">

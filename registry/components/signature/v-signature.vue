@@ -3,21 +3,16 @@
 
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
-import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, useNativeInstance, watch } from 'wevu'
+import type { SignaturePoint, SignatureStroke } from './signature-history'
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, useNativeInstance, watch } from 'wevu'
 import { cn } from '../../lib/cn'
+import { cloneStrokes, createSignatureHistory } from './signature-history'
 
-export interface SignaturePoint {
-  x: number
-  y: number
-}
-
-export interface SignatureStroke {
-  points: SignaturePoint[]
-}
+export type { SignatureInstance, SignaturePoint, SignatureStroke } from './signature-history'
 
 defineOptions({
   properties: {
-    value: { type: null },
+    value: { type: null, value: null },
   },
 })
 
@@ -29,9 +24,13 @@ const props = withDefaults(
     clearText?: string
     disabled?: boolean
     height?: number
+    historyLimit?: number
     lineColor?: string
     lineWidth?: number
+    redoText?: string
+    showHistory?: boolean
     showClear?: boolean
+    undoText?: string
     value?: SignatureStroke[]
   }>(),
   {
@@ -41,9 +40,13 @@ const props = withDefaults(
     clearText: '清除签名',
     disabled: false,
     height: 200,
+    historyLimit: 100,
     lineColor: '#172033',
     lineWidth: 2,
+    redoText: '重做',
+    showHistory: false,
     showClear: true,
+    undoText: '撤销',
     value: () => [],
   },
 )
@@ -92,33 +95,34 @@ function eventTouch(event: TouchEvent, changed = false, identifier?: number): Si
   return undefined
 }
 
-function cloneStrokes(strokes: SignatureStroke[]): SignatureStroke[] {
-  return strokes.map(stroke => ({ points: stroke.points.map(point => ({ ...point })) }))
-}
-
 const nativeInstance = useNativeInstance()
-const owner = nativeInstance as unknown as WechatMiniprogram.Component.TrivialInstance
 const canvasId = nextSignatureId()
 const classes = computed(() => cn('varo-signature', props.className))
 const canvasStyle = computed(() => `height: ${props.height}px; background: ${props.background}`)
-const strokes = shallowRef(cloneStrokes(props.value))
+const history = shallowRef(createSignatureHistory(props.value ?? [], props.historyLimit))
+const strokes = computed(() => history.value.value)
+const drawing = shallowRef(false)
+const canUndo = computed(() => !props.disabled && !drawing.value && history.value.canUndo)
+const canRedo = computed(() => !props.disabled && !drawing.value && history.value.canRedo)
+const clearDisabled = computed(() => props.disabled || drawing.value || strokes.value.length === 0)
 const dataDisabled = computed<'true' | 'false'>(() => props.disabled ? 'true' : 'false')
 const dataEmpty = computed(() => String(strokes.value.length === 0))
-let context: WechatMiniprogram.CanvasContext | undefined
+let context: WechatMiniprogram.CanvasRenderingContext.CanvasRenderingContext2D | undefined
 let currentPoints: SignaturePoint[] = []
 let activeTouchId: number | undefined
 let canvasWidth = 320
 let canvasHeight = props.height
 let initializeTimer: ReturnType<typeof setTimeout> | undefined
+let disposed = false
 
 function prepareContext() {
   if (!context) {
     return
   }
-  context.setStrokeStyle(props.lineColor)
-  context.setLineWidth(props.lineWidth)
-  context.setLineCap('round')
-  context.setLineJoin('round')
+  context.strokeStyle = props.lineColor
+  context.lineWidth = props.lineWidth
+  context.lineCap = 'round'
+  context.lineJoin = 'round'
 }
 
 function drawStroke(stroke: SignatureStroke) {
@@ -131,7 +135,7 @@ function drawStroke(stroke: SignatureStroke) {
   const firstX = first.x * canvasWidth
   const firstY = first.y * canvasHeight
   if (stroke.points.length === 1) {
-    context.setFillStyle(props.lineColor)
+    context.fillStyle = props.lineColor
     context.arc(firstX, firstY, Math.max(0.5, props.lineWidth / 2), 0, Math.PI * 2)
     context.fill()
     return
@@ -148,12 +152,11 @@ function redraw() {
     return
   }
   context.clearRect(0, 0, canvasWidth, canvasHeight)
-  context.setFillStyle(props.background)
+  context.fillStyle = props.background
   context.fillRect(0, 0, canvasWidth, canvasHeight)
   for (const stroke of strokes.value) {
     drawStroke(stroke)
   }
-  context.draw()
 }
 
 function pointFromTouch(touch: SignatureTouch): SignaturePoint {
@@ -175,6 +178,7 @@ function touchStart(event: TouchEvent) {
   }
   activeTouchId = touch.identifier
   currentPoints = [pointFromTouch(touch)]
+  drawing.value = true
   emit('start')
 }
 
@@ -184,6 +188,7 @@ function touchCancel(event?: TouchEvent) {
   }
   activeTouchId = undefined
   currentPoints = []
+  drawing.value = false
   redraw()
 }
 
@@ -212,7 +217,6 @@ function touchMove(event: TouchEvent) {
   context.moveTo(previous.x * canvasWidth, previous.y * canvasHeight)
   context.lineTo(point.x * canvasWidth, point.y * canvasHeight)
   context.stroke()
-  context.draw(true)
 }
 
 function samePoint(left: SignaturePoint, right: SignaturePoint) {
@@ -238,34 +242,56 @@ function touchEnd(event: TouchEvent) {
   }
   activeTouchId = undefined
   const stroke = { points: currentPoints.map(point => ({ ...point })) }
-  const next = [...strokes.value, stroke]
   currentPoints = []
-  emit('update:value', cloneStrokes(next))
-  emit('change', cloneStrokes(next))
+  drawing.value = false
+  emitProposal(history.value.propose([...strokes.value, stroke]))
   emit('end', { points: stroke.points.map(point => ({ ...point })) })
   void nextTick(redraw)
 }
 
 function clear() {
-  if (props.disabled || strokes.value.length === 0) {
+  if (clearDisabled.value) {
     return
   }
-  activeTouchId = undefined
-  currentPoints = []
-  emit('update:value', [])
-  emit('change', [])
+  emitProposal(history.value.propose([]))
   emit('clear')
   void nextTick(redraw)
 }
 
+function emitProposal(value: SignatureStroke[] | undefined) {
+  if (!value) {
+    return
+  }
+  emit('update:value', cloneStrokes(value))
+  emit('change', cloneStrokes(value))
+}
+
+function undo() {
+  if (canUndo.value) {
+    emitProposal(history.value.undo())
+  }
+}
+
+function redo() {
+  if (canRedo.value) {
+    emitProposal(history.value.redo())
+  }
+}
+
 function initialize() {
-  context = wx.createCanvasContext(canvasId, owner)
+  const owner = nativeInstance.$el as WechatMiniprogram.Component.TrivialInstance
   const query = nativeInstance.createSelectorQuery() ?? wx.createSelectorQuery().in(owner)
-  query.select(`#${canvasId}`).boundingClientRect((rect) => {
-    if (rect) {
-      canvasWidth = Math.max(1, rect.width)
-      canvasHeight = Math.max(1, rect.height)
-    }
+  query.select(`#${canvasId}`).fields({ node: true, size: true }, (result) => {
+    if (disposed) { return }
+    const canvas = result?.node as WechatMiniprogram.Canvas | undefined
+    if (!canvas) { throw new Error('VSignature requires a mounted 2D canvas') }
+    canvasWidth = Math.max(1, result.width)
+    canvasHeight = Math.max(1, result.height)
+    const ratio = Math.max(1, wx.getWindowInfo().pixelRatio)
+    canvas.width = Math.round(canvasWidth * ratio)
+    canvas.height = Math.round(canvasHeight * ratio)
+    context = canvas.getContext('2d')
+    context.scale(ratio, ratio)
     redraw()
   }).exec()
 }
@@ -279,9 +305,15 @@ function scheduleInitialize() {
 }
 
 watch(() => props.value, (value) => {
-  strokes.value = cloneStrokes(value)
-  redraw()
+  if (history.value.accept(value ?? [])) {
+    triggerRef(history)
+    touchCancel()
+  }
 }, { deep: true })
+watch(() => props.historyLimit, (limit) => {
+  history.value.setLimit(limit)
+  triggerRef(history)
+})
 watch([() => props.background, () => props.lineColor, () => props.lineWidth], redraw)
 watch(() => props.height, scheduleInitialize)
 watch(() => props.disabled, (disabled) => {
@@ -295,18 +327,20 @@ onMounted(() => {
   wx.onWindowResize?.(scheduleInitialize)
 })
 onBeforeUnmount(() => {
+  disposed = true
+  context = undefined
   clearTimeout(initializeTimer)
   wx.offWindowResize?.(scheduleInitialize)
 })
 
-defineExpose({ clear })
+defineExpose({ clear, undo, redo, canUndo, canRedo })
 </script>
 
 <template>
   <view :class="classes" :data-disabled="dataDisabled" :data-empty="dataEmpty">
     <canvas
       :id="canvasId"
-      :canvas-id="canvasId"
+      type="2d"
       class="varo-signature__canvas"
       :style="canvasStyle"
       :aria-label="props.ariaLabel"
@@ -317,15 +351,32 @@ defineExpose({ clear })
       @touchend="touchEnd"
       @touchcancel="touchCancel"
     />
-    <button
-      v-if="props.showClear"
-      class="varo-signature__clear"
-      type="button"
-      :disabled="props.disabled || strokes.length === 0"
-      @click="clear"
-    >
-      {{ props.clearText }}
-    </button>
+    <view v-if="props.showHistory || props.showClear" class="varo-signature__actions">
+      <button
+        v-if="props.showHistory"
+        class="varo-signature__action varo-signature__undo"
+        :disabled="!canUndo"
+        @click="undo"
+      >
+        {{ props.undoText }}
+      </button>
+      <button
+        v-if="props.showHistory"
+        class="varo-signature__action varo-signature__redo"
+        :disabled="!canRedo"
+        @click="redo"
+      >
+        {{ props.redoText }}
+      </button>
+      <button
+        v-if="props.showClear"
+        class="varo-signature__action varo-signature__clear"
+        :disabled="clearDisabled"
+        @click="clear"
+      >
+        {{ props.clearText }}
+      </button>
+    </view>
   </view>
 </template>
 

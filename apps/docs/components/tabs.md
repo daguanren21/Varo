@@ -44,6 +44,10 @@ const active = ref('overview')
 | `change`        | `string \| number` | 激活项变化 |
 | `clickTab`      | `{ name; title }`  | 点击标题   |
 
+H5 与小程序使用相同事件规则：重复点击当前激活标题仍发送 `clickTab`，但不发送 `update:active` 或 `change`；禁用项不发送任何事件。选择其他可用项时，事件顺序为 `update:active`、`change`、`clickTab`。`active` 保持由父组件控制，父组件接受更新后才切换内容。
+
+小程序通过安装的 `v-tabs.vue` 与 `v-tab.vue` 组合，事件各携带一个值，无需拆解多值参数。H5 的方向键、Home、End 导航继续生效，选中同一项时也不会产生重复状态事件。
+
 ## VTab Props
 
 | Prop       | 类型               | 默认值      | 描述       |

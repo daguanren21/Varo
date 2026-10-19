@@ -1,5 +1,6 @@
 import type { PropType, StyleValue } from 'vue'
 import { computed, defineComponent, h } from 'vue'
+import { getPaginationTokens, isAvailablePage } from './pagination-utils'
 import '../../styles/varo.css'
 import '../../styles/varo-pagination.css'
 
@@ -37,16 +38,13 @@ export const VPagination = defineComponent({
   },
   emits: ['update:modelValue', 'change'],
   setup(props, { attrs, emit }) {
-    const pages = computed(() => Array.from({ length: Math.max(props.pageCount, 0) }, (_, index) => index + 1))
+    const pages = computed(() => getPaginationTokens(props.pageCount, props.modelValue))
 
     function setPage(page: number) {
-      const next = Math.min(Math.max(page, 1), props.pageCount)
-      if (next === props.modelValue) {
-        return
-      }
+      if (!isAvailablePage(page, props.pageCount) || page === props.modelValue) { return }
 
-      emit('update:modelValue', next)
-      emit('change', next)
+      emit('update:modelValue', page)
+      emit('change', page)
     }
 
     function itemLabel(page: number) {
@@ -69,30 +67,32 @@ export const VPagination = defineComponent({
           h('button', {
             type: 'button',
             class: 'varo-pagination__prev',
-            disabled: props.modelValue <= 1,
+            disabled: !isAvailablePage(props.modelValue - 1, props.pageCount),
             onClick: () => setPage(props.modelValue - 1),
           }, props.prevText),
           props.mode === 'simple'
             ? h('span', { class: 'varo-pagination__simple' }, `${props.modelValue}/${props.pageCount}`)
             : pages.value.map(page =>
-                h(
-                  'button',
-                  {
-                    'key': page,
-                    'type': 'button',
-                    'class': 'varo-pagination__page',
-                    'data-active': String(page === props.modelValue),
-                    'aria-current': page === props.modelValue ? 'page' : undefined,
-                    'aria-label': itemLabel(page),
-                    'onClick': () => setPage(page),
-                  },
-                  String(page),
-                ),
+                typeof page === 'string'
+                  ? h('span', { 'key': page, 'class': 'varo-pagination__ellipsis', 'aria-hidden': 'true' }, '…')
+                  : h(
+                    'button',
+                    {
+                      'key': page,
+                      'type': 'button',
+                      'class': 'varo-pagination__page',
+                      'data-active': String(page === props.modelValue),
+                      'aria-current': page === props.modelValue ? 'page' : undefined,
+                      'aria-label': itemLabel(page),
+                      'onClick': () => setPage(page),
+                    },
+                    String(page),
+                  ),
               ),
           h('button', {
             type: 'button',
             class: 'varo-pagination__next',
-            disabled: props.modelValue >= props.pageCount,
+            disabled: !isAvailablePage(props.modelValue + 1, props.pageCount),
             onClick: () => setPage(props.modelValue + 1),
           }, props.nextText),
         ],

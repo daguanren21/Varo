@@ -1,0 +1,93 @@
+.varo-time-field {
+  display: grid;
+  gap: 8px;
+  width: min(100%, 360px);
+  min-width: 0;
+  color: var(--varo-ui-text);
+}
+
+.varo-time-field__input {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.varo-time-field__control {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  height: 44px;
+  padding: 0 12px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-ui-input-radius);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-time-field__control:focus-visible,
+.varo-time-field__clear:focus-visible {
+  outline: 2px solid var(--varo-ui-ring);
+  outline-offset: 2px;
+}
+
+.varo-time-field[data-open='true'] .varo-time-field__control {
+  border-color: var(--varo-ui-primary);
+}
+
+.varo-time-field[data-readonly='true'] .varo-time-field__control {
+  cursor: default;
+}
+
+.varo-time-field__value,
+.varo-time-field__placeholder {
+  min-width: 0;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.varo-time-field__placeholder {
+  color: var(--varo-ui-text-placeholder);
+}
+
+.varo-time-field__arrow {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  color: var(--varo-ui-text-muted);
+  border-right: 1.6px solid currentcolor;
+  border-bottom: 1.6px solid currentcolor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.varo-time-field__clear {
+  min-height: 44px;
+  padding: 0 8px;
+  font: inherit;
+  color: var(--varo-ui-text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--varo-ui-input-radius);
+}
+
+.varo-time-field__control:disabled,
+.varo-time-field__clear:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.varo-time-field__picker {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}

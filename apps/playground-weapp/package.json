@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
+    "build": "weapp-vite build && node scripts/localize-native-components.mjs && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
     "build:preview": "WEAPP_ROBOT_CHAT=1 weapp-vite build --mode browser-preview --project-config project.browser.json",
     "clean": "rimraf dist devtools .weapp-vite",
     "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite --project-config .weapp-vite/project.dev.config.json",

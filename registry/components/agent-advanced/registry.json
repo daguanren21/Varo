@@ -5,7 +5,7 @@
   "description": "Optional diffs, generated media, citations, activity, context, tables, workflows, fine-tuning controls, sidebars and artifacts.",
   "targets": ["h5", "weapp"],
   "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
-  "registryDependencies": ["components/agent-presentation", "themes/agent", "utils/cn"],
+  "registryDependencies": ["components/agent-presentation", "components/file-type", "themes/agent", "utils/cn"],
   "targetRegistryDependencies": { "weapp": ["components/button", "components/card", "components/progress"] },
   "files": [
     { "target": "h5", "from": "registry/components/agent-ui/advanced.ts", "to": "src/components/agent-ui/advanced.ts" },

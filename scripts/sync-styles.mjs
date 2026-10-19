@@ -32,6 +32,8 @@ const components = [
   ['calendar', 'h5.css', 'weapp-vite.css'],
   ['date-picker', 'h5.css', 'weapp-vite.css'],
   ['picker', 'h5.css', 'weapp-vite.css'],
+  ['time-field', 'h5.css', 'weapp-vite.css'],
+  ['file-type', 'style.css', 'style.css'],
   ['cascader', 'h5.css', 'weapp-vite.css'],
   ['number-keyboard', 'h5.css', 'weapp-vite.css'],
   ['short-password', 'style.css', 'style.css'],

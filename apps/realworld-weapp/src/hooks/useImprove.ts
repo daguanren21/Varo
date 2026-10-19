@@ -1162,13 +1162,11 @@ export function useOpenInfo() {
     device.value.publicTimeFrom = device.value.publicTimeFrom || '09:30'
     device.value.publicTimeTo = device.value.publicTimeTo || '16:30'
   }
-  const changeStartTime = (e: WechatMiniprogram.IAnyObject, item: WechatMiniprogram.IAnyObject) => {
-    // device.value.publicTimeFrom = e.detail.value
-    item.start = e.detail.value
+  const changeStartTime = (value: string, item: WechatMiniprogram.IAnyObject) => {
+    item.start = value
   }
-  const changeEndTime = (e: WechatMiniprogram.IAnyObject, item: WechatMiniprogram.IAnyObject) => {
-    // device.value.publicTimeTo = e.detail.value
-    item.end = e.detail.value
+  const changeEndTime = (value: string, item: WechatMiniprogram.IAnyObject) => {
+    item.end = value
   }
   const changePublic = (e: WechatMiniprogram.IAnyObject) => {
     publicIndex.value = e.detail.value

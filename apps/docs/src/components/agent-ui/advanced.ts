@@ -19,7 +19,7 @@ import type {
 import type { AgentFilterOption, AgentTableColumn, AgentTableRow } from './agent-table'
 import type { AgentDiffIndicators, AgentDiffLine, AgentDiffSelection, AgentDiffView, AgentFileDiffLabels, IndexedAgentDiffLine } from './file-diff'
 import type { AgentChoice } from './types'
-import { computed, defineComponent, h, shallowRef, useId } from 'vue'
+import { computed, defineComponent, h, shallowRef, useId, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import {
 
@@ -35,7 +35,10 @@ import {
 
   splitAgentDiffContent,
 } from './file-diff'
+import { agentPartStatusLabels } from './presentation'
 import '../../styles/varo.css'
+import '../../styles/varo-icon.css'
+import '../../styles/varo-file-type.css'
 import '../../styles/varo-agent.css'
 import './agent-advanced.css'
 import './agent-artifact.css'
@@ -80,10 +83,10 @@ function statusLabel(status: AgentActivityStatus) {
   return 'Waiting'
 }
 
-function renderStatus(status: AgentActivityStatus) {
+function renderStatus(status: AgentActivityStatus, label = statusLabel(status)) {
   return h('span', { 'class': 'agent-advanced__status', 'data-status': status }, [
     h('i', { 'class': 'agent-advanced__status-dot', 'aria-hidden': 'true' }),
-    statusLabel(status),
+    label,
   ])
 }
 
@@ -547,22 +550,27 @@ export const AgentToolResult = defineComponent({
     defaultOpen: Boolean,
     duration: String,
     name: { type: String, required: true },
+    open: { type: Boolean as PropType<boolean | undefined>, default: undefined },
     output: { type: String, default: '' },
     status: { type: String as PropType<AgentPartStatus>, default: 'completed' },
     summary: String,
   },
   emits: { 'retry': () => true, 'update:open': (_value: boolean) => true },
   setup(props, { emit, slots }) {
-    const open = shallowRef(props.defaultOpen || props.status === 'running' || props.status === 'failed')
+    const bodyId = `agent-tool-result-${useId()}`
+    const localOpen = shallowRef(props.defaultOpen || props.status === 'running' || props.status === 'failed')
+    const open = computed(() => props.open ?? localOpen.value)
     const meta = computed(() => [props.duration, props.summary].filter(Boolean).join(' · '))
     return () => h('section', { 'class': 'agent-tool-result', 'data-open': String(open.value), 'data-status': props.status }, [
       h('button', {
         'class': 'agent-tool-result__header',
         'type': 'button',
         'aria-expanded': String(open.value),
+        'aria-controls': bodyId,
         'onClick': () => {
-          open.value = !open.value
-          emit('update:open', open.value)
+          const next = !open.value
+          if (props.open == null) { localOpen.value = next }
+          emit('update:open', next)
         },
       }, [
         h('span', { class: 'agent-tool-result__command' }, [
@@ -570,13 +578,11 @@ export const AgentToolResult = defineComponent({
           h('strong', props.name),
         ]),
         h('span', { class: 'agent-tool-result__meta' }, [
-          renderStatus(props.status),
+          renderStatus(props.status, agentPartStatusLabels[props.status]),
           meta.value ? h('small', meta.value) : null,
         ]),
       ]),
-      open.value
-        ? h('div', { class: 'agent-tool-result__body' }, slots.default?.() ?? [h('pre', props.output)])
-        : null,
+      h('div', { id: bodyId, class: 'agent-tool-result__body', hidden: !open.value }, open.value ? slots.default?.() ?? [h('pre', props.output)] : []),
       props.status === 'failed' && open.value
         ? h('button', { class: 'agent-tool-result__retry', type: 'button', onClick: () => emit('retry') }, 'Retry')
         : null,
@@ -795,10 +801,28 @@ export const AgentCitations = defineComponent({
 export const AgentActivity = defineComponent({
   name: 'AgentActivity',
   props: {
+    defaultExpandedIds: { type: Array as PropType<string[]>, default: () => [] },
+    expandable: { type: Boolean, default: false },
+    expandedIds: { type: Array as PropType<string[]>, default: undefined },
     items: { type: Array as PropType<AgentActivityItem[]>, default: () => [] },
     title: { type: String, default: 'Agent activity' },
   },
-  setup(props) {
+  emits: { 'update:expandedIds': (_value: string[]) => true },
+  setup(props, { emit }) {
+    const disclosureId = `agent-activity-${useId()}`
+    const localExpandedIds = shallowRef([...props.defaultExpandedIds])
+    const expandedIds = computed(() => props.expandedIds ?? localExpandedIds.value)
+    watch(() => props.items.map(item => item.id), (ids) => {
+      localExpandedIds.value = localExpandedIds.value.filter(id => ids.includes(id))
+    }, { immediate: true })
+    function toggleItem(item: AgentActivityItem) {
+      if (!props.expandable || !item.detail) { return }
+      const next = expandedIds.value.includes(item.id)
+        ? expandedIds.value.filter(id => id !== item.id)
+        : [...expandedIds.value, item.id]
+      if (props.expandedIds == null) { localExpandedIds.value = next }
+      emit('update:expandedIds', next)
+    }
     const completed = computed(() => props.items.filter(item => item.status === 'completed').length)
     const current = computed(() => props.items.find(item => item.status === 'running' || item.status === 'failed'))
     const headingHint = computed(() => {
@@ -818,28 +842,46 @@ export const AgentActivity = defineComponent({
         ]),
         h('span', { class: 'agent-activity__count' }, `${completed.value}/${props.items.length}`),
       ]),
-      h('ol', { class: 'agent-activity__body' }, props.items.map(item => h('li', {
-        'class': 'agent-activity__item',
-        'data-kind': item.kind,
-        'data-status': item.status,
-        'aria-current': item.status === 'running' ? 'step' : undefined,
-        'key': item.id,
-      }, [
-        h('span', { 'class': 'agent-activity__kind', 'aria-hidden': 'true' }, [
-          renderActivityKindIcon(item.kind),
-        ]),
-        h('span', { class: 'agent-activity__copy' }, [
-          h('span', { class: 'agent-activity__row' }, [
-            h('strong', item.title),
-            renderStatus(item.status),
+      h('ol', { class: 'agent-activity__body' }, props.items.map((item) => {
+        const expandable = props.expandable && !!item.detail
+        const expanded = expandedIds.value.includes(item.id)
+        const detailId = `${disclosureId}-${encodeURIComponent(item.id)}`
+        const label = item.status === 'queued' ? '排队中' : item.status === 'cancelled' ? '已取消' : agentPartStatusLabels[item.status]
+        return h('li', {
+          'class': 'agent-activity__item',
+          'data-kind': item.kind,
+          'data-status': item.status,
+          'aria-current': item.status === 'running' ? 'step' : undefined,
+          'key': item.id,
+        }, [
+          h('span', { 'class': 'agent-activity__kind', 'aria-hidden': 'true' }, [renderActivityKindIcon(item.kind)]),
+          h('span', { class: 'agent-activity__copy' }, [
+            h(expandable ? 'button' : 'span', {
+              'class': ['agent-activity__row', expandable && 'agent-activity__trigger'],
+              'type': expandable ? 'button' : undefined,
+              'aria-expanded': expandable ? String(expanded) : undefined,
+              'aria-controls': expandable ? detailId : undefined,
+              'onClick': expandable ? () => toggleItem(item) : undefined,
+            }, [
+              h('strong', item.title),
+              renderStatus(item.status, label),
+              expandable ? h('svg', {
+                'class': ['agent-activity__chevron', expanded && 'is-open'],
+                'viewBox': '0 0 24 24',
+                'fill': 'none',
+                'stroke': 'currentColor',
+                'stroke-width': '2',
+                'aria-hidden': 'true',
+              }, [h('path', { d: 'm6 9 6 6 6-6' })]) : null,
+            ]),
+            h('span', { class: 'agent-activity__meta' }, [
+              h('small', { class: 'agent-activity__kind-label' }, activityKindLabel(item.kind)),
+              item.duration ? h('small', item.duration) : null,
+            ]),
+            item.detail ? h('p', { id: detailId, hidden: expandable && !expanded }, item.detail) : null,
           ]),
-          h('span', { class: 'agent-activity__meta' }, [
-            h('small', { class: 'agent-activity__kind-label' }, activityKindLabel(item.kind)),
-            item.duration ? h('small', item.duration) : null,
-          ]),
-          item.detail ? h('p', item.detail) : null,
-        ]),
-      ]))),
+        ])
+      })),
     ])
   },
 })

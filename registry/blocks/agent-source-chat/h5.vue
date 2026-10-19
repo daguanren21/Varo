@@ -166,6 +166,8 @@ function stop() {
 @import '../agent-ui/agent-markdown.css';
 @import '../../styles/varo-button.css';
 @import '../agent-ui/agent-workspace.css';
+@import '../../styles/varo-icon.css';
+@import '../../styles/varo-file-type.css';
 @import '../agent-ui/agent-advanced.css';
 @import '../agent-ui/agent-artifact.css';
 </style>

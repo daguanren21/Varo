@@ -47,24 +47,31 @@ catch (error) {
   emit('error', message)
 }
 let previousContent = ''
-const nodes = shallowRef<AgentMarkdownViewNode[]>([])
+let contentRevision = 0
+const nodes = shallowRef<{ key: string, node: AgentMarkdownViewNode }[]>([])
+
+function setNodes(nextNodes: AgentMarkdownViewNode[]) {
+  // Structural paths survive streamed text changes; replacement starts a new tree.
+  nodes.value = nextNodes.map((node, index) => ({ key: `${contentRevision}.${index}`, node }))
+}
 
 function updateNodes(content: string, final: boolean) {
-  if (!parser) {
-    nodes.value = content ? [{ kind: 'text', text: content }] : []
-    return
-  }
   if (!content.startsWith(previousContent)) {
-    parser.reset()
+    contentRevision += 1
+    parser?.reset()
   }
   previousContent = content
+  if (!parser) {
+    setNodes(content ? [{ kind: 'text', text: content }] : [])
+    return
+  }
   try {
-    nodes.value = normalizeMarkdownNodes(parser.parse(content, { final }))
+    setNodes(normalizeMarkdownNodes(parser.parse(content, { final })))
   }
   catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
     emit('error', message)
-    nodes.value = content ? [{ kind: 'text', text: content }] : []
+    setNodes(content ? [{ kind: 'text', text: content }] : [])
   }
 }
 
@@ -80,8 +87,7 @@ const rootClass = computed(() =>
 
 <template>
   <view :class="rootClass" :data-final="String(final)">
-    <!-- Native wx:key names an item field, not a loop index; this stateless tree is positional. -->
-    <AgentMarkdownNode v-for="node in nodes" :node="node" @link="emit('link', $event)" />
+    <AgentMarkdownNode v-for="item in nodes" :key="item.key" :node="item.node" :node-key="item.key" @link="emit('link', $event)" />
   </view>
 </template>
 

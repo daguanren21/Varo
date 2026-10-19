@@ -47,6 +47,7 @@ defineOptions({
 
 const robotChatEnabled = import.meta.env.VARO_ROBOT_CHAT_ENABLED === true
 const blockDemos = [
+  { label: '组件更新', route: '/component-lab/index/index' },
   { label: 'Source Chat', route: '/pages/source-chat/index' },
   { label: 'Workspace', route: '/pages/agent-workspace-demo/index' },
   { label: 'Activity', route: '/pages/agent-activity-demo/index' },

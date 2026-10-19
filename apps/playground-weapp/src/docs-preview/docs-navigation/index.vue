@@ -272,7 +272,7 @@ onBeforeUnmount(stopIndicator)
               {{ menuCopy.count }}
             </text>
           </view>
-          <VMenu :active-name="menuActiveName" @update:active-name="menuActiveName = $event">
+          <VMenu :active-name="menuActiveName" @update:activeName="menuActiveName = $event">
             <VMenuItem :model-value="menuValue" name="sort" :title="menuCopy.sort" :options="menuCopy.sortOptions" @select="selectMenuSort" />
             <VMenuItem :model-value="menuStockValue" name="stock" :title="menuCopy.stock" :options="menuCopy.stockOptions" @select="selectMenuStock" />
           </VMenu>
@@ -367,7 +367,7 @@ onBeforeUnmount(stopIndicator)
           <text class="text-[11px] text-[var(--varo-ui-text-muted)]" role="status" aria-live="polite">
             {{ paginationCopy.page }} {{ paginationPage }} {{ paginationCopy.pageSuffix }}
           </text>
-          <VPagination :aria-label="paginationCopy.navigationLabel" :item-aria-label="paginationCopy.itemLabel" :model-value="paginationPage" :page-count="5" :prev-text="paginationCopy.previous" :next-text="paginationCopy.next" @update:model-value="paginationPage = $event" />
+          <VPagination :aria-label="paginationCopy.navigationLabel" :item-aria-label="paginationCopy.itemLabel" :model-value="paginationPage" :page-count="5" :prev-text="paginationCopy.previous" :next-text="paginationCopy.next" @update:modelValue="paginationPage = $event" />
         </view>
       </view>
 
@@ -408,7 +408,7 @@ onBeforeUnmount(stopIndicator)
           </text>
         </view>
         <view class="mt-3" :aria-label="tabbarCopy.navigationLabel" role="navigation">
-          <VTabbar :model-value="tabbarActive" @update:model-value="tabbarActive = $event">
+          <VTabbar :model-value="tabbarActive" @update:modelValue="tabbarActive = $event">
             <VTabbarItem v-for="item in tabbarCopy.items" :key="item.name" :name="item.name" :badge="item.badge" :dot="item.dot">
               <template #icon>
                 <VIcon :size="20">

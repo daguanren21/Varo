@@ -36,6 +36,11 @@
   align-items: center;
 }
 
+.varo-avatar-group__item {
+  display: inline-flex;
+  flex: none;
+}
+
 .varo-avatar-group > * + * {
   margin-left: calc(var(--varo-avatar-group-overlap, 10px) * -1);
 }
@@ -47,6 +52,7 @@
 
 .varo-avatar-group__more {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 40px;

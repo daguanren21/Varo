@@ -8,7 +8,10 @@ import { postcss } from 'weapp-tailwindcss/core'
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(projectRoot, 'devtools/build/mp-weixin')
 const requiredComponentExtensions = ['.js', '.json', '.wxml']
-const mainPackageLimit = 2 * 1024 * 1024
+// Real-device debugging adds code beyond the compiled files; reserve the same
+// headroom as the realworld native app instead of treating preview size as proof.
+const mainPackageLimit = 1_500_000
+const subPackageLimit = 2 * 1024 * 1024
 const requiredRegistryCatalogComponents = [
   'v-action-sheet',
   'v-cell',
@@ -171,7 +174,11 @@ for (const [path, size] of outputFiles) {
   if (!packageOwner(path)) { mainPackageBytes += size }
 }
 if (mainPackageBytes > mainPackageLimit) {
-  throw new Error(`Main package exceeds 2 MiB: ${mainPackageBytes} > ${mainPackageLimit} bytes`)
+  throw new Error(`Main package exceeds 1.5 MB debug budget: ${mainPackageBytes} > ${mainPackageLimit} bytes`)
+}
+for (const pkg of subPackages) {
+  const bytes = [...outputFiles].reduce((total, [path, size]) => total + (packageOwner(path) === pkg ? size : 0), 0)
+  if (bytes > subPackageLimit) { throw new Error(`Subpackage ${pkg.root} exceeds 2 MiB: ${bytes} > ${subPackageLimit} bytes`) }
 }
 const scriptReferenceCount = await verifyScriptReferences(outputFiles)
 for (const pagePath of pageJsonPaths(appJson)) {
@@ -217,6 +224,10 @@ while (queue.length > 0) {
   }
 
   const json = JSON.parse(await readFile(ownerPath, 'utf8'))
+  if (/[/\\]components[/\\]agent-ui[/\\](?:AgentEventRenderer|AgentMessage|AgentConversation|AgentStream)\.json$/.test(ownerPath)
+    && Object.keys(json.usingComponents ?? {}).some(name => name.startsWith('scoped-slot-'))) {
+    throw new Error(`${relative(outputRoot, ownerPath)} streaming content must not cross a scoped-slot boundary`)
+  }
   if (ownerPath !== appJsonPath) {
     const stylePath = ownerPath.replace(/\.json$/, '.wxss')
     if (await exists(stylePath)) { styleQueue.push({ path: stylePath, component: json.component === true }) }
@@ -252,16 +263,6 @@ if (missing.length > 0) {
     )
     .join('\n')
   throw new Error(`Unresolved mini-program components:\n${details}`)
-}
-
-for (const component of ['AgentEventRenderer', 'AgentMessage', 'AgentConversation', 'AgentStream']) {
-  const componentJsonPath = resolve(outputRoot, `components/agent-ui/${component}.json`)
-  if (!await exists(componentJsonPath)) { continue }
-  const componentJson = JSON.parse(await readFile(componentJsonPath, 'utf8'))
-  const componentNames = Object.keys(componentJson.usingComponents ?? {})
-  if (componentNames.some(name => name.startsWith('scoped-slot-'))) {
-    throw new Error(`${component} streaming content must not cross a scoped-slot boundary`)
-  }
 }
 
 const visitedStyles = new Set()

@@ -27,19 +27,38 @@
   opacity: 0.58;
 }
 
-.varo-signature__clear {
-  justify-self: end;
-  min-height: 36px;
+.varo-signature__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.varo-signature__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
   padding: 0 12px;
   font-weight: 700;
-  color: var(--varo-ui-danger);
+  line-height: 1.25;
+  color: var(--varo-ui-text);
   cursor: pointer;
   background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius-sm);
 }
 
-.varo-signature__clear:disabled {
+.varo-signature__action:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.varo-signature__action:focus-visible {
+  outline: 2px solid var(--varo-ui-primary);
+  outline-offset: 2px;
+}
+
+.varo-signature__clear {
+  color: var(--varo-ui-danger);
 }

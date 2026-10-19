@@ -22,22 +22,36 @@
   opacity: 0.58;
 }
 
-.varo-signature__clear.varo-signature__clear {
+.varo-signature__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.varo-signature__action.varo-signature__action {
   box-sizing: border-box;
-  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: auto;
-  min-height: 36px;
+  min-height: 40px;
   padding: 0 12px;
   margin: 0;
   font-weight: 700;
-  color: var(--varo-ui-danger);
+  line-height: 1.25;
+  color: var(--varo-ui-text);
   cursor: pointer;
   background: var(--varo-ui-surface);
   border: 1px solid var(--varo-ui-border);
   border-radius: var(--varo-ui-radius-sm);
 }
 
-.varo-signature__clear:disabled {
+.varo-signature__action[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.varo-signature__clear.varo-signature__clear {
+  color: var(--varo-ui-danger);
 }

@@ -40,6 +40,8 @@ export default defineConfig(({ mode }) => ({
       ]
     : [],
   build: {
+    // Vite owns syntax lowering; project.config.json disables the DevTools JS passes.
+    target: 'es2018',
     outDir: mode === 'browser-preview'
       ? 'dist/browser/mp-weixin'
       : isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
@@ -69,7 +71,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    keepNames: true,
+    keepNames: !isProductionBuild,
   },
   oxc: false,
   resolve: {

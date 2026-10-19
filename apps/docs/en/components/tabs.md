@@ -44,6 +44,10 @@ const active = ref('overview')
 | `change`        | `string \| number` | Active tab changed |
 | `clickTab`      | `{ name; title }`  | Tab title clicked  |
 
+H5 and native share the same event rules. Selecting the active title still emits `clickTab`, but emits no `update:active` or `change`. Disabled tabs emit nothing. Selecting another enabled tab emits `update:active`, `change`, then `clickTab`. The parent owns `active`; content switches when the parent accepts the update.
+
+Native consumers compose the installed `v-tabs.vue` and `v-tab.vue` files. Each event carries one value. H5 arrow-key, Home, and End navigation continues to work, and selecting the same item through keyboard navigation does not duplicate state events.
+
 ## VTab Props
 
 | Prop       | Type               | Default     | Description    |

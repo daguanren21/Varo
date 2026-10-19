@@ -90,6 +90,10 @@
         {
           "from": "registry/components/avatar/weapp-vite.vue",
           "to": "src/components/ui/avatar.vue"
+        },
+        {
+          "from": "registry/components/avatar/v-avatar-group.weapp-vite.vue",
+          "to": "src/components/ui/v-avatar-group.vue"
         }
       ]
     },
@@ -370,6 +374,22 @@
         {
           "from": "registry/components/empty/weapp-vite.vue",
           "to": "src/components/ui/empty.vue"
+        }
+      ]
+    },
+    "file-type": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/file-type/weapp-vite.vue",
+          "to": "src/components/ui/v-file-type.vue"
         }
       ]
     },
@@ -1139,6 +1159,22 @@
         {
           "from": "registry/components/theme-provider/weapp-vite.vue",
           "to": "src/components/ui/v-theme-provider.vue"
+        }
+      ]
+    },
+    "time-field": {
+      "targets": [
+        "h5",
+        "weapp"
+      ],
+      "platforms": [
+        "h5",
+        "weapp"
+      ],
+      "nativeFiles": [
+        {
+          "from": "registry/components/time-field/v-time-field.vue",
+          "to": "src/components/ui/v-time-field.vue"
         }
       ]
     },

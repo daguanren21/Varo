@@ -37,7 +37,7 @@ function getTabEntry(vnode: VNode, index: number): TabEntry {
   const props = vnode.props as Record<string, unknown> | null
   const name = getTabName(vnode, index)
   return {
-    disabled: Boolean(props?.disabled),
+    disabled: props?.disabled === '' || Boolean(props?.disabled),
     name,
     title: (props?.title as string | undefined) ?? String(name),
   }
@@ -98,8 +98,10 @@ export const VTabs = defineComponent({
 
     function select(entry: TabEntry) {
       if (entry.disabled) { return }
-      emit('update:active', entry.name)
-      emit('change', entry.name)
+      if (entry.name !== current.value) {
+        emit('update:active', entry.name)
+        emit('change', entry.name)
+      }
       emit('clickTab', { name: entry.name, title: entry.title })
     }
 

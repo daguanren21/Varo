@@ -1,20 +1,11 @@
 import type { PropType } from 'vue'
-import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import type { SignaturePoint, SignatureStroke } from './signature-history'
+import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, watch } from 'vue'
+import { cloneStrokes, createSignatureHistory } from './signature-history'
 import '../../styles/varo.css'
 import '../../styles/varo-signature.css'
 
-export interface SignaturePoint {
-  x: number
-  y: number
-}
-
-export interface SignatureStroke {
-  points: SignaturePoint[]
-}
-
-function cloneStrokes(strokes: SignatureStroke[]): SignatureStroke[] {
-  return strokes.map(stroke => ({ points: stroke.points.map(point => ({ ...point })) }))
-}
+export type { SignatureInstance, SignaturePoint, SignatureStroke } from './signature-history'
 
 export const VSignature = defineComponent({
   name: 'VSignature',
@@ -36,6 +27,10 @@ export const VSignature = defineComponent({
       type: Number,
       default: 200,
     },
+    historyLimit: {
+      type: Number,
+      default: 100,
+    },
     lineColor: {
       type: String,
       default: '#172033',
@@ -44,9 +39,18 @@ export const VSignature = defineComponent({
       type: Number,
       default: 2,
     },
+    redoText: {
+      type: String,
+      default: '重做',
+    },
+    showHistory: Boolean,
     showClear: {
       type: Boolean,
       default: true,
+    },
+    undoText: {
+      type: String,
+      default: '撤销',
     },
     value: {
       type: Array as PropType<SignatureStroke[]>,
@@ -56,7 +60,9 @@ export const VSignature = defineComponent({
   emits: ['update:value', 'change', 'start', 'end', 'clear'],
   setup(props, { attrs, emit, expose }) {
     const canvas = shallowRef<HTMLCanvasElement | null>(null)
-    const strokes = shallowRef(cloneStrokes(props.value))
+    const history = shallowRef(createSignatureHistory(props.value, props.historyLimit))
+    const strokes = computed(() => history.value.value)
+    const drawing = shallowRef(false)
     let currentPoints: SignaturePoint[] = []
     let activePointerId: number | undefined
     let resizeObserver: ResizeObserver | undefined
@@ -64,6 +70,8 @@ export const VSignature = defineComponent({
     let canvasHeight = props.height
 
     const empty = computed(() => strokes.value.length === 0)
+    const canUndo = computed(() => !props.disabled && !drawing.value && history.value.canUndo)
+    const canRedo = computed(() => !props.disabled && !drawing.value && history.value.canRedo)
     const canvasStyle = computed(() => ({
       background: props.background,
       height: `${props.height}px`,
@@ -153,6 +161,7 @@ export const VSignature = defineComponent({
       }
       activePointerId = event.pointerId
       currentPoints = [point]
+      drawing.value = true
       try {
         canvas.value?.setPointerCapture?.(event.pointerId)
       }
@@ -205,6 +214,7 @@ export const VSignature = defineComponent({
     function cancelActiveStroke() {
       releaseActivePointer()
       currentPoints = []
+      drawing.value = false
       redraw()
     }
 
@@ -223,28 +233,51 @@ export const VSignature = defineComponent({
       }
       releaseActivePointer()
       const stroke = { points: currentPoints.map(point => ({ ...point })) }
-      const next = [...strokes.value, stroke]
       currentPoints = []
-      emit('update:value', cloneStrokes(next))
-      emit('change', cloneStrokes(next))
+      drawing.value = false
+      emitProposal(history.value.propose([...strokes.value, stroke]))
       emit('end', { points: stroke.points.map(point => ({ ...point })) })
       void nextTick(redraw)
     }
     function clear() {
-      if (props.disabled || strokes.value.length === 0) {
+      if (props.disabled || drawing.value || strokes.value.length === 0) {
         return
       }
-      currentPoints = []
-      emit('update:value', [])
-      emit('change', [])
+      emitProposal(history.value.propose([]))
       emit('clear')
       void nextTick(redraw)
     }
 
+    function emitProposal(value: SignatureStroke[] | undefined) {
+      if (!value) {
+        return
+      }
+      emit('update:value', cloneStrokes(value))
+      emit('change', cloneStrokes(value))
+    }
+
+    function undo() {
+      if (canUndo.value) {
+        emitProposal(history.value.undo())
+      }
+    }
+
+    function redo() {
+      if (canRedo.value) {
+        emitProposal(history.value.redo())
+      }
+    }
+
     watch(() => props.value, (value) => {
-      strokes.value = cloneStrokes(value)
-      void nextTick(redraw)
+      if (history.value.accept(value)) {
+        triggerRef(history)
+        cancelActiveStroke()
+      }
     }, { deep: true })
+    watch(() => props.historyLimit, (limit) => {
+      history.value.setLimit(limit)
+      triggerRef(history)
+    })
     watch(() => props.disabled, (disabled) => {
       if (disabled && activePointerId !== undefined) {
         cancelActiveStroke()
@@ -262,7 +295,7 @@ export const VSignature = defineComponent({
       }
     })
     onBeforeUnmount(() => resizeObserver?.disconnect())
-    expose({ clear })
+    expose({ clear, undo, redo, canUndo, canRedo })
 
     return () => h('div', {
       ...attrs,
@@ -283,13 +316,33 @@ export const VSignature = defineComponent({
         },
         'style': canvasStyle.value,
       }),
-      props.showClear
-        ? h('button', {
-            class: 'varo-signature__clear',
-            disabled: props.disabled || empty.value,
-            type: 'button',
-            onClick: clear,
-          }, props.clearText)
+      props.showHistory || props.showClear
+        ? h('div', { class: 'varo-signature__actions' }, [
+            props.showHistory
+              ? h('button', {
+                  class: 'varo-signature__action varo-signature__undo',
+                  disabled: !canUndo.value,
+                  type: 'button',
+                  onClick: undo,
+                }, props.undoText)
+              : null,
+            props.showHistory
+              ? h('button', {
+                  class: 'varo-signature__action varo-signature__redo',
+                  disabled: !canRedo.value,
+                  type: 'button',
+                  onClick: redo,
+                }, props.redoText)
+              : null,
+            props.showClear
+              ? h('button', {
+                  class: 'varo-signature__action varo-signature__clear',
+                  disabled: props.disabled || drawing.value || empty.value,
+                  type: 'button',
+                  onClick: clear,
+                }, props.clearText)
+              : null,
+          ])
         : null,
     ])
   },

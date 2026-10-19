@@ -16,6 +16,12 @@ interface KeyboardLikeEvent {
   preventDefault?: () => void
 }
 
+defineOptions({
+  properties: {
+    active: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     active?: TabName
@@ -38,7 +44,7 @@ const emit = defineEmits<{
 const attrs = useAttrs()
 const generatedRootId = createTabsRootId()
 const rootId = typeof attrs.id === 'string' && attrs.id ? attrs.id : generatedRootId
-const active = computed(() => props.active)
+const active = computed(() => props.active ?? undefined)
 const registrations = shallowRef<TabRegistration[]>([])
 const focusedName = shallowRef<TabName | undefined>(undefined)
 const activeData = computed(() => String(props.active ?? ''))
@@ -85,8 +91,10 @@ const renderedTabs = computed(() => {
 function select(tab: TabRegistration) {
   if (tab.disabled) { return }
   focusedName.value = tab.name
-  emit('update:active', tab.name)
-  emit('change', tab.name)
+  if (tab.name !== props.active) {
+    emit('update:active', tab.name)
+    emit('change', tab.name)
+  }
   emit('clickTab', { name: tab.name, title: tab.title })
 }
 

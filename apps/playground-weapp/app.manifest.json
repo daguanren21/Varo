@@ -8,6 +8,17 @@
   ],
   "subPackages": [
     {
+      "root": "component-lab",
+      "pages": [
+        "index/index",
+        "navigation/index",
+        "time-field/index",
+        "file-type/index",
+        "agent-disclosure/index",
+        "signature/index"
+      ]
+    },
+    {
       "root": "pages/mall",
       "pages": ["index"]
     },

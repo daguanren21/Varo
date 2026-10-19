@@ -69,6 +69,8 @@ function request(id: string, action: AgentActivityAction) {
 <style>
 /* Registry styles: generated from the dependency closure. */
 @import '../../styles/varo.css';
+@import '../../styles/varo-icon.css';
+@import '../../styles/varo-file-type.css';
 @import '../../styles/varo-agent.css';
 @import '../agent-ui/agent-advanced.css';
 @import '../agent-ui/agent-artifact.css';

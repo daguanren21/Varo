@@ -189,6 +189,25 @@ describe('playground-weapp delivery contract', () => {
     expect(result.stdout).toContain('4 synchronous script references')
   })
 
+  it.each(['components/agent-ui', 'blocks-lab/components/agent-ui'])('rejects streaming scoped slots under %s', (directory) => {
+    const result = runArtifactVerifier((outputRoot) => {
+      const base = `${directory}/AgentStream`
+      mkdirSync(resolve(outputRoot, directory), { recursive: true })
+      writeFileSync(resolve(outputRoot, `${base}.json`), JSON.stringify({
+        component: true,
+        usingComponents: { 'scoped-slot-probe': '/components/ui/v-button' },
+      }))
+      writeFileSync(resolve(outputRoot, `${base}.js`), 'Component({})')
+      writeFileSync(resolve(outputRoot, `${base}.wxml`), '<scoped-slot-probe />')
+      const pagePath = resolve(outputRoot, 'blocks-lab/index.json')
+      const page = JSON.parse(readFileSync(pagePath, 'utf8'))
+      page.usingComponents.stream = `/${base}`
+      writeFileSync(pagePath, JSON.stringify(page))
+    }, 'package-graph')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain(`${directory}/AgentStream.json streaming content must not cross a scoped-slot boundary`)
+  })
+
   describe.each(['usingComponents', 'componentGenerics'] as const)('%s package ownership', (referenceKind) => {
     it.each([
       ['main', 'app.json', '/blocks-lab/components/blocks/task-board'],
@@ -223,10 +242,16 @@ describe('playground-weapp delivery contract', () => {
     expect(result.stderr).toContain('Forbidden synchronous package reference: app.wxss')
   })
 
-  it('rejects a main package above the uncompressed 2 MiB limit', () => {
-    const result = runArtifactVerifier(outputRoot => writeFileSync(resolve(outputRoot, 'budget-probe.bin'), Buffer.alloc(2 * 1024 * 1024 + 1)))
+  it('reserves real-debug overhead even when compiled main files fit the platform limit', () => {
+    const result = runArtifactVerifier(outputRoot => writeFileSync(resolve(outputRoot, 'budget-probe.bin'), Buffer.alloc(1_500_000)), 'package-graph')
     expect(result.status).not.toBe(0)
-    expect(result.stderr).toContain('Main package exceeds 2 MiB:')
+    expect(result.stderr).toContain('Main package exceeds 1.5 MB debug budget:')
+  })
+
+  it('rejects a subpackage above its source limit after component localization', () => {
+    const result = runArtifactVerifier(outputRoot => writeFileSync(resolve(outputRoot, 'blocks-lab/budget-probe.bin'), Buffer.alloc(2 * 1024 * 1024)), 'package-graph')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain('Subpackage blocks-lab exceeds 2 MiB:')
   })
 
   it('rejects a missing synchronous script dependency', () => {

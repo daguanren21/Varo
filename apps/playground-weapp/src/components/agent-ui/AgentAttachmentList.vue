@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AgentAttachmentItem } from './advanced-types'
+import VFileType from '../ui/v-file-type.vue'
 import { agentCloseIcon } from './agent-icons'
 
 withDefaults(
@@ -17,21 +18,19 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <view class="agent-attachments flex flex-wrap gap-2">
-    <view v-for="attachment in attachments" :key="attachment.id" class="inline-flex min-h-10 max-w-full items-center gap-2 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-2.5">
-      <image v-if="attachment.previewUrl" class="h-7 w-7 rounded-lg bg-[var(--varo-agent-surface)]" :src="attachment.previewUrl" mode="aspectFill" />
-      <text v-else class="grid h-7 w-7 place-items-center rounded-lg bg-[var(--varo-agent-surface)] text-[10px] font-bold text-[var(--varo-agent-text)]">
-        FILE
-      </text>
-      <view class="grid min-w-0">
-        <text class="max-w-40 truncate text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
+  <view class="agent-attachments grid gap-2">
+    <view v-for="attachment in attachments" :key="attachment.id" class="flex min-h-14 min-w-0 items-center gap-2 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] px-2.5 py-2">
+      <image v-if="attachment.previewUrl" class="h-9 w-9 flex-none rounded-lg bg-[var(--varo-agent-surface)]" :src="attachment.previewUrl" mode="aspectFill" aria-hidden="true" />
+      <VFileType v-else :filename="attachment.name" :mime-type="attachment.mimeType" decorative />
+      <view class="grid min-w-0 flex-1">
+        <text class="break-all text-[12px] font-semibold text-[var(--varo-agent-foreground)]">
           {{ attachment.name }}
         </text>
         <text v-if="attachment.size" class="text-[10px] text-[var(--varo-agent-muted)]">
           {{ attachment.size }}
         </text>
       </view>
-      <button class="agent-native-button agent-attachments__remove grid place-items-center rounded-full bg-transparent" type="button" :aria-label="`移除 ${attachment.name}`" @click="emit('remove', attachment)">
+      <button class="agent-native-button agent-attachments__remove grid flex-none place-items-center rounded-full bg-transparent" :aria-label="'移除 ' + attachment.name" @click="emit('remove', attachment)">
         <image class="h-4 w-4" :src="agentCloseIcon" mode="aspectFit" aria-hidden="true" />
       </button>
     </view>
@@ -41,6 +40,9 @@ const emit = defineEmits<{
 <json lang="jsonc">
 {
   "component": true,
-  "styleIsolation": "apply-shared"
+  "styleIsolation": "apply-shared",
+  "usingComponents": {
+    "v-file-type": "../ui/v-file-type"
+  }
 }
 </json>

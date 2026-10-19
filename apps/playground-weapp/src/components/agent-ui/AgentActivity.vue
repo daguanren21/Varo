@@ -1,21 +1,52 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import type { AgentActivityItem, AgentActivityStatus } from './advanced-types'
-import { computed } from 'wevu'
+import { computed, shallowRef, watch } from 'wevu'
 import { cn } from '../../lib/cn'
-import { agentSearchIcon, agentSparklesIcon, agentToolIcon } from './agent-icons'
+import { agentChevronDownIcon, agentSearchIcon, agentSparklesIcon, agentToolIcon } from './agent-icons'
+import { agentPartStatusLabels } from './presentation'
+
+defineOptions({
+  properties: {
+    expandedIds: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
     className?: ClassValue
+    defaultExpandedIds?: string[]
+    expandable?: boolean
+    expandedIds?: string[]
     items?: AgentActivityItem[]
     title?: string
   }>(),
   {
+    defaultExpandedIds: () => [],
+    expandable: false,
+    expandedIds: undefined,
     items: () => [],
     title: 'Agent activity',
   },
 )
+
+const emit = defineEmits<{
+  'update:expandedIds': [ids: string[]]
+}>()
+const internalExpandedIds = shallowRef([...props.defaultExpandedIds])
+const expandedIds = computed(() => props.expandedIds ?? internalExpandedIds.value)
+watch(() => props.items.map(item => item.id), (ids) => {
+  internalExpandedIds.value = internalExpandedIds.value.filter(id => ids.includes(id))
+}, { immediate: true })
+
+function toggleItem(item: AgentActivityItem) {
+  if (!props.expandable || !item.detail) { return }
+  const next = expandedIds.value.includes(item.id)
+    ? expandedIds.value.filter(id => id !== item.id)
+    : [...expandedIds.value, item.id]
+  if (props.expandedIds == null) { internalExpandedIds.value = next }
+  emit('update:expandedIds', next)
+}
 
 const rootClass = computed(() => cn('agent-activity', props.className))
 const completedCount = computed(() => props.items.filter(item => item.status === 'completed').length)
@@ -33,20 +64,18 @@ const headingHint = computed(() => {
   if (props.items.some(item => item.status === 'queued')) { return '排队中' }
   return '活动已结束'
 })
-const statusLabels: Record<AgentActivityStatus, string> = {
-  queued: 'Queued',
-  running: 'Running',
-  waiting: 'Waiting',
-  failed: 'Failed',
-  cancelled: 'Cancelled',
-  completed: 'Completed',
-}
 const displayItems = computed(() =>
   props.items.map((item) => {
     const ariaCurrent: 'step' | undefined = item.status === 'running' ? 'step' : undefined
+    const expandable = props.expandable && !!item.detail
+    const expanded = expandedIds.value.includes(item.id)
     return {
       ...item,
       ariaCurrent,
+      expandable,
+      expanded,
+      showDetail: !!item.detail && (!expandable || expanded),
+      chevronClass: cn('agent-activity__chevron', expanded && 'is-open'),
       itemClass: `agent-activity__item is-${item.status} is-${item.kind}`,
       kindLabel: item.kind === 'reasoning'
         ? '推理'
@@ -61,7 +90,7 @@ const displayItems = computed(() =>
           ? agentToolIcon
           : agentSparklesIcon,
       statusChipClass: `agent-advanced__status is-${item.status}`,
-      statusLabel: statusLabels[item.status],
+      statusLabel: item.status === 'queued' ? '排队中' : item.status === 'cancelled' ? '已取消' : agentPartStatusLabels[item.status],
     }
   }),
 )
@@ -103,7 +132,15 @@ function statusDotClass(status: AgentActivityStatus) {
           <image class="agent-activity__kind-icon" :src="item.kindIcon" mode="aspectFit" />
         </view>
         <view class="agent-activity__copy">
-          <view class="agent-activity__row">
+          <button v-if="item.expandable" class="agent-native-button agent-native-button--block agent-activity__row agent-activity__trigger" :aria-expanded="item.expanded" @click="toggleItem(item)">
+            <text class="agent-activity__name">{{ item.title }}</text>
+            <view :class="item.statusChipClass" :data-status="item.status">
+              <view :class="statusDotClass(item.status)" aria-hidden="true" />
+              <text>{{ item.statusLabel }}</text>
+            </view>
+            <image :class="item.chevronClass" :src="agentChevronDownIcon" mode="aspectFit" aria-hidden="true" />
+          </button>
+          <view v-else class="agent-activity__row">
             <text class="agent-activity__name">
               {{ item.title }}
             </text>
@@ -120,7 +157,7 @@ function statusDotClass(status: AgentActivityStatus) {
               {{ item.duration }}
             </text>
           </view>
-          <text v-if="item.detail" class="agent-activity__detail">
+          <text v-if="item.showDetail" class="agent-activity__detail">
             {{ item.detail }}
           </text>
         </view>
@@ -130,6 +167,42 @@ function statusDotClass(status: AgentActivityStatus) {
 </template>
 
 <style>
+.agent-activity__trigger {
+  width: 100%;
+  min-height: 36px;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+}
+
+.agent-activity__trigger::after {
+  border: 0;
+}
+
+.agent-activity__trigger .agent-activity__name {
+  flex: 1;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.agent-activity__chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.agent-activity__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.agent-activity__detail {
+  overflow-wrap: anywhere;
+}
+
 .agent-activity {
   overflow: hidden;
   background: var(--varo-agent-surface, #fff);

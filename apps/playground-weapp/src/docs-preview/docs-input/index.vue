@@ -641,7 +641,7 @@ function confirmRegion(selection: VaroRegionSelection) {
         @load-error="failRegionLoad"
         @load-start="startRegionLoad"
         @load-success="finishRegionLoad"
-        @update:model-value="regionPath = $event"
+        @update:modelValue="regionPath = $event"
         @update:visible="regionVisible = $event"
       />
     </view>
