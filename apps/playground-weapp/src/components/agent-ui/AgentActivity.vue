@@ -133,7 +133,9 @@ function statusDotClass(status: AgentActivityStatus) {
         </view>
         <view class="agent-activity__copy">
           <button v-if="item.expandable" class="agent-native-button agent-native-button--block agent-activity__row agent-activity__trigger" :aria-expanded="item.expanded" @click="toggleItem(item)">
-            <text class="agent-activity__name">{{ item.title }}</text>
+            <text class="agent-activity__name">
+              {{ item.title }}
+            </text>
             <view :class="item.statusChipClass" :data-status="item.status">
               <view :class="statusDotClass(item.status)" aria-hidden="true" />
               <text>{{ item.statusLabel }}</text>

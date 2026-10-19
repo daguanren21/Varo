@@ -2028,9 +2028,9 @@ textarea.varo-input__control {
   box-sizing: border-box;
   display: flex;
   flex: 1;
+  gap: 12px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
   min-width: 0;
   height: 44px;
   padding: 0 12px;
@@ -2062,8 +2062,8 @@ textarea.varo-input__control {
 .varo-time-field__placeholder {
   min-width: 0;
   overflow: hidden;
-  font-variant-numeric: tabular-nums;
   text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
@@ -2109,18 +2109,18 @@ textarea.varo-input__control {
   --varo-file-type-color: var(--varo-ui-text-regular);
   --varo-file-type-background: var(--varo-ui-surface-muted);
 
-  display: inline-flex;
   box-sizing: border-box;
+  display: inline-flex;
   flex: none;
   flex-direction: column;
+  gap: 1px;
   align-items: center;
   justify-content: center;
-  gap: 1px;
   width: 36px;
   height: 36px;
   overflow: hidden;
-  color: var(--varo-file-type-color);
   vertical-align: middle;
+  color: var(--varo-file-type-color);
   background: var(--varo-file-type-background);
   border-radius: 8px;
 }
@@ -2143,13 +2143,13 @@ textarea.varo-input__control {
   height: 100%;
   background-color: currentcolor;
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M8 12h8M8 16h6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M8 12h8M8 16h6'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   mask-position: center;
+  mask-position: center;
   mask-size: contain;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M8 12h8M8 16h6'/%3E%3C/svg%3E");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .varo-file-type__label {
@@ -2933,8 +2933,8 @@ textarea.varo-input__control {
 .varo-pagination .varo-pagination__page {
   flex: 1 1 32px;
   max-width: 64px;
-  overflow-wrap: anywhere;
   word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .varo-pagination .varo-pagination__prev,
@@ -2960,8 +2960,8 @@ textarea.varo-input__control {
 
 .varo-pagination__ellipsis {
   flex: 0 0 16px;
-  text-align: center;
   color: var(--varo-ui-text-muted);
+  text-align: center;
 }
 
 .varo-pagination__simple {
@@ -4085,8 +4085,8 @@ textarea.varo-input__control {
 .varo-signature__actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 8px;
+  justify-content: flex-end;
 }
 
 .varo-signature__action {

@@ -195,14 +195,16 @@ export const AgentThinking = defineComponent({
                   h('span', { class: 'agent-thinking__step-meta' }, [
                     props.expandable ? h('small', agentPartStatusLabels[step.status]) : null,
                     agentTraceDuration(step) ? h('small', agentTraceDuration(step)) : null,
-                    expandable ? h('svg', {
-                      'class': ['agent-thinking__row-chevron', expanded && 'is-open'],
-                      'viewBox': '0 0 24 24',
-                      'fill': 'none',
-                      'stroke': 'currentColor',
-                      'stroke-width': '2',
-                      'aria-hidden': 'true',
-                    }, [h('path', { d: 'm6 9 6 6 6-6' })]) : null,
+                    expandable
+                      ? h('svg', {
+                          'class': ['agent-thinking__row-chevron', expanded && 'is-open'],
+                          'viewBox': '0 0 24 24',
+                          'fill': 'none',
+                          'stroke': 'currentColor',
+                          'stroke-width': '2',
+                          'aria-hidden': 'true',
+                        }, [h('path', { d: 'm6 9 6 6 6-6' })])
+                      : null,
                   ]),
                 ]),
                 detail ? h('small', { id: detailId, class: 'agent-thinking__detail', hidden: expandable && !expanded }, detail) : null,

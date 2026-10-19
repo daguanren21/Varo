@@ -146,7 +146,9 @@ function clear() {
         :aria-readonly="props.readonly"
         @click="open"
       >
-        <text :class="valueClass">{{ controlLabel }}</text>
+        <text :class="valueClass">
+          {{ controlLabel }}
+        </text>
         <text class="varo-time-field__arrow" aria-hidden="true" />
       </button>
       <button v-if="showClear" class="varo-time-field__clear" :disabled="inactive" @click="clear">

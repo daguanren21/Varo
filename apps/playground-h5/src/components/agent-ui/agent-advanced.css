@@ -854,10 +854,10 @@
 
 .agent-activity__copy p {
   margin: 0;
-  overflow-wrap: anywhere;
   font-size: 11px;
   line-height: 16px;
   color: var(--agent-muted);
+  overflow-wrap: anywhere;
 }
 
 .agent-activity__copy p[hidden] {

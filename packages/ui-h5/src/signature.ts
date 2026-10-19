@@ -1,6 +1,6 @@
 // Generated from registry/components/signature/h5.ts; edit the Registry source.
-import type { SignaturePoint, SignatureStroke } from './signature-history'
 import type { PropType } from 'vue'
+import type { SignaturePoint, SignatureStroke } from './signature-history'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, watch } from 'vue'
 import { cloneStrokes, createSignatureHistory } from './signature-history'
 import './styles/varo.css'

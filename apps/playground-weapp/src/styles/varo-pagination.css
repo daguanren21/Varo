@@ -15,11 +15,11 @@
 .varo-pagination__prev.varo-pagination__prev,
 .varo-pagination__page.varo-pagination__page,
 .varo-pagination__next.varo-pagination__next {
+  box-sizing: border-box;
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  box-sizing: border-box;
-  flex: 0 0 auto;
   width: auto;
   min-width: 32px;
   min-height: 36px;
@@ -37,8 +37,8 @@
 .varo-pagination__page.varo-pagination__page {
   flex: 1 1 32px;
   max-width: 64px;
-  overflow-wrap: anywhere;
   word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .varo-pagination__prev.varo-pagination__prev,
@@ -66,8 +66,8 @@
 
 .varo-pagination__ellipsis {
   flex: 0 0 16px;
-  text-align: center;
   color: var(--varo-ui-text-muted);
+  text-align: center;
 }
 
 .varo-pagination__simple {

@@ -115,7 +115,7 @@ export const VTimeField = defineComponent({
           'onClick': open,
         }, [
           h('span', { class: props.value ? 'varo-time-field__value' : 'varo-time-field__placeholder' }, props.value || props.placeholder),
-          h('span', { class: 'varo-time-field__arrow', 'aria-hidden': 'true' }),
+          h('span', { 'class': 'varo-time-field__arrow', 'aria-hidden': 'true' }),
         ]),
         props.clearable && props.value
           ? h('button', { class: 'varo-time-field__clear', type: 'button', disabled: inactive.value, onClick: clear }, props.clearText)

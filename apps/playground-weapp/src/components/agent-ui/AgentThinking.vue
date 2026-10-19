@@ -128,21 +128,33 @@ function dotClass(status: AgentTraceStep['status']) {
             :aria-expanded="step.expanded"
             @click="toggleStep(step)"
           >
-            <text class="min-w-0 break-words text-xs font-semibold leading-[17px] text-[var(--varo-agent-foreground)]">{{ step.title }}</text>
+            <text class="min-w-0 break-words text-xs font-semibold leading-[17px] text-[var(--varo-agent-foreground)]">
+              {{ step.title }}
+            </text>
             <view class="flex flex-none flex-wrap items-center justify-end gap-2 text-[12px] leading-4 text-[var(--varo-agent-text)]">
               <text>{{ step.statusLabel }}</text>
-              <text v-if="step.durationLabel">{{ step.durationLabel }}</text>
+              <text v-if="step.durationLabel">
+                {{ step.durationLabel }}
+              </text>
               <image :class="step.chevronClass" :src="chevronIcon" mode="aspectFit" aria-hidden="true" />
             </view>
           </button>
           <view v-else class="flex items-center justify-between gap-2.5">
-            <text class="text-xs font-semibold leading-[17px] text-[var(--varo-agent-foreground)]">{{ step.title }}</text>
+            <text class="text-xs font-semibold leading-[17px] text-[var(--varo-agent-foreground)]">
+              {{ step.title }}
+            </text>
             <view class="flex items-center gap-2 text-[12px] leading-4 text-[var(--varo-agent-text)]">
-              <text v-if="expandable">{{ step.statusLabel }}</text>
-              <text v-if="step.durationLabel">{{ step.durationLabel }}</text>
+              <text v-if="expandable">
+                {{ step.statusLabel }}
+              </text>
+              <text v-if="step.durationLabel">
+                {{ step.durationLabel }}
+              </text>
             </view>
           </view>
-          <text v-if="step.showDetail" class="agent-thinking__detail break-words text-[12px] leading-4 text-[var(--varo-agent-text)]">{{ step.detail }}</text>
+          <text v-if="step.showDetail" class="agent-thinking__detail break-words text-[12px] leading-4 text-[var(--varo-agent-text)]">
+            {{ step.detail }}
+          </text>
         </view>
       </view>
     </view>

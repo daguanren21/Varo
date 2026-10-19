@@ -865,14 +865,16 @@ export const AgentActivity = defineComponent({
             }, [
               h('strong', item.title),
               renderStatus(item.status, label),
-              expandable ? h('svg', {
-                'class': ['agent-activity__chevron', expanded && 'is-open'],
-                'viewBox': '0 0 24 24',
-                'fill': 'none',
-                'stroke': 'currentColor',
-                'stroke-width': '2',
-                'aria-hidden': 'true',
-              }, [h('path', { d: 'm6 9 6 6 6-6' })]) : null,
+              expandable
+                ? h('svg', {
+                    'class': ['agent-activity__chevron', expanded && 'is-open'],
+                    'viewBox': '0 0 24 24',
+                    'fill': 'none',
+                    'stroke': 'currentColor',
+                    'stroke-width': '2',
+                    'aria-hidden': 'true',
+                  }, [h('path', { d: 'm6 9 6 6 6-6' })])
+                : null,
             ]),
             h('span', { class: 'agent-activity__meta' }, [
               h('small', { class: 'agent-activity__kind-label' }, activityKindLabel(item.kind)),

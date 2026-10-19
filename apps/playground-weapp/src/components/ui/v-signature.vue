@@ -1,5 +1,4 @@
 <script lang="ts">
-export type { SignatureInstance, SignaturePoint, SignatureStroke } from './signature-history'
 </script>
 
 <script setup lang="ts">
@@ -8,6 +7,8 @@ import type { SignaturePoint, SignatureStroke } from './signature-history'
 import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef, triggerRef, useNativeInstance, watch } from 'wevu'
 import { cn } from '../../lib/cn'
 import { cloneStrokes, createSignatureHistory } from './signature-history'
+
+export type { SignatureInstance, SignaturePoint, SignatureStroke } from './signature-history'
 
 defineOptions({
   properties: {

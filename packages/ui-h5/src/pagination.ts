@@ -77,18 +77,18 @@ export const VPagination = defineComponent({
                 typeof page === 'string'
                   ? h('span', { 'key': page, 'class': 'varo-pagination__ellipsis', 'aria-hidden': 'true' }, '…')
                   : h(
-                    'button',
-                    {
-                      'key': page,
-                      'type': 'button',
-                      'class': 'varo-pagination__page',
-                      'data-active': String(page === props.modelValue),
-                      'aria-current': page === props.modelValue ? 'page' : undefined,
-                      'aria-label': itemLabel(page),
-                      'onClick': () => setPage(page),
-                    },
-                    String(page),
-                  ),
+                      'button',
+                      {
+                        'key': page,
+                        'type': 'button',
+                        'class': 'varo-pagination__page',
+                        'data-active': String(page === props.modelValue),
+                        'aria-current': page === props.modelValue ? 'page' : undefined,
+                        'aria-label': itemLabel(page),
+                        'onClick': () => setPage(page),
+                      },
+                      String(page),
+                    ),
               ),
           h('button', {
             type: 'button',

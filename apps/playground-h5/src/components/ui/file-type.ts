@@ -1,8 +1,8 @@
 import type { PropType } from 'vue'
 import type { FileTypeSize } from './file-type-utils'
 import { computed, defineComponent, h } from 'vue'
-import { VIcon } from './icon'
 import { classifyFileType } from './file-type-utils'
+import { VIcon } from './icon'
 import '../../styles/varo.css'
 import '../../styles/varo-icon.css'
 import '../../styles/varo-file-type.css'
@@ -33,9 +33,9 @@ export const VFileType = defineComponent({
       'aria-label': props.decorative ? undefined : props.label || `${fileType.value.description} (${fileType.value.label})`,
     }, [
       h(VIcon, { name: 'file-type', size: iconSize.value }, {
-        default: () => h('span', { class: 'varo-file-type__glyph', 'aria-hidden': 'true' }),
+        default: () => h('span', { 'class': 'varo-file-type__glyph', 'aria-hidden': 'true' }),
       }),
-      h('span', { class: 'varo-file-type__label', 'aria-hidden': 'true' }, fileType.value.label),
+      h('span', { 'class': 'varo-file-type__label', 'aria-hidden': 'true' }, fileType.value.label),
     ])
   },
 })
