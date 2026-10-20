@@ -112,6 +112,8 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 仅供 `blocks-lab` 使用的原生 Block 投影到 `apps/playground-weapp/src/blocks-lab/components/blocks/`；共享 UI、Agent 组件和工具仍留在主包源码树。`pnpm sync:registry` 负责这一应用专用位置映射和 import 改写，公共 Registry 安装路径仍为 `src/components/blocks/`。生产构建保持 2 MiB 主包限制，并拒绝指向不可用兄弟分包的同步引用。
 
+原生编译后，`localize-native-components.mjs` 将仅供分包使用的组件产物放到消费方所在分包，共享脚本和资源保持原路径。CSS `url(...)` 以及引号形式或 URL 形式的 `@import` 先解码再解析文件路径，重定位时重新进行 CSS 转义，支持十六进制转义、空格、引号、括号及查询串和片段后缀。外部 URL 和 data URL 保留原始写法。缺失依赖或目标路径冲突会在修改任何编译产物前报错；生产构建与导出 starter 的样式校验共用同一 CSS 引用解析器。
+
 ## 文档开发
 
 ```bash

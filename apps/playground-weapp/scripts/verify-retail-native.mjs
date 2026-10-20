@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url'
 import { Parser } from 'htmlparser2'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
-import valueParser from 'postcss-value-parser'
 import ts from 'typescript'
+import { cssReferences, localCssReference } from './css-references.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const manifest = JSON.parse(await readFile(resolve(projectRoot, 'starter-manifest.json'), 'utf8'))
@@ -249,14 +249,14 @@ for (let index = 0; index < scriptQueue.length; index++) {
   for (const asset of assets) { await checkAsset(path, asset) }
 }
 
-function cssReference(value, owner) {
-  const nodes = valueParser(value).nodes.filter(node => node.type !== 'space' && node.type !== 'comment')
-  const node = nodes[0]
-  if (nodes.length === 1 && node?.type === 'string') { return node.value }
-  if (nodes.length === 1 && node?.type === 'function' && node.value.toLowerCase() === 'url') {
-    return valueParser.stringify(node.nodes).trim().replace(/^(['"])([\s\S]*)\1$/, '$2')
-  }
-  throw new Error(`Unsupported compiled style import in ${owner}: ${value}`)
+function cssOutputPath(ownerPath, value) {
+  const local = localCssReference(value)
+  if (!local) { return undefined }
+  const path = local.path.startsWith('/')
+    ? resolve(outputRoot, decodeURIComponent(local.path).slice(1))
+    : resolve(dirname(ownerPath), decodeURIComponent(local.path))
+  if (!inside(outputRoot, path)) { throw new Error(`Native reference escapes output in ${label(ownerPath)}: ${value}`) }
+  return path
 }
 
 const visitedStyles = new Set()
@@ -272,8 +272,11 @@ for (let index = 0; index < styleQueue.length; index++) {
   styles.walkAtRules(/^(?:theme|tailwind|source|apply|utility|variant|custom-variant|layer|property)$/, (rule) => {
     throw new Error(`Uncompiled @${rule.name} in ${label(path)}; check the Tailwind mini-program pipeline`)
   })
-  styles.walkAtRules('import', (rule) => {
-    styleQueue.push({ path: outputPath(path, cssReference(rule.params, label(path))), component })
+  styles.walkAtRules(/^import$/i, (rule) => {
+    for (const reference of cssReferences(rule.params, { importRule: true, from: label(path) })) {
+      const target = cssOutputPath(path, reference.value)
+      if (target) { styleQueue.push({ path: target, component }) }
+    }
   })
   styles.walkRules((rule) => {
     if (rule.parent.type === 'atrule' && /keyframes$/i.test(rule.parent.name)) { return }
@@ -292,14 +295,12 @@ for (let index = 0; index < styleQueue.length; index++) {
   })
   styles.walkDecls((declaration) => {
     if (!component && declaration.prop === '--varo-ui-primary') { hasVaroTheme = true }
-    valueParser(declaration.value).walk((node) => {
-      if (node.type === 'function' && node.value.toLowerCase() === 'url') {
-        assets.push(valueParser.stringify(node.nodes).trim().replace(/^(['"])([\s\S]*)\1$/, '$2'))
-        return false
-      }
-    })
+    for (const reference of cssReferences(declaration.value, { from: label(path) })) {
+      const target = cssOutputPath(path, reference.value)
+      if (target) { assets.push(target) }
+    }
   })
-  for (const asset of assets) { await checkAsset(path, asset) }
+  for (const asset of assets) { await readOutput(asset) }
 }
 if (!hasFlexUtility || !hasVaroTheme) {
   throw new Error('Global output lacks Tailwind flex layout or Varo theme tokens; check both App.vue style imports')

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { h } from 'vue'
+import { Comment, defineComponent, Fragment, h, ref, Text } from 'vue'
 import { VBreadcrumb } from '../src/breadcrumb'
 import { VElevator } from '../src/elevator'
 import { VFixedNav } from '../src/fixed-nav'
@@ -397,6 +397,140 @@ describe('ui-h5 navigation components', () => {
     expect(tabs.emitted('change')).toBeUndefined()
     await buttons[2].trigger('click')
     expect(tabs.emitted('update:active')).toEqual([['last']])
+    wrapper.unmount()
+  })
+
+  it('omits hidden conditional placeholders while retaining nested v-for tabs', async () => {
+    const wrapper = mount({
+      components: { VTabs, VTab },
+      data: () => ({
+        active: 'a',
+        show: false,
+        items: [{ name: 'b', title: 'B' }, { name: 'c', title: 'C' }],
+      }),
+      template: `
+        <VTabs v-model:active="active">
+          <VTab name="a" title="A">Panel A</VTab>
+          <VTab v-if="show" name="conditional" title="Conditional">Conditional panel</VTab>
+          <template v-for="item in items" :key="item.name">
+            <VTab :name="item.name" :title="item.title">Panel {{ item.title }}</VTab>
+          </template>
+        </VTabs>
+      `,
+    })
+    const tabs = wrapper.getComponent(VTabs)
+    expect(tabs.findAll('[role="tab"]').map(tab => tab.text())).toEqual(['A', 'B', 'C'])
+    await tabs.findAll('[role="tab"]')[1].trigger('click')
+    expect(tabs.get('[role="tabpanel"]').text()).toBe('Panel B')
+    expect(tabs.emitted('change')).toEqual([['b']])
+    await wrapper.setData({ show: true })
+    expect(tabs.findAll('[role="tab"]').map(tab => tab.text())).toEqual(['A', 'Conditional', 'B', 'C'])
+    await wrapper.setData({ show: false, items: [{ name: 'c', title: 'C' }, { name: 'b', title: 'B' }] })
+    expect(tabs.findAll('[role="tab"]').map(tab => tab.text())).toEqual(['A', 'C', 'B'])
+    expect(tabs.get('[role="tabpanel"]').text()).toBe('Panel B')
+    await tabs.findAll('[role="tab"]')[1].trigger('click')
+    expect(tabs.get('[role="tabpanel"]').text()).toBe('Panel C')
+    expect(tabs.emitted('change')).toEqual([['b'], ['c']])
+    wrapper.unmount()
+  })
+
+  it.each([
+    { group: 'single-child fragments', multiple: false, localKeys: false },
+    { group: 'multi-child fragments', multiple: true, localKeys: false },
+    { group: 'fragments with repeated local child keys', multiple: true, localKeys: true },
+  ])('preserves active panel state when $group move, insert, and remove', async ({ multiple, localKeys }) => {
+    const Draft = defineComponent({
+      setup() {
+        const value = ref('')
+        return () => h('input', {
+          value: value.value,
+          onInput: (event: Event) => { value.value = (event.target as HTMLInputElement).value },
+        })
+      },
+    })
+    const wrapper = mount({
+      components: { VTabs, VTab, Draft },
+      data: () => ({ active: 'b', show: false, items: [{ name: 'a' }, { name: 'b' }] }),
+      template: `
+        <VTabs v-model:active="active">
+          <VTab v-if="show" name="conditional" title="Conditional" />
+          <template v-for="item in items" :key="item.name">
+            <VTab ${localKeys ? 'key="main"' : ''} :name="item.name" :title="item.name"><Draft /></VTab>
+            ${multiple ? `<VTab ${localKeys ? 'key="extra"' : ''} :name="item.name + '-extra'" :title="item.name + ' extra'" />` : ''}
+          </template>
+        </VTabs>
+      `,
+    })
+    const tabs = wrapper.getComponent(VTabs)
+    const input = wrapper.get<HTMLInputElement>('input')
+    await input.setValue('unsaved B draft')
+    const draftInstance = wrapper.getComponent(Draft).vm
+    const tabInstance = wrapper.findAllComponents(VTab).find(tab => tab.props('name') === 'b')!.vm
+
+    for (const { names, show } of [
+      { names: ['b', 'a'], show: false },
+      { names: ['c', 'b', 'a'], show: false },
+      { names: ['b', 'a'], show: false },
+      { names: ['a', 'b'], show: true },
+      { names: ['a', 'b'], show: false },
+    ]) {
+      await wrapper.setData({ items: names.map(name => ({ name })), show })
+      expect(tabs.findAll('[role="tab"]').map(tab => tab.text())).toEqual([
+        ...(show ? ['Conditional'] : []),
+        ...names.flatMap(name => multiple ? [name, `${name} extra`] : [name]),
+      ])
+      expect(wrapper.get<HTMLInputElement>('input').element).toBe(input.element)
+      expect(input.element.value).toBe('unsaved B draft')
+      expect(wrapper.getComponent(Draft).vm).toBe(draftInstance)
+      expect(wrapper.findAllComponents(VTab).find(tab => tab.props('name') === 'b')!.vm).toBe(tabInstance)
+      expect(wrapper.vm.active).toBe('b')
+    }
+
+    expect(tabs.emitted('update:active')).toBeUndefined()
+    expect(tabs.emitted('change')).toBeUndefined()
+    expect(tabs.emitted('clickTab')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('ignores comments and text in nested fragments during disabled and keyboard navigation', async () => {
+    const wrapper = mount(VTabs, {
+      props: { active: 0 },
+      attachTo: document.body,
+      slots: {
+        default: () => [
+          h(Comment, 'hidden tab'),
+          h(Text, ' '),
+          h(Fragment, [
+            h(VTab, { name: 0, title: 'First' }, { default: () => 'First panel' }),
+            [h(Fragment, [
+              h(Text, 'Not a tab'),
+              h(VTab, { name: 'locked', title: 'Locked', disabled: true }),
+              h(Comment),
+              h(VTab, { name: '', title: 'Last' }, { default: () => 'Last panel' }),
+            ])],
+          ]),
+        ],
+      },
+    })
+    const tabs = wrapper.findAll<HTMLButtonElement>('[role="tab"]')
+    expect(tabs.map(tab => tab.text())).toEqual(['First', 'Locked', 'Last'])
+    await tabs[1].trigger('click')
+    expect(wrapper.emitted('clickTab')).toBeUndefined()
+    tabs[0].element.focus()
+    await tabs[0].trigger('keydown', { key: 'ArrowRight' })
+    expect(document.activeElement).toBe(tabs[2].element)
+    expect(wrapper.emitted('update:active')).toEqual([['']])
+    await wrapper.setProps({ active: '' })
+    expect(wrapper.get('[role="tabpanel"]').text()).toBe('Last panel')
+    await tabs[2].trigger('keydown', { key: 'ArrowRight' })
+    expect(document.activeElement).toBe(tabs[0].element)
+    expect(wrapper.emitted('update:active')).toEqual([[''], [0]])
+    await wrapper.setProps({ active: 0 })
+    await tabs[0].trigger('keydown', { key: 'End' })
+    expect(document.activeElement).toBe(tabs[2].element)
+    await tabs[2].trigger('keydown', { key: 'Home' })
+    expect(document.activeElement).toBe(tabs[0].element)
+    expect(wrapper.get('[role="tabpanel"]').text()).toBe('First panel')
     wrapper.unmount()
   })
 

@@ -1355,6 +1355,9 @@ function syncCanvas(state: CanvasState) {
     addCanvasRegistration(state, nextCanvasId)
   }
   syncSemanticAttributes(component, control)
+  // Canvas2D callers own bitmap dimensions and transforms. Resizing here would
+  // clear their drawing after fields({ node: true, size: true }) initialization.
+  if (stringProperty(component, 'type') === '2d') { return }
   const width = Math.max(1, Math.round(host.clientWidth || 300))
   const height = Math.max(1, Math.round(host.clientHeight || 150))
   const ratio = Math.max(1, window.devicePixelRatio || 1)
@@ -1473,15 +1476,12 @@ function attachCanvas(component: NativeComponent, options: NativeElementRegistra
   syncCanvas(state)
 }
 
-export function findPreviewSelectorElement(selector: string, owner?: unknown): HTMLElement | null {
-  const canvasId = /^#([\w-]+)$/.exec(selector)?.[1]
-  if (canvasId) {
-    const canvasState = resolveCanvasState(canvasId, owner)
-    if (canvasState) {
-      return canvasState.host
-    }
-  }
-  return document.querySelector<HTMLElement>(selector)
+export function getPreviewCanvasNode(element: glassEasel.Element): HTMLCanvasElement | null {
+  if (!glassEasel.Component.isComponent(element)) { return null }
+  const state = canvasStates.get(element)
+  return state && glassEasel.Element.isAttached(element) && stringProperty(element, 'type') === '2d'
+    ? state.control
+    : null
 }
 
 export function createPreviewCanvasContext(canvasId: string, owner?: unknown) {

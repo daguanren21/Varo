@@ -1,12 +1,15 @@
 // @vitest-environment jsdom
 import assert from 'node:assert/strict'
 import { Buffer } from 'node:buffer'
+import { posix } from 'node:path'
 import { compileFunction } from 'node:vm'
+import { tokenize, TokenType } from '@csstools/css-tokenizer'
 import { mount } from '@vue/test-utils'
 import ts from 'typescript'
 import { describe, it } from 'vitest'
 import * as Vue from 'vue'
 import { compileScript, parse } from 'vue/compiler-sfc'
+import { postcss } from 'weapp-tailwindcss/core'
 import { convertRetailSources } from './convert-retail-vue.mjs'
 
 function sources(extra = []) {
@@ -35,6 +38,20 @@ function evaluate(source, filename, { dependencies = {}, taroEnv = 'h5' } = {}) 
   }
   compileFunction(outputText, ['require', 'module', 'exports', 'process'])(require, module, module.exports, { env: { TARO_ENV: taroEnv } })
   return module.exports
+}
+
+const cssAssets = [
+  ['escaped space', String.raw`../assets/a\ b.svg`, 'a b.svg', ''],
+  ['quoted hexadecimal escape', String.raw`"../assets/a\20 b.svg"`, 'a b.svg', ''],
+  ['six-digit escape', String.raw`../assets/a\000020b.svg`, 'a b.svg', ''],
+  ['hexadecimal escape without terminator', String.raw`../assets/a\20z.svg`, 'a z.svg', ''],
+  ['quotes and parentheses', String.raw`../assets/a\"b\'\(c\).svg`, 'a"b\'(c).svg', ''],
+  ['punctuation', String.raw`"../assets/a\,b\;c.svg"`, 'a,b;c.svg', ''],
+  ['escaped suffix delimiters', String.raw`../assets/a\20 b.svg\3f size=2\23 shape`, 'a b.svg', '?size=2#shape'],
+]
+
+function cssValues(value) {
+  return tokenize({ css: value }).flatMap(token => token[0] === TokenType.URL || token[0] === TokenType.String ? [token[4].value] : [])
 }
 
 describe.each(['uni-app', 'taro'])('%s source conversion', (framework) => {
@@ -112,6 +129,74 @@ withDefaults(defineProps<{ value?: number }>(), { value: 2 })
     assert.equal(brand.logo, '/static/features/retail/logo.svg')
     assert.equal(files.get(`src${brand.logo}`), logo)
     assert.equal(files.has('src/features/retail/logo.svg'), false)
+  })
+
+  it.each(cssAssets)('maps %s CSS assets from stylesheets and SFC styles to the collected static bytes', (_name, reference, filename, suffix = '') => {
+    const asset = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" />')
+    const css = `.hero { background-image: url(${reference}); }`
+    const component = 'src/components/hero.vue'
+    const stylesheet = 'src/features/hero.css'
+    const files = sources([
+      [`src/assets/${filename}`, asset],
+      [stylesheet, css],
+      [component, `<template><view /></template><style>${css}</style>`],
+    ])
+    convertRetailSources(files, [], framework)
+    const componentStyles = parse(files.get(component), { filename: component }).descriptor.styles[0].content
+    for (const content of [files.get(stylesheet), componentStyles]) {
+      const references = []
+      postcss.parse(content).walkDecls((declaration) => { references.push(...cssValues(declaration.value)) })
+      assert.deepEqual(references, [`/static/assets/${filename}${suffix}`])
+      assert.equal(files.get(`src${references[0].split(/[?#]/, 1)[0]}`), asset)
+    }
+    assert.equal(files.has(`src/assets/${filename}`), false)
+  })
+
+  it.each(cssAssets)('rejects an uncollected %s CSS asset without changing output or provenance', (_name, reference) => {
+    const files = sources([['src/features/hero.css', `.hero { background: url(${reference}); }`]])
+    const before = new Map(files)
+    const transforms = [{ file: 'src/app.vue', operation: 'Collected source.' }]
+    assert.throws(() => convertRetailSources(files, transforms, framework), /asset is outside the collected closure/)
+    assert.deepEqual(files, before)
+    assert.deepEqual(transforms, [{ file: 'src/app.vue', operation: 'Collected source.' }])
+  })
+
+  it('preserves stylesheet imports, external URLs, content strings and comments while converting local CSS assets', () => {
+    const owner = 'src/features/hero.css'
+    const imported = 'src/features/theme name.css'
+    const reference = String.raw`u\72l("./theme\20 name.css?mode=1#theme")`
+    const external = String.raw`URL("https\3a //example.com/a(b).svg")`
+    const data = 'url("data:image/svg+xml,<svg>(x)</svg>")'
+    const files = sources([
+      [imported, '.theme { color: red; }'],
+      ['src/assets/hero.svg', Buffer.from('svg bytes')],
+      [owner, `@import ${reference} layer(theme) screen;
+        .hero {
+          background: url(../assets/hero.svg);
+          --external: ${external};
+          --data: ${data};
+          --protocol-relative: url(//example.com/hero.svg);
+          --fragment: url(#shape);
+          content: "url(../assets/missing.svg)";
+          /* @import "./missing.css"; url(../assets/missing.svg) */
+        }`],
+    ])
+    convertRetailSources(files, [], framework)
+    const styles = postcss.parse(files.get(owner))
+    styles.walkAtRules('import', (rule) => {
+      assert.equal(rule.params, `${reference} layer(theme) screen`)
+      const [value] = cssValues(rule.params)
+      assert.equal(files.get(posix.join(posix.dirname(owner), value.split(/[?#]/, 1)[0])), '.theme { color: red; }')
+    })
+    const declarations = new Map()
+    styles.walkDecls((declaration) => { declarations.set(declaration.prop, declaration.value) })
+    assert.equal(declarations.get('--external'), external)
+    assert.equal(declarations.get('--data'), data)
+    assert.equal(declarations.get('--protocol-relative'), 'url(//example.com/hero.svg)')
+    assert.equal(declarations.get('--fragment'), 'url(#shape)')
+    assert.equal(declarations.get('content'), '"url(../assets/missing.svg)"')
+    assert.ok(files.get(owner).includes('/* @import "./missing.css"; url(../assets/missing.svg) */'))
+    assert.equal(files.get(`src${cssValues(declarations.get('background'))[0]}`).toString(), 'svg bytes')
   })
 
   it('rejects native APIs without an approved cross-platform meaning rather than replacing the global blindly', () => {

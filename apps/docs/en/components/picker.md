@@ -30,6 +30,8 @@ Columns are separated by a gap. Selected options use a subtle fill and emphasize
 
 ## Unavailable choices and dynamic columns
 
-Confirmation is disabled when any column is empty, has no enabled options, or its current candidate has been disabled or removed. These states emit no `update:value`, `confirm`, or close event. Column changes re-evaluate the candidates; a disabled option is never used as the default committed value. Cancel remains available, and reopening restores the value supplied by the parent.
+Column mutations and replacements retain each enabled draft selection, including `0` and `''`. If a draft option is removed or disabled, that column selects its first enabled option while the other columns retain their drafts. Reconciliation emits no selection or commit events. Confirmation is disabled when any column is empty or has no enabled options; attempting to confirm emits no `update:value`, `confirm`, or close event.
+
+Until the user selects an option, arriving columns continue to resolve the parent's `value`. Parent `value` changes, cancellation, and closing or reopening the picker restore that value, normalized against the current columns. Cancel remains available even when confirmation is disabled.
 
 Use `confirmDisabled` for constraints spanning several columns. For example, [TimeField](/en/components/time-field) validates the complete `HH:mm` before confirming, in addition to the individual options. Valid selections retain the existing event payloads.

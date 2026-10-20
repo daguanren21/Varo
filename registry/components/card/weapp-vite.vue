@@ -45,6 +45,7 @@ const classes = computed(() =>
 const hoverClass = computed(() => (props.interactive ? 'varo-card--pressed' : 'none'))
 
 function click(event: unknown) {
+  if (!props.interactive) { return }
   if (pressable.events.click(event as PressableEvent)) { emit('click', event) }
 }
 

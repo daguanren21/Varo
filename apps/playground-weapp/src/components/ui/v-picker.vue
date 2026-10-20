@@ -96,7 +96,7 @@ function firstEnabledValue(column: PickerColumn): PickerScalar | undefined {
   return column.find(option => !option.disabled)?.value
 }
 
-function normalizeValue(value: PickerValue, columns: PickerColumn[]): Array<PickerScalar | undefined> {
+function normalizeValue(value: PickerValue | Array<PickerScalar | undefined>, columns: PickerColumn[]): Array<PickerScalar | undefined> {
   const values = Array.isArray(value) ? value : [value]
   return columns.map((column, index) => {
     const next = values[index]
@@ -109,6 +109,7 @@ function normalizeValue(value: PickerValue, columns: PickerColumn[]): Array<Pick
 
 const resolvedColumns = computed(() => normalizeColumns(props.columns))
 const selectedValues = shallowRef(normalizeValue(props.value, resolvedColumns.value))
+let hasDraft = false
 const classes = computed(() => cn('varo-picker', props.className))
 const columnCount = computed(() => String(resolvedColumns.value.length))
 const selectedOptions = computed(() =>
@@ -141,9 +142,17 @@ const renderedColumns = computed<RenderedPickerColumn[]>(() =>
 )
 
 watch(
-  [() => props.value, resolvedColumns, () => props.visible],
+  [() => props.value, () => props.visible],
   () => {
+    hasDraft = false
     selectedValues.value = normalizeValue(props.value, resolvedColumns.value)
+  },
+  { deep: true },
+)
+watch(
+  resolvedColumns,
+  () => {
+    selectedValues.value = normalizeValue(hasDraft ? selectedValues.value : props.value, resolvedColumns.value)
   },
   { deep: true },
 )
@@ -157,6 +166,7 @@ function select(columnIndex: number, option: PickerOption) {
     return
   }
 
+  hasDraft = true
   const next = selectedValues.value.slice()
   next[columnIndex] = option.value
   selectedValues.value = next
@@ -181,6 +191,7 @@ function confirm() {
 }
 
 function cancel() {
+  hasDraft = false
   selectedValues.value = normalizeValue(props.value, resolvedColumns.value)
   emit('cancel')
   emit('update:visible', false)

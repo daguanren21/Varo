@@ -24,8 +24,15 @@ The following direct versions and SPDX license declarations were read from the s
 | `@babel/core`              | 8.0.1          | MIT              | Compiler peer dependency                                                               |
 | `esbuild`                  | 0.28.2         | MIT              | Production minification                                                                |
 | `postcss-selector-parser`  | 7.1.6          | MIT              | Compiled component selector verification                                               |
+| `@csstools/css-tokenizer`  | 4.0.2          | MIT              | CSS escape decoding for recursive stylesheet verification                              |
 
 `pnpm-lock.yaml` fixes the resolved transitive graph for this export. The local pnpm policy retains the source baseline's `undici` 7.29.0 override and pins Vue 3.5.42. Before redistribution, inspect the installed dependency `LICENSE`/`NOTICE` files and the licenses for that exact graph, including bundled dependencies and native binaries. This table is a direct-dependency inventory, not an exhaustive legal audit or a claim that all transitive dependencies are MIT.
+
+### Compiler patch
+
+`weapp-vite` remains pinned to **7.5.0** and is patched by `pnpm-workspace.yaml` using the included `patches/weapp-vite@7.5.0.patch`. The exporter snapshots that file directly from Varo's canonical `packages/ui-weapp/patches/weapp-vite@7.5.0.patch` before resolving the lockfile; it records both source and exported SHA256 digests in `starter-manifest.json`. No separate starter patch is maintained.
+
+The patch fixes compiler registration for template-bearing `app.vue` shells and scriptless Vue layouts needed for plain native slot provider-context inheritance. That capability requires compiled Wevu components, the WeChat target and default attached setup; it does not certify other setup modes, platforms or device behavior. Keep the copied patch, workspace mapping and lockfile together. An upstream compiler upgrade must replace or remove this version-specific patch only after checking app-shell and layout provider/consumer behavior with the new compiler.
 
 ## Assets
 

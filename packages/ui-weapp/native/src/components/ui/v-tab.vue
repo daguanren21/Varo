@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TabName, VaroTabsContext } from './tabs-context'
 import { computed, inject, onBeforeUnmount, watch } from 'wevu'
-import { getTabsPanelId, getTabsTriggerId, tabsContextKey } from './tabs-context'
+import { createTabToken, getTabsPanelId, getTabsTriggerId, tabsContextKey } from './tabs-context'
 
 const props = withDefaults(
   defineProps<{
@@ -20,9 +20,11 @@ if (!context) {
   throw new Error('VTab must be used inside VTabs')
 }
 const tabs = context
+const token = createTabToken()
 
 function register() {
   tabs.registerTab({
+    token,
     disabled: props.disabled,
     name: props.name,
     title: props.title || String(props.name),
@@ -32,12 +34,9 @@ function register() {
 register()
 watch(
   () => [props.name, props.title, props.disabled] as const,
-  ([name], [previousName]) => {
-    if (name !== previousName) { tabs.unregisterTab(previousName) }
-    register()
-  },
+  register,
 )
-onBeforeUnmount(() => tabs.unregisterTab(props.name))
+onBeforeUnmount(() => tabs.unregisterTab(token))
 
 const active = computed(() => tabs.active.value === props.name)
 const activeData = computed(() => String(active.value))

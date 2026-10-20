@@ -20,11 +20,13 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # Native Wevu project (choose one path; no extra Vue renderer is needed)
-pnpm add wevu @varo-ui/weapp @varo-ui/theme
-pnpm add -D weapp-vite
+pnpm add wevu@7.5.0 @varo-ui/weapp @varo-ui/theme
+pnpm add -D --save-exact weapp-vite@7.5.0
 # Only for Agent events and Markdown
 pnpm add @varo-ui/ai
 ```
+
+Native `7.5.0` projects must also apply the [compiler patch below](#compiler-patch), for both npm and CLI source consumption.
 
 On H5, import components from the public entry and load styles at application entry:
 
@@ -136,13 +138,34 @@ await controller.connect(transport.source)
 ## Mini-program build chain
 
 ```bash
-pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
+pnpm add -D --save-exact weapp-vite@7.5.0
+pnpm add -D weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
 Native Registry components consume application-global styles through `styleIsolation: apply-shared`. `themes/base` contains only tokens and foundation rules; each ordinary component manifest owns its CSS, and optional `themes/agent` owns Agent additions. The `cn()` helper uses `@weapp-tailwindcss/merge`, preserving mini-program escaping behavior.
 
 `@varo-ui/cli` only copies Registry files and prints `Dependencies:` / `Dev dependencies:`; it does not install npm packages. After each `add`, install every reported dependency not already present. Globally register all installed `src/styles/*.css` in `app.vue`, with `varo.css` first; loading only base or importing these files inside components is insufficient. See the [one-time Wevu Registry setup](/en/guide/shadcn-mode) for the full configuration.
+
+### Compiler patch {#compiler-patch}
+
+Stock `weapp-vite@7.5.0` emits incomplete component registration for template-bearing `app.vue` shells and scriptless Vue layouts, leaving the plain-slot parent-context protocol without its handlers. `@varo-ui/weapp` ships the version-specific fix. Apply it in the consumer project root; a dependency's workspace patch settings do not propagate.
+
+CLI source-only projects can first run `pnpm add -D @varo-ui/weapp` to obtain the patch, without importing its UI components.
+
+```bash
+mkdir -p patches
+cp node_modules/@varo-ui/weapp/patches/weapp-vite@7.5.0.patch patches/
+```
+
+Merge the following into the project's root `pnpm-workspace.yaml`, then run `pnpm install`:
+
+```yaml
+patchedDependencies:
+  weapp-vite@7.5.0: patches/weapp-vite@7.5.0.patch
+```
+
+Commit the patch, workspace configuration, and lockfile. Keep the compiler pinned to `7.5.0` while applying this patch. Remove it when upgrading to an upstream release containing the fix, after verifying app-shell and Vue layout slot ownership.
 
 ## Preview mini-program artifacts in a browser
 

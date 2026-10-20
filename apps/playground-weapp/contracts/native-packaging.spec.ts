@@ -2,7 +2,9 @@ import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promis
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, posix, resolve } from 'node:path'
+import { tokenize, TokenType } from '@csstools/css-tokenizer'
 import { afterEach, describe, expect, it } from 'vitest'
+import { postcss } from 'weapp-tailwindcss/core'
 import { localizeNativeComponents } from '../scripts/localize-native-components.mjs'
 
 const fixtures: string[] = []
@@ -54,6 +56,40 @@ async function snapshot(root: string, directory = ''): Promise<Record<string, st
   return result
 }
 
+function cssValues(source: string) {
+  return tokenize({ css: source }).flatMap(token => token[0] === TokenType.URL || token[0] === TokenType.String ? [token[4].value] : [])
+}
+
+const escapedAssets = [
+  ['quoted space', '"./icons/a b.svg"', 'icons/a b.svg'],
+  ['escaped space', String.raw`./icons/a\ b.svg`, 'icons/a b.svg'],
+  ['quoted hexadecimal space', String.raw`"./icons/a\20 b.svg"`, 'icons/a b.svg'],
+  ['hexadecimal space', String.raw`./icons/a\20 b.svg`, 'icons/a b.svg'],
+  ['six-digit escape', String.raw`./icons/a\000020b.svg`, 'icons/a b.svg'],
+  ['hexadecimal escape without terminator', String.raw`./icons/a\20z.svg`, 'icons/a z.svg'],
+  ['CRLF escape terminator', './icons/a\\20\r\nb.svg', 'icons/a b.svg'],
+  ['tab', String.raw`./icons/a\9 b.svg`, 'icons/a\tb.svg'],
+  ['newline', String.raw`"./icons/a\a b.svg"`, 'icons/a\nb.svg'],
+  ['string continuation', '"./icons/a\\\r\nb.svg"', 'icons/ab.svg'],
+  ['punctuation', String.raw`./icons/a\,b\;c.svg`, 'icons/a,b;c.svg'],
+  ['backslash', String.raw`./icons/a\\b.svg`, 'icons/a\\b.svg'],
+  ['quotes', String.raw`./icons/a\"b\'c.svg`, 'icons/a"b\'c.svg'],
+  ['quoted quote', String.raw`"./icons/a\"b.svg"`, 'icons/a"b.svg'],
+  ['parentheses', String.raw`./icons/a\(b\).svg`, 'icons/a(b).svg'],
+  ['trailing escaped space', String.raw`./icons/a.svg\ `, 'icons/a.svg '],
+  ['leading escaped space', String.raw`./icons/\ a.svg`, 'icons/ a.svg'],
+  ['non-BMP hexadecimal escape', String.raw`./icons/a\1f600.svg`, 'icons/a\u{1F600}.svg'],
+] as const
+
+const cssImports = [
+  String.raw`"./styles/theme\20 name.wxss"`,
+  String.raw`'./styles/theme\ name.wxss'`,
+  String.raw`url(./styles/theme\20 name.wxss)`,
+  String.raw`url( "./styles/theme\ name.wxss" )`,
+  String.raw`URL('./styles/theme\20 name.wxss')`,
+  String.raw`u\72l("./styles/theme\000020name.wxss")`,
+] as const
+
 describe('native production component packaging', () => {
   it('localizes shared components and their native parents while retaining main runtime identity and asset paths', async () => {
     const { root, json } = await fixture()
@@ -86,23 +122,108 @@ describe('native production component packaging', () => {
     expect(await snapshot(root)).toEqual(packaged)
   })
 
-  it('rebases quoted and unquoted CSS URLs with whitespace and suffixes while preserving external URLs', async () => {
+  it.each(escapedAssets)('resolves %s to the same real asset from each relocated package', async (_name, url, path) => {
     const { root, write } = await fixture()
-    await write('components/preview(1).svg', '<svg xmlns="http://www.w3.org/2000/svg" />')
-    await write('components/markdown.wxss', `.assets {
-      --double: url( "./preview(1).svg?size=2#shape" );
-      --single: url( './preview.svg#single' );
-      --bare: url( ./preview.svg?raw=1#bare );
-      --remote: url("https://example.com/a(b).svg");
-      --data: url("data:image/svg+xml,<svg>(x)</svg>");
-    }`)
+    await write(`components/${path}`, 'asset bytes')
+    await write('components/markdown.wxss', `.asset { background: url(${url}); }`)
+    await localizeNativeComponents(root)
+    for (const component of ['a/components/markdown', 'features/b/components/markdown']) {
+      const styles = postcss.parse(await readFile(resolve(root, `${component}.wxss`), 'utf8'))
+      const references: string[] = []
+      styles.walkDecls((declaration) => { references.push(...cssValues(declaration.value)) })
+      expect(references).toHaveLength(1)
+      const asset = target(component, references[0]!)
+      expect(asset).toBe(`components/${path}`)
+      expect(await readFile(resolve(root, asset), 'utf8')).toBe('asset bytes')
+    }
+    const packaged = await snapshot(root)
+    await localizeNativeComponents(root)
+    expect(await snapshot(root)).toEqual(packaged)
+  })
+
+  it('preserves URL suffixes, external and data URLs, and non-URL strings and comments', async () => {
+    const { root, write } = await fixture()
+    await write('components/a b(1).svg', 'asset bytes')
+    const external = String.raw`u\72l("https\3a //example.com/a(b).svg")`
+    const data = String.raw`url('data:image/svg+xml,<svg>(x)</svg>')`
+    const protocolRelative = 'url(//example.com/preview.svg)'
+    const fragment = String.raw`url(\23 shape)`
+    const source = `.assets {
+      --asset: url( ${String.raw`./a\20 b\(1\).svg\3f size=2\23 shape`} );
+      --absolute: URL(${String.raw`"/components/a\20 b(1).svg?size=2#shape"`});
+      --remote: ${external};
+      --data: ${data};
+      --protocol-relative: ${protocolRelative};
+      --fragment: ${fragment};
+      content: "url(./missing.svg)";
+      /* url(./missing-comment.svg) */
+    }`
+    await write('components/markdown.wxss', source)
     await localizeNativeComponents(root)
     const styles = await readFile(resolve(root, 'a/components/markdown.wxss'), 'utf8')
-    expect(styles).toContain('url("../../components/preview(1).svg?size=2#shape")')
-    expect(styles).toContain('url(\'../../components/preview.svg#single\')')
-    expect(styles).toContain('url(../../components/preview.svg?raw=1#bare)')
-    expect(styles).toContain('url("https://example.com/a(b).svg")')
-    expect(styles).toContain('url("data:image/svg+xml,<svg>(x)</svg>")')
+    const declarations = new Map<string, string>()
+    postcss.parse(styles).walkDecls((declaration) => { declarations.set(declaration.prop, declaration.value) })
+    for (const property of ['--asset', '--absolute']) {
+      const [value] = cssValues(declarations.get(property)!)
+      expect(value!.slice(value!.indexOf('?'))).toBe('?size=2#shape')
+      const asset = target('a/components/markdown', value!.split('?')[0]!)
+      expect(await readFile(resolve(root, asset), 'utf8')).toBe('asset bytes')
+    }
+    expect(declarations.get('--remote')).toBe(external)
+    expect(declarations.get('--data')).toBe(data)
+    expect(declarations.get('--protocol-relative')).toBe(protocolRelative)
+    expect(declarations.get('--fragment')).toBe(fragment)
+    expect(declarations.get('content')).toBe('"url(./missing.svg)"')
+    expect(styles).toContain('/* url(./missing-comment.svg) */')
+  })
+
+  it.each(cssImports)('relocates a CSS import %s and preserves its dependency closure and conditions', async (reference) => {
+    const { root, write } = await fixture()
+    await write('components/styles/theme name.wxss', String.raw`.asset { background: url(../icons/a\20 b.svg); }`)
+    await write('components/icons/a b.svg', 'asset bytes')
+    await write('components/markdown.wxss', `@import ${reference} layer(theme) screen and (min-width: 1px);`)
+    await localizeNativeComponents(root)
+    for (const component of ['a/components/markdown', 'features/b/components/markdown']) {
+      const styles = postcss.parse(await readFile(resolve(root, `${component}.wxss`), 'utf8'))
+      const references: string[] = []
+      styles.walkAtRules('import', (rule) => {
+        expect(rule.params).toContain('layer(theme) screen and (min-width: 1px)')
+        references.push(...cssValues(rule.params))
+      })
+      expect(references).toHaveLength(1)
+      const imported = target(component, references[0]!)
+      expect(imported).toBe('components/styles/theme name.wxss')
+      const importedStyles = postcss.parse(await readFile(resolve(root, imported), 'utf8'))
+      let asset = ''
+      importedStyles.walkDecls((declaration) => { asset = target(imported, cssValues(declaration.value)[0]!) })
+      expect(await readFile(resolve(root, asset), 'utf8')).toBe('asset bytes')
+    }
+  })
+
+  it.each(cssImports)('rejects a missing imported stylesheet %s before writing', async (reference) => {
+    const { root, write } = await fixture()
+    await write('components/markdown.wxss', `@import ${reference};`)
+    const before = await snapshot(root)
+    await expect(localizeNativeComponents(root)).rejects.toThrow('Missing native artifact: components/styles/theme name.wxss')
+    expect(await snapshot(root)).toEqual(before)
+  })
+
+  it.each(escapedAssets)('rejects a missing %s asset before writing', async (_name, url, path) => {
+    const { root, write } = await fixture()
+    await write('components/markdown.wxss', `.asset { background: url(${url}); }`)
+    const before = await snapshot(root)
+    await expect(localizeNativeComponents(root)).rejects.toThrow(`Missing native artifact: components/${path}`)
+    expect(await snapshot(root)).toEqual(before)
+  })
+
+  it.each(cssImports)('keeps a main stylesheet dependency reached through %s in main', async (reference) => {
+    const { root, write, unit, json } = await fixture()
+    await unit('components/styles/theme name', { component: true })
+    await write('app.wxss', `@import ${reference.replace('./styles/', './components/styles/')};`)
+    await write('a/index.json', { usingComponents: { ...(await json('a/index')).usingComponents, theme: '/components/styles/theme name' } })
+    await localizeNativeComponents(root)
+    expect(target('a/index', (await json('a/index')).usingComponents.theme)).toBe('components/styles/theme name')
+    expect(await readFile(resolve(root, 'components/styles/theme name.wxss'), 'utf8')).toBe('')
   })
 
   it.each(['native parent', 'main script', 'main style', 'shared template', 'transitive script'])('retains components reached by a %s in main', async (consumer) => {
@@ -128,6 +249,8 @@ describe('native production component packaging', () => {
 
   it.each(['file', 'ancestor file', 'destination directory'])('rejects %s conflicts before modifying any compiler output', async (conflict) => {
     const { root, write } = await fixture()
+    await write('components/a b.svg', 'asset bytes')
+    await write('components/markdown.wxss', String.raw`.asset { background: url(./a\20 b.svg); }`)
     if (conflict === 'ancestor file') { await write('a/components', 'application-owned') }
     else if (conflict === 'destination directory') { await write('a/components/wrapper.js/keep', 'application-owned') }
     else { await write('a/components/markdown.js', 'module.exports = "application-owned"') }

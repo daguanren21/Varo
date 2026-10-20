@@ -54,7 +54,7 @@ The versions below are pinned in this template's package manifest. License decla
 | `@types/node`               | `22.10.4`                | MIT              | Node tooling declarations                                                      |
 | `postcss`                   | `8.5.6`                  | MIT              | Explicit build peer and compiled CSS parsing                                   |
 | `postcss-selector-parser`   | `7.1.6`                  | MIT              | Compiled selector verification                                                 |
-| `postcss-value-parser`      | `4.2.0`                  | MIT              | Compiled CSS import/URL verification                                           |
+| `@csstools/css-tokenizer`   | `4.0.2`                  | MIT              | CSS escape decoding for compiled import/URL verification                       |
 | `htmlparser2`               | `12.0.0`                 | MIT              | WXML dependency and attribute parsing                                          |
 
 The lockfile fixes the resolved graph for one export. With `autoInstallPeers: false`, required Vue, Vite, uni types, TypeScript and PostCSS peers are explicitly declared rather than silently installed. This list is not an exhaustive legal/security audit of transitive packages, bundled code or native binaries. Inspect the actual installed graph and preserve required notices before redistribution.

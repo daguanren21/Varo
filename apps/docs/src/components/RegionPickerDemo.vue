@@ -5,10 +5,10 @@ import type {
   VaroRegionLoadSuccess,
   VaroRegionOption,
   VaroRegionSelection,
-} from './registry-preview/region-picker.types'
+} from './ui/region-picker.types'
 import { VButton } from '@varo-ui/h5'
 import { computed, shallowRef } from 'vue'
-import { VRegionPicker } from './registry-preview/region-picker'
+import { VRegionPicker } from './ui/region-picker'
 
 type RequestState = 'idle' | 'loading' | 'success' | 'error'
 

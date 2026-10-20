@@ -129,4 +129,165 @@ describe('native avatar group and navigation', () => {
     expect(wrapper.emitted('change')).toEqual([[1]])
     expect(wrapper.emitted('clickTab')).toHaveLength(4)
   })
+
+  it.each([
+    { change: 'same-update name swap', before: ['a', 'b'], after: ['b', 'a'] },
+    { change: 'zero and empty-name swap', before: [0, ''], after: ['', 0] },
+    { change: 'overlapping renames', before: ['a', 'b'], after: ['b', 'c'] },
+    { change: 'rename to an unused name', before: ['a', 'b'], after: ['c', 'b'] },
+  ])('retains both native registrations and order after $change', async ({ before, after }) => {
+    const wrapper = mount({
+      components: { VTabs, VTab },
+      data: () => ({
+        items: [
+          { id: 'first', name: before[0]!, title: 'First' },
+          { id: 'second', name: before[1]!, title: 'Second' },
+        ],
+      }),
+      template: `
+        <VTabs active="outside">
+          <VTab v-for="item in items" :key="item.id" :name="item.name" :title="item.title" />
+        </VTabs>
+      `,
+    })
+    await wrapper.vm.$nextTick()
+    const tabs = wrapper.getComponent(VTabs)
+    const instances = wrapper.findAllComponents(VTab).map(tab => tab.vm.$)
+    expect(tabs.findAll('[role="tab"]').map(tab => tab.text())).toEqual(['First', 'Second'])
+
+    await wrapper.setData({
+      items: [
+        { id: 'first', name: after[0]!, title: 'First' },
+        { id: 'second', name: after[1]!, title: 'Second' },
+      ],
+    })
+    const buttons = tabs.findAll('[role="tab"]')
+    expect(buttons.map(tab => tab.text())).toEqual(['First', 'Second'])
+    wrapper.findAllComponents(VTab).forEach((tab, index) => expect(tab.vm.$).toBe(instances[index]))
+    expect(tabs.emitted('update:active')).toBeUndefined()
+    expect(tabs.emitted('change')).toBeUndefined()
+    for (const button of buttons) { await button.trigger('click') }
+    expect(tabs.emitted('clickTab')).toEqual([
+      [{ name: after[0], title: 'First' }],
+      [{ name: after[1], title: 'Second' }],
+    ])
+    expect(tabs.emitted('update:active')).toEqual(after.map(name => [name]))
+    expect(tabs.emitted('change')).toEqual(after.map(name => [name]))
+    expect(tabs.find('[role="tabpanel"]').exists()).toBe(false)
+
+    await wrapper.setData({ items: [{ id: 'second', name: after[0]!, title: 'Survivor' }] })
+    expect(wrapper.getComponent(VTab).vm.$).toBe(instances[1])
+    expect(tabs.findAll('[role="tab"]').map(tab => tab.text())).toEqual(['Survivor'])
+    await tabs.get('[role="tab"]').trigger('click')
+    expect(tabs.emitted('clickTab')?.at(-1)).toEqual([{ name: after[0], title: 'Survivor' }])
+    await wrapper.setData({ items: [] })
+    expect(tabs.findAll('[role="tab"]')).toHaveLength(0)
+  })
+
+  it.each([
+    { mutation: 'remove', nextActive: 'b', entryTitle: 'A' },
+    { mutation: 'disable', nextActive: 'b', entryTitle: 'A' },
+    { mutation: 'rename', nextActive: 'b', entryTitle: 'A' },
+    { mutation: 'remove', nextActive: 'c', entryTitle: 'C' },
+    { mutation: 'disable', nextActive: 'c', entryTitle: 'C' },
+    { mutation: 'rename', nextActive: 'c', entryTitle: 'C' },
+  ])('restores an enabled entry after focused tab $mutation with active=$nextActive', async ({ mutation, nextActive, entryTitle }) => {
+    const wrapper = mount({
+      components: { VTabs, VTab },
+      data: () => ({
+        active: 'a',
+        showB: true,
+        disabledB: false,
+        nameB: 'b',
+      }),
+      template: `
+        <VTabs v-model:active="active">
+          <VTab name="a" title="A" />
+          <VTab v-if="showB" :name="nameB" title="B" :disabled="disabledB" />
+          <VTab name="c" title="C" />
+        </VTabs>
+      `,
+    })
+    await wrapper.vm.$nextTick()
+    const tabs = wrapper.getComponent(VTabs)
+    await tabs.findAll('[role="tab"]')[1]!.trigger('click')
+    expect(wrapper.vm.active).toBe('b')
+    expect(tabs.get('[role="tab"][tabindex="0"]').text()).toBe('B')
+
+    await wrapper.setData({
+      active: nextActive,
+      showB: mutation !== 'remove',
+      disabledB: mutation === 'disable',
+      nameB: mutation === 'rename' ? 'renamed' : 'b',
+    })
+    const entries = tabs.findAll<HTMLButtonElement>('[role="tab"][tabindex="0"]')
+    expect(entries).toHaveLength(1)
+    expect(entries[0]!.text()).toBe(entryTitle)
+    expect(entries[0]!.element.disabled).toBe(false)
+    expect(tabs.findAll('[role="tab"][disabled][tabindex="0"]')).toHaveLength(0)
+    expect(wrapper.vm.active).toBe(nextActive)
+    expect(tabs.emitted('update:active')).toEqual([['b']])
+    expect(tabs.emitted('change')).toEqual([['b']])
+    expect(tabs.emitted('clickTab')).toEqual([[{ name: 'b', title: 'B' }]])
+  })
+
+  it('restores focus after all tabs are disabled without accepting disabled actions', async () => {
+    const wrapper = mount({
+      components: { VTabs, VTab },
+      data: () => ({ active: 'a', disabledA: false, disabledB: false }),
+      template: `
+        <VTabs v-model:active="active">
+          <VTab name="a" title="A" :disabled="disabledA" />
+          <VTab name="b" title="B" :disabled="disabledB" />
+        </VTabs>
+      `,
+    })
+    await wrapper.vm.$nextTick()
+    const tabs = wrapper.getComponent(VTabs)
+    await tabs.findAll('[role="tab"]')[1]!.trigger('click')
+    await wrapper.setData({ disabledA: true, disabledB: true })
+    expect(tabs.findAll('[role="tab"][tabindex="0"]')).toHaveLength(0)
+    for (const button of tabs.findAll('[role="tab"]')) { await button.trigger('click') }
+    expect(tabs.emitted('clickTab')).toEqual([[{ name: 'b', title: 'B' }]])
+    expect(tabs.emitted('update:active')).toEqual([['b']])
+    await wrapper.setData({ disabledA: false })
+    expect(tabs.get('[role="tab"][tabindex="0"]').text()).toBe('A')
+    expect(wrapper.vm.active).toBe('b')
+    expect(tabs.emitted('change')).toEqual([['b']])
+    await tabs.get('[role="tab"][tabindex="0"]').trigger('keydown', { key: 'Home' })
+    expect(wrapper.vm.active).toBe('a')
+    expect(tabs.emitted('update:active')).toEqual([['b'], ['a']])
+  })
+
+  it('navigates current native registration order with arrows, Home, and End', async () => {
+    const wrapper = mount({
+      components: { VTabs, VTab },
+      data: () => ({ active: 0, lastName: '' }),
+      template: `
+        <VTabs v-model:active="active">
+          <VTab :name="0" title="First" />
+          <VTab name="locked" title="Locked" disabled />
+          <VTab :name="lastName" title="Last" />
+        </VTabs>
+      `,
+    })
+    await wrapper.vm.$nextTick()
+    const tabs = wrapper.getComponent(VTabs)
+    let buttons = tabs.findAll('[role="tab"]')
+    await buttons[0]!.trigger('keydown', { key: 'ArrowRight' })
+    expect(wrapper.vm.active).toBe('')
+    expect(tabs.get('[role="tab"][tabindex="0"]').text()).toBe('Last')
+    await buttons[2]!.trigger('keydown', { key: 'ArrowRight' })
+    expect(wrapper.vm.active).toBe(0)
+    await buttons[0]!.trigger('keydown', { key: 'ArrowLeft' })
+    expect(wrapper.vm.active).toBe('')
+    await buttons[2]!.trigger('keydown', { key: 'Home' })
+    expect(wrapper.vm.active).toBe(0)
+    await wrapper.setData({ lastName: 'renamed' })
+    buttons = tabs.findAll('[role="tab"]')
+    await buttons[0]!.trigger('keydown', { key: 'End' })
+    expect(wrapper.vm.active).toBe('renamed')
+    expect(tabs.emitted('update:active')).toEqual([[''], [0], [''], [0], ['renamed']])
+    expect(tabs.emitted('change')).toEqual([[''], [0], [''], [0], ['renamed']])
+  })
 })

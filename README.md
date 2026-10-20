@@ -112,6 +112,8 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 Native Blocks used exclusively by `blocks-lab` are projected into `apps/playground-weapp/src/blocks-lab/components/blocks/`; shared UI, Agent components, and helpers remain in the main source tree. `pnpm sync:registry` owns this app-only placement and import rewriting. Public Registry installs still use `src/components/blocks/`. The production build rejects a main package above 2 MiB and any synchronous reference into an unavailable sibling subpackage.
 
+After native compilation, `localize-native-components.mjs` places subpackage-only component artifacts beside their consumers while keeping shared scripts and assets at their existing paths. CSS `url(...)` and quoted or URL-form `@import` references are decoded before resolving files and escaped when rebased, including CSS hexadecimal escapes, spaces, quotes, parentheses, and query/hash suffixes. External and data URLs retain their spelling. Missing dependencies and destination conflicts reject before any compiler output is changed; the production and exported-starter style verifiers use the same CSS reference parser.
+
 ## Documentation development
 
 ```bash

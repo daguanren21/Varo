@@ -5,6 +5,7 @@ import * as glassEasel from 'glass-easel'
 import { resolveWeappWebHarness } from './harness.ts'
 import { createNativeModuleLoader } from './module-loader.ts'
 import { requirePlugin } from './native-elements.ts'
+import { PreviewSelectorQuery } from './selector-query.ts'
 
 function record(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) { throw new TypeError(`${label} 必须是对象`) }
@@ -147,6 +148,13 @@ export function createNativeHost(
   }
   const wxHost = resolvedHarness.createWxHost({ pagePath, query, getPage: () => currentPage, enqueue })
   const sharedEnv = space.componentEnv('__preview_shared__', value => value)
+  const selectorQueryBehavior = sharedEnv.Behavior().init(function () {
+    Object.defineProperty(this, 'createSelectorQuery', {
+      configurable: true,
+      writable: true,
+      value: () => new PreviewSelectorQuery(this, enqueue),
+    })
+  }).register()
 
   function component(...args: unknown[]) {
     if (!environment) { throw new Error('Component 必须在小程序组件模块注册阶段调用') }
@@ -160,7 +168,7 @@ export function createNativeHost(
       args[0] = {
         ...definition,
         properties: nativeProperties(definition.properties),
-        behaviors: nativeBehaviors(definition.behaviors),
+        behaviors: [selectorQueryBehavior, ...(nativeBehaviors(definition.behaviors) ?? [])],
         // The adapter only installs methods; Wevu declares page onLoad at the top level.
         methods: isPage && typeof definition.onLoad === 'function'
           ? { ...(definition.methods ? record(definition.methods, '组件方法') : {}), onLoad: definition.onLoad }
@@ -216,7 +224,7 @@ export function createNativeHost(
     if (!environment) { throw new Error('Page 必须在小程序页面模块注册阶段调用') }
     if (args.length) {
       const definition = record(args[0], '小程序页面定义')
-      args[0] = { ...definition, behaviors: nativeBehaviors(definition.behaviors) }
+      args[0] = { ...definition, behaviors: [selectorQueryBehavior, ...(nativeBehaviors(definition.behaviors) ?? [])] }
     }
     return Reflect.apply(environment.Page, undefined, args)
   }

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import selectorParser from 'postcss-selector-parser'
 import ts from 'typescript'
 import { postcss } from 'weapp-tailwindcss/core'
+import { cssReferences, localCssReference } from './css-references.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(projectRoot, 'devtools/build/mp-weixin')
@@ -296,11 +297,11 @@ while (styleQueue.length > 0) {
   styles.walkAtRules(/^(theme|tailwind)$/, (rule) => {
     throw new Error(`Compiled ${stylePath} still contains @${rule.name}; Tailwind CSS was not generated`)
   })
-  styles.walkAtRules('import', (rule) => {
-    const importedPath = rule.params.match(/^(['"])(.+)\1$/)?.[2]
-    if (importedPath) {
-      const target = componentBasePath(stylePath, importedPath)
-      if (!target) { throw new Error(`Unsupported style import in ${outputName(stylePath)}: ${importedPath}`) }
+  styles.walkAtRules(/^import$/i, (rule) => {
+    for (const reference of cssReferences(rule.params, { importRule: true, from: stylePath })) {
+      const local = localCssReference(reference.value)
+      if (!local) { continue }
+      const target = componentBasePath(stylePath, local.path)
       assertPackageReference(stylePath, target)
       styleQueue.push({ path: target, component, app })
     }

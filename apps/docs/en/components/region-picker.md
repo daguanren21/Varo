@@ -68,6 +68,12 @@ async function loadChildren(context: VaroRegionLoadContext) {
 
 The list exposes `aria-busy` while loading. On failure it retains the current breadcrumbs and renders a retry action. Children returned by the current component instance stay cached, so loaded nodes are not requested again.
 
+Replacing or mutating `options` preserves the current draft path and the level being browsed. Removed nodes truncate the draft at the first missing level; reconciliation does not emit `change` or commit events. Until the user selects a region, arriving options continue to resolve the parent's `modelValue`. Parent value changes and visibility changes start a fresh draft from that value. Cancel only requests a close and never commits; reopening restores the parent selection.
+
+If a selected node becomes disabled, its path remains displayed. Confirmation, shortcuts, and automatic confirmation require every node in the path, including its ancestors, to be enabled. Re-enabling the path permits confirmation again.
+
+A complete asynchronous root result also resolves an untouched parent selection. While the picker is open, changing `loading` to `false` or supplying `loadChildren` starts an eligible root request; an empty result does not automatically repeat it. After switching paths, an old branch's loading, error, and retry state cannot block the new selection, and its completion cannot change the new browsing level. Valid root results can still be cached while the picker is closed.
+
 ## Props
 
 | Prop                | Type                   | Default          | Description                                          |

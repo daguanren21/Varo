@@ -29,7 +29,7 @@ function firstEnabledValue(column: PickerColumn): string | number | undefined {
 }
 
 export function normalizePickerValue(
-  value: PickerValue,
+  value: PickerValue | Array<string | number | undefined>,
   columns: PickerColumn[],
 ): Array<string | number | undefined> {
   const values = Array.isArray(value) ? value : [value]
@@ -73,11 +73,20 @@ export const VPicker = defineComponent({
     const resolvedColumns = computed(() => normalizePickerColumns(props.columns))
     const selectedValues = shallowRef(normalizePickerValue(props.value, resolvedColumns.value))
     const rootElement = shallowRef<HTMLElement | null>(null)
+    let hasDraft = false
 
     watch(
-      [() => props.value, resolvedColumns, () => props.visible],
+      [() => props.value, () => props.visible],
       () => {
+        hasDraft = false
         selectedValues.value = normalizePickerValue(props.value, resolvedColumns.value)
+      },
+      { deep: true },
+    )
+    watch(
+      resolvedColumns,
+      () => {
+        selectedValues.value = normalizePickerValue(hasDraft ? selectedValues.value : props.value, resolvedColumns.value)
       },
       { deep: true },
     )
@@ -121,6 +130,7 @@ export const VPicker = defineComponent({
       if (option.disabled) {
         return
       }
+      hasDraft = true
       const next = selectedValues.value.slice()
       next[columnIndex] = option.value
       selectedValues.value = next
@@ -139,6 +149,7 @@ export const VPicker = defineComponent({
     }
 
     function cancel() {
+      hasDraft = false
       selectedValues.value = normalizePickerValue(props.value, resolvedColumns.value)
       emit('cancel')
       emit('update:visible', false)

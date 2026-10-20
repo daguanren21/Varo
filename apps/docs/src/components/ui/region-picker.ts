@@ -10,12 +10,15 @@ import { computed, defineComponent, h, shallowRef, useId, watch } from 'vue'
 import {
   cloneRegionOptions,
   isRegionLeaf,
+  isRegionPathEnabled,
   normalizeRegionPath,
   regionOptionHasChildren,
   regionOptionsAtLevel,
   replaceRegionChildren,
   resolveRegionSelection,
 } from './region-picker.shared'
+import '../../styles/varo.css'
+import '../../styles/varo-region-picker.css'
 
 export const VRegionPicker = defineComponent({
   name: 'VRegionPicker',
@@ -56,16 +59,24 @@ export const VRegionPicker = defineComponent({
     const loadError = shallowRef<unknown>(undefined)
     const retryContext = shallowRef<VaroRegionLoadContext | undefined>(undefined)
     let loadRequestId = 0
+    let hasDraft = false
 
-    function syncDraft() {
-      const path = normalizeRegionPath(workingOptions.value, props.modelValue)
+    function syncDraft(value: RegionValue[] = props.modelValue) {
+      const path = normalizeRegionPath(workingOptions.value, value)
       draftPath.value = path
       const selection = resolveRegionSelection(workingOptions.value, path)
       level.value = path.length > 0 && isRegionLeaf(selection.option) ? path.length - 1 : path.length
     }
 
+    function isLoadRelevant(context: VaroRegionLoadContext | undefined) {
+      return Boolean(context && (!context.option || (
+        level.value >= context.level
+        && context.path.every((value, index) => draftPath.value[index] === value)
+      )))
+    }
+
     async function loadRegion(context: VaroRegionLoadContext) {
-      if (!props.loadChildren || props.loading || internalLoading.value) { return }
+      if (!props.loadChildren || props.loading || (internalLoading.value && isLoadRelevant(retryContext.value))) { return }
       const requestId = ++loadRequestId
       internalLoading.value = true
       loadError.value = undefined
@@ -75,14 +86,14 @@ export const VRegionPicker = defineComponent({
       try {
         const options = await props.loadChildren(context)
         if (requestId !== loadRequestId) { return }
-        if (context.option) {
-          workingOptions.value = replaceRegionChildren(workingOptions.value, context.path, options)
-          if (options.length === 0) {
-            level.value = Math.max(0, context.path.length - 1)
-          }
-        }
-        else {
-          workingOptions.value = cloneRegionOptions(options)
+        const ownsFeedback = isLoadRelevant(context)
+        workingOptions.value = context.option
+          ? replaceRegionChildren(workingOptions.value, context.path, options)
+          : cloneRegionOptions(options)
+        if (ownsFeedback) {
+          const previousLevel = level.value
+          syncDraft(hasDraft ? draftPath.value : props.modelValue)
+          if (hasDraft) { level.value = Math.min(previousLevel, level.value) }
         }
         loadError.value = undefined
         retryContext.value = undefined
@@ -90,8 +101,10 @@ export const VRegionPicker = defineComponent({
       }
       catch (error) {
         if (requestId !== loadRequestId) { return }
-        loadError.value = error
-        retryContext.value = context
+        if (isLoadRelevant(context)) {
+          loadError.value = error
+          retryContext.value = context
+        }
         emit('loadError', { ...context, error })
       }
       finally {
@@ -122,7 +135,9 @@ export const VRegionPicker = defineComponent({
         loadError.value = undefined
         retryContext.value = undefined
         workingOptions.value = cloneRegionOptions(props.options)
-        syncDraft()
+        const previousLevel = level.value
+        syncDraft(hasDraft ? draftPath.value : props.modelValue)
+        if (hasDraft) { level.value = Math.min(previousLevel, level.value) }
         ensureRootOptions()
       },
       { deep: true, immediate: true },
@@ -131,11 +146,14 @@ export const VRegionPicker = defineComponent({
     watch(
       () => [props.visible, props.modelValue] as const,
       () => {
+        hasDraft = false
         syncDraft()
         ensureRootOptions()
       },
       { deep: true, immediate: true },
     )
+
+    watch(() => [props.loading, props.loadChildren] as const, ensureRootOptions)
 
     const selection = computed(() => resolveRegionSelection(workingOptions.value, draftPath.value))
     const currentOptions = computed(() => regionOptionsAtLevel(workingOptions.value, draftPath.value, level.value))
@@ -146,9 +164,10 @@ export const VRegionPicker = defineComponent({
       value: draftPath.value[index],
     })))
     const showPlaceholder = computed(() => !isRegionLeaf(selection.value.option))
-    const isLoading = computed(() => props.loading || internalLoading.value)
+    const isLoading = computed(() => props.loading || (internalLoading.value && isLoadRelevant(retryContext.value)))
+    const loadFailed = computed(() => loadError.value !== undefined && isLoadRelevant(retryContext.value))
     const canConfirm = computed(() => {
-      if (draftPath.value.length === 0 || isLoading.value || loadError.value !== undefined) { return false }
+      if (draftPath.value.length === 0 || isLoading.value || loadFailed.value || !isRegionPathEnabled(workingOptions.value, draftPath.value)) { return false }
       return props.allowIntermediate || isRegionLeaf(selection.value.option)
     })
 
@@ -168,6 +187,8 @@ export const VRegionPicker = defineComponent({
     function choose(option: VaroRegionOption) {
       if (option.disabled || isLoading.value) { return }
       const next = [...draftPath.value.slice(0, level.value), option.value]
+      if (!isRegionPathEnabled(workingOptions.value, next)) { return }
+      hasDraft = true
       draftPath.value = next
       const result = resolveRegionSelection(workingOptions.value, next)
       emit('change', result)
@@ -185,6 +206,8 @@ export const VRegionPicker = defineComponent({
     function chooseShortcut(path: RegionValue[]) {
       if (isLoading.value) { return }
       const normalized = normalizeRegionPath(workingOptions.value, path)
+      if (!isRegionPathEnabled(workingOptions.value, normalized)) { return }
+      hasDraft = true
       draftPath.value = normalized
       const result = resolveRegionSelection(workingOptions.value, normalized)
       level.value = Math.max(0, normalized.length - (isRegionLeaf(result.option) ? 1 : 0))
@@ -253,7 +276,7 @@ export const VRegionPicker = defineComponent({
             ]),
             h('div', { 'class': 'varo-region-picker__options', 'role': 'listbox', 'aria-busy': isLoading.value || undefined }, isLoading.value
               ? h('p', { class: 'varo-region-picker__state', role: 'status' }, props.loadingText)
-              : loadError.value !== undefined
+              : loadFailed.value
                 ? h('div', { class: 'varo-region-picker__state', role: 'alert' }, [
                     h('p', props.errorText),
                     h('button', { class: 'varo-region-picker__retry', type: 'button', onClick: retry }, props.retryText),

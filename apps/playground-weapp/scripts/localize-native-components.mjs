@@ -4,9 +4,9 @@ import { dirname, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { postcss } from 'weapp-tailwindcss/core'
 import { importSpecifiers, rewriteModuleSpecifiers } from '../../../scripts/registry-artifacts.mjs'
+import { cssReferences, localCssReference, rewriteCssReferences } from './css-references.mjs'
 
 const componentExtensions = ['.js', '.json', '.wxml', '.wxss']
-const cssUrlPattern = /url\(\s*(?:"([^"]*)"\s*|'([^']*)'\s*|([^'")\s][^)]*)?)\)/g
 
 // The compiler emits native components at source-relative paths. Package their
 // compiled artifacts with their consumers without changing authored Registry source.
@@ -59,10 +59,14 @@ export async function localizeNativeComponents(outputRoot) {
     }
     else if (name.endsWith('.wxss')) {
       const css = postcss.parse(source.toString('utf8'), { from: name })
-      css.walkAtRules('import', (rule) => { const match = rule.params.match(/^(["'])(.+?)\1/); if (match) { add(match[2]) } })
-      css.walkDecls((declaration) => {
-        for (const match of declaration.value.matchAll(cssUrlPattern)) { add(match[1] ?? match[2] ?? match[3]?.trim() ?? '') }
-      })
+      const addCss = (value, importRule = false) => {
+        for (const reference of cssReferences(value, { importRule, from: name })) {
+          const local = localCssReference(reference.value)
+          if (local) { references.push(resolveReference(name, local.path)) }
+        }
+      }
+      css.walkAtRules(/^import$/i, rule => addCss(rule.params, true))
+      css.walkDecls(declaration => addCss(declaration.value))
     }
     artifactReferences.set(name, references)
   }
@@ -159,16 +163,13 @@ export async function localizeNativeComponents(outputRoot) {
       return Buffer.from(source.replace(/\bsrc\s*=\s*(["'])([^"']*)\1/g, (match, quote, value) => match.replace(`${quote}${value}${quote}`, `${quote}${reference(value)}${quote}`)))
     }
     const css = postcss.parse(source, { from: original })
-    css.walkAtRules('import', (rule) => {
-      rule.params = rule.params.replace(/^(["'])(.+?)\1/, (_match, quote, value) => `${quote}${reference(value)}${quote}`)
-    })
-    css.walkDecls((declaration) => {
-      declaration.value = declaration.value.replace(cssUrlPattern, (_match, doubleQuoted, singleQuoted, unquoted) => {
-        const quote = doubleQuoted !== undefined ? '"' : singleQuoted !== undefined ? '\'' : ''
-        const value = doubleQuoted ?? singleQuoted ?? unquoted?.trim() ?? ''
-        return `url(${quote}${reference(value)}${quote})`
-      })
-    })
+    const rewriteCss = (value, importRule = false) => rewriteCssReferences(
+      value,
+      cssReferences(value, { importRule, from: original }),
+      path => reference(path),
+    )
+    css.walkAtRules(/^import$/i, (rule) => { rule.params = rewriteCss(rule.params, true) })
+    css.walkDecls((declaration) => { declaration.value = rewriteCss(declaration.value) })
     return Buffer.from(css.toString())
   }
   // Resolve every path and reject conflicts before replacing any compiler output.
