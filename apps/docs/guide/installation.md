@@ -20,13 +20,11 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # 原生 Wevu 工程（二选一，不需要为渲染额外安装 Vue）
-pnpm add wevu@7.5.0 @varo-ui/weapp @varo-ui/theme
-pnpm add -D --save-exact weapp-vite@7.5.0
+pnpm add wevu @varo-ui/weapp @varo-ui/theme
+pnpm add -D weapp-vite
 # 仅在接入 Agent 事件流与 Markdown 时需要
 pnpm add @varo-ui/ai
 ```
-
-原生 `7.5.0` 工程还需完成下方的[编译器补丁配置](#compiler-patch)，npm 与 CLI 源码消费方式都适用。
 
 H5 从正式入口导入组件，并在应用入口加载样式：
 
@@ -138,34 +136,13 @@ await controller.connect(transport.source)
 ## 小程序构建链
 
 ```bash
-pnpm add -D --save-exact weapp-vite@7.5.0
-pnpm add -D weapp-tailwindcss tailwindcss
+pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
 原生 Registry 组件通过 `styleIsolation: apply-shared` 消费应用全局样式。`themes/base` 只含 tokens 与基础规则；普通组件 CSS 由各自 manifest 持有，Agent 的附加样式由可选 `themes/agent` 持有。`cn()` 使用 `@weapp-tailwindcss/merge`，不会引入浏览器版 `tailwind-merge` 的转义差异。
 
 `@varo-ui/cli` 只复制 Registry 文件并输出 `Dependencies:` / `Dev dependencies:`，不会安装 npm 包；每次执行 `add` 后都要安装它报告且工程尚未包含的依赖。必须把所有已安装 `src/styles/*.css` 按 `varo.css` 优先的顺序全局注册到 `app.vue`，不能只加载 base 或在组件局部导入这些文件。完整配置见 [Wevu Registry 一次性接入](/guide/shadcn-mode)。
-
-### 编译器补丁 {#compiler-patch}
-
-原版 `weapp-vite@7.5.0` 为带模板的 `app.vue` 和无脚本 Vue layout 输出不完整的组件注册，导致 plain-slot 父级上下文协议缺少处理方法。`@varo-ui/weapp` 随包提供对应补丁；必须在消费者工程根目录应用，依赖包内的 workspace 设置不会自动生效。
-
-仅使用 CLI 源码的工程先运行 `pnpm add -D @varo-ui/weapp` 获取补丁文件，不需要导入该包中的 UI 组件。
-
-```bash
-mkdir -p patches
-cp node_modules/@varo-ui/weapp/patches/weapp-vite@7.5.0.patch patches/
-```
-
-将以下配置合并到工程根目录的 `pnpm-workspace.yaml`，再运行 `pnpm install`：
-
-```yaml
-patchedDependencies:
-  weapp-vite@7.5.0: patches/weapp-vite@7.5.0.patch
-```
-
-提交补丁、workspace 配置和锁文件。此补丁仅适用于固定的 `7.5.0`；以后升级到已包含修复的上游版本时，应在验证 app-shell 与 Vue layout 的 slot 上下文后移除补丁。
 
 ## 在浏览器预览小程序产物
 

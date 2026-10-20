@@ -9,14 +9,11 @@ Complete this global stylesheet and Tailwind setup once per project. Do not repe
 ### Install Build And Style Dependencies
 
 ```bash
-pnpm add wevu@7.5.0 clsx @weapp-tailwindcss/merge
-pnpm add -D --save-exact weapp-vite@7.5.0
-pnpm add -D weapp-tailwindcss tailwindcss
+pnpm add wevu clsx @weapp-tailwindcss/merge
+pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 ```
 
 The CLI recursively copies Registry files and prints npm `Dependencies:` and `Dev dependencies:`, but it does not modify `package.json` or run a package manager. After every `add`, use `pnpm add` / `pnpm add -D` to install every reported package that is not already present. Depending on the selected components, the output can also include packages such as `@varo-ui/headless` and `@varo-ui/theme`. Native Registry source does not depend on a Vue renderer from `@varo-ui/weapp`; that package provides an alternative native source consumption path.
-
-The `7.5.0` app-shell and scriptless Vue layout paths also require the [consumer compiler patch](/en/guide/installation#compiler-patch). The CLI does not change package-manager configuration; follow those steps to copy the patch shipped by `@varo-ui/weapp` and reinstall dependencies.
 
 ### Create The Tailwind Stylesheet Entry
 

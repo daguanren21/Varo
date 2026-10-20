@@ -28,12 +28,6 @@ The following direct versions and SPDX license declarations were read from the s
 
 `pnpm-lock.yaml` fixes the resolved transitive graph for this export. The local pnpm policy retains the source baseline's `undici` 7.29.0 override and pins Vue 3.5.42. Before redistribution, inspect the installed dependency `LICENSE`/`NOTICE` files and the licenses for that exact graph, including bundled dependencies and native binaries. This table is a direct-dependency inventory, not an exhaustive legal audit or a claim that all transitive dependencies are MIT.
 
-### Compiler patch
-
-`weapp-vite` remains pinned to **7.5.0** and is patched by `pnpm-workspace.yaml` using the included `patches/weapp-vite@7.5.0.patch`. The exporter snapshots that file directly from Varo's canonical `packages/ui-weapp/patches/weapp-vite@7.5.0.patch` before resolving the lockfile; it records both source and exported SHA256 digests in `starter-manifest.json`. No separate starter patch is maintained.
-
-The patch fixes compiler registration for template-bearing `app.vue` shells and scriptless Vue layouts needed for plain native slot provider-context inheritance. That capability requires compiled Wevu components, the WeChat target and default attached setup; it does not certify other setup modes, platforms or device behavior. Keep the copied patch, workspace mapping and lockfile together. An upstream compiler upgrade must replace or remove this version-specific patch only after checking app-shell and layout provider/consumer behavior with the new compiler.
-
 ## Assets
 
 The exporter copies only statically reached assets from the native source and the retail tab icons. Product images currently originate under `apps/playground-weapp/src/assets/retail/`; tab icons originate under `apps/playground-weapp/src/assets/tabbar/`. Their exact copied paths and digests appear in the manifest. No remote image download or additional asset license grant happens during export.

@@ -4,7 +4,7 @@ An MIT, editable WeChat mini-program project exported from the current Varo nati
 
 ## Requirements and first run
 
-Use Node **22.18+ within Node 22, 24.11+ within Node 24, or 26+**, and **pnpm 11.24.0**. Node 25 is outside this repository's supported runtime policy. Compiler/runtime versions are pinned in `package.json` and listed in `DEPENDENCIES.md`. Install registry dependencies with network access:
+Use Node **22.18+ within Node 22, 24.11+ within Node 24, or 26+**, and **pnpm 11.24.0**. Node 25 is outside this repository's supported runtime policy. Compiler/runtime dependencies are listed in `DEPENDENCIES.md`. Install registry dependencies with network access:
 
 ```sh
 pnpm install --frozen-lockfile
@@ -13,8 +13,6 @@ pnpm verify
 ```
 
 The export already includes `pnpm-lock.yaml`; do not replace a frozen install with an unlocked install to hide a mismatch. Export preparation only resolves the lock and does not install dependencies or run dependency lifecycle scripts. Normal installation permits only the native build dependencies listed in `pnpm-workspace.yaml`. The workspace file includes this project alone and does not link back to Varo.
-
-The export includes `patches/weapp-vite@7.5.0.patch`, copied from Varo's canonical `packages/ui-weapp/patches/` source before lockfile generation. `pnpm-workspace.yaml` applies it to the pinned compiler during installation. This gives the standalone project the same compiler support for template-bearing app shells, scriptless Vue layouts and native slot provider context as the source workspace. Keep the patch, workspace configuration and lockfile together; see `DEPENDENCIES.md` before changing the compiler version.
 
 `pnpm build` invokes the native compiler, prepares both local DevTools configurations and runs the recursive verifier. `pnpm verify` checks the existing production output: registered retail pages, page/component `.js`/`.json`/`.wxml` files, component generics, tab assets, recursive WXSS imports, supported component selectors and generated Tailwind utilities. It is a real path/style check, not a placeholder. It does not certify device behavior.
 
@@ -53,8 +51,6 @@ src/
 scripts/
   prepare-devtools-project.mjs
   verify-devtools-project.mjs
-patches/
-  weapp-vite@7.5.0.patch          # Snapshot of the canonical public compiler patch
 starter-manifest.json
 pnpm-lock.yaml
 ```
@@ -69,7 +65,7 @@ Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data/as
 
 ## Version and integrity record
 
-`starter-manifest.json` records the source Git revision, relative canonical input paths and SHA256 digests, exported file SHA256 digests (including the lockfile and compiler patch), exporter Node/pnpm versions, exact direct dependency versions, page inventory and source transformations. The patch's source digest points to `packages/ui-weapp/patches/weapp-vite@7.5.0.patch`; the starter template does not maintain a second patch copy. The manifest excludes its own digest. HEAD alone is not a claim that uncommitted source changes are committed; use the source hashes to identify the actual snapshot.
+`starter-manifest.json` records the source Git revision, relative canonical input paths and SHA256 digests, exported file SHA256 digests (including the lockfile), exporter Node/pnpm versions, exact direct dependency versions, page inventory and source transformations. The manifest excludes its own digest. HEAD alone is not a claim that uncommitted source changes are committed; use the source hashes to identify the actual snapshot.
 
 The source projection is deterministic for the same inputs. Transitive registry dependencies are resolved when exporting; retain the resulting lockfile for reproducible frozen installs of this artifact. Re-exporting later may resolve a different transitive lock and therefore a different lockfile digest. The manifest describes export-time files; normal development edits intentionally change those hashes.
 

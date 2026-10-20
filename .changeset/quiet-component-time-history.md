@@ -20,7 +20,7 @@ Package subpackage-only native components with their actual consuming pages, pre
 
 Give native Markdown blocks and recursive children explicit stable list keys during streaming, replacing their identities when the source content is replaced. Reject native relocation file/directory conflicts before writes and retain components used by shared templates or styles.
 
-Patch weapp-vite 7.5.0 app-shell and scriptless or JSON-macro-only Vue layout generation to use compiled Wevu registration and preserve native slot-parent/provider ownership. Ship the version-specific patch in `@varo-ui/weapp` with consumer-root setup instructions, and verify it from fresh source and npm consumers.
+Patch weapp-vite 7.5.0 app-shell and scriptless or JSON-macro-only Vue layout generation to use compiled Wevu registration and preserve native slot-parent/provider ownership. Ship the version-specific patch in `@varo-ui/weapp` and verify it from fresh source and npm consumers.
 
 Wait for the committed post-approval assistant message and its rendered confirmation in the native runtime smoke, so an order-state update cannot end verification before the response stream finishes.
 

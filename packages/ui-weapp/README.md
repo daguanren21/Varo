@@ -5,31 +5,11 @@ Native Wevu `.vue` component source and a resolver for Varo mini-program project
 ## Install
 
 ```bash
-pnpm add @varo-ui/weapp wevu@7.5.0
-pnpm add -D --save-exact weapp-vite@7.5.0
+pnpm add @varo-ui/weapp wevu
+pnpm add -D weapp-vite
 ```
 
-The repository fixtures use `weapp-vite` and `wevu` 7.5.0. Both package peers remain `>=7.2.1 <8`; versions before 7.2.1 are outside the supported peer range.
-
-For provider-context inheritance through plain native slots (`scopedSlotsRequireProps: true`), use 7.5.0 **with the compiler patch below**, compiled Wevu components, the WeChat target, and default attached setup. The upstream 7.5.0 runtime implements the [plain-slot protocol](https://github.com/weapp-vite/weapp-vite/pull/1174), but its compiler emits incomplete registration for template-bearing `app.vue` shells and scriptless Vue layouts. The patch fixes those compiler owners. This does not certify created setup, uncompiled third-party components, other platforms, or device behavior.
-
-### Consumer compiler patch
-
-The package ships `patches/weapp-vite@7.5.0.patch`. Apply it in the **consumer project root**; workspace patches do not propagate through npm dependencies. Registry/CLI source consumers need the same compiler fix and can obtain the patch with `pnpm add -D @varo-ui/weapp`, without importing its UI source into their application.
-
-```bash
-mkdir -p patches
-cp node_modules/@varo-ui/weapp/patches/weapp-vite@7.5.0.patch patches/
-```
-
-Merge this entry into the consumer's `pnpm-workspace.yaml`:
-
-```yaml
-patchedDependencies:
-  weapp-vite@7.5.0: patches/weapp-vite@7.5.0.patch
-```
-
-Run `pnpm install` and commit the copied patch, workspace configuration, and updated lockfile. The compiler must remain pinned to `7.5.0` while using this version-specific patch. When an upstream release replaces it, remove the patch only after app-shell and Vue layout slot ownership pass the consumer runtime checks.
+The supported peer range for `weapp-vite` and `wevu` is `>=7.2.1 <8`.
 
 ## Usage
 
