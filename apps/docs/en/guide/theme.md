@@ -1,8 +1,8 @@
 # Theme
 
-Varo keeps theme ownership inside `@varo-ui/theme` so wrappers can remain token-driven.
+Varo manages themes in `@varo-ui/theme`; wrapper components use visual tokens.
 
-Registry styles are authored in `registry/themes/**/*` and owned by component manifests. `themes/base` contains only tokens and foundation rules; ordinary component CSS arrives with its dependency closure, while Agent units additionally require optional `themes/agent`. H5 installed source imports its CSS closure automatically. Native consumers must inject every `src/styles/*.css` globally into `app.vue`, with `varo.css` first, rather than loading only base or importing these files into component-local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). Native npm consumers globally load the complete `@varo-ui/weapp/style.css`.
+Registry styles live in `registry/themes/**/*`, with dependencies declared in component manifests. `themes/base` contains only tokens and foundation rules; component CSS installs with dependencies, and Agent units also require optional `themes/agent`. H5 source imports CSS automatically. Native projects must load all `src/styles/*.css` globally in `app.vue`, with `varo.css` first, never in component-local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). Native npm projects globally load the complete `@varo-ui/weapp/style.css`.
 
 ## H5
 
@@ -39,7 +39,7 @@ Theme seeds use `#RGB` or `#RRGGBB` so Varo can derive contrast-safe foregrounds
 
 ## Weapp build-time theme
 
-Use the Vite integration for a fixed app-wide brand theme. It appends the complete `page { --varo-ui-* }` contract to the configured app stylesheet.
+For a fixed app-wide brand theme, the Vite integration appends all `page { --varo-ui-* }` variables to the configured app stylesheet.
 
 ```ts
 import { resolve } from 'node:path'
@@ -90,7 +90,7 @@ const activeTheme = shallowRef(createTheme({
 </template>
 ```
 
-Replacing `activeTheme.value` recomputes the provider's inline CSS Variables, updating every Varo component in its subtree through CSS inheritance.
+Replacing `activeTheme.value` recalculates inline CSS variables; Varo components in the provider's subtree inherit the update.
 
 ## Dark mode
 
@@ -110,6 +110,6 @@ const darkTheme = createTheme({
 
 ## Principles
 
-- palette, semantic, and component tokens stay layered
-- wrappers consume tokens instead of hard-coding brand styles
-- H5 and Weapp share the variable contract while keeping target-specific integration
+- Maintain separate layers for palette, semantic, and component tokens
+- Use tokens in wrappers instead of hard-coding brand styles
+- Share the same variables between H5 and Weapp, with separate integration for each target

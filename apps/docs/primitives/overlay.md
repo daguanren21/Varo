@@ -1,10 +1,10 @@
 # Overlay
 
-遮罩基座：统一 visible、点击关闭、层级、持续时间与滚动锁定。
+管理遮罩的显示、点击关闭、层级、持续时间和滚动锁定。
 
 ## 运行时归属
 
-`useOverlayRoot` 来自 `@varo-ui/headless`，只管理中立状态。DOM 滚动锁定属于 H5 适配层，不由 headless 导出。本页 `OverlayRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`；原生端使用 Wevu SFC，标签页只展示源码/证据。
+`useOverlayRoot` 来自 `@varo-ui/headless`，只管理平台中立状态。本页 `OverlayRoot` 与交互示例来自 `@varo-ui/h5/primitives`，由 H5 适配层实现 DOM 滚动锁定；headless 不导出此功能。原生端使用 Wevu SFC，标签页仅展示源码和支持证据。
 
 ## 演示
 
@@ -22,5 +22,5 @@
 - 事件：`update:visible`、`visibleChange`、`close`、`click`。
 
 ::: info 平台差异
-H5 可锁定 `body`；原生端没有 `body`，需要由业务页面按宿主能力管理滚动，不能把共享 `lockScroll` 意图当作原生页面已锁定的证明。
+H5 可锁定 `body`。原生端没有 `body`，需由业务页面按宿主能力管理滚动；共享的 `lockScroll` 只表达锁定意图，不保证原生页面已锁定。
 :::

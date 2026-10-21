@@ -1,6 +1,6 @@
 # 跨运行时案例
 
-这里是 Varo 面向使用者的跨运行时展示页：先确认采用路径，再区分 H5 浏览器交互、原生源码/支持证据、编译产物浏览器预览与微信开发者工具快照。仓库内的 playground 仍是维护者 QA surface，不是公开安装入口；以上证据都不能替代真机验证。
+这里可操作 H5 组件、查看原生源码和运行截图。仓库内的 playground 用于维护者 QA，不是公开安装入口。
 
 ## 先选择采用路径
 
@@ -21,7 +21,7 @@
     <span>RUNTIME PACKAGE</span>
     <h3>集中式 H5 runtime</h3>
     <code>pnpm add @varo-ui/h5</code>
-    <p>在明确需要统一升级时消费已发布组件包。</p>
+    <p>需要统一升级组件时，使用已发布的 H5 组件包。</p>
   </article>
 </div>
 
@@ -29,17 +29,17 @@ Registry 是默认采用路径；从[安装指南](/guide/installation)开始，
 
 ## H5 Live 与原生源码证据
 
-H5 标签运行 `@varo-ui/h5` 的真实浏览器组件，可以直接操作。原生标签页只展示目标 Wevu SFC 源码与支持信息，不再用 Vue 组件渲染“等价小程序”，也不声称该页面执行了原生运行时。
+H5 标签运行可直接操作的 `@varo-ui/h5` 浏览器组件；原生标签只展示目标 Wevu SFC 源码与支持信息，不用 Vue 模拟小程序，也不运行原生运行时。
 
 <PlatformTabsDemo example="overview" locale="zh" />
 
 ## Weapp DevTools Verified：已编译 Blocks {#weapp-devtools-evidence}
 
-小程序图库的 **13 个 Block** 于 **2026-10-05** 在 **375px 微信开发者工具模拟器**中重新采集，来自 `weapp-vite` 构建并实际运行的页面；展示图片裁去系统栏和模拟器边缘。可查看[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[示例截图](../blocks/login-form.png)；点击卡片下方链接可打开完整尺寸图片。
+图库中的 **13 个 Block** 截图于 **2026-10-05** 在 **375px 微信开发者工具模拟器**中重新采集，来自 `weapp-vite` 构建并运行的页面，图片已裁去系统栏和模拟器边缘。可查看[采集脚本](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs)和[示例截图](../blocks/login-form.png)，或通过卡片下方链接打开原尺寸图片。
 
-六个双端 Block 的 H5 浏览器截图更新于 **2026-10-05**；选择 H5 会同时切换图片、安装命令与使用代码。截图只覆盖采集时的版本，不同目标的截图不互相充当运行证据。
+六个双端 Block 的 H5 截图也于同日更新。选择 H5 会同时切换图片、安装命令与使用代码。
 
-这些是注明日期的历史截图，不是本次源码切换的实时回归，也不认证六个实验性 profile 或真实设备。当前精确准入与编译检查范围见 [安装指南](/guide/installation#安装-profile-与支持边界)。
+截图只记录采集时的版本，不能作为当前源码的回归结果、其他目标的运行证据，或六个实验性 profile 与真机的认证。当前准入和编译检查范围见[安装指南](/guide/installation#安装-profile-与支持边界)。
 
 <MiniProgramBlocksGallery locale="zh" />
 

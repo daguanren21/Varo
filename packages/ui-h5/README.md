@@ -1,6 +1,6 @@
 # @varo-ui/h5
 
-Tree-shakeable Vue components for mobile H5 products, backed by Varo Headless contracts and theme tokens.
+Vue components for mobile H5 applications, with Varo Headless behavior and theme tokens.
 
 ## Install
 
@@ -15,7 +15,7 @@ import { VButton } from '@varo-ui/h5'
 import '@varo-ui/h5/style.css'
 ```
 
-Target render primitives are available from `@varo-ui/h5/primitives`. Components are emitted as preserved ESM modules so bundlers can remove unused components.
+Import H5 render primitives from `@varo-ui/h5/primitives`. The package preserves individual ESM modules so bundlers can remove components you do not use.
 
 ## Public entrypoints and source migration
 
@@ -26,7 +26,7 @@ Target render primitives are available from `@varo-ui/h5/primitives`. Components
 | `@varo-ui/h5/style.css`        | Built package stylesheet                               |
 | `@varo-ui/h5/source/style.css` | CSS-only source stylesheet                             |
 
-The TypeScript `@varo-ui/h5/source` export is removed: it exposed private workspace dependencies rather than a self-contained consumer entrypoint. Replace those imports with the root or `/primitives` entry above. The CSS-only `/source/style.css` path remains supported; it is not a TypeScript source API.
+The TypeScript `@varo-ui/h5/source` export was removed because it exposed private workspace dependencies. Replace those imports with the package root or `/primitives`. The CSS-only `/source/style.css` export remains available; it does not export TypeScript source.
 
 For editable renderers, install source instead:
 
@@ -34,15 +34,15 @@ For editable renderers, install source instead:
 pnpm dlx @varo-ui/cli add --target h5 button input card
 ```
 
-The CLI reports required npm dependencies; install them explicitly. Installed H5 source imports its complete dependency CSS closure. `themes/base` provides tokens/foundation only, ordinary component styles have manifest owners, and Agent styles are optional `themes/agent` dependencies. Do not replace the installed closure with just the base stylesheet.
+Install the npm dependencies reported by the CLI. H5 source imports the CSS for each component and its dependencies. `themes/base` supplies tokens and foundation styles, each component manifest declares its own styles, and Agent styles come from the optional `themes/agent` dependency. Keep all installed styles; the base stylesheet alone does not cover the components.
 
 ## Behavior and ownership
 
-- `@varo-ui/headless` owns neutral state and form contracts. H5 owns DOM rendering, focus, keyboard handling, and body-scroll locking. Migrate `useBodyScrollLock` imports from headless to `@varo-ui/h5/primitives`.
-- Form submit/failed handlers receive `SubmitPayload` from `@varo-ui/headless`, also exported as `FormSubmitPayload` by the H5 form API. The payload contains `values`, `errors`, and optional `event`; it is not the raw submit event. The shared event type is `unknown`; only H5 adapters may make DOM-specific claims.
-- Disabled/readonly inputs reject mutation. Accepted changes notify once; no-op changes do not notify. Drawer `openChange` is synchronously cancelable before state mutation, model updates, or close notifications.
-- Repository renderer sources live in `registry/components/**`, and canonical styles in `registry/themes/**`. `pnpm sync:registry` projects these into this package; edit the Registry owner, not generated files in `packages/ui-h5/src`.
+- `@varo-ui/headless` defines shared state and form interfaces. H5 handles DOM rendering, focus, keyboard input, and body-scroll locking. Move existing `useBodyScrollLock` imports from headless to `@varo-ui/h5/primitives`.
+- Form submit/failed handlers receive `SubmitPayload` from `@varo-ui/headless`, also exported as `FormSubmitPayload` by the H5 form API. It contains `values`, `errors`, and optional `event`, rather than the raw submit event. The shared event type is `unknown`; narrow it to a DOM event only in an H5 adapter.
+- Inputs reject edits while disabled or readonly. Accepted changes notify once; unchanged values do not notify. Cancel Drawer `openChange` synchronously to prevent the state change, model update, and close notification.
+- Edit component source in `registry/components/**` and styles in `registry/themes/**`. Run `pnpm sync:registry` to update the generated files in `packages/ui-h5/src`.
 
-Repository checks are `pnpm check:generated` and `pnpm check:architecture`; after synchronization and package builds, `pnpm check:consumers` exercises packed and source-installed H5 consumers. These commands are verification entrypoints, not a claim that a particular revision has passed independent verification.
+Run `pnpm check:generated` and `pnpm check:architecture` to check generated files and import boundaries. After synchronization and package builds, run `pnpm check:consumers` for packed and source-installed H5 consumers.
 
 [Component documentation](https://varo.weapp.dev/components/) · [Repository](https://github.com/daguanren21/Varo)

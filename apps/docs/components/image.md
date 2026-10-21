@@ -75,5 +75,5 @@
 | `error`   | 自定义失败占位 |
 
 ::: info Primitives
-`ImageRoot` 是 `@varo-ui/h5/primitives` 的 H5 Parts API；`@varo-ui/headless` 只承载共享状态契约。原生 `VImage` 来自 Registry 或 `@varo-ui/weapp` 的 Wevu SFC，由目标编译器处理，不是等价的 Vue Parts。
+H5 的 `ImageRoot` Parts API 由 `@varo-ui/h5/primitives` 提供；`@varo-ui/headless` 只提供共享状态契约。原生 `VImage` 是来自 Registry 或 `@varo-ui/weapp` 的 Wevu SFC，由目标编译器处理，与 Vue Parts 不等价。
 :::

@@ -18,7 +18,7 @@
 
 ## Events
 
-下表 `FocusEvent` 是 H5 契约，不表示原生 profile 已支持此组件或拥有浏览器焦点事件；原生准入以 Registry manifest 为准。
+下表的 `FocusEvent` 仅描述 H5 焦点事件，不适用于原生宿主。组件支持哪些原生 profile，以 Registry manifest 为准。
 
 | Event          | Payload      | 描述       |
 | -------------- | ------------ | ---------- |

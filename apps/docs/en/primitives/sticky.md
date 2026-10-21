@@ -1,10 +1,10 @@
 # Sticky
 
-Sticky foundation exposing fixed state, offset, and scroll information while wrappers own visuals.
+Exposes fixed state, offset, and scroll information. Wrappers handle styling.
 
 ## Runtime ownership
 
-This page's `StickyRoot` and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VSticky` SFC, not equivalent Vue Parts; the native tab shows source/evidence only. Each runtime owns its real scrolling source.
+This page's `StickyRoot` and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VSticky` SFC; there are no equivalent Vue Parts. The native tab shows source and support evidence only. Each runtime connects to its own scroll source.
 
 ## Demo
 
@@ -18,8 +18,8 @@ This page's `StickyRoot` and interactive example are H5-only, from `@varo-ui/h5/
 
 ## State and events
 
-- State：`offsetTop`, `zIndex`, `disabled`, and `data-fixed`
-- Events：`change` and `scroll`.
+- State: `offsetTop`, `zIndex`, `disabled`, and `data-fixed`
+- Events: `change` and `scroll`.
 
 ::: info Platform notes
 H5 observes window scroll; Weapp binds page or scroll-container state.

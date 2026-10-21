@@ -62,5 +62,5 @@
 | `default` | 吸顶内容，slot props 包含 `fixed` |
 
 ::: info Primitives
-`Sticky` 有滚动状态和事件，因此 H5 / Weapp 均提供 `StickyRoot` primitive；`Divider`、`Grid`、`Layout`、`Space` 是静态布局展示组件，直接在 UI 层实现。
+`Sticky` 的滚动状态和事件在 H5 由 `StickyRoot` 管理，原生端使用 Wevu Registry SFC。`Divider`、`Grid`、`Layout`、`Space` 是静态布局组件，直接在 UI 层实现。
 :::

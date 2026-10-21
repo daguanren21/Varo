@@ -1,6 +1,6 @@
 # AgentActivity
 
-统一展示推理、搜索、工具调用和执行轨迹。
+在同一列表中展示推理、搜索、工具调用和执行轨迹。
 
 ## 案例
 
@@ -40,7 +40,9 @@ const activity: AgentActivityItem[] = [
 </template>
 ```
 
-`id` 必须唯一且稳定；重排保留展开项。省略 `expandedIds` 时，`defaultExpandedIds` 只初始化一次，删除项目会清理内部记录。传入 `expandedIds`（包括空数组）后，组件仅发出下一组 id；父级拒绝更新时保持原样，删除项目也不会改写父级数组。H5 使用支持 Enter / Space 的原生按钮及 `aria-expanded` / `aria-controls`；原生点击发出同一数组。状态采用统一中文展示标签，额外的 `queued` / `cancelled` 分别显示“排队中” / “已取消”。这些状态仅用于展示，不执行任务或重试。
+`id` 必须唯一且稳定，重排后保持展开状态。省略 `expandedIds` 时，`defaultExpandedIds` 只初始化一次，删除项目会清理内部记录。传入 `expandedIds`（包括空数组）后，组件只发出下一组 id；父级不更新则界面不变，删除项目也不会改写父级数组。
+
+H5 使用支持 Enter / Space 的原生按钮及 `aria-expanded` / `aria-controls`；原生点击发出同一数组。状态使用统一的中文标签，额外的 `queued` / `cancelled` 分别显示“排队中” / “已取消”。这些状态仅用于展示，组件不会执行或重试任务。
 
 ## Props
 

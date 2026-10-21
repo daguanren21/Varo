@@ -1,6 +1,6 @@
 # Accordion
 
-Accordion runtime: Root supports single/multiple, Item provides a unique value, Trigger/Content form each entry.
+A composable accordion with single and multiple modes.
 
 ## Runtime
 
@@ -12,7 +12,7 @@ State contracts come from `@varo-ui/headless`. Parts and interactive examples on
 
 ## Basic usage
 
-The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
+The H5 panel provides interactive Parts and their code. The native tab shows source and support evidence, without a live mini-program preview.
 
 ## Multiple mode
 
@@ -20,43 +20,43 @@ With `type="multiple"`, value is an array; item values must stay unique.
 
 ## Parts
 
-| Part               | Purpose          |
-| ------------------ | ---------------- |
-| `AccordionRoot`    | Collection state |
-| `AccordionItem`    | One entry        |
-| `AccordionTrigger` | Entry title      |
-| `AccordionContent` | Entry body       |
+| Part               | Purpose                        |
+| ------------------ | ------------------------------ |
+| `AccordionRoot`    | Manages which entries are open |
+| `AccordionItem`    | One entry                      |
+| `AccordionTrigger` | Entry title                    |
+| `AccordionContent` | Entry body                     |
 
 ## Props
 
 ### AccordionRoot
 
-| Prop           | Type                              | Default                | Description                        |
-| -------------- | --------------------------------- | ---------------------- | ---------------------------------- |
-| `type`         | `'single' \| 'multiple'`          | implementation default | Single or multiple open            |
-| `value`        | `string \| string[] \| undefined` | `undefined`            | Controlled value                   |
-| `defaultValue` | `string \| string[]`              | `undefined`            | Uncontrolled initial value         |
-| `collapsible`  | `boolean`                         | `false`                | Allow all collapsed in single mode |
-| `disabled`     | `boolean`                         | `false`                | Disable whole root                 |
-| `id`           | `string`                          | `undefined`            | Association id                     |
+| Prop           | Type                              | Default                | Description                               |
+| -------------- | --------------------------------- | ---------------------- | ----------------------------------------- |
+| `type`         | `'single' \| 'multiple'`          | implementation default | Open one or multiple entries at a time    |
+| `value`        | `string \| string[] \| undefined` | `undefined`            | Controlled value                          |
+| `defaultValue` | `string \| string[]`              | `undefined`            | Uncontrolled initial value                |
+| `collapsible`  | `boolean`                         | `false`                | Allow all entries to close in single mode |
+| `disabled`     | `boolean`                         | `false`                | Disable the whole group                   |
+| `id`           | `string`                          | `undefined`            | Association id                            |
 
 ### AccordionItem
 
 | Prop       | Type      | Description       |
 | ---------- | --------- | ----------------- |
 | `value`    | `string`  | Unique item value |
-| `disabled` | `boolean` | Item disabled     |
+| `disabled` | `boolean` | Disable this item |
 
 ## Events
 
-| Event          | Payload              | Description     |
-| -------------- | -------------------- | --------------- |
-| `update:value` | `string \| string[]` | Controlled sync |
-| `valueChange`  | `string \| string[]` | Value change    |
+| Event          | Payload              | Description                  |
+| -------------- | -------------------- | ---------------------------- |
+| `update:value` | `string \| string[]` | Sync the controlled value    |
+| `valueChange`  | `string \| string[]` | Fires when the value changes |
 
 ## Accessibility
 
-- Item value associates Trigger/Content.
+- Each Item's value links its Trigger and Content.
 - Disabled items cannot expand.
 
 ::: info Platform notes

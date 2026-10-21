@@ -1,6 +1,6 @@
 # Agent Activity Block
 
-An installable combination of an activity timeline and task decisions. It composes `AgentActivity` with Varo `VButton` controls for start, approval, retry and cancellation intents. **The application owns data, eligibility, valid transitions, approval, execution, network and storage.** The Block never runs tasks, changes controlled state optimistically or presents a click as successful execution.
+Combines an activity timeline with task controls. `AgentActivity` displays activity, and Varo `VButton` controls request start, approval, retry, and cancellation. The application handles data, eligibility, valid transitions, approval, execution, networking, and storage. The Block neither runs tasks nor updates state optimistically; clicking does not indicate successful execution.
 
 ## Installation and dependency closure
 
@@ -10,7 +10,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/agent-activity
 pnpm dlx @varo-ui/cli add --target weapp blocks/agent-activity
 ```
 
-Install npm dependencies reported by the CLI separately. This item explicitly opts into `components/agent-advanced` and `components/button`, not the monolithic `components/agent-ui`. Activity remains owned by the optional advanced source unit; its types and renderer do not move into the basic conversation/presentation closure.
+Install npm dependencies listed by the CLI separately. This item depends on `components/agent-advanced` and `components/button`; it does not require the full `components/agent-ui` suite. Activity's types and renderer are provided by the optional advanced unit, outside the basic conversation/presentation units.
 
 | Installed source            | H5                                                                          | Native Wevu                                                                  |
 | --------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -20,7 +20,7 @@ Install npm dependencies reported by the CLI separately. This item explicitly op
 | Shared presentation types   | Existing advanced-owned `agent-ui/advanced-types.ts`                        | Same                                                                         |
 | Styles                      | Source imports advanced-owned CSS, Agent theme and button dependency styles | Activity's own SFC styles; load base/Agent/button dependency styles globally |
 
-The Block uses existing semantic tokens and utility classes, not a new stylesheet system. Native consumers load installed global CSS into `app.vue` through `weapp.styles`, with `varo.css` first. Do not import global styles into an `apply-shared` component's local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). The manifest admits `h5`/`weapp` only; this is not certification for other hosts or devices.
+The Block uses existing semantic tokens and utility classes. Native projects load installed global CSS into `app.vue` through `weapp.styles`, with `varo.css` first. Do not import global styles into an `apply-shared` component's local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). The manifest declares support for `h5`/`weapp` only; it does not establish support for other hosts or verify device behavior.
 
 ## Controlled inputs and events
 
@@ -29,14 +29,14 @@ import type { AgentActivityItem, AgentActivityStatus } from '@/components/agent-
 import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks/agent-activity-actions'
 ```
 
-`AgentActivityStatus` is `queued | running | waiting | failed | cancelled | completed`, a **presentation-only** type. `AgentActivityItem.status` uses it. Existing waiting/running/failed/completed callers remain valid; the core `AgentPartStatus` protocol is unchanged.
+`AgentActivityStatus` contains `queued | running | waiting | failed | cancelled | completed` and is used only for display. `AgentActivityItem.status` uses this type. Existing waiting/running/failed/completed callers remain valid; the core `AgentPartStatus` protocol is unchanged.
 
 `AgentActivityTask extends AgentActivityItem`, retaining `id`, `title`, `kind`, `detail?`, `duration?` and `status`, and adding only:
 
 - `actions?: readonly AgentActivityAction[]`: explicit application grants; absent or empty means no action is eligible.
 - `disabled?: boolean`: disables all actions on that item.
 
-IDs must be stable and unique. `items` is the only state owner; the Block keeps no local task copy.
+IDs must be stable and unique. The Block displays the state supplied in `items` without keeping a local task copy.
 
 | Prop        | Type                  | Default           | Meaning                                                                    |
 | ----------- | --------------------- | ----------------- | -------------------------------------------------------------------------- |
@@ -45,7 +45,7 @@ IDs must be stable and unique. `items` is the only state owner; the Block keeps 
 | `title`     | `string`              | `Task activity`   | Activity heading                                                           |
 | `emptyText` | `string`              | `No activity yet` | Empty-state copy                                                           |
 
-Each of `start`, `approve`, `retry` and `cancel` emits the **current prop `AgentActivityTask` at activation time**. Both renderers use a single payload, not a multi-argument event. Before emission the Block looks up the current item by ID and checks its current status, global and item disabled flags, and explicit grants. Removed, terminal, inapplicable or ineligible requests are rejected before emitting. There is no `update:items` event; rejecting an intent in the application leaves the UI unchanged.
+`start`, `approve`, `retry`, and `cancel` each emit the current `AgentActivityTask` from props as a single payload. Before emitting, the Block resolves the item by ID and checks status, global/item disabling, and action grants. Removed or terminal items and inapplicable or ungranted actions emit nothing. There is no `update:items` event; rejecting a request leaves the UI unchanged.
 
 ## State / action / transition table
 
@@ -58,11 +58,11 @@ Each of `start`, `approve`, `retry` and `cancel` emits the **current prop `Agent
 | `cancelled`   | Cancelled     | None                        | Terminal; mistakenly supplied grants cannot enable actions |
 | `completed`   | Completed     | None                        | Terminal; mistakenly supplied grants cannot enable actions |
 
-These transitions are **example application policy**, not a new transport protocol. The Block restricts which actions may be requested in the current state; it does not transition state itself. The application supplies running → waiting/failed/completed results. There is no simulated completion executor inside the Block. Applicable but ungranted buttons remain disabled; terminal rows show `No actions available`. Starting an already-running item, approving again, retrying a queued item or cancelling a terminal item is no longer an available action.
+The example application handles these transitions; they do not define a new transport protocol. The Block restricts available requests without changing state or simulating completion. The application supplies running → waiting/failed/completed results. Applicable but ungranted buttons stay disabled; terminal rows show `No actions available`. Running items cannot be started or approved again, queued items cannot be retried, and terminal items cannot be cancelled.
 
 ## Minimal local controlled example
 
-This example demonstrates local state only, with no service or executor. Production handlers must apply real authorization, approval and service policy and update `items` from actual results.
+This example demonstrates local state changes without a service or executor. In production, application handlers must check authorization, process approvals and service requests, and update `items` from actual results.
 
 ```vue
 <script setup lang="ts">
@@ -96,12 +96,12 @@ function acceptLocal(action: AgentActivityAction, requested: AgentActivityTask) 
 </template>
 ```
 
-For asynchronous requests, the application should immediately supply updated `disabled` / `actions` or task state while awaiting real results. The Block has no hidden request lock, automatic retry or success cache. UI eligibility is not server-side authorization.
+For asynchronous requests, immediately supply updated `disabled` / `actions` or task state and maintain those restrictions while awaiting results. The Block has no built-in request lock, automatic retry, or success cache. Its action checks do not replace server-side authorization.
 
 ## Interactive demo and verification boundary
 
-H5 playground `/?demo=activity` and native `pages/agent-activity-demo/index` use explicitly labelled deterministic local data. `Start Draft report` → `Require local approval` → `Approve Draft report` → `Mark local failure` → `Retry Draft report` → `Start Draft report` → `Mark local complete` exercises application-owned transitions; another running item can be cancelled.
+H5 playground `/?demo=activity` and native `pages/agent-activity-demo/index` use explicitly labelled deterministic local data. Follow `Start Draft report` → `Require local approval` → `Approve Draft report` → `Mark local failure` → `Retry Draft report` → `Start Draft report` → `Mark local complete` to see how the application controls the sequence. Another running item can be cancelled.
 
-`Restrict start` / `Allow start`, global disabling, per-item locking and terminal rows demonstrate eligibility from current props. `Reject next request` rejects the next otherwise legal intent in the application without an optimistic state change. `Clear activity` supplies a controlled empty array. Tests observe live labels, controls, results and request counts rather than copied source logic.
+`Restrict start` / `Allow start`, global disabling, per-item locking, and terminal rows show how current props affect available actions. `Reject next request` makes the application reject the next otherwise legal request, leaving state unchanged. `Clear activity` supplies a controlled empty array. Tests observe labels, controls, results, and request counts through live page interactions rather than copies of the source logic.
 
-E2E coverage is authored in `apps/e2e/tests/h5/activity.e2e.ts` and `apps/e2e/tests/weapp-native/activity.e2e.ts`. Native buttons depend on current Wevu plain-slot support. The known unreleased plain-slot protocol and host observation limitations remain explicit acceptance boundaries; fake text, DOM geometry or a successful compilation cannot replace real device evidence.
+E2E scenarios are in `apps/e2e/tests/h5/activity.e2e.ts` and `apps/e2e/tests/weapp-native/activity.e2e.ts`. Native buttons depend on the unreleased Wevu plain-slot protocol, and the host has observation limits. These remain verification limits; simulated text, DOM geometry, or compilation cannot replace real-device evidence.

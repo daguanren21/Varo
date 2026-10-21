@@ -128,7 +128,7 @@ SSR applications should configure each isolated application process during boots
 | `reset`        | `{ values, errors }` | Form reset                                                    |
 | `update:model` | `FormValues`         | Native controlled form requests replacement of the page model |
 
-`submit` / `failed` receive the named `SubmitPayload` exported by `@varo-ui/headless`. The component's `FormSubmitPayload` is an alias of that contract, not a raw DOM event or a type inferred through `ReturnType` of a concrete function:
+`submit` / `failed` receive the named `SubmitPayload` exported by `@varo-ui/headless`. The component's `FormSubmitPayload` aliases this type; it is neither a raw DOM event nor a type inferred through a concrete function's `ReturnType`:
 
 ```ts
 import type { SubmitPayload } from '@varo-ui/headless'

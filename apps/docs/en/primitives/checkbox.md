@@ -1,6 +1,6 @@
 # Checkbox
 
-Composable checkbox runtime: Root owns checked state; Indicator only renders when checked.
+A checkbox composed from Root and Indicator.
 
 ## Runtime
 
@@ -12,18 +12,18 @@ State contracts come from `@varo-ui/headless`. Parts and interactive examples on
 
 ## Basic usage
 
-The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
+The H5 panel provides interactive Parts and their code. The native tab shows source and support evidence, without a live mini-program preview.
 
 ## Disabled state
 
-When `disabled` is set, `checkedChange` no longer fires. Indicator may still reflect the current checked value, but interaction is closed.
+`disabled` prevents interaction and `checkedChange` events. Indicator can still show the current checked state.
 
 ## Parts
 
-| Part                | Purpose                         |
-| ------------------- | ------------------------------- |
-| `CheckboxRoot`      | State and toggle interaction    |
-| `CheckboxIndicator` | Indicator rendered when checked |
+| Part                | Purpose                                    |
+| ------------------- | ------------------------------------------ |
+| `CheckboxRoot`      | Manages checked state and handles toggling |
+| `CheckboxIndicator` | Indicator rendered when checked            |
 
 ## Props
 
@@ -36,19 +36,16 @@ When `disabled` is set, `checkedChange` no longer fires. Indicator may still ref
 
 ## Events
 
-| Event            | Payload   | Description                   |
-| ---------------- | --------- | ----------------------------- |
-| `update:checked` | `boolean` | Sync controlled checked state |
-| `checkedChange`  | `boolean` | Fires when checked changes    |
+| Event            | Payload   | Description                          |
+| ---------------- | --------- | ------------------------------------ |
+| `update:checked` | `boolean` | Sync the controlled checked state    |
+| `checkedChange`  | `boolean` | Fires when the checked state changes |
 
 ## Accessibility
 
-- Root defaults to button semantics for toggling.
-- Indicator is not the click target.
-- Disabled state must not emit checked changes.
+- Root defaults to a button for toggling; Indicator is not a click target.
 
 ::: info Platform notes
 
-- H5 can be previewed live in docs.
-- Mini-program keeps the same `v-model:checked` and part composition; focus details stay page-owned.
+- The `v-model:checked` and Parts composition shown here apply to H5. Native consumers use Registry Wevu SFCs, with focus managed by the page container.
   :::

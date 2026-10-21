@@ -1,6 +1,6 @@
 # Mobile Operations
 
-One editable mobile workspace for **CRM, AI Ops, Dev Ops, Agents, Analytics and Files**. H5 uses Vue; native Weapp uses Wevu. Domain-specific records, fields, labels, permissions and decisions are injected by the application. The Block does not route a domain label to a business API.
+An editable mobile workspace for CRM, AI Ops, Dev Ops, Agents, Analytics and Files. H5 uses Vue; native Weapp uses Wevu. Applications supply records, fields, labels and permissions, and make business decisions. The Block does not select APIs from domain labels.
 
 ## Install and composition
 
@@ -9,7 +9,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/mobile-operations
 pnpm dlx @varo-ui/cli add --target weapp blocks/mobile-operations
 ```
 
-The manifest admits stable `h5` and `weapp`, not experimental native profiles. Direct dependencies are Button and Input, plus their declared transitive utilities/styles. The CLI reports npm requirements; it does not install them.
+The manifest admits stable `h5` and `weapp`; experimental native profiles require separate admission. Direct dependencies are Button and Input, along with their declared utility and style dependencies. Install the npm requirements reported by the CLI separately.
 
 Installed source:
 
@@ -17,7 +17,7 @@ Installed source:
 - `src/components/blocks/mobile-operations-detail.vue`: detail fields and granted actions, composed by the workspace.
 - `src/components/blocks/mobile-operations-actions.ts`: portable types, constants and current-record eligibility helpers.
 
-Use the installed source, not imports into the repository Registry. Native consumers load the installed styles globally via `weapp.styles`; no H5 renderer or global CSS is imported into native component-local WXSS. There is no shared cross-platform rendering runtime.
+Import installed components, without referencing repository Registry source. Native applications load styles globally through `weapp.styles`; do not import global CSS into component-local WXSS or use the H5 renderer. Each target renders separately, with no shared rendering runtime.
 
 ## Controlled page contract
 
@@ -34,11 +34,11 @@ Use the installed source, not imports into the repository Registry. Native consu
 | `loading`, `busy`, `disabled`                 | Default false; preserve visible evidence and block mutations/navigation                    |
 | `error?: string`                              | Application load error; preserves existing rows/details but disables actions until cleared |
 
-The application performs search/filtering and slicing, supplies the filtered total and accepts or rejects emitted changes. **The Block never filters, fetches or silently slices `items`.** A page may contain fewer than `pageSize` rows, but cannot exceed the page size or the remaining declared total. An out-of-range page, invalid size/total, duplicate/empty record IDs, invalid revisions or duplicate/empty field/action IDs produces an explicit configuration error and no actionable list. This is bounded pagination, **not virtualization**.
+Applications search, filter and page data, supply totals and accept or reject events. The Block does not fetch, filter or trim `items`. A page can have fewer than `pageSize` rows, but cannot exceed that size or the remaining declared total. Invalid pages, sizes, totals or revisions, and empty or duplicate record/field/action IDs display a configuration error and prevent an actionable list. Pagination does not provide virtual scrolling.
 
-Apply filter changes and their page-1 result together. When page/filter/domain changes, the demo closes selection; callers choose their own policy but must only keep `selectedId` if that record is on the supplied page. If a selected record disappears or loses `canView`, detail shows an unavailable message with an operable close action. The component does not silently select another record.
+Supply new filters, page-1 data and the total together. The demo closes detail on domain, filter or page changes; applications may choose another policy, but `selectedId` must belong to the current page. If that record disappears or loses `canView`, detail displays an unavailable message with a working close button. It does not select another record.
 
-Required collections have empty native pre-binding defaults through explicit host property metadata. `filters` has an initialized empty object shape. Callers must still provide complete, well-typed props; malformed external data belongs at the application's validation boundary.
+Native host property metadata initializes required collections to empty arrays and `filters` to an empty object with all fields, preventing null access before parent binding. Applications must still validate external data and supply complete, correctly typed props.
 
 ## Record and action types
 
@@ -72,7 +72,7 @@ interface OperationAction {
 
 Use stable IDs, and increment the record's non-negative integer `revision` whenever its content or grants change. Field values are supplied display text, including units and provenance. Missing metrics are not converted into zero. Text wraps and the full detail is readable without hover.
 
-`allowed` is an explicit UI grant, **not authorization**. `completed` disables no-op requests. `reason` remains visible alongside a disabled action. Missing, disabled, busy, inaccessible or stale records cannot emit an accepted mutation; missing/forbidden/disabled/completed grants cannot either. Activation re-finds the record and action in **current props**, checks the captured revision and requires the action's ID and kind to still match. Selection is also guarded by ID and revision. No optimistic business success is reported.
+`allowed` controls UI permission without replacing authorization. `completed` blocks repeated actions; `reason` remains visible when disabled. Missing, disabled, busy, inaccessible or stale records cannot emit accepted mutations, nor can missing, forbidden, disabled or completed actions. Activation rechecks **current props**, the captured revision, action ID and kind so old objects cannot bypass new permissions. Detail selection also checks ID and revision. The Block does not report success before completion.
 
 ## One typed event
 
@@ -95,7 +95,7 @@ type OperationsIntent
 
 Same-value filters, current-page/current-selection requests, unavailable choices and out-of-bounds page requests are no-ops. Close remains available during loading, disabled, busy, errors and stale selection. Per-record `error` describes an application rejection and does not block an otherwise eligible corrective action; the application changes grants when an error is terminal.
 
-The portable exports `canViewOperation`, `canRequestOperation`, `operationFilterChanged` and `operationsPageError` can be reused in the application. Re-read your current authoritative record, authorization and business rules before mutating. For asynchronous work, re-check them after awaiting and before committing; set busy state while the decision is pending. The UI guard is not a server security boundary.
+Applications can reuse the pure exports `canViewOperation`, `canRequestOperation`, `operationFilterChanged` and `operationsPageError`. On receiving events, re-read authoritative records and check authorization and business rules. For asynchronous work, repeat checks after awaiting and before committing; set busy while pending. Servers must enforce security independently.
 
 Application composition uses the same prop/event shape on both targets:
 
@@ -108,11 +108,11 @@ Application composition uses the same prop/event shape on both targets:
 />
 ```
 
-Those bindings belong to the application: `handleIntent` accepts/rejects filters and paging, supplies detail selection, handles confirmation, performs real work and replaces records with incremented revisions. Domain services, storage, secrets, authentication, authorization, network cancellation and navigation are not implemented by the Block.
+The application maintains all bindings: `handleIntent` accepts or rejects filters and pages, selects detail, confirms and executes actions, then replaces records with incremented revisions. Applications provide services, storage, secrets, authentication, authorization, network cancellation and navigation.
 
 ### Files are host intents
 
-`open` and `download` contain only record/action identity and revision. There is no URL field, `<a>` navigation, implicit download, file picker or permission request. An application-provided host adapter resolves its own authorized handle/URL and exposes truthful pending, success and failure state. When no adapter exists, report that prerequisite rather than claiming a download.
+`open` and `download` carry record/action IDs and revision, without URL fields, `<a>` navigation, automatic downloads, file pickers or permission requests. The application's host adapter resolves authorized handles or URLs and reports actual pending, success or failure states. Report a missing adapter instead of download success.
 
 ## Six local application scenarios
 
@@ -129,7 +129,7 @@ Integrated entries: H5 `/?demo=operations`; native `/blocks-lab/operations/index
 
 Each scenario includes an archived read-only record, a forbidden action, status/category/search controls and an application-rejected review. Review decisions disable both repeated approval and rejection, and freeze local mutating tasks. Files preview remains host/application-owned. Removal is explicitly confirmed, checks the current revision/grant again and corrects pagination after deletion. Revoking a grant while a confirmation is open demonstrates stale-confirmation rejection without deleting a record.
 
-The state controls are labelled **injected presentation states**, not simulated network outcomes: loading, pending, disabled, error and invalid page size. Existing records remain visible when appropriate; close/cancel exits stay available. Empty state is reached by real filtering. Analytics numbers come from demo arrays; AI matches come from actual local string comparisons. Neither is service/model telemetry.
+State controls supply loading, pending, disabled, error and invalid-page-size states, not network results. Records remain visible where applicable, and close/cancel remain available. Filtering to zero results produces the empty state. Analytics uses local arrays and AI matches use string comparisons; neither is service/model telemetry.
 
 ## Verification and target limits
 
@@ -140,6 +140,6 @@ Matching authored suites:
 
 For each of six domains they exercise bounded first/last pages, archived/forbidden/no-op actions, task-specific visible results, approval, status/category/search filtering, empty results, application rejection, correction and reviewer rejection. Additional scenarios cover revoked grants, stale confirmation, confirmed deletion, loading/busy/disabled/error exits and page-size rejection. H5 captures each reviewed domain at 375px; a separate DevTools-only native scenario captures CRM detail where screenshots are supported. Tests interact with real controls and assert rendered record/detail changes, not page-method calls, `setData` or event counters.
 
-Authored scenarios are **not a claim that validation passed**. Integration must first generate the installed source, register the routes, then run the corresponding real suites and inspect screenshots. Native headless observation is not physical-device certification. WeChat DevTools evidence needs an authorized local AppID/project and supported DevTools runtime. Actual file opening/downloading requires a real host adapter and appropriate permissions; production CRM, evaluation, deployment, agent, analytics and persistence services remain external prerequisites.
+Written scenarios do not establish passing validation. Generate installed source, register routes, run suites and inspect screenshots. Native headless results do not establish device behavior. DevTools requires a supported runtime and authorized local AppID/project. Real file operations need a host adapter and permissions; production CRM, evaluation, deployment, agent, analytics and persistence services require separate integration.
 
-This is a one-column mobile list/detail/review workspace. It does not promise a desktop console, unbounded datasets, virtual scrolling, multi-column editing, arbitrary charts, background agents, deployment execution or cross-platform host file support.
+The workspace displays lists, details and review actions in a single mobile column. It does not guarantee support for a desktop console, unbounded datasets, virtual scrolling, multi-column editing, arbitrary charts, background agents, deployment execution or general file operations across hosts.

@@ -1,6 +1,6 @@
 # Collapsible
 
-单个展开区域运行时：Root 持有 open，Trigger 切换，Content 按状态显隐。
+组合 Root、Trigger 和 Content，控制单个区域的展开与收起。
 
 ## 运行时
 
@@ -12,43 +12,42 @@
 
 ## 基础用法
 
-上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
+H5 面板提供 Parts 交互与代码；原生标签页仅展示源码和支持证据，不提供实时小程序预览。
 
 ## 受控展开
 
-需要和路由/埋点同步时使用 `v-model:open`；高度动画放在 UI wrapper。
+需要与路由或埋点同步展开状态时，使用 `v-model:open`。高度动画由 UI 封装组件处理。
 
 ## Parts
 
-| Part                 | 作用       |
-| -------------------- | ---------- |
-| `CollapsibleRoot`    | open 状态  |
-| `CollapsibleTrigger` | 切换入口   |
-| `CollapsibleContent` | 可展开内容 |
+| Part                 | 作用           |
+| -------------------- | -------------- |
+| `CollapsibleRoot`    | 管理展开状态   |
+| `CollapsibleTrigger` | 切换展开与收起 |
+| `CollapsibleContent` | 可展开内容     |
 
 ## Props
 
-| Prop          | 类型                   | 默认值      | 描述         |
-| ------------- | ---------------------- | ----------- | ------------ |
-| `open`        | `boolean \| undefined` | `undefined` | 受控展开态   |
-| `defaultOpen` | `boolean`              | `false`     | 非受控初始态 |
-| `disabled`    | `boolean`              | `false`     | 禁用         |
-| `as`          | `string`               | `'div'`     | 根节点标签   |
+| Prop          | 类型                   | 默认值      | 描述               |
+| ------------- | ---------------------- | ----------- | ------------------ |
+| `open`        | `boolean \| undefined` | `undefined` | 受控展开态         |
+| `defaultOpen` | `boolean`              | `false`     | 非受控初始展开状态 |
+| `disabled`    | `boolean`              | `false`     | 禁止切换展开状态   |
+| `as`          | `string`               | `'div'`     | 根节点标签         |
 
 ## Events
 
-| Event         | Payload   | 描述       |
-| ------------- | --------- | ---------- |
-| `update:open` | `boolean` | 受控同步   |
-| `openChange`  | `boolean` | 展开态变化 |
+| Event         | Payload   | 描述               |
+| ------------- | --------- | ------------------ |
+| `update:open` | `boolean` | 同步受控展开状态   |
+| `openChange`  | `boolean` | 展开状态变化时触发 |
 
 ## 无障碍
 
-- Trigger 控制 open。
-- disabled 时不切换。
+- Trigger 切换展开状态；禁用时不能切换。
 
 ::: info 平台差异
 
-- 双端共享 open 契约。
-- 动画与过渡不进入 primitive。
+- 两端共用展开状态规则。
+- 动画与过渡由 primitive 之外的组件处理。
   :::

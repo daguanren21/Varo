@@ -1,6 +1,6 @@
 # @varo-ui/theme
 
-Token-driven themes and providers for Varo H5 and mini-program components.
+Theme tokens and providers for Varo H5 and mini-program components.
 
 ## Install
 
@@ -15,13 +15,13 @@ pnpm add @varo-ui/theme
 - `@varo-ui/theme/weapp-vite` is a build-time plugin, not a native component runtime.
 - Source subpaths `/source`, `/source/theme`, `/source/weapp`, and `/source/weapp-vite` remain declared exports. Native product code must use the native-safe branch, not the H5 root/provider.
 
-The theme engine resolves variables; it is not a monolithic component stylesheet. Registry `themes/base` owns only tokens and foundation rules. Each ordinary component manifest owns its CSS from `registry/themes/components/**`; optional Agent tokens/native helpers belong to `themes/agent`, which depends on the base.
+The theme engine resolves CSS variables. Component styles are installed separately: Registry `themes/base` contains tokens and foundation rules, component manifests declare CSS from `registry/themes/components/**`, and optional Agent tokens and native helpers come from `themes/agent`, which depends on the base.
 
-In the repository, edit `registry/themes/base/seed.json`, `foundation.css`, component CSS, or Agent token/helper sources, then run `pnpm sync:registry`. Base/Agent target CSS, package aggregate CSS, renderer style imports, and installed copies are generated. `pnpm check:generated` detects drift; do not patch a generated aggregate to fix a component style.
+To change repository styles, edit `registry/themes/base/seed.json`, `foundation.css`, component CSS, or Agent token/helper sources, then run `pnpm sync:registry`. This generates base and Agent CSS for each target, package stylesheets, renderer imports, and installed copies. Use `pnpm check:generated` to check for drift; fix component styles in their source files before regenerating.
 
 ## H5 application theme
 
-Use `VaroConfigProvider` when one theme owns the application-level CSS variables:
+Use `VaroConfigProvider` to apply one theme's CSS variables across the application:
 
 ```ts
 import { createTheme, VaroConfigProvider } from '@varo-ui/theme'
@@ -73,7 +73,7 @@ const sectionTheme = createTheme({
 
 ## Injection-only theme context
 
-`provideVaroTheme({ theme, overrides })` only provides the resolved theme for descendants that call `useVaroTheme()`. It does not bind CSS variables or render a themed wrapper, so it is not a replacement for `VaroConfigProvider` or `VaroThemeProvider` when components need visual theme variables.
+`provideVaroTheme({ theme, overrides })` makes the resolved theme available to descendants through `useVaroTheme()`. It neither binds CSS variables nor renders a wrapper. Use `VaroConfigProvider` or `VaroThemeProvider` when components also need those variables applied to the page.
 
 ## Weapp build-time theme
 
@@ -95,9 +95,9 @@ export default defineConfig({
 
 The plugin transforms source CSS before preprocessing and appends `page { --varo-ui-* }` declarations after native CSS emission, so styles loaded through native sidecars retain the configured theme overrides.
 
-This generates theme variables, not the complete component style closure. Use `weapp-vite`/`wevu` 7.5.0 for the repository baseline. For Registry source installs, configure `weapp.styles` to include **every installed `src/styles/*.css`** in `app.vue`, with `varo.css` first and your application overrides afterward. For npm-native components, put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and globally register `{ source: 'package.css', include: 'app.vue' }` instead; an absolute package path is not a supported `weapp.styles.source`.
+The plugin generates theme variables; you still need the component styles. Repository builds use `weapp-vite`/`wevu` 7.5.0. For Registry installations, configure `weapp.styles` to load every installed `src/styles/*.css` file in `app.vue`, starting with `varo.css` and ending with your application overrides. For native npm components, put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and register `{ source: 'package.css', include: 'app.vue' }` globally. `weapp.styles.source` does not accept an absolute package path.
 
-Do not import page/global CSS into component-local WXSS of `apply-shared` SFCs. H5 installed source imports its dependency CSS automatically; native source deliberately leaves global loading to the application. See the [native stylesheet configuration](../ui-weapp/README.md#global-npm-stylesheet) and repository `apps/platform-smoke/vite.config.mjs`.
+Keep page and global CSS out of component-local WXSS in `apply-shared` SFCs. H5 source imports dependency CSS automatically; native applications load it globally. See the [native stylesheet configuration](../ui-weapp/README.md#global-npm-stylesheet) and `apps/platform-smoke/vite.config.mjs`.
 
 ## Weapp runtime theme switching
 
@@ -134,6 +134,6 @@ const activeTheme = shallowRef(createTheme({
 
 Pass `mode: 'dark'` to generate the dark text, border, fill, background, shadow, and semantic soft-color scales.
 
-Theme support does not broaden platform admission. `h5` and `weapp` are stable install profiles; `alipay`, `tt`, `xhs`, and the three Donut profiles are experimental and require explicit manifest admission for the whole selected closure. In particular, a theme helper or provider example is not proof that an item is admitted on every native host. Compiler/artifact checks do not certify SDK packaging, signing, or device theme behavior.
+Check platform support for the components using the theme. `h5` and `weapp` are stable installation profiles. `alipay`, `tt`, `xhs`, and the three Donut profiles are experimental: each component and all its dependencies must declare support in their manifests. A theme helper or provider example alone does not establish that support. SDK packaging, signing, and device theme behavior need verification beyond compiler and artifact checks.
 
 [Theme documentation](https://varo.weapp.dev/guide/theme) · [Repository](https://github.com/daguanren21/Varo)

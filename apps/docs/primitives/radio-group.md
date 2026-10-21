@@ -1,6 +1,6 @@
 # Radio Group
 
-单选组运行时：Group 持有 value，Item 表达选项，Indicator 渲染选中标记。
+由 Group、Item 和 Indicator 组合的单选组。
 
 ## 运行时
 
@@ -12,19 +12,19 @@
 
 ## 基础用法
 
-上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
+H5 面板提供 Parts 交互与代码；原生标签页仅展示源码和支持证据，不提供实时小程序预览。
 
 ## 禁用选项
 
-在 `RadioItem` 上设置 `disabled`，可保留组级 value 契约的同时屏蔽单个选项。
+在 `RadioItem` 上设置 `disabled` 可禁用该选项，不影响组级 value 的使用方式。
 
 ## Parts
 
-| Part             | 作用                |
-| ---------------- | ------------------- |
-| `RadioGroup`     | 组级 value 与上下文 |
-| `RadioItem`      | 单个选项            |
-| `RadioIndicator` | 选中指示器          |
+| Part             | 作用                       |
+| ---------------- | -------------------------- |
+| `RadioGroup`     | 管理组级选中值并提供上下文 |
+| `RadioItem`      | 单个选项                   |
+| `RadioIndicator` | 选中指示器                 |
 
 ## Props
 
@@ -47,19 +47,18 @@
 
 ## Events
 
-| Event          | Payload            | 描述           |
-| -------------- | ------------------ | -------------- |
-| `update:value` | `string \| number` | 受控同步选中值 |
-| `valueChange`  | `string \| number` | 选中值变化     |
+| Event          | Payload            | 描述             |
+| -------------- | ------------------ | ---------------- |
+| `update:value` | `string \| number` | 同步受控选中值   |
+| `valueChange`  | `string \| number` | 选中值变化时触发 |
 
 ## 无障碍
 
-- 组级 value 决定当前选中项。
-- 禁用 Item 不可被选中。
-- Indicator 只反映状态。
+- 组级 value 决定选中项，Indicator 只显示该状态。
+- 禁用的 Item 不能被选中。
 
 ::: info 平台差异
 
-- H5 与小程序共用 value/disabled 契约。
-- 小程序侧键盘焦点由页面管理。
+- H5 与小程序共用 value/disabled 状态规则。
+- 小程序的键盘焦点由页面管理。
   :::

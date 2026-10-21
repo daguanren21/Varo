@@ -1,6 +1,6 @@
 # @varo-ui/weapp
 
-Native Wevu `.vue` component source and a resolver for Varo mini-program projects. The package root is a source entry for the `weapp-vite` compiler, **not** a Vue render-function library or a precompiled JavaScript runtime.
+Native Wevu `.vue` components and a resolver for Varo mini-program projects. The package exports source for the `weapp-vite` compiler; it contains neither Vue render functions nor a precompiled JavaScript runtime.
 
 ## Install
 
@@ -23,13 +23,13 @@ import { VButton } from '@varo-ui/weapp'
 </template>
 ```
 
-For a direct native source import, use the actual component filename:
+You can also import a component by filename:
 
 ```ts
 import VButton from '@varo-ui/weapp/components/v-button.vue'
 ```
 
-Both forms compile the native SFC. They are not drop-in imports for a browser Vue renderer or plain Node.js. The npm source tree is generated from the same Registry closure used by editable installations.
+Both imports require the native SFC compiler and cannot run directly in a browser Vue application or plain Node.js. The npm package and editable installations use the same Registry source and dependencies.
 
 ## Global npm stylesheet
 
@@ -59,9 +59,9 @@ export default defineConfig({
 })
 ```
 
-`weapp.styles.source` is resolved within the application source tree; do not give it an absolute `node_modules` path. The local CSS import lets the stylesheet resolver load the package aggregate. `@varo-ui/weapp/source/style.css` remains a CSS-only export of that same aggregate.
+`weapp.styles.source` resolves paths within the application source tree, so use the local file shown above, not an absolute `node_modules` path. Its CSS import loads the package stylesheet. The CSS-only export `@varo-ui/weapp/source/style.css` provides the same stylesheet.
 
-Do not import either stylesheet into component-local WXSS. Native `apply-shared` components receive page tokens and global component selectors from the application stylesheet.
+Native `apply-shared` components use page tokens and global component selectors from the application stylesheet. Keep both package stylesheets out of component-local WXSS.
 
 ## Editable Registry source
 
@@ -69,12 +69,12 @@ Do not import either stylesheet into component-local WXSS. Native `apply-shared`
 pnpm dlx @varo-ui/cli add --target weapp button input card
 ```
 
-Install the npm dependencies reported by the CLI. Source installation brings the selected transitive CSS closure into `src/styles/`: `varo.css` is tokens/foundation, ordinary component styles are separate, and Agent installs add `varo-agent.css`. Load **all installed CSS files globally**, with `varo.css` first. A base-only stylesheet is not enough.
+Install the npm dependencies reported by the CLI. Registry installation copies all required CSS into `src/styles/`: `varo.css` contains tokens and foundation styles, component styles have separate files, and Agent components add `varo-agent.css`. Load all installed CSS files globally, with `varo.css` first, to include both base and component styles.
 
 ## Editable Registry source resolver
 
-`VaroResolver` discovers only Varo SFCs already copied into the consumer project and lets
-`weapp-vite` compile them on demand. Unreferenced candidates stay out of production entries.
+`VaroResolver` finds Varo SFCs already installed in your project and passes them to
+`weapp-vite` for compilation when used. Unused components stay out of production entries.
 
 ```ts
 import { readdirSync } from 'node:fs'
@@ -108,7 +108,7 @@ install components; continue using `@varo-ui/cli add --target weapp` to copy edi
 
 `root` defaults to `process.cwd()`; the example supplies the config directory explicitly. Use `sourceRoot` and `componentsDir` if your local layout differs. Component candidates must remain inside the source root, and duplicate normalized names are rejected.
 
-The resolver does not select npm components or install missing source. Use either the npm aggregate stylesheet or your installed source closure as appropriate; do not import global CSS from each native SFC. Repository examples are `apps/platform-smoke/vite.config.mjs` and `apps/playground-weapp/vite.config.ts`.
+The resolver only uses local source files; it neither selects npm components nor installs missing files. Load the npm stylesheet for npm components, or all installed styles for Registry components. Keep global CSS out of individual native SFCs. See `apps/platform-smoke/vite.config.mjs` and `apps/playground-weapp/vite.config.ts` for repository examples.
 
 ## Migration from the former Vue Weapp renderer
 
@@ -121,7 +121,7 @@ The resolver does not select npm components or install missing source. Use eithe
 
 ## Profiles and evidence limits
 
-The `weapp` renderer serves `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos` install profiles. Only `weapp` is stable; the six additional profiles are experimental and require explicit admission throughout the selected manifest dependency closure. The representative admitted set is `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon` plus required utilities/themes. This is not certification of every npm export; use the CLI profile gate for source selection.
+The `weapp` renderer is used by the `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos` installation profiles. Only `weapp` is stable. For any of the six experimental profiles, every selected component and dependency must declare support in its manifest. Representative components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with their utilities and themes. Use the CLI to select supported source; this list does not certify every npm export.
 
 From the repository root:
 
@@ -133,6 +133,6 @@ pnpm --filter @varo/platform-smoke verify:alipay
 
 The first command builds/checks all seven native profiles. The latter two build/check one profile and recheck its existing artifacts, respectively. The IDE/artifact root is `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`; runtime files are inside its nested `dist/`.
 
-Donut uses the WeChat compiler (`weapp`) with distinct `mini-android`, `mini-ios`, or `mini-ohos` host metadata. Artifact checks validate reachable component files, target templates/event bindings, global styles, and host metadata, **not** SDK installation, native packaging, signing, simulator/device interactions, or independent release acceptance. The matching `open:<profile>` command requires your registered AppID and vendor tooling; it does not fabricate credentials. Browser glass-easel previews are trusted artifact tooling, not device proof or security isolation.
+Donut uses the WeChat compiler (`weapp`) and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. Artifact checks cover reachable component files, templates and event bindings, global styles, and host metadata. SDK installation, native packaging, signing, simulator and device checks, and independent release review need separate verification. To use `open:<profile>`, supply your registered AppID and vendor tools; the command does not generate credentials. Run only trusted artifacts in the glass-easel browser preview, which provides neither security isolation nor proof of device behavior.
 
 [Component documentation](https://varo.weapp.dev/components/) · [Repository](https://github.com/daguanren21/Varo)

@@ -12,7 +12,7 @@
 | `placeholder`    | `string`  | `'Search'`  | Placeholder                          |
 | `inputAriaLabel` | `string`  | `undefined` | Accessible name for the search input |
 | `actionText`     | `string`  | `''`        | Action button text                   |
-| `clearable`      | `boolean` | `true`      | Show clear affordance                |
+| `clearable`      | `boolean` | `true`      | Show a clear button                  |
 | `disabled`       | `boolean` | `false`     | Disable input                        |
 
 ## Events

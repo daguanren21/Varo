@@ -1,6 +1,6 @@
 # Checkbox
 
-可组合的复选框运行时：Root 持有 checked，Indicator 只负责选中时的渲染。
+由 Root 和 Indicator 组合的复选框。
 
 ## 运行时
 
@@ -12,18 +12,18 @@
 
 ## 基础用法
 
-上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
+H5 面板提供 Parts 交互与代码；原生标签页仅展示源码和支持证据，不提供实时小程序预览。
 
 ## 禁用态
 
-传入 `disabled` 后不再触发 `checkedChange`。Indicator 仍可根据当前 checked 渲染，但交互关闭。
+`disabled` 禁止交互，也不再触发 `checkedChange`；Indicator 仍可显示当前选中状态。
 
 ## Parts
 
-| Part                | 作用               |
-| ------------------- | ------------------ |
-| `CheckboxRoot`      | 状态与点击切换     |
-| `CheckboxIndicator` | 选中时渲染的指示器 |
+| Part                | 作用                       |
+| ------------------- | -------------------------- |
+| `CheckboxRoot`      | 管理选中状态，处理点击切换 |
+| `CheckboxIndicator` | 选中时渲染的指示器         |
 
 ## Props
 
@@ -36,19 +36,16 @@
 
 ## Events
 
-| Event            | Payload   | 描述           |
-| ---------------- | --------- | -------------- |
-| `update:checked` | `boolean` | 受控同步选中态 |
-| `checkedChange`  | `boolean` | 选中态变化     |
+| Event            | Payload   | 描述               |
+| ---------------- | --------- | ------------------ |
+| `update:checked` | `boolean` | 同步受控选中状态   |
+| `checkedChange`  | `boolean` | 选中状态变化时触发 |
 
 ## 无障碍
 
-- Root 默认以 button 语义承载切换。
-- Indicator 不单独承接点击。
-- disabled 时不应触发 checked 变化。
+- Root 默认使用 button 处理切换；Indicator 不单独处理点击。
 
 ::: info 平台差异
 
-- H5 可在文档中实时预览。
-- 小程序保持相同 `v-model:checked` 与 part 组合；焦点细节由页面容器处理。
+- 本页的 `v-model:checked` 与 Parts 组合用于 H5。原生端使用 Registry 中的 Wevu SFC，焦点由页面容器处理。
   :::

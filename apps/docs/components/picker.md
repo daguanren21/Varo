@@ -16,7 +16,7 @@
 | `title`           | `string`                             | `undefined` | 标题                             |
 | `confirmText`     | `string`                             | `'Confirm'` | 确认文案                         |
 | `cancelText`      | `string`                             | `'Cancel'`  | 取消文案                         |
-| `confirmDisabled` | `boolean`                            | `false`     | 领域约束额外禁用确认，不影响取消 |
+| `confirmDisabled` | `boolean`                            | `false`     | 根据业务约束禁用确认，取消仍可用 |
 
 ## Events
 

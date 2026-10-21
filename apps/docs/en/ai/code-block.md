@@ -1,6 +1,6 @@
 # AgentCodeBlock
 
-Code surface with stable streaming, line numbers, focused lines, and copy feedback.
+Code block with stable streaming, line numbers, focused lines, and copy feedback.
 
 ## Demo
 

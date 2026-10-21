@@ -104,15 +104,17 @@ Weapp cannot distinguish an omitted `value` from `:value="undefined"`; both use 
 
 ## Events
 
-| Event          | Payload                                          | Description                                |
-| -------------- | ------------------------------------------------ | ------------------------------------------ |
-| `update:value` | `string`                                         | Once per accepted actual value change      |
-| `valueChange`  | `string`                                         | Once for the same change as `update:value` |
-| `clear`        | H5: `MouseEvent`; native: host event (`unknown`) | Once after an accepted clear               |
-| `focus`        | H5: `FocusEvent`; native: host event (`unknown`) | Focus                                      |
-| `blur`         | H5: `FocusEvent`; native: host event (`unknown`) | Blur                                       |
+| Event          | Payload                                          | Description                                  |
+| -------------- | ------------------------------------------------ | -------------------------------------------- |
+| `update:value` | `string`                                         | Emitted once when a value change is accepted |
+| `valueChange`  | `string`                                         | Once for the same change as `update:value`   |
+| `clear`        | H5: `MouseEvent`; native: host event (`unknown`) | Once after an accepted clear                 |
+| `focus`        | H5: `FocusEvent`; native: host event (`unknown`) | Focus                                        |
+| `blur`         | H5: `FocusEvent`; native: host event (`unknown`) | Blur                                         |
 
-`disabled` / `readonly` reject value mutation through input, formatting, and clear. Unchanged formatted values, repeated equal values, and clearing an empty value emit no change events; an empty clear emits no `clear` either. In controlled mode, events are requests and the displayed value changes only when the parent updates `value`. Native events are not browser DOM objects; do not depend on `MouseEvent` / `FocusEvent` methods.
+`disabled` / `readonly` prevent input, formatting, and clearing from changing the value. Unchanged formatting, repeated values, and clearing an empty value emit no change events; clearing an empty value emits no `clear`. In controlled mode, events request a change; the parent must update `value` to change the display.
+
+Native events are not browser DOM objects; do not rely on `MouseEvent` / `FocusEvent` methods.
 
 ## Slots
 

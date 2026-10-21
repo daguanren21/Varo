@@ -14,9 +14,9 @@
 
 ## Clickable Ancestors
 
-Ancestor items emit `select` with their index and the full `item`. The last item is the current page and is not selectable.
+Clicking an ancestor item emits `select` with its index and the full `item`. The last item represents the current page and is not selectable.
 
-H5 renders ancestors with `href` as anchors. Weapp has no page-level `<a>`, so the same field is only forwarded on `select`; the page owns `wx.navigateTo` or routing.
+H5 renders ancestors with `href` as links. Weapp has no page-level `<a>`, so the field is passed with `select`; the page must call `wx.navigateTo` or a router to navigate.
 
 ```vue
 <script setup lang="ts">
@@ -40,13 +40,13 @@ const items = [
 | `label`     | `string`                          | `'Breadcrumb'` | Accessible nav label               |
 | `separator` | `string`                          | chevron icon   | Custom separator; defaults to icon |
 
-`BreadcrumbItem`: `{ label: string, href?: string, disabled?: boolean, value?: string }`. `href` becomes a link on H5 and is not auto-navigated on Weapp.
+`BreadcrumbItem`: `{ label: string, href?: string, disabled?: boolean, value?: string }`. `href` becomes a link on H5; Weapp does not navigate automatically.
 
 ## Events
 
-| Event    | Payload                                   | Description                   |
-| -------- | ----------------------------------------- | ----------------------------- |
-| `select` | `{ index: number, item: BreadcrumbItem }` | Fired for a non-current crumb |
+| Event    | Payload                                   | Description                              |
+| -------- | ----------------------------------------- | ---------------------------------------- |
+| `select` | `{ index: number, item: BreadcrumbItem }` | Emitted when an ancestor item is clicked |
 
 ## Slots
 

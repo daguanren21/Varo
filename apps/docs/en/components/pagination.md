@@ -22,7 +22,7 @@ const page = shallowRef(2)
 
 ## Large page counts and narrow screens
 
-Both renderers show at most five page positions, including ellipses, while retaining the first, last, and valid current page. Page 20 of 40 displays `1 … 20 … 40`; page 40 displays `1 … 38 39 40`. Ellipses are noninteractive and never enter the tab order. Previous and next controls remain visible; the default labels fit alongside the page window on a 320px page without horizontal scrolling.
+In normal mode, both H5 and native show at most five page positions, including ellipses, while retaining the first, last, and valid current page. Page 20 of 40 displays `1 … 20 … 40`; page 40 displays `1 … 38 39 40`. Ellipses are noninteractive and never enter the tab order. Previous and next controls remain visible; the default labels fit alongside the page numbers on a 320px page without horizontal scrolling.
 
 ```vue
 <VPagination v-model="page" :page-count="40" />

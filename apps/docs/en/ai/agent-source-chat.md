@@ -1,6 +1,6 @@
 # AgentSourceChat Block
 
-An installable knowledge-scoped conversation: show source availability and selected scope, then retrieval progress, source receipts, answer citations, and a ticket-escalation entry. It composes the existing `AgentChat`, `AgentComposerScope`, `AgentRetrievalProgress`, `AgentSourceReceipt`, and `AgentCitations`. It does not own a connection, retrieval, or ticket executor.
+Chat using selected sources, with source availability, scope, retrieval progress, receipts, answer citations, and ticket escalation. This Block combines `AgentChat`, `AgentComposerScope`, `AgentRetrievalProgress`, `AgentSourceReceipt`, and `AgentCitations`; the application handles connections, retrieval, and ticket creation.
 
 ## Installation
 
@@ -12,18 +12,18 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-source-chat
 
 Both targets install `src/components/blocks/agent-source-chat.vue` and the adjacent `agent-source-chat.types.ts`. Install the npm dependencies reported by the CLI separately.
 
-Direct Registry dependencies are `blocks/agent-chat`, `components/agent-workspace`, `components/agent-advanced`, `components/button`, and `utils/primitives`. Citations explicitly opt into `agent-advanced`; this does not install the monolithic `components/agent-ui` entry or expand the basic `agent-chat` conversation closure. Source types remain owned by `agent-workspace`, and citation types by `agent-advanced`. Transitive dependencies include the Agent theme, conversation, presentation, and required base controls. Use the install plan rather than copying dependency files manually.
+Direct dependencies are `blocks/agent-chat`, `components/agent-workspace`, `components/agent-advanced`, `components/button`, and `utils/primitives`. Citations use `agent-advanced`, without requiring the full `components/agent-ui` suite or adding conversation dependencies to basic `agent-chat`. Source types are in `agent-workspace`; citation types are in `agent-advanced`. The install plan includes the Agent theme, conversation, presentation, and required base controls. There is no need to copy dependencies manually.
 
-H5 installed source imports its full CSS dependency closure. For native, register every installed CSS file globally with `weapp.styles`, put `varo.css` first, and use `include: 'app.vue'`. Retain `styleIsolation: apply-shared`; do not import global CSS into component-local WXSS. See [Registry mode](/en/guide/shadcn-mode). Native code runs on `wevu`, not a Vue alias. The declared targets are only `h5` and `weapp`, not experimental-profile or device certification.
+H5 source imports the required CSS. For native, register all installed CSS globally with `weapp.styles`, put `varo.css` first, and use `include: 'app.vue'`. Retain `styleIsolation: apply-shared` and keep global CSS out of component-local WXSS; see [Registry mode](/en/guide/shadcn-mode). Native uses `wevu`, which a Vue alias cannot replace. Only `h5` and `weapp` are declared targets; experimental profiles and device behavior are not certified.
 
 ## Data and execution boundary
 
-- The application supplies `sources`, `retrieval`, `receipts`, `citations`, `messages`, response state, and ticket eligibility. The Block never treats a click as external execution success or optimistically mutates those arrays.
-- `AgentContextSource.status` remains `available | connecting | unavailable`. An omitted status means `available`, matching the existing component contract. Submission requires at least one enabled, available source. A connection intent does not authorize or enable a source automatically.
-- Retrieval keeps `AgentRetrievalItem` and its `queued | reading | read | skipped | failed` states. Receipts keep `AgentSourceReceiptItem` and `read | skipped | failed`. An empty result can be “read, zero items”; an out-of-scope result can be “skipped.” The application supplies truthful results and explanations; the Block does not infer them from message text.
-- `openCitation` carries the original `AgentCitationItem`. Its `url` is optional: an application-local document can be resolved by `id`. Supply only citations whose open intent the application can actually handle. The application owns authorization, URL safety, and host navigation. The Block does not call `window.open`, native navigation, or the network.
-- `createTicket` only requests escalation. Approval, deduplication, actual creation, results, and persistence are application-owned. Remove `ticket` or set `busy` after accepting the request so the same request is not still offered during processing.
-- There is no model, authentication, credential, server-side knowledge retrieval, ticket API, or storage implementation, and no fabricated success fallback.
+- The application supplies `sources`, `retrieval`, `receipts`, `citations`, `messages`, response state, and ticket eligibility. Clicking does not make the Block update these arrays or report that an external operation succeeded.
+- `AgentContextSource.status` uses `available | connecting | unavailable`; omission means `available`. Submission requires at least one enabled, available source. A connection request does not automatically authorize or enable a source.
+- Retrieval uses `AgentRetrievalItem` with `queued | reading | read | skipped | failed`; receipts use `AgentSourceReceiptItem` with `read | skipped | failed`. An empty result can be “read, zero items”; an out-of-scope result can be “skipped.” Supply actual results and reasons; the Block does not infer them from message text.
+- `openCitation` carries the original `AgentCitationItem`. Its `url` is optional; local documents can be resolved by `id`. The application must be able to open each supplied citation and handle authorization, URL safety, and host navigation. The Block does not call `window.open`, native navigation, or the network.
+- `createTicket` requests escalation. The application approves, deduplicates, creates the ticket, and stores the result. After accepting a request, remove `ticket` or set `busy` to prevent duplicate requests during processing.
+- The application must provide any model, authentication, credentials, server-side retrieval, ticket API, or storage. The component does not simulate successful results.
 
 ## Minimal controlled example
 
@@ -122,7 +122,7 @@ export interface AgentSourceChatTicketIntent {
 }
 ```
 
-These are Block presentation/escalation types, not an expansion of core `AgentPartStatus`. The ticket `reason` must match the current `responseState`, and `question.trim()` must be nonempty. `sourceIds` records the application's request scope; the Block does not reinterpret it as authorization.
+These types describe Block display and escalation, without changing core `AgentPartStatus`. The ticket `reason` must match `responseState`, and `question.trim()` must be nonempty. `sourceIds` records the application's request scope; the Block does not infer authorization from it.
 
 ## Events and guards
 
@@ -141,7 +141,7 @@ These are Block presentation/escalation types, not an expansion of core `AgentPa
 | `stop`              | None                                                 | Busy only; application cancels its real task/producer                                         |
 | `close`             | None                                                 | Application closes the slice and cancels work as appropriate                                  |
 
-The Block looks list items up by id in current props before checking eligibility, rather than forwarding a replaced stale object. `stop` and `close` retain Chat's cancellation/exit escape: **they remain available even when `disabled`**, so an active task cannot trap the user. Disabling or becoming busy leaves receipts and citations visible and disables their actions. Retrieval items and statuses are preserved rather than rewritten as success or non-retryable.
+The Block resolves items by id from current props and checks eligibility before emitting, so replaced objects are not forwarded. Chat's `stop` and `close` events remain available when `disabled`. Busy or disabled controls leave receipts, citations, and retrieval states visible; retrieval items are not changed to successful or non-retryable states.
 
 Omitting `modelValue` differs from passing `''`. Native uses `type: null, value: null` metadata and nullish presence checks. Submission does not clear an uncontrolled draft. Use `v-model` for application acceptance/rejection of updates, external clearing, or conversation-specific drafts. Native allows editing the next draft while busy but blocks submission; H5 retains the existing `AgentChat` behavior of disabling editing while busy.
 
@@ -152,4 +152,4 @@ Omitting `modelValue` differs from passing `''`. Native uses `type: null, value:
 - Manual flow: change source availability → request and manually finish a **demo** connection → explicitly enable its scope → ask a question → queued/reading → success, failure, empty, or out-of-scope → open the local cited original or request escalation.
 - Disabled actions preserve evidence. After escalation, the application removes the eligibility object and prevents another request. Switching to uncontrolled input demonstrates a local draft versus a controlled empty string.
 
-Real E2E scenarios live in `apps/e2e/tests/h5/source-chat.e2e.ts` and `apps/e2e/tests/weapp-native/source-chat.e2e.ts`. They operate real controls and inspect page state, without calling private component methods or using `setData` to simulate input. Native assertions cover native text, receipt/citation controls, and the local document preview; **they do not claim headless observation of Chat's rich-text message body**. The unreleased Wevu plain-slot protocol and real-host observation limits still require independent acceptance. No context bridge, fake geometry, or copied message text is used to bypass them.
+E2E scenarios in `apps/e2e/tests/h5/source-chat.e2e.ts` and `apps/e2e/tests/weapp-native/source-chat.e2e.ts` operate real controls and inspect page state, without private methods or `setData` input simulation. Native assertions cover text, receipt/citation controls, and local document previews; they do not establish headless access to Chat's rich-text body. The unreleased Wevu plain-slot protocol and host observation limits still require independent acceptance. Tests do not bypass them with context bridges, simulated geometry, or copied message text.

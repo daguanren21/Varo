@@ -20,7 +20,7 @@ import { AgentThinking } from '@/components/agent-ui'
 
 ## Expand individual steps
 
-By default, `open` / `defaultOpen` still controls the whole group and every detail is visible when the group opens. Set `expandable` to make rows with `detail` (preferred) or `content` independent disclosure buttons. Rows without details remain static. Row expansion does not change the group state.
+`open` / `defaultOpen` controls the whole group; by default, all details show when it opens. Set `expandable` to make rows with `detail` (preferred) or `content` individually expandable. Rows without details stay static. Row expansion does not change the group state.
 
 ```vue
 <script setup lang="ts">
@@ -40,7 +40,7 @@ const steps: AgentTraceStep[] = [
 </template>
 ```
 
-Use unique, stable ids. Reordering preserves expansion. Uncontrolled state starts from `defaultExpandedIds`; removing a step prunes its internal id, so readding it leaves it closed. Supplying `expandedIds`, including `[]`, makes the parent the state owner: the component emits proposed ids and waits for acceptance. It never prunes the parent's array. H5 uses native buttons with Enter / Space activation, `aria-expanded`, and `aria-controls`; native taps emit the same array. Expandable rows display the canonical Chinese status labels: 等待中 (waiting), 进行中 (running), 已完成 (completed), and 失败 (failed).
+Use unique, stable ids to preserve expansion when reordering. Uncontrolled state starts from `defaultExpandedIds`; removing a step clears its expansion record, so it stays closed when readded. With `expandedIds`, including `[]`, the component emits the next ids and waits for the parent to update them. It never removes ids from the parent's array. H5 native buttons support Enter / Space, `aria-expanded`, and `aria-controls`; native taps emit the same array. Expandable rows use the standard Chinese status labels: 等待中 (waiting), 进行中 (running), 已完成 (completed), and 失败 (failed).
 
 ## Props
 

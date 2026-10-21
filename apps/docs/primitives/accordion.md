@@ -1,6 +1,6 @@
 # Accordion
 
-手风琴运行时：Root 支持 single/multiple，Item 提供唯一 value，Trigger/Content 组成条目。
+支持 single/multiple 模式的可组合手风琴。
 
 ## 运行时
 
@@ -12,33 +12,33 @@
 
 ## 基础用法
 
-上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
+H5 面板提供 Parts 交互与代码；原生标签页仅展示源码和支持证据，不提供实时小程序预览。
 
 ## multiple 模式
 
-`type="multiple"` 时 value 为数组；Item value 必须唯一。
+设置 `type="multiple"` 时，value 为数组；每个 Item 的 value 必须唯一。
 
 ## Parts
 
-| Part               | 作用     |
-| ------------------ | -------- |
-| `AccordionRoot`    | 集合状态 |
-| `AccordionItem`    | 单个条目 |
-| `AccordionTrigger` | 条目标题 |
-| `AccordionContent` | 条目内容 |
+| Part               | 作用             |
+| ------------------ | ---------------- |
+| `AccordionRoot`    | 管理整组展开状态 |
+| `AccordionItem`    | 单个条目         |
+| `AccordionTrigger` | 条目标题         |
+| `AccordionContent` | 条目内容         |
 
 ## Props
 
 ### AccordionRoot
 
-| Prop           | 类型                              | 默认值      | 描述                    |
-| -------------- | --------------------------------- | ----------- | ----------------------- |
-| `type`         | `'single' \| 'multiple'`          | 实现默认    | 单开/多开               |
-| `value`        | `string \| string[] \| undefined` | `undefined` | 受控值                  |
-| `defaultValue` | `string \| string[]`              | `undefined` | 非受控初始值            |
-| `collapsible`  | `boolean`                         | `false`     | single 下是否可全部折叠 |
-| `disabled`     | `boolean`                         | `false`     | 整组禁用                |
-| `id`           | `string`                          | `undefined` | 关联 id                 |
+| Prop           | 类型                              | 默认值      | 描述                              |
+| -------------- | --------------------------------- | ----------- | --------------------------------- |
+| `type`         | `'single' \| 'multiple'`          | 实现默认    | 一次展开一个或多个条目            |
+| `value`        | `string \| string[] \| undefined` | `undefined` | 受控值                            |
+| `defaultValue` | `string \| string[]`              | `undefined` | 非受控初始值                      |
+| `collapsible`  | `boolean`                         | `false`     | single 模式下是否允许收起所有条目 |
+| `disabled`     | `boolean`                         | `false`     | 整组禁用                          |
+| `id`           | `string`                          | `undefined` | 关联 id                           |
 
 ### AccordionItem
 
@@ -49,18 +49,18 @@
 
 ## Events
 
-| Event          | Payload              | 描述     |
-| -------------- | -------------------- | -------- |
-| `update:value` | `string \| string[]` | 受控同步 |
-| `valueChange`  | `string \| string[]` | 值变化   |
+| Event          | Payload              | 描述         |
+| -------------- | -------------------- | ------------ |
+| `update:value` | `string \| string[]` | 同步受控值   |
+| `valueChange`  | `string \| string[]` | 值变化时触发 |
 
 ## 无障碍
 
-- Item value 关联 Trigger/Content。
-- disabled item 不可展开。
+- Item 的 value 用于关联 Trigger 和 Content。
+- 禁用的 Item 不能展开。
 
 ::: info 平台差异
 
-- 双端共享 single/multiple 契约。
-- 动画与图标属于 UI wrapper。
+- 两端共用 single/multiple 状态规则。
+- 动画与图标由 UI 封装组件提供。
   :::

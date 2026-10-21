@@ -1,6 +1,6 @@
 # TimeField
 
-`VTimeField` composes [Picker](/en/components/picker) into hour and minute columns. Values use strict 24-hour `HH:mm` strings. Seconds, time zones, and 12-hour conversion are outside this component's API.
+`VTimeField` uses [Picker](/en/components/picker) to select hours and minutes. Values use strict 24-hour `HH:mm` strings. The component does not support seconds, time zones, or 12-hour conversion.
 
 ## Basic usage
 
@@ -34,7 +34,7 @@ The parent owns both `value` and `visible`. Activating the field requests `updat
 
 Bounds are inclusive. `min="22:30" max="02:15"` permits `22:30–23:59` and `00:00–02:15`, wrapping across midnight. Equal bounds permit only that minute. `minuteStep` must be an integer from `1` to `59`, defaulting to `1`. Steps restart at `00` every hour: `15` offers `00/15/30/45`, and `7` offers `00/07/14/21/28/35/42/49/56`. Invalid steps or malformed bounds throw `RangeError`.
 
-An invalid, out-of-range, or off-step external value stays visible exactly as supplied. Mounting and opening never emit a correction. The picker resolves a legal draft by keeping a valid complete value, then trying the first available minute of the supplied hour, then the first available time of day. Only explicit confirmation commits that candidate. Changing hours re-evaluates the minute options; confirmation also validates the complete time.
+An invalid, out-of-range, or off-step external value stays visible exactly as supplied. Mounting and opening never emit a correction. For the draft, the picker keeps a valid complete value if possible, then tries the first available minute of the supplied hour, then the first available time of day. Only explicit confirmation submits that candidate. Changing hours recalculates the minute options; confirmation also validates the complete time.
 
 For example, `min="10:01" max="10:14" :minute-step="15"` has no available candidate and disables confirmation. A disabled or read-only field cannot open, edit, or clear. Even when a parent forces `visible=true`, its options and confirmation remain disabled; cancel can still request closure.
 

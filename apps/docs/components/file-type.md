@@ -1,6 +1,6 @@
 # FileType 文件类型
 
-`VFileType` 是独立、无状态的文件类型展示组件。它根据文件名与 MIME 展示文件图形和简短类型标记，不读取文件、请求 URL、检测文件内容或决定上传权限。
+`VFileType` 是独立、无状态的文件类型展示组件，根据文件名与 MIME 显示图标和简短的类型标签。它不读取文件、请求 URL、检测文件内容或决定是否允许上传。
 
 ## 基础用法
 
@@ -50,7 +50,7 @@ import VFileType from '@/components/ui/v-file-type.vue'
 
 ## 支持范围
 
-这是有限的展示分类表，不是任意文件格式识别器。
+组件按已支持的文件名、扩展名和 MIME 展示类型，无法识别任意文件格式。
 
 | 类别     | 支持的扩展名或文件名                                                                                                                                           |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -93,10 +93,10 @@ classifyFileType('download', 'image/png')
 | `label`      | `string`               | 自动类型描述 | 独立图标的可访问名称，可本地化  |
 | `className`  | `ClassValue`           | —            | 原生附加样式类；H5 使用 `class` |
 
-组件没有事件或可变内部状态。`data-family` 和 `data-size` 暴露展示状态。
+组件不发送事件。`data-family` 和 `data-size` 表示展示状态。
 
 ## 附件与演示
 
-[AgentAttachmentList](/ai/attachments) 在没有 `previewUrl` 时使用装饰性的 `VFileType`；预览图始终优先。`remove` 仍返回原始附件，由应用接受移除操作。
+[AgentAttachmentList](/ai/attachments) 在没有 `previewUrl` 时使用装饰性的 `VFileType`；预览图始终优先。`remove` 返回原始附件，由应用决定是否接受移除操作。
 
 H5 Playground 的 `?demo=file-type` 与原生 `component-lab/file-type/index` 展示常见格式、特殊文件名、未知格式、长文件名、独立图标、预览切换、移除与恢复。分类不会改变上传白名单、大小限制或服务器验证。

@@ -39,15 +39,15 @@ pnpm --filter @varo/e2e exec playwright-core install chromium
 pnpm check:full
 ```
 
-`check:full` runs projection and architecture checks, then repoctl's lint/typecheck/unit/build plan, fresh-build structural contracts, runner failure/cancellation checks, real browser and native headless E2E, isolated consumers, and native compiler artifacts. Repoctl 5.5 does not include the additional Varo gates itself; `pnpm exec repo check --full` alone is not release verification. The current lint tasks remain placeholders, not substantive source linting.
+`check:full` runs projection and architecture checks, repoctl's lint/typecheck/unit/build plan, fresh-build contracts, runner failure/cancellation checks, browser and native headless E2E, isolated consumers, and native artifact checks. Use it for releases: `pnpm exec repo check --full` omits the additional Varo checks in repoctl 5.5. Lint tasks are currently placeholders.
 
-Real E2E uses no model or retry and writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json` plus framework artifacts. A failing or blocked run stays nonzero; do not substitute an earlier report. Structural checks are `pnpm test:contracts`, not runtime E2E. CI installs Chromium with `--with-deps` before running the same runtime suites.
+E2E runs without models or retries and writes a new `apps/e2e/.e2e/runs/<run-id>/run.json` plus framework artifacts. Failed or blocked runs return nonzero; keep the report from that run. `pnpm test:contracts` covers structure, not runtime behavior. CI installs Chromium with `--with-deps` for the runtime suites.
 
-The H5/preview `app.command` resolves each playground's installed Vite CLI and launches it with the current Node executable. Dependencies must be installed beforehand; app startup does not invoke a package manager or install hooks. Do not run installs or builds concurrently with real E2E: rebuilding shared runtime modules can invalidate active browser sessions.
+H5/preview `app.command` launches the playground's installed Vite CLI with the current Node executable. Install dependencies first; startup runs no package manager or install hooks. Avoid installs or builds during E2E, since rebuilding shared runtime modules can invalidate browser sessions.
 
-DevTools scenarios use `pnpm test:e2e:devtools` separately and require an authenticated WeChat DevTools automation endpoint and a registered local AppID. Browser glass-easel preview, headless interaction checks, compiler artifacts, and DevTools execution are distinct evidence; none certifies a physical device.
+Run `pnpm test:e2e:devtools` separately with an authenticated WeChat DevTools automation endpoint and registered local AppID. Browser preview, headless tests, compiler checks, and DevTools runs each cover different behavior; physical devices need separate checks.
 
-The three compiler-backed CLI consumer tests run real `vue-tsc` processes with a 30-second subprocess timeout and a 60-second test limit for installation and assertions. These are integration bounds, not a five-second compiler performance requirement. Compiler errors still fail the tests; ordinary unit-test timeouts are unchanged.
+The three CLI consumer tests allow 30 seconds for each `vue-tsc` process and 60 seconds per test, including installation and assertions. Compiler errors fail the tests. Ordinary unit-test timeouts are unchanged.
 
 ### 3. Record and apply the release intent
 

@@ -1,6 +1,6 @@
 # Collapsible
 
-Single disclosure runtime: Root owns open, Trigger toggles, Content shows by state.
+Compose Root, Trigger, and Content to show or hide a single area.
 
 ## Runtime
 
@@ -12,40 +12,39 @@ State contracts come from `@varo-ui/headless`. Parts and interactive examples on
 
 ## Basic usage
 
-The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
+The H5 panel provides interactive Parts and their code. The native tab shows source and support evidence, without a live mini-program preview.
 
 ## Controlled open
 
-Use `v-model:open` when routing/analytics need ownership; height animation stays in UI wrappers.
+Use `v-model:open` to synchronize the open state with routing or analytics. Handle height animation in a UI wrapper.
 
 ## Parts
 
-| Part                 | Purpose            |
-| -------------------- | ------------------ |
-| `CollapsibleRoot`    | Open state         |
-| `CollapsibleTrigger` | Toggle entry       |
-| `CollapsibleContent` | Expandable content |
+| Part                 | Purpose                            |
+| -------------------- | ---------------------------------- |
+| `CollapsibleRoot`    | Manages open state                 |
+| `CollapsibleTrigger` | Toggles the content open or closed |
+| `CollapsibleContent` | Expandable content                 |
 
 ## Props
 
-| Prop          | Type                   | Default     | Description                |
-| ------------- | ---------------------- | ----------- | -------------------------- |
-| `open`        | `boolean \| undefined` | `undefined` | Controlled open state      |
-| `defaultOpen` | `boolean`              | `false`     | Uncontrolled initial state |
-| `disabled`    | `boolean`              | `false`     | Disabled                   |
-| `as`          | `string`               | `'div'`     | Root element tag           |
+| Prop          | Type                   | Default     | Description                     |
+| ------------- | ---------------------- | ----------- | ------------------------------- |
+| `open`        | `boolean \| undefined` | `undefined` | Controlled open state           |
+| `defaultOpen` | `boolean`              | `false`     | Uncontrolled initial open state |
+| `disabled`    | `boolean`              | `false`     | Prevent toggling                |
+| `as`          | `string`               | `'div'`     | Root element tag                |
 
 ## Events
 
-| Event         | Payload   | Description     |
-| ------------- | --------- | --------------- |
-| `update:open` | `boolean` | Controlled sync |
-| `openChange`  | `boolean` | Open change     |
+| Event         | Payload   | Description                       |
+| ------------- | --------- | --------------------------------- |
+| `update:open` | `boolean` | Sync the controlled open state    |
+| `openChange`  | `boolean` | Fires when the open state changes |
 
 ## Accessibility
 
-- Trigger controls open.
-- Disabled state does not toggle.
+- Trigger toggles the open state unless disabled.
 
 ::: info Platform notes
 

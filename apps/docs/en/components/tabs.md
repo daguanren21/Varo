@@ -46,7 +46,7 @@ const active = ref('overview')
 
 H5 and native share the same event rules. Selecting the active title still emits `clickTab`, but emits no `update:active` or `change`. Disabled tabs emit nothing. Selecting another enabled tab emits `update:active`, `change`, then `clickTab`. The parent owns `active`; content switches when the parent accepts the update.
 
-Native consumers compose the installed `v-tabs.vue` and `v-tab.vue` files. Each event carries one value. H5 arrow-key, Home, and End navigation continues to work, and selecting the same item through keyboard navigation does not duplicate state events.
+In native apps, use the installed `v-tabs.vue` and `v-tab.vue` together. Each event carries one value. H5 supports arrow-key, Home, and End navigation; selecting the same item through the keyboard does not duplicate state events.
 
 H5 accepts tabs inside nested fragments and `v-for` groups. Comments, text nodes, and hidden `v-if` placeholders do not create titles or keyboard stops. Reordering groups with stable keys preserves the still-active panel instance and its uncommitted input.
 

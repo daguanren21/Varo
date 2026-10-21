@@ -1,6 +1,6 @@
 # Signature
 
-`VSignature` uses normalized stroke data as its cross-target controlled value. H5 uses pointer canvas input; mini-program uses native canvas touch events. Enable `showHistory` for stroke-level undo and redo, including undoable clear.
+`VSignature` uses normalized stroke data as its controlled value on both platforms. H5 draws through pointer events on a canvas; mini-programs use native canvas touch events. Enable `showHistory` to undo and redo individual strokes and undo a clear operation.
 
 ## Demo
 
@@ -34,9 +34,9 @@ For mini-programs, import the installed `v-signature.vue` and use reactivity fro
 
 - Draw A and B, undo to A, then redo to A/B. Drawing a new stroke after undo discards the redo branch.
 - Clear proposes an empty array. Once accepted, clear can be undone. The initial value is the history baseline, not an undoable edit.
-- Each valid action emits `update:value` and `change` once as a proposal. History and the committed canvas advance only when the parent supplies the proposed `value`. Refusal or delayed acceptance leaves the accepted state intact and does not lock further actions. Live ink returns to the accepted value after the gesture until the parent accepts it.
-- A content-equivalent deep copy preserves history. A genuine external replacement, including a direct parent clear or coordinate edit, resets history. An echo matching a proposed update applies that history transition.
-- Undo, redo, and clear are inert during drawing. A cancelled gesture, disabling the pad mid-stroke, or receiving a different parent value discards unfinished ink.
+- Each valid action emits `update:value` and `change` once. History and the committed canvas update only when the parent returns the proposed `value`. Rejection or delay leaves the accepted value intact and further actions available. After each stroke, the preview returns to that value until the parent accepts the update.
+- A deep copy with the same content preserves history. Direct replacement, including clearing or editing coordinates, resets history. A returned value matching a proposed update applies the corresponding history operation.
+- Undo, redo, and clear are unavailable during drawing. Cancelling a gesture, disabling the pad mid-stroke, or receiving a different parent value discards the unfinished stroke.
 - `historyLimit` must be a positive integer. The default retains 100 accepted edits and at most 100 outstanding proposals. A change to the accepted value expires older proposals. Delayed responses outside the retained range or from an older state are treated as external replacements.
 
 ## Exposed methods and state

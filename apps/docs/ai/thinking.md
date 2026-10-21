@@ -20,7 +20,7 @@ import { AgentThinking } from '@/components/agent-ui'
 
 ## 按步骤展开
 
-默认仍由 `open` / `defaultOpen` 控制整个分组，打开后直接显示所有详情。设置 `expandable` 后，有 `detail`（优先）或 `content` 的行成为独立的展开按钮；无详情的行保持静态。行展开不影响分组状态。
+`open` / `defaultOpen` 控制整个分组，默认展开后显示所有详情。设置 `expandable` 可单独展开含有 `detail`（优先）或 `content` 的行；无详情的行保持静态。行展开不影响分组状态。
 
 ```vue
 <script setup lang="ts">
@@ -40,7 +40,7 @@ const steps: AgentTraceStep[] = [
 </template>
 ```
 
-`id` 必须唯一且稳定；重排不会改变展开项。非受控模式使用 `defaultExpandedIds` 初始化，删除步骤会清理内部展开记录，重新添加后保持关闭。传入 `expandedIds`（包括 `[]`）后由父级决定状态；组件仅发出下一组 id，父级不接纳时界面保持不变，也不会自动清理父级数组。H5 使用原生按钮支持 Enter / Space，并提供 `aria-expanded` / `aria-controls`；原生端点击发出同一数组。展开模式显示统一的中文状态标签。
+`id` 必须唯一且稳定，重排后保持展开状态。非受控模式以 `defaultExpandedIds` 初始化；删除步骤会清理其展开记录，重新添加后默认关闭。传入 `expandedIds`（包括 `[]`）后，组件只发出下一组 id，等待父级更新，也不会自动清理父级数组。H5 原生按钮支持 Enter / Space，并提供 `aria-expanded` / `aria-controls`；原生点击发出同一数组。展开模式使用统一的中文状态标签。
 
 ## Props
 

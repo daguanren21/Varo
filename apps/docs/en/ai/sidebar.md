@@ -1,6 +1,6 @@
 # AgentSidebar
 
-AI workspace sidebar with groups, collapse, create, and selection.
+AI workspace sidebar with grouping, collapse, chat creation, and selection state.
 
 ## Demo
 

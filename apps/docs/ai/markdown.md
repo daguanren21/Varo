@@ -1,6 +1,6 @@
 # AgentMarkdown
 
-流式友好的安全 Markdown AST 渲染器。
+支持流式输入的安全 Markdown AST 渲染器。
 
 ## 案例
 
@@ -40,7 +40,7 @@ const markdownContent = '## Result\n\n**Ready**'
 | `link` | `string` | 链接点击 |
 
 ::: warning 小程序渲染
-小程序继续使用平台无关的 `stream-markdown-parser` 生成安全 AST。普通行内节点会转换为微信 `rich-text nodes`，标题、列表、代码块、表格、图片和引用继续使用原生小程序节点。链接不会交给 `rich-text`，仍通过 `link` 事件由业务决定如何打开；原始 HTML 不会直接注入。
+小程序通过平台无关的 `stream-markdown-parser` 生成安全 AST。普通行内节点转换为微信 `rich-text nodes`，标题、列表、代码块、表格、图片和引用使用原生小程序节点。链接不交给 `rich-text` 渲染，由应用通过 `link` 事件决定如何打开；原始 HTML 不会直接注入。
 :::
 
 ::: info 平台差异

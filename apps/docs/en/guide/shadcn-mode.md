@@ -1,10 +1,10 @@
 # Wevu Registry Mode
 
-The CLI copies native Wevu source admitted for the selected profile into your project. Import it from `src/components/ui/*` and edit it as application code. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for the exact profiles and experimental scope.
+The CLI copies native Wevu source for the selected profile into your project. Import and edit it from `src/components/ui/*`. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for profiles and experimental support limits.
 
 ## One-Time Wevu Project Setup
 
-Complete this global stylesheet and Tailwind setup once per project. Do not repeat it on individual component pages.
+Configure global styles and Tailwind once per project.
 
 ### Install Build And Style Dependencies
 
@@ -13,7 +13,7 @@ pnpm add wevu clsx @weapp-tailwindcss/merge
 pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 ```
 
-The CLI recursively copies Registry files and prints npm `Dependencies:` and `Dev dependencies:`, but it does not modify `package.json` or run a package manager. After every `add`, use `pnpm add` / `pnpm add -D` to install every reported package that is not already present. Depending on the selected components, the output can also include packages such as `@varo-ui/headless` and `@varo-ui/theme`. Native Registry source does not depend on a Vue renderer from `@varo-ui/weapp`; that package provides an alternative native source consumption path.
+The CLI recursively copies Registry files and lists npm `Dependencies:` and `Dev dependencies:` without modifying `package.json` or running a package manager. After each `add`, use `pnpm add` / `pnpm add -D` to install reported packages that are missing, including component dependencies such as `@varo-ui/headless` and `@varo-ui/theme`. Native Registry source needs no Vue renderer; `@varo-ui/weapp` is another way to obtain native source.
 
 ### Create The Tailwind Stylesheet Entry
 
@@ -37,7 +37,7 @@ Use the same Tailwind v4 entry as the Varo mini-program playground in `src/style
 
 ### Register Managed Global Styles
 
-First install at least one component so its dependency closure creates `src/styles/`. In `vite.config.ts`, collect every installed CSS file, sort `varo.css` first, register the files globally, and configure Tailwind:
+Install at least one component and its dependencies to create `src/styles/`. In `vite.config.ts`, collect all CSS, put `varo.css` first, register it globally, and configure Tailwind:
 
 ```ts
 import { readdirSync } from 'node:fs'
@@ -72,7 +72,7 @@ export default defineConfig({
 })
 ```
 
-Each `styles.source` is relative to `srcRoot`. `themes/base` installs `src/styles/varo.css` with tokens and foundation rules only; component manifests install their own CSS, and Agent units additionally depend on `varo-agent.css` from `themes/agent`. Registering only `varo.css` is insufficient. Restart the build process after adding components so it recollects all styles. This matches `apps/platform-smoke/vite.config.mjs`, with foundation before component CSS.
+Each `styles.source` is relative to `srcRoot`. `themes/base` installs `src/styles/varo.css` with tokens and foundation rules only. Component manifests install their own CSS; Agent units also need `varo-agent.css` from `themes/agent`. After adding components, restart the build to collect all styles, including `varo.css`. This matches `apps/platform-smoke/vite.config.mjs`: foundation styles load before component CSS.
 
 Load all these files globally through `weapp.styles` with `include: 'app.vue'`. Retain `styleIsolation: apply-shared` in native SFCs. Do not import global theme or component CSS into component-local `<style>` / WXSS: application-level selectors cannot appear in component WXSS. H5 Registry source automatically imports its full CSS dependency closure and does not use this native global registration.
 
@@ -97,9 +97,9 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/profile-edit
 pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 ```
 
-`agent-chat` pulls only the conversation closure, without advanced, RAG, or fine-tune files. Install `components/agent-ui` only when you deliberately want the full suite; see [Agent installation](/en/ai/) for smaller units.
+`agent-chat` installs conversation components and dependencies only, excluding advanced, RAG, and fine-tune files. Install `components/agent-ui` for the full suite; see [Agent installation](/en/ai/) for individual units.
 
-`--target alipay|tt|xhs|donut-android|donut-ios|donut-ohos` names six separate experimental install profiles, not interchangeable values for `weapp.platform`. Alipay, Douyin, and Xiaohongshu use their own compiler platforms; Donut uses the `weapp` compiler with per-host metadata. If any item in the dependency closure lacks explicit admission, installation fails instead of treating WeChat source as supported automatically. Compilation is not device validation.
+`--target alipay|tt|xhs|donut-android|donut-ios|donut-ohos` selects one of six experimental profiles, not interchangeable values for `weapp.platform`. Alipay, Douyin, and Xiaohongshu use their own compiler platforms; Donut uses the `weapp` compiler and host metadata. Every item and transitive dependency must explicitly support the selected profile, or installation fails without falling back to WeChat source. A successful build still needs device validation.
 
 Existing files are preserved by default. Use `--force` only after reviewing local changes:
 

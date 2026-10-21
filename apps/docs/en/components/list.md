@@ -1,6 +1,6 @@
 # List
 
-`VList` owns bottom-edge incremental loading. Use [PullRefresh](/en/components/pull-refresh) for top-edge refresh.
+`VList` supports loading more items at the bottom of a list. Use [PullRefresh](/en/components/pull-refresh) for pull-to-refresh at the top.
 
 ## Demo
 

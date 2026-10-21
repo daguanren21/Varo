@@ -7,7 +7,7 @@
 <FormComponentDemo example="switch" locale="en" />
 
 ::: info Motion
-The thumb uses a reversible 180ms translation. Holding the control briefly stretches the thumb along its travel direction; release or rapid reversal retargets from the current visual state. Reduced motion keeps only the immediate position change.
+The thumb moves over 180ms and can reverse direction. Holding the control slightly stretches it along its travel direction. On release or rapid reversal, the animation continues from its current visual state toward the new position. With reduced motion enabled, the thumb changes position immediately.
 :::
 
 ## Props

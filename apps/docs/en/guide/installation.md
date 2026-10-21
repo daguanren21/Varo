@@ -2,9 +2,9 @@
 
 ## Recommended package path
 
-- Product teams: use `@varo-ui/cli` to install owned source; npm packages provide H5 components or native Wevu SFCs for compilation
-- `@varo-ui/headless` provides only platform-neutral state, event, and controlled-state contracts; DOM, focus, and page scroll locking belong to H5
-- Native projects use `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`, not a Vue renderer that simulates mini programs
+- Prefer `@varo-ui/cli` for editable source; npm packages provide H5 components or native Wevu SFCs that require compilation
+- `@varo-ui/headless` provides only platform-neutral state, event, and controlled-state contracts; H5 handles DOM behavior, focus, and page scroll locking
+- Native projects use `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`, without a Vue renderer to simulate mini programs
 
 ## Initialize a project
 
@@ -33,15 +33,15 @@ import { VButton } from '@varo-ui/h5'
 import '@varo-ui/h5/style.css'
 ```
 
-H5 public entries are the package root, `/primitives`, `/style.css`, and `/source/style.css`. The last remains a valid CSS subpath, not a TypeScript component entry. Use Registry for editable components instead of importing package-internal source.
+H5 public entries are the package root, `/primitives`, `/style.css`, and `/source/style.css`; the last is CSS-only, not a TypeScript component entry. For editable components, use the Registry instead of package-internal source paths.
 
-The `@varo-ui/weapp` root exports real native Wevu SFCs. Individual files can also be imported directly:
+The `@varo-ui/weapp` root exports native Wevu SFCs. You can also import individual files directly:
 
 ```ts
 import VButton from '@varo-ui/weapp/components/v-button.vue'
 ```
 
-These SFCs require the native compiler; they are not Vue Parts for browser mounting. For npm consumption, first create the local application stylesheet `src/package.css`:
+These SFCs require native compilation and cannot mount in a browser as Vue Parts. For npm usage, create a local stylesheet at `src/package.css`:
 
 ```css
 @import '@varo-ui/weapp/style.css';
@@ -72,11 +72,11 @@ See [Wevu Registry setup](/en/guide/shadcn-mode) for the `src/styles.css` Tailwi
 pnpm add @varo-ui/headless
 ```
 
-Headless includes neither UI nor DOM side effects. H5 unstyled Parts come from `@varo-ui/h5/primitives`. Native consumers compose Registry SFCs or bind headless to Wevu reactivity; there is no equivalent Vue Parts entry.
+Headless has no UI or DOM side effects. Import unstyled H5 Parts from `@varo-ui/h5/primitives`. Native projects compose Registry SFCs or bind headless to Wevu reactivity; there is no equivalent Vue Parts entry.
 
 ## shadcn-style install
 
-If you want the shadcn/ui workflow, copy source into the product project first, then wrap it for business needs:
+Use the CLI to install source into your project and adapt it, as with shadcn/ui:
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp button select card
@@ -88,7 +88,7 @@ pnpm dlx @varo-ui/cli add --target h5 button select card
 
 Components land in `src/components/ui/*`; blocks land in `src/components/blocks/*`. Your product can then create `UserSelect`, `DepartmentSelect`, and `ProductSelect` in `src/components/biz/*`.
 
-Registry manifests define installable components and their complete dependency closure; component counts or similar APIs do not establish platform support. H5 source automatically imports its CSS closure. Native source ships as Wevu SFCs compiled into platform artifacts. Only types, pure functions, and headless state contracts are shared across renderers.
+Registry manifests list installable components and all required dependencies; component counts or similar APIs do not establish platform support. H5 source automatically imports required CSS. Native Wevu SFCs are compiled into platform artifacts. Only types, pure functions, and headless state contracts are shared across renderers.
 
 Third-party components do not need to be merged upstream: use `add --registry <local-directory-or-http(s)-url>` to install an independent registry. Authors can use `export --target <profile> <item>` to generate JSON for shadcn-vue. See [Publish an independent registry](/en/blocks/build-your-own#publish-an-independent-registry) for layouts, publishing commands, and runtime boundaries.
 
@@ -107,19 +107,19 @@ There are only two renderers, `h5` and `weapp`. `--target` selects an exact inst
 | `donut-ios`     | `weapp`  | `weapp`           | Donut iOS                | experimental |
 | `donut-ohos`    | `weapp`  | `weapp`           | Donut HarmonyOS          | experimental |
 
-Each of the six new profiles requires explicit admission in the item manifest and every transitive dependency. Missing admission rejects the install before writes; it never falls back to `weapp`. The representative admitted components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with required dependencies. Current manifests are authoritative; this does not admit the rest of the catalog or Agent UI.
+Each experimental profile requires explicit support in the item manifest and every transitive dependency. Any missing declaration rejects installation before writes, with no fallback to `weapp`. Representative supported components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with required dependencies. Current manifests define the exact list; this does not imply support for the remaining catalog or Agent UI.
 
 ```bash
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-The repository's `pnpm check:platforms` runs real compiler/artifact checks for all seven native profiles, writing `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The current integrated compiler is 7.5.0. Donut uses the WeChat compiler with real per-host metadata. **Compiler/artifact success is not device certification.** Consumers supply AppIDs, signing, host SDKs, IDE access, and device validation; no credentials are fabricated.
+`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.5.0. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
 
 ## Agent streaming
 
 `@varo-ui/ai` is model-provider neutral. A backend emits `message.start`, `text.delta`, `reasoning.*`, `tool.*`, `approval.*`, `message.end`, and `done` events. H5 can connect Fetch/SSE; a mini program can feed `wx.request({ enableChunked: true })` chunks into `createAgentSseEventSource()`.
 
-Choose UI units as needed: `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag`. Shared `agent-presentation` contains only presentation types and pure helpers. `blocks/agent-chat` installs the conversation closure without requiring `components/agent-ui`; the latter is an intentional full-suite choice. See [Agent installation](/en/ai/). Approval execution, networking, retry, and cancellation policy remain application-owned.
+Install UI as needed: `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag`. Shared `agent-presentation` contains only presentation types and pure helpers. `blocks/agent-chat` installs conversation components and dependencies without requiring the full `components/agent-ui` suite. See [Agent installation](/en/ai/). Your application handles approval execution, networking, retries, and cancellation policy.
 
 ```ts
 import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
@@ -131,7 +131,7 @@ requestTask.onChunkReceived(({ data }) => transport.feed(data))
 await controller.connect(transport.source)
 ```
 
-`connect()` owns the event-iterator lifecycle: protocol `done`/`error` events settle the connection and request iterator cleanup; natural iterator exhaustion synthesizes `done`.
+`connect()` manages the event iterator's lifecycle. Protocol `done`/`error` events end the connection and request iterator cleanup; when the iterator ends naturally, the controller generates `done`.
 
 ## Mini-program build chain
 
@@ -140,32 +140,32 @@ pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
-Native Registry components consume application-global styles through `styleIsolation: apply-shared`. `themes/base` contains only tokens and foundation rules; each ordinary component manifest owns its CSS, and optional `themes/agent` owns Agent additions. The `cn()` helper uses `@weapp-tailwindcss/merge`, preserving mini-program escaping behavior.
+Native Registry components use application-global styles through `styleIsolation: apply-shared`. `themes/base` contains only tokens and foundation rules. Each ordinary component manifest declares its CSS, while optional `themes/agent` contains the additional Agent styles. The `cn()` helper uses `@weapp-tailwindcss/merge` to preserve mini-program escaping behavior.
 
 `@varo-ui/cli` only copies Registry files and prints `Dependencies:` / `Dev dependencies:`; it does not install npm packages. After each `add`, install every reported dependency not already present. Globally register all installed `src/styles/*.css` in `app.vue`, with `varo.css` first; loading only base or importing these files inside components is insufficient. See the [one-time Wevu Registry setup](/en/guide/shadcn-mode) for the full configuration.
 
 ## Preview mini-program artifacts in a browser
 
-The private `@varo/weapp-web` package is development tooling for trusted compiled artifacts: its Vite plugin compiles Wevu artifacts into `virtual:varo-native-artifacts`, and the harness handles `wx` APIs and native elements. It is not published and must not become a production UI dependency. The host runs Wevu-generated JS, JSON, WXML, and WXSS through glass-easel's DOM backend rather than substituting H5 business components. Narrow windows scale the presentation while preserving the selected native viewport width. **A same-origin iframe is not a security sandbox, a WeChat client, or device proof.** Do not load untrusted artifacts. Unsupported capabilities such as login and payment fail explicitly instead of returning fabricated success.
+The private `@varo/weapp-web` package previews trusted compiled artifacts during development. It is unpublished and must not be a production UI dependency. Its Vite plugin compiles Wevu artifacts into `virtual:varo-native-artifacts`; the preview handles `wx` APIs and native elements. It runs generated JS, JSON, WXML, and WXSS through glass-easel's DOM backend without substituting H5 business components. Narrow windows scale the display while retaining the selected native viewport width. **The same-origin iframe is neither a security sandbox nor a WeChat client.** Do not load untrusted artifacts. Unsupported login, payment, and other capabilities fail without fabricated success.
 
-Build and preview the production surface manually:
+Build and preview the production output manually:
 
 ```bash
 pnpm exec turbo run build --filter=@varo/playground-weapp-preview
 pnpm --filter @varo/playground-weapp-preview preview
 ```
 
-The production preview defaults to `http://127.0.0.1:4182`; deployable files are in `apps/playground-weapp-preview/dist`. Deterministic browser regression now uses `pnpm test:e2e:web` below. The runner starts and cleans up its own services, covering compiled-native interaction, event counts, context, stream stop/resume, layout boundaries, and error recovery.
+The production preview defaults to `http://127.0.0.1:4182`; deployable files are in `apps/playground-weapp-preview/dist`. Use `pnpm test:e2e:web` below for deterministic browser regressions. The runner starts and cleans up its services, checking native artifact interactions, event counts, context, stream stop/resume, layout boundaries, and error recovery.
 
 The repository lockfile records the SDK versions required by this pipeline. The CLI does not automatically install those dependencies into external consumer projects. WeChat-specific capabilities, device performance, and final native visuals still require validation in WeChat.
 
-The H5 and Mini Program documentation tabs share example groups, locale, theme, and device framing. Registered component and Primitive Mini Program examples run compiled Wevu artifacts with input, selection, validation, dynamic arrays, file selection, and error recovery. Expand **View code** for installation commands and native source. H5-only components retain explicit platform boundaries. Browser artifact previews do not establish device validation.
+The H5 and Mini Program documentation tabs share example groups, locale, theme, and device framing. Registered component and Primitive Mini Program examples run compiled Wevu artifacts with input, selection, validation, dynamic arrays, file selection, and error recovery. Expand **View code** for installation commands and native source. H5-only components are labeled.
 
 `pnpm --filter @varo/docs dev` and `pnpm --filter @varo/docs build` prepare the native preview dependencies automatically. Docs serve the complete preview at `${DOCS_BASE}weapp-preview/`, with no separate preview server. Development uses artifacts prepared at startup; restart the docs development server after editing native demos or the preview runtime. Run `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` to check every registered scene, 320/390px layouts, and interaction regressions including both languages, light/dark themes, and form submission. For production previews, use the actual address, such as `http://localhost:4173/Varo/`, retaining any deployment subpath. Set `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` to run selected cases.
 
 ### Deterministic E2E and evidence boundaries
 
-The workspace's private `@varo/e2e` package is development tooling, not a Registry install or component-runtime dependency. Run real E2E separately from structural contracts:
+Private `@varo/e2e` is development tooling, excluded from Registry installs and the component runtime. Run E2E tests and structural contract checks separately:
 
 ```bash
 pnpm --filter @varo/e2e exec playwright-core install chromium
@@ -175,17 +175,17 @@ pnpm test:e2e:web
 pnpm test:e2e:weapp
 ```
 
-The Web suite covers H5 and glass-easel preview; the Weapp suite uses a headless host for native compiled artifacts. Neither uses a model or retries. Missing cases/targets, failures, and unexpected skips reject acceptance. Each run writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json`, with screenshots and framework reports in that run's directory rather than reusing a previous report. The three legacy browser smokes were removed after assertion parity, error diagnostics, and full-page secure-field masking passed. Legacy native smokes and capture entrypoints remain pending their host acceptance.
+The Web suite covers H5 and glass-easel preview; the Weapp suite uses a headless host for native compiled artifacts. Neither uses models or retries. Missing cases or targets, failures, and unexpected skips reject acceptance. Each run writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json`, with screenshots and framework reports in the same run directory; reports are never reused. Legacy native smokes and capture entrypoints remain pending host acceptance.
 
 The repository's pnpm patch for `@weapp-vite/miniprogram-automator@1.3.0` adds rendered-tree text observation for `rich-text` arrays/HTML and the native submit-button form default action. The patch lives at `patches/@weapp-vite__miniprogram-automator@1.3.0.patch` and applies only to a development test dependency. `apps/e2e/tests/runner/native-runtime.test.ts` exercises the real Launcher for entities, content updates, unsupported node/event filtering, named field values, custom form behaviors, and disabled buttons. Revalidate these scenarios when upgrading the SDK and remove the patch once upstream provides the behavior.
 
 Headless is not a WeChat client: it does not provide real pixels, keyboard input, or touch geometry. Rendered-text assertions must read the rendered tree rather than application state. `pnpm test:e2e:devtools` separately requires authenticated WeChat DevTools, its automation port, and a valid local AppID. Device capabilities and final native visuals still require separate acceptance.
 
-The full repository gate is `pnpm check:full`: source projections and architecture first, then repoctl's basic checks/build, structural contracts, runner negative controls, real E2E, isolated consumers, and native profile artifacts. Missing host prerequisites do not count as passing.
+`pnpm check:full` checks source projections and architecture, then runs repoctl's basic checks and build, structural contracts, runner negative controls, real E2E, isolated consumers, and native profile artifact checks. Missing host prerequisites do not count as passing.
 
 ## Local Devframe MCP
 
-Private `@varo/devtools` exposes workspace development tools through the real Devframe stdio adapter. It exposes neither HTTP nor shared state and is not a production dependency. After workspace installation, launch from the repository root with Node 24:
+Private `@varo/devtools` provides workspace tools through the Devframe stdio adapter, with no HTTP interface or shared state. It is not a production dependency. After installing the workspace, launch it from the repository root with Node 24:
 
 ```bash
 # Read-only by default: Block catalog/manifests/source and installation plans

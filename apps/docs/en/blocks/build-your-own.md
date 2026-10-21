@@ -1,6 +1,6 @@
 # Build Your Own Block
 
-This guide shows how to turn Base Kit components into a maintainable, installable, and optionally contributable business block. The anonymized filter bar below is an **H5 Vue example**, with no real APIs, credentials, private URLs, or internal ticket IDs. A native version needs its own Wevu SFC, native nodes, and component JSON; changing the manifest target alone is not a port.
+Combine Base Kit components into a business block you can maintain locally, install through the CLI or contribute to Varo. The anonymized filter below is an **H5 Vue example** with no real APIs, credentials, private URLs or internal ticket IDs. Native use requires a Wevu SFC, native nodes and component JSON; changing the manifest target alone is insufficient.
 
 ## Installable Blocks
 
@@ -15,11 +15,11 @@ This guide shows how to turn Base Kit components into a maintainable, installabl
 | **Business wrappers**   | APIs, authz, field mapping, product copy             | Generic interaction state machines                 |
 | **Blocks**              | Reusable screen sections and local composition       | Private backend details, one-off page glue         |
 
-Rule of thumb: a block should feel like a portable page slice, not a page locked to one product API.
+Keep blocks portable across projects by putting product-specific APIs in business wrappers.
 
 ## 2. Define the block contract
 
-Write the contract before the implementation:
+Define inputs and events before coding:
 
 ```ts
 // Example contract for a local filter block
@@ -46,11 +46,11 @@ export interface FilterBarEmits {
 
 Capture:
 
-- **Inputs**: options, defaults, disabled
-- **Outputs**: `update:modelValue` / `change`
-- **Local state**: UI-only temporary state
-- **Dependencies**: Base Kit component names such as `select`
-- **Exclusions**: remote dictionaries, auth, analytics SDKs, private domains
+- Inputs: options, defaults, disabled
+- Outputs: `update:modelValue` / `change`
+- Local state: temporary UI state only
+- Dependencies: Base Kit component names such as `select`
+- Exclusions: remote dictionaries, auth, analytics SDKs, private domains
 
 ## 3. Choose Base Kit dependencies
 
@@ -192,7 +192,7 @@ const options = [
 </template>
 ```
 
-Copied source belongs to the application team. You can change layout, tokens, and interaction without contributing those product decisions back to Varo.
+The application team maintains the copied source and can change layout, tokens and interaction without contributing those changes to Varo.
 
 ## 7. Prepare registry metadata
 
@@ -234,7 +234,7 @@ Key fields:
 - `docs`: documentation route
 - `platforms`: explicit admission of additional profiles; the item and every transitive dependency must admit the profile, otherwise installation fails before writes without falling back to `weapp`
 
-Install profiles are `h5`, `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos`. The six additions remain experimental; see [support boundaries](/en/guide/installation#install-profiles-and-support-boundaries). Do not add admission without a target implementation and evidence. Native SFC consumers must globally load all installed `src/styles/*.css`, foundation first, following [Wevu Registry](/en/guide/shadcn-mode), not import global CSS locally.
+Install profiles are `h5`, `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos`. The last six remain experimental; see [support boundaries](/en/guide/installation#install-profiles-and-support-boundaries). Admission requires a target implementation and validation evidence. Native SFC consumers must load all installed `src/styles/*.css` globally, foundation first, following [Wevu Registry](/en/guide/shadcn-mode). Do not import global CSS locally.
 
 ## 8. Add bilingual documentation
 
@@ -274,7 +274,7 @@ Confirm:
 
 ### Publish an independent registry
 
-No upstream contribution is required. Host the `registry/` directory, including manifests and source for every transitive dependency, on your own static site:
+Host `registry/` and every transitive dependency's manifest and source on your static site, then install from your application. No contribution to Varo is required:
 
 ```bash
 pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target h5 blocks/status-filter
@@ -318,7 +318,7 @@ Export each exact profile separately. `meta.varo.target` preserves the selected 
 
 ## 10. Contribute to Varo
 
-Upstream contribution is optional, not a prerequisite for publishing a third-party registry.
+You can optionally contribute the block to Varo; independent publication does not require this step.
 
 Privacy and portability checklist:
 

@@ -1,6 +1,6 @@
 # Tabs
 
-选项卡运行时：Root 持有当前 value，Trigger/Content 通过相同 value 关联。
+通过共享 value 关联选项卡标题与内容面板。
 
 ## 运行时
 
@@ -12,11 +12,11 @@
 
 ## 基础用法
 
-上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
+H5 面板提供 Parts 交互与代码；原生标签页仅展示源码和支持证据，不提供实时小程序预览。
 
 ## 受控与唯一 value
 
-同一 `TabsRoot` 内 Trigger/Content 的 value 必须唯一；H5 自动模式下支持方向键切换。
+同一 `TabsRoot` 内，每组 Trigger/Content 使用唯一的 value。H5 自动模式支持方向键切换。
 
 ## Parts
 
@@ -35,7 +35,7 @@
 | -------------- | ------------------------------- | ----------- | ------------ |
 | `value`        | `string \| number \| undefined` | `undefined` | 受控激活项   |
 | `defaultValue` | `string \| number`              | `undefined` | 非受控初始项 |
-| `orientation`  | `string`                        | `undefined` | 方向语义     |
+| `orientation`  | `string`                        | `undefined` | 选项卡方向   |
 | `disabled`     | `boolean`                       | `false`     | 整组禁用     |
 | `id`           | `string`                        | `undefined` | 关联 id 前缀 |
 | `as`           | `string`                        | `'div'`     | 根节点标签   |
@@ -49,19 +49,18 @@
 
 ## Events
 
-| Event          | Payload            | 描述       |
-| -------------- | ------------------ | ---------- |
-| `update:value` | `string \| number` | 受控同步   |
-| `valueChange`  | `string \| number` | 激活项变化 |
+| Event          | Payload            | 描述             |
+| -------------- | ------------------ | ---------------- |
+| `update:value` | `string \| number` | 同步受控激活项   |
+| `valueChange`  | `string \| number` | 激活项变化时触发 |
 
 ## 无障碍
 
-- value 同时用于状态与 panel 关联。
-- H5 支持方向键/Home/End。
+- value 同时决定激活状态和面板关联。
+- H5 支持方向键、Home 和 End。
 - 小程序保留 ARIA 与 value 关联，不模拟浏览器焦点。
 
 ::: info 平台差异
 
-- H5 可演示键盘行为。
-- 原生标签页提供目标源码与证据，不运行另一套 Parts 渲染器。
+- H5 面板可演示上述键盘操作；原生标签页仅展示源码与证据，不运行 Parts 渲染器。
   :::

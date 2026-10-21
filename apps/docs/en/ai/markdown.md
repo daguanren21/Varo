@@ -40,7 +40,7 @@ The native renderer reconciles stateless Markdown children by position when cont
 | `link` | `string` | Link selected |
 
 ::: warning Mini-program rendering
-The mini-program target keeps the platform-neutral `stream-markdown-parser` as its parser. Safe inline nodes become WeChat `rich-text nodes`; headings, lists, code blocks, tables, images, and quotes stay native mini-program nodes. Links bypass `rich-text` so applications retain the `link` event, and raw HTML is never injected.
+Mini programs use the platform-neutral `stream-markdown-parser` to produce a safe AST. Inline nodes become WeChat `rich-text nodes`; headings, lists, code blocks, tables, images, and quotes use native nodes. Links bypass `rich-text` and emit `link` for the application to handle. Raw HTML is never injected.
 :::
 
 ::: info Target notes

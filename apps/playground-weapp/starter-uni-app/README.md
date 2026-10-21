@@ -1,6 +1,6 @@
 # Varo retail starter for uni-app Vue 3
 
-An editable, standalone retail simulation for **H5 and WeChat mini programs**. The exporter converts the current Varo native retail source into uni-app Vue 3 source; this template supplies only the project/tooling shell. It does not maintain another renderer or product UI tree. Varo source and this tooling are MIT; framework and dependency licenses are separate (see `DEPENDENCIES.md`).
+An editable retail simulation for H5 and WeChat mini programs. The exporter converts Varo's current native retail application into a standalone uni-app Vue 3 project; this template supplies its tooling. Varo source and tooling use MIT, while dependencies keep their own licenses (see `DEPENDENCIES.md`).
 
 ## Requirements and first run
 
@@ -13,13 +13,13 @@ pnpm build
 pnpm verify
 ```
 
-The export includes `pnpm-lock.yaml`. Keep it and use a frozen install rather than hiding a dependency mismatch with an unlocked install. `pnpm-workspace.yaml` includes only this project, disables automatic peer installation, and permits only the listed native dependency build scripts. The `core-js`/`core-js-pure` funding-banner scripts are explicitly disabled. There are no source-repository links or private workspace dependencies. Lock resolution during export is not an install, build, or runtime check.
+Keep the included `pnpm-lock.yaml` for frozen installs. `pnpm-workspace.yaml` contains only this project, disables automatic peer installation, and permits the listed native build scripts. It disables the `core-js`/`core-js-pure` funding banners. The export has no private workspace dependencies or source-repository links. Resolving its lockfile does not install, build, or run the project.
 
-Keep `nodeLinker: hoisted`: the pinned uni Vite plugin preserves symlinks, which otherwise prevents the class-merging package from resolving its installed runtime dependencies in pnpm's isolated layout. This is a standalone package-layout setting, not a Vue alias or a transitive-dependency workaround.
+Keep `nodeLinker: hoisted`. The pinned uni Vite plugin preserves symlinks, preventing class-merge dependencies from resolving under pnpm's isolated layout. Hoisting changes the package layout without Vue aliases or added transitive dependencies.
 
 Retain the exact Vite/plugin overrides and versioned uni H5 input patch in `pnpm-workspace.yaml`. They protect the development-server boundary and preserve rapid input/blur ordering; see `DEPENDENCIES.md` for their rationale and upgrade checks. The repository stores the package manifest as `package.json.template` because this shell is not an installed workspace package. Export emits a normal `package.json`; run the commands above in that assembled project.
 
-Commands describe the intended verification workflow, **not a claim that this particular export has passed it**:
+Run these checks on each export:
 
 | Command                    | Operation                                                                                                                                                  |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +31,7 @@ Commands describe the intended verification workflow, **not a claim that this pa
 | `pnpm build`               | Run both production builds, H5 first and WeChat second.                                                                                                    |
 | `pnpm verify`              | Check existing production WeChat artifacts without rebuilding or launching DevTools.                                                                       |
 
-`createSSRApp` in `src/main.ts` is the official uni-app entry contract, not an SSR deployment claim. Only H5 and `mp-weixin` are supported here; no other platform packages or commands are supplied.
+uni-app requires `createSSRApp` in `src/main.ts` even for this non-SSR project. Only H5 and `mp-weixin` packages and commands are included.
 
 ## AppID and generated configuration
 
@@ -41,16 +41,16 @@ cp .env.example .env.local
 pnpm dev:mp-weixin
 ```
 
-No example AppID is provided. An empty value permits compilation only and does not grant DevTools/device access. A shell-provided `WEAPP_APP_ID` takes precedence over the same key in this project's `.env.local`. The preparation script reads that exact local file, not environment files from parent directories. It accepts only an empty value or the WeChat AppID shape; it cannot prove ownership or authorization.
+Use your own AppID; an empty value permits compilation but no DevTools or device access. Shell `WEAPP_APP_ID` overrides this project's `.env.local`. The script reads no parent environment files and checks only that the value is empty or has the WeChat AppID format; account ownership still needs authorization.
 
 Edit **`manifest.config.json`** for app metadata, H5 routing and `mp-weixin` settings. Before every development or build command, `scripts/prepare-uni-project.mjs` generates these ignored files:
 
 - `src/manifest.json`: uni-app's manifest, with the local WeChat AppID applied.
 - `src/project.config.json`: the native project configuration, with the same AppID and `miniprogramRoot: "./"`.
 
-Do not edit those generated files; the next command replaces them. Keep WeChat AppID input in `.env.local` or the shell, not the tracked manifest configuration. The top-level `appid` in `manifest.config.json` is the separate DCloud identifier and is deliberately empty; this local example does not configure DCloud cloud services. uni statistics are disabled.
+Commands overwrite generated files, so edit their source configuration instead. Keep the WeChat AppID in `.env.local` or the shell. The separate DCloud `appid` in `manifest.config.json` stays empty; cloud services and uni statistics are disabled.
 
-The source project configuration is intentional: the pinned official compiler substitutes a tourist AppID when generating its own project config for an empty manifest AppID. Supplying the documented source project config path preserves the empty value without patching compiled output or impersonating an account.
+The pinned compiler substitutes a tourist AppID when the manifest AppID is empty. Supplying the source project config preserves the empty value without patching compiled output.
 
 ### Output directories and DevTools import roots
 
@@ -59,7 +59,7 @@ The source project configuration is intentional: the pinned official compiler su
 | WeChat development watcher | **`dist/dev/mp-weixin/`**                         |
 | WeChat production build    | **`dist/build/mp-weixin/`**                       |
 
-Import the platform directory itself, **not** `dist/dev/`, `dist/build/`, or the source root. Each contains its own `project.config.json` pointing at `./`. The template neither opens nor authenticates DevTools. Library version `3.5.5` is a configuration baseline inherited from the native starter, not device certification. Domain checking is enabled; configure real approved domains when replacing the local service.
+Import the platform directory itself, not `dist/dev/`, `dist/build/`, or the source root. Its `project.config.json` points to `./`. Open and authenticate DevTools yourself. Library version `3.5.5` comes from the native starter; check it on supported devices. Domain checking is enabled, so configure approved domains when connecting a backend.
 
 The H5 build uses hash routing. Serve `dist/build/h5/` over HTTP rather than opening `index.html` with `file://`. For a non-root deployment, review the H5 router base and deployment URL in the official uni-app documentation before building. Development servers are loopback-only by default; do not expose this pinned toolchain as a public service.
 
@@ -88,17 +88,17 @@ starter-manifest.json
 pnpm-lock.yaml
 ```
 
-The exporter provides the routes, app component, UI and helpers, not this template. Framework composition APIs use Vue; page/application hooks use `@dcloudio/uni-app`; platform interactions use uni APIs. The generated project has no Wevu runtime, native compiler dependency, repository Vite aliases, or imported internal renderer tree. Add or edit routes in `src/pages.json`; the verifier compares compiled pages against that current file rather than hardcoding the export-time route count.
+The exporter generates routes, the app component, UI, and helpers from retail source. Components use Vue, page/app hooks use `@dcloudio/uni-app`, and platform calls use uni APIs. The project includes no Wevu runtime, native compiler, repository Vite aliases, or internal renderer imports. Edit routes in `src/pages.json`; the verifier compares compiled pages with that file.
 
-The conversion also preserves the reached component contracts: Vue prop defaults replace native property initialization, native event payloads remain consistent, and static asset URLs move with their files. H5-only DOM bindings provide Enter/Space activation and copy field ARIA attributes onto the actual HTML inputs; they are excluded from WeChat compilation. Blur commits the current field value before submission and discards older queued input events. Fixed bottom actions account for the H5 tab bar through `--window-bottom`. These are scoped source adaptations, not a general-purpose Wevu-to-uni-app converter or a global runtime shim. Unsupported native APIs/configurations fail the export instead of receiving no-op fallbacks.
+Conversion preserves prop defaults, event payloads, and asset paths. H5 bindings add Enter/Space activation and copy ARIA attributes to HTML inputs; WeChat builds exclude them. Blur commits the current value before submission and discards older queued input. Fixed actions use `--window-bottom` for the H5 tab bar. These adaptations cover the exported retail source, not arbitrary Wevu projects. Unsupported APIs or configuration fail export; there is no global runtime shim or no-op fallback.
 
-Start API integration at `src/features/retail/runtime.ts`, which selects the local simulated `retailService`. The included `src/features/retail/http-service.ts` is an editable transport boundary requiring an application-owned `RetailHttpTransport` and actual API contract. Preserve integer-cent money and order/address snapshot semantics. Put authoritative pricing, stock, authentication, address validation and order persistence behind that service boundary rather than embedding private APIs into UI components.
+Start API integration in `src/features/retail/runtime.ts`, which selects the simulated `retailService`. Connect the included `src/features/retail/http-service.ts` using your `RetailHttpTransport` and API contract. Preserve integer-cent amounts and order/address snapshots. Handle pricing, stock, authentication, address validation, and order persistence in that service.
 
-Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data, images, tab assets and app theme values for your application. `retailConfig.scenario` selects local demo scenarios. Local orders, payment result screens, fulfillment, refunds, invoices and identity screens are simulations, not connected production services or proof of payment.
+Set `retailConfig.brand` in `src/features/retail/config.ts` and replace product data, images, tab assets, and theme values. `retailConfig.scenario` selects demo scenarios. Order, payment, fulfillment, refund, invoice, and identity screens use local simulations; their results do not confirm real transactions.
 
 ## Tailwind 4 and global Varo styles
 
-`src/App.vue` imports `./styles.css`, then every exported Registry stylesheet under `./styles/`, with foundation (`varo.css`) before component styles. The app's retail token overrides follow all imports in its unscoped style block. Keep this order. `src/styles.css` owns the Tailwind theme/utility imports and explicit source discovery for exported Vue/TypeScript, including the copied helper recipes. There is no second manually maintained palette or UI stylesheet in the template.
+`src/App.vue` loads `./styles.css`, then exported `./styles/` files with `varo.css` first, followed by retail token overrides in its unscoped style block. Keep that order. `src/styles.css` imports Tailwind's theme and utilities and scans exported Vue/TypeScript, including copied recipes. The template maintains no separate palette or UI stylesheet.
 
 `WeappTailwindcss` runs **after** the official uni plugin, with `cssEntries` pointing at that real imported CSS file. It remains enabled for both platforms:
 
@@ -121,13 +121,13 @@ Do not also register `@tailwindcss/vite` or `@tailwindcss/postcss`: that would c
 - Unprocessed Tailwind directives/classes, unsupported component selectors, or absent global flex utility/Varo theme tokens.
 - Invalid/nonlocal AppID configuration or the wrong DevTools import root.
 
-It does not execute application JavaScript, evaluate arbitrary runtime-generated asset URLs, download remote/data/wxfile assets, verify network services, render H5, or certify WeChat runtime/device behavior. Dynamic business behavior, source-to-runtime conversion and visual quality require actual runtime checks.
+The verifier does not run application JavaScript, resolve runtime-generated asset URLs, download remote/data/wxfile assets, check network services, or render H5. Test dynamic behavior, converted source, visuals, and WeChat device behavior in the actual runtime.
 
 ## Provenance and reproducibility
 
-`starter-manifest.json` records source revision, relative input paths and SHA256 digests, exported file hashes, exact direct dependencies, page inventory, source conversions and exporter Node/pnpm versions. The lockfile is included; the manifest excludes its own hash. Prepared local configuration and compiled output are not export-time source. Normal consumer edits intentionally change recorded hashes.
+`starter-manifest.json` records the source revision, relative input paths and SHA256s, exported-file hashes, exact dependencies, pages, conversions, and Node/pnpm versions. It includes the lockfile and excludes its own hash. Local configuration and compiled output are created later; editing source changes the recorded hashes.
 
-The same source inputs produce the same source projection. Registry resolution happens at export time, so a later export can resolve different transitive versions. Preserve the particular export's lockfile for reproducible installs.
+The same source inputs produce the same source output. Later exports may resolve different transitive versions; keep each export's lockfile for reproducible installs.
 
 To produce a new snapshot, run **from an installed Varo repository**:
 
@@ -141,4 +141,4 @@ The destination parent must exist; the destination must be absent or a real empt
 
 Run both builds and typechecking, then exercise product → cart → address/checkout → simulated order on actual narrow/wide H5 pages. Check quantity, checkbox/input events, navigation, loading/error paths, image loading, keyboard/focus and reduced-motion behavior. Separately validate WeChat DevTools and real supported devices with your own AppID. Build/path checks are not evidence of those interactions.
 
-Before publishing, replace simulation APIs, confirm asset rights, audit the pinned dependency graph, supply authentication/authorized transaction APIs and platform disclosures, and review network/domain permissions. The official compiler basis retains Vue 3.4 and upstream `vue-i18n` 9, which its publisher marks unsupported; the starter's security-patched Vite toolchain and scoped input patch are documented in `DEPENDENCIES.md`. Do not independently bump framework internals to silence package warnings; migrate the uni release family coherently and repeat platform validation. This template does not expand Varo's commercial/support boundaries or configure a production backend/payment service.
+Before publishing, connect real services, confirm asset rights, audit dependencies, supply authentication and authorized transaction APIs, and review platform disclosures and network permissions. The compiler uses Vue 3.4 and upstream `vue-i18n` 9, which is unsupported. See `DEPENDENCIES.md` for Vite security fixes and the input patch. Update the uni release family together and repeat platform checks; do not bump internals just to silence warnings. The template adds no commercial/support commitments or production backend/payment service.

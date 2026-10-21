@@ -1,6 +1,6 @@
 # AgentFilterTable
 
-使用状态 chips 实时过滤 Agent 数据。
+通过状态标签实时筛选 Agent 数据。
 
 ## 案例
 

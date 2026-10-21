@@ -1,6 +1,6 @@
 # RegionPicker
 
-`VRegionPicker` is a controlled hierarchical selector. It owns level navigation, shortcuts, disabled state, confirmation, and async root/child loading feedback; API implementation, caching policy, authorization, and coordinate resolution stay in application code.
+`VRegionPicker` is a controlled hierarchical region selector. It supports level navigation, shortcuts, disabled states, and confirmation, and displays loading feedback for async root and child requests. Application code handles API calls, caching policy, authorization, and coordinate resolution.
 
 ## Demo
 
@@ -68,7 +68,7 @@ async function loadChildren(context: VaroRegionLoadContext) {
 
 The list exposes `aria-busy` while loading. On failure it retains the current breadcrumbs and renders a retry action. Children returned by the current component instance stay cached, so loaded nodes are not requested again.
 
-Replacing or mutating `options` preserves the current draft path and the level being browsed. Removed nodes truncate the draft at the first missing level; reconciliation does not emit `change` or commit events. Until the user selects a region, arriving options continue to resolve the parent's `modelValue`. Parent value changes and visibility changes start a fresh draft from that value. Cancel only requests a close and never commits; reopening restores the parent selection.
+Changing or replacing `options` preserves the current draft path and the level being browsed. If a node is removed, the draft ends at the first missing level without emitting `change` or commit events. Until the user selects a region, new options use the parent's `modelValue` to determine the selection. Parent value changes and visibility changes start a fresh draft from that value. Cancel requests a close without submitting the draft; reopening restores the parent selection.
 
 If a selected node becomes disabled, its path remains displayed. Confirmation, shortcuts, and automatic confirmation require every node in the path, including its ancestors, to be enabled. Re-enabling the path permits confirmation again.
 

@@ -1,6 +1,6 @@
 # AgentToolApproval
 
-Review tool details, allow once, remember access, or deny execution.
+Review tool details and choose: allow once, remember access, or deny execution.
 
 ## Demo
 

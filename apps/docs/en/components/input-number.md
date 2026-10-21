@@ -4,7 +4,7 @@
 
 <FormComponentDemo example="input-number" locale="en" />
 
-H5 defaults to a compact 128px minimum width. The mini-program renderer uses a 146px minimum width, retaining touch areas at least 44px high for the increment/decrement buttons and numeric input. Set width explicitly through `class` or the parent layout when a full-width control is required.
+Default minimum widths are 128px on H5 and 146px in mini programs, where the increment/decrement buttons and numeric input have touch areas at least 44px high. Use `class` or the parent layout to fill the container.
 
 ## Decimal
 
@@ -12,7 +12,7 @@ Use `step` for increments and `precision` for decimal formatting.
 
 The mini-program renderer commits on blur: it preserves text while editing, then normalizes the displayed value using `min`, `max`, and `precision`. It corrects out-of-range text even when the accepted number is unchanged, without repeating `update:value` or `change`.
 
-H5 retains its input-time numeric updates and reconciles the displayed text with the accepted number after blur, preventing out-of-range text from disagreeing with the actual filter value.
+H5 updates numbers during input and adjusts the text on blur to match the accepted number, so out-of-range text does not misrepresent the filter value.
 
 ## Props
 

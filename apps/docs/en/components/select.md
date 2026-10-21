@@ -1,6 +1,6 @@
 # Select
 
-`VSelect` is the low-level Base Kit select component for forms, filters, and secondary business wrappers. The H5 / full Vue wrapper and the native Registry component installed by `--target weapp` target different runtimes; use the API section for the version you consume.
+`VSelect` is a Base Kit selection component for forms, filters, and business wrappers. The H5 / full Vue wrapper and the native Registry component installed by `--target weapp` have different runtimes and APIs; use the corresponding section.
 
 ## Demo
 
@@ -8,7 +8,7 @@
 
 ## H5 / Full Vue Wrapper
 
-The H5 Registry entry and full Vue wrapper use `picker` mode by default. Their controlled contract uses `v-model:value`, `value`, `update:value`, and `valueChange`.
+The H5 Registry entry and full Vue wrapper use `picker` mode by default. Control the selected value with `v-model:value`, `value`, `update:value`, and `valueChange`.
 
 ### Multiple Selection And Confirm
 
@@ -16,13 +16,13 @@ Multiple selection confirms draft changes by default. Set `:confirmable="false"`
 
 ### Search And Dropdown
 
-Use `filterable` to type and filter local options directly in the Select field; the open panel does not render a second search input. Use `mode="dropdown"` for dropdown presentation.
+Use `filterable` to search local options directly in the Select field, without a second search input in the panel. Use `mode="dropdown"` for dropdown presentation.
 
 ### Readonly And Disabled
 
-`readonly` keeps the component operable: it can still open, close, and browse options, but it never updates the selected value or emits clear or multiple-confirm commits. Switching to readonly while a panel is open also discards an unconfirmed draft. `disabled` blocks opening and value mutation and does not provide a readonly browsing entry.
+`readonly` allows opening, closing, and browsing options, but blocks value changes, clearing, and multiple-selection confirmation. Enabling it while the panel is open discards the unconfirmed draft. `disabled` blocks opening and value changes, with no readonly browsing mode.
 
-On H5, a readonly `filterable` field uses the native readonly input contract.
+On H5, a readonly `filterable` field uses the input element's native readonly behavior.
 
 Name the field with `aria-label` or `aria-labelledby`. These attributes label the actual `combobox` button or search input, keeping its selected value separate.
 
@@ -61,9 +61,9 @@ Name the field with `aria-label` or `aria-labelledby`. These attributes label th
 
 ## Native Registry Weapp
 
-`--target weapp` installs the native Wevu SFC at `src/components/ui/select.vue` with a smaller runtime contract. `readonly` can still open, close, and browse options, but it does not update the selected value; the clear action and filter input are unavailable. Because a native mini-program input cannot reliably express the same readonly contract, `filterable + readonly` uses the button-style trigger.
+`--target weapp` installs the native Wevu SFC at `src/components/ui/select.vue` with fewer APIs. `readonly` allows opening, closing, and browsing options, but blocks value changes, clearing, and filter input. Native inputs cannot reliably support this readonly behavior, so `filterable + readonly` uses a button-style trigger.
 
-Multiple selection has no draft or confirmation commit: every option click updates the value immediately. The bottom completion (`完成`) button only closes the panel; it does not commit again or emit a confirmation event.
+Multiple selection has no draft or confirmation step: every option click updates the value immediately. The bottom completion (`完成`) button only closes the panel; it does not submit the value again or emit a confirmation event.
 
 Reopening a filterable field keeps the selected label until typing starts; clearing the search does not clear the selection. Tapping outside closes the panel and restores the selected label. In single-selection mode, choosing any enabled option closes the panel, including the current option; an unchanged value does not emit a duplicate value update.
 
@@ -79,8 +79,8 @@ While open, the selected label uses the muted text color until search input star
 | `disabled`    | `boolean`                                                               | `false`     | Blocks opening and value changes                                                                                 |
 | `readonly`    | `boolean`                                                               | `false`     | Allows browsing but blocks value changes, clearing, and filter input                                             |
 | `clearable`   | `boolean`                                                               | `false`     | Shows the clear action for an editable selected value after click or focus opens the panel; hides it when closed |
-| `multiple`    | `boolean`                                                               | `false`     | Enables multiple selection with immediate per-option commits                                                     |
-| `filterable`  | `boolean`                                                               | `false`     | Performs a local label-contains match and emits search input                                                     |
+| `multiple`    | `boolean`                                                               | `false`     | Enables multiple selection; each option click updates the value immediately                                      |
+| `filterable`  | `boolean`                                                               | `false`     | Filters options whose labels contain the search text and emits search input                                      |
 
 ### Events
 
@@ -94,5 +94,5 @@ While open, the selected label uses the muted text color until search input star
 Native Registry Weapp does not provide `mode`, `max`, `confirmable`, `filterOption`, `loading`, or `emptyText`, and it does not emit `valueChange`, `open`, `close`, `confirm`, `cancel`, or `limit`.
 
 ::: info Wrapper boundary
-Grouped options, remote search, and async paging belong in secondary wrappers. Business components should wrap `VSelect` to create `UserSelect`, `DepartmentSelect`, `CitySelect`, and `ProductSelect`.
+Base Kit does not provide grouped options, remote search, or async paging. Implement them by wrapping `VSelect` in business components such as `UserSelect`, `DepartmentSelect`, `CitySelect`, and `ProductSelect`.
 :::

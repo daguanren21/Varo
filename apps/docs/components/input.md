@@ -106,13 +106,15 @@ Weapp 无法区分省略 `value` 与 `:value="undefined"`，两者都会使用 `
 
 | Event          | Payload                                       | 描述                                 |
 | -------------- | --------------------------------------------- | ------------------------------------ |
-| `update:value` | `string`                                      | 一次被接受的实际值变化触发一次       |
+| `update:value` | `string`                                      | 值实际改变且修改被接受时，触发一次   |
 | `valueChange`  | `string`                                      | 与该次 `update:value` 对应，触发一次 |
 | `clear`        | H5: `MouseEvent`；原生: 宿主事件（`unknown`） | 接受清空后触发一次                   |
 | `focus`        | H5: `FocusEvent`；原生: 宿主事件（`unknown`） | 聚焦                                 |
 | `blur`         | H5: `FocusEvent`；原生: 宿主事件（`unknown`） | 失焦                                 |
 
-`disabled` / `readonly` 拒绝输入、格式化和清空导致的值修改。格式化后值未变、重复相同值或空值清空时不发出变化事件；空值清空也不发出 `clear`。受控时事件是请求，父组件更新 `value` 后才改变显示。原生事件不是浏览器 DOM 对象，不依赖 `MouseEvent` / `FocusEvent` 方法。
+`disabled` / `readonly` 会阻止输入、格式化和清空操作修改值。格式化后值未变、输入与当前值相同或清空空值时，不会发出变化事件；清空空值也不会发出 `clear`。受控模式下，事件用于请求更新，父组件更新 `value` 后显示才会改变。
+
+原生事件不是浏览器 DOM 对象，处理时不要依赖 `MouseEvent` / `FocusEvent` 方法。
 
 ## Slots
 

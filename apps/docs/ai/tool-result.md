@@ -33,7 +33,7 @@ const open = ref(false)
 </template>
 ```
 
-显式 `open=false` 始终优先于 `defaultOpen` 和状态。点击仅发出 `update:open` 请求；父级不更新时界面不变。省略 `open` 时由组件自己切换：初次挂载遇到 `running` 或 `failed` 会展开，其余状态使用 `defaultOpen`。后续状态变化不会重新打开用户已关闭的结果。状态文案使用统一的“等待中 / 进行中 / 已完成 / 失败”。`retry` 仍是交给应用处理的意图事件，组件不执行工具。
+显式 `open=false` 优先于 `defaultOpen` 和状态。点击只发出 `update:open`，父级不更新则界面不变。省略 `open` 时由组件切换：初始状态为 `running` 或 `failed` 时展开，其余使用 `defaultOpen`。后续状态变化不会重新打开用户已关闭的结果。状态文案为“等待中 / 进行中 / 已完成 / 失败”。应用收到 `retry` 后自行处理重试，组件不执行工具。
 
 ## Props
 

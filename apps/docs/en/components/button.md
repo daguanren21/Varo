@@ -5,7 +5,7 @@
 <PlatformTabsDemo example="button" locale="en" />
 
 ::: info Interaction
-Buttons retain the 44px default target and existing semantic colors. Press feedback uses a short 140ms scale plus inset shadow; Ghost stays transparent until hover or press. Spatial scaling is removed under reduced motion.
+Buttons have a default target height of 44px and support semantic colors. Pressing a button applies a slight scale and inset shadow over 140ms. Ghost buttons stay transparent until hover or press. With reduced motion enabled, buttons do not scale.
 :::
 
 ## Basic Usage
@@ -126,28 +126,28 @@ On Weapp, put a `VButton` with `native-type="submit"` / `"reset"` inside a nativ
 The browser compatibility preview supports form values, submit, and reset. `tap` cancellation is verified only for mouse before touch, touch, and keyboard (including after touch). It provides no WeChat `formId` reporting and is not DevTools or device verification.
 
 ::: warning Unfixed: touch followed by a physical mouse
-In the same preview session, touch followed by a physical mouse makes `glass-easel@1.1.0` suppress mouse `tap`, so cancellation handlers do not run. Canceled submit/reset actions can still execute, and reset clears edited fields. This sequence failed verification.
+After touch input in a preview session, `glass-easel@1.1.0` suppresses `tap` from a physical mouse, so cancellation handlers do not run. Submit or reset actions that should be canceled can still execute, and reset clears edited fields. This sequence failed verification.
 :::
 
 ## Props
 
-| Prop              | Type                                                           | Default     | Description                                         |
-| ----------------- | -------------------------------------------------------------- | ----------- | --------------------------------------------------- |
-| `variant`         | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | Visual variant                                      |
-| `tone`            | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Semantic tone                                       |
-| `size`            | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | Button size                                         |
-| `shape`           | `'default' \| 'square' \| 'round'`                             | `'default'` | Button shape                                        |
-| `plain`           | `boolean`                                                      | `false`     | Plain button, mapped to outline styling             |
-| `hairline`        | `boolean`                                                      | `false`     | Hairline border marker                              |
-| `block`           | `boolean`                                                      | `false`     | Fill the parent width                               |
-| `icon`            | `string`                                                       | `undefined` | Icon text or icon name for the style layer          |
-| `iconPosition`    | `'left' \| 'right'`                                            | `'left'`    | Icon position                                       |
-| `loading`         | `boolean`                                                      | `false`     | Loading state, blocks clicks                        |
-| `loadingText`     | `string`                                                       | `undefined` | Replaces default content while loading              |
-| `disabled`        | `boolean`                                                      | `false`     | Disabled state                                      |
-| `color`           | `string`                                                       | `undefined` | Custom button color                                 |
-| `foregroundColor` | `string`                                                       | `undefined` | Required foreground for non-hex solid custom colors |
-| `nativeType`      | `'button' \| 'submit' \| 'reset'`                              | `undefined` | Native button type                                  |
+| Prop              | Type                                                           | Default     | Description                                                  |
+| ----------------- | -------------------------------------------------------------- | ----------- | ------------------------------------------------------------ |
+| `variant`         | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | Visual variant                                               |
+| `tone`            | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Semantic tone                                                |
+| `size`            | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | Button size                                                  |
+| `shape`           | `'default' \| 'square' \| 'round'`                             | `'default'` | Button shape                                                 |
+| `plain`           | `boolean`                                                      | `false`     | Plain button, mapped to outline styling                      |
+| `hairline`        | `boolean`                                                      | `false`     | Hairline border marker                                       |
+| `block`           | `boolean`                                                      | `false`     | Fill the parent width                                        |
+| `icon`            | `string`                                                       | `undefined` | Icon text or icon name for the style layer                   |
+| `iconPosition`    | `'left' \| 'right'`                                            | `'left'`    | Icon position                                                |
+| `loading`         | `boolean`                                                      | `false`     | Loading state, blocks clicks                                 |
+| `loadingText`     | `string`                                                       | `undefined` | Replaces default content while loading                       |
+| `disabled`        | `boolean`                                                      | `false`     | Disabled state                                               |
+| `color`           | `string`                                                       | `undefined` | Custom button color                                          |
+| `foregroundColor` | `string`                                                       | `undefined` | Required when a custom solid button color is not a hex value |
+| `nativeType`      | `'button' \| 'submit' \| 'reset'`                              | `undefined` | Native button type                                           |
 
 ## Slots
 

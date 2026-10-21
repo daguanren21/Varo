@@ -1,6 +1,6 @@
 # AgentSelectionActions
 
-Agent actions such as explain, improve, or shorten for selected text.
+Offers Agent actions to explain, improve, or shorten selected text.
 
 ## Demo
 

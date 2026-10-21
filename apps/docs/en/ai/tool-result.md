@@ -33,7 +33,7 @@ const open = ref(false)
 </template>
 ```
 
-Explicit `open=false` takes precedence over `defaultOpen` and status. Clicking emits an `update:open` request and waits for the parent to accept it. When `open` is omitted, the component owns toggling: an initial `running` or `failed` status opens the result; other initial states use `defaultOpen`. Later status changes never reopen a result the user closed. Status text uses the canonical labels 等待中 (waiting), 进行中 (running), 已完成 (completed), and 失败 (failed). `retry` remains an application-owned intent event; the component does not execute tools.
+Explicit `open=false` overrides `defaultOpen` and status. Clicking emits `update:open`; the display changes only when the parent updates it. Without `open`, the component manages expansion: initial `running` or `failed` states open the result; other states use `defaultOpen`. Later status changes never reopen a result the user closed. Status labels are 等待中 (waiting), 进行中 (running), 已完成 (completed), and 失败 (failed). Handle `retry` in your application; the component does not execute tools.
 
 ## Props
 

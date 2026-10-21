@@ -1,6 +1,6 @@
 # Radio Group
 
-Single-select runtime: Group owns value, Item represents options, Indicator renders the selected mark.
+A radio group composed from Group, Item, and Indicator.
 
 ## Runtime
 
@@ -12,19 +12,19 @@ State contracts come from `@varo-ui/headless`. Parts and interactive examples on
 
 ## Basic usage
 
-The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
+The H5 panel provides interactive Parts and their code. The native tab shows source and support evidence, without a live mini-program preview.
 
 ## Disabled item
 
-Set `disabled` on `RadioItem` to keep the group value contract while blocking one option.
+Set `disabled` on `RadioItem` to disable that option without changing how the group value works.
 
 ## Parts
 
-| Part             | Purpose                 |
-| ---------------- | ----------------------- |
-| `RadioGroup`     | Group value and context |
-| `RadioItem`      | One option              |
-| `RadioIndicator` | Selected indicator      |
+| Part             | Purpose                                         |
+| ---------------- | ----------------------------------------------- |
+| `RadioGroup`     | Manages the selected value and provides context |
+| `RadioItem`      | One option                                      |
+| `RadioIndicator` | Selected indicator                              |
 
 ## Props
 
@@ -47,19 +47,18 @@ Set `disabled` on `RadioItem` to keep the group value contract while blocking on
 
 ## Events
 
-| Event          | Payload            | Description              |
-| -------------- | ------------------ | ------------------------ |
-| `update:value` | `string \| number` | Sync controlled value    |
-| `valueChange`  | `string \| number` | Fires when value changes |
+| Event          | Payload            | Description                           |
+| -------------- | ------------------ | ------------------------------------- |
+| `update:value` | `string \| number` | Sync the controlled selected value    |
+| `valueChange`  | `string \| number` | Fires when the selected value changes |
 
 ## Accessibility
 
-- Group value determines the selected item.
+- The group value determines the selected item; Indicator only displays that state.
 - Disabled items cannot be selected.
-- Indicator reflects state only.
 
 ::: info Platform notes
 
 - H5 and mini-program share the value/disabled contract.
-- Mini-program keyboard focus stays page-owned.
+- The page manages keyboard focus in mini-programs.
   :::

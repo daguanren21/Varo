@@ -67,5 +67,5 @@ const visible = ref(false)
 | `default` | Custom overlay content |
 
 ::: info Primitives
-`OverlayRoot` uses `useOverlayRoot` for controlled/uncontrolled state and click-close behavior. H5 and Weapp primitives both reuse `useBodyScrollLock`.
+The H5 render component `OverlayRoot` and native Wevu Registry SFC share `useOverlayRoot` from `@varo-ui/headless` for controlled/uncontrolled visibility and closing on click. `useBodyScrollLock` is H5-only.
 :::

@@ -4,7 +4,7 @@
 
 [Documentation](https://varo.weapp.dev/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm organization](https://www.npmjs.com/org/varo-ui)
 
-Varo is a registry-first component system for Vue 3 mobile H5 applications and `weapp-vite` mini programs. Its primary product is editable, target-specific component and Block source code that becomes part of the consuming application—not an opaque cross-platform UI runtime.
+Varo provides components and Blocks for Vue 3 mobile H5 applications and `weapp-vite` mini programs. Install source for your target through the Registry, then edit and maintain it in your application.
 
 ## Published packages
 
@@ -29,19 +29,19 @@ Varo is a registry-first component system for Vue 3 mobile H5 applications and `
 
 ## Product boundary
 
-- The high-consensus Weapp Registry is based on the overlapping capabilities of [Vant Weapp](https://vant-ui.github.io/vant-weapp/), [NutUI](https://nutui.jd.com/h5/vue/4x/), [TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview), and [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview).
+- The core Weapp Registry components draw on features shared by [Vant Weapp](https://vant-ui.github.io/vant-weapp/), [NutUI](https://nutui.jd.com/h5/vue/4x/), [TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview), and [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview).
 - Motion and Agent interaction patterns reference [Beautiful UI](https://www.beautifului.dev/) and [beUI](https://beui.dev/), while production code remains native to Vue and mini-program runtimes.
-- Component availability comes from each `registry/**/registry.json` manifest and its complete dependency closure. A browser example or a component in the H5 catalog does not imply native availability.
+- A component's supported platforms are declared in its `registry/**/registry.json` manifest and those of all its dependencies. An H5 catalog entry or browser example does not establish native support.
 - H5 streaming uses [Markstream Core](https://github.com/Simon-He95/markstream-vue) scheduling and Markdown parsing. Mini programs use the same protocol and AST with a timed scheduler that does not depend on `requestAnimationFrame`.
-- [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json) records product tiers; installation admission is owned by the manifests and the profile table in [`packages/registry/src/index.ts`](./packages/registry/src/index.ts).
+- [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json) records product tiers. The manifests and profile table in [`packages/registry/src/index.ts`](./packages/registry/src/index.ts) determine which platforms an installation supports.
 
 ## Source ownership
 
-Author component renderers in `registry/components/**`, Blocks in `registry/blocks/**`, and styles in `registry/themes/**`. `pnpm sync:registry` generates the H5 renderer projections in `packages/ui-h5/src`, the native npm tree in `packages/ui-weapp/native`, repository playground installs, and the docs Agent source/support catalog. Do not edit those projections directly.
+Write components in `registry/components/**`, Blocks in `registry/blocks/**`, and styles in `registry/themes/**`. Run `pnpm sync:registry` to generate `packages/ui-h5/src`, `packages/ui-weapp/native`, playground copies, and the docs Agent source and support catalog. Make changes in the Registry source; generated files should not be edited directly.
 
-`packages/shared` owns the single neutral `ReactiveRuntime` contract. `@varo-ui/headless` exposes neutral behavior; H5 owns DOM rendering, focus, and body-scroll locking. Native SFCs bind headless behavior to `wevu` without importing Vue render primitives.
+`packages/shared` defines the shared `ReactiveRuntime` interface. `@varo-ui/headless` provides framework- and platform-neutral interaction logic. H5 handles DOM rendering, focus, and body-scroll locking; native SFCs use the headless logic through `wevu`, without Vue render primitives.
 
-`themes/base` contains tokens and foundation rules only. Ordinary component CSS has one manifest owner; Agent tokens/helpers are optional `themes/agent` dependencies. H5 source imports its complete dependency CSS closure. Native `apply-shared` components instead receive that closure from the application stylesheet.
+`themes/base` contains tokens and foundation rules. Each component's manifest declares its CSS; Agent tokens and helpers come from the optional `themes/agent` dependency. H5 source imports all CSS needed by the component and its dependencies. Native `apply-shared` components load those styles through the application stylesheet.
 
 ## Deployment profiles
 
@@ -56,9 +56,9 @@ Author component renderers in `registry/components/**`, Blocks in `registry/bloc
 | `donut-ios`     | `weapp`  | `weapp`           | Donut iOS / experimental                |
 | `donut-ohos`    | `weapp`  | `weapp`           | Donut OpenHarmony / experimental        |
 
-The six experimental profiles require explicit admission for every item in the selected transitive closure. Missing admission fails before writes; the CLI never falls back to Weapp. The representative admitted component set is `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with required utilities/themes. Manifests remain authoritative; this is not certification of the wider catalog or Agent UI on those profiles.
+To install one of the six experimental profiles, the selected components and every dependency must explicitly support it. If any item does not, the CLI fails before writing files instead of falling back to Weapp. Representative supported components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with their required utilities and themes. Check the manifests for the exact list. This does not certify the full catalog or Agent UI on those platforms.
 
-Use `weapp-vite` and `wevu` **7.5.0** for the repository fixtures. The native package peers remain `>=7.2.1 <8`. Donut uses WeChat compilation plus separate `mini-android`, `mini-ios`, or `mini-ohos` host metadata, not an Android/iOS/OpenHarmony compiler target. SDK installation, signing, AppIDs, vendor IDEs, and device execution remain separate prerequisites; no identities or credentials are fabricated.
+Repository fixtures use `weapp-vite` and `wevu` **7.5.0**; native package peers accept `>=7.2.1 <8`. Donut uses the WeChat compiler and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. It has no separate Android, iOS, or OpenHarmony compiler target. You still need SDKs, vendor IDEs, registered AppIDs, signing, and device checks. The repository does not supply identities or credentials.
 
 ## Install editable source
 
@@ -87,7 +87,7 @@ pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 pnpm dlx @varo-ui/cli add --target weapp action-sheet collapse dialog list notice-bar popover skeleton steps
 ```
 
-The CLI reports npm dependencies but does not install them. It does not overwrite existing files by default. Use `--force` only after reviewing local customizations; it replaces files and does not merge downstream edits.
+Install the npm dependencies listed by the CLI yourself. Existing files are kept by default. Review local customizations before using `--force`, which replaces files without merging your changes.
 
 For native source installs, load **every installed `src/styles/*.css` file globally** using `weapp.styles` entries with `include: 'app.vue'`, with `varo.css` first. Do not import these global styles from component-local WXSS: page tokens and global selectors do not belong there. Native npm consumers put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and register `{ source: 'package.css', include: 'app.vue' }` globally, not an absolute package path. See the [native package setup](./packages/ui-weapp/README.md) and [`apps/platform-smoke/vite.config.mjs`](./apps/platform-smoke/vite.config.mjs).
 
@@ -99,7 +99,7 @@ For native source installs, load **every installed `src/styles/*.css` file globa
 4. **Styles:** stop treating `themes/base` as a monolithic component/Agent stylesheet. Reinstall the required item closure and apply the native global loading rule above; H5 installed source brings its dependency CSS imports.
 5. **Agent installs:** choose `components/agent-conversation`, `components/agent-workspace`, `components/agent-advanced`, or `components/agent-rag` as needed. `components/agent-presentation` owns pure shared types/helpers. `blocks/agent-chat` selects conversation dependencies, not advanced/RAG/fine-tuning UI; `components/agent-ui` deliberately selects the full suite. Approval, network, retry, and cancellation execution policy remains application-owned.
 
-Input disabled/readonly states reject mutation; accepted changes emit once and no-ops emit no change. Drawer `openChange` cancellation is synchronous and precedes state mutation, model updates, and close notification. Update handlers to these contracts rather than retaining old forwarding behavior.
+Input rejects edits while disabled or readonly. It notifies once when a value changes and sends no change event when the value stays the same. Cancel Drawer `openChange` synchronously in the handler to prevent the subsequent state change, model update, and close notification. Update existing handlers to follow these rules and remove the old event forwarding logic.
 
 ## Playground
 
@@ -110,7 +110,7 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 `dev:ai` prepares the WeChat DevTools project, starts the MCP HTTP service, and forwards DevTools console output and uncaught errors to the active terminal.
 
-Native Blocks used exclusively by `blocks-lab` are projected into `apps/playground-weapp/src/blocks-lab/components/blocks/`; shared UI, Agent components, and helpers remain in the main source tree. `pnpm sync:registry` owns this app-only placement and import rewriting. Public Registry installs still use `src/components/blocks/`. The production build rejects a main package above 2 MiB and any synchronous reference into an unavailable sibling subpackage.
+Native Blocks used only by `blocks-lab` are generated in `apps/playground-weapp/src/blocks-lab/components/blocks/`. Shared UI, Agent components, and helpers stay in the main source tree. `pnpm sync:registry` handles these paths and import changes; public Registry installations still use `src/components/blocks/`. The production build rejects a main package above 2 MiB or a synchronous reference to an unavailable sibling subpackage.
 
 After native compilation, `localize-native-components.mjs` places subpackage-only component artifacts beside their consumers while keeping shared scripts and assets at their existing paths. CSS `url(...)` and quoted or URL-form `@import` references are decoded before resolving files and escaped when rebased, including CSS hexadecimal escapes, spaces, quotes, parentheses, and query/hash suffixes. External and data URLs retain their spelling. Missing dependencies and destination conflicts reject before any compiler output is changed; the production and exported-starter style verifiers use the same CSS reference parser.
 
@@ -137,16 +137,16 @@ pnpm check:consumers
 pnpm check:platforms
 ```
 
-- `sync:registry` regenerates owned projections; `check:generated` rejects drift, including obsolete outputs recorded in `scripts/registry-projections.json`, without writing. Sync deletes obsolete files only when their bytes match the recorded digest; modified obsolete files and newly claimed authored paths reject before that owner's mutations. Authored renderers receiving generated style imports are never deletion-owned. Preflight protection is per generator invocation, not a transaction across all three scripts or a rollback guarantee for disk failures; do not run concurrent writers or delete the inventory to bypass a conflict.
-- `check:architecture` checks neutral/runtime/tooling import boundaries and rejects obsolete Vue-native renderer imports.
-- After generation and builds, `check:consumers` exercises packed public packages and fresh CLI source installs in isolated consumers. It checks published dependency/entrypoint isolation, H5/native compilation, source/style closure, minimal Agent Chat installs, and fail-closed profile roundtrips; it is not a device test.
-- `check:platforms` builds and checks all seven native compiler/artifact profiles. To select one, use `pnpm --filter @varo/platform-smoke build:alipay` (or another native profile). `verify:alipay` checks existing artifacts without rebuilding.
+- `sync:registry` generates files; `check:generated` checks for drift, including obsolete outputs in `scripts/registry-projections.json`, without writing. Sync deletes obsolete files only if their bytes match the recorded digest. If an obsolete output was edited, or a new output path conflicts with an authored file, that generator fails before writing. Authored renderers receiving style imports are never deleted. Preflight applies per generator, without a transaction across all three scripts or disk-failure rollback. Do not run writers concurrently or delete the inventory to bypass conflicts.
+- `check:architecture` checks imports between shared logic, runtime code, and tooling, rejecting old Vue-native renderer imports.
+- After generation and builds, `check:consumers` checks packed packages and fresh CLI installations in isolated projects: dependency/entrypoint isolation, H5/native compilation, complete source/style dependencies, minimal Agent Chat installs, and profile roundtrips with rejection of unsupported profiles. It does not run devices.
+- `check:platforms` builds and checks seven native profiles. Use `pnpm --filter @varo/platform-smoke build:alipay` for one platform; `verify:alipay` checks existing artifacts.
 - `test:e2e:runner` checks runner gates and native locator semantics. `aria-hidden` excludes nodes and descendants from role queries without hiding their pixels or blocking explicit XPath actions; visually hidden and disabled controls remain non-actionable.
 - Native custom-event listeners must preserve the declared event spelling, such as `@update:modelValue`. Wevu normalizes colon events to lowercase with `:` replaced by `-`; adding a hyphen inside `modelValue` changes the event name and prevents the model update.
 
-The native fixture IDE/artifact root is exactly `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`; application files are in its nested `dist/`. Checks follow reachable component files, platform markup/event bindings, global style closure, IDE paths, and Donut host metadata. These commands do **not** prove simulator/device behavior, SDK packaging, signing, or approval by an independent verifier. To open an artifact, use the corresponding `open:<profile>` command with your registered AppID and installed vendor tools; missing prerequisites fail explicitly.
+Native artifacts are in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`, with application files in the nested `dist/`. Checks cover component references, templates and events, complete global styles, IDE paths, and Donut host metadata. Simulators, devices, SDK packaging, signing, and independent release review need separate verification. To use `open:<profile>`, supply a registered AppID and vendor tools; missing prerequisites fail the command.
 
-The Realworld fixture creates its app-owned manager with `createAedPinia()` in [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts). Install it before creating stores: native `app.vue` calls `use(pinia)`; local runtime consumers use `createApp({}).use(manager)`. Its plugin persists only the AED store through `$subscribe`, preserving the `realworld-weapp-state` storage format, including nested-only updates. Navigation payloads remain transient, and disposing a store/manager releases persistence. Do not replace this with a setup-local deep watch or a bare, unconfigured `createPinia()` when persistence is required. Local store/bootstrap smoke does not execute real `wx.login`, update checks, or device launch.
+Realworld creates its manager with `createAedPinia()` in [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts). Install it before creating stores: call `use(pinia)` in native `app.vue` or `createApp({}).use(manager)` in local consumers. Through `$subscribe`, the plugin persists only the AED store in `realworld-weapp-state` format, including nested updates. Navigation data stays transient; disposing the store or manager releases subscriptions. Keep this configuration for persistence, rather than a setup-local deep watch or bare `createPinia()`. Local checks do not run `wx.login`, update checks, or device launch.
 
 Use pnpm `11.24.0` and Node `^22.18.0 || ^24.11.0 || >=26.0.0`. Vitest 5 and tsdown 0.23 exclude Node 25. TypeScript remains on 6.x for `vue-tsc` and the compiler API used by the native-artifact preview; jsdom remains on 29.x because 30.x requires newer Node patch versions than this workspace's supported minimums.
 

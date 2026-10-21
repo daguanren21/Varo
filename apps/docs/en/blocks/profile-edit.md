@@ -15,7 +15,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/profile-edit
 
 ## Boundary
 
-The Block owns typed local form composition only. APIs, authentication, remote city dictionaries, and persistence policy stay in the business wrapper. Products inject `initialProfile` and `cities`, then handle `submit` / `cancel`.
+The Block composes a local form and emits typed events. The application supplies `initialProfile` and `cities`, handles `submit` / `cancel`, and provides APIs, authentication, remote city dictionaries and persistence policy.
 
 ## Related
 

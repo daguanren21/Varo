@@ -1,6 +1,6 @@
 # Cross-runtime Showcase
 
-This is Varo's public cross-runtime showcase. Choose an adoption path, then distinguish H5 browser interaction, native source/support evidence, compiled-artifact browser previews, and WeChat DevTools snapshots. Repository playgrounds remain maintainer QA surfaces, not the public installation path. None of these evidence categories substitutes for device validation.
+Try H5 components and inspect native source and runtime screenshots here. Repository playgrounds are for maintainer QA; use the public installation paths below for your application.
 
 ## Choose an Adoption Path
 
@@ -21,7 +21,7 @@ This is Varo's public cross-runtime showcase. Choose an adoption path, then dist
     <span>RUNTIME PACKAGE</span>
     <h3>Centralized H5 Runtime</h3>
     <code>pnpm add @varo-ui/h5</code>
-    <p>Consumes the published package when coordinated upgrades are intentional.</p>
+    <p>Use the published H5 package when you need coordinated component upgrades.</p>
   </article>
 </div>
 
@@ -29,17 +29,17 @@ Registry installation is the default path. Start with the [installation guide](/
 
 ## H5 Live and Native Source Evidence
 
-The H5 tab runs real, directly operable `@varo-ui/h5` browser components. The native tab shows target Wevu SFC source and support information only; it no longer renders Vue components as an “equivalent mini program” or claims to execute a native runtime on this page.
+The H5 tab runs interactive `@varo-ui/h5` browser components. The native tab displays target Wevu SFC source and support information; it neither simulates mini-programs with Vue nor runs a native runtime.
 
 <PlatformTabsDemo example="overview" locale="en" />
 
 ## Weapp DevTools Verified: Compiled Blocks {#weapp-devtools-evidence}
 
-All **13 native Blocks** were recaptured on **2026-10-05** in the **375px WeChat DevTools simulator**, using pages built by `weapp-vite` and executed in the native runtime. System bars and simulator edges are cropped out. See the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and an [example screenshot](../../blocks/login-form.png); the link beneath each card opens its full-resolution image.
+All **13 native Blocks** were recaptured on **2026-10-05** in the **375px WeChat DevTools simulator**, from pages built by `weapp-vite` and run in the native runtime. Images exclude system bars and simulator edges. See the [capture script](https://github.com/daguanren21/Varo/blob/main/apps/playground-weapp/e2e/capture-blocks.mjs) and [example screenshot](../../blocks/login-form.png), or open the full-resolution image beneath each card.
 
-The six dual-renderer Blocks have H5 browser captures updated on **2026-10-05**. Selecting H5 changes the image, install command, and usage code together. Captures cover only the version at capture time; images from one target are not runtime evidence for another.
+H5 browser captures for the six dual-renderer Blocks were updated the same day. Selecting H5 changes the image, installation command and usage code together.
 
-These dated historical screenshots are not a live regression run for the current source cutover and do not certify the six experimental profiles or devices. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for exact current admission and compiler-check scope.
+Screenshots record only the captured version. They do not validate current source, another target's runtime, the six experimental profiles or devices. See [Installation](/en/guide/installation#install-profiles-and-support-boundaries) for current admission and compiler-check scope.
 
 <MiniProgramBlocksGallery locale="en" />
 

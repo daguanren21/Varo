@@ -1,6 +1,6 @@
 # FileType
 
-`VFileType` is an independent, stateless file type display. It derives a document graphic and compact type label from a filename and MIME type. It does not read files, fetch URLs, inspect content, or decide upload admission.
+`VFileType` is an independent, stateless component that displays a file icon and short type label based on a filename and MIME type. It does not read files, fetch URLs, inspect content, or decide whether an upload is allowed.
 
 ## Basic usage
 
@@ -50,7 +50,7 @@ Matching ignores filename case and handles POSIX/Windows paths, URL paths, and p
 
 ## Supported scope
 
-This is a finite presentation classifier, not a detector for arbitrary file formats.
+The component displays types for a fixed set of filenames, extensions, and MIME types. It cannot detect arbitrary file formats.
 
 | Family        | Supported extensions or names                                                                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -93,10 +93,10 @@ Both source-installed renderers can import the helper and the `FileTypeInfo`, `F
 | `label`      | `string`               | Automatic type description | Localizable accessible name for a standalone icon |
 | `className`  | `ClassValue`           | —                          | Additional native classes; H5 uses `class`        |
 
-There are no events or mutable internal state. `data-family` and `data-size` expose the display state.
+The component emits no events. `data-family` and `data-size` expose the display state.
 
 ## Attachments and demos
 
-[AgentAttachmentList](/en/ai/attachments) uses decorative `VFileType` icons when `previewUrl` is absent. Preview images always take precedence. `remove` continues to return the original attachment, and the application accepts the removal.
+[AgentAttachmentList](/en/ai/attachments) uses decorative `VFileType` icons when `previewUrl` is absent. Preview images always take precedence. `remove` returns the original attachment; the application decides whether to accept the removal.
 
 The H5 Playground route `?demo=file-type` and native `component-lab/file-type/index` demonstrate common formats, special names, unknown types, long filenames, standalone icons, preview switching, removal, and restoration. Classification never changes upload allowlists, size limits, or server validation.

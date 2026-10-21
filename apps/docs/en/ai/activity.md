@@ -1,6 +1,6 @@
 # AgentActivity
 
-Unified activity stream for reasoning, searches, tools, and traces.
+Displays reasoning, searches, tool calls, and execution traces in one list.
 
 ## Demo
 
@@ -40,7 +40,9 @@ const activity: AgentActivityItem[] = [
 </template>
 ```
 
-Use unique, stable ids. Reordering preserves expansion. Without `expandedIds`, `defaultExpandedIds` initializes local state once and removing an item prunes its internal id. Supplying `expandedIds`, including an empty array, makes the state controlled: updates propose the next ids and refusal leaves the display unchanged. Removed items never rewrite the parent's array. H5 uses native buttons supporting Enter / Space, `aria-expanded`, and `aria-controls`; native taps emit the same array. Status text uses the canonical Chinese labels, plus 排队中 for `queued` and 已取消 for `cancelled`. These are presentation states; they do not execute or retry work.
+Use unique, stable ids to preserve expansion when reordering. Without `expandedIds`, `defaultExpandedIds` initializes local state once, and removed items lose their local expansion records. With `expandedIds`, including an empty array, the component emits the next ids and waits for the parent to update them. Removing items does not change the parent's array.
+
+H5 uses native buttons supporting Enter / Space, `aria-expanded`, and `aria-controls`; native taps emit the same array. Status text uses the standard Chinese labels, plus 排队中 for `queued` and 已取消 for `cancelled`. These states only affect the display; the component does not execute or retry work.
 
 ## Props
 
@@ -65,6 +67,6 @@ Use unique, stable ids. Reordering preserves expansion. Without `expandedIds`, `
 | H5     | Named export from `@/components/agent-ui`                     |
 | weapp  | Default export from `@/components/agent-ui/AgentActivity.vue` |
 
-For native, import `ref` from `wevu` and use the `.vue` default export above. Omitted `expandedIds` and an explicit empty array have different ownership semantics.
+For native, import `ref` from `wevu` and use the `.vue` default export above. Omitting `expandedIds` lets the component manage expansion; passing an empty array puts the parent in control.
 
 :::

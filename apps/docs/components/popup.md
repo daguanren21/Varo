@@ -90,5 +90,5 @@ const visible = ref(false)
 | `closeIcon` | 替换默认 `VIcon` 的自定义关闭图标内容 |
 
 ::: info Primitives
-`PopupRoot` 使用 `usePopupRoot` 管理显隐、遮罩点击和 `Escape` 关闭；UI 包只保留 Varo 风格组件入口。
+`PopupRoot` 通过 `usePopupRoot` 管理显隐、遮罩点击和按 `Escape` 关闭的行为；UI 包仅提供带有 Varo 样式的组件入口。
 :::

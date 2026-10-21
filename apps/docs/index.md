@@ -3,8 +3,8 @@ layout: home
 title: Varo
 hero:
   name: VARO / REGISTRY-FIRST
-  text: Vue 3 + Wevu 的双端移动 UI Registry
-  tagline: 面向同时交付 H5 与微信小程序的产品团队。按目标复制可编辑源码，保留各端原生渲染，并共享稳定的行为契约与 WeChat-green 主题。
+  text: Vue 3 与 Wevu 移动端组件
+  tagline: 为 H5 和微信小程序提供可编辑的组件源码。两端各自使用原生渲染，共享交互规则和 WeChat-green 主题。
   image:
     src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 360'%3E%3Cdefs%3E%3Cpattern id='g' width='24' height='24' patternUnits='userSpaceOnUse'%3E%3Cpath d='M24 0H0V24' fill='none' stroke='%23263d32' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect x='6' y='6' width='348' height='348' rx='18' fill='%230d1712' stroke='%23315040'/%3E%3Crect x='7' y='7' width='346' height='346' rx='17' fill='url(%23g)'/%3E%3Ctext x='24' y='34' fill='%2378e7aa' font-family='ui-monospace,monospace' font-size='11' font-weight='700' letter-spacing='1.5'%3EVARO REGISTRY / TWO RENDERERS%3C/text%3E%3Crect x='20' y='50' width='320' height='120' rx='12' fill='%2313231b' stroke='%23315040'/%3E%3Ctext x='34' y='76' fill='%23f0f8f3' font-family='ui-monospace,monospace' font-size='13' font-weight='700'%3EH5 + VUE 3%3C/text%3E%3Ctext x='34' y='101' fill='%23aabbb2' font-family='ui-monospace,monospace' font-size='10'%3E$ pnpm dlx @varo-ui/cli add%3C/text%3E%3Ctext x='34' y='118' fill='%23aabbb2' font-family='ui-monospace,monospace' font-size='10'%3E--target h5 button%3C/text%3E%3Crect x='34' y='132' width='72' height='24' rx='6' fill='%231a3d29'/%3E%3Ccircle cx='47' cy='144' r='4' fill='%2307c160'/%3E%3Ctext x='57' y='148' fill='%2394efba' font-family='ui-monospace,monospace' font-size='9' font-weight='700'%3EH5 LIVE%3C/text%3E%3Crect x='20' y='182' width='320' height='132' rx='12' fill='%2313231b' stroke='%23315040'/%3E%3Ctext x='34' y='208' fill='%23f0f8f3' font-family='ui-monospace,monospace' font-size='13' font-weight='700'%3EWEAPP + WEVU%3C/text%3E%3Ctext x='34' y='233' fill='%23aabbb2' font-family='ui-monospace,monospace' font-size='10'%3E$ pnpm dlx @varo-ui/cli add%3C/text%3E%3Ctext x='34' y='250' fill='%23aabbb2' font-family='ui-monospace,monospace' font-size='10'%3E--target weapp button%3C/text%3E%3Crect x='34' y='264' width='168' height='24' rx='6' fill='%231a3d29'/%3E%3Ccircle cx='47' cy='276' r='4' fill='%2307c160'/%3E%3Ctext x='57' y='280' fill='%2394efba' font-family='ui-monospace,monospace' font-size='9' font-weight='700'%3ENATIVE SOURCE / EVIDENCE%3C/text%3E%3Ctext x='24' y='338' fill='%237f9589' font-family='ui-monospace,monospace' font-size='9' letter-spacing='.7'%3EBASE KIT %C2%B7 SOURCE / BUILD EVIDENCE%3C/text%3E%3C/svg%3E"
     style: "position: relative; top: auto; left: auto; width: 320px; height: 320px; transform: none;"
@@ -17,19 +17,19 @@ hero:
       text: 安装 H5 Registry
       link: /guide/installation
 features:
-  - title: 可复制组件资产
-    details: Registry 把目标专属组件、主题和 Blocks 安装为业务项目拥有的源码，直接编辑而不是等待抽象层扩展。
-  - title: 双端行为底座
-    details: H5 的 Vue 3 与小程序的 Wevu 保持各自原生渲染，只共享类型、纯函数和 headless 行为契约。
-  - title: 交付可靠性
-    details: H5 交互、原生源码、编译产物与开发者工具截图分开标注；浏览器或编译通过不等于真机认证。
-  - title: Registry-first，Primitives 可下钻
-    details: 公共接入从 Registry 开始；需要建设内部设计系统时，再从技术文档进入 primitives 与 runtime。
+  - title: 源码装进项目
+    details: 用 Registry 安装组件、主题和 Blocks，按项目需要直接修改源码。
+  - title: 各端原生渲染
+    details: H5 使用 Vue 3，小程序使用 Wevu；两端共享类型、纯函数和 headless 交互逻辑。
+  - title: 查看支持情况
+    details: 文档分别标注 H5 交互、原生源码、编译产物和开发者工具截图。真机表现需要单独验证。
+  - title: 按需使用 Primitives
+    details: 从 Registry 安装现成组件；需要自建组件或设计系统时，可使用底层 Primitives 和运行时接口。
 ---
 
 ## Registry-first 开始路径
 
-Varo 是跨运行时组件系统的生产底座，但默认交付不是一套浏览器抽象：选择目标，复制源码，然后在 Vue 3 或 Wevu 工程中继续封装。
+选择 H5 或小程序，通过 Registry 将组件源码安装到项目，再用 Vue 3 或 Wevu 按业务需要修改。两端使用各自的渲染实现。
 
 <div class="varo-doc-links">
   <a href="guide/shadcn-mode">Weapp Registry 安装</a>
@@ -42,12 +42,12 @@ Varo 是跨运行时组件系统的生产底座，但默认交付不是一套浏
 
 <div class="varo-block-grid">
   <div class="varo-block-card">
-    <h3>把常用业务做成可复制资产</h3>
-    <p>Varo 的 Blocks 面向 H5 与小程序高频场景：订单、电商、生鲜到家、SaaS 审批、会员权益、门店补货、支付确认和账户安全都可以沉淀成可复用页面切片，而不是只展示孤立组件。</p>
+    <h3>把业务页面复制到项目</h3>
+    <p>Blocks 将常用组件组合成页面片段，适用于 H5 和小程序的订单、电商、生鲜配送、SaaS 审批、会员、门店补货、支付确认和账户安全等场景。</p>
     <ul>
-      <li>按目标安装到业务项目，组件和依赖关系保持可检查</li>
-      <li>H5 与小程序保留相同交互语义和 WeChat-green 视觉 token</li>
-      <li>安装后的源码属于产品团队，可直接继续业务封装</li>
+      <li>按目标端安装，源码和依赖关系都能查看</li>
+      <li>两端沿用相同的交互规则和 WeChat-green 主题 token</li>
+      <li>安装后直接编辑源码，接入自己的业务</li>
     </ul>
     <div class="varo-block-actions">
       <a href="examples/">查看业务 Blocks</a>
@@ -98,25 +98,25 @@ Varo 是跨运行时组件系统的生产底座，但默认交付不是一套浏
 
 <RegistryCoverageEvidence locale="zh" />
 
-安装 profile 包括 `h5`、`weapp` 与六个实验性 profile；renderer 仍只有 H5 和 Wevu 原生两类。新增 profile 必须在完整依赖闭包内显式准入，不由截图或相似 API 推断支持。详见 [安装与支持边界](/guide/installation#安装-profile-与支持边界)。
+可选安装 profile 为 `h5`、`weapp` 和六个实验性 profile，渲染实现分为 H5 与 Wevu 原生两类。安装实验性 profile 时，组件及其全部依赖都必须明确支持该 profile；截图或相似 API 不能作为支持依据。详见 [安装与支持边界](/guide/installation#安装-profile-与支持边界)。
 
 ## 安装后的技术边界
 
 <div class="varo-package-grid">
   <div class="varo-package-card">
     <h3>Registry Source</h3>
-    <p>拥有组件、主题、工具和 Blocks 源码；这是产品团队的默认接入面。</p>
+    <p>将组件、主题、工具和 Blocks 的源码安装到项目，直接修改和使用。</p>
   </div>
   <div class="varo-package-card">
     <h3>Target Runtimes</h3>
-    <p>Vue 3 负责 H5 DOM，Wevu 与 weapp-vite 负责原生 WXML/WXSS。</p>
+    <p>H5 使用 Vue 3 渲染 DOM；小程序由 Wevu 和 weapp-vite 生成 WXML/WXSS。</p>
   </div>
   <div class="varo-package-card">
     <h3>Behavior Contracts</h3>
-    <p>Primitives 沉淀受控状态与可访问交互，作为需要下钻时的技术路径。</p>
+    <p>需要自建组件时，可复用 Primitives 提供的受控状态和无障碍交互逻辑。</p>
   </div>
   <div class="varo-package-card">
     <h3>Agent Core</h3>
-    <p>按需提供事件协议、流式传输和安全 Markdown 能力，不改变 UI target 边界。</p>
+    <p>按需接入 Agent 事件协议、流式传输和安全 Markdown 处理，UI 仍由各端组件渲染。</p>
   </div>
 </div>

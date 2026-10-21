@@ -128,7 +128,7 @@ configureForm({
 | `reset`        | `{ values, errors }` | 重置                         |
 | `update:model` | `FormValues`         | 原生受控表单请求替换页面模型 |
 
-`submit` / `failed` 接收 `@varo-ui/headless` 导出的具名 `SubmitPayload`，组件的 `FormSubmitPayload` 是它的类型别名，不是原始 DOM 事件，也不从具体函数的 `ReturnType` 推导：
+`submit` / `failed` 接收 `@varo-ui/headless` 导出的具名 `SubmitPayload`。组件的 `FormSubmitPayload` 是它的别名，不是原始 DOM 事件，也不由具体函数的 `ReturnType` 推导：
 
 ```ts
 import type { SubmitPayload } from '@varo-ui/headless'

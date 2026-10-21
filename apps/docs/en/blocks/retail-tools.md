@@ -1,6 +1,6 @@
 # Retail Tools Blocks
 
-Six independently installable native page slices: coupons, receipts, reviews, wishlists, bounded mobile comparison and transactional filters. They extend the existing retail model rather than cloning cart, checkout or product detail.
+Six independently installable native Weapp Blocks cover coupons, receipts, reviews, wishlists, mobile comparison and filters users edit before applying. They reuse the existing retail model without replacing cart, checkout or product detail.
 
 ## Installation and target boundaries
 
@@ -15,17 +15,17 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 
 Installed components live in `src/components/blocks/retail-*.vue`; public data contracts live in the corresponding `retail-*.types.ts`. Amounts reuse `formatRetailMoney` from `src/lib/retail`: integer minor units, divided by 100 for display, with the default RMB symbol `¥`. Do not pass major currency units into money fields.
 
-- These entries admit stable `weapp` only. There is no H5 implementation or automatic experimental-profile admission. Native code uses Wevu, not the Vue DOM runtime.
-- The application owns data, stock, permissions, eligibility, business validation, submission, persistence, navigation, payments, refunds, support and file operations. Events request actions; they do not confirm success. Blocks make no network/storage calls and never optimistically change business data.
-- Native events carry a single detail value. Compound intents use one object, not multiple Vue callback arguments. Event names below preserve source spelling.
-- Collections have empty-array defaults for the host's pre-binding phase. Absent `selectedId` and `receipt` preserve native null; `open` opens only when explicitly true. Applications must still inject complete typed business data.
-- IDs must be stable and unique within each collection. Re-read current records and recheck permission/version when accepting actions. Set `busy` immediately while handling asynchronous requests to prevent duplicate submissions.
+- These entries support stable `weapp` only. There is no H5 implementation; experimental profiles require separate admission. Components use Wevu and do not import the Vue DOM runtime.
+- The application handles data, stock, permissions, eligibility, business validation, submission, persistence, navigation, payments, refunds, support and files. Events request actions without confirming success. Blocks make no network/storage calls or optimistic business-data changes.
+- Native events carry one detail value. Requests with several fields use one object instead of multiple Vue callback arguments. Event names below match the source.
+- Collections default to empty arrays before the host first binds props. Absent `selectedId` and `receipt` retain native null; `open` opens only when explicitly true. Applications must still supply complete typed business data.
+- IDs must be stable and unique within each collection. Look up the current record and recheck its permissions and version before accepting an action. Set `busy` immediately when handling asynchronous requests to prevent duplicate submissions.
 
 ### Shared states
 
-All six Blocks accept optional `loading`, `disabled`, `busy` (default false) and `error` (default empty string). Loading, disabled and busy states block actions while retaining supplied records, amounts, reasons and errors for inspection. `error` only displays application feedback; it does not discard data or trigger retries. The application may combine it with `disabled` when further interaction is inappropriate. Empty collections have explicit feedback; long text wraps without hover-only disclosure.
+All six Blocks accept optional `loading`, `disabled`, `busy` (default false) and `error` (default empty string). Loading, disabled and busy states block actions while keeping records, amounts, reasons and errors visible. `error` neither discards data nor retries; add `disabled` to prevent edits. Empty collections display a message, and long text wraps without requiring hover.
 
-Filter cancel/close remains available while loading, disabled or busy. The application handles that intent, closes the Drawer, and cancels pending work or ignores stale responses. The other five Blocks have no hidden request lifecycle; their application containers can expose cancellation controls.
+Filter cancel and close remain available while loading, disabled or busy. The application closes the Drawer and cancels pending work or ignores stale responses. The other five Blocks do not manage requests; applications can provide cancellation controls in their containers.
 
 ## Coupons: `retail-coupons`
 
@@ -59,7 +59,7 @@ Events `claim(id: string)` and `select(id: string)` look up the current coupon a
 />
 ```
 
-`requestClaim` and `requestSelection` are application handlers, not Block implementations. Do not change coupon status or selection before the application accepts the request.
+Implement `requestClaim` and `requestSelection` in the application, and update coupon status or selection only after the request is accepted.
 
 ## Receipt: `retail-receipt`
 
@@ -77,7 +77,7 @@ Events `claim(id: string)` and `select(id: string)` look up the current coupon a
 - `grants: Record<'refund' | 'contact' | 'download', boolean>`: each action requires an explicit true grant.
 - `actionReason?: string`: grant restrictions or other action guidance.
 
-The `action({ receiptId, orderId, action })` event uses `RetailReceiptAction`: `refund`, `contact` or `download`. Confirmation, execution and failure feedback belong to the application. The Block does not assume that WeChat payment, support or file APIs are configured. Never turn an emitted intent into a claimed refund/download success.
+The `action({ receiptId, orderId, action })` event uses `RetailReceiptAction`: `refund`, `contact` or `download`. The application handles confirmation, execution, failures and any required WeChat payment, support or file APIs. Events do not guarantee API availability; show refund or download success only after completion.
 
 ## Reviews: `retail-reviews`
 
@@ -95,11 +95,11 @@ The `action({ receiptId, orderId, action })` event uses `RetailReceiptAction`: `
 - `submit(draft)` emits a current snapshot only when `canSubmit` and not loading/disabled/busy. The application returns business errors such as empty content through `draftError`.
 - `helpful(id)` rechecks the current review, requiring `canHelpful`, not already marked and not disabled/busy. The application owns the count and viewer marker.
 
-There is no image upload, automatic moderation or fabricated rating. Update the list and clear the draft only after accepting it; preserve rejected input. The local example requires a 1–5 rating and at least five characters. This is an example application rule, not a hidden Block validation policy.
+Reviews support neither image uploads nor automatic moderation, and the Block does not fabricate ratings. Acceptance updates the list and clears the draft; rejection preserves input. The local example requires a rating from 1 to 5 and at least five characters. The reusable Block does not enforce these application rules.
 
 ## Wishlist: `retail-wishlist`
 
-`items: RetailWishlistEntry[]` is the sole authority for membership. Each entry includes:
+`items: RetailWishlistEntry[]` determines which products appear in the wishlist. Each entry includes:
 
 - `product: RetailProduct`, reusing `category/description/id/image/linePrice/name/price/sales/stock/tags`.
 - `canView`, `canRemove`, `canAddToCart: boolean`.
@@ -107,7 +107,7 @@ There is no image upload, automatic moderation or fabricated rating. Update the 
 
 Events are `view(productId)`, `remove(productId)` and `addToCart(productId)`. Every activation looks up the current member and corresponding grant. Cart requests additionally require actual `product.stock > 0`. Existing cart quantity, concurrent inventory changes and purchase limits remain application decisions. The Block maintains no local membership copy.
 
-Presentation reuses `product-list-item.vue` from `blocks/product-list`, not a duplicated product-detail implementation. The native row adds optional `viewDisabled` and `cartDisabled` props, both default false. They disable the relevant controls and guard emission; existing stock/loading checks remain. H5 behavior is unchanged. Permission denial never falsifies inventory: an item with stock 2 still displays stock 2 even when adding is forbidden.
+The wishlist reuses `product-list-item.vue` from `blocks/product-list` without copying product detail. Its native `viewDisabled` and `cartDisabled` props default to false, disable the respective controls and block events. Stock/loading checks and H5 behavior remain unchanged. Permission denial does not alter displayed stock: stock 2 remains 2 even when adding is forbidden.
 
 ## Mobile comparison: `retail-comparison`
 
@@ -118,11 +118,11 @@ Presentation reuses `product-list-item.vue` from `blocks/product-list`, not a du
 
 `RetailComparisonField = { id: string, label: string }`. Each entry has `product: RetailProduct`, `values: Record<string, string>` (complete display values keyed by field ID), `canView`, `canRemove: boolean`, and optional `reason`, `disabled`, `busy`. Missing field values explicitly render “未提供” (not provided); they are never invented.
 
-`RETAIL_COMPARISON_LIMIT = 3` is a public constant. This is a field-by-field vertical mobile comparison, not a wide desktop grid. Every selected value is readable without hover. More than three products produces an explicit limit error and suspends the field comparison while retaining **every** selected product and its remove/view controls. It does not silently slice to the first three. An application-accepted `remove(productId)` restores the bounded comparison; `view(productId)` delegates navigation. An empty field list retains products with “暂无比较字段” (no comparison fields).
+The public constant `RETAIL_COMPARISON_LIMIT = 3` limits the comparison. Full values appear vertically by field, without a wide grid or hover. More than three products displays an error and stops field comparison while retaining **every** product and its remove/view controls. The application accepts `remove(productId)` to bring the selection within the limit and handles `view(productId)` navigation. An empty field list retains products and displays “暂无比较字段” (no comparison fields).
 
 ## Transactional filters: `retail-filters`
 
-The mobile filter composes existing `VDrawer`, `VCheckbox`, `VInputNumber` and `VButton`, following order-filter's selection/amount control patterns. It does not disguise order statuses as categories. The existing order-filter's one-time `initialValue` and built-in status/price reset do not express a controlled product transaction, so it is not embedded and no parallel generic filtering engine is introduced.
+The filter composes `VDrawer`, `VCheckbox`, `VInputNumber` and `VButton` using order-filter's selection and amount patterns. Product categories differ from order statuses, and order-filter's one-time `initialValue` and built-in status/price reset cannot manage a controlled product-filter draft and submission. This Block uses the controls directly without embedding order-filter or adding a generic filter engine.
 
 ```ts
 interface RetailFilterValue {
@@ -151,7 +151,7 @@ Events:
 - `reset()`: requests a **draft-only** reset. The application owns defaults; the Block never updates committed results itself.
 - `cancel()`: explicit cancel or overlay-close request. The Block does not mutate controlled `open`. Close, discard the draft and handle pending work in the application.
 
-Recommended transaction: copy committed state on open → replace the draft on `draftChange` → reset only the draft → revalidate `apply` in the application → update committed state and close only on acceptance → retain the Drawer, draft and previous results on rejection → discard the draft on cancel. Set `canApply=false` for an unchanged transaction and `canReset=false` for a default draft. Inject `busy=true` during asynchronous acceptance; cancellation remains available.
+On open, copy committed state into a draft and replace that draft on `draftChange`. Reset changes only the draft. Revalidate `apply` in the application: on acceptance, update committed state and close; on rejection, keep the Drawer, draft and previous results. Cancel discards the draft. Set `canApply=false` when filters are unchanged and `canReset=false` when the draft already has the default values. Set `busy=true` during asynchronous handling; cancellation remains available.
 
 ## Complete local demo and acceptance entry
 
@@ -166,6 +166,6 @@ Native route: `/blocks-lab/retail/index`. Authored example source: `apps/playgro
 | Comparison | Read every field, view/remove products                                                               | Fourth product visibly exceeds the limit; removal restores comparison; locked member blocked                                           |
 | Filters    | Category, sort, price and stock choices filter actual local products                                 | Cancel does not commit; reset affects draft only; invalid prices block apply; application rejects delivery category; zero-result state |
 
-Each example exposes loading, empty, error, disabled, busy and long-content controls. Real native scenarios are authored in `apps/e2e/tests/weapp-native/retail-tools.e2e.ts`. They use public fixtures, actual buttons/inputs/Drawer and observable page results, not `setData`, page-method substitutes or implementation-text assertions.
+Each example has loading, empty, error, disabled, busy and long-content controls. Native E2E scenarios in `apps/e2e/tests/weapp-native/retail-tools.e2e.ts` use public fixtures, real buttons, inputs and Drawer controls, and page results. They do not replace user flows with `setData`, page methods or source-text assertions.
 
-Execution requires integration-owned Registry generation, route registration and fresh native build output first; this page does not claim tests have passed. `weapp-headless` is a supported native automation surface, not proof of WeChat IDE/device behavior. `weapp-devtools` also requires Developer Tools, a legitimate AppID, CLI/automation permission and current build artifacts. Production applications must separately supply business APIs, authentication/eligibility/inventory rechecks, payment/refund adapters, support channels, receipt file handling and required domain/host permissions.
+Generate the Registry, register native routes and rebuild before running the scenarios; written tests are not passing results. `weapp-headless` supports native automation but does not establish WeChat IDE/device behavior. `weapp-devtools` also needs Developer Tools, a legitimate AppID, CLI/automation permission and fresh builds. Production applications must provide business APIs, authentication/eligibility/inventory rechecks, payment/refund adapters, support, receipt downloads and required domain/host permissions.

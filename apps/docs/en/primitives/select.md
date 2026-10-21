@@ -1,6 +1,6 @@
 # Select
 
-Composable select runtime: Root owns value/open; Trigger/Value/Content/Item split rendering duties.
+A composable selector that manages selection and open state.
 
 ## Runtime
 
@@ -12,18 +12,18 @@ State contracts come from `@varo-ui/headless`. Parts and interactive examples on
 
 ## Basic usage
 
-The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
+The H5 panel provides interactive Parts and their code. The native tab shows source and support evidence, without a live mini-program preview.
 
 ## Groups, Readonly, And Disabled
 
-Use `SelectGroup/SelectLabel` for grouping. In `readonly`, the component can still open, close, and browse options, while `SelectItem` and `setValue` cannot change value. `disabled` also blocks opening. Placement and motion stay in UI wrappers.
+Use `SelectGroup/SelectLabel` for grouping. With `readonly`, users can still open, close, and browse options, but `SelectItem` and `setValue` cannot change value. `disabled` also blocks opening. UI wrappers handle placement and animation.
 
 ## Parts
 
 | Part            | Purpose               |
 | --------------- | --------------------- |
 | `SelectRoot`    | value/open state      |
-| `SelectTrigger` | Open entry            |
+| `SelectTrigger` | Opens the selector    |
 | `SelectValue`   | Current value display |
 | `SelectContent` | Options container     |
 | `SelectGroup`   | Group                 |
@@ -34,17 +34,17 @@ Use `SelectGroup/SelectLabel` for grouping. In `readonly`, the component can sti
 
 ### SelectRoot
 
-| Prop           | Type                   | Default     | Description                     |
-| -------------- | ---------------------- | ----------- | ------------------------------- |
-| `value`        | `unknown`              | `undefined` | Controlled value                |
-| `defaultValue` | `unknown`              | `undefined` | Uncontrolled initial value      |
-| `open`         | `boolean \| undefined` | `undefined` | Controlled open state           |
-| `defaultOpen`  | `boolean`              | `false`     | Uncontrolled initial open state |
-| `options`      | `array`                | `undefined` | Options data                    |
-| `placeholder`  | `string`               | `undefined` | Placeholder                     |
-| `disabled`     | `boolean`              | `false`     | Disabled                        |
-| `readonly`     | `boolean`              | `false`     | Read only                       |
-| `multiple`     | `boolean`              | `false`     | Multiple semantics              |
+| Prop           | Type                   | Default     | Description                                           |
+| -------------- | ---------------------- | ----------- | ----------------------------------------------------- |
+| `value`        | `unknown`              | `undefined` | Controlled value                                      |
+| `defaultValue` | `unknown`              | `undefined` | Uncontrolled initial value                            |
+| `open`         | `boolean \| undefined` | `undefined` | Controlled open state                                 |
+| `defaultOpen`  | `boolean`              | `false`     | Uncontrolled initial open state                       |
+| `options`      | `array`                | `undefined` | Options data                                          |
+| `placeholder`  | `string`               | `undefined` | Placeholder text                                      |
+| `disabled`     | `boolean`              | `false`     | Prevent opening and selection changes                 |
+| `readonly`     | `boolean`              | `false`     | Allow browsing options without changing the selection |
+| `multiple`     | `boolean`              | `false`     | Allow multiple selections                             |
 
 ### SelectItem
 
@@ -54,18 +54,17 @@ Use `SelectGroup/SelectLabel` for grouping. In `readonly`, the component can sti
 
 ## Events
 
-| Event          | Payload   | Description  |
-| -------------- | --------- | ------------ |
-| `update:value` | `unknown` | Value sync   |
-| `valueChange`  | `unknown` | Value change |
-| `update:open`  | `boolean` | Open sync    |
-| `openChange`   | `boolean` | Open change  |
+| Event          | Payload   | Description                           |
+| -------------- | --------- | ------------------------------------- |
+| `update:value` | `unknown` | Sync the selected value               |
+| `valueChange`  | `unknown` | Fires when the selected value changes |
+| `update:open`  | `boolean` | Sync the open state                   |
+| `openChange`   | `boolean` | Fires when the open state changes     |
 
 ## Accessibility
 
-- Trigger opens in regular and readonly states; disabled blocks opening.
-- Item performs selection; readonly/disabled must not change value.
-- The role owner exposes `aria-readonly` without reporting readonly as disabled.
+- Trigger opens and Item selects, following the readonly and disabled rules above.
+- The element with the selection role exposes `aria-readonly`; readonly is not reported as disabled.
 
 ::: info Platform notes
 

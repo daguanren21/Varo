@@ -1,8 +1,8 @@
 # 主题配置
 
-Varo 的主题能力集中在 `@varo-ui/theme`，目标是让交互层、组件封装层与视觉 token 解耦。
+Varo 通过 `@varo-ui/theme` 管理主题，将视觉 token 与交互逻辑、组件封装分开维护。
 
-Registry 样式的作者源位于 `registry/themes/**/*` 和各组件 manifest：`themes/base` 只包含 tokens 与基础规则，普通组件 CSS 随依赖闭包安装，Agent 额外依赖可选 `themes/agent`。H5 安装源码自动导入所需 CSS；原生端必须把全部 `src/styles/*.css` 按 `varo.css` 优先的顺序全局注入 `app.vue`，不能只加载主题 base，也不能导入组件局部 WXSS。配置见 [Wevu Registry](/guide/shadcn-mode)；npm 原生消费者全局加载完整 `@varo-ui/weapp/style.css`。
+Registry 样式源码位于 `registry/themes/**/*`，由组件 manifest 声明依赖。`themes/base` 只含 tokens 与基础规则；组件 CSS 随依赖安装，Agent 还依赖可选的 `themes/agent`。H5 源码自动导入所需 CSS；原生端须将全部 `src/styles/*.css` 按 `varo.css` 优先的顺序全局注册到 `app.vue`，不可导入组件局部 WXSS。配置见 [Wevu Registry](/guide/shadcn-mode)；npm 原生项目全局加载完整的 `@varo-ui/weapp/style.css`。
 
 ## H5 基础接入
 
@@ -68,7 +68,7 @@ export default defineConfig({
 })
 ```
 
-这层集成运行在 Vite `transform` 阶段，不需要提交生成后的 WXSS。
+插件在 Vite `transform` 阶段处理样式，无需提交生成的 WXSS。
 
 ## Weapp 运行时切换
 
@@ -103,7 +103,7 @@ const activeTheme = shallowRef(createTheme({
 </template>
 ```
 
-用新的 `ThemeDefinition` 替换 `activeTheme.value` 后，Provider 会重新计算内联 CSS Variables；子树中的 Varo 组件通过变量继承立即更新。多页面应用应把 Provider 放进共享页面壳，而不是在 App 生命周期中操作样式。
+用新的 `ThemeDefinition` 替换 `activeTheme.value`，Provider 会重算内联 CSS 变量，子树中的 Varo 组件随即继承更新。多页面应用将 Provider 放在共享页面壳中，不要在 App 生命周期中操作样式。
 
 ## 暗色模式
 
@@ -123,12 +123,12 @@ const darkTheme = createTheme({
 
 ## 设计原则
 
-- palette、semantic、component token 分层
-- wrapper 组件只消费 token，不硬编码业务品牌色
-- light / dark 由同一颜色引擎生成，品牌色和语义不漂移
+- palette、semantic、component token 分层维护
+- wrapper 组件使用 token，不硬编码业务品牌色
+- light / dark 使用同一颜色引擎，保持品牌色和颜色语义一致
 
 ## 推荐实践
 
-- 品牌色、语义色与状态色都从一个主题入口收敛
+- 通过同一个主题入口配置品牌色、语义色与状态色
 - H5 与小程序侧尽量共享同一份语义 token
 - 二次封装组件库时优先扩展 token，而不是直接覆盖组件内部样式

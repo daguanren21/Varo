@@ -4,7 +4,7 @@
 **¥399 is only a proposed one-time trial price, not a current offer.** No orders, payments, or reservations are accepted, and no launch date is promised.
 :::
 
-For independent developers, studios, and small teams that can connect their own backend: an editable, independently runnable retail frontend to reduce integration work. This is not a fully managed shop.
+The proposal is an editable, standalone retail frontend for independent developers, studios and small teams that can connect their own backend. It aims to reduce integration work and does not include a fully managed shop.
 
 ## Planned deliverables
 
@@ -25,4 +25,4 @@ Existing and newly added public source, components, Blocks, and documentation re
 
 Delivery version, support, update, and refund terms are not confirmed. This proposal adds no paywall and promises neither lifetime updates nor unlimited support.
 
-Use the public project through the [integration guide](/en/guide/retail-starter). Interested in the proposal? Discuss it in the original [Issue #21](https://github.com/daguanren21/Varo/issues/21).
+Use the public project through the [integration guide](/en/guide/retail-starter). Discuss the proposal in the original [Issue #21](https://github.com/daguanren21/Varo/issues/21).

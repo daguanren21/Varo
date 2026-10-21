@@ -1,6 +1,6 @@
 # Agent Model Compare
 
-Two named sides compare application-owned text streams using one shared prompt. The Block selects models, renders existing conversation/stream/Markdown components, and emits guarded intents. It never connects a model, owns a provider key, calculates a price, or implements another stream reducer.
+Compare two text streams from your application side by side with one prompt. The Block provides model selection, reuses conversation, stream, and Markdown renderers, and checks state before emitting requests. It does not connect models, store keys, calculate prices, or implement another stream reducer.
 
 ## Install
 
@@ -11,7 +11,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-model-compare
 
 Choose the command for your project. Install the npm dependencies reported by the CLI separately. Native consumers configure global styles as described in [Wevu Registry](/en/guide/shadcn-mode).
 
-The minimal closure adds `components/agent-model-selector`, `components/select`, conversation rendering, Button, and their required primitives/styles. It does **not** install `components/agent-ui`, workspace, advanced, RAG, or `blocks/agent-chat`. The selector is also independently installable:
+Installation includes `components/agent-model-selector`, `components/select`, conversation rendering, Button, and their required primitives and styles. It does not install the full `components/agent-ui` suite, workspace, advanced, RAG, or `blocks/agent-chat`. The selector can also be installed independently:
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp components/agent-model-selector
@@ -23,14 +23,14 @@ Both units explicitly support stable H5 and Weapp; no experimental profile or de
 
 - H5: `/?demo=model-compare`
 - Native: `/blocks-lab/model-compare/index`
-- Application owners: `apps/playground-h5/src/features/useModelCompareDemo.ts` and `apps/playground-weapp/src/blocks-lab/model-compare/useModelCompareDemo.ts`.
-- Composition surfaces: `ModelCompareDemo.vue` and native `index.vue` in those directories.
+- Application logic: `apps/playground-h5/src/features/useModelCompareDemo.ts` and `apps/playground-weapp/src/blocks-lab/model-compare/useModelCompareDemo.ts`.
+- Components: `ModelCompareDemo.vue` and native `index.vue` in those directories.
 
-These are **deterministic local transformations, not model responses**. Each side has a separate `createAgentStreamController`, async generator, cancellable timer, saved request, subscription, and teardown. The generators actually uppercase words, reverse Unicode characters within each word, or count Unicode code points. Code-point counts are not token counts. Every new comparison deliberately throws a local error on the left after producing its first transformed word; the right keeps computing. Retrying the left runs its saved request without restarting the right. Even a one-word input exercises that failure.
+The demos transform text asynchronously and deterministically on the local device, without calling a model. Each side has a separate `createAgentStreamController`, async generator, cancellable timer, saved request, subscription, and cleanup routine. Transformations uppercase words, reverse Unicode characters within words, or count Unicode code points, not tokens. Each comparison deliberately fails on the left after its first transformed word; the right continues. Retrying only restarts the left's saved request. A one-word input also triggers the first failure.
 
-The application preserves the shared draft after submitting. Model changes clear only that side's old messages, snapshot, saved retry request, and measurement. “Display ordinary Chat composition” uses the standalone selector **outside** ordinary AgentChat and only runs the left producer. It retains the distinct pair selection while the right is dormant. Chat's conversation-only installation closure is unchanged. “New conversation” clears that ordinary local conversation.
+The application preserves the shared draft after submission so you can compare it with the results. Changing a model clears only that side's messages, snapshot, saved retry request, and measurement. “Display ordinary Chat composition” places the standalone selector outside AgentChat and runs only the left producer. The two selected models must still differ while the right side is inactive. Chat still installs only conversation and its dependencies. “New conversation” clears that ordinary local conversation.
 
-The demo's lifecycle receipts count actual generated words and generator `finally` cleanups; timer counts come from actual scheduling/cancellation. They are resource diagnostics, not substitute response text. Closing cleans up both sides; reload the route to create a fresh owner. Unmount also unsubscribes, cancels the producers, and destroys both controllers.
+Word counts, generator `finally` cleanups, and timer counts record actual generation, scheduling, and cancellation. They describe resources, not response text. Closing cleans up both sides; reloading creates fresh instances. Unmounting cancels producers, unsubscribes, and destroys both controllers.
 
 ## Public contracts
 
@@ -60,7 +60,7 @@ interface AgentCompareState {
 }
 ```
 
-Supply unique stable catalog IDs, readable labels, and current availability. `left` and `right` are controlled application state. Keep `busy` true throughout pending work and resource settlement, not just while visible text arrives. A snapshot in `streaming` or `waiting` is also treated as running, even if `busy` is false. Missing side state is safe during initialization but prevents submission. This is a **text comparison**: messages and snapshot text are rendered; tool execution, approval flows, conversation storage and provider routing remain outside this Block.
+Supply unique, stable catalog IDs, readable labels, and current availability. The application controls `left` and `right`. Keep `busy` true from the start of pending work through resource cleanup. A snapshot in `streaming` or `waiting` is also treated as running, even if `busy` is false. Missing side state is safe during initialization but prevents submission. The Block compares text by rendering messages and snapshot text. Handle tool execution, approvals, conversation storage, and provider routing in your application.
 
 | Prop                                  | Meaning                                                                                |
 | ------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -81,21 +81,21 @@ Supply unique stable catalog IDs, readable labels, and current availability. `le
 | `retry`             | `'left' \| 'right'`                                             | Only a failed/error side with `retryable: true`, an available selected model and no pending work on that side. Allowed while the **other** side runs. Application retries that side's saved request, not the edited draft. |
 | `stop`              | `'left' \| 'right'`                                             | Only an active side; remains available while disabled/loading/error. Application aborts/cancels that producer and controller only.                                                                                         |
 
-All event payloads are single values/objects on both targets; no native multi-argument event ambiguity. Guards use current props at activation, not a saved option object. The Block does not optimistically accept selection, clear results or announce application success. Externally replacing controlled state is the host's responsibility; do not replace model IDs during an active request.
+Both targets emit single values or objects, without native multi-argument events. Actions read current props, not saved option objects. The Block does not optimistically accept model changes, clear results, or report success; the application handles those decisions and external state replacements. Do not replace model IDs during active requests.
 
-`modelValue` distinguishes omission from an explicitly supplied `''`. Native metadata preserves absent values as `null`, and presence checks are nullish. Local prompt state is not copied from a controlled draft when ownership changes. Submission never clears the draft automatically. H5 and native comparison inputs both lock while either side runs, unlike ordinary native Chat's editable-next-draft policy.
+`modelValue` distinguishes omission from an explicitly supplied `''`. Native metadata uses `null` for absent values and nullish checks to determine whether the prompt is controlled. Switching to uncontrolled mode does not copy the external draft into local state. Submission never clears the draft automatically. Both H5 and native comparison inputs lock while either side runs; ordinary native Chat allows editing the next draft while busy.
 
 ### Optional measurements
 
-Measurements are displayed **only when supplied by the application**. `latencyMs` must be finite and nonnegative. `cost` must have a finite nonnegative `amount` and nonempty `currency`/unit. An absent or invalid value displays “not provided” (`未提供`), never zero. A supplied zero is a real supplied measurement, not an absence marker.
+Measurements appear only when the application supplies them. `latencyMs` must be finite and nonnegative. `cost` must have a finite, nonnegative `amount` and a nonempty `currency`/unit. An absent or invalid value displays “not provided” (`未提供`). Zero appears only when the application explicitly supplies it as a measurement.
 
-The demo's “Show local measured time” reveals an actual `Date.now()` elapsed duration from start through controller completion, including intentional pacing. It is labelled application-measured time, **not network/model latency**. Failed/stopped work has no completed duration; hiding measurements omits them again. The demo never supplies a cost or token count and does not claim a free model call.
+“Show local measured time” displays the `Date.now()` duration from start to controller completion, including deliberate pacing. It is labelled application-measured time, not network/model latency. Failed or stopped work has no completion duration; hiding measurements omits them again. The demo supplies no cost or token count and makes no claim of free model calls.
 
 ## Selector composition
 
-`AgentModelSelector.vue` wraps VSelect with `models`, controlled `modelValue`, optional `excludedId`, `label`, `disabled`, `loading`, and `error`. It emits `update:modelValue` only for an eligible different ID. Selected and excluded choices remain readable but disabled. The selector does not execute a service or own a selected-value fallback.
+`AgentModelSelector.vue` adds availability and selection checks to VSelect through `models`, controlled `modelValue`, optional `excludedId`, `label`, `disabled`, `loading`, and `error`. It emits `update:modelValue` only for an allowed ID that differs from the current selection. Selected and excluded choices remain readable but disabled. The selector does not call a service or choose a fallback value automatically.
 
-The ordinary Chat demo installs/composes selector and Chat separately; no model-related dependency was added to AgentChat. For application use, bind the selected ID to your application-owned request policy and render the selector beside Chat, not inside its conversation dependency unit.
+The ordinary Chat demo installs and combines the selector and Chat separately, so AgentChat needs no model-related dependencies. Bind the selected model ID to your application's request logic and render the selector beside Chat. Providers and selectors remain outside the conversation unit.
 
 ## Verification surfaces and limits
 
@@ -103,7 +103,7 @@ Matching public E2E files are `apps/e2e/tests/h5/model-compare.e2e.ts` and `apps
 
 1. Controlled selection and unavailable, disabled, duplicate and no-op choices.
 2. Loading/error/empty catalog and externally revoked availability.
-3. Controlled draft rejection/reset and absent local draft ownership.
+3. Parent rejection or reset of controlled drafts, and local drafts when no binding is supplied.
 4. One-side failure, independent retry/continuation, actual rendered transformations, optional measured duration, and one-side result reset on model change.
 5. Disabled input with independent stop and no later producer work.
 6. Closing active streams and actual iterator/timer cleanup.

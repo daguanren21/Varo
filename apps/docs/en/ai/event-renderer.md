@@ -1,6 +1,6 @@
 # AgentEventRenderer
 
-Projects AgentStreamSnapshot into reasoning, tools, response, and approval UI.
+Renders reasoning, tools, responses, and approvals from AgentStreamSnapshot.
 
 ## Demo
 

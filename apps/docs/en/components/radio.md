@@ -6,7 +6,7 @@
 
 ## Selection feedback
 
-Radio keeps its inner indicator mounted and reveals the Varo-primary dot with a 180ms scale/fade, avoiding layout reconstruction between states. Press feedback is brief; reduced motion switches state immediately.
+Radio keeps its inner dot mounted. When selected, the dot appears in Varo's primary color with a 180ms scale and fade animation, avoiding layout reconstruction between states. Pressing briefly scales the control; with reduced motion enabled, the state changes immediately.
 
 ## Props
 

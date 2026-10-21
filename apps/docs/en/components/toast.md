@@ -1,6 +1,6 @@
 # Toast
 
-`VToast` owns one controlled status message. `VToastRegion` lays out multiple notifications in a fixed or inline region. The caller still owns queue state, auto-dismiss timers, and request integration.
+`VToast` displays one controlled status message. `VToastRegion` arranges multiple notifications in a fixed or inline region. The caller manages the queue, auto-dismiss timers, and integration with requests.
 
 ## Demo
 
@@ -30,7 +30,7 @@
 | `inline`   | `boolean`                       | `false` | Render in normal document flow |
 
 ::: info Motion and accessibility
-Toast motion resolves through theme tokens: 220ms enter, 160ms exit, and 180ms status changes. Updating `type`, `title`, and `message` on the same instance changes its status in place; product state never depends on animation completion. Under `prefers-reduced-motion: reduce`, spatial movement is removed. Success and neutral feedback use `status`; warning and danger use `alert`.
+Toast uses theme motion tokens: 220ms to enter, 160ms to exit, and 180ms for status changes. Updating `type`, `title`, and `message` on the same instance changes its status in place; application state does not wait for the animation to finish. Under `prefers-reduced-motion: reduce`, spatial movement is removed. Success and neutral feedback use `status`; warning and danger use `alert`.
 :::
 
 ## Events

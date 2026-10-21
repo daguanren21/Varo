@@ -1,6 +1,6 @@
 # @varo-ui/ai
 
-Provider-neutral Agent event protocol, SSE/chunk decoding, streaming controller, and safe Markdown view model for Varo applications.
+Agent event types, SSE/chunk decoding, a streaming controller, and a safe Markdown view model for Varo applications. The protocol is independent of the model provider.
 
 ## Install
 
@@ -10,7 +10,7 @@ pnpm add @varo-ui/ai
 
 ## Usage
 
-For an application-owned chunked request, feed its bytes to the transport and connect the normalized event stream:
+For a chunked request made by your application, feed incoming bytes to the transport and connect its event stream to the controller:
 
 ```ts
 import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
@@ -22,11 +22,11 @@ requestTask.onChunkReceived(({ data }) => transport.feed(data))
 await controller.connect(transport.source)
 ```
 
-`connect()` owns the iterator lifecycle: protocol `done`/`error` events settle the connection and request iterator cleanup, while natural iterator exhaustion synthesizes `done`.
+`connect()` manages the iterator: a protocol `done` or `error` event settles the connection and requests iterator cleanup. If the iterator ends naturally, the controller produces `done`.
 
-The application must call `transport.end()` on normal transport completion or `transport.fail(error)` on request failure. Unsubscribe UI listeners and call `controller.destroy()` at teardown. Controller cancellation closes its iterator and local streaming lifecycle; it does not authorize a purchase, execute a tool, abort an application's network request, or choose a retry policy.
+Call `transport.end()` when the request completes normally, or `transport.fail(error)` when it fails. During teardown, unsubscribe UI listeners and call `controller.destroy()`. Canceling the controller closes its iterator and ends local streaming. Your application still handles network aborts, purchase approval, tool execution, and retry decisions.
 
-The root export provides the compiled protocol/controller API; `@varo-ui/ai/source` remains an explicit source entry. Neither entry is a provider SDK or a renderer. Shared presentation types/helpers live in the Registry `agent-presentation` unit, while target lifecycle/render code remains in H5 or native source.
+Import the compiled protocol and controller API from the package root, or use the source entry `@varo-ui/ai/source`. Both provide data and control APIs, without a provider SDK or renderer. Shared presentation types and helpers are in the Registry's `agent-presentation` unit; H5 and native sources handle their own rendering and lifecycle.
 
 ### Markdown runtime portability
 
@@ -47,7 +47,7 @@ thread.fork('root', { id: 'verified', label: 'Verified branch' })
 thread.select('root')
 ```
 
-The controller owns an immutable acyclic version graph. `append()` and `fork()` activate the new version; invalid ids, missing parents, cycles, and post-destroy mutations fail immediately.
+The controller stores versions in an immutable, acyclic graph. `append()` and `fork()` select the new version. Invalid ids, missing parents, cycles, and changes after destruction fail immediately.
 
 ## Install presentation source separately
 
@@ -73,12 +73,12 @@ pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 | `components/agent-rag`          | Retrieval pipeline progress and source-linked answers                                    |
 | `components/agent-ui`           | Deliberate composition of the full suite, not a compatibility alias                      |
 
-`blocks/agent-chat` selects the conversation closure and does not pull advanced/RAG/fine-tuning source. When migrating from an all-in-one install, choose the unit you actually use; manually reconcile existing local customizations before any `--force` replacement. The CLI reports npm dependencies without installing them.
+`blocks/agent-chat` installs conversation dependencies without advanced, RAG, or fine-tuning source. When replacing an all-in-one installation, choose the units you use and reconcile local edits before replacing files with `--force`. Install the npm dependencies reported by the CLI separately.
 
 Rendered Agent units depend on optional `themes/agent`; `themes/base` no longer carries Agent tokens/helpers. H5 source brings dependency CSS imports. Native source consumers load all installed `src/styles/*.css` globally through `weapp.styles` with `include: 'app.vue'`, `varo.css` first, including `varo-agent.css`. Do not import page/global CSS from component-local WXSS.
 
-These units declare H5/Weapp renderer support. The experimental `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos` profiles do not gain Agent admission merely by sharing the native renderer; the complete selected manifest closure must explicitly admit a profile.
+These units support H5 and Weapp. To install them for experimental `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, or `donut-ohos` profiles, every selected item and dependency must explicitly declare support; sharing the native renderer does not grant it.
 
-Registry source and styles are canonical. `pnpm sync:registry` projects them into the playgrounds and docs Agent source; `pnpm check:generated` detects drift. After generation and package builds, `pnpm check:consumers` checks the minimal Chat closure in actual CLI consumers. None of these commands asserts provider/network execution policy or device certification.
+Edit source and styles in the Registry, then run `pnpm sync:registry` to update playground and docs copies. `pnpm check:generated` detects drift. After generation and package builds, `pnpm check:consumers` checks minimal Chat installations in actual CLI consumers. Provider and network execution remain the application's responsibility, and device behavior needs separate verification.
 
 [Documentation](https://varo.weapp.dev/ai/) · [Repository](https://github.com/daguanren21/Varo)

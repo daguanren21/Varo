@@ -20,12 +20,12 @@ import { AgentCitations } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type                  | Default   | Description                                                                       |
-| ------------- | --------------------- | --------- | --------------------------------------------------------------------------------- |
-| `items`       | `AgentCitationItem[]` | `[]`      | Citations                                                                         |
-| `title`       | `string`              | `Sources` | Title                                                                             |
-| `defaultOpen` | `boolean`             | `false`   | Default open                                                                      |
-| `disabled`    | `boolean`             | `false`   | Disable expansion and opening citations without hiding currently visible evidence |
+| Prop          | Type                  | Default   | Description                                                           |
+| ------------- | --------------------- | --------- | --------------------------------------------------------------------- |
+| `items`       | `AgentCitationItem[]` | `[]`      | Citations                                                             |
+| `title`       | `string`              | `Sources` | Title                                                                 |
+| `defaultOpen` | `boolean`             | `false`   | Default open                                                          |
+| `disabled`    | `boolean`             | `false`   | Disables expansion and opening citations; preserves visible citations |
 
 ## Events
 

@@ -1,6 +1,6 @@
 # 构建你自己的 Block
 
-这份指南教你如何从 Base Kit 组件沉淀一个可本地维护、可安装、可贡献的业务区块（block）。下面的筛选区块是 **H5 Vue 示例**，不包含真实 API、凭证、私有 URL 或内部需求编号。原生版本必须另写 Wevu SFC、使用原生节点和组件 JSON，不能只修改 manifest 的 target。
+用 Base Kit 组件组合业务区块（block），可在本地维护、通过 CLI 安装或贡献给 Varo。下面是 **H5 Vue 筛选示例**，不含真实 API、凭证、私有 URL 或内部需求编号。原生版本需另写 Wevu SFC、原生节点和组件 JSON，不能只改 manifest target。
 
 ## 当前可安装 Blocks
 
@@ -15,11 +15,11 @@
 | **业务 wrapper**        | 接口、权限、字段映射、产品文案             | 通用交互状态机                        |
 | **Blocks**              | 可复用页面切片与本地组合                   | 私有后端细节、一次性页面胶水          |
 
-经验法则：block 应该像“可搬运的页面切片”，不是“绑死某业务接口的页面”。
+让 block 可复制到其他项目，把特定业务 API 留在业务 wrapper 中。
 
 ## 2. 定义 block 契约
 
-在写代码前先写清合同：
+编码前定义输入与事件：
 
 ```ts
 // 示例：本地筛选 block 的契约
@@ -46,21 +46,21 @@ export interface FilterBarEmits {
 
 契约里要写明：
 
-- **输入**：options、默认值、disabled
-- **输出**：`update:modelValue` / `change`
-- **本地状态**：仅 UI 需要的临时状态
-- **依赖**：Base Kit 组件名（如 `select`）
-- **排除项**：远程字典、鉴权、埋点 SDK、私有域名
+- 输入：options、默认值、disabled
+- 输出：`update:modelValue` / `change`
+- 本地状态：仅供 UI 使用的临时状态
+- 依赖：Base Kit 组件名，如 `select`
+- 排除：远程字典、鉴权、埋点 SDK、私有域名
 
 ## 3. 选择 Base Kit 依赖
 
-优先依赖业务项目中的：
+从业务项目的组件目录导入：
 
 ```text
 src/components/ui/*
 ```
 
-而不是在 block 里直接 import registry 源码路径。远程数据和产品策略放在业务 wrapper，不放进 block。
+不要直接导入 registry 源码。远程数据和产品策略由业务 wrapper 处理。
 
 安装底座组件：
 
@@ -192,7 +192,7 @@ const options = [
 </template>
 ```
 
-复制进业务仓库的源码归业务团队所有，可以继续改布局、token 和交互，不必回灌到 Varo。
+复制后的源码由业务团队维护，可修改布局、token 和交互，无需贡献回 Varo。
 
 ## 7. 准备 registry 元数据
 
@@ -234,7 +234,7 @@ registry/blocks/status-filter/status-filter.vue
 - `docs`：文档路由
 - `platforms`：新增 profile 的显式准入列表；条目及每个传递依赖都必须准入，缺失时在写入前拒绝，不回退到 `weapp`
 
-安装 profile 包含 `h5`、`weapp`、`alipay`、`tt`、`xhs`、`donut-android`、`donut-ios`、`donut-ohos`；新增六个保持 experimental，详见 [支持边界](/guide/installation#安装-profile-与支持边界)。没有针对目标的实现和证据时不要添加准入。原生 SFC 的全局 CSS 必须按 [Wevu Registry](/guide/shadcn-mode) 加载所有已安装 `src/styles/*.css`，基础文件优先，不能局部导入。
+安装 profile 包括 `h5`、`weapp`、`alipay`、`tt`、`xhs`、`donut-android`、`donut-ios`、`donut-ohos`；后六个仍为实验性，详见[支持边界](/guide/installation#安装-profile-与支持边界)。只有具备目标实现和验证证据后才能添加准入。原生 SFC 需按 [Wevu Registry](/guide/shadcn-mode) 全局加载全部已安装 `src/styles/*.css`，基础文件在前，不能局部导入。
 
 ## 8. 补充双语文档
 
@@ -274,7 +274,7 @@ pnpm dlx @varo-ui/cli add --registry ./registry --target h5 blocks/status-filter
 
 ### 独立发布第三方 Registry
 
-不必先贡献回 Varo。把 `registry/` 目录及其所有传递依赖的 manifest 和源码部署到自己的静态站点，即可从业务项目安装：
+将 `registry/` 及其全部传递依赖的 manifest 和源码部署到静态站点，即可在业务项目中安装，无需先贡献给 Varo：
 
 ```bash
 pnpm dlx @varo-ui/cli add --registry https://ui.example.com/registry/ --target h5 blocks/status-filter
@@ -318,7 +318,7 @@ pnpm dlx shadcn-vue@latest add https://ui.example.com/r/status-filter.json
 
 ## 10. 贡献回 Varo
 
-这是可选的上游贡献流程，不是发布第三方 Registry 的前置条件。
+可选择将 block 贡献给 Varo；独立发布不需要此步骤。
 
 提交前过一遍隐私与可移植清单：
 
