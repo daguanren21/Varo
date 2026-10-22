@@ -2,7 +2,7 @@
 
 **English** | [简体中文](./README.zh-CN.md)
 
-[Documentation](https://varo.weapp.dev/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm organization](https://www.npmjs.com/org/varo-ui)
+[Documentation](https://varo.weapp.dev/) · [DeepWiki](https://deepwiki.com/daguanren21/Varo) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm organization](https://www.npmjs.com/org/varo-ui)
 
 Varo provides components and Blocks for Vue 3 mobile H5 applications and `weapp-vite` mini programs. Install source for your target through the Registry, then edit and maintain it in your application.
 
