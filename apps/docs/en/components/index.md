@@ -6,6 +6,8 @@ outline: false
 
 # Components
 
-Choose a component for its H5 interactive demo, native source/support evidence, usage, and API. Native tabs are not live Vue mini programs, and compiled-artifact previews are not device validation. Installation requires admission of the complete manifest dependency closure; all six additional profiles are experimental. See [support boundaries](/en/guide/installation#install-profiles-and-support-boundaries).
+Select a component to view its H5 interactive demo, native source, platform support evidence, usage, and API. Native tabs do not run live Vue mini programs, and previews of compiled components do not replace device validation.
+
+Installation is allowed only when the component and all its dependencies admit the selected profile in their manifests. All six additional profiles are experimental. See [support boundaries](/en/guide/installation#install-profiles-and-support-boundaries).
 
 <ComponentCatalog locale="en" />

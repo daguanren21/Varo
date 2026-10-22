@@ -2,7 +2,7 @@
 
 ## Varo source and ownership
 
-The converted retail source, selected editable UI/helper files and starter tooling originate from Varo under its MIT license. Preserve `LICENSE` and upstream copyright notices when redistributing substantial portions. The exporter records actual source paths, conversions and hashes in `starter-manifest.json`. There is no manually copied framework renderer or second authored product UI in the template.
+Converted retail source, UI, helpers, and tooling come from Varo under MIT. Keep `LICENSE` and copyright notices when redistributing substantial portions. `starter-manifest.json` records source paths, conversions, and hashes; the template maintains no separate renderer or product UI.
 
 Dependency packages retain their own license terms. Varo's MIT license does not relicense DCloud, Vue or any transitive dependency.
 
@@ -27,7 +27,7 @@ Primary integration references:
 - [Class merge runtime: disable escaping for Web](https://tw.weapp.dev/docs/community/packages-runtime/merge).
 - Published pinned DCloud `uni-mp-vite` `dist/plugins/manifestJson.js` and `uni-cli-shared` `dist/json/mp/project.js`: supplying `src/project.config.json` uses that local configuration rather than synthesizing a tourist AppID for an empty manifest value.
 
-Documentation websites evolve independently of pinned packages. Review the installed package APIs and repeat real builds when upgrading. These source references are design evidence, not evidence that installation, typechecking, builds or runtime interactions have passed for an export.
+Check installed APIs when upgrading; online documentation may describe newer packages. Run installation, typechecking, builds, and runtime checks on each export.
 
 ## Direct dependencies
 
@@ -54,17 +54,17 @@ The versions below are pinned in this template's package manifest. License decla
 | `@types/node`               | `22.10.4`                | MIT              | Node tooling declarations                                                      |
 | `postcss`                   | `8.5.6`                  | MIT              | Explicit build peer and compiled CSS parsing                                   |
 | `postcss-selector-parser`   | `7.1.6`                  | MIT              | Compiled selector verification                                                 |
-| `postcss-value-parser`      | `4.2.0`                  | MIT              | Compiled CSS import/URL verification                                           |
+| `@csstools/css-tokenizer`   | `4.0.2`                  | MIT              | CSS escape decoding for compiled import/URL verification                       |
 | `htmlparser2`               | `12.0.0`                 | MIT              | WXML dependency and attribute parsing                                          |
 
-The lockfile fixes the resolved graph for one export. With `autoInstallPeers: false`, required Vue, Vite, uni types, TypeScript and PostCSS peers are explicitly declared rather than silently installed. This list is not an exhaustive legal/security audit of transitive packages, bundled code or native binaries. Inspect the actual installed graph and preserve required notices before redistribution.
+The lockfile fixes one export's dependency graph. With `autoInstallPeers: false`, required Vue, Vite, uni types, TypeScript, and PostCSS peers are declared explicitly. This list covers direct dependencies only; review transitive packages, bundled code, and native binaries and preserve their notices before redistribution.
 
-The official basis is not a promise that every pinned tool is current or independently security-hardened. In particular, the publisher marks `vue-i18n` 9 unsupported. Coordinate framework updates as a single tested uni-app family. Changes to the documented Vite overrides or input patch require frozen installation, peer/type checks, both builds, browser interaction and development-server security/HMR verification. No source-repository lockfile or broad monorepo override is copied into this standalone project.
+The publisher marks `vue-i18n` 9 unsupported. Update uni-app packages together, and check security for the resulting dependency graph. Changes to Vite overrides or the input patch require frozen installation, peer/type checks, both builds, browser interaction, and dev-server security/HMR checks. The standalone project includes neither the repository lockfile nor its broad overrides.
 
 ## Assets
 
 Reached source assets are rehomed under `src/static/` while retaining their source-relative paths. This includes retail product media, tab icons and feature-local media such as the retail logo. `starter-manifest.json` records each exported path/hash and its source inputs. Export does not download remote imagery or grant additional media rights.
 
-The source repository lacks a complete per-image provenance/rights record for its demonstration media. Inclusion under the repository license is not independent proof of photographic, trademark, design or model-release rights. Treat that missing record as a publication gate: replace media with assets you own or have verified rights to, and retain the necessary attributions. Do not infer rights from product names, example branding or the export tool.
+Per-image rights records are incomplete. The repository license does not establish photographic, trademark, design, or model-release rights for demo media. Before publishing, use assets you own or have verified permission to use, with required attribution. Product names, branding, and the exporter grant no additional rights.
 
-No custom font is introduced by this template; the source system-font stack is retained. Review added fonts, photos, logos, icons, other media and network-domain requirements separately before publishing.
+The template keeps system fonts and adds no font files. Review added media and its network-domain requirements before publishing.

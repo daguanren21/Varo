@@ -1,10 +1,10 @@
 # Sticky
 
-吸顶基座：暴露 fixed 状态、偏移量和滚动信息，让 wrapper 只负责视觉。
+提供吸顶状态、偏移量和滚动信息，外层组件负责样式。
 
 ## 运行时归属
 
-本页 `StickyRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VSticky` SFC，不提供等价 Vue Parts；原生标签页只展示源码/证据。各自运行时负责真实滚动源。
+本页 `StickyRoot` 与交互示例仅适用于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VSticky` SFC，没有对应的 Vue Parts；原生标签页仅展示源码和支持证据。各运行时分别连接实际滚动源。
 
 ## 演示
 

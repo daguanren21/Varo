@@ -250,7 +250,7 @@ defineExpose({
       @send="send"
       @approve="approve"
       @reject="reject"
-      @update:approval-value="panelApprovalValue = $event"
+      @update:approvalValue="panelApprovalValue = $event"
       @return-order="returnOrder"
       @save-address="saveAddress"
     />

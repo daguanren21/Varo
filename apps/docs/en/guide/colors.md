@@ -1,6 +1,6 @@
 # Color System
 
-Varo borrows the layered palette method without copying another product's brand. The default primary remains **WeChat Green**. Every brand and semantic color exposes stable **Dark / Base / Light / Soft** levels, while text, border, fill, and background use independent neutral scales.
+Varo uses a layered palette with its own brand colors, defaulting to **WeChat Green**. Every brand and semantic color has four fixed levels: **Dark / Base / Light / Soft**. Text, borders, fills, and backgrounds use independent neutral scales.
 
 <div class="varo-color-system">
   <section class="varo-color-intro">
@@ -43,7 +43,7 @@ Varo borrows the layered palette method without copying another product's brand.
 ## Usage Notes
 
 - Solid components use Base, hover uses Light, and pressed or emphasized states use Dark.
-- Soft is only a quiet background; text and borders keep the matching semantic Base color.
+- Use Soft only for subtle backgrounds; text and borders keep the matching semantic Base color.
 - Body, secondary, placeholder, and disabled text use separate neutral roles.
 - Borders and fills use named levels rather than ad-hoc opacity.
 - Dark mode retains semantic colors and remaps text, border, fill, and background levels.

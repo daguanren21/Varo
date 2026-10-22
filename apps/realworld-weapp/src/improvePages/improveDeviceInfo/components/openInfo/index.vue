@@ -1,9 +1,25 @@
 <script setup lang="ts">
+import { shallowRef, watch } from 'wevu'
+import VTimeField from '../../../../components/ui/v-time-field.vue'
 import { useOpenInfo } from '../../../../hooks/useImprove'
 
 const openInfo = useOpenInfo()
 
 const { publicIndex, publicList, changeStartTime, changeEndTime, changePublic, device, showWeekDays, showWorkDayCheck, checkAllOptions, checkedALLList, checkboxOptions, checkedList, checkAll, closeCheckDay, handleCheck, openLayout, addTime, removeTime, _publicTimes } = openInfo
+
+const activeTime = shallowRef('')
+watch(() => device.value.dataPublic, () => {
+  activeTime.value = ''
+})
+
+function setTimeVisible(index: number, field: 'start' | 'end', visible: boolean) {
+  activeTime.value = visible ? `${index}:${field}` : ''
+}
+
+function removeInterval(index: number) {
+  activeTime.value = ''
+  removeTime(index)
+}
 
 defineExpose({ _publicTimes })
 
@@ -33,22 +49,28 @@ function timeLabelTitle(index: number) {
           arrow="right" :extra-text="showWeekDays(device.workDay) || '请选择开放日'" @click="openLayout"
         />
         <view>
-          <view v-for="(item, index) in _publicTimes" :key="index" style="display: flex;align-items: center;">
-            <picker
-              style="flex:1" mode="time" start="00:00" :disabled="device.dataPublic == 'PUBLIC'"
-              :value="item.start" @change="changeStartTime($event, item)"
-            >
-              <viewItem
-                v-if="device.dataPublic == 'HALF'" :class="timeLabelClass(index)"
-                :title="timeLabelTitle(index)" has-border arrow="right" :extra-text="item.start || '请选择'"
+          <view v-for="(item, index) in _publicTimes" :key="index" style="display: flex;flex-direction: column;gap: 8px;">
+            <view v-if="device.dataPublic == 'HALF'" style="display: grid;gap: 8px;min-width: 0;">
+              <text :class="timeLabelClass(index)">
+                {{ timeLabelTitle(index) }}
+              </text>
+              <text>开始时间</text>
+              <VTimeField
+                min="00:00" :disabled="device.dataPublic == 'PUBLIC'" :value="item.start"
+                :visible="activeTime === `${index}:start`" title="开始时间" placeholder="请选择"
+                confirm-text="确定" cancel-text="取消"
+                @update:value="changeStartTime($event, item)"
+                @update:visible="setTimeVisible(index, 'start', $event)"
               />
-            </picker>
-            <picker
-              style="flex:1" mode="time" end="23:59" :disabled="device.dataPublic == 'PUBLIC'" :value="item.end"
-              @change="changeEndTime($event, item)"
-            >
-              <viewItem v-if="device.dataPublic == 'HALF'" has-border arrow="right" :extra-text="item.end || '请选择'" />
-            </picker>
+              <text>结束时间</text>
+              <VTimeField
+                max="23:59" :disabled="device.dataPublic == 'PUBLIC'" :value="item.end"
+                :visible="activeTime === `${index}:end`" title="结束时间" placeholder="请选择"
+                confirm-text="确定" cancel-text="取消"
+                @update:value="changeEndTime($event, item)"
+                @update:visible="setTimeVisible(index, 'end', $event)"
+              />
+            </view>
             <view v-if="device.dataPublic == 'HALF'" style="margin-left: 10px;">
               <VIcon
                 v-if="index === _publicTimes.length - 1" name="add-circle" size="30" color="#FF6216"
@@ -56,7 +78,7 @@ function timeLabelTitle(index: number) {
               />
               <VIcon
                 v-if="_publicTimes.length >= 2" style="margin-left:5px" name="close-circle"
-                size="30" color="#F00" @click="removeTime(index)"
+                size="30" color="#F00" @click="removeInterval(index)"
               />
             </view>
           </view>

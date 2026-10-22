@@ -1,6 +1,6 @@
 # DateField
 
-Year / month / day columns composed from `VPicker`. Keep the month grid on [Calendar](/en/components/calendar); DateField is not a calendar.
+DateField uses `VPicker` to select a date from year, month, and day columns. For a monthly calendar grid, use [Calendar](/en/components/calendar).
 
 ## Demo
 

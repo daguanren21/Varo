@@ -45,9 +45,11 @@ async function main() {
     assert.ok(streamingState.reasoningCount > 0, 'Agent reasoning must reach the page renderer')
     assert.ok(streamingState.toolCount > 0, 'Agent tool state must reach the page renderer')
 
-    await waitForAutomationState(page, state => state.pendingAction === 'purchase' && !state.busy)
+    const beforeApproval = await waitForAutomationState(page, state => state.pendingAction === 'purchase' && !state.busy)
     assert.equal(await page.callMethod('automationApprovePurchase'), true)
-    const purchasedState = await waitForAutomationState(page, state => state.orderCount === initialState.orderCount + 1)
+    const purchasedState = await waitForAutomationState(page, state => state.orderCount === initialState.orderCount + 1
+      && state.messageCount === beforeApproval.messageCount + 1 && state.status === 'idle')
+    await page.waitForRendered({ text: '已创建', timeout: 5000 })
     assert.equal(purchasedState.latestProduct, 'milk')
     assert.equal(purchasedState.latestStatus, 'paid')
     assert.deepEqual(markdownErrors, [], 'Agent Markdown must parse without runtime fallback')

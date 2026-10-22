@@ -67,5 +67,5 @@ const visible = ref(false)
 | `default` | 自定义遮罩层内容 |
 
 ::: info Primitives
-`OverlayRoot` 使用 `useOverlayRoot` 处理受控/非受控显隐和点击关闭；H5 与 Weapp primitives 都会复用 `useBodyScrollLock`。
+`OverlayRoot` 是 H5 渲染组件；它与原生 Wevu Registry SFC 共用 `@varo-ui/headless` 的 `useOverlayRoot` 处理受控/非受控显隐和点击关闭。`useBodyScrollLock` 仅用于 H5。
 :::

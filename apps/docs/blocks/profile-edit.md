@@ -15,7 +15,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/profile-edit
 
 ## 边界
 
-Block 只拥有本地表单组合和类型化事件，不包含用户接口、鉴权、远程城市字典或保存策略。业务层通过 `initialProfile` 与 `cities` 注入数据，监听 `submit` / `cancel` 执行真实业务。
+Block 组合本地表单并发出类型化事件。应用通过 `initialProfile` 和 `cities` 传入数据，处理 `submit` / `cancel`，并负责用户接口、鉴权、远程城市字典及保存策略。
 
 ## 相关文档
 

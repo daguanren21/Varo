@@ -1,10 +1,10 @@
 # Number Field
 
-Numeric-input foundation where Root owns bounds, step, and precision while controls stay composable.
+Root manages numeric bounds, step, and precision. Compose the input with increment and decrement buttons.
 
 ## Runtime ownership
 
-`useNumberFieldRoot` comes from `@varo-ui/headless` with reusable numeric constraints. This page's Parts and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VInputNumber` SFC, not equivalent Vue Parts; the native tab shows source/evidence only.
+`useNumberFieldRoot` comes from `@varo-ui/headless` with numeric constraints shared across targets. This page's Parts and interactive example are H5-only, from `@varo-ui/h5/primitives`. Native consumers use the Wevu `VInputNumber` SFC; there are no equivalent Vue Parts. The native tab shows source and support evidence only.
 
 ## Demo
 
@@ -15,15 +15,15 @@ Numeric-input foundation where Root owns bounds, step, and precision while contr
 | Part                   | Role                          |
 | ---------------------- | ----------------------------- |
 | `NumberFieldRoot`      | Numeric state and constraints |
-| `NumberFieldDecrement` | Decrease action               |
+| `NumberFieldDecrement` | Decreases the value           |
 | `NumberFieldInput`     | Native numeric input          |
-| `NumberFieldIncrement` | Increase action               |
+| `NumberFieldIncrement` | Increases the value           |
 
 ## State and events
 
-- State：`value`, `min`, `max`, `step`, `precision`, and `readonly`
-- Events：`update:value` and `valueChange`.
+- State: `value`, `min`, `max`, `step`, `precision`, and `readonly`
+- Events: `update:value` and `valueChange`.
 
 ::: info Platform notes
-Bounds and precision align across targets; native input events stay runtime-owned.
+Both targets use the same bounds and precision rules. Each runtime adapts its native input events.
 :::

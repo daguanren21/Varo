@@ -90,5 +90,5 @@ const visible = ref(false)
 | `closeIcon` | Custom close icon content that replaces the default `VIcon` |
 
 ::: info Primitives
-`PopupRoot` uses `usePopupRoot` for visibility, overlay click, and `Escape` close behavior; UI packages keep the Varo-style component entry.
+`PopupRoot` uses `usePopupRoot` to manage visibility, overlay clicks, and closing with `Escape`. UI packages expose the components with Varo styling.
 :::

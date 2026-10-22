@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "weapp-vite build && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
+    "build": "weapp-vite build && node scripts/localize-native-components.mjs && node scripts/prepare-devtools-project.mjs && node scripts/verify-devtools-project.mjs",
     "build:preview": "WEAPP_ROBOT_CHAT=1 weapp-vite build --mode browser-preview --project-config project.browser.json",
     "clean": "rimraf dist devtools .weapp-vite",
     "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite --project-config .weapp-vite/project.dev.config.json",
@@ -14,7 +14,7 @@
     "prepare:weapp": "weapp-vite prepare",
     "lint": "echo weapp playground lint pending",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config vite.config.ts --environment jsdom --dir src --passWithNoTests",
+    "test": "vitest run --config vite.config.ts --environment jsdom --dir src --passWithNoTests && vitest run --config vite.config.ts --environment jsdom --dir scripts --passWithNoTests=false",
     "smoke:blocks": "node e2e/block-runtime-smoke.mjs",
     "smoke:runtime": "node e2e/runtime-smoke.mjs",
     "smoke:theme": "node e2e/theme-runtime-smoke.mjs",
@@ -31,6 +31,7 @@
     "wevu": "7.5.0"
   },
   "devDependencies": {
+    "@csstools/css-tokenizer": "4.0.2",
     "@vitejs/plugin-vue": "^6.0.9",
     "@weapp-vite/miniprogram-automator": "1.3.0",
     "pngjs": "7.0.0",

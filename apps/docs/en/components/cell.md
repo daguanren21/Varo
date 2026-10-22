@@ -75,8 +75,8 @@
 | --------------- | ---------------------- | ----------- | ------------------------------------------ |
 | `title`         | `string`               | `undefined` | Left title                                 |
 | `subTitle`      | `string`               | `undefined` | Subtitle below title                       |
-| `desc`          | `string`               | `undefined` | Right description                          |
-| `descTextAlign` | `'left' \| 'right'`    | `'right'`   | Right description alignment                |
+| `desc`          | `string`               | `undefined` | Description on the right                   |
+| `descTextAlign` | `'left' \| 'right'`    | `'right'`   | Alignment of the description on the right  |
 | `icon`          | `string`               | `undefined` | Left icon content                          |
 | `isLink`        | `boolean`              | `false`     | Show the right arrow and clickable state   |
 | `to`            | `string`               | `undefined` | Link href; renders an anchor when provided |
@@ -88,14 +88,14 @@
 
 ## CellGroup Props
 
-| Prop    | Type     | Default     | Description             |
-| ------- | -------- | ----------- | ----------------------- |
-| `title` | `string` | `undefined` | Group title             |
-| `desc`  | `string` | `undefined` | Group right description |
+| Prop    | Type     | Default     | Description                           |
+| ------- | -------- | ----------- | ------------------------------------- |
+| `title` | `string` | `undefined` | Group title                           |
+| `desc`  | `string` | `undefined` | Description on the right of the group |
 
 ## Events
 
-The DOM event types below apply only to H5. Native components use host click events, not browser keyboard events or DOM APIs; follow the corresponding SFC contract.
+The DOM event types below apply only to H5. Native components use host click events; see the corresponding SFC for payloads. Browser keyboard events and DOM APIs do not apply.
 
 | Event   | Payload                       | Description                                          |
 | ------- | ----------------------------- | ---------------------------------------------------- |

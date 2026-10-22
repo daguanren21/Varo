@@ -803,6 +803,40 @@
   white-space: nowrap;
 }
 
+.agent-activity__trigger {
+  width: 100%;
+  min-height: 36px;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+}
+
+.agent-activity__trigger:focus-visible {
+  outline: 2px solid var(--varo-agent-primary);
+  outline-offset: 3px;
+}
+
+.agent-activity__trigger strong {
+  flex: 1;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.agent-activity__chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--agent-muted);
+}
+
+.agent-activity__chevron.is-open {
+  transform: rotate(180deg);
+}
+
 .agent-activity__meta {
   display: flex;
   gap: 8px;
@@ -823,6 +857,11 @@
   font-size: 11px;
   line-height: 16px;
   color: var(--agent-muted);
+  overflow-wrap: anywhere;
+}
+
+.agent-activity__copy p[hidden] {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

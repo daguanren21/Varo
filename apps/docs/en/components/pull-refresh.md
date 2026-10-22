@@ -1,6 +1,6 @@
 # PullRefresh
 
-`VPullRefresh` owns top-edge pull-to-refresh. Keep bottom-edge incremental loading on [List](/en/components/list).
+`VPullRefresh` handles pull-to-refresh at the top of a list. Use [List](/en/components/list) to load more items when the user reaches the bottom.
 
 ## Demo
 

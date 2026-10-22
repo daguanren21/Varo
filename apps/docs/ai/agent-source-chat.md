@@ -1,6 +1,6 @@
 # AgentSourceChat Block
 
-可安装的知识来源对话切片：先显示可用来源与启用范围，再呈现检索进度、来源回执、回答引用和转工单入口。它组合现有 `AgentChat`、`AgentComposerScope`、`AgentRetrievalProgress`、`AgentSourceReceipt` 与 `AgentCitations`，不拥有连接、检索或工单执行器。
+围绕选定来源展开对话，显示来源可用性、启用范围、检索进度、来源回执、回答引用和转工单入口。它组合 `AgentChat`、`AgentComposerScope`、`AgentRetrievalProgress`、`AgentSourceReceipt` 与 `AgentCitations`；连接、检索和工单操作由应用执行。
 
 ## 安装
 
@@ -12,18 +12,18 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-source-chat
 
 两个目标都安装到 `src/components/blocks/agent-source-chat.vue`，并安装同目录的 `agent-source-chat.types.ts`。CLI 报告的 npm 依赖需要另外安装。
 
-直接 Registry 依赖为 `blocks/agent-chat`、`components/agent-workspace`、`components/agent-advanced`、`components/button` 与 `utils/primitives`。引用功能明确选择 `agent-advanced`；不安装 monolithic `components/agent-ui`，也不扩张基础 `agent-chat` 的 conversation 闭包。共享来源类型属于 `agent-workspace`，引用类型属于 `agent-advanced`。传递闭包包含 Agent 主题、conversation、presentation 与所需基础控件；以安装计划为准，不手工复制依赖文件。
+直接依赖 `blocks/agent-chat`、`components/agent-workspace`、`components/agent-advanced`、`components/button` 与 `utils/primitives`。引用功能使用 `agent-advanced`，无需安装完整的 `components/agent-ui`，也不增加基础 `agent-chat` 的 conversation 依赖。来源类型在 `agent-workspace`，引用类型在 `agent-advanced`。安装计划还包含 Agent 主题、conversation、presentation 与所需基础控件，无需手工复制依赖文件。
 
-H5 使用安装源中的完整依赖 CSS 导入。原生通过 `weapp.styles` 全局注册全部已安装 CSS，`varo.css` 排在前面，`include: 'app.vue'`；保留 SFC 的 `styleIsolation: apply-shared`，不要把全局 CSS 导入组件局部 WXSS。配置见 [Registry 模式](/guide/shadcn-mode)。原生运行时使用 `wevu`，不是 Vue alias。目标声明仅覆盖 `h5` / `weapp`，不代表实验性 profile 或设备认证。
+H5 源码会导入所需 CSS。原生通过 `weapp.styles` 全局注册全部已安装 CSS，先加载 `varo.css`，并设置 `include: 'app.vue'`。保留 SFC 的 `styleIsolation: apply-shared`，不要把全局 CSS 导入组件局部 WXSS，详见 [Registry 模式](/guide/shadcn-mode)。原生使用 `wevu`，不能用 Vue alias 替代。声明的目标仅有 `h5` / `weapp`，不代表实验性 profile 或设备已通过验证。
 
 ## 数据与执行边界
 
-- `sources`、`retrieval`、`receipts`、`citations`、`messages`、回答状态与工单资格全部由应用注入；Block 不把点击当作外部执行成功，也不乐观修改这些数组。
+- 应用提供 `sources`、`retrieval`、`receipts`、`citations`、`messages`、回答状态和工单权限。Block 不会因点击就更新数组或报告外部操作成功。
 - `AgentContextSource.status` 继续使用 `available | connecting | unavailable`。省略状态按已有组件约定视为 `available`。只有 `enabled` 且可用的来源允许提交；不可用来源的连接意图不会自动授权或启用来源。
-- 检索继续使用 `AgentRetrievalItem` 的 `queued | reading | read | skipped | failed`；回执继续使用 `AgentSourceReceiptItem` 的 `read | skipped | failed`。空结果可以是“已读、0 条”，超出范围可以是“已跳过”。应用必须给出真实结果与原因，Block 不从消息文字猜测。
-- `AgentCitationItem` 原样传给 `openCitation`。`url` 可省略，例如应用内文档可用 `id` 定位。应用只提供确实能打开的引用，负责权限检查、URL 安全策略及宿主导航。Block 不调用 `window.open`、原生导航或网络。
-- `createTicket` 只是申请转交；应用负责审核、去重、实际创建、结果和存储。接收后应移除 `ticket` 或设置 `busy`，避免在处理同一申请时继续授权点击。
-- 不包含模型、账号授权、凭据、服务端知识检索、工单 API 或持久化，也不提供假的成功兜底。
+- 检索使用 `AgentRetrievalItem` 的 `queued | reading | read | skipped | failed`；回执使用 `AgentSourceReceiptItem` 的 `read | skipped | failed`。空结果可表示为“已读、0 条”，超出范围可表示为“已跳过”。应用需提供真实结果和原因，Block 不从消息文字推断。
+- `AgentCitationItem` 原样传给 `openCitation`。`url` 可省略，例如应用内文档可用 `id` 定位。应用需确保引用能打开，并处理权限、URL 安全和宿主导航。Block 不调用 `window.open`、原生导航或网络。
+- `createTicket` 请求转交，由应用审核、去重、创建工单并保存结果。接受请求后应移除 `ticket` 或设置 `busy`，防止处理中重复申请。
+- 模型、账号授权、凭据、服务端知识检索、工单 API 和持久化需由应用提供；组件不会模拟成功结果。
 
 ## 最小受控示例
 
@@ -122,7 +122,7 @@ export interface AgentSourceChatTicketIntent {
 }
 ```
 
-这些只是 Block 的呈现/转交类型，不改变核心 `AgentPartStatus`。工单上下文的 `reason` 必须匹配当前 `responseState`，且 `question.trim()` 非空；`sourceIds` 表示应用记录的请求范围，不是 Block 重新推断的权限。
+这些类型用于 Block 展示和转交，不改变核心 `AgentPartStatus`。工单的 `reason` 必须匹配当前 `responseState`，且 `question.trim()` 非空。`sourceIds` 是应用记录的请求范围，Block 不据此推断权限。
 
 ## Events 与守卫
 
@@ -141,7 +141,7 @@ export interface AgentSourceChatTicketIntent {
 | `stop`              | 无                                                 | 仅忙碌；应用取消真实任务/生产者                             |
 | `close`             | 无                                                 | 应用关闭页面切片，并按业务要求取消任务                      |
 
-Block 按当前 props 的 id 重新定位列表项，再判断资格，不继续转发已经被替换的陈旧对象。`stop` 与 `close` 是既有 Chat 的退出/取消通道：**即使 `disabled` 仍可停止或关闭**，不会困住正在进行的任务。禁用和忙碌不隐藏回执或引用，只禁用操作；检索列表保持原始项与状态，不把它们改写成成功或不可重试。
+Block 按 id 从当前 props 查找条目并检查操作条件，不转发已替换的旧对象。`stop` 与 `close` 沿用 Chat 的取消和关闭事件，即使 `disabled` 仍可使用。禁用或忙碌时，回执、引用及检索状态保持可见，仅操作被禁用；检索项不会被改写为成功或不可重试。
 
 省略 `modelValue` 与传入 `''` 不同。原生使用 `type: null, value: null` 属性元数据与 nullish 存在性检查。提交不清空非受控草稿；需要应用接受/拒绝更新、外部清空或切换会话草稿时使用 `v-model`。原生忙碌时可以编辑下一条草稿但不能提交；H5 沿用 `AgentChat` 忙碌时禁用编辑的行为。
 
@@ -152,4 +152,4 @@ Block 按当前 props 的 id 重新定位列表项，再判断资格，不继续
 - 手动流程：切换来源可用性 → 请求并手动完成**演示**连接 → 显式启用范围 → 提问 → 排队/读取 → 成功、失败、空结果或超出范围 → 打开本地引用原文/申请转交。
 - 禁用操作时证据仍保留；转交后应用移除授权对象，按钮不可再次申请。切换非受控输入可检查本地草稿与受控空串的区别。
 
-对应真实 E2E 为 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`。它们通过实际控件操作检查页面状态，不调用组件内部方法或用 `setData` 假扮输入。原生断言针对原生文字、回执与引用控件和本地来源预览，**不声称 headless 能观察 Chat 的 rich-text 消息正文**。未发布的 Wevu plain-slot 协议与真实宿主可观测性限制仍须独立验收；不会用上下文桥、假几何或复制消息文字绕过。
+E2E 场景在 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`，通过实际控件检查页面状态，不调用组件内部方法或用 `setData` 模拟输入。原生断言覆盖原生文字、回执、引用控件和本地来源预览，不证明 headless 能观察 Chat 的 rich-text 正文。Wevu plain-slot 协议尚未发布，宿主也有观测限制，仍需独立验收；测试不通过上下文桥、模拟几何或复制消息文字绕过这些限制。

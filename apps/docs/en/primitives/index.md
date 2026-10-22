@@ -1,6 +1,6 @@
 # Primitives
 
-`@varo-ui/headless` provides platform-neutral unstyled state and event contracts. Composable Parts and interactive examples in these docs are H5-only. Native consumers use real Wevu SFCs or headless, not an equivalent Vue Parts renderer.
+`@varo-ui/headless` provides platform-neutral state and event contracts without styles. The composable Parts and interactive examples in these docs are available only on H5. Native consumers use Wevu SFCs or headless; there is no equivalent Vue Parts renderer.
 
 ## Install
 
@@ -24,7 +24,7 @@ See [Wevu Registry](/en/guide/shadcn-mode) for global styles and Tailwind config
 | `@varo-ui/h5/primitives`                         | DOM, keyboard, and ARIA                         |
 | `@varo-ui/weapp` / `@varo-ui/weapp/components/*` | Native Wevu SFC source for platform compilation |
 
-Headless exports no DOM scroll locking or browser focus logic; H5 owns those effects. All Parts tables describe H5 APIs. Native demo tabs show target source and support evidence, not a live Vue mini program or device proof. See [install profiles](/en/guide/installation#install-profiles-and-support-boundaries) for exact support.
+H5 handles DOM scroll locking and browser focus; headless does not export this logic. All Parts tables describe H5 APIs. Native tabs show target source and support evidence. Any browser previews they provide are not live Vue mini programs or proof of device support. See [install profiles](/en/guide/installation#install-profiles-and-support-boundaries) for the exact support scope.
 
 ## Catalog
 

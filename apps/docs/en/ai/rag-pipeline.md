@@ -1,6 +1,6 @@
 # AgentRagPipeline
 
-Five-stage retrieval-augmented generation: progress, source cards, and citations that point back to sources.
+Shows five-stage retrieval-augmented generation progress, source cards, and answers citing their sources.
 
 ## Demo
 

@@ -1,6 +1,6 @@
 # AgentToolChip
 
-Compact tool name, summary, and execution status.
+Compact display of tool name, summary, and execution status.
 
 ## Demo
 

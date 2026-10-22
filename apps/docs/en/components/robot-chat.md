@@ -6,7 +6,7 @@
 
 <NativeComponentPreview component="robot-chat" locale="en" />
 
-This preview runs the compiled native `VRobotChat` scene. The browser host presents the plugin conversation, input area, and callback interactions locally. Replies and connection states do not indicate a successful request to a real robot service. Configure and verify the plugin, permissions, and product AppID in the real WeChat host.
+The browser preview runs compiled native `VRobotChat` code with local conversation, input, and callback interactions. It does not connect to the WeChat dialogue platform, so replies and connection states do not indicate real service success. Configure and verify the plugin, permissions, and your application's AppID in WeChat.
 
 ::: warning Mini-program configuration
 Enable the plugin for the Mini Program, then declare it under the fixed `varoRobot` alias in `app.json`:
@@ -40,7 +40,7 @@ For development, use `WEAPP_ROBOT_CHAT=1 pnpm --filter @varo/playground-weapp de
 
 `provider` is the plugin provider's AppID, not your Mini Program AppID or `options.appid` (the robot application ID); do not replace it. Keep your AppID in ignored `project.local.json` or `WEAPP_APP_ID`. Test-account sign-in grants no plugin authorization.
 
-Browser-preview `pnpm --filter @varo/playground-weapp-preview dev` / `build` writes separate `dist/browser/mp-weixin` output without overwriting `devtools/build/mp-weixin`. Its configuration has no AppID and cannot be used for DevTools sign-in. Preview proves neither plugin authorization nor device behavior.
+Run `pnpm --filter @varo/playground-weapp-preview dev` / `build` for the browser preview. Output goes to `dist/browser/mp-weixin` without overwriting `devtools/build/mp-weixin`. Its configuration has no AppID and cannot sign in to DevTools; the preview verifies neither plugin authorization nor device behavior.
 
 ## Usage
 

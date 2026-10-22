@@ -7,9 +7,11 @@ import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import ts from 'typescript'
 import { parse as parseSfc } from 'vue/compiler-sfc'
+import { postcss } from 'weapp-tailwindcss/core'
 import { resolveRegistryItems } from '../../../packages/cli/src/index.ts'
 import { registryItems, registryRoot } from '../../../scripts/registry-artifacts.mjs'
 import { convertRetailSources } from './convert-retail-vue.mjs'
+import { cssReferences, localCssReference } from './css-references.mjs'
 
 const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const repoRoot = resolve(appRoot, '../..')
@@ -40,6 +42,10 @@ function portable(path) {
 
 function digest(content) {
   return createHash('sha256').update(content).digest('hex')
+}
+
+function npmPackageName(specifier) {
+  return specifier.startsWith('@') ? specifier.split('/').slice(0, 2).join('/') : specifier.split('/')[0]
 }
 
 async function statIfPresent(path) {
@@ -228,7 +234,7 @@ async function collectProject(framework) {
       const path = portable(relative(dirname(outputName(owner)), outputName(target)))
       return path.startsWith('.') ? path : `./${path}`
     }
-    const packageName = specifier.startsWith('@') ? specifier.split('/').slice(0, 2).join('/') : specifier.split('/')[0]
+    const packageName = npmPackageName(specifier)
     if (packageName === 'vue' || packageName.startsWith('@varo') || (!npmPackages.has(packageName) && packageName !== 'wevu')
       || (helperRoots.some(root => inside(root, owner)) && packageName === 'wevu')) {
       throw new Error(`Unsupported runtime dependency in ${portable(relative(repoRoot, owner))}: ${specifier}. Use relative native source or an explicitly declared registry dependency.`)
@@ -272,13 +278,33 @@ async function collectProject(framework) {
     for (const asset of assets) { await localTarget(owner, asset) }
   }
 
+  async function cssTarget(owner, specifier, importRule = false) {
+    const target = specifier.startsWith('/') ? resolve(sourceRoot, `.${specifier}`) : resolve(dirname(owner), specifier)
+    const stat = await statIfPresent(target)
+    if (stat?.isSymbolicLink()) { throw new Error(`Source import is a symlink: ${specifier}`) }
+    const packageImport = importRule && !specifier.startsWith('.') && !specifier.startsWith('/')
+      && npmPackages.has(npmPackageName(specifier))
+    if (packageImport) {
+      if (stat?.isFile()) {
+        throw new Error(`Ambiguous stylesheet import in ${outputName(owner)}: ${specifier} matches a local file and a declared package. Use ./${specifier} to select the local file.`)
+      }
+      return
+    }
+    if (!stat?.isFile()) {
+      throw new Error(`Unresolved source reference in ${portable(relative(repoRoot, owner))}: ${specifier}`)
+    }
+    enqueue(target)
+  }
+
   async function styleReferences(owner, content) {
-    for (const match of content.matchAll(/@import\s+(?:url\(\s*)?['"]([^'"]+)['"]|url\(\s*['"]?([^)'"\s]+)['"]?\s*\)/g)) {
-      const specifier = match[1] ?? match[2]
-      if (/^(?:data:|https?:|#)/.test(specifier)) { continue }
-      if (specifier.startsWith('.') || specifier.startsWith('/')) { await localTarget(owner, specifier) }
-      else if (!npmPackages.has(specifier.split('/')[0])) {
-        throw new Error(`Unresolved stylesheet dependency in ${outputName(owner)}: ${specifier}`)
+    const styles = postcss.parse(content, { from: outputName(owner) })
+    const references = []
+    styles.walkAtRules(/^import$/i, rule => references.push({ value: rule.params, importRule: true }))
+    styles.walkDecls(declaration => references.push({ value: declaration.value, importRule: false }))
+    for (const { value, importRule } of references) {
+      for (const reference of cssReferences(value, { importRule, from: outputName(owner) })) {
+        const local = localCssReference(reference.value)
+        if (local) { await cssTarget(owner, local.path, importRule) }
       }
     }
   }
@@ -327,7 +353,7 @@ async function collectProject(framework) {
           else { await scriptReferences(path, block.content, block.loc.start.offset, edits) }
         }
         for (const style of descriptor.styles) {
-          if (style.src) { await localTarget(path, style.src) }
+          if (style.src) { await cssTarget(path, style.src.replace(/[?#].*$/, '')) }
           await styleReferences(path, style.content)
         }
         if (descriptor.template?.src) { await localTarget(path, descriptor.template.src) }
@@ -392,7 +418,13 @@ async function collectProject(framework) {
     }
   }
   await addTemplates(selectedTemplateRoot)
+  if (framework === 'wevu') {
+    const patch = 'patches/weapp-vite@7.5.0.patch'
+    if (files.has(patch)) { throw new Error(`Template/source path collision: ${patch}`) }
+    files.set(patch, await snapshot(resolve(repoRoot, 'packages/ui-weapp', patch)))
+  }
   files.set('LICENSE', await snapshot(resolve(repoRoot, 'LICENSE')))
+  files.set('scripts/css-references.mjs', await snapshot(fileURLToPath(new URL('./css-references.mjs', import.meta.url))))
   if (framework !== 'wevu') {
     const verifier = fileURLToPath(new URL('./verify-retail-native.mjs', import.meta.url))
     files.set('scripts/verify-native.mjs', await snapshot(verifier))

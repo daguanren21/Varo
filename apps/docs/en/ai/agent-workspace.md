@@ -29,9 +29,9 @@ function submit(value: string) {
 </template>
 ```
 
-`v-model:prompt` is optional. Without a binding, the Block owns its draft. With a binding, the parent accepts updates and decides when to clear it; an explicit `''` remains controlled. Submission emits trimmed text without clearing the draft. Disabled, busy or whitespace-only input does not submit. Native optional prompt metadata uses `null` for absence; it is not coerced to an empty controlled string.
+`v-model:prompt` is optional: without it, the Block keeps a local draft; with it, the parent accepts updates and decides when to clear it. Explicit `''` is controlled. Submission emits trimmed text without clearing the draft; disabled, busy, or whitespace-only input does not submit. Native metadata uses `null` for an unbound prompt, without converting it to a controlled empty string.
 
-Both renderers determine ownership from the presence of `prompt`, not its update listener. Passing only `:prompt="''"` without listening for `update:prompt` cannot turn an unaccepted edit into a submittable draft.
+Both renderers use the presence of `prompt` to determine whether it is controlled, regardless of update listeners. With only `:prompt="''"` and no `update:prompt` listener, edits the parent has not accepted cannot be submitted.
 
 ## Props
 
@@ -76,9 +76,9 @@ Both renderers determine ownership from the presence of `prompt`, not its update
 
 ## Application-owned execution
 
-The Block never mutates `versions`, `tasks`, sources or receipts. Selecting, branching and pinning emit an `AgentThreadVersion` from the current `versions` prop. The application replaces its snapshot and supplies `activeVersionId`; it owns branch IDs, ancestry, saved messages and persistence. Pinning emits intent only, not an optimistic pinned state.
+The Block does not modify `versions`, `tasks`, sources, or receipts. Selecting, branching, and pinning emit an `AgentThreadVersion` from current `versions`. The application updates its snapshot and `activeVersionId`, and manages branch IDs, ancestry, saved messages, and persistence. Pinning also waits for the application to confirm the new state.
 
-`AgentTask` is the existing presentation contract (`id`, `title`, `status`, optional `description`, `meta`, `progress`, `requiresApproval`, `retryable`). Its `status` remains the core `AgentPartStatus`: `waiting | running | completed | failed`. Do not add `queued` or `cancelled` to this protocol. Cancellation outcome and whether a cancelled task may run again are application policy, not a fabricated successful completion.
+`AgentTask` contains `id`, `title`, `status`, and optional `description`, `meta`, `progress`, `requiresApproval`, and `retryable`. Its `status` uses core `AgentPartStatus`: `waiting | running | completed | failed`. Do not add `queued` or `cancelled`. The application determines cancellation results and whether a task can run again; cancellation must not be presented as successful completion.
 
 | Intent         | Eligibility checked at dispatch                  |
 | -------------- | ------------------------------------------------ |
@@ -89,15 +89,15 @@ The Block never mutates `versions`, `tasks`, sources or receipts. Selecting, bra
 | Retry task     | Current task is `failed` and `retryable`         |
 | Cancel task    | `busy` is true or a current task is `running`    |
 
-`disabled` rejects all these intents. `busy` blocks selection, branching, pinning, approval, retry, source changes, receipt actions and submission, but **does not block cancel**. Source, retrieval and receipt evidence remains visible while controls are disabled. Closing is a visibility intent, not cancellation. Applications must recheck authorization and current state when handling an intent, especially across asynchronous approval or network boundaries.
+`disabled` blocks all actions above. `busy` blocks selection, branching, pinning, approval, retry, source changes, receipt actions, and submission, while still allowing cancellation. Source, retrieval, and receipt content and states remain visible. Closing only requests that the application hide the workspace; it does not cancel execution. Recheck authorization and current state when handling requests, especially after asynchronous approvals or network calls.
 
-Standalone `AgentThreadVersions` accepts `disabled`; pass `disabled || busy` when composing it yourself. Standalone `AgentTaskRunner` accepts both `busy` and `disabled`; do not pass `busy` as `disabled`, or you will also disable its cancellation escape. Both resolve the current prop item by ID before emitting and reject removed/ineligible items rather than trusting a stale rendered object.
+Standalone `AgentThreadVersions` accepts `disabled`; pass `disabled || busy` to also block actions while busy. `AgentTaskRunner` accepts `busy` and `disabled` separately; do not pass `busy` as `disabled`, or cancellation will also be blocked. Both components resolve current prop items by ID before emitting and reject removed or ineligible items.
 
-The default execution region still renders conversation, retrieval, tasks and receipts. Tool details can be composed with the existing `AgentToolChip` from `components/agent-conversation` (H5: `@/components/agent-ui/conversation`; native: `@/components/agent-ui/AgentToolChip.vue`). Pass an application-owned `AgentToolPart`; the UI does not invoke tools. An `approveTask` handler may open an application approval surface, wait for the user's decision, and only then execute permitted work and publish updated task/tool snapshots. The Block does not implement credentials, approval policy, network execution, retry scheduling or storage.
+The default execution area displays conversation, retrieval, tasks, and receipts. For tool details, use `AgentToolChip` from `components/agent-conversation` (H5: `@/components/agent-ui/conversation`; native: `@/components/agent-ui/AgentToolChip.vue`) with an application-supplied `AgentToolPart`; the UI does not call tools. An `approveTask` handler can open an approval UI, await the user's decision, execute approved work, and update task/tool snapshots. Credentials, approval policy, network requests, retry scheduling, and storage are handled by the application.
 
 ### Local demo and runtime coverage
 
-The H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` compose the installed Block with existing Varo controls. Their labelled local demo branches/selects/pins in memory, accepts or declines an approval, deliberately fails the first local word-count attempt, and retries to compute 24 words from eight in-page sentences. Cancel clears the actual local producer; the application returns the task to `waiting` and requires approval again. No service connection or persisted result is claimed.
+H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` use the installed Block and Varo controls. The labelled local demo selects, branches, and pins versions in memory and accepts or rejects approvals. The first word-count attempt deliberately fails; retry counts 24 words from eight in-page sentences. Cancel clears the local producer and returns the task to `waiting`, requiring approval to run again. The demo does not connect to a service or persist results.
 
 `apps/e2e/tests/{h5,weapp-native}/workspace.e2e.ts` exercises these controls and live page states, including disabled/no-op affordances and no later work after cancellation. Authored scenarios are not a claim that a device run passed.
 
@@ -108,7 +108,7 @@ The H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index
 | `execution` | Replaces the default conversation, retrieval, task, and receipt region |
 
 ::: warning Native runtime limits
-The `execution` slot remains an unscoped replacement slot. Parent-state forwarding through native plain slots depends on an unreleased Wevu plain-slot protocol fix; do not change `scopedSlotsRequireProps`, add a context bridge or copy parent data to disguise that limit. Use the default execution region for the provided demo, and treat custom native slot acceptance as blocked until the supported compiler/runtime fix is available. The known headless native `rich-text` observation gap is also not evidence of rendered text correctness; validate affected rich-text on a supported real host. H5 slot coverage does not certify native behavior.
+The `execution` slot is an unscoped replacement slot. Forwarding parent state through native plain slots requires an unreleased Wevu plain-slot protocol fix. Do not change `scopedSlotsRequireProps`, add a context bridge, or copy parent data to bypass this limit. The demo uses the default execution area; custom native slots require the supported compiler/runtime fix before acceptance. Headless native tools cannot fully observe `rich-text`, so validate affected text on a supported real host. H5 slot tests do not establish native correctness.
 :::
 
 ::: info Target import

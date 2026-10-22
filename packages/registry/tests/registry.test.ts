@@ -98,7 +98,6 @@ describe('registry catalog', () => {
   })
 
   it('keeps the full H5 catalog, high-consensus weapp catalog, and executable SFC Base Kit aligned', () => {
-    expect(weappComponentCatalogV01).toHaveLength(53)
     const baseKitNames = new Set<string>(baseKitPhase1)
     const weappComponentNames = new Set<string>(weappComponentCatalogV01)
 

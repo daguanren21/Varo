@@ -6,7 +6,7 @@
 
 ## Custom Length
 
-Use `length` to control password cell count.
+Use `length` to set the number of password cells.
 
 ## Props
 
@@ -18,7 +18,7 @@ Use `length` to control password cell count.
 
 ## Events
 
-`FocusEvent` below is an H5 contract, not a claim of native profile admission or browser focus events on native hosts. Registry manifests determine native admission.
+`FocusEvent` below describes H5 focus events and does not apply to native hosts. Check the Registry manifest for the component's supported native profiles.
 
 | Event          | Payload      | Description     |
 | -------------- | ------------ | --------------- |

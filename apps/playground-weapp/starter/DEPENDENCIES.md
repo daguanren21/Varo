@@ -2,11 +2,11 @@
 
 ## Varo source
 
-The native retail source, copied native UI, automatically selected pure helper source and starter tooling are provided under the repository's MIT license. Preserve `LICENSE` and upstream copyright notices when redistributing substantial portions. Source hashes and relative locations are recorded in `starter-manifest.json`; helper files are extracted from the source repository, not fetched from private workspace packages.
+Varo retail source, native UI, selected helpers, and starter tooling use the repository's MIT license. Keep `LICENSE` and copyright notices when redistributing substantial portions. `starter-manifest.json` records source paths and hashes. Helpers are copied from the repository, with no private workspace package downloads.
 
 ## Registry dependencies
 
-The following direct versions and SPDX license declarations were read from the source baseline's installed package metadata. Upstream license texts, notices and the exact resolved transitive graph remain authoritative. They are not replaced by Varo's MIT license.
+Versions and SPDX declarations below come from installed package metadata. Check upstream license texts and notices for the resolved dependency graph; Varo's MIT license does not replace them.
 
 | Package                    | Direct version | Declared license | Role                                                                                   |
 | -------------------------- | -------------- | ---------------- | -------------------------------------------------------------------------------------- |
@@ -24,13 +24,14 @@ The following direct versions and SPDX license declarations were read from the s
 | `@babel/core`              | 8.0.1          | MIT              | Compiler peer dependency                                                               |
 | `esbuild`                  | 0.28.2         | MIT              | Production minification                                                                |
 | `postcss-selector-parser`  | 7.1.6          | MIT              | Compiled component selector verification                                               |
+| `@csstools/css-tokenizer`  | 4.0.2          | MIT              | CSS escape decoding for recursive stylesheet verification                              |
 
-`pnpm-lock.yaml` fixes the resolved transitive graph for this export. The local pnpm policy retains the source baseline's `undici` 7.29.0 override and pins Vue 3.5.42. Before redistribution, inspect the installed dependency `LICENSE`/`NOTICE` files and the licenses for that exact graph, including bundled dependencies and native binaries. This table is a direct-dependency inventory, not an exhaustive legal audit or a claim that all transitive dependencies are MIT.
+`pnpm-lock.yaml` fixes this export's dependency graph. The pnpm configuration retains the `undici` 7.29.0 override and Vue 3.5.42 pin. Before redistribution, check `LICENSE`/`NOTICE` files for all installed dependencies, bundled code, and native binaries. This table covers direct dependencies only.
 
 ## Assets
 
 The exporter copies only statically reached assets from the native source and the retail tab icons. Product images currently originate under `apps/playground-weapp/src/assets/retail/`; tab icons originate under `apps/playground-weapp/src/assets/tabbar/`. Their exact copied paths and digests appear in the manifest. No remote image download or additional asset license grant happens during export.
 
-The repository does not contain a complete per-image provenance/rights record for these demo assets. Inclusion under the repository license is not proof of independent photographic, design, trademark or model-release rights. Treat the missing provenance record as a release gate: use assets you own or have verified rights to, and retain required attributions. Do not infer additional rights from the exporter, product names or demonstration branding.
+Per-image rights records are incomplete. The repository license does not establish photographic, design, trademark, or model-release rights for demo assets. Before publishing, use assets you own or have verified permission to use, with required attribution. Product names and demo branding grant no additional rights.
 
-No custom font file is introduced by the starter template; the native app's system-font stack is preserved. Review any fonts, logos, photos, icons and other media you add, as well as their network-domain requirements, before publishing.
+The starter keeps system fonts and adds no font files. Review any media you add and its network-domain requirements before publishing.

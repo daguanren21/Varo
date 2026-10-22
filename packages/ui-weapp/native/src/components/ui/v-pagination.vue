@@ -2,6 +2,7 @@
 import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
+import { getPaginationTokens, isAvailablePage } from './pagination-utils'
 
 type PaginationMode = 'multi' | 'simple'
 
@@ -9,6 +10,8 @@ interface RenderedPage {
   activeData: string
   ariaCurrent: 'page' | undefined
   ariaLabel: string
+  key: string | number
+  ellipsis: boolean
   label: string
   value: number
 }
@@ -49,29 +52,31 @@ function itemLabel(page: number) {
 
 const classes = computed(() => cn('varo-pagination', props.className))
 const isSimple = computed(() => props.mode === 'simple')
-const nextDisabled = computed(() => props.modelValue >= props.pageCount)
+const nextDisabled = computed(() => !isAvailablePage(props.modelValue + 1, props.pageCount))
 const pages = computed<RenderedPage[]>(() =>
-  Array.from({ length: Math.max(props.pageCount, 0) }, (_, index) => {
-    const value = index + 1
-    const active = value === props.modelValue
+  getPaginationTokens(props.pageCount, props.modelValue).map((token) => {
+    const ellipsis = typeof token === 'string'
+    const value = ellipsis ? 0 : token
+    const active = value === props.modelValue && !ellipsis
     return {
+      key: token,
+      ellipsis,
       activeData: String(active),
       ariaCurrent: active ? 'page' : undefined,
-      ariaLabel: itemLabel(value),
-      label: String(value),
+      ariaLabel: ellipsis ? '' : itemLabel(value),
+      label: ellipsis ? '…' : String(value),
       value,
     }
   }),
 )
-const previousDisabled = computed(() => props.modelValue <= 1)
+const previousDisabled = computed(() => !isAvailablePage(props.modelValue - 1, props.pageCount))
 const simpleText = computed(() => `${props.modelValue}/${props.pageCount}`)
 
 function setPage(page: number) {
-  const next = Math.min(Math.max(page, 1), props.pageCount)
-  if (next === props.modelValue) { return }
+  if (!isAvailablePage(page, props.pageCount) || page === props.modelValue) { return }
 
-  emit('update:modelValue', next)
-  emit('change', next)
+  emit('update:modelValue', page)
+  emit('change', page)
 }
 
 function previous() {
@@ -92,7 +97,6 @@ function next() {
   >
     <button
       class="varo-pagination__prev"
-      type="button"
       :disabled="previousDisabled"
       @click="previous"
     >
@@ -102,22 +106,24 @@ function next() {
       {{ simpleText }}
     </text>
     <template v-else>
-      <button
-        v-for="page in pages"
-        :key="page.value"
-        class="varo-pagination__page"
-        type="button"
-        :aria-current="page.ariaCurrent"
-        :aria-label="page.ariaLabel"
-        :data-active="page.activeData"
-        @click="setPage(page.value)"
-      >
-        {{ page.label }}
-      </button>
+      <template v-for="page in pages" :key="page.key">
+        <text v-if="page.ellipsis" class="varo-pagination__ellipsis" aria-hidden="true">
+          {{ page.label }}
+        </text>
+        <button
+          v-else
+          class="varo-pagination__page"
+          :aria-current="page.ariaCurrent"
+          :aria-label="page.ariaLabel"
+          :data-active="page.activeData"
+          @click="setPage(page.value)"
+        >
+          {{ page.label }}
+        </button>
+      </template>
     </template>
     <button
       class="varo-pagination__next"
-      type="button"
       :disabled="nextDisabled"
       @click="next"
     >

@@ -1,12 +1,12 @@
 # Dialog
 
-模态交互基座：Root、Trigger、Overlay、Content、Close 拆分组合。
+通过 Root、Trigger、Overlay、Content 和 Close 组合模态对话框。
 
 ## 运行时归属
 
-`useDialogRoot` 来自 `@varo-ui/headless`，负责平台中立的 open request、reason 与同步取消；H5 adapter 负责焦点陷阱、背景 `inert` 和 Trigger 焦点恢复，portal 与动画仍由更上层决定。
+`useDialogRoot` 来自 `@varo-ui/headless`，管理平台中立的打开、关闭请求、请求原因与同步取消。H5 适配层负责焦点陷阱、背景 `inert` 和 Trigger 焦点恢复；portal 与动画由上层处理。
 
-本页 Parts 与交互示例仅来自 `@varo-ui/h5/primitives`。原生端使用独立 Wevu SFC，原生标签页只展示源码/证据，不是 Vue Parts 预览。
+本页 Parts 与交互示例仅来自 `@varo-ui/h5/primitives`。原生端使用独立的 Wevu SFC，原生标签页仅展示源码和支持证据，不提供 Vue Parts 预览。
 
 ## 演示
 
@@ -14,19 +14,19 @@
 
 ## Parts
 
-| Part            | 作用              |
-| --------------- | ----------------- |
-| `DialogRoot`    | open 状态与上下文 |
-| `DialogTrigger` | 打开入口          |
-| `DialogOverlay` | 遮罩关闭          |
-| `DialogContent` | 模态内容          |
-| `DialogClose`   | 显式退出          |
+| Part            | 作用                     |
+| --------------- | ------------------------ |
+| `DialogRoot`    | 管理打开状态并提供上下文 |
+| `DialogTrigger` | 打开对话框               |
+| `DialogOverlay` | 通过遮罩关闭对话框       |
+| `DialogContent` | 模态内容                 |
+| `DialogClose`   | 显式关闭对话框           |
 
 ## 状态与事件
 
 - 状态：`open`、`defaultOpen`、`disabled`
-- `onOpenChange(open, details)`：状态写入前的同步请求 callback
-- Adapter 事件：`openChange(open, details)` 先触发；请求未取消时才触发 `update:open(open)`
+- `onOpenChange(open, details)`：在写入状态前同步调用，可在回调中取消请求
+- 适配层事件：先触发 `openChange(open, details)`；请求未取消时才触发 `update:open(open)`
 
 ```ts
 type DialogOpenChangeReason
@@ -51,7 +51,7 @@ interface DialogOpenChangeDetails {
 | `close-press`       | Close / `events.close()`                   |
 | `imperative-action` | `api.setOpen()` 的默认原因                 |
 
-取消必须在 callback 返回前同步完成：
+必须在回调返回前同步取消请求：
 
 ```ts
 import type { DialogOpenChangeDetails } from '@varo-ui/headless'
@@ -69,8 +69,8 @@ const dialog = useDialogRoot({
 })
 ```
 
-取消后，非受控 state 不写入，adapter 也不发出 `update:open`。传入 `open` 时该 prop 始终是最终事实来源：未取消的请求仍需上层应用新 prop 才会改变可见状态；即使请求已取消，上层随后独立改变 prop 时组件仍遵循 prop。
+取消请求后，非受控状态不变，适配层也不发出 `update:open`。传入 `open` 时，显示状态始终以该 prop 为准：未取消的请求也需等待上层更新 prop；请求取消后，上层仍可独立修改 prop。
 
 ::: info 平台差异
-H5 支持 overlay、Escape、焦点陷阱、背景 `inert` 与关闭后的 Trigger 焦点恢复。原生 Wevu SFC 使用显式 Close 与 overlay 路径，不提供浏览器 `document` 键盘监听或 DOM 焦点/inert/portal 语义。共享的是 reason/cancel 状态契约，不是渲染实现。
+H5 支持点击遮罩关闭、Escape、焦点陷阱、背景 `inert`，以及关闭后将焦点恢复到 Trigger。原生 Wevu SFC 通过显式 Close 或遮罩关闭，不提供浏览器 `document` 键盘监听，也不具备 DOM 焦点、inert 或 portal 语义。两端共用 reason/cancel 状态规则，各自实现渲染。
 :::

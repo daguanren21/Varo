@@ -23,6 +23,16 @@ export function normalizeRegionPath(options: VaroRegionOption[], path: RegionVal
   return normalized
 }
 
+export function isRegionPathEnabled(options: VaroRegionOption[], path: RegionValue[]) {
+  let current = options
+  for (const value of path) {
+    const option = findRegionOption(current, value)
+    if (!option || option.disabled) { return false }
+    current = option.children ?? []
+  }
+  return true
+}
+
 export function regionOptionsAtLevel(options: VaroRegionOption[], path: RegionValue[], level: number) {
   let current = options
   for (let index = 0; index < level; index += 1) {

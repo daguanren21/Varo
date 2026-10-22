@@ -1,6 +1,6 @@
 # AgentSelectionActions
 
-针对选中文本执行解释、优化、缩短等 Agent 操作。
+选中文本的 Agent 操作选项：解释、优化、缩短等。
 
 ## 案例
 

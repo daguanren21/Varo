@@ -1,12 +1,15 @@
 import type { InjectionKey, PropType, StyleValue, VNode } from 'vue'
 import {
+  Comment,
   computed,
   defineComponent,
   Fragment,
   h,
   inject,
+  isVNode,
 
   provide,
+  Text,
 
   useId,
 
@@ -36,16 +39,31 @@ function getTabEntry(vnode: VNode, index: number): TabEntry {
   const props = vnode.props as Record<string, unknown> | null
   const name = getTabName(vnode, index)
   return {
-    disabled: Boolean(props?.disabled),
+    disabled: props?.disabled === '' || Boolean(props?.disabled),
     name,
     title: (props?.title as string | undefined) ?? String(name),
   }
 }
 
-function flattenTabs(children: VNode[]): VNode[] {
-  return children.flatMap(child =>
-    child.type === Fragment && Array.isArray(child.children) ? flattenTabs(child.children as VNode[]) : child,
-  )
+function flattenTabs(children: unknown[]): VNode[] {
+  const tabs: VNode[] = []
+  function visit(nodes: unknown[]) {
+    for (const child of nodes) {
+      if (Array.isArray(child)) {
+        visit(child)
+      }
+      else if (isVNode(child)) {
+        if (child.type === Fragment) {
+          if (Array.isArray(child.children)) { visit(child.children) }
+        }
+        else if (child.type !== Comment && child.type !== Text) {
+          tabs.push(child)
+        }
+      }
+    }
+  }
+  visit(children)
+  return tabs
 }
 
 function encodeTabName(name: TabName) {
@@ -97,8 +115,10 @@ export const VTabs = defineComponent({
 
     function select(entry: TabEntry) {
       if (entry.disabled) { return }
-      emit('update:active', entry.name)
-      emit('change', entry.name)
+      if (entry.name !== current.value) {
+        emit('update:active', entry.name)
+        emit('change', entry.name)
+      }
       emit('clickTab', { name: entry.name, title: entry.title })
     }
 
@@ -116,8 +136,8 @@ export const VTabs = defineComponent({
     }
 
     return () => {
-      const children = flattenTabs(slots.default?.() ?? [])
-      const entries = children.map(getTabEntry)
+      const children = slots.default?.() ?? []
+      const entries = flattenTabs(children).map(getTabEntry)
       const activeIndex = entries.findIndex(entry => entry.name === current.value && !entry.disabled)
       const focusIndex = activeIndex >= 0 ? activeIndex : entries.findIndex(entry => !entry.disabled)
 

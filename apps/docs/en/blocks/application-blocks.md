@@ -1,6 +1,6 @@
 # Application Blocks
 
-Seven editable mobile application slices for the stable **H5 (Vue)** and **Weapp (Wevu)** renderer families. These are controlled presentation components, not account, authorization, scheduling or persistence services.
+Seven editable mobile Blocks provide source for stable H5 (Vue) and Weapp (Wevu). Components handle controlled presentation; applications must connect account, authorization, booking and persistence services.
 
 ## Install and ownership
 
@@ -9,7 +9,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/settings-panel
 pnpm dlx @varo-ui/cli add --target weapp blocks/step-form
 ```
 
-Replace the item name with any unit below. Each installation includes `src/components/blocks/<name>.vue` and the pure `<name>-actions.ts` contract. Import components and types from that installed tree, not from the repository's Registry source. The CLI reports npm dependencies; it does not install them. Experimental native profiles are not admitted by these manifests.
+Use any item below. Each installs `src/components/blocks/<name>.vue` and the pure `<name>-actions.ts` types and functions. Import from this installed directory, without referencing repository Registry source. Install the npm dependencies reported by the CLI separately. These manifests do not admit experimental native profiles.
 
 | Unit                  | Direct component dependencies |
 | --------------------- | ----------------------------- |
@@ -23,9 +23,9 @@ Replace the item name with any unit below. Each installation includes `src/compo
 
 The manifests resolve each component's own utility, theme and headless dependencies. No full application, retail or Agent bundle is pulled in. Native consumers load the installed CSS globally through their `weapp.styles` configuration; native Blocks do not import H5/global CSS into component-local WXSS.
 
-The application owns **all records, controlled selection, validation decisions, grants, pending state, external navigation and side effects**. An event is a request, never confirmation that a service completed. Re-read current application data when accepting it, particularly after asynchronous work. Keep rejected values and errors visible. Use immutable replacement for accepted changes. The Blocks re-find the current item on activation and reject missing, disabled, busy, unsupported and no-op mutations. This is UI gating, not an authorization boundary.
+The application maintains records, controlled selection, validation results, permissions and pending state, and handles navigation and external operations. After receiving an event, re-read current data, especially after asynchronous validation. Keep rejected values and errors visible; apply accepted changes with immutable replacement. Events do not confirm service success. Blocks look up the current item and reject missing, disabled, busy, unsupported or unchanged mutations, but the application must still enforce authorization.
 
-All units accept an optional `title`. All collections have safe empty defaults for native pre-binding, but callers should provide the required collection props. IDs must be stable and unique within each collection. Text wraps; there is no hover-only detail, silent truncation, local network call, persistence or fabricated measurement.
+All units accept an optional `title`. Native collections default to empty before binding; callers must still supply required collections with stable, unique IDs. Text wraps without truncation or hover-only details. Blocks do not make network calls, persist data or fabricate metrics.
 
 ## settings-panel
 
@@ -100,7 +100,7 @@ interface OnboardingIntent {
 
 Required props: `steps: OnboardingStep[]`, `position: number` (zero-based). Optional: `busy`, `disabled` (both `false`), `error`, `title`. Event: `intent(OnboardingIntent)`.
 
-`back` is unavailable at the first position. `next` only exists before the last step; `finish` only at the last step. Both require the current step's `canContinue` grant. Invalid positions display the empty state rather than inventing a step. `close` stays available during busy/disabled and empty states; `stepId` is `''` if there is no current step. The application decides whether to hide the component, accept navigation or mark completion. The component never moves itself. `canNavigateOnboarding` exposes the same eligibility rule.
+`back` is unavailable at the first step. `next` appears before the last step and `finish` at the last; both require `canContinue`. Invalid positions show an empty state. `close` remains available while busy, disabled or empty, with `stepId` set to `''` if no step exists. The application decides when to hide the component, change steps or record completion. `canNavigateOnboarding` provides the same eligibility checks.
 
 ## step-form
 
@@ -140,7 +140,7 @@ An application submission handler should:
 3. Recheck the current step/revision after awaiting; clear `busy` in `finally`.
 4. Advance `position` only after accepting validation. Submit through the application's service or local data owner; do not treat the event as success.
 
-**Native Form boundary:** this Block follows the existing login/profile form-container + VInput/VSwitch pattern and does not use VForm's validation provider. The separate VForm plain-slot context has been exercised with the supported 7.5.0 compiler configuration; it is distinct from this Block's host form default action. H5 uses a semantic `<form>` and submit prevention; native uses a host `<form>` and VButton's submit behavior, without a context bridge or simulated host geometry.
+This Block uses the login/profile pattern of a host form with VInput/VSwitch, without VForm's validation provider. VForm's separate plain-slot context has been exercised with the supported 7.5.0 compiler configuration; that does not validate this Block's host form default action. H5 uses a semantic `<form>` and prevents default submission. Native uses a host `<form>` and VButton submit, without a context bridge or simulated host geometry.
 
 The repository's native E2E uses a pnpm patch for `@weapp-vite/miniprogram-automator` 1.3.0 to execute form submission in the simulator's native default-action layer, preserving the multi-step validation and local submission assertions. See the [installation guide](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for patch ownership and upgrade checks. WeChat DevTools and device acceptance remain separate.
 
@@ -164,7 +164,7 @@ interface TimelineIntent { action: 'retry' | 'detail', id: string }
 
 Required: `entries`. Optional: `loading`, `disabled`, `error`, `title`. Event: `intent(TimelineIntent)`.
 
-Input order is display order; timestamps and status labels are injected, not sorted, localized, measured or invented by the Block. Pending/error entries retain their evidence. Retry requires `status === 'error'` and `canRetry === true`; detail requires `canDetail === true`. Both reject busy/disabled/loading. `canRequestTimeline` is the shared pure guard. Retry execution and any resulting history change belong to the application.
+Records appear in supplied order with application-provided timestamps and status labels. The Block does not sort, localize, measure or generate them. Pending/error states keep existing content visible. Retry requires `status === 'error'` and `canRetry === true`; detail requires `canDetail === true`. Busy, disabled and loading states block both actions. Applications can reuse `canRequestTimeline` and must execute retries and update history themselves.
 
 ## summary-dashboard
 
@@ -177,7 +177,7 @@ type SummaryIntent = { action: 'period', id: string } | { action: 'retry' }
 
 Required: `metrics`, `summaries`, `periods`, `period: string`. Optional: `loading`, `disabled`, `error`, `canRetry` (all boolean flags default to `false`), `title`. Event: `intent(SummaryIntent)`.
 
-Values are preformatted strings supplied with their context. There is no chart, aggregation engine or fabricated trend. The controlled `period` can represent any application-owned period/filter choice. Current and disabled periods cannot be selected. Retry requires a non-empty error and an explicit `canRetry` grant, and is unavailable while loading/disabled. Previously injected rows and metrics remain readable during loading/error. `canSelectSummaryPeriod` provides the selection guard. Native metrics stack vertically; H5 can use two columns at wider viewports.
+The application supplies formatted metric strings with their context; the Block provides no charts, aggregation or generated trends. Controlled `period` can represent an application-defined period or filter. Current and disabled options cannot be selected. Retry requires a nonempty error and explicit `canRetry`, and is blocked while loading or disabled. Rows and metrics remain visible during loading or errors. `canSelectSummaryPeriod` checks selection. Native metrics stack vertically; H5 can use two columns on wider screens.
 
 ## appointment-booking
 
@@ -233,9 +233,9 @@ type PeopleIntent = PersonMutation
 
 Required: `people`, `filters`, controlled `filter`, `detailId` (`''` closes detail). Optional: `hasMore`, `loading`, `disabled`, `error`, `title`. Event: `intent(PeopleIntent)`.
 
-Pass an **application-bounded page**; the demo uses two rows per page. A page of at most 20 is recommended for this mobile composition. All supplied records are rendered, never silently truncated. `hasMore` exposes a guarded `more` intent; paging/filtering/fetching is application-owned, not virtualization. Inline detail is only available for a current record with `canDetail`. Closing stays available while pending, or when a selected record disappears.
+Supply data one page at a time. The demo uses two rows per page; at most 20 is recommended for this mobile layout. The component displays every supplied record without truncation. `hasMore` controls the `more` request; the application handles paging, filtering and fetching. This is not virtualization. Detail appears only for a current record with `canDetail`; it can still be closed while pending or after the record disappears.
 
-The application supplies exact permitted role/status choices and explicit approval/removal grants. The Block does not infer permissions from role names or decide which statuses can be approved. It blocks unchanged role/status values and missing/disabled/busy records. `canRequestPerson` exposes the same pure gate. Revoke `canApprove` after acceptance to prevent repeat approval. Destructive confirmation belongs to the application: the demo opens a local confirmation and rechecks the record before removing it. Filter changes should clear any detail/confirmation that no longer belongs to the active page.
+The application supplies allowed role/status choices and approval/removal permissions. The Block does not infer permissions or approvable statuses from role names. Unchanged values and missing, disabled or busy records cannot be modified. `canRequestPerson` provides the same checks. Revoke `canApprove` after acceptance to prevent repeat approval. The application handles deletion confirmation: the demo confirms, rechecks the record, then removes it locally. Filter changes should clear details and pending confirmations for records no longer on the current page.
 
 ## Complete local demos and E2E
 
@@ -243,8 +243,8 @@ The application supplies exact permitted role/status choices and explicit approv
 - Native: `/blocks-lab/application/index` → the native composition and `use-application-demo.ts`.
 - Scenarios: `apps/e2e/tests/{h5,weapp-native}/application-blocks.e2e.ts`.
 
-Each demo has seven section buttons and explicit injected disabled/pending/empty controls. Local state survives switching sections, not a reload. The form awaits local validation, rejects reserved/duplicate names, preserves values and inserts a row on accepted consent. Timeline retry validates and imports another row. Summary counts those **actual rows** and the actual people list. Booking uses a separate local ledger to demonstrate a genuine conflict, then accepts and cancels a distinct local reservation. People supports paging, filters, granted edits/approval and cancelable removal confirmation. No network, email, authentication, payment or booking API is simulated.
+Both demos have seven section buttons and labelled controls for injected disabled/pending/empty states. Switching sections preserves local state; reloading resets it. The form awaits local validation, rejects reserved or duplicate names, preserves input across steps and inserts an in-memory row after accepted consent. Timeline retry validates and imports another row, and Summary counts these rows and the people list. Booking uses a separate local ledger to demonstrate a conflict, then accepts and cancels another reservation. People provides paging, filters, permitted edits/approval and cancelable deletion confirmation. No network, email, authentication, payment or booking API is simulated.
 
 The paired scenarios exercise controlled settings rejection; bounded onboarding/close; invalid, previous and successful form paths; timeline retry; derived summary/filter/error; booking conflict/acceptance/cancel; people grants/paging/edit/approval/removal; and empty/pending/disabled evidence. Tests operate on rendered controls and observable state, not `setData`, page-method stand-ins, source-text assertions or fake geometry.
 
-Integration and runtime acceptance are separate from source authorship: route registration, Registry generation, styles, type/build checks and these real E2E scenarios must run against the integrated output. Native headless execution is not device/visual certification. Native DevTools scenarios require a usable WeChat DevTools installation, authorized local AppID/project configuration and the repository's real native fixture. Real account storage, booking services, authorization and async server validation remain application prerequisites, not services provided by these Blocks.
+After integration, register routes, generate the Registry, check styles and types/builds, and run these E2E scenarios against the output. Passing native headless tests does not establish device or visual behavior. DevTools scenarios require usable WeChat DevTools, an authorized local AppID/project and the repository's native fixture. Applications must connect real account storage, booking, authorization and asynchronous server validation.

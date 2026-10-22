@@ -26,6 +26,7 @@
 
 .varo-picker__cancel,
 .varo-picker__confirm {
+  min-height: 44px;
   font-weight: 650;
   cursor: pointer;
   background: transparent;
@@ -50,16 +51,25 @@
   color: var(--varo-ui-primary);
 }
 
+.varo-picker__confirm:disabled,
+.varo-picker__option:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
 .varo-picker__columns {
   display: grid;
   grid-auto-columns: minmax(0, 1fr);
   grid-auto-flow: column;
+  gap: 8px;
   padding: 8px;
 }
 
 .varo-picker__column {
   display: grid;
   align-content: start;
+  min-width: 0;
   max-height: 240px;
   overflow: auto;
 }
@@ -73,20 +83,13 @@
   background: transparent;
   border: 0;
   border-radius: var(--varo-ui-radius);
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+  transition: color 0.15s ease;
 }
 
-.varo-picker__option[data-active='true'],
-.varo-picker__option:hover {
-  font-weight: 750;
+.varo-picker__option[data-active='true'] {
+  font-weight: 650;
   color: var(--varo-ui-primary);
-  background: var(--varo-ui-surface-muted);
-  box-shadow: inset 0 0 0 1px var(--varo-ui-ring);
-  transform: translateY(-1px);
+  background: var(--varo-ui-fill-lighter);
 }
 
 .varo-picker__option:focus-visible {

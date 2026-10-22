@@ -1,6 +1,8 @@
 import { posix } from 'node:path'
 import ts from 'typescript'
 import { parse as parseSfc } from 'vue/compiler-sfc'
+import { postcss } from 'weapp-tailwindcss/core'
+import { cssReferences, rewriteCssReferences } from './css-references.mjs'
 
 const assetPattern = /\.(?:png|jpe?g|webp|gif|svg|ico|woff2?|ttf|mp4|mp3)$/i
 const scriptExtensions = new Set(['.ts', '.js', '.mjs'])
@@ -519,16 +521,20 @@ function convertCss(source, file, assetUrl, record, framework) {
       record('Expose native page tokens on the H5 document root; the native CSS compiler maps :root back to page.')
     }
   }
-  const references = /@import\s+(?:url\(\s*)?['"]([^'"]+)['"]|url\(\s*['"]?([^)'"\s]+)['"]?\s*\)/g
-  for (const match of source.matchAll(references)) {
-    const reference = match[1] ?? match[2]
-    const asset = assetUrl(reference)
-    if (!asset) { continue }
-    const start = match.index + match[0].indexOf(reference)
-    edits.push({ start, end: start + reference.length, text: asset })
-    record('Rewrite stylesheet assets to collected static URLs.')
-  }
-  return editRanges(source, edits, file)
+  const styles = postcss.parse(editRanges(source, edits, file), { from: file })
+  const rewrite = (value, importRule = false) => rewriteCssReferences(
+    value,
+    cssReferences(value, { importRule, from: file }),
+    (path) => {
+      const asset = assetUrl(path)
+      if (!asset) { return path }
+      record('Rewrite stylesheet assets to collected static URLs.')
+      return asset
+    },
+  )
+  styles.walkAtRules(/^import$/i, (rule) => { rule.params = rewrite(rule.params, true) })
+  styles.walkDecls((declaration) => { declaration.value = rewrite(declaration.value) })
+  return styles.toString()
 }
 
 function componentMetadata(config, file) {

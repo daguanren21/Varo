@@ -1,6 +1,6 @@
 # AgentApproval
 
-General human approval, choice, reject, and confirm card.
+A card for human approval, with choices, rejection, and confirmation.
 
 ## Demo
 

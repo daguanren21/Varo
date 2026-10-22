@@ -1,6 +1,6 @@
 # DateField 日期字段
 
-年 / 月 / 日三列选择，底层复用 `VPicker`。月历网格继续用 [Calendar](/components/calendar)，不要把 DateField 当成日历。
+DateField 使用 `VPicker`，通过年、月、日三列选择日期。需要月历网格时，请使用 [Calendar](/components/calendar)。
 
 ## 演示
 

@@ -7,23 +7,18 @@
   flex-wrap: nowrap;
   gap: 4px;
   align-items: center;
-  justify-content: flex-start;
-  justify-content: safe center;
+  justify-content: center;
   width: 100%;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: none;
-}
-
-.varo-pagination::-webkit-scrollbar {
-  display: none;
+  min-width: 0;
 }
 
 .varo-pagination button {
+  box-sizing: border-box;
   flex: 0 0 auto;
   min-width: 32px;
-  min-height: 34px;
+  min-height: 36px;
   padding: 0 6px;
+  font-size: 14px;
   color: var(--varo-ui-text);
   cursor: pointer;
   background: var(--varo-ui-surface);
@@ -31,11 +26,21 @@
   border-radius: var(--varo-ui-radius-sm);
 }
 
-.varo-pagination__prev,
-.varo-pagination__next {
-  min-width: 56px;
-  padding-right: 10px;
-  padding-left: 10px;
+.varo-pagination .varo-pagination__page {
+  flex: 1 1 32px;
+  max-width: 64px;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.varo-pagination .varo-pagination__prev,
+.varo-pagination .varo-pagination__next {
+  flex: 1 0 52px;
+  min-width: 52px;
+  max-width: 88px;
+  padding-right: 4px;
+  padding-left: 4px;
+  overflow-wrap: anywhere;
 }
 
 .varo-pagination button[data-active='true'] {
@@ -47,6 +52,12 @@
 .varo-pagination button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+
+.varo-pagination__ellipsis {
+  flex: 0 0 16px;
+  color: var(--varo-ui-text-muted);
+  text-align: center;
 }
 
 .varo-pagination__simple {

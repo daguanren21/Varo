@@ -6,7 +6,7 @@
 
 ## Extra Key
 
-Use `extraKey` for business keys such as a decimal point.
+Use `extraKey` to add a key, such as a decimal point.
 
 ## Props
 

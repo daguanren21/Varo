@@ -1,0 +1,50 @@
+{
+  "name": "time-field",
+  "type": "component",
+  "title": "VTimeField",
+  "description": "Controlled HH:mm field with constrained hour/minute drafts, wrapping overnight ranges, clear, confirm and cancel.",
+  "exportName": "VTimeField",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": {
+    "h5": ["vue"],
+    "weapp": ["wevu"]
+  },
+  "registryDependencies": ["themes/base", "components/picker"],
+  "targetRegistryDependencies": {
+    "weapp": ["utils/cn"]
+  },
+  "files": [
+    {
+      "target": "h5",
+      "from": "registry/components/time-field/time-field.ts",
+      "to": "src/components/ui/time-field.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/time-field/v-time-field.vue",
+      "to": "src/components/ui/v-time-field.vue"
+    },
+    {
+      "target": "h5",
+      "from": "registry/components/time-field/time-field-utils.ts",
+      "to": "src/components/ui/time-field-utils.ts"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/components/time-field/time-field-utils.ts",
+      "to": "src/components/ui/time-field-utils.ts"
+    },
+    {
+      "target": "h5",
+      "from": "registry/themes/components/time-field/h5.css",
+      "to": "src/styles/varo-time-field.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/time-field/weapp-vite.css",
+      "to": "src/styles/varo-time-field.css"
+    }
+  ],
+  "docs": "/components/time-field"
+}

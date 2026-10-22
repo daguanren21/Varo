@@ -1,6 +1,6 @@
 # 移动数据工作区
 
-四个可独立安装的 Registry Block，目标为稳定 `h5`（Vue）与 `weapp`（Wevu）。这是有明确规模边界的移动子集，不承诺桌面功能完全等价。唯一作者源为 `registry/blocks/{metrics-chart,schedule-calendar,task-board,data-grid}`，安装目录由生成器投影。
+四个可独立安装的 Registry Block，支持稳定 `h5`（Vue）和 `weapp`（Wevu），提供有限数据量的移动端功能，不保证桌面功能完全等价。源码维护在 `registry/blocks/{metrics-chart,schedule-calendar,task-board,data-grid}`，安装目录由生成器生成。
 
 | Block               | 移动能力                                               | 明确限制                         |
 | ------------------- | ------------------------------------------------------ | -------------------------------- |
@@ -9,19 +9,19 @@
 | `task-board`        | 纵向列、详情、明确移动与批准按钮                       | 1–6 列，0–50 张卡片              |
 | `data-grid`         | Base、Columns、Editing、Expansion、Filtering、Grouping | 1–8 列，每页 1–50 条，默认 20    |
 
-不包含 canvas、任意图表类型、时区转换、重复日程、日历服务、拖放、虚拟滚动或设备性能承诺。拖放和虚拟化属于独立 B5-3；分页不是虚拟化。Manifest 不自动准入实验性 profile。
+这些 Block 不包含 canvas、任意图表类型、时区转换、重复日程、日历服务、拖放或虚拟滚动，也不保证设备性能。分页不提供虚拟化。Manifest 不自动准入实验性 profile。
 
 ## 安装与 ownership
 
 按目标独立安装 `blocks/metrics-chart`、`blocks/schedule-calendar`、`blocks/task-board` 或 `blocks/data-grid`。渲染器位于 `src/components/blocks/<name>.vue`，可移植类型/纯 helper 位于 `src/components/blocks/<name>-actions.ts`。
 
-四个 Block 都仅依赖已有 `components/button`；日程额外依赖已准入的 `utils/date-utils`；表格额外依赖 `components/input`。日/周列表使用 Varo 按钮与现有中立日期 helper，不创建第二套日期控件运行时，也不向 native 引入 H5 日历渲染器。本切片不修改已有共享基础组件。
+四个 Block 都依赖 `components/button`；日程还依赖已准入的 `utils/date-utils`，表格还依赖 `components/input`。日/周列表复用 Varo 按钮和平台中立日期 helper，不增加日期控件运行时，也不向 native 引入 H5 日历渲染器或修改共享基础组件。
 
-每个 Block 只发出单对象、类型化 `intent`。应用是选中 ID、视图日期、记录、编辑草稿、筛选/分组结果、权限与业务提交的唯一所有者。应用提交前必须重新检查当前状态与授权。意图不等于业务完成、持久化或服务成功。
+Block 通过单个类型化 `intent` 对象请求操作。应用维护选中 ID、视图日期、记录、草稿、筛选/分组结果、权限及业务提交，提交前须重查状态与授权。事件不表示已完成、持久化或服务成功。
 
-通用 props：`title?`、`loading?`、`busy?`、`disabled?`、`error?`；布尔值默认 false，error 默认空串。loading/busy/disabled 禁止新操作，但保留已有内容。error 只显示反馈，不隐式锁住纠错路径；错误需要锁定时由应用设置 busy/disabled。非法结构配置会明确显示拒绝消息并停止交互式数据展示，不裁剪、不静默截断、无自动重试。
+通用 props：`title?`、`loading?`、`busy?`、`disabled?`、`error?`；布尔值默认 false，error 默认空字符串。loading/busy/disabled 禁止新操作但保留内容。error 只显示反馈，仍可纠错；需锁定时由应用设置 busy/disabled。结构配置无效时显示原因并停止交互式数据展示，不裁剪、截断或自动重试。
 
-Native 的集合属性（包括 TS 必填集合）显式声明 `Array`/`[]` host metadata，覆盖父绑定前阶段。表格可选 draft 使用 null metadata：未提供或 null 都表示无编辑器，不创建内部草稿。事件只有一个对象，无须跨目标多参数事件桥接。
+原生集合（含 TS 必填集合）用 `Array`/`[]` host metadata 在父绑定前初始化。表格可选 draft 使用 null metadata；缺省或 null 表示无编辑器，不创建内部草稿。单对象事件无需跨目标多参数适配。
 
 ## Metrics chart {#metrics-chart}
 
@@ -89,7 +89,7 @@ type BoardIntent
     | { action: 'approve', id: string, columnId: string }
 ```
 
-操作发生时重新查找当前卡片与列。来源/目标列禁用、卡片禁用/busy、缺少目标授权、同列移动、无批准授权或全局锁定均不发意图。应用必须重新核对 `fromColumnId`/`columnId` 和授权后再提交。通过 error 显示应用拒绝，卡片不乐观移动。详情读取当前注入记录，而不是缓存副本。按钮提供明确、可访问的移动操作，**不是拖放**。
+用户操作时，组件重新查找当前卡片与列。来源或目标列禁用、卡片禁用或 busy、缺少目标授权、移动到同一列、无批准授权或全局锁定时，均不发出事件。应用提交前必须再次核对 `fromColumnId`/`columnId` 和授权；拒绝时通过 error 显示原因，卡片在接受前不会移动。详情始终读取当前传入的记录。移动操作使用有可访问名称的按钮，不支持拖放。
 
 ## Basic data grid {#data-grid}
 
@@ -108,7 +108,7 @@ type BoardIntent
 
 必填受控 props：`records`、`columns`、`columnIds`、`expandedIds`、`query`、`grouped`、`page`、`total`。页码从 1 开始。`pageSize` 默认 20，允许 1–50。应用只传请求页，不能传完整数据集期待组件裁剪。页内条数可以不足 pageSize，但不能超出 pageSize 或声明总数的剩余数量。非法页码、总数、ID、列或边界明确拒绝。columnIds 唯一且引用已有列；expandedIds 可跨页保留。
 
-可选 props：`draft?: { rowId, values: Record<string,string> } | null`、`fieldErrors?: Record<string,string>`（默认 `{}`）及通用 props。title 默认 `Basic data grid`。所有可编辑字段均为字符串，应用自行解析数值、验证业务规则。缺失/禁用/busy 记录不能编辑；无变化保存禁用。Demo 要求标题非空且唯一、工时为 0–8 整数，这些是 demo 应用规则，不是隐藏在 Block 中的业务验证。
+可选 props：`draft?: { rowId, values: Record<string,string> } | null`、`fieldErrors?: Record<string,string>`（默认 `{}`）及通用 props。title 默认 `Basic data grid`。可编辑字段都是字符串，应用负责解析数值并校验业务规则。记录缺失、禁用或 busy 时不能编辑；没有修改时不能保存。Demo 要求标题非空且唯一、工时为 0–8 整数，这些规则由 demo 应用执行，Block 不内置这些业务校验。
 
 保存时按当前 `columns` 检查实际提交值：已修改字段的列若被禁用、移除或撤销 `editable`，整次 `save` 都会被拒绝，不会静默丢弃该字段。受控草稿保留，取消仍可用；应用恢复权限或回退该字段值后可再次保存。未修改的只读字段可以随其他有效修改一起提交。
 
@@ -124,14 +124,14 @@ type BoardIntent
 | `save`      | `id`、`values: Record<string,string>` |
 | `cancel`    | `id`                                  |
 
-应用接受 edit 后创建草稿，接受 field 后替换受控字段；接受 save 时验证，拒绝则保留草稿与错误，成功则更新真实记录并清空草稿。草稿打开期间禁止筛选、分组、翻页，防止意外丢失上下文。loading/busy/disabled 或外部删除编辑记录时，取消仍可用；记录缺失显示说明，不伪造可编辑记录。已展开详情在锁定期间仍可收起。
+应用接受 edit 后创建草稿，接受 field 后替换受控字段。收到 save 后先校验：拒绝时保留草稿和错误，成功后更新记录并清空草稿。编辑草稿期间不能筛选、分组或翻页，以免丢失编辑上下文。loading/busy/disabled 或编辑中的记录被外部删除时仍可取消；记录缺失时会显示说明，不会创建替代记录供编辑。已展开详情在锁定期间仍可收起。
 
 ## 本地 demo 与验证边界
 
-由 playground 集成者接入：H5 `/?demo=data-workspace`，native `/blocks-lab/data-workspace/index`。应用持有同一份 Alpha/Beta/Gamma/Delta 内存任务，图表对工时求和；看板移动和表格接受编辑实际修改同一数据。日程选中日期可实际筛选表格。十二分类样例对没有记录的分类计算零值。非法配置控件故意传入 13 个分类、非法日历日期、51 张卡片或每页 51 条，属于标记的错误输入示例，不冒充服务响应。
+playground 入口为 H5 `/?demo=data-workspace` 和 native `/blocks-lab/data-workspace/index`，由集成者接入。应用使用同一份 Alpha/Beta/Gamma/Delta 内存任务：图表汇总工时，看板移动和已接受的表格编辑会修改这份数据，选择日程日期可筛选表格。十二分类样例会为没有记录的分类计算零值。非法配置控件会传入 13 个分类、非法日历日期、51 张卡片或每页 51 条，并标注这些是错误输入示例，不是服务响应。
 
-未批准 Alpha 移到 Done 会被应用拒绝，明确批准后可移动；Beta 的目标授权受限；Gamma 锁定。本地占用开关让 Alpha 时段与应用台账冲突。表格字段错误或标题重复时保留草稿，纠正后更新记录。loading/busy/disabled/empty/error 开关仅注入展示状态，不伪装网络任务。
+Alpha 未获批准时，应用拒绝将它移到 Done，批准后才允许移动；Beta 的目标授权受限，Gamma 被锁定。本地占用开关会使 Alpha 时段与应用台账冲突。表格字段错误或标题重复时保留草稿，纠正后再更新记录。loading/busy/disabled/empty/error 开关只改变传入的展示状态，不表示发生了网络任务。
 
 H5/native 对应 E2E 源码含七个同名场景：图表值/零/详情/12 与 13 边界；日期导航和禁用日期；时段拒绝、日期筛选和选择保留；拒绝/批准移动与图表变化；表格全部展示维度和分页；拒绝/接受编辑与 busy 时取消；四个 Block 的状态、错误和配置路径。测试通过真实控件操作并断言渲染记录，不使用 setData、页面方法或事件计数器代替用户流程。H5 请求截图；native 仅 DevTools 模式请求截图。
 
-这里描述已编写场景，不表示已通过验收。Main 负责生成、路由、manifest/navigation、required-pair gate 和新构建后的真实 H5/native 验证。已配置的受支持 native engine/DevTools 环境与有效本地 host 配置仍是真实验证前提。本地 demo 不需要服务密钥。视觉/设备、有限数值边界探针和 profile 认证必须由独立实际验证给出，不能从源码推断。
+用例已编写不表示验收通过。集成方需完成生成、路由、manifest/navigation、required-pair gate 和新构建，再验证 H5/native。原生验证需要已配置的受支持 native engine/DevTools 环境和有效本地 host 配置；本地 demo 无需服务密钥。视觉/设备表现、有限数值边界和 profile 认证须独立运行验证，不能从源码推断。

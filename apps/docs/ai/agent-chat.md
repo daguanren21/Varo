@@ -1,6 +1,6 @@
 # AgentChat Block
 
-组合导航头、消息历史、事件渲染、审批和输入区的完整 Block。
+将导航头、消息历史、事件渲染、审批和输入区组合成一个对话 Block。
 
 ## 安装
 
@@ -9,7 +9,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 # 原生 Wevu 工程改用 --target weapp
 ```
 
-无需先装 `components/agent-ui`：此 Block 只安装 conversation 及其必要依赖，不包含 advanced、RAG、fine-tune 或 workspace UI。CLI 报告的 npm 依赖需另外安装；原生全局样式见 [Wevu Registry](/guide/shadcn-mode)。`approve`、`reject`、`retry` 和取消相关意图不执行网络或审批策略，这些仍由业务层处理。
+无需先装 `components/agent-ui`：此 Block 只安装 conversation 及其必要依赖，不包含 advanced、RAG、fine-tune 或 workspace UI。CLI 列出的 npm 依赖需另外安装；原生全局样式见 [Wevu Registry](/guide/shadcn-mode)。应用收到 `approve`、`reject`、`retry` 和取消相关事件后，需要自行处理网络请求和审批；Block 不会自动执行这些操作。
 
 ## 案例
 
@@ -47,9 +47,9 @@ function newConversation() {
 
 `v-model` 是可选的。未绑定时，Block 保存初始为空的本地草稿；绑定后由父级管理草稿，空字符串也是有效的受控值。`submit` 发送去除首尾空白的文本，但不自动清空草稿；父级可在接受提交后将绑定值设为 `''`。忙碌、禁用或纯空白输入不会提交。
 
-两端均按 `modelValue` 是否提供决定所有权。仅传 `:model-value="''"` 而不监听更新，也保持受控；未经父级接受的编辑不能提交。
+两端都按是否提供 `modelValue` 判断是否受控。仅传 `:model-value="''"` 而不监听更新时，父级未接受的编辑不能提交。
 
-原生输入在 `busy` 时仍可编辑下一条草稿，但不能提交；`disabled` 才同时禁用编辑。H5 在 `busy` 时保持禁用输入的既有行为。原生 playground 的 `pages/chat-prompt/index` 演示组件草稿、应用拒绝/接受更新、外部清空及忙碌期间的草稿保留，使用实际原生组件验证，不依赖 jsdom 模拟布局。
+原生输入在 `busy` 时可编辑但不能提交，`disabled` 才禁用编辑；H5 在 `busy` 时禁用输入。原生 playground 的 `pages/chat-prompt/index` 用原生组件演示本地草稿、应用拒绝或接受更新、外部清空及忙碌期间保留草稿，不使用 jsdom 模拟布局。
 
 此示例只保存本地消息，不连接模型。`newConversation` 和 `close` 必须接到应用的真实状态转换；提供 `busy` 与流式 `snapshot` 时，也必须将 `stop` 接到应用的生产者/网络取消操作。禁用输入不会阻止忙碌时停止。Block 只在距底部 64px 内跟随内容增长，向上阅读时保留滚动位置。
 

@@ -1,6 +1,6 @@
 # AgentFlowchart
 
-Agent workflow made of triggers, conditions, actions, and results.
+Displays an Agent workflow with triggers, conditions, actions, and results.
 
 ## Demo
 

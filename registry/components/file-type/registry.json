@@ -1,0 +1,21 @@
+{
+  "name": "file-type",
+  "type": "component",
+  "title": "VFileType",
+  "description": "Independent filename/MIME presentation with accessible file family icons and a pure deterministic classifier.",
+  "exportName": "VFileType",
+  "targets": ["h5", "weapp"],
+  "dependencies": [],
+  "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
+  "registryDependencies": ["themes/base", "components/icon"],
+  "targetRegistryDependencies": { "weapp": ["utils/cn"] },
+  "files": [
+    { "target": "h5", "from": "registry/components/file-type/file-type.ts", "to": "src/components/ui/file-type.ts" },
+    { "target": "weapp", "from": "registry/components/file-type/weapp-vite.vue", "to": "src/components/ui/v-file-type.vue" },
+    { "target": "h5", "from": "registry/components/file-type/file-type-utils.ts", "to": "src/components/ui/file-type-utils.ts" },
+    { "target": "weapp", "from": "registry/components/file-type/file-type-utils.ts", "to": "src/components/ui/file-type-utils.ts" },
+    { "target": "h5", "from": "registry/themes/components/file-type/style.css", "to": "src/styles/varo-file-type.css" },
+    { "target": "weapp", "from": "registry/themes/components/file-type/style.css", "to": "src/styles/varo-file-type.css" }
+  ],
+  "docs": "/components/file-type"
+}

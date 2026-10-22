@@ -1,6 +1,7 @@
 export type TabName = string | number
 
 export interface TabRegistration {
+  readonly token: number
   disabled: boolean
   name: TabName
   title: string
@@ -14,10 +15,16 @@ export interface VaroTabsContext {
   active: TabsValueRef
   registerTab: (tab: TabRegistration) => void
   rootId: string
-  unregisterTab: (name: TabName) => void
+  unregisterTab: (token: TabRegistration['token']) => void
 }
 
 let nextTabsRootId = 0
+let nextTabToken = 0
+
+export function createTabToken() {
+  nextTabToken += 1
+  return nextTabToken
+}
 
 export function createTabsRootId() {
   nextTabsRootId += 1

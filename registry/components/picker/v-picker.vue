@@ -55,6 +55,7 @@ const props = withDefaults(
     cancelText?: string
     className?: ClassValue
     columns?: PickerColumn | PickerColumn[]
+    confirmDisabled?: boolean
     confirmText?: string
     title?: string
     value?: PickerValue
@@ -64,6 +65,7 @@ const props = withDefaults(
     cancelText: 'Cancel',
     className: undefined,
     columns: () => [],
+    confirmDisabled: false,
     confirmText: 'Confirm',
     title: undefined,
     value: undefined,
@@ -91,10 +93,10 @@ function normalizeColumns(columns: PickerColumn | PickerColumn[]): PickerColumn[
 }
 
 function firstEnabledValue(column: PickerColumn): PickerScalar | undefined {
-  return column.find(option => !option.disabled)?.value ?? column[0]?.value
+  return column.find(option => !option.disabled)?.value
 }
 
-function normalizeValue(value: PickerValue, columns: PickerColumn[]): Array<PickerScalar | undefined> {
+function normalizeValue(value: PickerValue | Array<PickerScalar | undefined>, columns: PickerColumn[]): Array<PickerScalar | undefined> {
   const values = Array.isArray(value) ? value : [value]
   return columns.map((column, index) => {
     const next = values[index]
@@ -107,11 +109,15 @@ function normalizeValue(value: PickerValue, columns: PickerColumn[]): Array<Pick
 
 const resolvedColumns = computed(() => normalizeColumns(props.columns))
 const selectedValues = shallowRef(normalizeValue(props.value, resolvedColumns.value))
+let hasDraft = false
 const classes = computed(() => cn('varo-picker', props.className))
 const columnCount = computed(() => String(resolvedColumns.value.length))
 const selectedOptions = computed(() =>
   resolvedColumns.value.map((column, index) => column.find(option => option.value === selectedValues.value[index])),
 )
+const canConfirm = computed(() => !props.confirmDisabled
+  && selectedOptions.value.every(option => option !== undefined && !option.disabled))
+const confirmationDisabled = computed(() => !canConfirm.value)
 const renderedColumns = computed<RenderedPickerColumn[]>(() =>
   resolvedColumns.value.map((column, index) => {
     const options = column.map((option, optionIndex) => ({
@@ -136,10 +142,19 @@ const renderedColumns = computed<RenderedPickerColumn[]>(() =>
 )
 
 watch(
-  [() => props.value, resolvedColumns],
+  [() => props.value, () => props.visible],
   () => {
+    hasDraft = false
     selectedValues.value = normalizeValue(props.value, resolvedColumns.value)
   },
+  { deep: true },
+)
+watch(
+  resolvedColumns,
+  () => {
+    selectedValues.value = normalizeValue(hasDraft ? selectedValues.value : props.value, resolvedColumns.value)
+  },
+  { deep: true },
 )
 
 function publishedValue(values: Array<PickerScalar | undefined>): PickerValue {
@@ -151,6 +166,7 @@ function select(columnIndex: number, option: PickerOption) {
     return
   }
 
+  hasDraft = true
   const next = selectedValues.value.slice()
   next[columnIndex] = option.value
   selectedValues.value = next
@@ -162,6 +178,9 @@ function select(columnIndex: number, option: PickerOption) {
 }
 
 function confirm() {
+  if (!props.visible || !canConfirm.value) {
+    return
+  }
   const value = publishedValue(selectedValues.value)
   emit('update:value', value)
   emit('confirm', {
@@ -172,6 +191,7 @@ function confirm() {
 }
 
 function cancel() {
+  hasDraft = false
   selectedValues.value = normalizeValue(props.value, resolvedColumns.value)
   emit('cancel')
   emit('update:visible', false)
@@ -181,13 +201,13 @@ function cancel() {
 <template>
   <view v-if="props.visible" :class="classes" :data-columns="columnCount">
     <view class="varo-picker__toolbar">
-      <button class="varo-picker__cancel" type="button" @click="cancel">
+      <button class="varo-picker__cancel" @click="cancel">
         {{ props.cancelText }}
       </button>
       <text v-if="props.title" class="varo-picker__title">
         {{ props.title }}
       </text>
-      <button class="varo-picker__confirm" type="button" @click="confirm">
+      <button class="varo-picker__confirm" :disabled="confirmationDisabled" @click="confirm">
         {{ props.confirmText }}
       </button>
     </view>
@@ -206,7 +226,6 @@ function cancel() {
           :id="item.id"
           :key="item.key"
           class="varo-picker__option"
-          type="button"
           :disabled="item.disabled"
           :data-active="item.activeData"
           @click="select(column.index, item.option)"

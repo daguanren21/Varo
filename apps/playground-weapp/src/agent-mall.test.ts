@@ -128,6 +128,76 @@ describe('Varo Agent UI contracts', () => {
     await link.get('[role="link"]').trigger('click')
     expect(link.emitted('link')?.[0]).toEqual(['https://example.com'])
   })
+
+  it('preserves distinct Markdown blocks while streaming and replaces their identities with new content', async () => {
+    const content = '[Same](https://example.com)\n\n[Same](https://example.com)'
+    const wrapper = mount(AgentMarkdown, { props: { content } })
+    try {
+      const originalLinks = wrapper.findAll('[role="link"]').map(link => link.element)
+      expect(originalLinks).toHaveLength(2)
+      expect(originalLinks[0]).not.toBe(originalLinks[1])
+
+      await wrapper.setProps({ content: `${content} more\n\n[Same](https://example.com)` })
+      const streamedLinks = wrapper.findAll('[role="link"]')
+      expect(streamedLinks).toHaveLength(3)
+      expect(streamedLinks[0].element).toBe(originalLinks[0])
+      expect(streamedLinks[1].element).toBe(originalLinks[1])
+      expect(streamedLinks[2].element).not.toBe(originalLinks[1])
+      expect(wrapper.text()).toContain('more')
+
+      await wrapper.setProps({ final: true })
+      expect(wrapper.findAll('[role="link"]')[1].element).toBe(originalLinks[1])
+
+      await wrapper.setProps({ content: '[Replacement](https://replacement.example)' })
+      const replacementLinks = wrapper.findAll('[role="link"]')
+      expect(replacementLinks).toHaveLength(1)
+      expect(replacementLinks[0].text()).toBe('Replacement')
+      expect(replacementLinks[0].element).not.toBe(originalLinks[0])
+      await replacementLinks[0].trigger('click')
+      expect(wrapper.emitted('link')).toEqual([['https://replacement.example']])
+
+      await wrapper.setProps({ content: '' })
+      expect(wrapper.findAll('[role="link"]')).toHaveLength(0)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it.each([
+    {
+      name: 'nested lists',
+      content: '1. [Same](https://example.com)\n2. [Same](https://example.com)\n   - [Same](https://nested.example)\n   - [Same](https://nested.example)',
+      suffix: ' more\n3. [Last](https://last.example)',
+      replacement: '4. [New](https://new.example)\n   - [Nested](https://new-nested.example)',
+    },
+    {
+      name: 'table rows and cells',
+      content: '| One | Two |\n| --- | --- |\n| [Same](https://example.com) | [Same](https://example.com) |\n| [Same](https://nested.example) | [Same](https://nested.example) |',
+      suffix: '\n| [Last](https://last.example) | End |',
+      replacement: '| New | Nested |\n| --- | --- |\n| [New](https://new.example) | [Nested](https://new-nested.example) |',
+    },
+  ])('preserves recursive identities and link events in $name', async ({ content, suffix, replacement }) => {
+    const wrapper = mount(AgentMarkdown, { props: { content } })
+    try {
+      const originalLinks = wrapper.findAll('[role="link"]').map(link => link.element)
+      expect(originalLinks).toHaveLength(4)
+      expect(new Set(originalLinks).size).toBe(4)
+
+      await wrapper.setProps({ content: content + suffix })
+      const streamedLinks = wrapper.findAll('[role="link"]')
+      expect(streamedLinks).toHaveLength(5)
+      originalLinks.forEach((element, index) => expect(streamedLinks[index].element).toBe(element))
+      await streamedLinks[3].trigger('click')
+      expect(wrapper.emitted('link')).toEqual([['https://nested.example']])
+
+      await wrapper.setProps({ content: replacement, final: true })
+      const replacementLinks = wrapper.findAll('[role="link"]')
+      expect(replacementLinks.map(link => link.text())).toEqual(['New', 'Nested'])
+      expect(replacementLinks.every(link => !originalLinks.includes(link.element))).toBe(true)
+      await replacementLinks[1].trigger('click')
+      expect(wrapper.emitted('link')?.at(-1)).toEqual(['https://new-nested.example'])
+    }
+    finally { wrapper.unmount() }
+  })
 })
 
 describe('AI-driven mall flows', () => {

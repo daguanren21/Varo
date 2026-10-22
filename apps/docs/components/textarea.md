@@ -9,5 +9,3 @@
 继承 `VInput` 的文本域能力，默认 `type="textarea"`。
 
 ## Props
-
-继承 `VInput` 的文本域能力，默认 `type="textarea"`。

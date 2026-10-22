@@ -41,6 +41,40 @@ describe('expanded weapp registry components', () => {
     expect(card.get('.varo-card').classes()).toContain('shadow-none')
   })
 
+  it('keeps noninteractive card descendants uncanceled and bubbling through interaction changes', async () => {
+    const parent = document.createElement('div')
+    const onAncestorClick = vi.fn()
+    parent.addEventListener('click', onAncestorClick)
+    const card = mount(VCard, {
+      attachTo: parent,
+      slots: { default: () => h('button', { type: 'button' }, 'Child action') },
+    })
+    try {
+      const click = () => {
+        const event = new MouseEvent('click', { bubbles: true, cancelable: true })
+        card.get('button').element.dispatchEvent(event)
+        expect(event.defaultPrevented).toBe(false)
+        return event
+      }
+      click()
+      expect(card.emitted('click')).toBeUndefined()
+      expect(onAncestorClick).toHaveBeenCalledTimes(1)
+
+      await card.setProps({ interactive: true })
+      const accepted = click()
+      expect(card.emitted('click')).toEqual([[accepted]])
+
+      await card.setProps({ interactive: false })
+      click()
+      expect(card.emitted('click')).toEqual([[accepted]])
+      expect(onAncestorClick).toHaveBeenCalledTimes(3)
+    }
+    finally {
+      card.unmount()
+      parent.remove()
+    }
+  })
+
   it('exposes toggle semantics only when ariaPressed is supplied', async () => {
     const wrapper = mount(VButton)
     const button = wrapper.get('button')

@@ -1,6 +1,6 @@
 # List 列表加载
 
-`VList` 负责列表底部的触底/上拉加载；顶部下拉刷新使用 [PullRefresh](/components/pull-refresh)。
+`VList` 用于列表触底或上拉时加载更多内容。顶部下拉刷新请使用 [PullRefresh](/components/pull-refresh)。
 
 ## 演示
 

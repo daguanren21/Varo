@@ -1,6 +1,6 @@
 # Mobile data workspace
 
-Four independently installable Registry Blocks for stable `h5` (Vue) and `weapp` (Wevu). They implement a bounded mobile subset, not desktop parity. Their source is authored under `registry/blocks/{metrics-chart,schedule-calendar,task-board,data-grid}`; installed sources are generated projections.
+Four independently installable Registry Blocks support stable `h5` (Vue) and `weapp` (Wevu), with limited mobile datasets and no desktop-parity guarantee. Source lives in `registry/blocks/{metrics-chart,schedule-calendar,task-board,data-grid}`; the generator produces installed copies.
 
 | Block               | Mobile capability                                                                         | Explicit limit                              |
 | ------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------- |
@@ -9,19 +9,19 @@ Four independently installable Registry Blocks for stable `h5` (Vue) and `weapp`
 | `task-board`        | Vertical columns, details, explicit move and approval buttons                             | 1–6 columns; 0–50 cards                     |
 | `data-grid`         | Base, Columns, Editing, Expansion, Filtering, Grouping                                    | 1–8 columns; page size 1–50, default 20     |
 
-No canvas, arbitrary chart types, timezone conversion, recurrence, calendar integration, drag-and-drop, virtual scrolling or device-performance guarantee is included. B5-3 owns drag and virtualization separately. Pages are never called virtualization. Experimental profiles are not admitted by these manifests.
+These Blocks do not include canvas, arbitrary chart types, timezone conversion, recurrence, calendar integration, drag-and-drop or virtual scrolling, and make no device-performance guarantee. Pagination does not provide virtualization. These manifests do not admit experimental profiles.
 
 ## Install and ownership
 
 Install the individual `blocks/metrics-chart`, `blocks/schedule-calendar`, `blocks/task-board`, or `blocks/data-grid` entry for the selected target. Each installs a renderer at `src/components/blocks/<name>.vue` and portable types/helpers at `src/components/blocks/<name>-actions.ts`.
 
-Dependencies are deliberately small: all four use `components/button`; schedule additionally uses admitted `utils/date-utils`; grid additionally uses `components/input`. No H5 calendar renderer enters native code. The day/week list uses Varo buttons and the existing neutral calendar helpers instead of introducing a second date-picker runtime. No existing shared base component is changed.
+All four Blocks depend on `components/button`; schedule also uses admitted `utils/date-utils`, and grid uses `components/input`. Day/week lists reuse Varo buttons and platform-neutral date helpers without another date-picker runtime, native imports of H5 renderers or changes to shared base components.
 
-Every Block emits a single typed `intent` object. The application remains the only owner of selected IDs, view dates, records, drafts, filter/group results, grants and accepted mutations. Recheck current state and authorization in the application before committing. An emitted intent is not completion, persistence or service success.
+Blocks request actions through a single typed `intent` object. Applications maintain selected IDs, view dates, records, drafts, filter/group results, permissions and accepted changes, rechecking state and authorization before committing. Events do not establish completion, persistence or service success.
 
-All Blocks accept `title?`, `loading?`, `busy?`, `disabled?`, `error?`. Boolean defaults are false and error defaults to an empty string. Loading/busy/disabled lock new actions without hiding existing evidence; an error is readable feedback, not an implicit lock, so correction remains possible. Use busy/disabled if an error requires locking. Invalid structural configuration produces an explicit rejection message and no interactive data presentation; input is not clipped or silently truncated. There is no automatic retry.
+Common props are `title?`, `loading?`, `busy?`, `disabled?`, `error?`; booleans default to false and error to an empty string. Loading, busy and disabled states block new actions but retain content. Errors display feedback while allowing correction; use busy/disabled when locking is needed. Invalid structural configuration shows a reason and stops interactive data rendering, without clipping, truncation or automatic retries.
 
-Native collection props have explicit `Array`/`[]` host metadata, including required collections, for pre-binding initialization. Grid's optional draft uses null metadata: null or omitted means no editor, not a locally owned draft. All intents are single-object events, so neither target needs a multi-argument event bridge.
+Native collections, including required props, use `Array`/`[]` host metadata before parent binding. Grid's optional draft uses null metadata: absent or null means no editor, with no internal draft. Single-object events need no multi-argument adaptation across targets.
 
 ## Metrics chart {#metrics-chart}
 
@@ -91,7 +91,7 @@ type BoardIntent
     | { action: 'approve', id: string, columnId: string }
 ```
 
-Current card and column state is looked up on activation. Source/destination column disablement, card disablement/busy state, missing grants, same-column moves, unavailable approval and global locks suppress the intent. The application must recheck `fromColumnId`/`columnId` and current grants before applying it. Application rejection is displayed through `error`; the card does not move optimistically. Details read the currently injected card, not a cached copy. Buttons are an accessible explicit move operation, **not drag-and-drop**.
+On activation, the component looks up the current card and columns again. It emits nothing if the source or destination column is disabled, the card is disabled or busy, the destination is not permitted, the card is already in that column, approval is unavailable, or a global lock applies. Before committing, the application must recheck `fromColumnId`/`columnId` and current permissions. Rejections display through `error`, and the card stays in place until acceptance. Detail always reads the current supplied card. Accessible buttons handle moves; drag-and-drop is not supported.
 
 ## Basic data grid {#data-grid}
 
@@ -110,7 +110,7 @@ Column: `{ id: string, label: string, editable?: boolean, disabled?: boolean }`.
 
 Required controlled props: `records`, `columns`, `columnIds`, `expandedIds`, `query`, `grouped`, `page`, `total`. `page` is one-based. `pageSize` defaults to 20 (1–50). Supply only the requested page, never a full dataset to be clipped. Records may be fewer than the page size, but may not exceed either it or the remaining declared total. Invalid page, total, IDs, columns or bounds reject explicitly. Column IDs are unique and refer to declared columns. Expansion IDs may persist across pages.
 
-Optional props: `draft?: { rowId, values: Record<string,string> } | null`, `fieldErrors?: Record<string,string>` (default `{}`), and the common props. `title` defaults to `Basic data grid`. All editable cells are strings; the application parses numbers and validates business rules. A missing/disabled/busy record cannot be edited. No-op saves are disabled. The demo requires a unique nonblank title and integer hours from 0 to 8, but those are demo application rules, not hidden Block validation.
+Optional props: `draft?: { rowId, values: Record<string,string> } | null`, `fieldErrors?: Record<string,string>` (default `{}`), and the common props. `title` defaults to `Basic data grid`. Editable cells are strings; the application parses numbers and validates business rules. Missing, disabled or busy records cannot be edited, and save is disabled when nothing has changed. The demo application requires a unique nonblank title and integer hours from 0 to 8; the Block does not enforce these business rules.
 
 Save checks the actual proposed values against the current `columns`. If a changed field's column is disabled, removed, or no longer editable, the entire `save` is rejected rather than silently dropping that field. The controlled draft is retained and cancel remains available; the application can restore permission or revert that field before saving again. Unchanged read-only values may accompany other valid changes.
 
@@ -128,14 +128,14 @@ Intents:
 | `save`    | `id`, `values: Record<string,string>` |
 | `cancel`  | `id`                                  |
 
-On `edit`, the application creates the draft. On `field`, it replaces the controlled draft values. On `save`, it validates and either keeps the draft plus errors or commits the updated record and clears the draft. Filtering, grouping and paging are locked while a draft is open to prevent accidental context loss. Cancel remains available while loading, busy, disabled, or after external removal of the editing row; an absent row displays an explanation, not a fabricated editable record. Collapsing already-expanded detail also remains available during locks.
+The application creates a draft when it accepts `edit` and replaces controlled draft values when it accepts `field`. On `save`, it validates the values: rejection keeps the draft and errors, while success updates the record and clears the draft. Filtering, grouping and paging are disabled during editing to preserve the editing context. Cancel remains available while loading, busy or disabled, and after external removal of the edited row. A missing row displays an explanation instead of creating a replacement record to edit. Already-expanded details can still be collapsed while locked.
 
 ## Local demo and verification boundaries
 
-Routes integrated by the playground owner: H5 `/?demo=data-workspace`, native `/blocks-lab/data-workspace/index`. The demo owns one in-memory list of Alpha/Beta/Gamma/Delta tasks. Chart totals sum task hours; board moves and accepted grid edits change those same rows. Schedule selection can be applied as a real grid date filter. The optional twelve-category sample derives zero values for categories with no records. The invalid-configuration control deliberately supplies 13 categories, an invalid calendar date, 51 board cards or grid page size 51; it is labelled test data, not a service response.
+The playground integrator connects H5 `/?demo=data-workspace` and native `/blocks-lab/data-workspace/index`. The demo uses one in-memory list of Alpha/Beta/Gamma/Delta tasks: the chart sums their hours, board moves and accepted grid edits update those records, and selecting a schedule date can filter the grid. The optional twelve-category sample calculates zero for categories without records. Invalid-configuration controls supply 13 categories, an invalid calendar date, 51 cards or a page size of 51. These inputs are labelled as error examples, not service responses.
 
-The application rejects moving unapproved Alpha to Done, then permits it after explicit approval. Beta has a restricted destination grant; Gamma is locked. A local occupancy toggle makes Alpha's schedule slot conflict with the application ledger. Grid edits preserve their draft after field validation or duplicate-title rejection, then commit corrected data. Presentation toggles inject loading/busy/disabled/empty/error states and are not represented as network work.
+The application rejects moving Alpha to Done until it has been explicitly approved. Beta has restricted destinations, and Gamma is locked. A local occupancy toggle makes Alpha's schedule slot conflict with the application ledger. Grid field errors or duplicate titles keep the draft open; corrected data can then be saved. Loading, busy, disabled, empty and error toggles only supply display states and do not represent network work.
 
 Matching H5/native E2E source covers seven scenarios: chart values/zero/detail/12-versus-13 bounds; date navigation and disabled dates; rejected slot/date filtering/selection preservation; rejected and approved board moves with changed chart totals; all grid view dimensions and page bounds; rejected/accepted edits and cancel while busy; and state/error/configuration paths for all four Blocks. Tests operate real controls and assert rendered records, not `setData`, page methods or event counters. H5 scenarios request screenshots; native screenshots are requested only in DevTools mode.
 
-These are authored scenarios, not a claim they have passed. Main integrates generation, routes, manifests/navigation and the required-pair gate, then runs fresh builds and the real H5/native surfaces. A configured supported native engine/DevTools environment and valid local host configuration remain verification prerequisites. No service credentials are needed for this local demo. Visual/device, finite-value boundary probes and platform certification must be reported from actual independent verification, not inferred from source.
+Written scenarios do not establish passing validation. Complete generation, routes, manifests/navigation, the required-pair gate and fresh builds, then validate H5/native. Native checks require a configured, supported native engine/DevTools environment and valid local host configuration; the local demo needs no service credentials. Visual/device behavior, finite-value boundaries and profile certification require independent execution, not source inspection.

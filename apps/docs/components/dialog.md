@@ -1,6 +1,6 @@
 # Dialog
 
-由 `VDialogRoot`、`VDialogTrigger`、`VDialogOverlay`、`VDialogContent` 和 `VDialogClose` 组合。
+使用 `VDialogRoot`、`VDialogTrigger`、`VDialogOverlay`、`VDialogContent` 和 `VDialogClose` 组合对话框。
 
 ## 演示
 
@@ -40,10 +40,12 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 ### 原生 Weapp（Wevu）
 
 ::: info 原生组合运行边界
-小程序页签使用 `weapp-vite` / `wevu` 7.5.0 的真实编译产物。普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)适用于微信目标、编译后的 Wevu 组件、`scopedSlotsRequireProps: true` 和默认 attached setup，无需下游 context bridge。独立 `dialog` 预览已验证打开、同步取消关闭和允许关闭。这不扩展到 created setup、其他平台或 IDE/真机认证。
+小程序页签运行 `weapp-vite` / `wevu` 7.5.0 编译产物。普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)适用于微信目标下编译后的 Wevu 组件，要求 `scopedSlotsRequireProps: true` 和默认 attached setup，无需应用添加 context bridge。
+
+独立 `dialog` 预览已验证打开、同步取消关闭和允许关闭；结果仅覆盖上述配置，不包括 created setup、其他平台或 IDE/真机认证。
 :::
 
-原生事件只传递一个 `detail` 参数；`openChange` 的该参数是 `[open, details]` 元组，处理器必须解构元组，而不是声明两个独立参数。使用 `wevu` 的响应式 API：
+原生事件只有一个 `detail` 参数。`openChange` 传递 `[open, details]` 元组，处理器需解构元组，不能接收两个独立参数。响应式 API 从 `wevu` 导入：
 
 ```vue
 <script setup lang="ts">
@@ -104,5 +106,5 @@ Weapp 没有 DOM 焦点陷阱、`inert`、portal 或 `Escape` 键语义；使用
 | `VDialogClose`   | 显式关闭       |
 
 ::: info 关闭约定
-受控模式以 `open` 为准，未取消的请求仍需父组件应用新值才改变显示。Overlay、Close、Trigger 和 H5 的 `Escape` 都进入同一同步取消流程，但 H5 使用双参数处理器，原生使用单元组处理器。
+受控模式以 `open` 为准，未取消的请求仍需父组件应用新值才改变显示。Overlay、Close、Trigger 和 H5 的 `Escape` 都进入同一同步取消流程。
 :::

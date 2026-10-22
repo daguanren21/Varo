@@ -1,10 +1,10 @@
 # Cell
 
-列表行基座：适合设置项、详情项、链接行和可点击信息单元。
+用于设置项、详情项、链接行和可点击信息单元的列表行组件。
 
 ## 运行时归属
 
-本页 Parts 与交互示例仅属于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VCell` / `VCellGroup` SFC，不承诺 Parts API 等价；原生标签页仅展示源码/证据。键盘与导航能力由各自运行时决定。
+本页 Parts 与交互示例仅适用于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VCell` / `VCellGroup` SFC，不保证 Parts API 一致；原生标签页仅展示源码和支持证据。键盘操作与导航能力取决于各自的运行时。
 
 ## 演示
 

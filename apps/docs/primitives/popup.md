@@ -1,10 +1,10 @@
 # Popup
 
-弹出层基座：组合遮罩、位置、关闭、安全区与销毁策略。
+组合弹出层的遮罩、位置、关闭行为、安全区和销毁策略。
 
 ## 运行时归属
 
-`usePopupRoot` 来自 `@varo-ui/headless`。本页 `PopupRoot` 与交互示例仅属于 `@varo-ui/h5/primitives`；原生端使用独立 Wevu `VPopup` SFC 实现定位和安全区，原生标签页只展示源码/证据。
+`usePopupRoot` 来自 `@varo-ui/headless`。本页 `PopupRoot` 与交互示例仅适用于 `@varo-ui/h5/primitives`。原生端使用独立的 Wevu `VPopup` SFC 处理定位和安全区；原生标签页仅展示源码和支持证据。
 
 ## 演示
 
@@ -22,5 +22,5 @@
 - 事件：`update:visible`、`visibleChange`、`close`、`clickOverlay`。
 
 ::: info 平台差异
-小程序安全区和 H5 viewport 各自适配，公开状态保持一致。
+两端公开状态一致，分别适配小程序安全区和 H5 视口。
 :::

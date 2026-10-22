@@ -1,6 +1,6 @@
 # Tabs
 
-Tabs runtime: Root owns the active value; Trigger/Content associate through the same value.
+Links tab titles to content panels through matching values.
 
 ## Runtime
 
@@ -12,11 +12,11 @@ State contracts come from `@varo-ui/headless`. Parts and interactive examples on
 
 ## Basic usage
 
-The H5 panel provides the current Parts example and code. The native tab shows source/support evidence only, not a live mini-program preview.
+The H5 panel provides interactive Parts and their code. The native tab shows source and support evidence, without a live mini-program preview.
 
 ## Controlled unique values
 
-Trigger/Content values must stay unique inside one `TabsRoot`; H5 automatic mode supports arrow-key movement.
+Each Trigger/Content pair must have a unique value within a `TabsRoot`. H5 automatic mode supports arrow-key switching.
 
 ## Parts
 
@@ -31,37 +31,36 @@ Trigger/Content values must stay unique inside one `TabsRoot`; H5 automatic mode
 
 ### TabsRoot
 
-| Prop           | Type                            | Default     | Description                  |
-| -------------- | ------------------------------- | ----------- | ---------------------------- |
-| `value`        | `string \| number \| undefined` | `undefined` | Controlled active value      |
-| `defaultValue` | `string \| number`              | `undefined` | Uncontrolled initial value   |
-| `orientation`  | `string`                        | `undefined` | Orientation semantics        |
-| `disabled`     | `boolean`                       | `false`     | Disables the whole tabs root |
-| `id`           | `string`                        | `undefined` | Association id prefix        |
-| `as`           | `string`                        | `'div'`     | Root element tag             |
+| Prop           | Type                            | Default     | Description                       |
+| -------------- | ------------------------------- | ----------- | --------------------------------- |
+| `value`        | `string \| number \| undefined` | `undefined` | Controlled active value           |
+| `defaultValue` | `string \| number`              | `undefined` | Uncontrolled initial value        |
+| `orientation`  | `string`                        | `undefined` | Tab orientation                   |
+| `disabled`     | `boolean`                       | `false`     | Disable all tabs                  |
+| `id`           | `string`                        | `undefined` | Prefix for associated element IDs |
+| `as`           | `string`                        | `'div'`     | Root element tag                  |
 
 ### TabsTrigger / TabsContent
 
 | Prop       | Type               | Description                       |
 | ---------- | ------------------ | --------------------------------- |
 | `value`    | `string \| number` | Unique value associated with Root |
-| `disabled` | `boolean`          | Trigger-only disabled flag        |
+| `disabled` | `boolean`          | Disables Trigger only             |
 
 ## Events
 
-| Event          | Payload            | Description         |
-| -------------- | ------------------ | ------------------- |
-| `update:value` | `string \| number` | Controlled sync     |
-| `valueChange`  | `string \| number` | Active value change |
+| Event          | Payload            | Description                         |
+| -------------- | ------------------ | ----------------------------------- |
+| `update:value` | `string \| number` | Sync the controlled active value    |
+| `valueChange`  | `string \| number` | Fires when the active value changes |
 
 ## Accessibility
 
-- Value drives both state and panel association.
-- H5 supports arrows/Home/End.
+- Value determines the active state and links each tab to its panel.
+- H5 supports arrow keys, Home, and End.
 - Weapp keeps ARIA and value association without browser focus simulation.
 
 ::: info Platform notes
 
-- H5 can demonstrate keyboard behavior.
-- The native tab provides target source and evidence, not a live Parts renderer.
+- The H5 panel demonstrates the keyboard behavior above; the native tab shows source and evidence without running a Parts renderer.
   :::

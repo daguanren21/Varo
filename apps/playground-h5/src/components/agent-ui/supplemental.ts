@@ -1,7 +1,10 @@
 import type { PropType } from 'vue'
 import type { AgentArtifactItem, AgentAttachmentItem, AgentSourceItem } from './advanced-types'
 import { computed, defineComponent, h } from 'vue'
+import { VFileType } from '../ui/file-type'
 import '../../styles/varo.css'
+import '../../styles/varo-icon.css'
+import '../../styles/varo-file-type.css'
 import '../../styles/varo-agent.css'
 import './agent-advanced.css'
 import './agent-artifact.css'
@@ -137,13 +140,9 @@ export const AgentAttachmentList = defineComponent({
             h('article', { class: 'flex min-h-14 min-w-0 items-center gap-3 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 shadow-sm', key: item.id }, [
               item.previewUrl
                 ? h('img', { alt: '', class: 'h-9 w-9 flex-none rounded-xl object-cover', src: item.previewUrl })
-                : h(
-                    'i',
-                    { class: 'grid h-9 w-9 flex-none place-items-center rounded-xl bg-slate-900 text-[10px] font-black not-italic text-white' },
-                    item.name.split('.').pop()?.slice(0, 4).toUpperCase() || 'FILE',
-                  ),
+                : h(VFileType, { filename: item.name, mimeType: item.mimeType, decorative: true }),
               h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
-                h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, item.name),
+                h('strong', { class: 'break-all text-[12px] text-[var(--varo-agent-foreground)]' }, item.name),
                 h('small', { class: 'text-[10px] text-[var(--varo-agent-muted)]' }, [item.size, item.mimeType].filter(Boolean).join(' · ')),
               ]),
               h(

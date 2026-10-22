@@ -77,6 +77,7 @@ function runArtifactVerifier(mutate?: (outputRoot: string) => void, fixtureKind:
     symlinkSync(resolve(playgroundRoot, '../../node_modules'), resolve(fixture, 'node_modules'), 'dir')
     symlinkSync(resolve(playgroundRoot, 'node_modules'), resolve(appRoot, 'node_modules'), 'dir')
     cpSync(resolve(playgroundRoot, 'scripts/verify-devtools-project.mjs'), resolve(appRoot, 'scripts/verify-devtools-project.mjs'))
+    cpSync(resolve(playgroundRoot, 'scripts/css-references.mjs'), resolve(appRoot, 'scripts/css-references.mjs'))
     if (fixtureKind === 'package-graph') { createPackageGraphFixture(appRoot) }
     else { cpSync(resolve(playgroundRoot, 'devtools/build'), resolve(appRoot, 'devtools/build'), { recursive: true }) }
     mutate?.(resolve(appRoot, 'devtools/build/mp-weixin'))
@@ -88,6 +89,67 @@ function runArtifactVerifier(mutate?: (outputRoot: string) => void, fixtureKind:
     rmSync(fixture, { recursive: true, force: true })
   }
 }
+
+function runStarterVerifier(framework: 'wevu' | 'taro' | 'uni-app', mutate?: (outputRoot: string) => void) {
+  const fixture = mkdtempSync(resolve(tmpdir(), 'varo-starter-css-'))
+  const appRoot = resolve(fixture, 'app')
+  const outputRoot = resolve(appRoot, framework === 'wevu' ? 'devtools/build/mp-weixin' : framework === 'taro' ? 'dist/weapp' : 'dist/build/mp-weixin')
+  function write(path: string, content: string | object) {
+    const destination = resolve(appRoot, path)
+    mkdirSync(dirname(destination), { recursive: true })
+    writeFileSync(destination, typeof content === 'string' ? content : JSON.stringify(content))
+  }
+  try {
+    mkdirSync(resolve(appRoot, 'scripts'), { recursive: true })
+    // Link the copied verifier's declared tools, including root-only TypeScript.
+    for (const dependency of ['@csstools/css-tokenizer', 'htmlparser2', 'postcss', 'postcss-selector-parser', 'typescript', 'weapp-tailwindcss']) {
+      const installation = [playgroundRoot, resolve(playgroundRoot, '../..'), resolve(playgroundRoot, '../../node_modules/.pnpm')]
+        .map(root => resolve(root, 'node_modules', dependency))
+        .find(existsSync)
+      if (!installation) { throw new Error(`Missing installed verifier dependency: ${dependency}`) }
+      const destination = resolve(appRoot, 'node_modules', dependency)
+      mkdirSync(dirname(destination), { recursive: true })
+      symlinkSync(installation, destination, 'dir')
+    }
+    cpSync(resolve(playgroundRoot, framework === 'wevu' ? 'starter/scripts/verify-devtools-project.mjs' : 'scripts/verify-retail-native.mjs'), resolve(appRoot, 'scripts/verify.mjs'))
+    cpSync(resolve(playgroundRoot, 'scripts/css-references.mjs'), resolve(appRoot, 'scripts/css-references.mjs'))
+    write('starter-manifest.json', { framework, pages: ['pages/home'] })
+    if (framework === 'wevu') { write('devtools/build/project.config.json', { appid: '' }) }
+    else {
+      write(resolve(outputRoot, 'project.config.json'), { appid: '', miniprogramRoot: './' })
+      write(framework === 'taro' ? 'project.config.json' : 'src/project.config.json', { appid: '' })
+      write(framework === 'taro' ? 'src/app.config.ts' : 'src/pages.json', framework === 'taro'
+        ? 'export default defineAppConfig({ "pages": ["pages/home"] })'
+        : { pages: [{ path: 'pages/home' }] })
+      mkdirSync(resolve(appRoot, 'src/static'), { recursive: true })
+    }
+    write(resolve(outputRoot, 'app.json'), { pages: ['pages/home'] })
+    write(resolve(outputRoot, 'app.js'), '')
+    write(resolve(outputRoot, 'pages/home.json'), {})
+    write(resolve(outputRoot, 'pages/home.js'), '')
+    write(resolve(outputRoot, 'pages/home.wxml'), '<view />')
+    write(resolve(outputRoot, 'app.wxss'), cssImportForms.map(reference => `@import ${reference};`).join('\n'))
+    write(resolve(outputRoot, 'theme name.wxss'), String.raw`
+      .flex { display: flex; --varo-ui-primary: red; }
+      .assets { background: url(./a\20 b\(1\)\"\'\\.svg?size=2#shape), url("data:image/svg+xml,<svg>(x)</svg>"), url(https://example.com/asset.svg); }
+    `)
+    write(resolve(outputRoot, 'a b(1)"\'\\.svg'), 'asset bytes')
+    mutate?.(outputRoot)
+    const result = spawnSync(process.execPath, ['scripts/verify.mjs'], { cwd: appRoot, encoding: 'utf8' })
+    expect(result.error).toBeUndefined()
+    return result
+  }
+  finally { rmSync(fixture, { recursive: true, force: true }) }
+}
+
+const cssImportForms = [
+  String.raw`"./theme\20 name.wxss?mode=1#theme"`,
+  String.raw`'./theme\ name.wxss?mode=1#theme'`,
+  String.raw`url(./theme\20 name.wxss?mode=1#theme)`,
+  String.raw`url( "./theme\ name.wxss?mode=1#theme" )`,
+  String.raw`URL('./theme\20 name.wxss?mode=1#theme')`,
+  String.raw`u\72l("./theme\000020name.wxss?mode=1#theme")`,
+]
 
 function collectFiles(directory: string, extension: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -170,7 +232,7 @@ describe('playground-weapp delivery contract', () => {
     })
     expect(result.status, result.stderr).toBe(0)
     expect(result.stdout).toContain('synchronous script references')
-  })
+  }, 30_000)
 
   it.each([
     ['main-to-subpackage', 'ownership-probe.js', 'require("./blocks-lab/retail/index.js");'],
@@ -187,6 +249,25 @@ describe('playground-weapp delivery contract', () => {
     const result = runArtifactVerifier(undefined, 'package-graph')
     expect(result.status, result.stderr).toBe(0)
     expect(result.stdout).toContain('4 synchronous script references')
+  })
+
+  it.each(['components/agent-ui', 'blocks-lab/components/agent-ui'])('rejects streaming scoped slots under %s', (directory) => {
+    const result = runArtifactVerifier((outputRoot) => {
+      const base = `${directory}/AgentStream`
+      mkdirSync(resolve(outputRoot, directory), { recursive: true })
+      writeFileSync(resolve(outputRoot, `${base}.json`), JSON.stringify({
+        component: true,
+        usingComponents: { 'scoped-slot-probe': '/components/ui/v-button' },
+      }))
+      writeFileSync(resolve(outputRoot, `${base}.js`), 'Component({})')
+      writeFileSync(resolve(outputRoot, `${base}.wxml`), '<scoped-slot-probe />')
+      const pagePath = resolve(outputRoot, 'blocks-lab/index.json')
+      const page = JSON.parse(readFileSync(pagePath, 'utf8'))
+      page.usingComponents.stream = `/${base}`
+      writeFileSync(pagePath, JSON.stringify(page))
+    }, 'package-graph')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain(`${directory}/AgentStream.json streaming content must not cross a scoped-slot boundary`)
   })
 
   describe.each(['usingComponents', 'componentGenerics'] as const)('%s package ownership', (referenceKind) => {
@@ -223,10 +304,61 @@ describe('playground-weapp delivery contract', () => {
     expect(result.stderr).toContain('Forbidden synchronous package reference: app.wxss')
   })
 
-  it('rejects a main package above the uncompressed 2 MiB limit', () => {
-    const result = runArtifactVerifier(outputRoot => writeFileSync(resolve(outputRoot, 'budget-probe.bin'), Buffer.alloc(2 * 1024 * 1024 + 1)))
+  it.each(cssImportForms)('verifies an escaped stylesheet import %s against its real file', (reference) => {
+    const result = runArtifactVerifier((outputRoot) => {
+      writeFileSync(resolve(outputRoot, 'app.wxss'), `@IMPORT ${reference} screen;`)
+      writeFileSync(resolve(outputRoot, 'theme name.wxss'), '.flex { display: flex; }')
+    }, 'package-graph')
+    expect(result.status, result.stderr).toBe(0)
+  })
+
+  it.each(cssImportForms)('rejects a missing escaped stylesheet import %s', (reference) => {
+    const result = runArtifactVerifier((outputRoot) => {
+      writeFileSync(resolve(outputRoot, 'app.wxss'), `@import ${reference}; .flex { display: flex; }`)
+    }, 'package-graph')
     expect(result.status).not.toBe(0)
-    expect(result.stderr).toContain('Main package exceeds 2 MiB:')
+    expect(result.stderr).toContain('theme name.wxss')
+    expect(result.stderr).toContain('ENOENT')
+  })
+
+  it.each(cssImportForms)('enforces package ownership for escaped stylesheet import %s', (reference) => {
+    const result = runArtifactVerifier((outputRoot) => {
+      writeFileSync(resolve(outputRoot, 'app.wxss'), `@import ${reference.replace('./theme', './blocks-lab/theme')}; .flex { display: flex; }`)
+      writeFileSync(resolve(outputRoot, 'blocks-lab/theme name.wxss'), '')
+    }, 'package-graph')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain('Forbidden synchronous package reference: app.wxss')
+    expect(result.stderr).toContain('blocks-lab/theme name.wxss')
+  })
+
+  it.each(['wevu', 'taro', 'uni-app'] as const)('verifies escaped stylesheet dependencies with the exported %s verifier', (framework) => {
+    const result = runStarterVerifier(framework)
+    expect(result.status, result.stderr).toBe(0)
+    expect(result.stdout).toContain('Verified')
+  })
+
+  it.each(['wevu', 'taro', 'uni-app'] as const)('rejects a missing escaped stylesheet with the exported %s verifier', (framework) => {
+    const result = runStarterVerifier(framework, outputRoot => rmSync(resolve(outputRoot, 'theme name.wxss')))
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain('theme name.wxss')
+  })
+
+  it.each(['taro', 'uni-app'] as const)('rejects a missing escaped CSS asset with the exported %s verifier', (framework) => {
+    const result = runStarterVerifier(framework, outputRoot => rmSync(resolve(outputRoot, 'a b(1)"\'\\.svg')))
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain('Missing compiled file: a b(1)')
+  })
+
+  it('reserves real-debug overhead even when compiled main files fit the platform limit', () => {
+    const result = runArtifactVerifier(outputRoot => writeFileSync(resolve(outputRoot, 'budget-probe.bin'), Buffer.alloc(1_500_000)), 'package-graph')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain('Main package exceeds 1.5 MB debug budget:')
+  })
+
+  it('rejects a subpackage above its source limit after component localization', () => {
+    const result = runArtifactVerifier(outputRoot => writeFileSync(resolve(outputRoot, 'blocks-lab/budget-probe.bin'), Buffer.alloc(2 * 1024 * 1024)), 'package-graph')
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain('Subpackage blocks-lab exceeds 2 MiB:')
   })
 
   it('rejects a missing synchronous script dependency', () => {

@@ -1,6 +1,6 @@
 # Elevator
 
-`VElevator` keeps the index rail synchronized with the group header currently crossing the content viewport. Reaching the bottom activates the final group, while index clicks scroll only the component list and never move the browser document.
+`VElevator` keeps the right-hand group index in sync with scrolling. Clicking an index scrolls the component's list without moving the browser page.
 
 ## Demo
 
@@ -29,7 +29,7 @@ const indexes = [
 ## Scroll synchronization
 
 - `activeIndex` updates when a group heading crosses the content container top.
-- Reaching the bottom activates the last index so short final groups do not stay unreachable.
+- At the bottom, the last index stays active even if the final group is too short for its heading to reach the top.
 - Clicking the index rail updates state immediately and smooth-scrolls only the internal content container.
 
 ## Props

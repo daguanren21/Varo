@@ -1,6 +1,6 @@
 # @varo-ui/headless
 
-Framework- and DOM-neutral state machines, events, controlled-state contracts, form hooks, and utilities shared by Varo renderers. This package does not render DOM, native, or mini-program elements and does not import Vue or Wevu.
+State machines, events, controlled-state interfaces, form hooks, and utilities shared by Varo renderers. The package has no Vue, Wevu, or DOM dependency and does not render DOM, native, or mini-program elements.
 
 ## Install
 
@@ -29,7 +29,7 @@ const accordion = useAccordionRoot({ type: 'single', collapsible: true, runtime 
 accordion.api.toggle('details')
 ```
 
-That is an H5 application binding; native application code binds the same contract with `computed` and `shallowRef` from `wevu`. The framework import belongs in the adapter/consumer, not in headless. In this repository, `packages/shared` is the single owner of `ReactiveRuntime`, `Ref`, and `MaybeRef`; headless re-exports the public contract so consumers do not import private workspace packages.
+This example connects an H5 application's reactivity. In native applications, import `computed` and `shallowRef` from `wevu` instead. Framework imports stay in the adapter or application. The shared `ReactiveRuntime`, `Ref`, and `MaybeRef` types are defined in `packages/shared` and re-exported by headless, so consumers can use them without importing private workspace packages.
 
 ## Renderer migration
 
@@ -45,10 +45,10 @@ import type { SubmitPayload } from '@varo-ui/headless'
 type CheckoutSubmission = SubmitPayload<{ email: string }>
 ```
 
-`SubmitPayload` contains `values`, `errors`, and optional `event: unknown`. Form source APIs name the same contract `FormSubmitPayload`; it is not inferred from a concrete function's return type or treated as a raw DOM event. Narrow the event in a platform-specific consumer only when that platform's payload is known.
+`SubmitPayload` contains `values`, `errors`, and optional `event: unknown`. Form APIs export the same named type as `FormSubmitPayload`; it is not inferred from a specific function's return type. The payload is not a raw DOM event. Narrow its event type only when you know the platform's event shape.
 
-Render adapters must reject disabled/readonly mutations and suppress no-op change notifications. Drawer `openChange` cancellation is synchronous and precedes state/model/close transitions. Native and H5 adapters may expose different platform event objects without changing the neutral state contract.
+Render adapters must reject edits while disabled or readonly and send no notification for unchanged values. To cancel Drawer `openChange`, do so synchronously before state/model/close transitions. Native and H5 adapters may provide different event objects with the same shared state interface.
 
-Repository ownership is checked with `pnpm check:architecture`; generated renderers are checked separately by `pnpm check:generated`. Neither substitutes for behavioral or consumer verification.
+Run `pnpm check:architecture` to check import boundaries and `pnpm check:generated` to check generated renderers. Behavior and consumer integration need separate checks.
 
 [Primitives documentation](https://varo.weapp.dev/primitives/) · [Repository](https://github.com/daguanren21/Varo)

@@ -1,10 +1,10 @@
 # Button
 
-可按压入口基座：统一 pressed、disabled、loading 与原生激活语义。
+管理按钮的按压、禁用和加载状态，并处理原生激活行为。
 
 ## 运行时归属
 
-`usePressableRoot` 状态机来自 `@varo-ui/headless`；本页 `ButtonRoot` 与 H5 交互示例属于 `@varo-ui/h5/primitives`。原生端使用 Wevu `VButton` SFC，不提供等价 Vue Parts；小程序标签页运行 `VButton` 编译产物的浏览器预览，可切换到代码查看原生源码。浏览器预览不代表微信真机验收。
+`usePressableRoot` 状态机来自 `@varo-ui/headless`；本页 `ButtonRoot` 与 H5 交互示例来自 `@varo-ui/h5/primitives`。原生端使用 Wevu `VButton` SFC，没有对应的 Vue Parts。小程序标签页在浏览器中预览 `VButton` 的编译产物，可切换到代码查看原生源码；该预览不能替代微信真机验收。
 
 ## 演示
 

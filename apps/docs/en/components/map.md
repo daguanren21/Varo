@@ -1,12 +1,12 @@
 # Map
 
-`VMap` is a typed Wevu wrapper around the native WeChat mini-program `<map>`. It normalizes sizing, capabilities, and event names. The component only supports the `weapp` target; application code still owns remote APIs, permission flows, and Map Context usage.
+`VMap` is a typed Wevu wrapper around the native WeChat mini-program `<map>`, with consistent sizing, map capabilities, and event names. It supports only the `weapp` target. Application code handles remote APIs, location permissions, and Map Context usage.
 
 ## Demo
 
 <NativeComponentPreview component="map" locale="en" />
 
-This preview runs the compiled native `VMap` scene. The browser host presents map capabilities through Tencent Map JS API / raster tiles. Location permission, Map Context, and WeChat's native map view still require verification in the WeChat host. The browser preview is not evidence of other profiles or device support.
+This preview runs the compiled native `VMap` example, but the browser displays the map through Tencent Map JS API / raster tiles. Location permissions, Map Context, and WeChat's native map view require verification in the WeChat host. The browser preview does not establish support for other profiles or devices.
 
 ## Usage
 
@@ -58,7 +58,7 @@ Location previews inside forms should disable gestures so the map does not captu
 
 ## VMap-owned API
 
-Native `latitude` and `longitude` remain required to render the map. `VMap` adds only these basic wrapper capabilities:
+Native `latitude` and `longitude` are required to render the map. `VMap` adds the following properties:
 
 | Prop               | Type               | Default        | Description                                                             |
 | ------------------ | ------------------ | -------------- | ----------------------------------------------------------------------- |

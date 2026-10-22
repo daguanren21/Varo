@@ -1,6 +1,6 @@
 # AgentFileDiff
 
-A dual-target review surface for Agent changes: unified/split layouts, inline changes, collapsed context, line selection, and accept/reject actions.
+Agent file review on both targets: unified/split layouts, inline changes, collapsed context, line selection, and accept/reject actions.
 
 ## Demo
 
@@ -73,7 +73,7 @@ const lines: AgentDiffLine[] = [
 | `update:wrap`        | `boolean`                                  | Wrapping state changed                           |
 | `update:lineNumbers` | `boolean`                                  | Line-number state changed                        |
 
-Wevu listeners receive one tuple: `function onExpand([line, index]: [AgentDiffLine, number]) { /* Load context as needed. */ }`. H5 keeps two arguments. Omitting controlled `open`, `view`, `wrap`, or `lineNumbers` leaves that state under local component ownership.
+Wevu listeners receive one tuple: `function onExpand([line, index]: [AgentDiffLine, number]) { /* Load context as needed. */ }`. H5 keeps two arguments. When `open`, `view`, `wrap`, or `lineNumbers` is omitted, the component manages that state locally.
 
 ## Slots
 

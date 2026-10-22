@@ -14,9 +14,9 @@
 
 ## 可点击层级
 
-祖先节点通过 `select` 回传索引和完整 `item`。最后一项是当前页，不会触发选择。
+点击祖先节点时，`select` 会返回索引和完整的 `item`。最后一项表示当前页，不会触发选择。
 
-H5 会把带 `href` 的祖先渲染成锚点。Weapp 没有页面级 `<a>`，同一字段只作为 `select` payload 传出，由页面自己调用 `wx.navigateTo` 或路由。
+H5 会把带 `href` 的祖先节点渲染成链接。Weapp 没有页面级 `<a>`，该字段会随 `select` 事件传出，页面需要自行调用 `wx.navigateTo` 或路由完成跳转。
 
 ```vue
 <script setup lang="ts">

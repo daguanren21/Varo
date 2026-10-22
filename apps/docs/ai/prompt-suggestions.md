@@ -20,10 +20,10 @@ import { AgentPromptSuggestions } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type       | Default | 说明             |
-| ------------- | ---------- | ------- | ---------------- |
-| `suggestions` | `string[]` | `[]`    | 建议词           |
-| `disabled`    | `boolean`  | `false` | 禁用；小程序支持 |
+| Prop          | Type       | Default | 说明                       |
+| ------------- | ---------- | ------- | -------------------------- |
+| `suggestions` | `string[]` | `[]`    | 建议词                     |
+| `disabled`    | `boolean`  | `false` | 禁用建议词选择；小程序支持 |
 
 ## Events
 

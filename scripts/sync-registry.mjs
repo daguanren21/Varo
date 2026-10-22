@@ -141,8 +141,8 @@ for (const [app, target] of [['playground-h5', 'h5'], ['playground-weapp', 'weap
     output(`apps/${app}/${destination}`, source)
   }
 }
-const docsAgent = await sourcePlan(['components/agent-ui', 'blocks/agent-chat'], 'h5')
-for (const file of docsAgent.files) {
+const docsSources = await sourcePlan(['components/agent-ui', 'blocks/agent-chat', 'components/region-picker'], 'h5')
+for (const file of docsSources.files) {
   output(`apps/docs/${file.to}`, await readFile(file.sourcePath))
 }
 

@@ -1,6 +1,6 @@
 # Agent Activity Block
 
-可安装的活动轨迹与任务决策组合。复用 `AgentActivity` 展示六种状态，使用 Varo `VButton` 发出开始、批准、重试和取消意图。**数据、权限、有效转换、审批、真实执行、网络与存储全部由应用拥有**；Block 不运行任务，不乐观更新状态，也不把一次点击描述成执行成功。
+组合活动轨迹和任务操作。`AgentActivity` 展示六种状态，Varo `VButton` 发出开始、批准、重试和取消请求。数据、权限、状态转换、审批、执行、网络和存储由应用处理；Block 不运行任务或乐观更新状态，点击不代表执行成功。
 
 ## 安装与依赖闭包
 
@@ -10,7 +10,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/agent-activity
 pnpm dlx @varo-ui/cli add --target weapp blocks/agent-activity
 ```
 
-CLI 报告的 npm 依赖需要另外安装。该项显式依赖 `components/agent-advanced` 和 `components/button`，不需要安装聚合的 `components/agent-ui`。Activity 属于可选 advanced 源单元，不把它的类型或渲染器搬进基础 conversation/presentation 闭包。
+CLI 列出的 npm 依赖需要另外安装。该项依赖 `components/agent-advanced` 和 `components/button`，无需安装完整的 `components/agent-ui`。Activity 的类型和渲染器随可选的 advanced 单元提供，不包含在基础 conversation/presentation 单元中。
 
 | 安装内容         | H5                                                        | 原生 Wevu                                                      |
 | ---------------- | --------------------------------------------------------- | -------------------------------------------------------------- |
@@ -20,7 +20,7 @@ CLI 报告的 npm 依赖需要另外安装。该项显式依赖 `components/agen
 | 共享展示类型     | advanced 源单元已有的 `agent-ui/advanced-types.ts`        | 同左                                                           |
 | 样式             | advanced 自有 CSS、Agent 主题及按钮依赖样式由源文件导入   | Activity 自有 SFC 样式；base/Agent/button 依赖样式全局加载     |
 
-Block 使用已有语义 token 和 utility class，不另建样式系统。原生工程通过 `weapp.styles` 将安装的全局 CSS 加载到 `app.vue`，`varo.css` 在前；不要把全局样式导入 `apply-shared` 组件局部 WXSS。具体配置见 [Wevu Registry](/guide/shadcn-mode)。清单目前只声明 `h5`/`weapp`，不是其他宿主或设备认证。
+Block 使用现有的语义 token 和 utility class。原生工程通过 `weapp.styles` 将安装的全局 CSS 加载到 `app.vue`，先加载 `varo.css`；不要把全局样式导入 `apply-shared` 组件的局部 WXSS。具体配置见 [Wevu Registry](/guide/shadcn-mode)。清单目前只声明支持 `h5`/`weapp`，不能据此认定其他宿主或设备已通过验证。
 
 ## 受控输入与事件
 
@@ -29,7 +29,7 @@ import type { AgentActivityItem, AgentActivityStatus } from '@/components/agent-
 import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks/agent-activity-actions'
 ```
 
-`AgentActivityStatus` 为 `queued | running | waiting | failed | cancelled | completed`，**仅用于展示**。`AgentActivityItem.status` 使用这个类型；原有 waiting/running/failed/completed 调用者保持有效，核心 `AgentPartStatus` 不变。
+`AgentActivityStatus` 包含 `queued | running | waiting | failed | cancelled | completed`，仅用于展示。`AgentActivityItem.status` 使用这个类型；已有的 waiting/running/failed/completed 用法仍然有效，核心 `AgentPartStatus` 不变。
 
 `AgentActivityTask extends AgentActivityItem`，保留 `id`、`title`、`kind`、`detail?`、`duration?`、`status`，只添加：
 
@@ -45,7 +45,7 @@ import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks
 | `title`     | `string`              | `Task activity`   | 活动标题                                |
 | `emptyText` | `string`              | `No activity yet` | 空状态提示                              |
 
-`start`、`approve`、`retry`、`cancel` 四个事件均携带**激活时当前 props 中的 `AgentActivityTask`**。两端都是单一 payload，不存在多参数事件。组件按 id 重新查找当前项，再检查当前状态、全局禁用、单项禁用和授予动作；已移除、终态、不适用或不合资格的操作在 emit 前被拒绝。组件不发送 `update:items`，应用拒绝请求时 UI 保持原状。
+`start`、`approve`、`retry`、`cancel` 均以激活时当前 props 中的 `AgentActivityTask` 为单一载荷。发出事件前，组件按 id 查找当前项，检查状态、全局和单项禁用及动作授权；项目已移除、已结束，或动作不适用、未获授权时，不会发出事件。组件不发送 `update:items`，应用拒绝请求则 UI 不变。
 
 ## 状态 / 动作 / 转换表
 
@@ -58,11 +58,11 @@ import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks
 | `cancelled` | Cancelled | 无                  | 终态；即使误传授予动作也不显示可操作按钮 |
 | `completed` | Completed | 无                  | 终态；即使误传授予动作也不显示可操作按钮 |
 
-表中的转换属于**应用示例策略**，不是新的传输协议。Block 只限制当前状态下可请求的动作，不擅自转换状态。running → waiting/failed/completed 由应用注入结果；Block 没有“假完成”执行器。状态适用但未授权的按钮显示为禁用，终态显示 `No actions available`。开始后再次开始、批准后再次批准、重试后再次重试或终态取消都不再是可用动作。
+表中的转换由示例应用处理，不定义新的传输协议。Block 仅限制可请求的动作，不转换状态或模拟完成。running → waiting/failed/completed 需由应用传入。状态适用但未授权的按钮禁用，终态显示 `No actions available`。运行中不能再次开始或批准，重试后处于 queued 时不能再重试，终态不可取消。
 
 ## 最小本地受控示例
 
-此例仅演示本地状态转换，没有服务或执行器。生产应用应在自己的处理器中执行真实权限、审批及服务策略，并根据真实结果更新 `items`。
+此例仅演示本地状态转换，没有连接服务或执行器。实际使用时，应用的事件处理器需要检查权限、处理审批和服务请求，再根据结果更新 `items`。
 
 ```vue
 <script setup lang="ts">
@@ -96,12 +96,12 @@ function acceptLocal(action: AgentActivityAction, requested: AgentActivityTask) 
 </template>
 ```
 
-异步请求发出后，应用应立即注入最新的 `disabled` / `actions` 或任务状态，直到获得真实结果；Block 不持有隐藏的请求锁、重试器或成功缓存。不要把 UI 守卫当成服务端授权。
+异步请求发出后，应用应立即更新 `disabled` / `actions` 或任务状态，并在等待结果期间保持这些限制。Block 没有内置的请求锁、自动重试或成功缓存，界面上的动作检查也不能代替服务端授权。
 
 ## 交互演示与验证边界
 
-H5 playground 的 `/?demo=activity` 与原生 `pages/agent-activity-demo/index` 使用清楚标记的确定性本地数据。`Start Draft report` → `Require local approval` → `Approve Draft report` → `Mark local failure` → `Retry Draft report` → `Start Draft report` → `Mark local complete` 展示完整应用控制流程；另一条运行项可取消。
+H5 playground 的 `/?demo=activity` 与原生 `pages/agent-activity-demo/index` 使用明确标记的确定性本地数据。依次操作 `Start Draft report` → `Require local approval` → `Approve Draft report` → `Mark local failure` → `Retry Draft report` → `Start Draft report` → `Mark local complete`，可以查看应用如何控制整个流程；另一条运行项可取消。
 
-`Restrict start` / `Allow start`、全局禁用、单项锁定和终态展示当前 props 的资格变化。`Reject next request` 由应用拒绝下一次合法意图，状态不乐观变化；`Clear activity` 注入受控空数组。六种标签、按钮、结果和意图计数均由真实页面交互观察。
+`Restrict start` / `Allow start`、全局禁用、单项锁定和终态展示当前 props 如何影响可用操作。`Reject next request` 让应用拒绝下一次合法请求，状态保持不变；`Clear activity` 传入受控空数组。六种标签、按钮、结果和请求计数均通过实际页面交互观察。
 
-对应 E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。原生按钮仍依赖当前 Wevu plain-slot 支持；已知未发布 plain-slot 协议和宿主观测限制必须作为验收边界保留，不能以假文本、DOM 几何或编译成功替代实际设备证据。
+E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。原生按钮依赖尚未发布的 Wevu plain-slot 协议，宿主也有观测限制；验证时须保留这些限制，模拟文本、DOM 几何或编译成功不能代替实际设备验证。

@@ -16,6 +16,12 @@ interface KeyboardLikeEvent {
   preventDefault?: () => void
 }
 
+defineOptions({
+  properties: {
+    active: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     active?: TabName
@@ -38,13 +44,13 @@ const emit = defineEmits<{
 const attrs = useAttrs()
 const generatedRootId = createTabsRootId()
 const rootId = typeof attrs.id === 'string' && attrs.id ? attrs.id : generatedRootId
-const active = computed(() => props.active)
+const active = computed(() => props.active ?? undefined)
 const registrations = shallowRef<TabRegistration[]>([])
 const focusedName = shallowRef<TabName | undefined>(undefined)
 const activeData = computed(() => String(props.active ?? ''))
 
 function registerTab(tab: TabRegistration) {
-  const index = registrations.value.findIndex(item => item.name === tab.name)
+  const index = registrations.value.findIndex(item => item.token === tab.token)
   if (index < 0) {
     registrations.value = [...registrations.value, tab]
     return
@@ -52,8 +58,8 @@ function registerTab(tab: TabRegistration) {
   registrations.value = registrations.value.map((item, itemIndex) => itemIndex === index ? tab : item)
 }
 
-function unregisterTab(name: TabName) {
-  registrations.value = registrations.value.filter(item => item.name !== name)
+function unregisterTab(token: TabRegistration['token']) {
+  registrations.value = registrations.value.filter(item => item.token !== token)
 }
 
 provide<VaroTabsContext>(tabsContextKey, {
@@ -64,9 +70,10 @@ provide<VaroTabsContext>(tabsContextKey, {
 })
 
 const renderedTabs = computed(() => {
+  const focusedTab = registrations.value.find(tab => tab.name === focusedName.value && !tab.disabled)
   const activeTab = registrations.value.find(tab => tab.name === props.active && !tab.disabled)
   const fallbackTab = registrations.value.find(tab => !tab.disabled)
-  const focusName = focusedName.value ?? activeTab?.name ?? fallbackTab?.name
+  const focusTab = focusedTab ?? activeTab ?? fallbackTab
 
   return registrations.value.map(tab => ({
     ...tab,
@@ -75,9 +82,9 @@ const renderedTabs = computed(() => {
     ariaSelected: tab.name === props.active,
     dataActive: String(tab.name === props.active),
     dataDisabled: String(tab.disabled),
-    focus: focusedName.value !== undefined && tab.name === focusName,
+    focus: focusedName.value !== undefined && tab.token === focusTab?.token,
     panelId: getTabsPanelId(rootId, tab.name),
-    tabindex: tab.name === focusName && !tab.disabled ? 0 : -1,
+    tabindex: tab.token === focusTab?.token ? 0 : -1,
     triggerId: getTabsTriggerId(rootId, tab.name),
   }))
 })
@@ -85,8 +92,10 @@ const renderedTabs = computed(() => {
 function select(tab: TabRegistration) {
   if (tab.disabled) { return }
   focusedName.value = tab.name
-  emit('update:active', tab.name)
-  emit('change', tab.name)
+  if (tab.name !== props.active) {
+    emit('update:active', tab.name)
+    emit('change', tab.name)
+  }
   emit('clickTab', { name: tab.name, title: tab.title })
 }
 
@@ -139,7 +148,7 @@ function handleKeydown(event: unknown) {
       <button
         v-for="(tab, index) in renderedTabs"
         :id="tab.triggerId"
-        :key="tab.name"
+        :key="tab.token"
         class="varo-tabs__tab"
         role="tab"
         :aria-controls="tab.panelId"

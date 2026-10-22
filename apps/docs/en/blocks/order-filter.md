@@ -15,7 +15,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/order-filter
 
 ## Boundary
 
-The Block only owns local filter state. Remote dictionaries, pagination, API parameter mapping, and result requests belong in business wrappers; products handle `apply` / `reset`.
+The Block maintains local filter state. The business wrapper handles `apply` / `reset`, remote dictionaries, pagination, API parameter mapping and result requests.
 
 ## Related
 

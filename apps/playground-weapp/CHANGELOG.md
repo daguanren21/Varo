@@ -4,7 +4,8 @@
 
 - Keep the four retail tabs in the main package and load the fourteen existing non-tab demo directories, the native button preview, and the documentation previews as ordinary subpackages, without changing route URLs or removing existing subpackages. Register the new `blocks-lab/attachments/index` demo. Robot pages remain opt-in through the browser-preview profile.
 - Keep shared retail image URL modules at their main-owned asset paths through the compiler's scoped shared-chunk policy. Give compiler-injected Oxc runtime helpers and their dependency closure a main-owned chunk before demo common groups can absorb them. Other modules retain the compiler's default package strategy.
-- Reject production artifacts above the 2 MiB main-package limit, missing page/component/script dependencies, and synchronous main-to-subpackage or cross-subpackage references. Recursive style checks remain part of the same verifier. These artifact checks do not certify DevTools or device execution; on-demand subpackage navigation latency is not measured.
+- Package subpackage-only native components beside their consumers, including template and stylesheet dependency ownership. Reject file/directory destination conflicts before writing and check streaming scoped-slot boundaries in localized copies.
+- Reserve a 1.5 MB compiled main-package budget for real-debug overhead and enforce 2 MiB per subpackage. Reject missing page/component/script dependencies and synchronous main-to-subpackage or cross-subpackage references. Recursive style checks remain part of the same verifier. These artifact checks do not certify DevTools upload accounting or device execution; on-demand subpackage navigation latency is not measured.
 
 ## 0.1.0
 

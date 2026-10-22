@@ -20,10 +20,10 @@ import { AgentPromptSuggestions } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type       | Default | Description            |
-| ------------- | ---------- | ------- | ---------------------- |
-| `suggestions` | `string[]` | `[]`    | Suggestions            |
-| `disabled`    | `boolean`  | `false` | Disabled; mini program |
+| Prop          | Type       | Default | Description                                               |
+| ------------- | ---------- | ------- | --------------------------------------------------------- |
+| `suggestions` | `string[]` | `[]`    | Suggestions                                               |
+| `disabled`    | `boolean`  | `false` | Disables suggestion selection; supported in mini programs |
 
 ## Events
 

@@ -1,6 +1,6 @@
 # AgentChat Block
 
-Complete block composing header, history, events, approval, and prompt input.
+Combines a header, message history, event rendering, approvals, and prompt input in one conversation block.
 
 ## Install
 
@@ -9,7 +9,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 # Use --target weapp in a native Wevu project
 ```
 
-There is no `components/agent-ui` prerequisite. This Block installs conversation and its required dependencies, without advanced, RAG, fine-tune, or workspace UI. Install the npm dependencies reported by the CLI separately; configure native global styles through [Wevu Registry](/en/guide/shadcn-mode). Approval, rejection, retry, and cancellation intents do not execute networking or approval policy; that remains application-owned.
+There is no `components/agent-ui` prerequisite. This Block installs conversation and its required dependencies, without advanced, RAG, fine-tune, or workspace UI. Install the npm dependencies listed by the CLI separately; configure native global styles through [Wevu Registry](/en/guide/shadcn-mode). Handle approval, rejection, retry, and cancellation events in your application. The Block does not perform network requests or process approvals automatically.
 
 ## Demo
 
@@ -45,11 +45,11 @@ function newConversation() {
 </template>
 ```
 
-`v-model` is optional. Without a binding, the Block owns an initially empty draft. With a binding, the parent owns the draft, including an explicit empty string. `submit` emits trimmed text without clearing the draft; the parent can set its bound value to `''` after accepting the submission. Busy, disabled or whitespace-only input does not submit.
+`v-model` is optional: without it, the Block keeps an initially empty draft; with it, the parent manages the draft, including an empty string. `submit` emits trimmed text without clearing it. The parent can set the bound value to `''` after accepting submission. Busy, disabled, or whitespace-only input does not submit.
 
-Both renderers determine ownership from the presence of `modelValue`. Passing only `:model-value="''"` without an update listener still keeps the prompt controlled; unaccepted edits cannot be submitted.
+Both renderers check whether `modelValue` is supplied. With only `:model-value="''"` and no update listener, the draft remains controlled and unaccepted edits cannot submit.
 
-Native input stays editable while `busy`, allowing a next draft without submitting it; `disabled` also prevents editing. H5 retains its existing disabled-input behavior while busy. Native playground route `pages/chat-prompt/index` demonstrates local drafts, parent rejection/acceptance, external reset, and draft retention while busy using actual native components rather than jsdom layout simulation.
+Native input remains editable while `busy` but cannot submit; `disabled` also blocks editing. H5 disables input while busy. Native playground `pages/chat-prompt/index` uses native components to demonstrate local drafts, parent rejection/acceptance, external reset, and draft retention while busy, without jsdom layout simulation.
 
 This example only stores local messages; it does not connect a model. Wire `newConversation` and `close` to real application state transitions. When supplying `busy` and a streaming `snapshot`, also wire `stop` to cancel the producer/network operation. Disabled input does not disable stopping an active operation. The Block follows content growth only within 64px of the bottom and preserves the position while reading above.
 

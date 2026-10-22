@@ -1,5 +1,6 @@
 import { createPreviewFilePicker } from './file-picker.ts'
-import { createPreviewCanvasContext, findPreviewSelectorElement } from './native-elements.ts'
+import { createPreviewCanvasContext } from './native-elements.ts'
+import { PreviewSelectorQuery } from './selector-query.ts'
 
 export interface WxHostOptions {
   pagePath: string
@@ -7,24 +8,6 @@ export interface WxHostOptions {
   getPage: () => Record<string, unknown> | undefined
   enqueue: (callback: () => void) => void
   apis?: Record<string, unknown>
-}
-
-interface PreviewSelectorRect {
-  bottom: number
-  dataset: DOMStringMap
-  height: number
-  id: string
-  left: number
-  right: number
-  top: number
-  width: number
-}
-
-interface PreviewSelectorQuery {
-  boundingClientRect: (callback: (result: PreviewSelectorRect | null) => void) => PreviewSelectorQuery
-  exec: (callback?: (results: Array<PreviewSelectorRect | null>) => void) => void
-  in: (owner?: unknown) => PreviewSelectorQuery
-  select: (selector: string) => PreviewSelectorQuery
 }
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
@@ -68,46 +51,6 @@ export function createWxHost({ pagePath, query = {}, getPage, enqueue, apis }: W
     },
   })
   const resize = listeners(resizeListeners)
-  const createSelectorQuery = (): PreviewSelectorQuery => {
-    let selector = ''
-    let owner: unknown
-    let rectCallback: ((result: PreviewSelectorRect | null) => void) | undefined
-    const query: PreviewSelectorQuery = {
-      boundingClientRect(handler) {
-        rectCallback = handler
-        return query
-      },
-      exec(handler) {
-        enqueue(() => {
-          const element = selector ? findPreviewSelectorElement(selector, owner) : null
-          const bounds = element?.getBoundingClientRect()
-          const result = bounds && element
-            ? {
-                bottom: bounds.bottom,
-                dataset: element.dataset,
-                height: bounds.height,
-                id: element.id,
-                left: bounds.left,
-                right: bounds.right,
-                top: bounds.top,
-                width: bounds.width,
-              }
-            : null
-          rectCallback?.(result)
-          handler?.([result])
-        })
-      },
-      in(value) {
-        owner = value
-        return query
-      },
-      select(value) {
-        selector = value
-        return query
-      },
-    }
-    return query
-  }
   const supported: Record<string, unknown> = {
     chooseMessageFile: filePicker.chooseMessageFile,
     getWindowInfo: windowInfo,
@@ -136,7 +79,7 @@ export function createWxHost({ pagePath, query = {}, getPage, enqueue, apis }: W
       if (typeof canvasId !== 'string' || !canvasId) { throw new TypeError('wx.createCanvasContext 需要 canvasId') }
       return createPreviewCanvasContext(canvasId, owner)
     },
-    createSelectorQuery,
+    createSelectorQuery: () => new PreviewSelectorQuery(getPage(), enqueue),
     onWindowResize: resize.add,
     offWindowResize: resize.remove,
   }

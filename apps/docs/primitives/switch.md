@@ -1,6 +1,6 @@
 # Switch
 
-开关运行时：Root 持有 checked，并支持 loading/disabled；Thumb 只消费上下文。
+Root 管理开关的选中、加载和禁用状态；Thumb 从上下文读取状态。
 
 ## 运行时
 
@@ -12,43 +12,42 @@
 
 ## 基础用法
 
-上方 H5 面板提供当前 Parts 的交互与代码；原生标签页仅展示源码/支持证据，不是小程序实时预览。
+H5 面板提供 Parts 交互与代码；原生标签页仅展示源码和支持证据，不提供实时小程序预览。
 
 ## Loading
 
-`loading` 与 `disabled` 都会关闭交互；loading 更适合异步提交中的短暂锁定。
+`loading` 与 `disabled` 都会禁止交互。异步提交期间需要暂时禁用开关时，可使用 loading。
 
 ## Parts
 
-| Part          | 作用       |
-| ------------- | ---------- |
-| `SwitchRoot`  | 状态与切换 |
-| `SwitchThumb` | 滑块 part  |
+| Part          | 作用               |
+| ------------- | ------------------ |
+| `SwitchRoot`  | 管理状态并处理切换 |
+| `SwitchThumb` | 显示滑块           |
 
 ## Props
 
-| Prop             | 类型                   | 默认值      | 描述             |
-| ---------------- | ---------------------- | ----------- | ---------------- |
-| `checked`        | `boolean \| undefined` | `undefined` | 受控开关态       |
-| `defaultChecked` | `boolean`              | `false`     | 非受控初始态     |
-| `disabled`       | `boolean`              | `false`     | 禁用             |
-| `loading`        | `boolean`              | `false`     | 加载中，不可切换 |
-| `as`             | `string`               | `'button'`  | 根节点标签       |
+| Prop             | 类型                   | 默认值      | 描述               |
+| ---------------- | ---------------------- | ----------- | ------------------ |
+| `checked`        | `boolean \| undefined` | `undefined` | 受控开关态         |
+| `defaultChecked` | `boolean`              | `false`     | 非受控初始开关状态 |
+| `disabled`       | `boolean`              | `false`     | 禁止切换           |
+| `loading`        | `boolean`              | `false`     | 加载中，禁止切换   |
+| `as`             | `string`               | `'button'`  | 根节点标签         |
 
 ## Events
 
-| Event            | Payload   | 描述     |
-| ---------------- | --------- | -------- |
-| `update:checked` | `boolean` | 受控同步 |
-| `checkedChange`  | `boolean` | 状态变化 |
+| Event            | Payload   | 描述               |
+| ---------------- | --------- | ------------------ |
+| `update:checked` | `boolean` | 同步受控开关状态   |
+| `checkedChange`  | `boolean` | 开关状态变化时触发 |
 
 ## 无障碍
 
-- Root 默认 button 语义。
-- loading/disabled 时不可切换。
+- Root 默认使用 button，加载或禁用时不可切换。
 
 ::: info 平台差异
 
 - 双端共享 checked/loading 契约。
-- 视觉轨道与动画由 UI wrapper 负责。
+- 轨道样式与动画由 UI 封装组件提供。
   :::

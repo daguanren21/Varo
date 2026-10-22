@@ -1,6 +1,6 @@
 # Dialog
 
-Compose `VDialogRoot`, `VDialogTrigger`, `VDialogOverlay`, `VDialogContent`, and `VDialogClose`.
+Build a dialog with `VDialogRoot`, `VDialogTrigger`, `VDialogOverlay`, `VDialogContent`, and `VDialogClose`.
 
 ## Demo
 
@@ -40,10 +40,12 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 ### Native Weapp (Wevu)
 
 ::: info Native compound runtime boundary
-The Mini Program tab runs actual `weapp-vite` / `wevu` 7.5.0 artifacts. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup, without a downstream context bridge. The separate `dialog` preview has exercised opening, synchronous close cancellation and accepted closing. This does not extend to created setup, other platforms, or IDE/device certification.
+The Mini Program tab runs `weapp-vite` / `wevu` 7.5.0 artifacts. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup. Applications need no context bridge.
+
+The separate `dialog` preview has exercised opening, synchronous close cancellation, and accepted closing for this configuration only. These results do not cover created setup, other platforms, or IDE/device certification.
 :::
 
-Native events deliver one `detail` argument. For `openChange`, it is an `[open, details]` tuple: destructure it instead of declaring two separate parameters. Use the reactive APIs from `wevu`:
+Native events deliver one `detail` argument. For `openChange`, destructure the `[open, details]` tuple; do not declare two separate parameters. Import reactive APIs from `wevu`:
 
 ```vue
 <script setup lang="ts">
@@ -104,5 +106,5 @@ Weapp has no DOM focus trap, `inert`, portal, or `Escape` key semantics. Close w
 | `VDialogClose`   | Explicit close             |
 
 ::: info Close contract
-Controlled mode follows `open`: an accepted request still requires the parent to apply the next value before visibility changes. Overlay, Close, Trigger, and H5 Escape requests share synchronous cancellation, with two handler arguments on H5 and one tuple argument on native.
+In controlled mode, the parent must update `open` before visibility changes, even for accepted requests. Overlay, Close, Trigger, and H5 Escape requests share synchronous cancellation.
 :::

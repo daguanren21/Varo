@@ -15,7 +15,7 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/order-filter
 
 ## 边界
 
-Block 只维护 UI 筛选状态。远程状态字典、分页、接口参数映射和结果请求属于业务 wrapper；业务层监听 `apply` / `reset` 事件。
+Block 维护界面筛选状态。业务 wrapper 处理 `apply` / `reset`，负责远程状态字典、分页、接口参数映射和结果请求。
 
 ## 相关文档
 

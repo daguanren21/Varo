@@ -1,6 +1,6 @@
 # @varo-ui/cli
 
-CLI for installing editable, target-specific Varo components and blocks from the Registry.
+Install editable Varo component and Block source for your target platform.
 
 ## Usage
 
@@ -9,24 +9,24 @@ pnpm dlx @varo-ui/cli add --target h5 button input card
 pnpm dlx @varo-ui/cli add --target weapp button input card
 ```
 
-The CLI copies source into your project. It does not hide rendering behind a cross-platform runtime. Existing files are preserved unless `--force` is provided; forced replacement does not merge local customizations. Required npm dependencies are reported, not installed.
+The CLI copies source into your project for that platform's renderer. It keeps existing files unless you pass `--force`, which replaces them without merging local changes. Install the npm dependencies listed in the output yourself.
 
 ## Deployment profiles
 
 `--target` accepts exactly `h5`, `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, or `donut-ohos`. Use `varo --help` for the current choices.
 
-H5 uses browser source; all other profiles select the Wevu `weapp` renderer family. Alipay, Douyin (`tt`), and Xiaohongshu (`xhs`) use their named compiler platform. Donut profiles compile Weapp source for the separate Android, iOS, or OpenHarmony host. A profile is not a new renderer and does not configure a consumer's AppID, permissions, SDK, signing, or host project.
+H5 uses browser source; the other profiles use the Wevu `weapp` renderer. Alipay, Douyin (`tt`), and Xiaohongshu (`xhs`) each use their named compiler platform. Donut profiles compile Weapp source for an Android, iOS, or OpenHarmony host. Profiles select deployment settings for those renderers; you still configure the application's AppID, permissions, SDK, signing, and host project.
 
-H5 and Weapp are stable profiles. The six additional profiles are **experimental**: source admission does not certify native IDE/device interactions or a packaged Donut host. `add` reports that limit in its human-readable output; `export` keeps stdout JSON-only.
+H5 and Weapp are stable profiles. The six other profiles are experimental and need separate IDE, device, and Donut packaging checks. `add` explains this limitation in its output; `export` writes only JSON to stdout.
 
 ```bash
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 pnpm dlx @varo-ui/cli add --target donut-ios button input form drawer
 ```
 
-The representative admitted components for the six experimental profiles are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, plus their required utilities/themes. The manifests are authoritative; the rest of the catalog and Agent units are not implicitly admitted.
+Representative components available for the six experimental profiles are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with their utilities and themes. Check each manifest for the exact support list; other catalog and Agent items are not automatically included.
 
-Use the repository baseline `weapp-vite`/`wevu` 7.5.0 for native compilation (`@varo-ui/weapp` peers remain `>=7.2.1 <8`). Donut uses `weapp` compilation with separate `mini-android`, `mini-ios`, or `mini-ohos` metadata; SDK/native packaging and signing are not performed by source installation.
+Repository native builds use `weapp-vite`/`wevu` 7.5.0; `@varo-ui/weapp` peers accept `>=7.2.1 <8`. Donut uses `weapp` compilation and selects its host with `mini-android`, `mini-ios`, or `mini-ohos` metadata. SDK setup, native packaging, and signing are separate from source installation.
 
 Native manifests retain renderer-family `targets`, `files[].target`, `targetDependencies`, `targetDevDependencies`, and `targetRegistryDependencies` (`h5` or `weapp`). To admit additional deployment profiles, authors explicitly add `platforms`, for example:
 
@@ -37,11 +37,11 @@ Native manifests retain renderer-family `targets`, `files[].target`, `targetDepe
 }
 ```
 
-This is admission metadata to add to a complete native manifest, not a standalone registry item. Every requested item and every selected transitive dependency must admit the new profile and declare its renderer. Missing admission, unknown profile IDs, and incompatible renderer declarations fail before consumer files are written, even with `--force`. No request falls back to Weapp. Existing H5/Weapp installs still follow `targets`, whether `platforms` is absent, empty, or lists only experimental profiles.
+Add this metadata to a complete native manifest; the fragment alone is not a Registry item. Every requested item and dependency must support the selected profile and declare its renderer. Missing support, unknown profile IDs, and incompatible renderer declarations fail before any consumer file is written, even with `--force`; the CLI never falls back to Weapp. H5 and Weapp installations continue to use `targets`, whether `platforms` is absent, empty, or contains only experimental profiles.
 
 ## Styles and native migration
 
-`themes/base` now contains only tokens and foundation rules. Ordinary component styles have a unique manifest owner, and Agent units select optional `themes/agent`. Install the complete item closure rather than copying only its top-level renderer or treating the base theme as the whole library.
+`themes/base` contains tokens and foundation styles. Each component's manifest declares its CSS, and Agent units use the optional `themes/agent` dependency. Install a component with all its dependencies; copying only its renderer or the base stylesheet leaves required files out.
 
 - **H5:** installed source imports the complete dependency CSS closure automatically.
 - **Native source:** configure `weapp.styles` to include every installed `src/styles/*.css` in `app.vue`, with `varo.css` first. `apply-shared` SFCs must not import these page/global styles into component-local WXSS.
@@ -61,7 +61,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-chat
 pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 ```
 
-`components/agent-presentation` owns pure shared types/helpers. `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag` are separately installable units under `components/`. `agent-ui` composes the full suite; it is not a legacy alias. `blocks/agent-chat` selects only conversation dependencies, not advanced, RAG, or fine-tuning files. These are H5/Weapp source units, not extra profile certifications. Approval/network/retry/cancellation execution policy stays in the consuming application.
+`components/agent-presentation` provides shared pure types and helpers. Under `components/`, you can install `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag` separately. `agent-ui` installs the full suite and is not an alias for an older package. `blocks/agent-chat` installs only conversation dependencies, leaving out advanced, RAG, and fine-tuning files. These units support H5 and Weapp; other profiles need their own manifest declarations. Your application handles approval, networking, retries, and cancellation.
 
 ## Third-party registries
 
@@ -107,7 +107,7 @@ Dependency names in a catalog resolve in that catalog. Individual item files can
 
 ## Export for shadcn-vue
 
-Export one item and its selected target's complete dependency closure as a self-contained [shadcn-vue registry item](https://www.shadcn-vue.com/docs/registry/registry-item-json):
+Export an item and all dependencies for its selected target as a self-contained [shadcn-vue registry item](https://www.shadcn-vue.com/docs/registry/registry-item-json):
 
 ```bash
 mkdir -p public/r
@@ -142,10 +142,10 @@ const payload = await exportRegistryItem('blocks/my-block', {
 
 ## Repository development and verification
 
-Canonical components/Blocks/utilities live in root `registry/`; styles live in `registry/themes/`. `pnpm sync:registry` generates package renderers/native source, repository installs, and the docs Agent source/support catalog. CLI `prepack` separately copies that Registry into the published CLI package. Do not hand-edit generated projections or the packaged `packages/cli/registry/` tree.
+Edit components, Blocks, and utilities in root `registry/`, and styles in `registry/themes/`. Run `pnpm sync:registry` to update package renderers, native source, playground installations, and docs Agent source and support data. The CLI's `prepack` step separately copies the Registry into the published package. Generated files, including `packages/cli/registry/`, should not be edited directly.
 
-From the repository root, `pnpm check:generated` rejects projection drift and `pnpm check:architecture` checks runtime/tooling boundaries. After synchronization and package builds, `pnpm check:consumers` exercises actual packed-package and fresh source consumers, including profile roundtrips and rejected-closure no-write behavior. It uses local tarballs for all six Varo public packages; non-Varo dependencies may require registry access when the local cache is cold.
+From the repository root, run `pnpm check:generated` to detect outdated generated files and `pnpm check:architecture` to check runtime and tooling imports. After synchronization and package builds, `pnpm check:consumers` exercises packed packages and fresh source installations. It checks profile roundtrips and verifies that rejected dependency sets write no files. All six public Varo packages use local tarballs; uncached third-party dependencies may need registry access.
 
-`pnpm check:platforms` builds/checks all seven native compiler/artifact profiles. Artifacts are under `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>` (application files in nested `dist/`). These checks validate compiler output and metadata, not IDE/device behavior, Donut SDK packaging, signing, or an independent verifier's acceptance.
+`pnpm check:platforms` builds and checks all seven native profiles. Artifacts are in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`, with application files in the nested `dist/` directory. These checks cover compiler output and metadata. IDE and device behavior, Donut packaging, signing, and independent release review need separate verification.
 
 [Installation guide](https://varo.weapp.dev/guide/installation) · [Repository](https://github.com/daguanren21/Varo)

@@ -1,6 +1,6 @@
 # 零售工具 Blocks
 
-六个可独立安装的微信原生页面切片：优惠券、凭证、评价、收藏、移动比较和事务式筛选。它们扩展既有零售模型，不替代或复制购物车、结算和商品详情。
+六个可独立安装的微信原生 Block，用于优惠券、凭证、评价、收藏、移动端比较和先编辑后提交的筛选。它们复用既有零售模型，不替代购物车、结算或商品详情。
 
 ## 安装与目标边界
 
@@ -15,17 +15,17 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 
 安装后的组件位于 `src/components/blocks/retail-*.vue`，公开数据类型位于对应的 `retail-*.types.ts`。金额复用 `src/lib/retail` 的 `formatRetailMoney`：整数分，显示时除以 100，默认人民币符号 `¥`。不要把元直接传入金额字段。
 
-- 这些条目仅声明稳定 `weapp` 目标，没有 H5 实现，也没有自动准入实验平台。使用 Wevu，不导入 Vue DOM 运行时。
-- 数据、库存、权限、资格、业务校验、提交、持久化、导航、支付、退款、客服和文件操作属于应用。事件是意图，不是成功通知；Block 不请求网络、不写存储、不乐观改变业务数据。
-- 原生事件携带一个 detail 值；复杂意图使用一个对象，而不是多个 Vue 回调参数。本文事件名保留源码拼写。
-- 集合在原生首次绑定前有空数组默认值。`selectedId`、`receipt` 的缺省值保留原生 null；`open` 只有显式 `true` 才打开。业务数据仍应按完整类型注入。
-- ID 必须稳定且在各集合内唯一。应用接受动作时应再次查找当前记录、检查权限和版本；异步任务需要立即注入 `busy`，避免重复请求。
+- 这些条目仅支持稳定 `weapp` 目标，没有 H5 实现；实验平台需要单独准入。组件使用 Wevu，不导入 Vue DOM 运行时。
+- 应用负责数据、库存、权限、资格、业务校验、提交、持久化、导航、支付、退款、客服和文件操作。事件只请求操作，不表示成功。Block 不请求网络、不写存储，也不提前改变业务数据。
+- 原生事件只携带一个 detail 值；包含多项信息的操作使用一个对象，不能传入多个 Vue 回调参数。本文事件名与源码一致。
+- 集合在原生首次绑定前默认为空数组。`selectedId`、`receipt` 缺省时保留原生 null；`open` 只有显式 `true` 才打开。应用仍需提供符合完整类型的业务数据。
+- ID 必须稳定且在各集合内唯一。应用接受操作前应重新查找当前记录，检查权限和版本；处理异步任务时立即传入 `busy`，避免重复请求。
 
 ### 公共状态
 
-六个 Block 都接受可选 `loading`、`disabled`、`busy`（默认 `false`）及 `error`（默认空字符串）。加载、禁用和忙碌状态阻止动作，但保留已注入的数据、金额、理由和错误供核对。`error` 只呈现应用错误，不自动清空数据，也不暗中执行重试；应用可结合 `disabled` 决定是否允许修改。空数据有明确反馈，长文字自然换行，不使用仅悬停可读内容。
+六个 Block 都接受可选 `loading`、`disabled`、`busy`（默认 `false`）及 `error`（默认空字符串）。加载、禁用或忙碌时禁止操作，数据、金额、理由和错误仍可查看。`error` 不清空数据或自动重试；需阻止修改时配合 `disabled`。空数据有提示，长文字会换行，无需悬停查看。
 
-筛选的取消/关闭在加载、禁用和忙碌时仍可使用；应用处理取消意图并关闭 Drawer，同时负责取消在途请求或忽略过期响应。其他五个 Block 没有隐藏的请求生命周期，应用可在自己的容器提供取消动作。
+筛选在加载、禁用或忙碌时仍可取消和关闭。应用收到取消事件后关闭 Drawer，并取消在途请求或忽略过期响应。其他五个 Block 不管理请求，应用可在容器中提供取消按钮。
 
 ## 优惠券 `retail-coupons`
 
@@ -59,7 +59,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 />
 ```
 
-这里的 `requestClaim`/`requestSelection` 是应用处理器，不由 Block 实现；在服务接受之前不要修改券状态或选中值。
+应用需要实现 `requestClaim`/`requestSelection` 处理器，并在服务接受请求后更新券状态或选中值。
 
 ## 凭证 `retail-receipt`
 
@@ -77,7 +77,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 - `grants: Record<'refund' | 'contact' | 'download', boolean>`：三个动作逐项显式授权，只有 `true` 可用。
 - `actionReason?: string`：授权限制说明。
 
-事件 `action({ receiptId, orderId, action })` 中 `action: RetailReceiptAction` 为 `refund`、`contact` 或 `download`。应用负责确认、执行与失败反馈；Block 不假设微信支付、客服或文件 API 存在。禁止把“意图已发出”显示成退款或下载成功。
+事件 `action({ receiptId, orderId, action })` 中 `action: RetailReceiptAction` 为 `refund`、`contact` 或 `download`。应用负责确认、执行、失败反馈，以及微信支付、客服或文件 API 的接入。事件不保证这些 API 可用；退款或下载完成后才能显示成功。
 
 ## 评价 `retail-reviews`
 
@@ -95,11 +95,11 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 - `submit(draft)`：当前草稿的快照。只有 `canSubmit` 且未加载/禁用/忙碌才发出；空文案等业务错误由应用返回 `draftError`。
 - `helpful(id)`：重新查找当前评价；要求 `canHelpful`、尚未标记且未禁用/忙碌。计数和标记都由应用更新。
 
-没有图片上传、自动审核或伪造的评分。应用在接受评价后更新 `items` 和草稿；拒绝时保留草稿。本地示例要求 1–5 分、至少五个字，这是示例应用规则，不是通用 Block 验证策略。
+评价不支持图片上传或自动审核，也不编造评分。应用接受评价后更新 `items` 和草稿，拒绝时保留草稿。本地示例要求 1–5 分、至少五个字；通用 Block 不强制这些应用规则。
 
 ## 收藏 `retail-wishlist`
 
-`items: RetailWishlistEntry[]` 是收藏成员的唯一权威。每项包含：
+收藏列表完全由 `items: RetailWishlistEntry[]` 决定。每项包含：
 
 - `product: RetailProduct`，复用现有 `category/description/id/image/linePrice/name/price/sales/stock/tags` 契约。
 - `canView`, `canRemove`, `canAddToCart: boolean`。
@@ -107,7 +107,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 
 事件为 `view(productId)`、`remove(productId)`、`addToCart(productId)`。每次激活都重新查找当前成员，检查对应授权；加购还要求真实 `product.stock > 0`。购物袋中已有数量、并发库存变化和购买上限仍由应用决定。Block 不维护一份本地收藏副本。
 
-呈现复用 `blocks/product-list` 的 `product-list-item.vue`，不是复制商品详情。该原生行新增可选 `viewDisabled`、`cartDisabled`，均默认为 false；它们禁用对应控件并在事件处理处拦截。既有库存和 loading 防护保留，H5 API 未改变。权限不会通过伪造 `inventory = 0` 实现：例如无权加购但库存为 2 时，库存仍显示 2。
+收藏列表复用 `blocks/product-list` 的 `product-list-item.vue`，无需复制商品详情。原生行的可选 `viewDisabled`、`cartDisabled` 默认为 false，会禁用对应控件并阻止事件；库存和 loading 检查仍生效，H5 API 不变。权限限制不会把库存改成 `inventory = 0`：无权加购但库存为 2 时仍显示 2。
 
 ## 移动比较 `retail-comparison`
 
@@ -118,11 +118,11 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/retail-filters
 
 `RetailComparisonField = { id: string, label: string }`。每个 entry 包含 `product: RetailProduct`、`values: Record<string, string>`（按字段 ID 提供完整显示值）、`canView`, `canRemove: boolean`，以及可选 `reason`, `disabled`, `busy`。缺失的字段值明确显示“未提供”，不猜测值。
 
-`RETAIL_COMPARISON_LIMIT = 3` 是公开常量。不是桌面横向大表：逐个字段纵向展示所有选中商品的完整值，无需 hover。传入超过三件时显式显示错误，停止字段比较，但列出**所有**选中商品及移出/查看控件；没有静默截取前三件。应用允许的 `remove(productId)` 可恢复到上限内；`view(productId)` 由应用导航。没有字段时保留商品，显示“暂无比较字段”。
+公开常量 `RETAIL_COMPARISON_LIMIT = 3` 限制比较商品数。移动端按字段纵向展示各商品的完整值，无需横向大表或悬停。超过三件时显示错误并停止字段比较，仍列出**所有**商品及移出、查看控件。应用接受 `remove(productId)` 后可恢复到上限内，并负责 `view(productId)` 导航。没有字段时保留商品，显示“暂无比较字段”。
 
 ## 事务式移动筛选 `retail-filters`
 
-筛选组合现有 `VDrawer`、`VCheckbox`、`VInputNumber`、`VButton`，沿用 `order-filter` 的选择和金额控件模式。没有把订单状态伪装成商品分类：现有 order-filter 的一次性 `initialValue` 和内置状态/金额重置并不表达商品的受控事务，因此这里不嵌入它，也不另建泛用过滤引擎。
+筛选组合 `VDrawer`、`VCheckbox`、`VInputNumber`、`VButton`，沿用 `order-filter` 的选择和金额控件用法。商品分类不同于订单状态；order-filter 的一次性 `initialValue` 和内置状态、金额重置无法管理商品筛选的受控草稿及提交。因此这里直接组合控件，不嵌入 order-filter 或另建通用过滤引擎。
 
 ```ts
 interface RetailFilterValue {
@@ -151,7 +151,7 @@ interface RetailFilterValue {
 - `reset()`：请求重置**草稿**。默认筛选由应用持有；Block 不自行改变已提交结果。
 - `cancel()`：取消按钮或遮罩关闭请求。Block 不擅自改变受控 `open`；应用应关闭、丢弃草稿，并处理在途请求。
 
-推荐事务：打开时从 `committed` 复制草稿 → 按 `draftChange` 替换草稿 → reset 只恢复草稿默认值 → apply 由应用再次校验并接受 → 接受后更新 `committed` 并关闭 → 拒绝时保持 Drawer、草稿和旧结果 → cancel 丢弃草稿。相同筛选应由应用设置 `canApply=false`，默认草稿应设置 `canReset=false`。需要异步接受时注入 `busy=true`；取消出口仍然开放。
+打开时，应用从 `committed` 复制草稿，收到 `draftChange` 后替换草稿；reset 只将草稿恢复为默认值。收到 apply 后，应用再次校验：接受则更新 `committed` 并关闭，拒绝则保留 Drawer、草稿和旧结果。cancel 丢弃草稿。筛选未变时设置 `canApply=false`，草稿已是默认值时设置 `canReset=false`。异步处理期间传入 `busy=true`，此时仍可取消。
 
 ## 完整本地示例与验收入口
 
@@ -166,6 +166,6 @@ interface RetailFilterValue {
 | 比较   | 阅读全部字段、查看/移出商品                                 | 第四件触发显式上限，移出恢复；锁定成员不可操作                                     |
 | 筛选   | 真实分类、排序、价格、有货条件作用于本地商品                | 取消不提交、reset 只改草稿、无效价格阻止提交、应用拒绝配送分类、无结果状态         |
 
-每个示例都有加载、空数据、错误、禁用、忙碌和长内容控件。真实 native E2E 场景定义于 `apps/e2e/tests/weapp-native/retail-tools.e2e.ts`，使用已公开 fixture、真实按钮/输入/Drawer 和页面结果，不使用 `setData`、页面方法代替操作或源码文本断言。
+每个示例都有加载、空数据、错误、禁用、忙碌和长内容控件。原生 E2E 位于 `apps/e2e/tests/weapp-native/retail-tools.e2e.ts`，使用公开 fixture 操作真实按钮、输入框和 Drawer，检查页面结果，不以 `setData`、页面方法或源码文本断言代替用户流程。
 
-运行依赖集成者先完成 Registry 生成、原生页面路由登记与新产物构建；本页不声明测试已通过。`weapp-headless` 是受支持的原生运行时自动化表面，不代替微信 IDE/真机证明。`weapp-devtools` 还需要开发者工具、合法 AppID、CLI/自动化权限和新构建产物。生产应用必须另行提供业务 API、认证/资格/库存再校验、支付/退款适配、客服渠道、凭证文件下载能力及所需域名与宿主权限。
+运行前需生成 Registry、登记原生路由并重新构建；用例已编写不表示已通过。`weapp-headless` 支持原生运行时自动化，但不能证明微信 IDE 或真机表现。`weapp-devtools` 还需开发者工具、合法 AppID、CLI/自动化权限和新构建产物。生产应用需接入业务 API、认证/资格/库存再校验、支付/退款、客服及凭证下载，并配置所需域名与宿主权限。

@@ -8,13 +8,13 @@
 
 Textarea reuses the `VInput` props and sets `type="textarea"` internally.
 
-| Prop          | Type               | Default | Description           |
-| ------------- | ------------------ | ------- | --------------------- |
-| `value`       | `string \| number` | `''`    | Current value         |
-| `placeholder` | `string`           | `''`    | Placeholder           |
-| `disabled`    | `boolean`          | `false` | Disable textarea      |
-| `readonly`    | `boolean`          | `false` | Readonly state        |
-| `clearable`   | `boolean`          | `false` | Show clear affordance |
+| Prop          | Type               | Default | Description         |
+| ------------- | ------------------ | ------- | ------------------- |
+| `value`       | `string \| number` | `''`    | Current value       |
+| `placeholder` | `string`           | `''`    | Placeholder         |
+| `disabled`    | `boolean`          | `false` | Disable textarea    |
+| `readonly`    | `boolean`          | `false` | Readonly state      |
+| `clearable`   | `boolean`          | `false` | Show a clear button |
 
 ## Events
 

@@ -24,6 +24,7 @@ peerDependencyRules:
     '@tarojs/webpack5-prebundle@4.3.0>webpack': 5.111.1
 
 overrides:
+  schema-utils@^4: 4.7.0
   '@tarojs/plugin-framework-vue3@4.3.0>lodash': 4.18.1
   '@tarojs/plugin-platform-h5@4.3.0>lodash-es': 4.18.1
   '@tarojs/taro-h5@4.3.0>lodash-es': 4.18.1

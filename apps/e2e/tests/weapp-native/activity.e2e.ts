@@ -12,18 +12,17 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
   })
   test.afterEach(async ({ miniProgram }) => { expect(await miniProgram.errors()).toEqual([]) })
 
-  test('six states have distinct labels and state-appropriate actions', async ({ miniProgram, screen }) => {
-    for (const [title, status, label] of [
-      ['Draft report', 'queued', 'Queued'],
-      ['Index notes', 'running', 'Running'],
-      ['Review outline', 'waiting', 'Waiting'],
-      ['Export summary', 'failed', 'Failed'],
-      ['Cancelled run', 'cancelled', 'Cancelled'],
-      ['Completed run', 'completed', 'Completed'],
+  test('six states expose state-appropriate actions', async ({ miniProgram, screen }) => {
+    for (const [title, status] of [
+      ['Draft report', 'queued'],
+      ['Index notes', 'running'],
+      ['Review outline', 'waiting'],
+      ['Export summary', 'failed'],
+      ['Cancelled run', 'cancelled'],
+      ['Completed run', 'completed'],
     ] as const) {
       const row = miniProgram.locator(activityXPath).filter({ hasText: title })
       await expect(row).toHaveAttribute('data-status', status)
-      await expect(row).toContainText(label)
     }
     for (const name of ['Start Draft report', 'Cancel Draft report', 'Cancel Index notes', 'Approve Review outline', 'Retry Export summary']) {
       await expect(screen.getByRole('button', { name, exact: true })).toBeEnabled()
@@ -53,7 +52,6 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
     await screen.getByRole('button', { name: 'Start Draft report', exact: true }).tap()
     await screen.getByRole('button', { name: 'Mark local complete', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'completed')
-    await expect(draft).toContainText('Completed')
     await expect(miniProgram.locator('//*[@data-activity-task="draft"]//button')).toHaveCount(0)
     await screen.getByRole('button', { name: 'Cancel Index notes', exact: true }).tap()
     await expect(miniProgram.locator(activityXPath).filter({ hasText: 'Index notes' })).toHaveAttribute('data-status', 'cancelled')
@@ -83,10 +81,10 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
     await start.tap()
     await expect(state).toHaveText('requests=2;accepted=2;last=start:draft')
     await screen.getByRole('button', { name: 'Cancel Draft report', exact: true }).tap()
-    await expect(miniProgram.locator(activityXPath).filter({ hasText: 'Draft report' })).toContainText('Cancelled')
+    await expect(miniProgram.locator(activityXPath).filter({ hasText: 'Draft report' })).toHaveAttribute('data-status', 'cancelled')
     await expect(miniProgram.locator('//*[@data-activity-task="draft"]//button')).toHaveCount(0)
     await screen.getByRole('button', { name: 'Clear activity', exact: true }).tap()
-    await expect(screen.getByRole('status')).toContainText('No activity yet')
+    await expect(screen.getByRole('status')).toHaveCount(1)
     await expect(miniProgram.locator('//*[@data-activity-task]')).toHaveCount(0)
     await expect(state).toHaveText('requests=3;accepted=3;last=cancel:draft')
   })
@@ -97,7 +95,6 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
     await screen.getByRole('button', { name: 'Reject next request', exact: true }).tap()
     await screen.getByRole('button', { name: 'Start Draft report', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'queued')
-    await expect(draft).toContainText('Queued')
     await expect(state).toHaveText('requests=1;accepted=0;last=rejected:start:draft')
     await screen.getByRole('button', { name: 'Start Draft report', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'running')

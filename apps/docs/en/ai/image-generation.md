@@ -1,6 +1,6 @@
 # AgentImageGeneration
 
-Stable image surface from queued work through refinement to completion.
+Stable image display from queueing through refinement to completion.
 
 ## Demo
 

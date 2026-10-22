@@ -8,6 +8,9 @@ overrides:
   vue: 3.5.42
   undici: 7.29.0
 
+patchedDependencies:
+  weapp-vite@7.5.0: patches/weapp-vite@7.5.0.patch
+
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true

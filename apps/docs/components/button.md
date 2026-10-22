@@ -5,7 +5,7 @@
 <PlatformTabsDemo example="button" locale="zh" />
 
 ::: info 交互
-按钮保留 44px 默认命中高度和现有语义色。按压使用 140ms 的轻量缩放与内阴影反馈；Ghost 默认透明，仅在 hover 或按压时出现弱背景。减少动态效果时不执行空间缩放。
+按钮的默认点击区域高度为 44px，支持语义色。按压时会轻微缩放并显示内阴影，动画时长为 140ms。Ghost 默认透明，仅在 hover 或按压时显示浅色背景。启用减少动态效果时，按钮不缩放。
 :::
 
 ## 基础用法
@@ -131,23 +131,23 @@ Weapp：将 `native-type="submit"` / `"reset"` 的 `VButton` 放入原生 `<form
 
 ## Props
 
-| Prop              | 类型                                                           | 默认值      | 描述                                       |
-| ----------------- | -------------------------------------------------------------- | ----------- | ------------------------------------------ |
-| `variant`         | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | 视觉变体                                   |
-| `tone`            | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | 语义色                                     |
-| `size`            | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | 尺寸                                       |
-| `shape`           | `'default' \| 'square' \| 'round'`                             | `'default'` | 形状                                       |
-| `plain`           | `boolean`                                                      | `false`     | 朴素按钮，等价于描边视觉                   |
-| `hairline`        | `boolean`                                                      | `false`     | 细边框标记                                 |
-| `block`           | `boolean`                                                      | `false`     | 宽度占满父容器                             |
-| `icon`            | `string`                                                       | `undefined` | 图标文本或图标名，由样式层解释             |
-| `iconPosition`    | `'left' \| 'right'`                                            | `'left'`    | 图标位置                                   |
-| `loading`         | `boolean`                                                      | `false`     | 加载中，自动禁用点击                       |
-| `loadingText`     | `string`                                                       | `undefined` | 加载时替换默认内容                         |
-| `disabled`        | `boolean`                                                      | `false`     | 禁用按钮                                   |
-| `color`           | `string`                                                       | `undefined` | 自定义按钮颜色                             |
-| `foregroundColor` | `string`                                                       | `undefined` | 非十六进制实心自定义色必须显式提供的前景色 |
-| `nativeType`      | `'button' \| 'submit' \| 'reset'`                              | `undefined` | 原生 button type                           |
+| Prop              | 类型                                                           | 默认值      | 描述                                               |
+| ----------------- | -------------------------------------------------------------- | ----------- | -------------------------------------------------- |
+| `variant`         | `'solid' \| 'outline' \| 'ghost' \| 'text'`                    | `'solid'`   | 视觉变体                                           |
+| `tone`            | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | 语义色                                             |
+| `size`            | `'sm' \| 'md' \| 'lg'`                                         | `'md'`      | 尺寸                                               |
+| `shape`           | `'default' \| 'square' \| 'round'`                             | `'default'` | 形状                                               |
+| `plain`           | `boolean`                                                      | `false`     | 朴素按钮，等价于描边视觉                           |
+| `hairline`        | `boolean`                                                      | `false`     | 细边框标记                                         |
+| `block`           | `boolean`                                                      | `false`     | 宽度占满父容器                                     |
+| `icon`            | `string`                                                       | `undefined` | 图标文本或图标名，由样式层解释                     |
+| `iconPosition`    | `'left' \| 'right'`                                            | `'left'`    | 图标位置                                           |
+| `loading`         | `boolean`                                                      | `false`     | 加载中，自动禁用点击                               |
+| `loadingText`     | `string`                                                       | `undefined` | 加载时替换默认内容                                 |
+| `disabled`        | `boolean`                                                      | `false`     | 禁用按钮                                           |
+| `color`           | `string`                                                       | `undefined` | 自定义按钮颜色                                     |
+| `foregroundColor` | `string`                                                       | `undefined` | 自定义实心按钮颜色不是十六进制值时，必须提供前景色 |
+| `nativeType`      | `'button' \| 'submit' \| 'reset'`                              | `undefined` | 原生 button type                                   |
 
 ## Slots
 

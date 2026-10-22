@@ -1,6 +1,6 @@
 # Varo Retail — Taro Vue 3
 
-An independently installable, editable source export of Varo's current retail application for **H5 and WeChat mini-programs**. The exporter follows the current retail route/import/Registry-style closure; this is not a second hand-maintained app, a compiled demo bundle, or a Wevu/uni-app compatibility runtime. `starter-manifest.json` records the selected framework, original source SHA256s, transformations, exported-file SHA256s and freshly resolved lockfile.
+Editable Varo retail source for H5 and WeChat mini-programs, exported as a standalone Taro project. The exporter collects the current routes, imports, and Registry styles; it generates source rather than a compiled bundle or compatibility runtime. `starter-manifest.json` records the framework, source SHA256s, transformations, exported-file SHA256s, and resolved lockfile.
 
 ## Run from this directory
 
@@ -26,9 +26,9 @@ The target output roots do not overwrite each other. `pnpm typecheck` checks edi
 
 ### Your own AppID
 
-Copy `.env.example` to ignored `.env.local` and set `WEAPP_APP_ID` to your registered mini-program AppID. A shell value takes precedence. Every dev/build command runs `scripts/prepare-taro-project.mjs`, which validates the value and generates ignored root `project.config.json`. Taro copies this configuration through its compiler; no compiled artifacts are patched. Leave the value empty for compilation-only checks. No tourist AppID, fabricated AppID, key, or other credential is included.
+Copy `.env.example` to ignored `.env.local` and set `WEAPP_APP_ID` to your registered AppID; a shell value takes precedence. Every dev/build command runs `scripts/prepare-taro-project.mjs` to validate it and generate ignored root `project.config.json`. Taro copies this file during compilation, without patching output. Empty AppIDs support compilation only; no tourist AppID or credentials are included.
 
-Import **`dist/weapp`** directly into WeChat DevTools after building. The source and compiled AppID must match, and compiled `miniprogramRoot` must be `./`. An empty AppID is not a claim that DevTools login, preview/upload, device APIs, signing, or release works. Supply the real account/AppID and perform those checks separately; compiler and browser results are not device certification. Network domain validation remains enabled.
+After building, import `dist/weapp` into WeChat DevTools. Source and compiled AppIDs must match, and compiled `miniprogramRoot` must be `./`. Use your real account to check login, preview/upload, device APIs, signing, and release. Compiler or browser results cannot replace those checks. Network domain validation stays enabled.
 
 ## Source ownership and editing
 
@@ -56,11 +56,11 @@ pnpm-lock.yaml
 LICENSE
 ```
 
-Edit `src/features/retail/config.ts` for the brand and scenario, `src/features/retail/data.ts` for local catalog content, and the `.retail-page-enter` variables in `src/App.vue` for the retail palette. Routes and navigation chrome belong to `src/app.config.ts`. Product assets are collected into `src/static`, including imported assets outside the original assets directory. URLs are `/static/...` in source and `static/...` in tab configuration. Keep app config as static `export default defineAppConfig({...})` with JSON-compatible values, so the verifier can compare today's edited routes with the compiler output rather than trusting the original export route list.
+Set brand and scenario in `src/features/retail/config.ts`, catalog data in `src/features/retail/data.ts`, and palette variables under `.retail-page-enter` in `src/App.vue`. Edit routes and navigation in `src/app.config.ts`. Assets, including imports from outside the original assets directory, are collected under `src/static`. Use `/static/...` in source and `static/...` for tab icons. Keep static `export default defineAppConfig({...})` with JSON-compatible values so verification follows your current routes.
 
-`App.vue` loads Tailwind, then base Varo tokens, then all reached Registry component styles, then retail overrides. Shared component CSS stays global. Taro's Vue components render in one host tree; native `apply-shared`/slot metadata is translated into this actual rendering model, not an ignored runtime shim. Unsupported isolated native metadata, property observers, unknown APIs, uncollected assets and path collisions fail conversion before publication.
+`App.vue` loads Tailwind, base Varo tokens, Registry component styles, then retail overrides. Component CSS stays global. Taro's Vue components share one host tree, so conversion adapts native `apply-shared` and slot metadata to it. Unsupported isolated metadata, property observers, unknown APIs, uncollected assets, and path collisions fail conversion before publication.
 
-The shared source converter preserves Vue typed props/defaults, distinguishes absence from supplied `false`, `0` and `''`, maps page/app lifecycle hooks to Taro hooks and component teardown to Vue, and preserves component event payloads and integer-cent calculations. Native `tap` bindings become Taro `click` bindings. Native host input events retain their actual `detail.value` shape. The editable H5-only keyboard/accessibility code is directly in the reached components, with lifecycle teardown; no Wevu/uni runtime is bundled.
+The converter preserves typed props/defaults, supplied `false`, `0`, and `''` versus absence, event payloads, and integer-cent calculations. It maps page/app hooks to Taro and component teardown to Vue. Native `tap` becomes Taro `click`; host input events keep `detail.value`. H5 keyboard and accessibility bindings stay in the components with teardown. No Wevu/uni runtime is bundled.
 
 The H5 input adapter observes asynchronous host-field hydration and disconnects on teardown. Fixed actions on tab pages use `--varo-retail-bottom`, derived from Taro's compiler-supported `taro-tabbar-height` constant and the safe-area inset. Non-tab and native pages retain a zero fallback. Do not replace the constant with `var(--taro-tabbar-height)`: Taro's H5 constant parser rewrites the matching text inside CSS variable names.
 
@@ -72,18 +72,18 @@ Both targets register `WeappTailwindcss` once. Do not add another Tailwind Vite/
 
 ## Real boundaries, not backend/payment claims
 
-The default service is local in-memory data. It demonstrates catalog/search/filtering, product details, quantity/cart state, address editing/selection, quote totals and mock orders. Reloading resets local state. Money uses integer cents. No real payment, order fulfillment, inventory authority, authentication, analytics, backend persistence or network credential is implemented or implied.
+The in-memory service demonstrates catalog search/filtering, product details, quantity and cart state, address editing/selection, quote totals, and mock orders. Reloading resets it. Money uses integer cents. It provides no real payment, fulfillment, authoritative inventory, authentication, analytics, backend persistence, or network credentials.
 
-`src/features/retail/http-service.ts` is the copied, typed injected HTTP boundary. Wire it explicitly through the existing retail runtime owner and provide your own transport/base URL/authentication. Do not scatter new fetch logic across pages or place secrets in frontend source. Requote and validate authoritative price/inventory/address on the backend before real checkout. Existing local error and recovery states remain available for flow verification.
+Connect `src/features/retail/http-service.ts` through the retail runtime with your transport, base URL, and authentication. Keep requests in that service and secrets out of frontend source. Before checkout, the backend must revalidate prices, stock, and addresses. Use the local error and recovery states to check the flow.
 
 ## What verification proves
 
-The recursive native verifier checks current routes, app/page/component registration, JavaScript/WXS dependencies, imported/included WXML, recursive WXSS imports, native utility-class syntax, required global layout/theme output, real AppID/config consistency and byte-identical copied static assets. It rejects missing/unbundled/path-escaping references and unsupported dynamic script dependencies. It is build-closure evidence, not a security sandbox, browser interaction test, IDE test or device test.
+The native verifier checks routes, app/page/component registration, JavaScript/WXS dependencies, WXML imports/includes, WXSS imports, utility syntax, global layout/theme output, AppID/config consistency, and byte-identical static assets. It rejects missing, unbundled, or path-escaping references and unsupported dynamic script dependencies. It checks build output, not runtime behavior, and provides no security sandbox.
 
-Run the actual H5 shopping/detail/quantity/cart/address/quote/mock-order path, including invalid address and recoverable failures, after changes. Test native host behavior separately in DevTools/device with your account. Frozen installation and compiler success cannot certify those runtime behaviors.
+After changes, exercise H5 shopping, details, quantities, cart, addresses, quotes, and mock orders, including invalid addresses and recoverable failures. Check native behavior in DevTools and on devices with your account; frozen installation and compilation do not cover it.
 
 ## License and provenance
 
-Varo source is MIT; retain `LICENSE` and attribution when distributing derivatives. Dependency licenses remain their owners' licenses; the package is not a transfer of exclusive rights to dependencies or third-party assets. Included assets are those reached from the source snapshot; review them and your replacements for your distribution context. No commercial permission gate or commercial license is added by this export.
+Varo source is MIT; keep `LICENSE` and attribution when distributing derivatives. Dependencies retain their own licenses, and the export grants no exclusive dependency or asset rights. Review included assets and replacements for your distribution. The export adds no commercial license or permission requirement.
 
-Hashes describe the export snapshot, not your later edits. The manifest excludes its own digest to avoid self-reference. Source hashes identify uncommitted source changes that a Git revision alone cannot. Keep the emitted lockfile for repeatable frozen installs, and re-audit dependencies when updating it; an exact pin is not a perpetual security guarantee. Re-export only into a new or truly empty real directory: occupied destinations, files and symlinks are rejected rather than merged or overwritten.
+Manifest hashes describe the export snapshot and exclude the manifest itself. Source hashes also identify uncommitted changes. Keep the lockfile for frozen installs and review dependencies when updating it; pinned versions still need security review. Re-export into a new or empty real directory. Existing files, symlinks, and occupied directories are rejected.

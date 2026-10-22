@@ -2,9 +2,9 @@
 
 ## 推荐接入路径
 
-- 业务项目优先使用 `@varo-ui/cli` 安装可维护源码；npm 包提供 H5 组件或待原生编译的 Wevu SFC
-- `@varo-ui/headless` 只提供平台无关状态、事件和受控状态契约；DOM、焦点和页面滚动锁定属于 H5
-- 原生工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`，不使用 Vue 渲染器模拟小程序
+- 业务项目优先用 `@varo-ui/cli` 安装可编辑源码；npm 包提供 H5 组件或需要原生编译的 Wevu SFC
+- `@varo-ui/headless` 只提供平台无关的状态、事件和受控状态约定；DOM、焦点和页面滚动锁定由 H5 处理
+- 原生工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`，无需用 Vue 渲染器模拟小程序
 
 ## 初始化项目
 
@@ -33,15 +33,15 @@ import { VButton } from '@varo-ui/h5'
 import '@varo-ui/h5/style.css'
 ```
 
-H5 公共入口为包根、`/primitives`、`/style.css` 和 `/source/style.css`；后者仍是合法 CSS 子路径，不是 TypeScript 组件入口。需要可编辑组件时使用 Registry，而不是依赖包内源码路径。
+H5 公共入口为包根、`/primitives`、`/style.css` 和 `/source/style.css`；最后一个仅用于 CSS，不能导入 TypeScript 组件。需要修改组件时使用 Registry，不要依赖包内源码路径。
 
-`@varo-ui/weapp` 包根导出真正的原生 Wevu SFC，也可以直接导入单个文件：
+`@varo-ui/weapp` 包根导出原生 Wevu SFC，也可以直接导入单个文件：
 
 ```ts
 import VButton from '@varo-ui/weapp/components/v-button.vue'
 ```
 
-这些 SFC 必须由原生编译链处理，不是可在 Vue 浏览器中挂载的 Parts。npm 消费时先创建本地应用样式入口 `src/package.css`：
+这些 SFC 必须经过原生编译，不能作为 Vue Parts 挂载到浏览器。使用 npm 包时，先创建本地样式入口 `src/package.css`：
 
 ```css
 @import '@varo-ui/weapp/style.css';
@@ -72,11 +72,11 @@ export default defineConfig({
 pnpm add @varo-ui/headless
 ```
 
-Headless 不附带 UI 或 DOM 副作用；H5 无样式 Parts 从 `@varo-ui/h5/primitives` 导入。原生端组合 Registry SFC 或将 headless 绑定到 Wevu 响应式运行时，不提供等价的 Vue Parts 入口。
+Headless 不含 UI，也不操作 DOM。H5 无样式 Parts 从 `@varo-ui/h5/primitives` 导入；原生端组合 Registry SFC 或将 headless 绑定到 Wevu 响应式运行时，没有对应的 Vue Parts 入口。
 
 ## shadcn 模式安装
 
-如果你想像 shadcn/ui 一样把源码安装进业务项目，再做二次封装，使用 CLI 的 registry add 流程：
+通过 CLI 将源码安装到项目，再按需封装，用法类似 shadcn/ui：
 
 ```bash
 pnpm dlx @varo-ui/cli add --target weapp button select card
@@ -88,7 +88,7 @@ pnpm dlx @varo-ui/cli add --target h5 button select card
 
 组件会进入 `src/components/ui/*`，blocks 会进入 `src/components/blocks/*`。业务项目可以继续在 `src/components/biz/*` 里封装 `UserSelect`、`DepartmentSelect`、`ProductSelect` 这类领域组件。
 
-Registry manifest 决定组件可安装范围和完整依赖闭包，不以组件数量或相似 API 推断平台支持。H5 源码自动导入所需 CSS 闭包；原生源码以 Wevu SFC 交付，由目标编译器生成原生产物。跨端共享限于类型、纯函数和 headless 状态契约。
+Registry manifest 列出可安装组件及全部依赖，组件数量或相似 API 不能说明平台支持情况。H5 源码自动导入所需 CSS；原生 Wevu SFC 由目标编译器生成原生产物。跨端只共享类型、纯函数和 headless 状态约定。
 
 第三方组件无需先合并到 Varo：用 `add --registry <本地目录或 HTTP(S) 地址>` 安装独立 Registry。作者也可以用 `export --target <profile> <条目>` 生成供 shadcn-vue 安装的 JSON。完整目录约定、发布命令和运行时边界见 [独立发布第三方 Registry](/blocks/build-your-own#独立发布第三方-registry)。
 
@@ -107,19 +107,19 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 | `donut-ios`     | `weapp`  | `weapp`    | Donut iOS       | experimental |
 | `donut-ohos`    | `weapp`  | `weapp`    | Donut HarmonyOS | experimental |
 
-新增六个 profile 必须在条目及其每个传递依赖的 manifest 中显式准入；任何一项未准入，CLI 会在写入前拒绝，不会回退为 `weapp`。当前代表性准入组件为 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及必要依赖；以当前 manifest 为准，不代表其余组件或 Agent UI 已准入。
+六个实验性 profile 都要求条目及全部传递依赖在 manifest 中显式声明支持。缺少任一声明，CLI 就会在写入前拒绝安装，不会回退为 `weapp`。当前代表性组件为 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及必要依赖；具体以当前 manifest 为准，不代表其余组件或 Agent UI 已获支持。
 
 ```bash
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-仓库的 `pnpm check:platforms` 覆盖七个原生 profile 的真实编译与产物检查，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前集成编译器为 7.5.0；Donut 使用微信编译器，并携带各宿主的真实元数据。**编译/产物通过不等于真机认证**；AppID、签名、宿主 SDK、IDE 和设备验收由消费项目提供，不生成虚假凭证。
+`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.5.0；Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
 
 ## Agent 流式接入
 
 `@varo-ui/ai` 不绑定模型厂商。服务端只需输出 `message.start`、`text.delta`、`reasoning.*`、`tool.*`、`approval.*`、`message.end` 与 `done` 事件；H5 可接 Fetch/SSE，小程序可把 `wx.request({ enableChunked: true })` 的分块交给 `createAgentSseEventSource()`。
 
-UI 按需选择 `agent-conversation`、`agent-workspace`、`agent-advanced`、`agent-rag`；共享 `agent-presentation` 只含展示类型与纯函数。`blocks/agent-chat` 自动安装 conversation 闭包，不需要预装完整 `components/agent-ui`；后者是主动选择的全套 UI。详见 [Agent 安装](/ai/)；审批执行、网络、重试和取消策略仍归业务层。
+UI 可按需安装 `agent-conversation`、`agent-workspace`、`agent-advanced`、`agent-rag`。共享的 `agent-presentation` 只含展示类型与纯函数。`blocks/agent-chat` 自动安装 conversation 及全部依赖，无需预装完整套件 `components/agent-ui`。详见 [Agent 安装](/ai/)。审批执行、网络、重试和取消策略由业务应用负责。
 
 ```ts
 import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
@@ -140,13 +140,13 @@ pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
-原生 Registry 组件通过 `styleIsolation: apply-shared` 消费应用全局样式。`themes/base` 只含 tokens 与基础规则；普通组件 CSS 由各自 manifest 持有，Agent 的附加样式由可选 `themes/agent` 持有。`cn()` 使用 `@weapp-tailwindcss/merge`，不会引入浏览器版 `tailwind-merge` 的转义差异。
+原生 Registry 组件通过 `styleIsolation: apply-shared` 使用应用全局样式。`themes/base` 只含 tokens 与基础规则；普通组件的 manifest 声明自身 CSS，可选的 `themes/agent` 提供 Agent 附加样式。`cn()` 使用 `@weapp-tailwindcss/merge`，避免浏览器版 `tailwind-merge` 的转义差异。
 
 `@varo-ui/cli` 只复制 Registry 文件并输出 `Dependencies:` / `Dev dependencies:`，不会安装 npm 包；每次执行 `add` 后都要安装它报告且工程尚未包含的依赖。必须把所有已安装 `src/styles/*.css` 按 `varo.css` 优先的顺序全局注册到 `app.vue`，不能只加载 base 或在组件局部导入这些文件。完整配置见 [Wevu Registry 一次性接入](/guide/shadcn-mode)。
 
 ## 在浏览器预览小程序产物
 
-私有包 `@varo/weapp-web` 是可信编译产物的开发预览工具：Vite 插件把 Wevu 产物编进 `virtual:varo-native-artifacts`，harness 承接 `wx` API 和原生元素；包暂不对外发布，也不应成为生产 UI 依赖。宿主通过 glass-easel 的 DOM 后端运行 Wevu 生成的 JS、JSON、WXML 和 WXSS，不替换成 H5 业务组件。窄窗口缩放画面但保留选定的原生视口宽度。**同源 iframe 不是安全沙箱，也不是微信客户端或真机证明**，不要加载不受信任的产物；登录、支付等未支持能力会失败，不会伪造成功结果。
+私有包 `@varo/weapp-web` 用于开发时预览可信编译产物，不对外发布，也不应作为生产 UI 依赖。Vite 插件把 Wevu 产物编进 `virtual:varo-native-artifacts`，预览环境处理 `wx` API 和原生元素，通过 glass-easel 的 DOM 后端运行生成的 JS、JSON、WXML 和 WXSS，不替换为 H5 业务组件。窄窗口缩放画面，但保留选定的原生视口宽度。**同源 iframe 不是安全沙箱或微信客户端**，请勿加载不受信任的产物；登录、支付等未支持能力会失败，不会伪造成功结果。
 
 生产构建与手动预览：
 
@@ -159,13 +159,13 @@ pnpm --filter @varo/playground-weapp-preview preview
 
 仓库 lockfile 记录该运行链需要的 SDK 版本；CLI 不会把这些依赖安装到外部业务项目。微信专属能力、真机性能与最终视觉仍需在微信环境验收。
 
-文档的 H5 与小程序标签页共享示例分组、语言、主题和设备框架。已注册的普通组件与 Primitive 小程序示例运行真实 Wevu 编译产物，支持输入、选择、表单校验、动态数组、文件选择和错误重试；安装命令与原生源码可在「查看代码」中展开。仅支持 H5 的组件保留明确的平台边界。编译产物浏览器预览不代表真实设备验收。
+文档的 H5 与小程序标签页共享示例分组、语言、主题和设备框架。已注册的普通组件与 Primitive 小程序示例运行 Wevu 编译产物，支持输入、选择、表单校验、动态数组、文件选择和错误重试。「查看代码」提供安装命令与原生源码；仅支持 H5 的组件会明确标注。
 
 `pnpm --filter @varo/docs dev` 和 `pnpm --filter @varo/docs build` 会自动构建原生预览依赖。文档将预览完整托管在 `${DOCS_BASE}weapp-preview/`，无需单独启动预览服务。开发模式使用启动时生成的产物；修改原生示例或预览运行时后，重新启动文档开发服务。对运行中的文档执行 `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview` 可检查全部注册场景、320/390px 窄屏布局及交互回归，包括中英文、明暗主题和表单提交。生产预览使用实际地址，例如 `http://localhost:4173/Varo/`；子路径部署时保留 URL 中的路径。可用 `DOCS_PREVIEW_CASES=form-file-picker,form-array-en-dark` 只运行指定场景。
 
 ### 确定性 E2E 与证据边界
 
-仓库内的 `@varo/e2e` 是私有开发工具，不随 Registry 安装，也不进入组件运行时。真实 E2E 与结构契约分别运行：
+仓库内的 `@varo/e2e` 是私有开发工具，不随 Registry 安装，也不进入组件运行时。E2E 测试与结构契约检查分别运行：
 
 ```bash
 pnpm --filter @varo/e2e exec playwright-core install chromium
@@ -175,17 +175,17 @@ pnpm test:e2e:web
 pnpm test:e2e:weapp
 ```
 
-Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试，用例和目标缺失、失败或意外跳过都会拒绝验收。每次运行生成唯一 `apps/e2e/.e2e/runs/<run-id>/run.json`；截图和框架报告位于该 run 的目录，不复用上次报告。三组旧浏览器 smoke 已在断言等价、错误诊断和全页安全遮罩验收后删除；尚未完成宿主验收的旧原生 smoke 与截图入口仍保留。
+Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试；用例或目标缺失、失败、意外跳过都会拒绝验收。每次运行生成唯一的 `apps/e2e/.e2e/runs/<run-id>/run.json`，截图和框架报告保存在同一 run 目录，不复用旧报告。旧原生 smoke 与截图入口仍保留，等待宿主验收。
 
 Headless 通过仓库内的 `@weapp-vite/miniprogram-automator@1.3.0` pnpm patch 支持 `rich-text` 数组/HTML 的渲染树文本观察，以及原生提交按钮的表单默认动作。补丁位于 `patches/@weapp-vite__miniprogram-automator@1.3.0.patch`，只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 覆盖文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。升级 SDK 时须重新验证这些场景，确认上游已覆盖后再移除补丁。
 
 Headless 不是微信客户端：不提供真实像素、键盘或触摸几何。渲染文本断言必须读取渲染树，不能用页面状态冒充结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
 
-全仓门禁为 `pnpm check:full`，先检查源投影与架构，再运行 repoctl 基础检查/构建、结构契约、runner 反例、真实 E2E、独立消费者和原生 profile 产物验证。它不会把缺少宿主前置条件解释为通过。
+`pnpm check:full` 先检查源投影与架构，再运行 repoctl 基础检查和构建、结构契约、runner 反例、真实 E2E、独立消费者和原生 profile 产物验证。缺少宿主前置条件不能算通过。
 
 ## 本地 Devframe MCP
 
-私有 `@varo/devtools` 通过真实 Devframe stdio adapter 提供仓库开发工具，不暴露 HTTP 或共享状态，也不进入生产依赖。安装 workspace 后，用 Node 24 从仓库根目录启动：
+私有包 `@varo/devtools` 通过 Devframe stdio adapter 提供仓库开发工具，无 HTTP 接口或共享状态，不作为生产依赖。安装 workspace 后，用 Node 24 从仓库根目录启动：
 
 ```bash
 # 默认只读：列出/读取 Block、读取 manifest 声明的源码、预览安装计划

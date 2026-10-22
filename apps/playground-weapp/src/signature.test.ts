@@ -8,16 +8,16 @@ const context = {
   arc: vi.fn(),
   beginPath: vi.fn(),
   clearRect: vi.fn(),
-  draw: vi.fn(),
   fill: vi.fn(),
   fillRect: vi.fn(),
   lineTo: vi.fn(),
   moveTo: vi.fn(),
-  setFillStyle: vi.fn(),
-  setLineCap: vi.fn(),
-  setLineJoin: vi.fn(),
-  setLineWidth: vi.fn(),
-  setStrokeStyle: vi.fn(),
+  scale: vi.fn(),
+  fillStyle: '',
+  lineCap: 'round',
+  lineJoin: 'round',
+  lineWidth: 2,
+  strokeStyle: '',
   stroke: vi.fn(),
 }
 
@@ -26,17 +26,18 @@ let queryRect = { height: 168, width: 331 }
 beforeEach(() => {
   vi.useFakeTimers()
   queryRect = { height: 168, width: 331 }
+  const canvas = { width: 0, height: 0, getContext: () => context }
   const query = {
     in: vi.fn(() => query),
     select: vi.fn(() => query),
-    boundingClientRect: vi.fn((callback: (rect: { height: number, width: number }) => void) => {
-      callback(queryRect)
+    fields: vi.fn((_options: unknown, callback: (rect: { height: number, width: number, node: typeof canvas }) => void) => {
+      callback({ ...queryRect, node: canvas })
       return query
     }),
     exec: vi.fn(),
   }
   vi.stubGlobal('wx', {
-    createCanvasContext: vi.fn(() => context),
+    getWindowInfo: () => ({ pixelRatio: 2 }),
     createSelectorQuery: vi.fn(() => query),
   })
 })
@@ -48,7 +49,7 @@ interface SignatureStroke {
 afterEach(() => {
   vi.useRealTimers()
   vi.unstubAllGlobals()
-  Object.values(context).forEach(value => value.mockClear())
+  vi.clearAllMocks()
 })
 
 describe('native weapp signature', () => {

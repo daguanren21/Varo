@@ -1,9 +1,9 @@
 # 零售工程接入
 
-从 Varo 导出可编辑的独立零售工程：默认保留 **Wevu 微信小程序工程**，也可选择 **uni-app Vue 3** 或 **Taro Vue 3**，后两者支持 **H5 + 微信小程序**。转换直接使用现有页面、组件、事件、配置和资源，不另维护零售 UI，也不依赖 Wevu 运行时或全局兼容层。
+从 Varo 导出可编辑的独立零售工程：默认是 **Wevu 微信小程序工程**，也可选择支持 **H5 + 微信小程序** 的 **uni-app Vue 3** 或 **Taro Vue 3**。后两者转换现有页面、组件、事件、配置和资源，无需另维护零售 UI，也不依赖 Wevu 运行时或全局兼容层。
 
 ::: warning 仅模拟下单
-默认服务在内存中保存数据，重启即重置；订单带 `simulation: true`，不是支付凭据。工程不含生产后端、鉴权、真实支付或持久化订单服务，HTTP 适配器也保留模拟订单契约。
+默认服务在内存中保存数据，重启即重置。订单带 `simulation: true`，不能作为支付凭据。工程不含生产后端、鉴权、真实支付或持久化订单服务；HTTP 适配器也仅支持模拟订单。
 :::
 
 ## 1. 导出并安装
@@ -57,7 +57,7 @@ Taro 的路由与应用配置在 `src/app.config.ts`，页面配置在对应的 
 - **商品：** 修改 `src/features/retail/data.ts`；Wevu 图片在 `src/assets/retail/`，uni-app 和 Taro 图片在 `src/static/assets/retail/`，替换后同步更新引用。
 - **主题：** 修改 Wevu 的 `src/app.vue` 或 uni-app／Taro 的 `src/App.vue` 中 `.retail-page-enter` 的主题变量，保留全局样式导入顺序。默认「日用图录」采用暖纸底、宋体标题和轻分隔线；`retail-heading`、`retail-price` 统一标题与金额字体，使用系统字体回退。Taro 的 `src/app.ts` 是应用入口，不是第二份主题。`brand.accent` 不会生成整套语义颜色。参见[主题配置](/guide/theme)。
 
-修改配置或服务后重新编译并重启应用，检查首页、详情图、购物车和订单快照。uni-app 和 Taro 导出保留 Vue 受控值语义、输入失焦提交与键盘操作，并针对各自 H5 tab bar 调整固定底栏。Taro 还处理异步宿主输入框的可访问名称；底栏使用其编译器支持的 `taro-tabbar-height` 常量，不能改为会被该编译器重写的 `var(--taro-tabbar-height)`。这些是当前零售源码闭包的适配，不是任意 Wevu 项目的通用转换器。
+修改配置或服务后重新编译并重启，检查首页、详情图、购物车和订单快照。uni-app 和 Taro 导出保留 Vue 受控值语义、输入失焦提交与键盘操作，并按各自 H5 tab bar 调整固定底栏。Taro 还处理异步宿主输入框的可访问名称；底栏使用编译器支持的 `taro-tabbar-height` 常量，不能改为会被编译器重写的 `var(--taro-tabbar-height)`。这些适配仅覆盖当前零售源码，不能转换任意 Wevu 项目。
 
 Taro H5 在页面加载边界将路由参数解码一次，保留中文、字面量 `%2F`、加号和保留字符；不要在业务页面再次解码，也不要将该处理应用到原生端。H5 按钮同步禁用状态与 `aria-disabled`。页面已用内联错误和重试控件展示同一条非空错误时，不再叠加阻挡操作的重复 Toast；其他未由页面展示的错误仍通过 Toast 通知。购物车行内的「数量」不代表已勾选参与结算。
 
@@ -78,7 +78,7 @@ Taro H5 在页面加载边界将路由参数解码一次，保留中文、字面
 
 `RetailCheckoutInput` 包含 `items: { productId, quantity }[]` 和 `addressId`。报价与订单返回商品、地址快照及金额；商品 ID、数量、地址须匹配请求，订单总额须匹配 `expectedTotal`。
 
-所有金额用**整数分**，且 `total = subtotal - discount + shipping`。数量须为不超过库存的正安全整数，同一商品不能重复成行。非 2xx、网络失败、非法或不匹配响应会报错，不应当作成功。
+金额均用**整数分**，且 `total = subtotal - discount + shipping`。数量须为不超过库存的正安全整数，同一商品不能重复成行。非 2xx、网络失败、非法或不匹配响应均报错。
 
 ## 5. 试用不同状态
 

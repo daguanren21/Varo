@@ -4,7 +4,7 @@
 
 [在线文档](https://varo.weapp.dev/) · [GitHub Release](https://github.com/daguanren21/Varo/releases/tag/v1.0.1) · [npm 组织](https://www.npmjs.com/org/varo-ui)
 
-Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组件系统。主要交付物是可复制、可修改并归业务项目所有的目标平台组件与 Blocks 源码，而不是黑盒跨端 UI 运行时。
+Varo 为 Vue 3 移动 H5 和 `weapp-vite` 小程序提供组件与 Blocks。通过 Registry 将对应平台的源码复制到项目，即可按业务需要修改和维护。
 
 ## 已发布包
 
@@ -29,19 +29,19 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 
 ## 产品边界
 
-- 高共识小程序 Registry 以 [Vant Weapp](https://vant-ui.github.io/vant-weapp/)、[NutUI](https://nutui.jd.com/h5/vue/4x/)、[TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview) 与 [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview) 的重叠能力为基线。
+- 小程序 Registry 的基础组件参考 [Vant Weapp](https://vant-ui.github.io/vant-weapp/)、[NutUI](https://nutui.jd.com/h5/vue/4x/)、[TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview) 与 [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview) 共同支持的功能。
 - 动效与 Agent 交互参考 [Beautiful UI](https://www.beautifului.dev/) 与 [beUI](https://beui.dev/)；生产代码保持 Vue 与小程序运行时原生实现。
-- 组件可用性由各 `registry/**/registry.json` manifest 及其完整依赖闭包决定。浏览器示例或 H5 catalog 中存在某组件，不代表该组件可用于原生端。
+- 组件支持哪些平台，由 `registry/**/registry.json` 及其全部依赖的配置决定。H5 目录或浏览器示例中有某个组件，并不表示原生端也支持它。
 - H5 流式实现使用 [Markstream Core](https://github.com/Simon-He95/markstream-vue) 调度与 Markdown Parser；小程序使用相同协议和 AST，但改用不依赖 `requestAnimationFrame` 的定时调度。
-- [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json) 记录产品分层；安装准入以 manifest 和 [`packages/registry/src/index.ts`](./packages/registry/src/index.ts) 中的 profile 表为准。
+- [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json) 记录产品分层；可安装的平台由 manifest 和 [`packages/registry/src/index.ts`](./packages/registry/src/index.ts) 中的 profile 表决定。
 
 ## 源码所有权
 
-组件 renderer 在 `registry/components/**` 编写，Blocks 在 `registry/blocks/**` 编写，样式在 `registry/themes/**` 编写。`pnpm sync:registry` 生成 `packages/ui-h5/src` 中的 H5 renderer 投影、`packages/ui-weapp/native` 原生 npm 树、仓库 Playground 安装副本，以及文档站 Agent 源码与支持目录。不要直接修改这些生成投影。
+在 `registry/components/**` 编写组件，在 `registry/blocks/**` 编写 Blocks，在 `registry/themes/**` 编写样式。运行 `pnpm sync:registry` 后，会生成 `packages/ui-h5/src`、`packages/ui-weapp/native`、Playground 中的安装副本，以及文档站的 Agent 源码和支持目录。修改应从 Registry 源文件开始，生成文件不直接编辑。
 
-`packages/shared` 是唯一中立 `ReactiveRuntime` 契约的所有者。`@varo-ui/headless` 提供中立行为；DOM 渲染、焦点与 body 滚动锁归 H5 所有。原生 SFC 用 `wevu` 绑定 headless 行为，不引入 Vue render primitives。
+共享的 `ReactiveRuntime` 接口统一定义在 `packages/shared`。`@varo-ui/headless` 提供与框架和平台无关的交互逻辑；DOM 渲染、焦点和 body 滚动锁由 H5 实现。原生 SFC 通过 `wevu` 使用 headless 逻辑，不引入 Vue render primitives。
 
-`themes/base` 仅包含 token 与基础规则。普通组件 CSS 由各 manifest 唯一归属；Agent token/helper 属于可选 `themes/agent` 依赖。H5 源码自动导入完整依赖 CSS 闭包；原生 `apply-shared` 组件则从应用全局样式获得该闭包。
+`themes/base` 只包含 token 和基础规则，每个组件的 CSS 由对应 manifest 声明。Agent 的 token 和辅助样式来自可选依赖 `themes/agent`。H5 源码会导入组件及其依赖的全部 CSS；原生 `apply-shared` 组件通过应用的全局样式加载这些 CSS。
 
 ## 部署 profiles
 
@@ -56,9 +56,9 @@ Varo 是面向 Vue 3 移动 H5 与 `weapp-vite` 小程序的 registry-first 组�
 | `donut-ios`     | `weapp`  | `weapp`    | Donut iOS / experimental         |
 | `donut-ohos`    | `weapp`  | `weapp`    | Donut OpenHarmony / experimental |
 
-六个 experimental profile 要求所选传递依赖闭包中的每个条目显式准入。缺失准入时在写入前拒绝，不会回退到 Weapp。代表性准入组件为 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及所需工具/主题；manifest 始终是准确信息源。这不代表完整 catalog 或 Agent UI 已获得这些平台认证。
+安装六个实验性 profile 时，所选组件及其全部依赖都必须明确支持该 profile。任何一项不支持，CLI 都会在写入前报错，不会回退到 Weapp。目前允许安装的代表组件有 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及所需工具和主题，具体以 manifest 为准。这个范围不代表完整组件目录或 Agent UI 已通过这些平台的验证。
 
-仓库 fixture 使用 `weapp-vite` 与 `wevu` **7.5.0**；原生包 peer 范围保持 `>=7.2.1 <8`。Donut 使用微信编译器并附加独立的 `mini-android`、`mini-ios` 或 `mini-ohos` 宿主元数据，不是 Android/iOS/OpenHarmony 编译 target。SDK 安装、签名、AppID、厂商 IDE 与真机执行仍是独立前提；不伪造身份或凭据。
+仓库示例使用 `weapp-vite` 与 `wevu` **7.5.0**，原生包的 peer 范围为 `>=7.2.1 <8`。Donut 使用微信编译器，再通过 `mini-android`、`mini-ios` 或 `mini-ohos` 元数据选择宿主，不单独使用 Android、iOS 或 OpenHarmony 编译 target。运行前仍需安装 SDK 和厂商 IDE、配置真实 AppID 与签名，并在真机上验证；仓库不提供身份或凭据。
 
 ## 安装可编辑源码
 
@@ -87,7 +87,7 @@ pnpm dlx @varo-ui/cli add --target h5 components/agent-ui
 pnpm dlx @varo-ui/cli add --target weapp action-sheet collapse dialog list notice-bar popover skeleton steps
 ```
 
-CLI 只报告 npm 依赖，不自动安装。默认不覆盖已有文件。使用 `--force` 前先审查本地定制；它会替换文件，不会合并下游修改。
+CLI 会列出需要安装的 npm 依赖，请自行安装。已有文件默认保留；`--force` 会直接替换文件，无法合并本地修改，使用前请先检查自己的定制内容。
 
 原生源码安装必须通过 `weapp.styles` 的 `include: 'app.vue'` **全局加载所有已安装的 `src/styles/*.css`**，并将 `varo.css` 放在首位。不要从组件局部 WXSS 导入这些全局样式：page token 与全局选择器不属于组件局部作用域。原生 npm 消费方在本地 `src/package.css` 写入 `@import "@varo-ui/weapp/style.css";`，再全局注册 `{ source: 'package.css', include: 'app.vue' }`，不要直接填写包的绝对路径。配置示例见[原生包说明](./packages/ui-weapp/README.md)与 [`apps/platform-smoke/vite.config.mjs`](./apps/platform-smoke/vite.config.mjs)。
 
@@ -99,7 +99,7 @@ CLI 只报告 npm 依赖，不自动安装。默认不覆盖已有文件。使�
 4. **样式：**不再把 `themes/base` 当作包含所有组件/Agent 的单体样式。重新安装所需条目的依赖闭包，并遵循上述原生全局加载规则；H5 安装源码自带依赖 CSS 导入。
 5. **Agent 安装：**按需选择 `components/agent-conversation`、`components/agent-workspace`、`components/agent-advanced` 或 `components/agent-rag`。`components/agent-presentation` 拥有共享纯类型/helper。`blocks/agent-chat` 只选择 conversation 依赖，不拉入 advanced/RAG/微调 UI；`components/agent-ui` 则明确安装完整套件。审批、网络、重试与取消操作的执行策略仍由应用负责。
 
-Input 的 disabled/readonly 状态拒绝修改；接受的变更只通知一次，无变化不发 change。需要取消 Drawer 的 `openChange` 时，必须在处理器中同步取消，先于状态修改、model 更新与 close 通知。请按这些契约迁移处理器，不保留旧转发行为。
+Input 在 disabled/readonly 状态下不接受修改；值确实变化时只通知一次，值相同则不触发 change。要取消 Drawer 的 `openChange`，请在事件处理器中同步取消，这会阻止后续状态修改、model 更新和 close 通知。迁移处理器时需要遵循这些规则，移除旧的事件转发逻辑。
 
 ## Playground
 
@@ -110,7 +110,9 @@ pnpm --filter @varo/playground-weapp dev:ai
 
 `dev:ai` 会准备微信开发者工具项目、启动 MCP HTTP 服务，并将 DevTools console 与未捕获异常转发到当前终端。
 
-仅供 `blocks-lab` 使用的原生 Block 投影到 `apps/playground-weapp/src/blocks-lab/components/blocks/`；共享 UI、Agent 组件和工具仍留在主包源码树。`pnpm sync:registry` 负责这一应用专用位置映射和 import 改写，公共 Registry 安装路径仍为 `src/components/blocks/`。生产构建保持 2 MiB 主包限制，并拒绝指向不可用兄弟分包的同步引用。
+仅供 `blocks-lab` 使用的原生 Blocks 会生成到 `apps/playground-weapp/src/blocks-lab/components/blocks/`，共享 UI、Agent 组件和工具仍放在主包源码目录。`pnpm sync:registry` 负责这部分路径和 import 的转换；公共 Registry 仍安装到 `src/components/blocks/`。生产构建会检查主包不超过 2 MiB，并拒绝指向不可用兄弟分包的同步引用。
+
+原生编译后，`localize-native-components.mjs` 将仅供分包使用的组件产物放到消费方所在分包，共享脚本和资源保持原路径。CSS `url(...)` 以及引号形式或 URL 形式的 `@import` 先解码再解析文件路径，重定位时重新进行 CSS 转义，支持十六进制转义、空格、引号、括号及查询串和片段后缀。外部 URL 和 data URL 保留原始写法。缺失依赖或目标路径冲突会在修改任何编译产物前报错；生产构建与导出 starter 的样式校验共用同一 CSS 引用解析器。
 
 ## 文档开发
 
@@ -118,9 +120,9 @@ pnpm --filter @varo/playground-weapp dev:ai
 pnpm run docs:dev
 ```
 
-该命令在 `http://localhost:5173` 启动 VitePress。页内 H5 示例是浏览器交互；原生源码 tab 只展示源码，不模拟原生 renderer。独立 glass-easel 预览属于可信编译产物工具，其同源 iframe 不是安全沙箱，浏览器中的产物预览也不是 IDE/真机证明。
+该命令在 `http://localhost:5173` 启动 VitePress。页面提供 H5 示例与原生源码，glass-easel 浏览器预览可运行可信的小程序编译产物。预览的同源 iframe 不提供安全隔离，也不能替代 IDE 或真机检查。
 
-预览将原生 Dialog 诊断放在独立的 `dialog` 场景。7.5.0 fixture 已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172)：微信目标上编译后的 Wevu 组件，在 `scopedSlotsRequireProps: true` 和默认 attached setup 下可通过普通原生插槽继承最近 Provider。该协议不扩展到 created setup 或其他平台，浏览器预览仍不等于 IDE/真机验证。
+原生 Dialog 使用独立的 `dialog` 诊断场景。仓库的 7.5.0 示例已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) 的修复：微信目标上编译的 Wevu 组件，在 `scopedSlotsRequireProps: true` 和默认 attached setup 下可通过普通插槽继承最近 Provider。created setup 和其他平台不在此范围内。
 
 ## 验证
 
@@ -135,14 +137,14 @@ pnpm check:consumers
 pnpm check:platforms
 ```
 
-- `sync:registry` 重新生成归属明确的投影；`check:generated` 只检查漂移，包括 `scripts/registry-projections.json` 记录的过期输出，不写文件。同步只删除内容仍匹配已记录摘要的过期文件；本地改过的过期文件、新归属与已有 authored 文件的冲突，会在该 owner 写入前拒绝。仅接收生成样式导入的 authored renderer 不纳入删除归属。预检保护以单次生成器调用为界，不是三个脚本的整体事务，也不保证磁盘故障回滚；不要并发运行写入者或删除清单绕过冲突。
-- `check:architecture` 检查中立层、运行时与开发工具的导入边界，拒绝旧 Vue-native renderer 导入。
-- 生成和构建后，`check:consumers` 在隔离消费项目中使用打包后的公开包与全新 CLI 源码安装，检查依赖/入口隔离、H5/原生编译、源码/样式闭包、最小 Agent Chat 安装和 fail-closed profile 往返；它不是真机测试。
-- `check:platforms` 构建并检查全部七个原生编译器/产物 profile。单独选择一个时使用 `pnpm --filter @varo/platform-smoke build:alipay`（或其他原生 profile）；`verify:alipay` 只检查已有产物，不重新构建。
+- `sync:registry` 生成文件，`check:generated` 只检查差异，包括 `scripts/registry-projections.json` 中的过期输出。同步仅删除内容仍与记录摘要一致的过期文件；过期输出被本地修改，或新增输出路径与已有手写文件冲突时，该生成器会在写入前报错。只接收样式导入的手写组件不会被删除。预检按单个生成器执行，不覆盖三个脚本的整体事务或磁盘故障回滚。不要并发写入或删除清单来绕过冲突。
+- `check:architecture` 检查共享逻辑、运行时代码和开发工具之间的导入，拒绝旧 Vue-native renderer 导入。
+- 生成和构建后，`check:consumers` 在隔离项目中检查打包的公开包和新安装的 CLI 源码，覆盖依赖与入口隔离、H5/原生编译、完整源码和样式依赖、最小 Agent Chat 安装、profile 导出再导入及不支持时拒绝安装。它不运行真机。
+- `check:platforms` 构建并检查七个原生 profile。用 `pnpm --filter @varo/platform-smoke build:alipay` 选择单个平台；`verify:alipay` 只检查已有产物。
 
-原生 fixture 的 IDE/产物根目录准确为 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`，应用文件位于其内部的 `dist/`。检查覆盖可达组件、平台模板/事件绑定、全局样式闭包、IDE 路径与 Donut 宿主元数据。这些命令**不证明**模拟器/真机行为、SDK 打包、签名或独立 verifier 的验收。打开产物可用对应 `open:<profile>` 命令，但需要自己的已注册 AppID 和厂商工具；缺失前提会明确失败。
+原生产物位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`，应用文件在其中的 `dist/`。检查覆盖组件引用、模板和事件绑定、完整全局样式、IDE 路径及 Donut 宿主信息。模拟器、真机、SDK 打包、签名和独立发布审核需另行验证。使用 `open:<profile>` 打开产物前，需准备已注册 AppID 和厂商工具；缺少时命令会报错。
 
-Realworld fixture 通过 [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts) 的 `createAedPinia()` 创建应用自己的管理器。必须先安装再创建 Store：原生 `app.vue` 调用 `use(pinia)`，本地运行消费方使用 `createApp({}).use(manager)`。插件通过 `$subscribe` 仅持久化 AED Store，保留 `realworld-weapp-state` 的存储格式，并覆盖只修改嵌套字段的情况。导航载荷不落盘，销毁 Store/管理器会释放持久化订阅。需要持久化时，不要改回 setup 内独立的深层 watch，也不要使用未经配置的 `createPinia()`。本地 Store/初始化 smoke 不执行真实 `wx.login`、更新检查或真机启动。
+Realworld 在 [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts) 用 `createAedPinia()` 创建管理器。创建 Store 前先安装：原生 `app.vue` 调用 `use(pinia)`，本地运行使用 `createApp({}).use(manager)`。插件通过 `$subscribe` 仅持久化 AED Store，沿用 `realworld-weapp-state` 格式，支持嵌套字段更新。导航数据不落盘，销毁 Store 或管理器会释放订阅。需要持久化时，保留此配置，不要改用 setup 内的深层 watch 或裸 `createPinia()`。本地检查不运行 `wx.login`、更新检查或真机启动。
 
 使用 pnpm `11.24.0` 和 Node `^22.18.0 || ^24.11.0 || >=26.0.0`。Vitest 5 与 tsdown 0.23 不支持 Node 25。TypeScript 保持在 6.x，以兼容 `vue-tsc` 和原生产物预览使用的编译器 API；jsdom 保持在 29.x，因为 30.x 要求的 Node 补丁版本高于工作区当前支持的下限。
 

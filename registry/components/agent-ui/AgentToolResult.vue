@@ -3,6 +3,13 @@ import type { AgentPartStatus } from '@varo-ui/ai'
 import type { ClassValue } from '../../lib/cn'
 import { computed, shallowRef } from 'wevu'
 import { cn } from '../../lib/cn'
+import { agentPartStatusLabels } from './presentation'
+
+defineOptions({
+  properties: {
+    open: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -10,12 +17,14 @@ const props = withDefaults(
     defaultOpen?: boolean
     duration?: string
     name: string
+    open?: boolean
     output?: string
     status?: AgentPartStatus
     summary?: string
   }>(),
   {
     defaultOpen: false,
+    open: undefined,
     output: '',
     status: 'completed',
   },
@@ -26,21 +35,11 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const open = shallowRef(props.defaultOpen || props.status === 'running' || props.status === 'failed')
+const internalOpen = shallowRef(props.defaultOpen || props.status === 'running' || props.status === 'failed')
+const open = computed(() => props.open ?? internalOpen.value)
 const meta = computed(() => [props.duration, props.summary].filter(Boolean).join(' · '))
 const openAttr = computed(() => String(open.value))
-const statusText = computed(() => {
-  if (props.status === 'completed') {
-    return 'Completed'
-  }
-  if (props.status === 'failed') {
-    return 'Failed'
-  }
-  if (props.status === 'running') {
-    return 'Running'
-  }
-  return 'Waiting'
-})
+const statusText = computed(() => agentPartStatusLabels[props.status])
 const rootClass = computed(() => cn('agent-tool-result', !open.value && 'is-closed', props.className))
 const headerClass = computed(() =>
   cn('agent-native-button agent-native-button--block agent-tool-result__header'),
@@ -56,14 +55,15 @@ const dotClass = computed(() =>
 )
 
 function toggle() {
-  open.value = !open.value
-  emit('update:open', open.value)
+  const next = !open.value
+  if (props.open == null) { internalOpen.value = next }
+  emit('update:open', next)
 }
 </script>
 
 <template>
   <view :class="rootClass" :data-open="openAttr" :data-status="status">
-    <button :class="headerClass" type="button" :aria-expanded="open" @click="toggle">
+    <button :class="headerClass" :aria-expanded="open" @click="toggle">
       <view class="agent-tool-result__command">
         <text class="agent-tool-result__prompt" aria-hidden="true">
           $
@@ -91,7 +91,7 @@ function toggle() {
       </slot>
     </view>
 
-    <button v-if="status === 'failed' && open" class="agent-native-button agent-tool-result__retry" type="button" @click="emit('retry')">
+    <button v-if="status === 'failed' && open" class="agent-native-button agent-tool-result__retry" @click="emit('retry')">
       Retry
     </button>
   </view>

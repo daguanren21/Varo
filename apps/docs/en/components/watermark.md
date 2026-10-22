@@ -1,6 +1,6 @@
 # Watermark
 
-`VWatermark` places an inaccessible, non-interactive repeated text layer over container content. The overlay never intercepts pointer input, making it suitable for document previews, approvals, and sensitive data.
+`VWatermark` repeats text over the content of a container. The overlay is noninteractive, hidden from assistive technology, and does not intercept pointer input. Use it for document previews, approval results, and sensitive data displays.
 
 A watermark is a visual marker, not a substitute for access control, encryption, or tamper resistance.
 
@@ -28,4 +28,4 @@ A watermark is a visual marker, not a substitute for access control, encryption,
 
 Rows stretch evenly across tall containers, preserving watermark coverage from top to bottom while using `gapY` as the minimum tile height.
 
-The default slot carries the protected content. H5 accepts consumer styles through `class`; the mini-program Registry SFC uses `className`.
+Place the content beneath the watermark in the default slot. H5 accepts custom styles through `class`; the mini-program Registry SFC uses `className`.

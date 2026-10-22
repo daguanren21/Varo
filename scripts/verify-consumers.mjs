@@ -7,7 +7,10 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { basename, dirname, extname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { postcss } from 'weapp-tailwindcss/core'
 import { fixtureItems } from '../apps/platform-smoke/scripts/project.mjs'
+import { cssReferences, localCssReference } from '../apps/playground-weapp/scripts/css-references.mjs'
+import { verifyNativeSlotOwners } from './verify-native-slot-owners.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const fixtures = resolve(repoRoot, 'scripts/consumer-fixtures')
@@ -194,6 +197,15 @@ async function installConsumer(root, records, rootPackage) {
   // Varo packages are forced to the local tarballs above. Third-party packages
   // may use the registry when the store is cold, as in a fresh downstream install.
   run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
+  // Follow the documented consumer-root setup using the published artifact only.
+  const consumerRequire = createRequire(resolve(root, 'package.json'))
+  const patchName = 'weapp-vite@7.5.0.patch'
+  const patch = inside(root, await realpath(consumerRequire.resolve(`@varo-ui/weapp/patches/${patchName}`)))
+  await mkdir(resolve(root, 'patches'), { recursive: true })
+  await cp(patch, resolve(root, 'patches', patchName))
+  const workspacePath = resolve(root, 'pnpm-workspace.yaml')
+  await write(workspacePath, `${await readFile(workspacePath, 'utf8')}patchedDependencies:\n  weapp-vite@7.5.0: patches/${patchName}\n`)
+  run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
   for (const { manifest: original } of records) {
     const packageRoot = await realpath(resolve(root, 'node_modules', original.name))
     inside(root, packageRoot)
@@ -308,10 +320,15 @@ async function verifyStyles(path, root, extension, visited = new Set()) {
   const source = await readFile(path, 'utf8')
   assert(!/@(?:tailwind|theme|source)\b/.test(source), `Uncompiled style directive in ${path}`)
   let result = source
-  for (const [, reference] of source.matchAll(/@import\s+(?:url\(\s*)?["']([^"']+)["']/g)) {
-    assert(!reference.includes('://'), `Consumer styles must resolve locally: ${reference}`)
-    assert.equal(extname(reference), extension, `Unexpected style import in ${path}`)
-    result += await verifyStyles(reference.startsWith('/') ? resolve(root, `.${reference}`) : resolve(dirname(path), reference), root, extension, visited)
+  const imports = []
+  postcss.parse(source, { from: path }).walkAtRules(/^import$/i, (rule) => {
+    imports.push(...cssReferences(rule.params, { importRule: true, from: path }))
+  })
+  for (const { value } of imports) {
+    const reference = localCssReference(value)
+    assert(reference, `Consumer styles must resolve locally: ${value}`)
+    assert.equal(extname(reference.path), extension, `Unexpected style import in ${path}`)
+    result += await verifyStyles(reference.path.startsWith('/') ? resolve(root, `.${reference.path}`) : resolve(dirname(path), reference.path), root, extension, visited)
   }
   return result
 }
@@ -483,6 +500,14 @@ async function buildNative(consumerRoot, cli, compiler, delivery) {
       .replace('<script setup lang="ts">', `<script setup lang="ts">\nimport NativePackageExports from '../../components/NativePackageExports.vue'`)
       .replace('<PlatformShowcase />', '<view><PlatformShowcase /><NativePackageExports /></view>'))
   }
+  await cp(resolve(fixtures, 'NativeSlotProvider.vue'), resolve(root, 'src/components/SlotOwnerProvider.vue'))
+  await cp(resolve(fixtures, 'NativeSlotConsumer.vue'), resolve(root, 'src/components/SlotOwnerConsumer.vue'))
+  await write(resolve(root, 'src/layouts/default.vue'), `${delivery === 'package' ? '<script setup lang="ts">\ndefineComponentJson({ styleIsolation: "apply-shared" })\n</script>\n' : ''}<template><view><slot /></view></template>\n`)
+  const pagePath = resolve(root, 'src/pages/index/index.vue')
+  const page = await readFile(pagePath, 'utf8')
+  await write(pagePath, page
+    .replace('<script setup lang="ts">', '<script setup lang="ts">\nimport SlotOwnerProvider from "../../components/SlotOwnerProvider.vue"\nimport SlotOwnerConsumer from "../../components/SlotOwnerConsumer.vue"\ndefinePageMeta({ layout: "default" })')
+    .replace('<PlatformShowcase />', '<PlatformShowcase /><SlotOwnerProvider value="consumer"><SlotOwnerConsumer /></SlotOwnerProvider>'))
   run(process.execPath, [compiler, 'build', root, '--config', resolve(root, 'vite.config.mjs'), '--platform', 'weapp'], root, {
     env: { VARO_CONSUMER_ROOT: consumerRoot, VARO_CONSUMER_DELIVERY: delivery },
   })
@@ -492,6 +517,7 @@ async function buildNative(consumerRoot, cli, compiler, delivery) {
   assert.equal(output, resolve(ideRoot, 'dist'), 'Native artifacts must match the selected IDE project')
   assert(!projectConfig.appid, 'Credential-free compilation must not acquire an AppID')
   await verifyNative(output, delivery)
+  await verifyNativeSlotOwners(output, consumerRoot)
   console.log(`[consumers] Verified Weapp ${delivery} with the installed compiler/runtime; no IDE/device/signing claim.`)
 }
 

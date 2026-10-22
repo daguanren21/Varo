@@ -2,10 +2,10 @@ import type { AgentPartStatus, AgentStreamSnapshot, AgentStreamStatus, AgentTool
 import type { PropType } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type { AgentChoice, AgentConversationMessage, AgentTraceStep } from './types'
-import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
+import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, useId, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import { AgentMarkdown } from './AgentMarkdown'
-import { agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
+import { agentPartStatusLabels, agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
 import '../../styles/varo.css'
 import '../../styles/varo-agent.css'
 import './agent-conversation.css'
@@ -96,13 +96,33 @@ export const AgentThinking = defineComponent({
   name: 'AgentThinking',
   props: {
     className: { type: [String, Array, Object] as PropType<ClassValue>, default: undefined },
+    defaultExpandedIds: { type: Array as PropType<string[]>, default: () => [] },
+    expandable: { type: Boolean, default: false },
+    expandedIds: { type: Array as PropType<string[]>, default: undefined },
     defaultOpen: { type: Boolean, default: false },
     label: { type: String, default: 'Agent 执行轨迹' },
     open: { type: Boolean as PropType<boolean | undefined>, default: undefined },
     steps: { type: Array as PropType<AgentTraceStep[]>, default: () => [] },
   },
-  emits: { 'update:open': (_value: boolean) => true },
+  emits: {
+    'update:open': (_value: boolean) => true,
+    'update:expandedIds': (_value: string[]) => true,
+  },
   setup(props, { emit }) {
+    const disclosureId = `agent-thinking-${useId()}`
+    const localExpandedIds = shallowRef([...props.defaultExpandedIds])
+    const expandedIds = computed(() => props.expandedIds ?? localExpandedIds.value)
+    watch(() => props.steps.map(step => step.id), (ids) => {
+      localExpandedIds.value = localExpandedIds.value.filter(id => ids.includes(id))
+    }, { immediate: true })
+    function toggleStep(step: AgentTraceStep) {
+      if (!props.expandable || !agentTraceDetail(step)) { return }
+      const next = expandedIds.value.includes(step.id)
+        ? expandedIds.value.filter(id => id !== step.id)
+        : [...expandedIds.value, step.id]
+      if (props.expandedIds == null) { localExpandedIds.value = next }
+      emit('update:expandedIds', next)
+    }
     const localOpen = shallowRef(props.defaultOpen)
     const currentOpen = computed(() => props.open ?? localOpen.value)
     const completed = computed(() => props.steps.filter(step => step.status === 'completed').length)
@@ -152,22 +172,45 @@ export const AgentThinking = defineComponent({
         ]),
       ]),
       currentOpen.value
-        ? h('div', { class: 'agent-thinking__body' }, props.steps.map(step =>
-            h('article', {
+        ? h('div', { class: 'agent-thinking__body' }, props.steps.map((step) => {
+            const detail = agentTraceDetail(step)
+            const expandable = props.expandable && !!detail
+            const expanded = expandedIds.value.includes(step.id)
+            const detailId = `${disclosureId}-${encodeURIComponent(step.id)}`
+            return h('article', {
               'class': 'agent-thinking__step',
               'data-status': step.status,
               'key': step.id,
             }, [
               h('span', { 'class': ['agent-thinking__dot', partMark(step.status)], 'aria-hidden': 'true' }),
               h('span', { class: 'agent-thinking__step-copy' }, [
-                h('span', { class: 'agent-thinking__step-header' }, [
+                h(expandable ? 'button' : 'span', {
+                  'class': ['agent-thinking__step-header', expandable && 'agent-thinking__step-trigger'],
+                  'type': expandable ? 'button' : undefined,
+                  'aria-expanded': expandable ? String(expanded) : undefined,
+                  'aria-controls': expandable ? detailId : undefined,
+                  'onClick': expandable ? () => toggleStep(step) : undefined,
+                }, [
                   h('strong', step.title),
-                  agentTraceDuration(step) ? h('small', agentTraceDuration(step)) : null,
+                  h('span', { class: 'agent-thinking__step-meta' }, [
+                    props.expandable ? h('small', agentPartStatusLabels[step.status]) : null,
+                    agentTraceDuration(step) ? h('small', agentTraceDuration(step)) : null,
+                    expandable
+                      ? h('svg', {
+                          'class': ['agent-thinking__row-chevron', expanded && 'is-open'],
+                          'viewBox': '0 0 24 24',
+                          'fill': 'none',
+                          'stroke': 'currentColor',
+                          'stroke-width': '2',
+                          'aria-hidden': 'true',
+                        }, [h('path', { d: 'm6 9 6 6 6-6' })])
+                      : null,
+                  ]),
                 ]),
-                agentTraceDetail(step) ? h('small', { class: 'agent-thinking__detail' }, agentTraceDetail(step)) : null,
+                detail ? h('small', { id: detailId, class: 'agent-thinking__detail', hidden: expandable && !expanded }, detail) : null,
               ]),
-            ]),
-          ))
+            ])
+          }))
         : null,
     ])
   },

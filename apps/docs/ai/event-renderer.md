@@ -1,6 +1,6 @@
 # AgentEventRenderer
 
-把 AgentStreamSnapshot 投影为推理、工具、回答和审批 UI。
+根据 AgentStreamSnapshot 展示推理、工具、回答和审批界面。
 
 ## 案例
 

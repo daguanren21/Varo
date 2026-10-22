@@ -1,6 +1,6 @@
 # Select 选择器
 
-`VSelect` 是 Base Kit 的低层选择组件，用于表单、筛选和业务组件二次封装。H5 / 完整 Vue 封装与 `--target weapp` 安装的原生 Registry 组件面向不同运行时，API 以各自章节为准。
+`VSelect` 是 Base Kit 的基础选择组件，用于表单、筛选和业务封装。H5 / 完整 Vue 封装与 `--target weapp` 原生 Registry 组件的运行时和 API 不同，请查阅对应章节。
 
 ## 演示
 
@@ -8,7 +8,7 @@
 
 ## H5 / 完整 Vue 封装
 
-H5 Registry 入口与完整 Vue 封装默认使用 `picker` 模式，受控契约使用 `v-model:value`、`value`、`update:value` 和 `valueChange`。
+H5 Registry 入口与完整 Vue 封装默认使用 `picker` 模式，通过 `v-model:value`、`value`、`update:value` 和 `valueChange` 控制选中值。
 
 ### 多选与确认
 
@@ -16,11 +16,11 @@ H5 Registry 入口与完整 Vue 封装默认使用 `picker` 模式，受控契�
 
 ### 搜索与 Dropdown
 
-`filterable` 让 Select 字段本身直接输入并过滤本地选项；展开面板不会再重复渲染第二个搜索框。`mode="dropdown"` 切换为下拉展示。
+`filterable` 允许直接在 Select 字段中输入并过滤本地选项，面板不另设搜索框。`mode="dropdown"` 切换为下拉展示。
 
 ### 只读与禁用
 
-`readonly` 保留组件的操作能力：仍可打开、关闭和浏览选项，但不会更新选中值，也不会触发清空或多选确认提交；面板打开后再切换到只读，尚未确认的草稿同样会被丢弃。`disabled` 则阻止打开和值变更，不提供只读浏览入口。
+`readonly` 允许打开、关闭和浏览选项，但禁止改值、清空和多选确认；面板打开后切换到只读会丢弃未确认的草稿。`disabled` 禁止打开和改值，不提供只读浏览入口。
 
 H5 的 `filterable` 只读字段使用原生只读输入语义。
 
@@ -61,7 +61,7 @@ H5 的 `filterable` 只读字段使用原生只读输入语义。
 
 ## 原生 Registry Weapp
 
-`--target weapp` 安装的是原生 Wevu SFC `src/components/ui/select.vue`，使用更小的运行时契约。`readonly` 仍可打开、关闭和浏览选项，但不会更新选中值；清空按钮和筛选输入不可用。小程序原生输入框无法可靠表达相同的只读契约，因此 `filterable + readonly` 会使用按钮式触发器。
+`--target weapp` 安装原生 Wevu SFC `src/components/ui/select.vue`，API 较少。`readonly` 允许打开、关闭和浏览选项，但禁止改值、清空和筛选输入。原生输入框无法可靠支持这种只读行为，因此 `filterable + readonly` 使用按钮式触发器。
 
 多选没有草稿或确认提交阶段：每次点击选项都会立即触发值更新。底部“完成”按钮只关闭面板，不再次提交，也不触发确认事件。
 
@@ -94,5 +94,5 @@ H5 的 `filterable` 只读字段使用原生只读输入语义。
 原生 Registry Weapp 不提供 `mode`、`max`、`confirmable`、`filterOption`、`loading` 或 `emptyText`，也不触发 `valueChange`、`open`、`close`、`confirm`、`cancel` 或 `limit`。
 
 ::: info 二次封装
-分组、远程搜索、异步分页属于二次封装组件能力，不属于 Base Kit。业务组件应基于 `VSelect` 封装 `UserSelect`、`DepartmentSelect`、`CitySelect`、`ProductSelect`。
+Base Kit 不提供分组、远程搜索和异步分页；可基于 `VSelect` 封装 `UserSelect`、`DepartmentSelect`、`CitySelect`、`ProductSelect` 等业务组件来实现。
 :::

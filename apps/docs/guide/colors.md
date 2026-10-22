@@ -1,6 +1,6 @@
 # 色彩系统
 
-Varo 使用角色化色板：每个品牌色和语义色都提供 **Dark / Base / Light / Soft** 四个稳定层级；文字、边框、填充和背景使用独立的中性色阶。组件只读取语义变量，不自行混色。
+Varo 按用途划分颜色：每个品牌色和语义色都提供 **Dark / Base / Light / Soft** 四个固定层级，文字、边框、填充和背景使用独立的中性色阶。组件读取语义变量，不自行混色。
 
 <div class="varo-color-system">
   <section class="varo-color-intro">
