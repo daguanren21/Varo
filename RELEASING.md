@@ -2,6 +2,8 @@
 
 Varo uses `repoctl` with pnpm native change intents and fixed package versioning.
 
+The workspace scanner requires the explicit `@pnpm/logger` development peer because this repository disables `autoInstallPeers`.
+
 ## Release policy
 
 - Six user-facing `@varo-ui/*` packages ship as one fixed version; internal implementation packages are bundled and remain private.
@@ -15,11 +17,12 @@ Varo uses `repoctl` with pnpm native change intents and fixed package versioning
 ```bash
 pnpm change
 pnpm change status
+pnpm exec repo release plan --json
 pnpm exec repo release stable prepare
 pnpm exec repo release stable publish
 ```
 
-`repo release stable prepare` is intended for CI and creates or updates the release pull request. `repo release stable publish` publishes already-versioned packages from `main`.
+`repo release plan --json` previews version changes and release notes without consuming intents or running release hooks. `repo release stable prepare` is intended for CI and creates or updates the release pull request. `repo release stable publish` publishes already-versioned packages from `main`.
 
 ## Initial local publish
 
@@ -39,7 +42,7 @@ pnpm --filter @varo/e2e exec playwright-core install chromium
 pnpm check:full
 ```
 
-`check:full` runs projection and architecture checks, repoctl's lint/typecheck/unit/build plan, fresh-build contracts, runner failure/cancellation checks, browser and native headless E2E, isolated consumers, and native artifact checks. Use it for releases: `pnpm exec repo check --full` omits the additional Varo checks in repoctl 5.5. Lint tasks are currently placeholders.
+`check:full` runs projection and architecture checks, repoctl's lint/typecheck/unit/build plan, fresh-build contracts, runner failure/cancellation checks, browser and native headless E2E, isolated consumers, and native artifact checks. Use it for releases: `pnpm exec repo check --full` only selects the root lint, typecheck, test, and build scripts and omits the additional Varo checks. Lint tasks are currently placeholders.
 
 E2E runs without models or retries and writes a new `apps/e2e/.e2e/runs/<run-id>/run.json` plus framework artifacts. Failed or blocked runs return nonzero; keep the report from that run. `pnpm test:contracts` covers structure, not runtime behavior. CI installs Chromium with `--with-deps` for the runtime suites.
 
