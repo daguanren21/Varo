@@ -50,6 +50,7 @@ function update(value: string) {
 }
 
 function search() {
+  if (props.disabled) { return }
   emit('search', props.value)
 }
 

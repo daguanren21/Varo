@@ -8,6 +8,7 @@ import VIcon from './v-icon.vue'
 defineOptions({
   properties: {
     max: { type: null, value: Number.POSITIVE_INFINITY },
+    precision: { type: null, value: null },
     value: { type: null, value: 0 },
   },
 })
@@ -32,6 +33,7 @@ const props = withDefaults(
     inputAriaLabel: 'Numeric value',
     max: Number.POSITIVE_INFINITY,
     min: Number.NEGATIVE_INFINITY,
+    precision: undefined,
     readonly: false,
     step: 1,
     value: 0,

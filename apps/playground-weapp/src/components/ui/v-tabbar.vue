@@ -5,6 +5,8 @@ import { computed, provide } from 'wevu'
 import { cn } from '../../lib/cn'
 import { tabbarContextKey } from './tabbar-context'
 
+defineOptions({ properties: { modelValue: { type: null, value: null } } })
+
 const props = withDefaults(
   defineProps<{
     border?: boolean
@@ -34,6 +36,7 @@ const fixedData = computed(() => String(props.fixed))
 const safeAreaInsetBottomData = computed(() => String(props.safeAreaInsetBottom))
 
 function select(name: TabbarName) {
+  if (props.modelValue === name) { return }
   emit('update:modelValue', name)
   emit('change', name)
 }

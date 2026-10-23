@@ -49,6 +49,7 @@ export const VSearchbar = defineComponent({
           'data-disabled': String(props.disabled),
           'onSubmit': (event: Event) => {
             event.preventDefault()
+            if (props.disabled) { return }
             emit('search', props.value)
           },
         },

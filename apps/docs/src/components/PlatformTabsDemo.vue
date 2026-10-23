@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DemoKind, Locale, Platform } from './demo'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { componentCatalogItems } from '../component-catalog'
 import {
 
   demoRuntime,
@@ -21,7 +22,11 @@ const props = withDefaults(
   },
 )
 
-const platforms = ['h5', 'weapp'] as const
+const supportsNative = computed(() => props.example === 'overview' || (componentCatalogItems
+  .find(item => item.id === props.example)
+  ?.targets
+  .includes('weapp') ?? false))
+const platforms = computed<Platform[]>(() => supportsNative.value ? ['h5', 'weapp'] : ['h5'])
 const platformPreferenceKey = 'varo.docs.platform'
 
 const inputValue = ref(props.locale === 'en' ? 'Avery Lin' : '林默')
@@ -30,6 +35,9 @@ const inputBio = ref(props.locale === 'en' ? 'Registry-first mobile UI.' : 'Regi
 const inputInvalid = computed(() => inputValue.value.trim().length === 0)
 const overviewInputInvalid = ref(false)
 const activePlatform = shallowRef<Platform>('h5')
+watch(supportsNative, (supported) => {
+  if (!supported && activePlatform.value !== 'h5') { setPlatform('h5') }
+})
 const codeExpanded = shallowRef(false)
 const copyState = ref<'idle' | 'copied' | 'unsupported'>('idle')
 const platformPanelId = computed(() => `platform-${props.example}-panel`)
@@ -646,7 +654,7 @@ const copyLabel = computed(() => {
 })
 
 function isPlatform(value: string | null): value is Platform {
-  return value === 'h5' || value === 'weapp'
+  return value === 'h5' || (value === 'weapp' && supportsNative.value)
 }
 
 function syncDemoQuery() {
@@ -690,7 +698,7 @@ function restoreDemoQuery() {
   codeExpanded.value = params.get('code') === 'open'
   storePlatformPreference()
 
-  if (!isPlatform(requestedPlatform) && isPlatform(storedPlatform)) {
+  if (requestedPlatform !== activePlatform.value) {
     syncDemoQuery()
   }
 }
@@ -719,7 +727,7 @@ async function copySnippet() {
 }
 
 function setPlatform(platform: Platform) {
-  activePlatform.value = platform
+  activePlatform.value = isPlatform(platform) ? platform : 'h5'
   storePlatformPreference()
   syncDemoQuery()
   resetCopyState()
@@ -730,27 +738,27 @@ function platformTabId(platform: Platform) {
 }
 
 function handlePlatformTabKeydown(event: KeyboardEvent) {
-  const currentIndex = platforms.indexOf(activePlatform.value)
+  const currentIndex = platforms.value.indexOf(activePlatform.value)
   let nextIndex = currentIndex
 
   if (event.key === 'ArrowRight') {
-    nextIndex = (currentIndex + 1) % platforms.length
+    nextIndex = (currentIndex + 1) % platforms.value.length
   }
   else if (event.key === 'ArrowLeft') {
-    nextIndex = (currentIndex - 1 + platforms.length) % platforms.length
+    nextIndex = (currentIndex - 1 + platforms.value.length) % platforms.value.length
   }
   else if (event.key === 'Home') {
     nextIndex = 0
   }
   else if (event.key === 'End') {
-    nextIndex = platforms.length - 1
+    nextIndex = platforms.value.length - 1
   }
   else {
     return
   }
 
   event.preventDefault()
-  const platform = platforms[nextIndex]!
+  const platform = platforms.value[nextIndex]!
   const tablist = (event.currentTarget as HTMLButtonElement).closest('[role=\"tablist\"]')
   setPlatform(platform)
   void nextTick(() => {
@@ -811,6 +819,7 @@ onBeforeUnmount(() => {
           H5
         </button>
         <button
+          v-if="supportsNative"
           :id="platformTabId('weapp')"
           type="button"
           role="tab"
@@ -2828,7 +2837,9 @@ onBeforeUnmount(() => {
 
 .platform-demo__image-demo {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
+  min-width: 0;
   padding: 16px;
 }
 
@@ -4386,6 +4397,7 @@ onBeforeUnmount(() => {
   bottom: 12px;
   left: 12px;
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
@@ -4409,6 +4421,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__image-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
@@ -4427,6 +4440,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__image-fit-options {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   min-width: 0;
 }
@@ -4439,7 +4453,7 @@ onBeforeUnmount(() => {
 
 .platform-demo__image-state-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(110px, 100%), 1fr));
   gap: 12px;
 }
 
@@ -4448,11 +4462,13 @@ onBeforeUnmount(() => {
   gap: 10px;
   align-content: center;
   justify-items: center;
+  min-width: 0;
   min-height: 132px;
   padding: 16px;
   font-size: 0.76rem;
   font-weight: 650;
   color: var(--varo-text-secondary);
+  overflow-wrap: anywhere;
   background: var(--varo-card-solid);
   border: 1px solid var(--varo-border);
   border-radius: 16px;

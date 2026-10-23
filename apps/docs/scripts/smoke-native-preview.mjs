@@ -17,7 +17,7 @@ const results = []
 const requiredCases = {
   'button': 'hierarchy tones sizes states layout',
   'badge': 'anchors counts statuses variants',
-  'avatar': 'image-fallback shapes sizes',
+  'avatar': 'image-fallback shapes sizes avatar-group',
   'card': 'composition variants interactive padding',
   'empty': 'basic action image sizes',
   'icon': 'builtins tones sizes-color spin',
@@ -49,6 +49,7 @@ const requiredCases = {
   'searchbar': 'component-search',
   'textarea': 'issue-details',
   'date-field': 'invoice-date states',
+  'time-field': 'appointment-time',
   'region-picker': 'activity-location',
   'picker': 'delivery-window',
   'checkbox': 'notification-channels checkbox-states',

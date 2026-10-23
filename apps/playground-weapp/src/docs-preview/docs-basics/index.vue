@@ -5,6 +5,7 @@ import VAvatar from '../../components/ui/avatar.vue'
 import VBadge from '../../components/ui/badge.vue'
 import VEmpty from '../../components/ui/empty.vue'
 import VTag from '../../components/ui/tag.vue'
+import VAvatarGroup from '../../components/ui/v-avatar-group.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
 import VDialogClose from '../../components/ui/v-dialog-close.vue'
@@ -37,6 +38,31 @@ watch(en, (isEnglish) => { overviewName.value = isEnglish ? 'Avery Lin' : '林�
 // A real decode failure exercises the native error event without an absent bundle asset.
 const unavailableImage = 'data:image/png;base64,AA=='
 const brokenImageIcon = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="#909399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h34v34H7z"/><path d="m7 34 9-9 7 7 5-5 13 12"/><circle cx="34" cy="16" r="4"/><path d="m25 7-4 9 6 5-5 8"/></svg>')}`
+
+const includeLastAvatar = shallowRef(true)
+const avatarMembers = [
+  { id: 'ada', alt: 'Ada', fallback: 'A' },
+  { id: 'bo', alt: 'Bo', fallback: 'B' },
+  { id: 'chen', alt: 'Chen', fallback: 'C' },
+  { id: 'dee', alt: 'Dee', fallback: 'D' },
+  { id: 'eli', alt: 'Eli', fallback: 'E' },
+]
+const visibleAvatarMembers = computed(() => includeLastAvatar.value ? avatarMembers : avatarMembers.slice(0, 4))
+const avatarGroupCopy = computed(() => en.value
+  ? {
+      heading: 'Avatar group',
+      label: 'Project members',
+      hint: 'Three visible avatars; the counter shows the remaining members.',
+      toggle: includeLastAvatar.value ? 'Hide final member' : 'Restore final member',
+      count: `Members: ${visibleAvatarMembers.value.length}`,
+    }
+  : {
+      heading: '头像组',
+      label: '项目成员',
+      hint: '展示三个头像，计数圆点显示其余人数。',
+      toggle: includeLastAvatar.value ? '隐藏最后一位' : '恢复最后一位',
+      count: `成员数: ${visibleAvatarMembers.value.length}`,
+    })
 
 const buttonCopy = computed(() => en.value
   ? {
@@ -593,6 +619,23 @@ const overviewCurrentValue = computed(() => overviewName.value || overviewCopy.v
               <VIcon name="check" :size="28" tone="primary" />
             </template>
           </VAvatar>
+        </view>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="avatar-group">
+        <text class="docs-demo__heading">
+          {{ avatarGroupCopy.heading }}
+        </text>
+        <text class="docs-demo__muted">
+          {{ avatarGroupCopy.hint }}
+        </text>
+        <VAvatarGroup :items="visibleAvatarMembers" :max="3" :size="40" :overlap="10" :aria-label="avatarGroupCopy.label" />
+        <view class="docs-demo__row">
+          <VButton size="sm" variant="outline" @click="includeLastAvatar = !includeLastAvatar">
+            {{ avatarGroupCopy.toggle }}
+          </VButton>
+          <text class="docs-demo__value" data-docs-state="avatar-members">
+            {{ avatarGroupCopy.count }}
+          </text>
         </view>
       </view>
     </view>

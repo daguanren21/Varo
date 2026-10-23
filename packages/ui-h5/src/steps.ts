@@ -45,7 +45,7 @@ export const VSteps = defineComponent({
 
     function select(index: number, item: StepItem) {
       if (!props.clickable || item.disabled) { return }
-      emit('update:current', index)
+      if (props.current !== index) { emit('update:current', index) }
       emit('select', { index, item })
     }
 

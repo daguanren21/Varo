@@ -15,6 +15,8 @@ interface MiniProgramTouchEvent {
   touches?: ArrayLike<MiniProgramTouch>
 }
 
+defineOptions({ properties: { modelValue: { type: null, value: null } } })
+
 const props = withDefaults(
   defineProps<{
     className?: ClassValue
@@ -92,12 +94,14 @@ function pointX(event: MiniProgramTouchEvent): number | undefined {
 }
 
 function open(side: SwipeCellOpenSide) {
+  if (props.disabled || currentSide.value === side) { return }
   currentSide.value = side
   emit('update:modelValue', side)
   emit('open', side)
 }
 
 function close() {
+  if (props.disabled || currentSide.value === null) { return }
   currentSide.value = null
   emit('update:modelValue', undefined)
   emit('close')
@@ -141,6 +145,7 @@ function touchEnd() {
   }
 
   dragging.value = false
+  if (props.disabled || dragOffset.value === startOffset.value) { return }
   if (props.leftWidth > 0 && dragOffset.value >= props.leftWidth * props.threshold) {
     open('left')
     return
@@ -150,6 +155,10 @@ function touchEnd() {
     return
   }
   close()
+}
+
+function touchCancel() {
+  dragging.value = false
 }
 </script>
 
@@ -175,7 +184,7 @@ function touchEnd() {
       @touchstart="touchStart"
       @touchmove="touchMove"
       @touchend="touchEnd"
-      @touchcancel="touchEnd"
+      @touchcancel="touchCancel"
     >
       <slot :close="close" :open="open" />
     </view>

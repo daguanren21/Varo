@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { VList } from '@varo-ui/h5'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 
 const props = withDefaults(defineProps<{ locale?: 'en' | 'zh' }>(), {
   locale: 'zh',
@@ -46,31 +47,32 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="list-demo">
-    <p>{{ copy.hint }}</p>
-    <div class="list-demo__surface">
-      <VList
-        :finished="finished"
-        :finished-text="copy.finished"
-        :immediate="false"
-        :loading="loading"
-        :loading-text="copy.loading"
-        @load="load"
-      >
-        <article v-for="item in items" :key="item" class="list-demo__item">
-          {{ copy.row }} {{ item }}
-        </article>
-      </VList>
-    </div>
-  </section>
+  <DocsDeviceFrame>
+    <section class="list-demo">
+      <p>{{ copy.hint }}</p>
+      <div class="list-demo__surface">
+        <VList
+          :finished="finished"
+          :finished-text="copy.finished"
+          :immediate="false"
+          :loading="loading"
+          :loading-text="copy.loading"
+          @load="load"
+        >
+          <article v-for="item in items" :key="item" class="list-demo__item">
+            {{ copy.row }} {{ item }}
+          </article>
+        </VList>
+      </div>
+    </section>
+  </DocsDeviceFrame>
 </template>
 
 <style scoped>
 .list-demo {
   display: grid;
   gap: 8px;
-  width: min(100%, 420px);
-  margin: 16px 0 24px;
+  min-width: 0;
 }
 
 .list-demo > p {

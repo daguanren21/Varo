@@ -2,7 +2,7 @@ import type { UseSwitchRootResult } from '@varo-ui/headless'
 import type { PropType } from 'vue'
 import { useSwitchRoot } from '@varo-ui/headless'
 import { defineComponent, h, inject, provide, toRef } from 'vue'
-import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useSwitchRoot } from './hooks'
@@ -59,6 +59,7 @@ export const SwitchRoot = defineComponent({
         props.as,
         {
           ...restAttrs,
+          ...buttonKeyboardAttrs(props.as, attrs, switchRoot.state.interactive.value),
           ...switchRoot.attrs.root,
           class: [attrClass],
           disabled: props.as === 'button' ? switchRoot.state.disabled.value || switchRoot.state.loading.value : undefined,

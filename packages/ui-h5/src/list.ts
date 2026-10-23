@@ -52,6 +52,7 @@ export const VList = defineComponent({
     }
 
     function retry() {
+      if (props.disabled) { return }
       emit('retry')
       requestLoad()
     }
@@ -102,7 +103,7 @@ export const VList = defineComponent({
               : props.errorText
                 ? h(
                     'button',
-                    { class: 'varo-list__retry', type: 'button', onClick: retry },
+                    { class: 'varo-list__retry', type: 'button', disabled: props.disabled, onClick: retry },
                     slots.error?.() ?? props.errorText,
                   )
                 : props.finished

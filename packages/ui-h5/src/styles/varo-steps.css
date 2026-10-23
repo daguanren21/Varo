@@ -1,4 +1,4 @@
-.varo-steps {
+.varo-steps.varo-steps {
   display: flex;
   width: 100%;
   padding: 0;
@@ -6,11 +6,12 @@
   list-style: none;
 }
 
-.varo-steps__item {
+.varo-steps .varo-steps__item {
   position: relative;
   display: flex;
   flex: 1;
   min-width: 0;
+  margin: 0;
 }
 
 .varo-steps__trigger {
@@ -52,6 +53,9 @@
   display: grid;
   gap: 3px;
   min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .varo-steps__title {
@@ -77,6 +81,28 @@
 
 .varo-steps__item[data-status='completed'] .varo-steps__line {
   background: var(--varo-ui-primary);
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__trigger {
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 0 4px;
+  text-align: center;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__marker {
+  box-sizing: border-box;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__body {
+  width: 100%;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__line {
+  right: calc(-50% + 16px);
+  left: calc(50% + 16px);
 }
 
 .varo-steps[data-direction='vertical'] {

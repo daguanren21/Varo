@@ -1,6 +1,18 @@
+<script setup>
+import AvatarDemo from '../../src/components/AvatarDemo.vue'
+</script>
+
 # Avatar
 
 `VAvatar` displays an image or fallback content. `VAvatarGroup` overlaps member avatars and shows how many members are hidden.
+
+## Interactive preview
+
+<ComponentPlatformDemo component="avatar" locale="en">
+  <AvatarDemo locale="en" />
+</ComponentPlatformDemo>
+
+Switch between H5 and Mini Program to try images, text and failed-image fallbacks, shapes, sizes, and avatar groups. Select “Hide final member” to change the member count from 5 to 4 and the overflow counter from `+2` to `+1`; select it again to restore the member.
 
 ## H5 avatar groups
 

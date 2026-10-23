@@ -9,6 +9,7 @@ import { varoReactiveRuntime } from '../../lib/varo-primitives'
 defineOptions({
   properties: {
     open: { type: null, value: null },
+    zIndex: { type: null, value: null },
   },
 })
 
@@ -36,6 +37,7 @@ const props = withDefaults(
     open: undefined,
     overlay: true,
     placement: 'right',
+    zIndex: undefined,
   },
 )
 

@@ -78,6 +78,7 @@ const readonlyData = computed(() => String(props.readonly))
 function update(next: number) {
   if (props.disabled || props.readonly) { return }
   const value = props.allowClear && props.value === next ? 0 : next
+  if (value === props.value) { return }
   emit('update:value', value)
   emit('change', value)
 }

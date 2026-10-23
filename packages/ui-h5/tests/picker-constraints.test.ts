@@ -138,7 +138,7 @@ describe('VPicker constrained confirmation', () => {
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true })
     await wrapper.get('.varo-picker__confirm').trigger('click')
-    expect(wrapper.emitted('update:value')).toEqual([['a']])
+    expect(wrapper.emitted('confirm')?.[0]?.[0]).toMatchObject({ value: 'a' })
   })
 
   it('centers the selected option relative to a scrolled column rather than its page offset parent', async () => {

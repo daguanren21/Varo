@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
-import { computed } from 'wevu'
+import { computed, useSlots } from 'wevu'
 import { cn } from '../../lib/cn'
 import { useDialogContext } from './dialog-context'
 
@@ -13,6 +13,8 @@ const emit = defineEmits<{
 }>()
 
 const dialog = useDialogContext()
+const slots = useSlots()
+const backdropAriaHidden = computed(() => slots.default ? undefined : 'true')
 const open = computed(() => dialog.state.open.value)
 const classes = computed(() => cn('varo-dialog__overlay', props.className))
 const state = computed(() => open.value ? 'open' : 'closed')
@@ -27,7 +29,7 @@ function click(event: unknown) {
   <view
     v-if="open"
     :class="classes"
-    aria-hidden="true"
+    :aria-hidden="backdropAriaHidden"
     :data-state="state"
     @click="click"
   >

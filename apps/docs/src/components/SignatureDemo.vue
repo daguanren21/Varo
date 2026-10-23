@@ -2,6 +2,7 @@
 import type { SignatureStroke } from '@varo-ui/h5'
 import { VButton, VSignature } from '@varo-ui/h5'
 import { computed, shallowRef } from 'vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 
 const props = withDefaults(defineProps<{ locale?: 'en' | 'zh' }>(), {
   locale: 'zh',
@@ -51,37 +52,38 @@ function update(strokes: SignatureStroke[]) {
 </script>
 
 <template>
-  <section class="signature-demo">
-    <VSignature
-      :value="value"
-      :disabled="disabled"
-      :aria-label="copy.aria"
-      :clear-text="copy.clear"
-      :undo-text="copy.undo"
-      :redo-text="copy.redo"
-      show-history
-      @update:value="update"
-    />
-    <div class="signature-demo__controls">
-      <VButton variant="outline" :disabled="disabled" @click="rejectNext = !rejectNext">
-        {{ rejectNext ? copy.armed : copy.reject }}
-      </VButton>
-      <VButton variant="outline" @click="disabled = !disabled">
-        {{ disabled ? copy.enable : copy.disable }}
-      </VButton>
-    </div>
-    <output class="signature-demo__status" aria-live="polite">
-      {{ copy.strokes }}: {{ value.length }}. {{ status || copy.empty }}
-    </output>
-  </section>
+  <DocsDeviceFrame>
+    <section class="signature-demo">
+      <VSignature
+        :value="value"
+        :disabled="disabled"
+        :aria-label="copy.aria"
+        :clear-text="copy.clear"
+        :undo-text="copy.undo"
+        :redo-text="copy.redo"
+        show-history
+        @update:value="update"
+      />
+      <div class="signature-demo__controls">
+        <VButton variant="outline" :disabled="disabled" @click="rejectNext = !rejectNext">
+          {{ rejectNext ? copy.armed : copy.reject }}
+        </VButton>
+        <VButton variant="outline" @click="disabled = !disabled">
+          {{ disabled ? copy.enable : copy.disable }}
+        </VButton>
+      </div>
+      <output class="signature-demo__status" aria-live="polite">
+        {{ copy.strokes }}: {{ value.length }}. {{ status || copy.empty }}
+      </output>
+    </section>
+  </DocsDeviceFrame>
 </template>
 
 <style scoped>
 .signature-demo {
   display: grid;
   gap: 10px;
-  width: min(100%, 480px);
-  margin: 16px 0 24px;
+  min-width: 0;
 }
 
 .signature-demo__controls {

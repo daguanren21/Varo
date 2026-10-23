@@ -8,6 +8,7 @@ import VIcon from './v-icon.vue'
 
 defineOptions({
   options: { virtualHost: true },
+  properties: { modelValue: { type: null, value: null } },
 })
 
 const props = withDefaults(
@@ -71,7 +72,7 @@ function toggle() {
 
 function select(option: MenuOption) {
   if (option.disabled) { return }
-  emit('update:modelValue', option.value)
+  if (props.modelValue !== option.value) { emit('update:modelValue', option.value) }
   emit('select', [option.value, option])
   if (menu) { menu.close() }
 }

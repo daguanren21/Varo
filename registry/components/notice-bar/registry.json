@@ -48,5 +48,5 @@
       "to": "src/styles/varo-notice-bar.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/notice-bar"
 }

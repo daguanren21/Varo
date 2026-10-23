@@ -3763,7 +3763,7 @@ textarea.varo-input__control {
 }
 
 /* registry/themes/components/steps/h5.css */
-.varo-steps {
+.varo-steps.varo-steps {
   display: flex;
   width: 100%;
   padding: 0;
@@ -3771,11 +3771,12 @@ textarea.varo-input__control {
   list-style: none;
 }
 
-.varo-steps__item {
+.varo-steps .varo-steps__item {
   position: relative;
   display: flex;
   flex: 1;
   min-width: 0;
+  margin: 0;
 }
 
 .varo-steps__trigger {
@@ -3817,6 +3818,9 @@ textarea.varo-input__control {
   display: grid;
   gap: 3px;
   min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .varo-steps__title {
@@ -3844,6 +3848,28 @@ textarea.varo-input__control {
   background: var(--varo-ui-primary);
 }
 
+.varo-steps[data-direction='horizontal'] .varo-steps__trigger {
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 0 4px;
+  text-align: center;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__marker {
+  box-sizing: border-box;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__body {
+  width: 100%;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__line {
+  right: calc(-50% + 16px);
+  left: calc(50% + 16px);
+}
+
 .varo-steps[data-direction='vertical'] {
   display: grid;
   gap: 0;
@@ -3866,6 +3892,7 @@ textarea.varo-input__control {
   display: flex;
   gap: 9px;
   align-items: center;
+  min-width: 0;
   min-height: 42px;
   padding: 0 12px;
   font-size: 13px;

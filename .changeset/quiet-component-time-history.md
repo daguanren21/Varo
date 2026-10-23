@@ -55,3 +55,11 @@ Keep filename-like JavaScript data from becoming required native preview assets,
 Keep Calendar toolbars and rating demos within narrow phone frames, render inactive native rating stars as transparent outlines, and keep Breadcrumb demo actions on the current page.
 
 Keep custom Cell icon and link slots accessible on H5 and native, hiding only built-in decorative fallbacks so embedded controls remain discoverable by assistive technology.
+
+Preserve native optional property absence for numeric precision, selection, layering, and Agent state. Reject disabled, readonly, canceled, and unchanged mutations while retaining explicit confirmation, selection, cancellation, and close actions. Keep inherited Form error visibility reactive and reset Picker drafts after externally controlled closure.
+
+Support keyboard activation and cancelable actions for H5 primitive controls, with a single enabled Radio tab stop that follows independently updated descendants. Preserve caller-provided accessible slot content and move Tag descriptions and error metadata with its focused checkbox, keeping removal independently operable.
+
+Repair Agent approval selection defaults, radio keyboard navigation, bounded insight navigation, inferred diff counts, replacement table rows, and persistent command-search naming. Complete missing bilingual component demonstrations and native preview entries, and extend the native preview smoke coverage to all supported scenarios.
+
+Reconcile images resolved before hydration and keep loading/error fallbacks inside their image bounds. Fit NoticeBar and translated Steps into narrow containers, isolate Steps list spacing from host prose styles, and keep SwipeCell demo controls reachable after opening either side. Support Space activation for native-preview selection roles while preserving disabled, canceled, and repeated-key guards.

@@ -24,18 +24,17 @@ const emit = defineEmits<{
   'update:current': [value: number]
 }>()
 
-const active = computed(() =>
-  props.insights[Math.min(Math.max(0, props.current), Math.max(0, props.insights.length - 1))],
-)
+const currentIndex = computed(() => Math.min(Math.max(0, props.current), Math.max(0, props.insights.length - 1)))
+const active = computed(() => props.insights[currentIndex.value])
 const activeTone = computed(() => active.value?.tone || 'default')
-const countLabel = computed(() => `${props.insights.length ? props.current + 1 : 0}/${props.insights.length}`)
+const countLabel = computed(() => `${props.insights.length ? currentIndex.value + 1 : 0}/${props.insights.length}`)
 const rootClass = computed(() =>
   cn('agent-insight-card', `is-${activeTone.value}`, props.className),
 )
 
 function move(delta: number) {
   if (!props.insights.length) { return }
-  emit('update:current', (props.current + delta + props.insights.length) % props.insights.length)
+  emit('update:current', (currentIndex.value + delta + props.insights.length) % props.insights.length)
 }
 
 function emitAction() {

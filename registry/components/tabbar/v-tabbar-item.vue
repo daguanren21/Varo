@@ -49,9 +49,11 @@ function select() {
     :data-active="activeData"
     @click="select"
   >
-    <view v-if="$slots.icon || props.icon" class="varo-tabbar__icon" aria-hidden="true">
+    <view v-if="$slots.icon || props.icon" class="varo-tabbar__icon">
       <slot name="icon">
-        {{ props.icon }}
+        <text aria-hidden="true">
+          {{ props.icon }}
+        </text>
       </slot>
     </view>
     <view class="varo-tabbar__text">

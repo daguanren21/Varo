@@ -1,6 +1,18 @@
+<script setup>
+import AvatarDemo from '../src/components/AvatarDemo.vue'
+</script>
+
 # Avatar 头像
 
 `VAvatar` 展示图片或文字回退内容；`VAvatarGroup` 将成员头像重叠排列，并显示未展示人数。
+
+## 交互预览
+
+<ComponentPlatformDemo component="avatar" locale="zh">
+  <AvatarDemo locale="zh" />
+</ComponentPlatformDemo>
+
+切换 H5 / 小程序可体验图片、文字与图片失败回退、形状、尺寸和头像组。点击「隐藏最后一位」后，成员数从 5 变为 4，溢出计数从 `+2` 变为 `+1`；再次点击恢复成员。
 
 ## H5 头像组
 

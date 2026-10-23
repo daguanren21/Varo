@@ -228,7 +228,7 @@ export const VInput = defineComponent({
         'span',
         {
           'class': `varo-input__${slotName}`,
-          'aria-hidden': icon ? 'true' : undefined,
+          'aria-hidden': icon && !slots[slotName] ? 'true' : undefined,
         },
         content,
       )

@@ -36,7 +36,7 @@ const gridStyle = computed(() => ({
 
 function changeClass(change: DiffTableRow['change']) {
   return cn(
-    'agent-native-button--block grid min-h-11 border-0 border-b border-[var(--varo-agent-border)] p-0 text-left last:border-b-0',
+    'grid min-h-11 border-0 border-b border-[var(--varo-agent-border)] p-0 text-left last:border-b-0',
     change === 'add' && 'bg-[var(--varo-agent-success-soft)]',
     change === 'remove' && 'bg-[var(--varo-agent-danger-soft)]',
     (!change || change === 'update') && 'bg-[var(--varo-agent-surface)]',
@@ -71,23 +71,25 @@ function changeMarkerClass(change: DiffTableRow['change']) {
     </view>
 
     <scroll-view scroll-x :show-scrollbar="false">
-      <view class="min-w-[620px]">
+      <view class="min-w-[620px]" role="table">
         <view class="grid border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)]" :style="gridStyle" role="row">
-          <text class="px-3 py-2.5 text-[10px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]">
+          <text class="px-3 py-2.5 text-[10px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]" role="columnheader">
             Change
           </text>
-          <text v-for="column in columns" :key="column.key" class="px-3 py-2.5 text-[10px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]">
+          <text v-for="column in columns" :key="column.key" class="px-3 py-2.5 text-[10px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]" role="columnheader">
             {{ column.label }}
           </text>
         </view>
-        <button v-for="row in rows" :key="row.id" class="agent-native-button" :class="changeClass(row.change)" :style="gridStyle" type="button" :data-change="row.change || 'update'" @click="emit('select', row)">
-          <text :class="changeMarkerClass(row.change)">
-            {{ changeMarker(row.change) }}
-          </text>
-          <text v-for="column in columns" :key="column.key" :class="cn('truncate px-3 py-3 text-[12px] text-[var(--varo-agent-foreground)]', row.change === 'remove' && 'line-through')">
+        <view v-for="row in rows" :key="row.id" :class="changeClass(row.change)" :style="gridStyle" role="row" :data-change="row.change || 'update'" @click="emit('select', row)">
+          <view :class="changeMarkerClass(row.change)" role="cell">
+            <button class="agent-native-button border-0 bg-transparent p-0" type="button" :aria-label="`Select row ${row.id}`" @click.stop="emit('select', row)">
+              {{ changeMarker(row.change) }}
+            </button>
+          </view>
+          <text v-for="column in columns" :key="column.key" :class="cn('truncate px-3 py-3 text-[12px] text-[var(--varo-agent-foreground)]', row.change === 'remove' && 'line-through')" role="cell">
             {{ agentTableCellValue(row, column.key) }}
           </text>
-        </button>
+        </view>
       </view>
     </scroll-view>
 

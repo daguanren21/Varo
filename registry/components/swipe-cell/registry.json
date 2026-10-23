@@ -47,5 +47,5 @@
       "to": "src/styles/varo-swipe-cell.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/swipe-cell"
 }

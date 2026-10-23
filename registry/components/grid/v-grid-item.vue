@@ -44,7 +44,7 @@ interface KeyboardLikeEvent {
 
 const grid = inject<GridContext | undefined>(gridContextKey, undefined)
 const hasNavigation = computed(() => Boolean(props.url || props.to))
-const navigationTarget = computed(() => (props.url ?? props.to))
+const navigationTarget = computed(() => (props.url || props.to))
 const clickable = computed(() => {
   if (props.clickable != null) { return props.clickable }
   if (grid !== undefined) { return grid.clickable }

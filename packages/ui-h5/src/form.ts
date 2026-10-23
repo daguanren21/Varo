@@ -36,7 +36,7 @@ interface FormItemControlContext {
 const formContextKey: InjectionKey<{
   form: UseFormReturn
   disabled: ComputedRef<boolean>
-  showError: boolean
+  showError: ComputedRef<boolean>
 }> = Symbol('varo-form')
 const formItemControlContextKey = 'varo-form-item-control' as unknown as InjectionKey<FormItemControlContext>
 
@@ -131,7 +131,7 @@ export const VForm = defineComponent({
     provide(formContextKey, {
       form,
       disabled: computed(() => props.disabled),
-      showError: props.showError,
+      showError: computed(() => props.showError),
     })
 
     async function submit(event?: Event) {
@@ -263,7 +263,7 @@ export const VFormItem = defineComponent({
       rules: mergedRules.value,
     })
     const invalid = computed(() => field.errorMessage.value.length > 0)
-    const shouldShowError = computed(() => props.showError ?? formContext.showError)
+    const shouldShowError = computed(() => props.showError ?? formContext.showError.value)
     const labelBasis = computed(() => normalizeLabelWidth(props.labelWidth))
     const itemId = `varo-form-item-${useId().replaceAll(':', '')}`
     const defaultControlId = `${itemId}-control`

@@ -2,6 +2,7 @@
   display: flex;
   gap: 9px;
   align-items: center;
+  min-width: 0;
   min-height: 42px;
   padding: 0 12px;
   font-size: 13px;

@@ -7,7 +7,7 @@ export interface PublicRef<T> {
 export interface VaroFormContext {
   form: UseFormReturn
   disabled: PublicRef<boolean>
-  showError: boolean
+  showError: PublicRef<boolean>
 }
 
 export interface VaroFormItemControlContext {

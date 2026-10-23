@@ -46,6 +46,7 @@ const safeTone = computed(() => props.tone || 'default')
 const safeVariant = computed(() => props.variant || 'soft')
 const checkableRole = computed(() => (props.checkable ? 'checkbox' : undefined))
 const checkableValue = computed(() => (props.checkable ? props.checked : undefined))
+const checkableTabIndex = computed(() => (props.checkable && !props.disabled ? 0 : undefined))
 
 function click(event: unknown) {
   if (props.disabled) { return }
@@ -56,8 +57,7 @@ function click(event: unknown) {
   emit('change', checked)
 }
 
-function close(event: { stopPropagation?: () => void }) {
-  event.stopPropagation?.()
+function close(event: unknown) {
   if (!props.disabled) { emit('close', event) }
 }
 </script>
@@ -65,8 +65,6 @@ function close(event: { stopPropagation?: () => void }) {
 <template>
   <view
     class="varo-tag"
-    :role="checkableRole"
-    :aria-checked="checkableValue"
     :aria-disabled="disabled"
     :data-checked="String(checked)"
     :data-disabled="String(disabled)"
@@ -76,10 +74,16 @@ function close(event: { stopPropagation?: () => void }) {
     :data-variant="safeVariant"
     @click="click"
   >
-    <view class="varo-tag__content">
+    <view
+      class="varo-tag__content"
+      :role="checkableRole"
+      :aria-checked="checkableValue"
+      :aria-disabled="disabled"
+      :tabindex="checkableTabIndex"
+    >
       <slot>{{ safeLabel }}</slot>
     </view>
-    <button v-if="closeable" class="varo-tag__close" type="button" :disabled="disabled" aria-label="Remove" @click="close">
+    <button v-if="closeable" class="varo-tag__close" type="button" :disabled="disabled" aria-label="Remove" @click.stop="close">
       <VIcon name="close" :size="12" />
     </button>
   </view>

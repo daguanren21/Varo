@@ -1,7 +1,8 @@
 import type { InjectionKey, PropType } from 'vue'
 import { createVariantClass } from '@varo-ui/headless'
 
-import { computed, defineComponent, h, inject, provide } from 'vue'
+import { computed, defineComponent, h, inject, mergeProps, provide } from 'vue'
+import { RadioGroup } from '../../lib/varo-primitives'
 import { VIcon } from './icon'
 
 export type SelectionDirection = 'horizontal' | 'vertical'
@@ -144,6 +145,7 @@ export const VCheckbox = defineComponent({
 
 export const VRadioGroup = defineComponent({
   name: 'VRadioGroup',
+  inheritAttrs: false,
   props: {
     disabled: Boolean,
     direction: {
@@ -161,7 +163,7 @@ export const VRadioGroup = defineComponent({
       disabled: () => props.disabled,
       isChecked: value => props.value === value,
       select: (value) => {
-        if (props.value === value) { return }
+        if (props.disabled || props.value === value) { return }
         emit('update:value', value)
         emit('change', value)
       },
@@ -169,20 +171,23 @@ export const VRadioGroup = defineComponent({
 
     return () =>
       h(
-        'div',
+        RadioGroup,
         {
           ...attrs,
+          'value': props.value,
+          'disabled': props.disabled,
           'class': ['varo-radio-group', attrs.class],
           'data-direction': props.direction,
           'data-disabled': String(props.disabled),
         },
-        slots.default?.() ?? [],
+        { default: () => slots.default?.() ?? [] },
       )
   },
 })
 
 export const VRadio = defineComponent({
   name: 'VRadio',
+  inheritAttrs: false,
   props: {
     checked: {
       type: Boolean as PropType<boolean | undefined>,
@@ -207,13 +212,15 @@ export const VRadio = defineComponent({
       createVariantClass('varo-radio', { checked: isChecked.value, disabled: isDisabled.value }),
     )
 
-    function select() {
-      if (isDisabled.value) { return }
+    function select(event: MouseEvent) {
+      if (isDisabled.value || event.defaultPrevented) { return }
 
       if (group) {
         group.select(props.value)
         return
       }
+
+      if (isChecked.value) { return }
 
       emit('update:checked', true)
       emit('change', props.value)
@@ -222,9 +229,8 @@ export const VRadio = defineComponent({
     return () =>
       h(
         'button',
-        {
-          ...attrs,
-          'class': [classes.value, attrs.class],
+        mergeProps(attrs, {
+          'class': classes.value,
           'type': 'button',
           'role': 'radio',
           'aria-checked': String(isChecked.value),
@@ -233,7 +239,7 @@ export const VRadio = defineComponent({
           'data-disabled': String(isDisabled.value),
           'disabled': isDisabled.value,
           'onClick': select,
-        },
+        }),
         [
           h('span', { 'class': 'varo-radio__icon', 'aria-hidden': 'true' }, [
             h('span', { class: 'varo-radio__dot' }),

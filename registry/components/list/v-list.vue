@@ -56,6 +56,7 @@ function requestLoad() {
 }
 
 function retry() {
+  if (props.disabled) { return }
   emit('retry')
 }
 
@@ -109,6 +110,7 @@ watch(
         v-else-if="props.errorText"
         class="varo-list__retry"
         type="button"
+        :disabled="props.disabled"
         @click="retry"
       >
         <slot name="error">

@@ -39,7 +39,7 @@ export const VAvatar = defineComponent({
     const dimension = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
     const style = computed<StyleValue>(() => ({ height: dimension.value, width: dimension.value }))
     const fallback = () =>
-      h('span', { 'class': 'varo-avatar__fallback', 'aria-hidden': props.alt ? undefined : 'true' }, slots.fallback?.() ?? props.fallback)
+      h('span', { 'class': 'varo-avatar__fallback', 'aria-hidden': props.alt || slots.fallback ? undefined : 'true' }, slots.fallback?.() ?? props.fallback)
 
     return () =>
       h(

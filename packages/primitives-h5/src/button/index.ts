@@ -5,7 +5,7 @@ import {
   usePressableRoot,
 } from '@varo-ui/headless'
 import { computed, defineComponent, h, toRef } from 'vue'
-import { callHandler } from '../vue-control'
+import { buttonKeyboardAttrs, callHandler } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useButtonRoot } from './hooks'
@@ -46,6 +46,7 @@ export const ButtonRoot = defineComponent({
     const rootAttrs = computed(() => ({
       ...attrs,
       ...pressable.attrs.root,
+      ...buttonKeyboardAttrs(props.as, attrs, pressable.state.interactive.value),
       'aria-busy': pressable.state.loading.value || undefined,
       'aria-disabled': !pressable.state.interactive.value || undefined,
       'data-disabled': String(pressable.state.disabled.value),
@@ -56,6 +57,7 @@ export const ButtonRoot = defineComponent({
       'type': props.as === 'button' ? props.nativeType ?? attrs.type ?? 'button' : undefined,
       'disabled': props.as === 'button' ? !pressable.state.interactive.value : undefined,
       'onClick': (event: MouseEvent) => {
+        if (event.defaultPrevented) { return }
         const allowed = pressable.events.click(event)
         if (allowed) {
           callHandler(attrs.onClick, event)

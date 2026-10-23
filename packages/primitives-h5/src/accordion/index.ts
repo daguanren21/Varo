@@ -7,7 +7,7 @@ import {
 
 } from '@varo-ui/headless'
 import { defineComponent, h, inject, provide, toRef, useId } from 'vue'
-import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useAccordionRoot } from './hooks'
@@ -129,6 +129,7 @@ export const AccordionTrigger = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, !item.disabled && accordion.state.interactive.value),
           ...accordion.api.getTriggerAttrs(item.value, item.disabled),
           disabled: props.as === 'button' ? item.disabled || accordion.state.disabled.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,

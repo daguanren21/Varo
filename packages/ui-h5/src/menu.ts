@@ -101,7 +101,7 @@ export const VMenuItem = defineComponent({
         return
       }
 
-      emit('update:modelValue', option.value)
+      if (props.modelValue !== option.value) { emit('update:modelValue', option.value) }
       emit('select', option.value, option)
       menu?.close()
     }

@@ -2,7 +2,7 @@ import type { UseCheckboxRootResult } from '@varo-ui/headless'
 import type { PropType } from 'vue'
 import { useCheckboxRoot } from '@varo-ui/headless'
 import { defineComponent, h, inject, provide, toRef } from 'vue'
-import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useCheckboxRoot } from './hooks'
@@ -57,6 +57,7 @@ export const CheckboxRoot = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, checkbox.state.interactive.value),
           ...checkbox.attrs.root,
           disabled: props.as === 'button' ? checkbox.state.disabled.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,

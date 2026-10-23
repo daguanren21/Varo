@@ -149,7 +149,9 @@ export class PreviewBackend extends glassEasel.CurrentWindowBackendContext {
     const target = event.target
     if (!(target instanceof HTMLElement) || target.matches('button, input, textarea, select, a[href]')) { return }
     const role = target.getAttribute('role')
-    if ((role === 'link' && event.key === 'Enter') || (role === 'button' && (event.key === 'Enter' || event.key === ' '))) {
+    const enterActivates = event.key === 'Enter' && (role === 'link' || role === 'button')
+    const spaceActivates = event.key === ' ' && (role === 'button' || role === 'checkbox' || role === 'radio' || role === 'switch')
+    if (enterActivates || spaceActivates) {
       event.preventDefault()
       target.click()
     }

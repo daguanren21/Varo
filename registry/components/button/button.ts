@@ -120,7 +120,7 @@ export const VButton = defineComponent({
           {
             'class': 'varo-button__icon',
             'data-position': props.iconPosition,
-            'aria-hidden': 'true',
+            'aria-hidden': slots.icon ? undefined : 'true',
           },
           icon,
         ),

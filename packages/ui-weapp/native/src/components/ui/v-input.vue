@@ -332,8 +332,6 @@ const wordLimit = computed(() => {
   return maxLength === undefined ? String(length) : `${length}/${maxLength}`
 })
 const ariaInvalid = computed(() => (field.state.invalid.value ? 'true' : undefined))
-const prefixAriaHidden = computed(() => (props.prefixIcon ? 'true' : undefined))
-const suffixAriaHidden = computed(() => (props.suffixIcon ? 'true' : undefined))
 const dataAutosize = computed(() => String(autosizeEnabled.value))
 const dataClearable = computed(() => String(props.clearable))
 const dataDisabled = computed(() => String(field.state.disabled.value))
@@ -504,10 +502,11 @@ function touchstart(event: unknown) {
       <view
         v-if="$slots.prefix || props.prefixIcon"
         class="varo-input__prefix"
-        :aria-hidden="prefixAriaHidden"
       >
         <slot name="prefix">
-          {{ props.prefixIcon }}
+          <text aria-hidden="true">
+            {{ props.prefixIcon }}
+          </text>
         </slot>
       </view>
       <textarea
@@ -644,10 +643,11 @@ function touchstart(event: unknown) {
       <view
         v-if="$slots.suffix || props.suffixIcon"
         class="varo-input__suffix"
-        :aria-hidden="suffixAriaHidden"
       >
         <slot name="suffix">
-          {{ props.suffixIcon }}
+          <text aria-hidden="true">
+            {{ props.suffixIcon }}
+          </text>
         </slot>
       </view>
     </view>

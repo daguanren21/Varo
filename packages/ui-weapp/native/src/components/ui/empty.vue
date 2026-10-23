@@ -28,10 +28,12 @@ const iconSize = computed(() => {
 
 <template>
   <view class="varo-empty" role="status" :data-size="size">
-    <view class="varo-empty__visual" aria-hidden="true">
+    <view class="varo-empty__visual">
       <slot name="image">
-        <VImage v-if="image" :src="image" width="100%" height="100%" fit="contain" />
-        <VIcon v-else :name="icon" :size="iconSize" />
+        <view style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%" aria-hidden="true">
+          <VImage v-if="image" :src="image" width="100%" height="100%" fit="contain" />
+          <VIcon v-else :name="icon" :size="iconSize" />
+        </view>
       </slot>
     </view>
     <text v-if="title || $slots.title" class="varo-empty__title">

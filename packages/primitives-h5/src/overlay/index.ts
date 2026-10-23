@@ -79,6 +79,7 @@ export const OverlayRoot = defineComponent({
         {
           ...attrs,
           ...overlay.attrs.root,
+          'aria-hidden': slots.default ? undefined : 'true',
           'class': attrs.class,
           'style': [attrs.style as StyleValue, style.value],
           'data-lock-scroll': String(props.lockScroll),

@@ -5,6 +5,8 @@ import { computed, provide } from 'wevu'
 import { cn } from '../../lib/cn'
 import { radioGroupKey } from './radio-context'
 
+defineOptions({ properties: { value: { type: null, value: null } } })
+
 const props = withDefaults(
   defineProps<{
     className?: ClassValue

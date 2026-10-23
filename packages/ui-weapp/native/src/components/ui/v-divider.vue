@@ -7,6 +7,8 @@ import { normalizeSize } from './layout-utils'
 
 type DividerContentPosition = 'left' | 'center' | 'right'
 
+defineOptions({ properties: { lineColor: { type: null, value: null } } })
+
 const props = withDefaults(
   defineProps<{
     borderColor?: string
@@ -23,6 +25,7 @@ const props = withDefaults(
     contentPosition: 'center',
     dashed: false,
     hairline: true,
+    lineColor: undefined,
     vertical: false,
   },
 )

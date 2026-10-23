@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { componentCatalogItems, componentDocsRoute, createComponentSidebarGroups } from './component-catalog'
@@ -15,6 +15,16 @@ describe('docs navigation', () => {
         expect(links.some(link => link.link === route), route).toBe(true)
         expect(existsSync(resolve(docsRoot, `${route.slice(1)}.md`)), route).toBe(true)
       }
+    }
+  })
+
+  it('makes every public base Registry component discoverable', () => {
+    const registryRoot = resolve(workspaceRoot, 'registry/components')
+    const owners = new Set(componentCatalogItems.map(item => item.id === 'calendar-card' ? 'calendar' : item.id))
+    for (const entry of readdirSync(registryRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory() || entry.name.startsWith('agent-') || entry.name === 'theme-provider') { continue }
+      const manifest = JSON.parse(readFileSync(resolve(registryRoot, entry.name, 'registry.json'), 'utf8')) as { type: string }
+      if (manifest.type === 'component') { expect(owners.has(entry.name), entry.name).toBe(true) }
     }
   })
 

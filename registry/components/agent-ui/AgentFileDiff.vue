@@ -17,6 +17,8 @@ import {
 // Preserve absent controlled props instead of native false/empty-string defaults.
 defineOptions({
   properties: {
+    additions: { type: null, value: null },
+    deletions: { type: null, value: null },
     open: { type: null, value: null },
     view: { type: null, value: null },
     lineNumbers: { type: null, value: null },

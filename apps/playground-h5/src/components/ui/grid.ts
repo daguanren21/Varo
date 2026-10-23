@@ -128,7 +128,7 @@ export const VGridItem = defineComponent({
         {
           ...attrs,
           'class': ['varo-grid__item', attrs.class],
-          'href': props.url ?? props.to,
+          'href': props.url || props.to,
           'role': clickable.value && tag.value === 'div' ? 'button' : undefined,
           'style': [attrs.style as StyleValue, style.value],
           'tabindex': clickable.value && tag.value === 'div' ? 0 : undefined,

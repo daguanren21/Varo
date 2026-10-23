@@ -50,7 +50,10 @@ const emit = defineEmits<{
 
 const draftValue = shallowRef(props.value ?? undefined)
 const classes = computed(() => cn('varo-date-field', props.className))
-const columns = computed(() => buildDateFieldColumns(draftValue.value, props.minYear, props.maxYear))
+const inactive = computed(() => props.disabled || props.readonly)
+const columns = computed(() => buildDateFieldColumns(draftValue.value, props.minYear, props.maxYear).map(column =>
+  inactive.value ? column.map(option => ({ ...option, disabled: true })) : column,
+))
 const pickerValue = computed(() => parseDateFieldValue(draftValue.value))
 const controlLabel = computed(() => props.value || props.placeholder)
 const valueClass = computed(() => props.value ? 'varo-date-field__value' : 'varo-date-field__placeholder')
@@ -82,12 +85,14 @@ function open() {
 }
 
 function onChange(payload: { value: string | number | Array<string | number | undefined> | undefined }) {
+  if (inactive.value || !props.visible) { return }
   const next = toDate(payload.value)
   draftValue.value = next
   emit('change', next)
 }
 
 function onConfirm(payload: { value: string | number | Array<string | number | undefined> | undefined }) {
+  if (inactive.value || !props.visible) { return }
   const next = toDate(payload.value)
   draftValue.value = next
   emit('update:value', next)
@@ -132,6 +137,7 @@ function onUpdateVisible(visible: boolean) {
       :cancel-text="props.cancelText"
       :columns="columns"
       :confirm-text="props.confirmText"
+      :confirm-disabled="inactive"
       :title="props.title"
       :value="pickerValue"
       :visible="props.visible"

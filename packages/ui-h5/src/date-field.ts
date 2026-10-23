@@ -46,7 +46,10 @@ export const VDateField = defineComponent({
   emits: ['update:value', 'update:visible', 'confirm', 'cancel', 'change'],
   setup(props, { attrs, emit }) {
     const draftValue = shallowRef(props.value)
-    const columns = computed(() => buildDateFieldColumns(draftValue.value, props.minYear, props.maxYear))
+    const inactive = computed(() => props.disabled || props.readonly)
+    const columns = computed(() => buildDateFieldColumns(draftValue.value, props.minYear, props.maxYear).map(column =>
+      inactive.value ? column.map(option => ({ ...option, disabled: true })) : column,
+    ))
     const pickerValue = computed(() => parseDateFieldValue(draftValue.value))
 
     watch(() => props.value, (value) => {
@@ -72,6 +75,7 @@ export const VDateField = defineComponent({
     }
 
     function onChange(payload: { value: string | number | Array<string | number | undefined> | undefined }) {
+      if (inactive.value || !props.visible) { return }
       const values = Array.isArray(payload.value) ? payload.value : [payload.value]
       const next = toDate(values)
       draftValue.value = next
@@ -79,6 +83,7 @@ export const VDateField = defineComponent({
     }
 
     function onConfirm(payload: { value: string | number | Array<string | number | undefined> | undefined }) {
+      if (inactive.value || !props.visible) { return }
       const values = Array.isArray(payload.value) ? payload.value : [payload.value]
       const next = toDate(values)
       draftValue.value = next
@@ -124,6 +129,7 @@ export const VDateField = defineComponent({
           'class': 'varo-date-field__picker',
           'columns': columns.value as PickerOption[][],
           'confirmText': props.confirmText,
+          'confirmDisabled': inactive.value,
           'title': props.title,
           'value': pickerValue.value,
           'visible': props.visible,

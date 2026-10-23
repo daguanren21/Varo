@@ -58,7 +58,7 @@ const slotField = field as unknown as Record<string, unknown>
 const slotValidate = field.validate as (trigger?: FormValidateTrigger) => Promise<{ errors: string[], valid: boolean }>
 const slotValue = field.value as PublicRef<unknown>
 const invalid = computed(() => field.errorMessage.value.length > 0)
-const shouldShowError = computed(() => props.showError ?? formContext.showError)
+const shouldShowError = computed(() => props.showError ?? formContext.showError.value)
 const itemId = createFormItemId()
 const defaultControlId = `${itemId}-control`
 const controlId = shallowRef(defaultControlId)

@@ -161,7 +161,7 @@ function selectBreadcrumb(payload: { index: number }) {
         </section>
       </DocsDeviceFrame>
 
-      <template v-else-if="component === 'drawer'">
+      <DocsDeviceFrame v-else-if="component === 'drawer'" overflow>
         <section class="additional-component-demo__section" data-docs-case="basic">
           <h3>{{ copy.basic }}</h3>
           <div class="additional-component-demo__row">
@@ -203,9 +203,9 @@ function selectBreadcrumb(payload: { index: number }) {
             </div>
           </VDrawer>
         </section>
-      </template>
+      </DocsDeviceFrame>
 
-      <template v-else-if="component === 'breadcrumb'">
+      <DocsDeviceFrame v-else-if="component === 'breadcrumb'">
         <section class="additional-component-demo__section" data-docs-case="basic">
           <h3>{{ copy.basic }}</h3>
           <VBreadcrumb :items="copy.breadcrumbItems" :label="copy.breadcrumbLabel" @select="selectBreadcrumb" />
@@ -230,7 +230,7 @@ function selectBreadcrumb(payload: { index: number }) {
           <VBreadcrumb :items="disabledBreadcrumbItems" :label="copy.breadcrumbLabel" @select="selectBreadcrumb" />
         </section>
         <output v-if="breadcrumbMessage" class="additional-component-demo__value" data-docs-result="breadcrumb" role="status">{{ breadcrumbMessage }}</output>
-      </template>
+      </DocsDeviceFrame>
     </div>
   </ComponentPlatformDemo>
 </template>

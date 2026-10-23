@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { VWatermark } from '@varo-ui/h5'
 import { computed, shallowRef } from 'vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 
 const props = withDefaults(defineProps<{ locale?: 'en' | 'zh' }>(), {
   locale: 'zh',
@@ -25,43 +26,44 @@ const copy = computed(() => props.locale === 'en'
 </script>
 
 <template>
-  <section class="watermark-demo">
-    <VWatermark
-      :content="copy.label"
-      color="var(--varo-ui-text)"
-      :font-size="13"
-      :gap-x="170"
-      :gap-y="92"
-      :opacity="0.18"
-      :rotate="-20"
-    >
-      <article class="watermark-demo__document">
-        <header>
-          <div>
-            <span>VARO FINANCE</span>
-            <h3>{{ copy.title }}</h3>
+  <DocsDeviceFrame>
+    <section class="watermark-demo">
+      <VWatermark
+        :content="copy.label"
+        color="var(--varo-ui-text)"
+        :font-size="13"
+        :gap-x="170"
+        :gap-y="92"
+        :opacity="0.18"
+        :rotate="-20"
+      >
+        <article class="watermark-demo__document">
+          <header>
+            <div>
+              <span>VARO FINANCE</span>
+              <h3>{{ copy.title }}</h3>
+            </div>
+            <strong>Q3 / 2026</strong>
+          </header>
+          <div class="watermark-demo__amount">
+            <span>{{ copy.amount }}</span>
+            <strong>¥ 482,600</strong>
           </div>
-          <strong>Q3 / 2026</strong>
-        </header>
-        <div class="watermark-demo__amount">
-          <span>{{ copy.amount }}</span>
-          <strong>¥ 482,600</strong>
-        </div>
-        <footer>
-          <span>{{ copy.owner }}</span>
-          <button type="button" @click="actionCount += 1">
-            {{ copy.action }} · {{ actionCount }}
-          </button>
-        </footer>
-      </article>
-    </VWatermark>
-  </section>
+          <footer>
+            <span>{{ copy.owner }}</span>
+            <button type="button" @click="actionCount += 1">
+              {{ copy.action }} · {{ actionCount }}
+            </button>
+          </footer>
+        </article>
+      </VWatermark>
+    </section>
+  </DocsDeviceFrame>
 </template>
 
 <style scoped>
 .watermark-demo {
-  width: min(100%, 620px);
-  margin: 16px 0 24px;
+  min-width: 0;
   border: 1px solid var(--varo-border);
   border-radius: 14px;
 }
@@ -77,6 +79,7 @@ const copy = computed(() => props.locale === 'en'
 .watermark-demo__document header,
 .watermark-demo__document footer {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: center;
   justify-content: space-between;
