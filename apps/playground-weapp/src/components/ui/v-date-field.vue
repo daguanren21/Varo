@@ -5,6 +5,12 @@ import { cn } from '../../lib/cn'
 import { buildDateFieldColumns, dateFieldValue, parseDateFieldValue } from './date-utils'
 import VPicker from './v-picker.vue'
 
+defineOptions({
+  properties: {
+    value: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     cancelText?: string
@@ -16,7 +22,7 @@ const props = withDefaults(
     placeholder?: string
     readonly?: boolean
     title?: string
-    value?: string
+    value?: string | null
     visible?: boolean
   }>(),
   {
@@ -42,22 +48,22 @@ const emit = defineEmits<{
   'update:visible': [visible: boolean]
 }>()
 
-const draftValue = shallowRef(props.value)
+const draftValue = shallowRef(props.value ?? undefined)
 const classes = computed(() => cn('varo-date-field', props.className))
 const columns = computed(() => buildDateFieldColumns(draftValue.value, props.minYear, props.maxYear))
 const pickerValue = computed(() => parseDateFieldValue(draftValue.value))
-const controlLabel = computed(() => props.value ?? props.placeholder)
+const controlLabel = computed(() => props.value || props.placeholder)
 const valueClass = computed(() => props.value ? 'varo-date-field__value' : 'varo-date-field__placeholder')
 const dataDisabled = computed(() => String(props.disabled))
 const dataOpen = computed(() => String(props.visible))
 const dataReadonly = computed(() => String(props.readonly))
 
 watch(() => props.value, (value) => {
-  draftValue.value = value
+  draftValue.value = value ?? undefined
 })
 watch(() => props.visible, (visible) => {
   if (visible) {
-    draftValue.value = props.value
+    draftValue.value = props.value ?? undefined
   }
 })
 
@@ -71,7 +77,7 @@ function open() {
   if (props.disabled || props.readonly) {
     return
   }
-  draftValue.value = props.value
+  draftValue.value = props.value ?? undefined
   emit('update:visible', true)
 }
 
@@ -89,13 +95,13 @@ function onConfirm(payload: { value: string | number | Array<string | number | u
 }
 
 function onCancel() {
-  draftValue.value = props.value
+  draftValue.value = props.value ?? undefined
   emit('cancel')
 }
 
 function onUpdateVisible(visible: boolean) {
   if (!visible) {
-    draftValue.value = props.value
+    draftValue.value = props.value ?? undefined
   }
   emit('update:visible', visible)
 }

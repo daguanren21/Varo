@@ -2,6 +2,12 @@
 
 `VTimeField` 复用 [Picker](/components/picker) 选择小时和分钟。值使用严格的 24 小时制 `HH:mm`，不包含秒、时区或 12 小时制转换。
 
+## 演示
+
+<ComponentPlatformDemo component="time-field" locale="zh">
+  <TimeFieldDemo locale="zh" />
+</ComponentPlatformDemo>
+
 ## 基本用法
 
 ```vue

@@ -220,6 +220,44 @@ page {
   color: var(--varo-ui-text);
 }
 
+.docs-cell-demo {
+  font-family:
+    Inter,
+    'SF Pro Text',
+    'PingFang SC',
+    -apple-system,
+    system-ui,
+    'Segoe UI',
+    sans-serif;
+  line-height: 24px;
+}
+
+.docs-cell-demo .varo-cell-group__title,
+.docs-cell-demo .varo-cell__desc {
+  font-size: 13.12px;
+}
+
+.docs-cell-demo .varo-cell-group__desc,
+.docs-cell-demo .varo-cell__subtitle {
+  font-size: 12.16px;
+}
+
+.docs-cell-demo .varo-cell__title {
+  font-size: 14.4px;
+}
+
+.docs-cell-demo .varo-cell-group__body {
+  border-radius: 8px;
+  box-shadow: var(--docs-cell-shadow);
+}
+
+.docs-cell-demo .varo-avatar {
+  font-size: 13.12px;
+  color: var(--varo-ui-primary-foreground);
+  background: var(--varo-ui-primary);
+  border-radius: 10px;
+}
+
 .docs-demo__section {
   min-width: 0;
   padding: 20px 0;

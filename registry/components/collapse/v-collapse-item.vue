@@ -5,6 +5,10 @@ import { cn } from '../../lib/cn'
 import { useCollapseContext } from './collapse-context'
 import VIcon from './v-icon.vue'
 
+defineOptions({
+  options: { virtualHost: true },
+})
+
 const props = withDefaults(
   defineProps<{
     className?: ClassValue

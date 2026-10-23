@@ -141,7 +141,7 @@ export const VGridItem = defineComponent({
           'onKeydown': keydown,
         },
         [
-          props.icon || slots.icon || props.badge || props.dot
+          props.icon || slots.icon || props.badge != null || props.dot
             ? h('span', { class: 'varo-grid__icon-wrap' }, [
                 slots.icon?.() ?? (props.icon ? h('span', { class: 'varo-grid__icon' }, props.icon) : null),
                 props.badge != null ? h('sup', { 'class': 'varo-grid__badge', 'data-wide': String(badgeWide.value) }, badgeText.value) : null,

@@ -28,13 +28,15 @@ export const AgentLoading = defineComponent({
     active: { type: Boolean, default: true },
     label: { type: String, default: 'Agent 正在处理' },
     startedAt: Number,
-    variant: { type: String as PropType<'dots' | 'grid' | 'orbit'>, default: 'dots' },
+    variant: { type: String as PropType<'dots' | 'grid' | 'orbit'>, default: 'grid' },
   },
   setup(props) {
     const elapsed = shallowRef(0)
+    const mountedAt = Date.now()
+    const pixels = computed(() => Array.from({ length: props.variant === 'grid' ? 9 : 3 }, (_, index) => index + 1))
     let timer: ReturnType<typeof setInterval> | undefined
     const update = () => {
-      const startedAt = props.startedAt ?? Date.now() - elapsed.value * 1000
+      const startedAt = props.startedAt ?? mountedAt
       elapsed.value = Math.max(0, (Date.now() - startedAt) / 1000)
     }
     const stop = () => {
@@ -50,11 +52,24 @@ export const AgentLoading = defineComponent({
     onMounted(start)
     onBeforeUnmount(stop)
 
-    return () => h('div', { class: 'agent-loading flex min-h-12 items-center gap-3 text-[var(--varo-agent-foreground)]', role: 'status' }, [
-      h('span', { 'class': 'agent-ui__loading flex h-6 w-8 items-center justify-center gap-1', 'aria-hidden': 'true' }, Array.from({ length: props.variant === 'grid' ? 6 : 3 }, (_, index) =>
-        h('i', { class: 'h-1.5 w-1.5 rounded-full bg-[var(--varo-agent-primary)]', style: { animationDelay: `${index * 80}ms` } }))),
-      h('span', { class: 'min-w-0 flex-1 truncate text-[13px] font-semibold' }, props.label),
-      h('span', { class: 'text-[12px] tabular-nums text-[var(--varo-agent-muted)]' }, `${elapsed.value.toFixed(1)}s`),
+    return () => h('div', { 'class': 'agent-loading flex min-h-12 items-center gap-3 text-[var(--varo-agent-foreground)]', 'data-active': String(props.active), 'role': 'status' }, [
+      props.variant === 'orbit'
+        ? h('span', { 'class': 'agent-loading__orbit relative h-[30px] w-[30px] flex-none rounded-full border border-[var(--varo-agent-border-strong)]', 'aria-hidden': 'true' }, [
+            h('i', { class: 'agent-loading__orbit-dot absolute left-1/2 top-[-2px] h-2 w-2 -translate-x-1/2 rounded-full bg-[var(--varo-agent-primary)]' }),
+          ])
+        : h('span', {
+            'class': props.variant === 'dots'
+              ? 'flex h-5 w-[30px] flex-none items-center gap-1 bg-transparent'
+              : 'box-border grid h-[30px] w-[30px] flex-none grid-cols-3 grid-rows-3 gap-[3px] rounded-[10px] bg-[var(--varo-agent-fill)] p-1',
+            'aria-hidden': 'true',
+          }, pixels.value.map(index => h('i', {
+            class: ['agent-loading__pixel block flex-none bg-[var(--varo-agent-primary)] opacity-20', props.variant === 'dots' ? 'h-1.5 w-1.5 rounded-full' : 'h-full w-full rounded-sm'],
+            style: { animationDelay: `${index * 45}ms` },
+          }))),
+      h('span', { class: 'flex min-w-0 flex-1 items-baseline justify-between gap-3' }, [
+        h('span', { class: 'min-w-0 truncate text-[13px] font-semibold' }, props.label),
+        h('span', { class: 'flex-none text-[12px] tabular-nums text-[var(--varo-agent-muted)]' }, `${elapsed.value.toFixed(1)}s`),
+      ]),
     ])
   },
 })
@@ -72,7 +87,7 @@ export const AgentMessage = defineComponent({
       'data-role': props.role,
     }, [
       props.role !== 'user' ? h('span', { 'class': 'grid h-8 w-8 flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-black text-[var(--varo-agent-primary-foreground)]', 'aria-hidden': 'true' }, 'V') : null,
-      h('div', { class: ['grid min-w-0 max-w-[82%] gap-1', props.role === 'user' && 'justify-items-end'] }, [
+      h('div', { class: ['agent-message__column grid min-w-0 max-w-[82%] gap-1', props.role === 'user' && 'justify-items-end'] }, [
         props.label || props.timestamp
           ? h('header', { class: 'flex w-full items-center justify-between gap-3 px-1 text-[11px] text-[var(--varo-agent-muted)]' }, [
               h('span', props.label || (props.role === 'assistant' ? 'Varo Agent' : props.role === 'user' ? '你' : '系统')),
@@ -84,7 +99,9 @@ export const AgentMessage = defineComponent({
             'min-w-11 max-w-full overflow-hidden break-words border px-3.5 py-2.5 shadow-sm',
             props.role === 'user'
               ? 'rounded-[16px_4px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)]'
-              : 'rounded-[4px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]',
+              : props.role === 'system'
+                ? 'rounded-[4px_16px_16px_16px] border-dashed border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] text-[var(--varo-agent-foreground)]'
+                : 'rounded-[4px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]',
           ],
         }, slots.default?.()),
       ]),

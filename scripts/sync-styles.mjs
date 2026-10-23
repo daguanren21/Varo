@@ -45,6 +45,7 @@ const components = [
   ['tabs', 'h5.css', 'weapp-vite.css'],
   ['icon', 'style.css', 'style.css'],
   ['card', 'h5.css', 'weapp-vite.css'],
+  ['cell', 'h5.css', 'weapp-vite.css'],
   ['avatar', 'style.css', 'style.css'],
   ['badge', 'style.css', 'style.css'],
   ['tag', 'h5.css', 'weapp-vite.css'],

@@ -83,6 +83,15 @@ describe('ui-weapp form controls', () => {
     expect(numberUpdate).toHaveBeenCalledWith(5)
     expect(number.get<HTMLInputElement>('input').element.value).toBe('5')
     expect(rateUpdate).toHaveBeenCalledWith(3)
+
+    await rate.setProps({ value: 3 })
+    expect(rate.findAll('[role="radio"][aria-checked="true"]').map(item => item.attributes('aria-label'))).toEqual(['3'])
+    expect(rate.findAll('[role="radio"][data-active="true"]')).toHaveLength(3)
+    await rate.setProps({ value: 0 })
+    expect(rate.findAll('[role="radio"][aria-checked="true"]')).toHaveLength(0)
+    expect(rate.findAll('[role="radio"][data-active="true"]')).toHaveLength(0)
+    rate.unmount()
+    number.unmount()
   })
 
   it.each([

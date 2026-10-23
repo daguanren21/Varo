@@ -7,7 +7,7 @@
   list-style: none;
 }
 
-.varo-breadcrumb__list {
+.varo-breadcrumb .varo-breadcrumb__list {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -16,11 +16,12 @@
   list-style: none;
 }
 
-.varo-breadcrumb__item {
+.varo-breadcrumb__list .varo-breadcrumb__item {
   display: inline-flex;
   flex: none;
   gap: 2px;
   align-items: center;
+  margin: 0;
 }
 
 .varo-breadcrumb__link,

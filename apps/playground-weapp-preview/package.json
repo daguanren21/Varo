@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "exports": {
-    "./docs-scenarios": "./src/docs-scenarios.ts"
+    "./docs-scenarios": "./src/docs-scenarios.ts",
+    "./preview-loading": "./src/components/PreviewLoading.vue"
   },
   "scripts": {
     "prepare:artifacts": "node scripts/prepare-artifacts.mjs",

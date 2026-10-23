@@ -2,6 +2,7 @@
   position: relative;
   display: inline-flex;
   min-width: 0;
+  max-width: 100%;
   color: var(--varo-ui-text);
 }
 
@@ -20,6 +21,8 @@
   display: inline-flex;
   gap: 8px;
   align-items: center;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .varo-input-otp__cell {
@@ -28,6 +31,7 @@
   align-items: center;
   justify-content: center;
   width: 44px;
+  min-width: 0;
   height: 44px;
   font-size: 20px;
   font-weight: 650;
@@ -52,6 +56,7 @@
 }
 
 .varo-input-otp__separator {
+  flex-shrink: 0;
   color: var(--varo-ui-text-muted);
 }
 

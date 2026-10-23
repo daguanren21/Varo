@@ -2,6 +2,12 @@
 
 `VTimeField` uses [Picker](/en/components/picker) to select hours and minutes. Values use strict 24-hour `HH:mm` strings. The component does not support seconds, time zones, or 12-hour conversion.
 
+## Demo
+
+<ComponentPlatformDemo component="time-field" locale="en">
+  <TimeFieldDemo locale="en" />
+</ComponentPlatformDemo>
+
 ## Basic usage
 
 ```vue

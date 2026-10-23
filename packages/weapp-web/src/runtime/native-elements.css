@@ -17,12 +17,19 @@ wx-button {
 
 wx-button > .varo-native-button__control {
   box-sizing: border-box;
-  display: flex;
+  display: inherit;
   flex: 1 1 auto;
+  flex-direction: inherit;
+  flex-wrap: inherit;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  grid-auto-flow: inherit;
   gap: inherit;
+  align-content: inherit;
   align-items: inherit;
   align-self: stretch;
   justify-content: inherit;
+  justify-items: inherit;
   width: 100%;
   min-width: 0;
   min-height: 100%;
@@ -117,9 +124,14 @@ wx-navigator > .varo-native-navigator__control {
   flex: 1 1 auto;
   flex-direction: inherit;
   flex-wrap: inherit;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  grid-auto-flow: inherit;
   gap: inherit;
+  align-content: inherit;
   align-items: inherit;
   justify-content: inherit;
+  justify-items: inherit;
   width: 100%;
   min-width: 0;
   margin: 0;

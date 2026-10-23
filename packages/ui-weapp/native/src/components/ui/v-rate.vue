@@ -9,6 +9,7 @@ interface RenderedRateItem {
   activeData: string
   ariaChecked: boolean
   ariaLabel: string
+  starClass: string
   value: number
 }
 
@@ -36,6 +37,17 @@ const emit = defineEmits<{
   'update:value': [value: number]
 }>()
 
+const starStyle = {
+  'maskImage': 'var(--varo-rate-star-mask)',
+  'maskPosition': 'center',
+  'maskRepeat': 'no-repeat',
+  'maskSize': 'contain',
+  '-webkit-mask-image': 'var(--varo-rate-star-mask)',
+  '-webkit-mask-position': 'center',
+  '-webkit-mask-repeat': 'no-repeat',
+  '-webkit-mask-size': 'contain',
+}
+
 const classes = computed(() =>
   cn(
     createVariantClass('varo-rate', {
@@ -55,7 +67,8 @@ const items = computed<RenderedRateItem[]>(() =>
       active,
       activeData: String(active),
       ariaLabel: String(value),
-      ariaChecked: active,
+      ariaChecked: value === props.value,
+      starClass: active ? 'varo-rate__star varo-rate__star--filled' : 'varo-rate__star',
       value,
     }
   }),
@@ -90,9 +103,7 @@ function update(next: number) {
       @click="update(item.value)"
     >
       <slot name="icon" :active="item.active" :value="item.value">
-        <view class="varo-rate__star" :data-active="item.activeData" aria-hidden="true">
-          <view v-if="!item.active" class="varo-rate__star-cutout" />
-        </view>
+        <view :class="item.starClass" :style="starStyle" :data-active="item.activeData" aria-hidden="true" />
       </slot>
     </button>
   </view>
@@ -100,22 +111,16 @@ function update(next: number) {
 
 <style>
 .varo-rate__star {
-  position: relative;
+  --varo-rate-star-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l2.78 5.63L21 9.54l-4.5 4.39L17.56 20 12 17.13 6.44 20l1.06-6.07L3 9.54l6.22-.91Z' fill='none' stroke='%23000' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E");
+
   display: block;
   width: 1em;
   height: 1em;
   background: currentcolor;
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 94%, 50% 72%, 21% 94%, 32% 57%, 2% 35%, 39% 35%);
 }
 
-.varo-rate__star-cutout {
-  position: absolute;
-  top: 22%;
-  left: 22%;
-  width: 56%;
-  height: 56%;
-  background: var(--varo-ui-bg, #fff);
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 94%, 50% 72%, 21% 94%, 32% 57%, 2% 35%, 39% 35%);
+.varo-rate__star--filled {
+  --varo-rate-star-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l2.78 5.63L21 9.54l-4.5 4.39L17.56 20 12 17.13 6.44 20l1.06-6.07L3 9.54l6.22-.91Z'/%3E%3C/svg%3E");
 }
 </style>
 

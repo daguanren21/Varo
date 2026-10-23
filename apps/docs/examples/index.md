@@ -27,9 +27,9 @@
 
 Registry 是默认采用路径；从[安装指南](/guide/installation)开始，再按目标生成源码。
 
-## H5 Live 与原生源码证据
+## H5 与小程序实时预览
 
-H5 标签运行可直接操作的 `@varo-ui/h5` 浏览器组件；原生标签只展示目标 Wevu SFC 源码与支持信息，不用 Vue 模拟小程序，也不运行原生运行时。
+H5 标签运行可直接操作的 `@varo-ui/h5` 浏览器组件；小程序标签在手机容器中运行已编译的 Wevu 页面。切换时显示与主题一致的加载骨架，就绪后展示交互内容；加载失败时可重试，也可展开查看 Registry 源码。浏览器预览不代替微信开发者工具或真机验证。
 
 <PlatformTabsDemo example="overview" locale="zh" />
 

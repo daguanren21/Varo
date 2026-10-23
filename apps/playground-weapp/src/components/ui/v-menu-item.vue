@@ -6,24 +6,9 @@ import { cn } from '../../lib/cn'
 import { createMenuPopupId, menuContextKey } from './menu-context'
 import VIcon from './v-icon.vue'
 
-interface MenuOption {
-  text: string
-  value: MenuName
-  disabled?: boolean
-  icon?: string
-}
-
-interface KeyboardLikeEvent {
-  detail?: { key?: string }
-  key?: string
-  preventDefault?: () => void
-}
-
-interface RenderedMenuOption {
-  active: boolean
-  dataActive: string
-  option: MenuOption
-}
+defineOptions({
+  options: { virtualHost: true },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -44,6 +29,25 @@ const emit = defineEmits<{
   'select': [payload: [value: MenuName, option: MenuOption]]
   'update:modelValue': [value: MenuName]
 }>()
+
+interface MenuOption {
+  text: string
+  value: MenuName
+  disabled?: boolean
+  icon?: string
+}
+
+interface KeyboardLikeEvent {
+  detail?: { key?: string }
+  key?: string
+  preventDefault?: () => void
+}
+
+interface RenderedMenuOption {
+  active: boolean
+  dataActive: string
+  option: MenuOption
+}
 
 const menu = inject<MenuContext>(menuContextKey)
 const open = computed(() => Boolean(menu && menu.activeName.value === props.name))

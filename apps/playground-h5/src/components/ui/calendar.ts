@@ -6,6 +6,10 @@ import '../../styles/varo.css'
 import '../../styles/varo-icon.css'
 import '../../styles/varo-calendar.css'
 
+function isDateDisabled(date: string, minDate: string | undefined, maxDate: string | undefined) {
+  return Boolean((minDate && date < minDate) || (maxDate && date > maxDate))
+}
+
 export const VCalendarCard = defineComponent({
   name: 'VCalendarCard',
   props: {
@@ -39,17 +43,13 @@ export const VCalendarCard = defineComponent({
       },
     )
 
-    function isDisabled(date: string) {
-      return Boolean((props.minDate && date < props.minDate) || (props.maxDate && date > props.maxDate))
-    }
-
     function updateMonth(month: string) {
       currentMonth.value = month
       emit('update:month', month)
     }
 
     function select(date: string) {
-      if (isDisabled(date)) { return }
+      if (isDateDisabled(date, props.minDate, props.maxDate)) { return }
       emit('update:value', date)
       emit('select', date)
     }
@@ -74,7 +74,7 @@ export const VCalendarCard = defineComponent({
                 'type': 'button',
                 'data-active': String(day.date === props.value),
                 'data-date': day.date,
-                'disabled': isDisabled(day.date),
+                'disabled': isDateDisabled(day.date, props.minDate, props.maxDate),
                 'onClick': () => select(day.date),
               },
               String(day.day),
@@ -92,6 +92,14 @@ export const VCalendar = defineComponent({
       type: String,
       default: 'Confirm',
     },
+    maxDate: {
+      type: String,
+      default: undefined,
+    },
+    minDate: {
+      type: String,
+      default: undefined,
+    },
     month: {
       type: String,
       default: undefined,
@@ -106,6 +114,8 @@ export const VCalendar = defineComponent({
   setup(props, { emit }) {
     const selected = shallowRef(props.value)
     const currentMonth = shallowRef(normalizeMonth(props.month ?? props.value))
+    const canConfirm = computed(() => selected.value === undefined
+      || !isDateDisabled(selected.value, props.minDate, props.maxDate))
 
     watch(
       () => props.value,
@@ -121,6 +131,7 @@ export const VCalendar = defineComponent({
     )
 
     function select(date: string) {
+      if (isDateDisabled(date, props.minDate, props.maxDate)) { return }
       selected.value = date
       emit('select', date)
       emit('update:value', date)
@@ -130,6 +141,8 @@ export const VCalendar = defineComponent({
       props.visible
         ? h('div', { class: 'varo-calendar' }, [
             h(VCalendarCard, {
+              'maxDate': props.maxDate,
+              'minDate': props.minDate,
               'month': currentMonth.value,
               'value': selected.value,
               'onUpdate:month': (month: string) => {
@@ -142,7 +155,9 @@ export const VCalendar = defineComponent({
               {
                 class: 'varo-calendar__confirm',
                 type: 'button',
+                disabled: !canConfirm.value,
                 onClick: () => {
+                  if (!canConfirm.value) { return }
                   emit('confirm', selected.value)
                   emit('update:visible', false)
                 },

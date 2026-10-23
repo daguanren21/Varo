@@ -12,6 +12,7 @@ import VDialogContent from '../../components/ui/v-dialog-content.vue'
 import VDialogOverlay from '../../components/ui/v-dialog-overlay.vue'
 import VDialogRoot from '../../components/ui/v-dialog-root.vue'
 import VDialogTrigger from '../../components/ui/v-dialog-trigger.vue'
+import VFileType from '../../components/ui/v-file-type.vue'
 import VIcon from '../../components/ui/v-icon.vue'
 import VImage from '../../components/ui/v-image.vue'
 import VInput from '../../components/ui/v-input.vue'
@@ -306,6 +307,16 @@ const cardVariants = computed(() => [
   { value: 'muted' as const, label: copy.value.cardMuted },
 ])
 const iconNames = ['back', 'check', 'close', 'search', 'plus', 'minus', 'menu', 'more', 'location', 'chevron-left', 'chevron-right', 'chevron-up', 'chevron-down']
+const fileTypeFiles = ['report.pdf', 'budget.xlsx', 'photo.png', 'audio.mp3', 'archive.zip', 'source.ts']
+const fileTypeSizes = ['sm', 'md', 'lg'] as const
+const fileTypeCopy = computed(() => en.value
+  ? { common: 'Common formats', fallback: 'Names and MIME fallback', sizes: 'Icon sizes', special: 'Special filename', unknown: 'Unknown format', pdf: 'PDF document' }
+  : { common: '常见格式', fallback: '文件名与 MIME 回退', sizes: '图标尺寸', special: '特殊文件名', unknown: '未知格式', pdf: 'PDF 文档' })
+const fileTypeFallbacks = computed(() => [
+  { filename: 'download', mimeType: 'image/png', description: 'MIME: image/png' },
+  { filename: '.env.local', mimeType: '', description: fileTypeCopy.value.special },
+  { filename: 'asset.custom', mimeType: '', description: fileTypeCopy.value.unknown },
+])
 const iconTones = [
   { name: 'info', tone: 'default' },
   { name: 'info', tone: 'primary' },
@@ -717,6 +728,53 @@ const overviewCurrentValue = computed(() => overviewName.value || overviewCopy.v
       </view>
     </view>
 
+    <view v-else-if="component === 'file-type'" class="docs-demo__stack min-w-0">
+      <view class="docs-demo__section min-w-0" data-docs-case="common-formats">
+        <text class="docs-demo__heading">
+          {{ fileTypeCopy.common }}
+        </text>
+        <view class="grid grid-cols-2 gap-x-3 gap-y-4">
+          <view v-for="filename in fileTypeFiles" :key="filename" class="flex min-w-0 items-center gap-2">
+            <VFileType :filename="filename" decorative />
+            <text class="min-w-0 break-all text-[12px] leading-[18px]">
+              {{ filename }}
+            </text>
+          </view>
+        </view>
+      </view>
+      <view class="docs-demo__section min-w-0" data-docs-case="fallbacks">
+        <text class="docs-demo__heading">
+          {{ fileTypeCopy.fallback }}
+        </text>
+        <view class="grid gap-3.5">
+          <view v-for="file in fileTypeFallbacks" :key="file.filename" class="flex min-w-0 items-center gap-2">
+            <VFileType :filename="file.filename" :mime-type="file.mimeType" decorative />
+            <view class="grid min-w-0">
+              <text class="break-all text-[12px] leading-[18px]">
+                {{ file.filename }}
+              </text>
+              <text class="text-[11px] leading-4 text-[var(--varo-ui-text-muted)]">
+                {{ file.description }}
+              </text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="docs-demo__section min-w-0" data-docs-case="sizes">
+        <text class="docs-demo__heading">
+          {{ fileTypeCopy.sizes }}
+        </text>
+        <view class="flex items-end gap-7">
+          <view v-for="size in fileTypeSizes" :key="size" class="grid justify-items-center gap-2">
+            <VFileType filename="report.pdf" :size="size" :label="fileTypeCopy.pdf" />
+            <text class="text-[11px] leading-4 text-[var(--varo-ui-text-muted)]">
+              {{ size }}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
     <view v-else-if="component === 'image'" class="docs-demo__stack min-w-0">
       <view class="relative overflow-hidden rounded-[18px] border border-solid border-[var(--varo-ui-border)] bg-[var(--varo-ui-surface-muted)]" data-docs-case="cover">
         <VImage :src="storefrontImage" :alt="copy.storefront" width="100%" :height="176" :fit="imageFit" lazy-load radius="18px" />
@@ -797,6 +855,50 @@ const overviewCurrentValue = computed(() => overviewName.value || overviewCopy.v
             {{ copy.progressComplete }}
           </text>
         </VProgress>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="circle-sizes">
+        <text class="docs-demo__heading">
+          {{ copy.circle }} · {{ copy.sizes }}
+        </text>
+        <view class="docs-demo__row">
+          <VProgress type="circle" :percentage="0" :size="64" :stroke-width="4" />
+          <VProgress type="circle" :percentage="50" />
+          <VProgress type="circle" :percentage="75" size="128px" :stroke-width="12" />
+        </view>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="circle-statuses">
+        <text class="docs-demo__heading">
+          {{ copy.circle }} · {{ copy.progressStatus }}
+        </text>
+        <view class="docs-demo__row">
+          <view v-for="item in progressStatuses" :key="item.status" class="grid justify-items-center gap-2">
+            <VProgress type="circle" :percentage="item.value" :status="item.status" :size="80" />
+            <text class="docs-demo__muted">
+              {{ item.label }}
+            </text>
+          </view>
+        </view>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="circle-text">
+        <text class="docs-demo__heading">
+          {{ copy.circle }} · {{ copy.progressText }}
+        </text>
+        <view class="docs-demo__row">
+          <view class="grid justify-items-center gap-2">
+            <VProgress type="circle" :percentage="60" :show-text="false" />
+            <text class="docs-demo__muted">
+              {{ copy.progressHidden }}
+            </text>
+          </view>
+          <view class="grid justify-items-center gap-2">
+            <VProgress type="circle" :percentage="75">
+              <text>3 / 4</text>
+            </VProgress>
+            <text class="docs-demo__muted">
+              {{ copy.progressCustom }}
+            </text>
+          </view>
+        </view>
       </view>
     </view>
 
