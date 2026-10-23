@@ -116,7 +116,7 @@ export const VDateField = defineComponent({
         }, [
           h('span', {
             class: props.value ? 'varo-date-field__value' : 'varo-date-field__placeholder',
-          }, props.value ?? props.placeholder),
+          }, props.value || props.placeholder),
           h('span', { 'aria-hidden': 'true', 'class': 'varo-date-field__arrow' }),
         ]),
         h(VPicker, {

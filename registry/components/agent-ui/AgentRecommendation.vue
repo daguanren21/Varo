@@ -14,9 +14,9 @@ const props = withDefaults(
     title: string
   }>(),
   {
-    acceptText: '接受建议',
+    acceptText: '采用建议',
     alternatives: () => [],
-    confidence: 0,
+    confidence: 80,
     description: '',
   },
 )

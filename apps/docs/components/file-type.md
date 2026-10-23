@@ -2,6 +2,12 @@
 
 `VFileType` 是独立、无状态的文件类型展示组件，根据文件名与 MIME 显示图标和简短的类型标签。它不读取文件、请求 URL、检测文件内容或决定是否允许上传。
 
+## 演示
+
+<ComponentPlatformDemo component="file-type" locale="zh">
+  <FileTypeDemo locale="zh" />
+</ComponentPlatformDemo>
+
 ## 基础用法
 
 ```vue

@@ -49,33 +49,33 @@ const authorLabel = computed(() => {
   return '系统'
 })
 const columnClass = computed(() =>
-  normalizedRole.value === 'user' ? 'max-w-[82%] justify-items-end' : 'flex-1',
+  normalizedRole.value === 'user' ? 'justify-items-end' : '',
 )
 const bubbleClass = computed(() => {
   if (normalizedRole.value === 'user') {
-    return 'rounded-[16px_5px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)]'
+    return 'rounded-[16px_4px_16px_16px] border-[var(--varo-agent-primary)] bg-[var(--varo-agent-primary)] text-[var(--varo-agent-primary-foreground)]'
   }
   if (normalizedRole.value === 'system') {
-    return 'rounded-[5px_16px_16px_16px] border-dashed border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] text-[var(--varo-agent-foreground)]'
+    return 'rounded-[4px_16px_16px_16px] border-dashed border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] text-[var(--varo-agent-foreground)]'
   }
-  return 'rounded-[5px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]'
+  return 'rounded-[4px_16px_16px_16px] border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-[var(--varo-agent-foreground)]'
 })
 </script>
 
 <template>
   <view class="agent-message box-border flex w-full min-w-0 max-w-full items-start gap-2.5 overflow-hidden" :class="[normalizedRole === 'user' && 'justify-end']" :data-role="normalizedRole">
-    <view v-if="normalizedRole !== 'user'" class="grid h-[30px] w-[30px] flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-extrabold text-[var(--varo-agent-primary-foreground)]" aria-hidden="true">
+    <view v-if="normalizedRole !== 'user'" class="grid h-8 w-8 flex-none place-items-center rounded-[10px] bg-[var(--varo-agent-primary)] text-xs font-black text-[var(--varo-agent-primary-foreground)]" aria-hidden="true">
       <text>V</text>
     </view>
-    <view class="agent-message__column box-border grid min-w-0 max-w-full gap-1" :class="columnClass">
-      <view v-if="normalizedLabel || normalizedTimestamp" class="flex w-full items-center justify-between gap-3.5 px-[3px] text-[11px] text-[var(--varo-agent-muted)]">
+    <view class="agent-message__column box-border grid min-w-0 max-w-[82%] gap-1" :class="columnClass">
+      <view v-if="normalizedLabel || normalizedTimestamp" class="flex w-full items-center justify-between gap-3 px-1 text-[11px] text-[var(--varo-agent-muted)]">
         <text>{{ authorLabel }}</text>
         <text v-if="normalizedTimestamp">
           {{ normalizedTimestamp }}
         </text>
       </view>
       <view
-        class="box-border w-full min-w-0 max-w-full overflow-hidden break-all border px-[13px] py-[11px] shadow-[0_3px_12px_rgba(15,23,42,.05)]"
+        class="box-border min-w-11 max-w-full overflow-hidden break-words border px-3.5 py-2.5 shadow-sm"
         :class="bubbleClass"
       >
         <AgentStream

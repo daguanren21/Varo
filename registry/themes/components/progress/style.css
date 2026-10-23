@@ -57,7 +57,7 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle, var(--varo-ui-surface) calc(50% - var(--varo-progress-stroke)), transparent calc(50% - var(--varo-progress-stroke) + 1px)),
+    radial-gradient(circle closest-side, var(--varo-ui-surface) calc(100% - var(--varo-progress-stroke)), transparent calc(100% - var(--varo-progress-stroke) + 1px)),
     conic-gradient(var(--varo-progress-color, var(--varo-ui-primary)) var(--varo-progress-value), var(--varo-ui-surface-muted) 0);
   border-radius: 999px;
 }

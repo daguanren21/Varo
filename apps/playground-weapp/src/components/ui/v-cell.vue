@@ -4,14 +4,12 @@ import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 import VIcon from './v-icon.vue'
 
-type CellDescTextAlign = 'left' | 'right'
-type CellSize = 'default' | 'large'
-
-interface KeyboardLikeEvent {
-  detail?: { key?: string }
-  key?: string
-  preventDefault?: () => void
-}
+defineOptions({
+  options: { virtualHost: true },
+  properties: {
+    titleWidth: { type: null, value: null },
+  },
+})
 
 const props = withDefaults(
   defineProps<{
@@ -37,10 +35,17 @@ const props = withDefaults(
     size: 'default',
   },
 )
-
 const emit = defineEmits<{
   click: [event: unknown]
 }>()
+type CellDescTextAlign = 'left' | 'right'
+type CellSize = 'default' | 'large'
+
+interface KeyboardLikeEvent {
+  detail?: { key?: string }
+  key?: string
+  preventDefault?: () => void
+}
 
 const link = computed(() => props.isLink || Boolean(props.to))
 const clickable = computed(() => props.clickable || link.value)
@@ -49,6 +54,7 @@ const classes = computed(() =>
   cn(
     'varo-cell',
     `size-${props.size}`,
+    `desc-align-${props.descTextAlign}`,
     props.center && 'center-true',
     clickable.value && 'clickable-true',
     link.value && 'link-true',
@@ -63,7 +69,6 @@ const titleStyle = computed(() => {
   const width = typeof props.titleWidth === 'number' ? `${props.titleWidth}px` : props.titleWidth
   return { flexBasis: width, width }
 })
-const iconAriaHidden = computed(() => (props.icon ? 'true' : undefined))
 const rootRole = computed(() => (clickable.value ? 'button' : undefined))
 const rootTabindex = computed(() => (clickable.value ? 0 : undefined))
 
@@ -95,11 +100,13 @@ function handleKeydown(event: unknown) {
     @click="handleClick"
     @keydown="handleKeydown"
   >
-    <text v-if="$slots.icon || props.icon" class="varo-cell__icon" :aria-hidden="iconAriaHidden">
+    <view v-if="$slots.icon || props.icon" class="varo-cell__icon">
       <slot name="icon">
-        {{ props.icon }}
+        <text aria-hidden="true">
+          {{ props.icon }}
+        </text>
       </slot>
-    </text>
+    </view>
     <view v-if="$slots.title || props.title || $slots.subTitle || props.subTitle || $slots.default" class="varo-cell__main">
       <view v-if="$slots.title || props.title" class="varo-cell__title" :style="titleStyle">
         <slot name="title">
@@ -120,7 +127,7 @@ function handleKeydown(event: unknown) {
         {{ props.desc }}
       </slot>
     </view>
-    <view v-if="$slots.link || props.isLink || props.to" class="varo-cell__link" aria-hidden="true">
+    <view v-if="$slots.link || props.isLink || props.to" class="varo-cell__link">
       <slot name="link">
         <VIcon name="chevron-right" />
       </slot>
@@ -141,11 +148,13 @@ function handleKeydown(event: unknown) {
     @click="handleClick"
     @keydown="handleKeydown"
   >
-    <text v-if="$slots.icon || props.icon" class="varo-cell__icon" :aria-hidden="iconAriaHidden">
+    <view v-if="$slots.icon || props.icon" class="varo-cell__icon">
       <slot name="icon">
-        {{ props.icon }}
+        <text aria-hidden="true">
+          {{ props.icon }}
+        </text>
       </slot>
-    </text>
+    </view>
     <view v-if="$slots.title || props.title || $slots.subTitle || props.subTitle || $slots.default" class="varo-cell__main">
       <view v-if="$slots.title || props.title" class="varo-cell__title" :style="titleStyle">
         <slot name="title">
@@ -166,7 +175,7 @@ function handleKeydown(event: unknown) {
         {{ props.desc }}
       </slot>
     </view>
-    <view v-if="$slots.link || props.isLink || props.to" class="varo-cell__link" aria-hidden="true">
+    <view v-if="$slots.link || props.isLink || props.to" class="varo-cell__link">
       <slot name="link">
         <VIcon name="chevron-right" />
       </slot>

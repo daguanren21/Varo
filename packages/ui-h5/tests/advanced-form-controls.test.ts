@@ -126,6 +126,24 @@ describe('ui-h5 advanced form controls', () => {
     wrapper.unmount()
   })
 
+  it('shows the DateField placeholder for absent and empty values without publishing a date', async () => {
+    const wrapper = mount(VDateField, { props: { placeholder: 'Choose a date' } })
+    expect(wrapper.get('.varo-date-field__control').text()).toBe('Choose a date')
+    expect(wrapper.find('.varo-date-field__placeholder').exists()).toBe(true)
+
+    await wrapper.setProps({ value: '' })
+    expect(wrapper.get('.varo-date-field__control').text()).toBe('Choose a date')
+    expect(wrapper.find('.varo-date-field__placeholder').exists()).toBe(true)
+
+    await wrapper.setProps({ value: '2026-05-18' })
+    expect(wrapper.get('.varo-date-field__control').text()).toBe('2026-05-18')
+    expect(wrapper.find('.varo-date-field__placeholder').exists()).toBe(false)
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+    wrapper.unmount()
+  })
+
   it('walks cascader levels and confirms selected path', async () => {
     const onConfirm = vi.fn()
     const wrapper = mount(VCascader, {
@@ -211,6 +229,151 @@ describe('ui-h5 advanced form controls', () => {
     expect(wrapper.get('.varo-calendar-card__title').text()).toBe('2025-06')
     expect(wrapper.find('[data-date="2025-06-01"]').exists()).toBe(true)
     expect(onMonthUpdate).toHaveBeenLastCalledWith('2025-06')
+  })
+
+  it('keeps calendar selection within inclusive bounds after confirming and reopening', async () => {
+    const wrapper = mount(VCalendar, {
+      props: {
+        month: '2026-05',
+        value: '2026-05-14',
+        minDate: '2026-05-10',
+        maxDate: '2026-05-20',
+        visible: true,
+      },
+    })
+
+    await wrapper.get('[data-date="2026-05-15"]').trigger('click')
+    await wrapper.get('.varo-calendar__confirm').trigger('click')
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15']])
+    await wrapper.setProps({ visible: false, value: '2026-05-15' })
+    await wrapper.setProps({ visible: true })
+
+    for (const date of ['2026-05-09', '2026-05-21']) {
+      const day = wrapper.get<HTMLButtonElement>(`[data-date="${date}"]`)
+      expect(day.element.disabled).toBe(true)
+      day.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    }
+    expect(wrapper.get('[data-date="2026-05-15"]').attributes('data-active')).toBe('true')
+    expect(wrapper.emitted('select')).toEqual([['2026-05-15']])
+    expect(wrapper.emitted('update:value')).toEqual([['2026-05-15']])
+    await wrapper.get('.varo-calendar__confirm').trigger('click')
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15'], ['2026-05-15']])
+
+    for (const date of ['2026-05-10', '2026-05-20']) {
+      expect(wrapper.get<HTMLButtonElement>(`[data-date="${date}"]`).element.disabled).toBe(false)
+      await wrapper.get(`[data-date="${date}"]`).trigger('click')
+      await wrapper.get('.varo-calendar__confirm').trigger('click')
+    }
+    expect(wrapper.emitted('select')).toEqual([['2026-05-15'], ['2026-05-10'], ['2026-05-20']])
+    expect(wrapper.emitted('update:value')).toEqual([['2026-05-15'], ['2026-05-10'], ['2026-05-20']])
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15'], ['2026-05-15'], ['2026-05-10'], ['2026-05-20']])
+    expect(wrapper.emitted('update:visible')).toEqual([[false], [false], [false], [false]])
+    wrapper.unmount()
+  })
+
+  it.each(['2026-05-09', '2026-05-21'])('rejects calendar confirmation of out-of-range controlled value %s', async (value) => {
+    const wrapper = mount(VCalendar, {
+      props: { month: '2026-05', value, minDate: '2026-05-10', maxDate: '2026-05-20', visible: true },
+    })
+    const confirm = wrapper.get<HTMLButtonElement>('.varo-calendar__confirm')
+
+    expect(confirm.element.disabled).toBe(true)
+    confirm.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+    expect(wrapper.emitted('update:visible')).toBeUndefined()
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('select')).toBeUndefined()
+
+    await wrapper.setProps({ value: '2026-05-15' })
+    expect(confirm.element.disabled).toBe(false)
+    await confirm.trigger('click')
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15']])
+    await wrapper.setProps({ value })
+    expect(confirm.element.disabled).toBe(true)
+    confirm.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15']])
+    expect(wrapper.emitted('update:visible')).toEqual([[false]])
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('select')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it.each([
+    { bounds: { minDate: '2026-05-16' }, allowed: '2026-05-16' },
+    { bounds: { maxDate: '2026-05-14' }, allowed: '2026-05-14' },
+  ])('rechecks calendar selection when bounds change to $bounds', async ({ bounds, allowed }) => {
+    const wrapper = mount(VCalendar, {
+      props: {
+        month: '2026-05',
+        value: '2026-05-14',
+        minDate: '2026-05-10',
+        maxDate: '2026-05-20',
+        visible: true,
+      },
+    })
+    await wrapper.get('[data-date="2026-05-15"]').trigger('click')
+    await wrapper.setProps(bounds)
+    const confirm = wrapper.get<HTMLButtonElement>('.varo-calendar__confirm')
+    expect(confirm.element.disabled).toBe(true)
+    confirm.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+    expect(wrapper.emitted('update:visible')).toBeUndefined()
+    expect(wrapper.emitted('update:value')).toEqual([['2026-05-15']])
+    expect(wrapper.emitted('select')).toEqual([['2026-05-15']])
+
+    await wrapper.setProps({ minDate: '2026-05-10', maxDate: '2026-05-20' })
+    expect(confirm.element.disabled).toBe(false)
+    await confirm.trigger('click')
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15']])
+
+    await wrapper.setProps(bounds)
+    await wrapper.get(`[data-date="${allowed}"]`).trigger('click')
+    expect(confirm.element.disabled).toBe(false)
+    await confirm.trigger('click')
+    expect(wrapper.emitted('confirm')).toEqual([['2026-05-15'], [allowed]])
+    expect(wrapper.emitted('update:visible')).toEqual([[false], [false]])
+    expect(wrapper.emitted('update:value')).toEqual([['2026-05-15'], [allowed]])
+    expect(wrapper.emitted('select')).toEqual([['2026-05-15'], [allowed]])
+    wrapper.unmount()
+  })
+
+  it('keeps calendar card bounds reactive without changing the controlled value', async () => {
+    const wrapper = mount(VCalendarCard, {
+      props: { month: '2026-05', value: '2026-05-15', minDate: '2026-05-10', maxDate: '2026-05-20' },
+    })
+
+    for (const date of ['2026-05-09', '2026-05-21']) {
+      const day = wrapper.get<HTMLButtonElement>(`[data-date="${date}"]`)
+      expect(day.element.disabled).toBe(true)
+      day.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    }
+    await wrapper.setProps({ minDate: '2026-05-16' })
+    const selectedDay = wrapper.get<HTMLButtonElement>('[data-date="2026-05-15"]')
+    expect(selectedDay.element.disabled).toBe(true)
+    selectedDay.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('select')).toBeUndefined()
+
+    await wrapper.setProps({ minDate: '2026-05-10' })
+    for (const date of ['2026-05-10', '2026-05-20']) {
+      await wrapper.get(`[data-date="${date}"]`).trigger('click')
+    }
+    expect(wrapper.emitted('update:value')).toEqual([['2026-05-10'], ['2026-05-20']])
+    expect(wrapper.emitted('select')).toEqual([['2026-05-10'], ['2026-05-20']])
+    wrapper.unmount()
+  })
+
+  it('preserves calendar confirmation without a selected date', async () => {
+    const wrapper = mount(VCalendar, {
+      props: { month: '2026-05', minDate: '2026-05-10', maxDate: '2026-05-20', visible: true },
+    })
+
+    await wrapper.get('.varo-calendar__confirm').trigger('click')
+    expect(wrapper.emitted('confirm')).toEqual([[undefined]])
+    expect(wrapper.emitted('update:visible')).toEqual([[false]])
+    expect(wrapper.emitted('update:value')).toBeUndefined()
+    expect(wrapper.emitted('select')).toBeUndefined()
+    wrapper.unmount()
   })
 
   it('confirms date picker date', async () => {

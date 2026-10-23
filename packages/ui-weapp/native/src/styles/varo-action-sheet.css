@@ -1,8 +1,37 @@
 .varo-action-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: none;
+}
+
+.varo-action-sheet .varo-popup__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: auto;
+  background: rgb(0 0 0 / 45%);
+}
+
+.varo-action-sheet .varo-popup__content {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1101;
+  box-sizing: border-box;
   width: 100%;
   max-height: min(76vh, 640px);
   overflow: auto;
+  color: var(--varo-ui-text);
+  pointer-events: auto;
   background: var(--varo-ui-surface);
+  border-radius: var(--varo-ui-radius) var(--varo-ui-radius) 0 0;
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-action-sheet .varo-popup__content[data-safe-area-inset-bottom='true'] {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .varo-action-sheet__header {

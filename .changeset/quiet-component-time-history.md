@@ -35,3 +35,23 @@ Separate RegionPicker's displayed path from whole-path acceptance, reconcile fet
 Keep playground E2E identity in the native build, allowing the portable app source to export to Taro and uni-app. Include the canonical compiler patch in standalone Wevu exports before locking dependencies, resolve CSS URLs and imports with exact filesystem/package rules, and run converter/exporter regressions in the normal owning-app test task.
 
 Keep the Taro starter on its compatible webpack 5.111.1 compiler and pin the schema-utils 4.x dependency family to 4.7.0, preserving strict peers and both H5/native compiler support.
+
+Restore native layout column spans, Menu and Tabbar sizing, and the List documentation phone frame. Preserve absent Cell title widths, Grid badges, Image dimensions, and Agent loading start times instead of accepting native zero initialization. Keep square Grid cells within narrow columns and render explicit zero badges on both renderers.
+
+Use a shared themed loading skeleton from documentation iframe startup through native readiness, with localized status, reduced-motion support, focus exclusion while loading, and reachable error recovery.
+
+Constrain AgentMessageScroller's inner viewport within maxHeight on both renderers, keeping long messages scrollable and the follow action reachable.
+
+Synchronize nested native preview color schemes to prevent opaque white backgrounds in dark mode. Match the Cell demo's H5 surface, avatar, typography, and icon sizing, and use consistent browser text rasterization.
+
+Give framed native previews the phone's full viewport and preserve shadow painting space without adding layout height; unframed previews retain their existing sizing.
+
+Add visible bilingual FileType and TimeField demonstrations, frame the form examples consistently, and expose native preview tabs only for Registry-supported targets. Restore compact Switch proportions and isolate Breadcrumb list spacing from documentation prose styles.
+
+Enforce Calendar date bounds through selection and confirmation, preserve DateField placeholders for absent and empty values, fit InputOtp cells within narrow containers with matching native separators, and separate Rate's cumulative fill from its single selected radio. Describe password masking and numeric entry accurately in the form examples.
+
+Keep filename-like JavaScript data from becoming required native preview assets, while retaining strict checks for explicit template/style assets, unsafe paths, and escaping symlinks.
+
+Keep Calendar toolbars and rating demos within narrow phone frames, render inactive native rating stars as transparent outlines, and keep Breadcrumb demo actions on the current page.
+
+Keep custom Cell icon and link slots accessible on H5 and native, hiding only built-in decorative fallbacks so embedded controls remain discoverable by assistive technology.

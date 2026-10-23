@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import vue from '@vitejs/plugin-vue'
@@ -47,7 +47,7 @@ describe('native artifact plugin', () => {
           pages: { sandbox: 'pages/index/index' },
         }),
       ],
-      server: { host: '127.0.0.1', port: 5197, strictPort: true },
+      server: { host: '127.0.0.1', port: 0, strictPort: true },
       logLevel: 'silent',
     })
     await server.listen()
@@ -55,11 +55,66 @@ describe('native artifact plugin', () => {
     const loadedCode = typeof loaded === 'string' ? loaded : loaded?.code
     expect(loadedCode).toBeTypeOf('string')
     expect(loadedCode).not.toContain('__weapp_vite_app_shell.wxss')
-    const response = await fetch('http://127.0.0.1:5197/@id/__x00__virtual:varo-native-artifacts')
+    const response = await fetch(new URL('/@id/__x00__virtual:varo-native-artifacts', server.resolvedUrls!.local[0]!))
     const code = await response.text()
     expect(response.status).toBe(200)
     expect(code).toContain('"__weapp_vite_app_shell"')
     expect(code).not.toContain('__weapp_vite_app_shell.wxss')
     expect(code).not.toMatch(/import __nativeAsset\d+ from .*?\.wxss/)
+  })
+
+  it('preserves filename data while bundling existing JavaScript asset candidates', async () => {
+    nativeRoot = await mkdtemp(join(tmpdir(), 'varo-weapp-web-'))
+    await writeMiniProgram(nativeRoot)
+    await mkdir(join(nativeRoot, 'assets'))
+    await writeFile(join(nativeRoot, 'assets/cover.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>')
+    await writeFile(join(nativeRoot, 'pages/index/index.js'), 'Page({ data: { names: ["audio.mp3", "photo.png"], image: "/assets/cover.svg?size=2#preview" } })')
+    server = await createServer({
+      configFile: false,
+      root: nativeRoot,
+      plugins: [nativeArtifactsPlugin({ nativeBuildRoot: nativeRoot, pages: { sandbox: 'pages/index/index' } })],
+      server: { host: '127.0.0.1', port: 0, strictPort: true },
+      logLevel: 'silent',
+    })
+    const { default: bundle } = await server.ssrLoadModule('virtual:varo-native-artifacts')
+    expect(bundle.assets['/assets/cover.svg?size=2#preview']).toBe(`${bundle.assets['/assets/cover.svg']}?size=2#preview`)
+    expect(Object.keys(bundle.assets)).toEqual(['/assets/cover.svg', '/assets/cover.svg?size=2#preview', 'assets/cover.svg'])
+    let data: unknown
+    bundle.modules['pages/index/index.js'](undefined, {}, {}, { Page: (options: { data: unknown }) => { data = options.data } })
+    expect(data).toEqual({ names: ['audio.mp3', 'photo.png'], image: '/assets/cover.svg?size=2#preview' })
+  })
+
+  it.each(['wxml', 'wxss'])('rejects missing explicitly referenced %s assets', async (extension) => {
+    nativeRoot = await mkdtemp(join(tmpdir(), 'varo-weapp-web-'))
+    await writeMiniProgram(nativeRoot)
+    await writeFile(join(nativeRoot, `pages/index/index.${extension}`), extension === 'wxml'
+      ? '<image src="missing.png" />'
+      : '.picture { background-image: url("missing.png"); }')
+    server = await createServer({
+      configFile: false,
+      root: nativeRoot,
+      plugins: [nativeArtifactsPlugin({ nativeBuildRoot: nativeRoot, pages: { sandbox: 'pages/index/index' } })],
+      server: { host: '127.0.0.1', port: 0, strictPort: true },
+      logLevel: 'silent',
+    })
+    await expect(server.ssrLoadModule('virtual:varo-native-artifacts')).rejects.toThrow('Missing native artifact pages/index/missing.png')
+  })
+
+  it.each(['traversal', 'symlink'])('rejects JavaScript asset candidates that escape through %s', async (kind) => {
+    nativeRoot = await mkdtemp(join(tmpdir(), 'varo-weapp-web-'))
+    const buildRoot = join(nativeRoot, 'build')
+    await writeMiniProgram(buildRoot)
+    await writeFile(join(nativeRoot, 'outside.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>')
+    if (kind === 'symlink') { await symlink(join(nativeRoot, 'outside.svg'), join(buildRoot, 'outside.svg')) }
+    const asset = kind === 'symlink' ? '/outside.svg' : '../../../outside.svg'
+    await writeFile(join(buildRoot, 'pages/index/index.js'), `Page({ data: { image: ${JSON.stringify(asset)} } })`)
+    server = await createServer({
+      configFile: false,
+      root: nativeRoot,
+      plugins: [nativeArtifactsPlugin({ nativeBuildRoot: buildRoot, pages: { sandbox: 'pages/index/index' } })],
+      server: { host: '127.0.0.1', port: 0, strictPort: true },
+      logLevel: 'silent',
+    })
+    await expect(server.ssrLoadModule('virtual:varo-native-artifacts')).rejects.toThrow(/escapes the native build root|resolves outside the build root/)
   })
 })

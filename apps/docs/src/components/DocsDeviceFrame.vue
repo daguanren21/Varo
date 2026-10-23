@@ -64,8 +64,10 @@ withDefaults(defineProps<{ overflow?: boolean }>(), { overflow: false })
 }
 
 .docs-device-frame__screen {
+  --docs-device-screen-min-height: 667px;
+
   position: relative;
-  min-height: 667px;
+  min-height: var(--docs-device-screen-min-height);
   overflow: hidden;
   color: var(--vp-c-text-1);
   background: var(--varo-demo-phone-screen);
@@ -77,6 +79,8 @@ withDefaults(defineProps<{ overflow?: boolean }>(), { overflow: false })
 }
 
 .docs-device-frame__content {
+  --docs-device-content-min-height: calc(var(--docs-device-screen-min-height) - 52px - 38px);
+
   position: relative;
   z-index: 1;
   min-width: 0;
@@ -89,7 +93,7 @@ withDefaults(defineProps<{ overflow?: boolean }>(), { overflow: false })
   }
 
   .docs-device-frame__screen {
-    min-height: 480px;
+    --docs-device-screen-min-height: 480px;
   }
 }
 </style>

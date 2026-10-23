@@ -8,6 +8,7 @@ import type {
 } from './ui/region-picker.types'
 import { VButton } from '@varo-ui/h5'
 import { computed, shallowRef } from 'vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 import { VRegionPicker } from './ui/region-picker'
 
 type RequestState = 'idle' | 'loading' | 'success' | 'error'
@@ -134,61 +135,59 @@ function confirm(value: VaroRegionSelection) {
 </script>
 
 <template>
-  <section class="region-demo">
-    <header>
-      <div>
-        <small>{{ copy.title }}</small>
-        <strong>{{ label }}</strong>
+  <DocsDeviceFrame>
+    <section class="region-demo">
+      <header>
+        <div>
+          <small>{{ copy.title }}</small>
+          <strong>{{ label }}</strong>
+        </div>
+        <VButton size="sm" variant="outline" @click="visible = true">
+          {{ copy.open }}
+        </VButton>
+      </header>
+
+      <div class="region-demo__request" :data-state="requestState">
+        <span>
+          <small>{{ requestLabel }}</small>
+          <code>{{ requestPath }}</code>
+        </span>
+        <strong>{{ requestStateLabel }}</strong>
       </div>
-      <VButton size="sm" variant="outline" @click="visible = true">
-        {{ copy.open }}
-      </VButton>
-    </header>
 
-    <div class="region-demo__request" :data-state="requestState">
-      <span>
-        <small>{{ requestLabel }}</small>
-        <code>{{ requestPath }}</code>
-      </span>
-      <strong>{{ requestStateLabel }}</strong>
-    </div>
+      <p>{{ copy.hint }}</p>
+      <output v-if="selection">
+        {{ selection.latitude }}, {{ selection.longitude }}
+      </output>
 
-    <p>{{ copy.hint }}</p>
-    <output v-if="selection">
-      {{ selection.latitude }}, {{ selection.longitude }}
-    </output>
-
-    <VRegionPicker
-      v-model:visible="visible"
-      v-model="path"
-      :cancel-text="copy.cancel"
-      :confirm-text="copy.confirm"
-      :empty-text="copy.empty"
-      :load-children="loadRegions"
-      :loading-text="copy.loading"
-      :options="options"
-      :error-text="copy.error"
-      :placeholder="copy.placeholder"
-      :retry-text="copy.retry"
-      :title="copy.pickerTitle"
-      @confirm="confirm"
-      @load-error="loadError"
-      @load-start="loadStart"
-      @load-success="loadSuccess"
-    />
-  </section>
+      <VRegionPicker
+        v-model:visible="visible"
+        v-model="path"
+        :cancel-text="copy.cancel"
+        :confirm-text="copy.confirm"
+        :empty-text="copy.empty"
+        :load-children="loadRegions"
+        :loading-text="copy.loading"
+        :options="options"
+        :error-text="copy.error"
+        :placeholder="copy.placeholder"
+        :retry-text="copy.retry"
+        :title="copy.pickerTitle"
+        @confirm="confirm"
+        @load-error="loadError"
+        @load-start="loadStart"
+        @load-success="loadSuccess"
+      />
+    </section>
+  </DocsDeviceFrame>
 </template>
 
 <style scoped>
 .region-demo {
   display: grid;
   gap: 12px;
-  padding: 18px;
-  margin: 16px 0 24px;
+  min-width: 0;
   color: var(--varo-ui-text);
-  background: var(--varo-ui-surface);
-  border: 1px solid var(--varo-ui-border);
-  border-radius: 16px;
 }
 
 .region-demo > header {

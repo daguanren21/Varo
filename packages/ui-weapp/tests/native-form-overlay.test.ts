@@ -277,6 +277,44 @@ describe('native form and overlay accepted transitions', () => {
     expect(events).toEqual(['update:0123', 'change:0123', 'complete:0123'])
     expect(wrapper.findAll('.varo-input-otp__cell').map(cell => cell.text())).toEqual(['0', '1', '2', '3'])
   })
+
+  it('interleaves native OTP separators between masked cells only', async () => {
+    const wrapper = mount(VInputOtp, {
+      props: {
+        value: nativeUnset,
+        defaultValue: '012345',
+        inputAriaLabel: 'Verification code',
+        length: 6,
+        mask: true,
+        separator: '·',
+      },
+    })
+    expect(wrapper.findAll('input')).toHaveLength(1)
+    expect(wrapper.get('input').attributes('aria-label')).toBe('Verification code')
+    expect(wrapper.get('.varo-input-otp__cells').attributes('aria-hidden')).toBe('true')
+    expect(wrapper.findAll('.varo-input-otp__cell, .varo-input-otp__separator').map(part => part.text())).toEqual([
+      '•',
+      '·',
+      '•',
+      '·',
+      '•',
+      '·',
+      '•',
+      '·',
+      '•',
+      '·',
+      '•',
+    ])
+
+    await wrapper.setProps({ length: 1, mask: false })
+    expect(wrapper.findAll('.varo-input-otp__cell').map(cell => cell.text())).toEqual(['0'])
+    expect(wrapper.findAll('.varo-input-otp__separator')).toHaveLength(0)
+
+    await wrapper.setProps({ length: 4, separator: '' })
+    expect(wrapper.findAll('.varo-input-otp__cell')).toHaveLength(4)
+    expect(wrapper.findAll('.varo-input-otp__separator')).toHaveLength(0)
+  })
+
   it('retains a pressed clear control through blur and cancels an abandoned press', async () => {
     vi.useFakeTimers()
     try {

@@ -7,10 +7,10 @@ export interface DocsPreviewScenario {
 }
 
 const componentGroups = {
-  basics: ['button', 'badge', 'avatar', 'card', 'empty', 'icon', 'image', 'progress', 'tag', 'watermark', 'overview'],
+  basics: ['button', 'badge', 'avatar', 'card', 'empty', 'icon', 'file-type', 'image', 'progress', 'tag', 'watermark', 'overview'],
   layout: ['breadcrumb', 'cell', 'divider', 'grid', 'layout', 'list', 'safe-area', 'space', 'sticky'],
   navigation: ['indicator', 'menu', 'navbar', 'pagination', 'steps', 'tabbar', 'tabs'],
-  input: ['input', 'input-number', 'input-otp', 'searchbar', 'textarea', 'date-field', 'region-picker', 'picker'],
+  input: ['input', 'input-number', 'input-otp', 'searchbar', 'textarea', 'date-field', 'time-field', 'region-picker', 'picker'],
   selection: ['checkbox', 'radio', 'select', 'switch', 'rate', 'form', 'form-array', 'collapse'],
   overlays: ['action-sheet', 'dialog', 'drawer', 'overlay', 'popover', 'popup', 'toast'],
   feedback: ['loading', 'skeleton', 'pull-refresh', 'swipe-cell', 'signature', 'notice-bar'],

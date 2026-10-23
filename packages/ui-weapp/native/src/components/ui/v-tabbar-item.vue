@@ -6,6 +6,7 @@ import { cn } from '../../lib/cn'
 import { tabbarContextKey } from './tabbar-context'
 
 defineOptions({
+  options: { virtualHost: true },
   properties: {
     badge: { type: null, value: null },
   },

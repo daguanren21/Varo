@@ -7,9 +7,13 @@ type ImageFit = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
 
 // WeChat validates initial child bindings before Wevu applies setup defaults.
 defineOptions({
+  options: { virtualHost: true },
   properties: {
     alt: { type: null, value: '' },
+    height: { type: null, value: null },
+    radius: { type: null, value: null },
     src: { type: null, value: '' },
+    width: { type: null, value: null },
   },
 })
 

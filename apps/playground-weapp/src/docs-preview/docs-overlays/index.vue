@@ -521,6 +521,92 @@ onUnmounted(clearDeployTimer)
 </template>
 
 <style>
+.docs-overlay-surface.varo-overlay {
+  background: color-mix(in srgb, var(--varo-ui-text) 58%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.docs-popup-surface.varo-popup {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.docs-popup-surface .varo-popup__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--varo-ui-text) 58%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+.docs-popup-surface .varo-popup__content {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  max-height: 100%;
+  overflow: auto;
+  color: var(--varo-ui-text);
+  pointer-events: auto;
+  background: var(--varo-ui-surface);
+  border-radius: var(--varo-ui-radius);
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.docs-popup-surface .varo-popup__content[data-position='top'] {
+  top: 0;
+  bottom: auto;
+}
+
+.docs-popup-surface .varo-popup__content[data-position='center'] {
+  inset: 50% 20px auto;
+  transform: translateY(-50%);
+}
+
+.docs-popup-surface .varo-popup__content[data-position='left'],
+.docs-popup-surface .varo-popup__content[data-position='right'] {
+  top: 0;
+  bottom: 0;
+  width: 72%;
+}
+
+.docs-popup-surface .varo-popup__content[data-position='right'] {
+  right: 0;
+  left: auto;
+}
+
+.docs-popup-surface .varo-popup__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  color: var(--varo-ui-text-muted);
+  background: var(--varo-ui-fill-light);
+  border: 0;
+  border-radius: 999px;
+}
+
+.docs-popup-surface .varo-popup__close[data-position='top-left'],
+.docs-popup-surface .varo-popup__close[data-position='bottom-left'] {
+  right: auto;
+  left: 12px;
+}
+
+.docs-popup-surface .varo-popup__close[data-position='bottom-left'],
+.docs-popup-surface .varo-popup__close[data-position='bottom-right'] {
+  top: auto;
+  bottom: 12px;
+}
+
+.docs-popup-surface .varo-popup__close::after {
+  border: 0;
+}
+
 .docs-popover-context-trigger.varo-popover__trigger,
 .docs-popover-top-trigger.varo-popover__trigger,
 .docs-popover-right-trigger.varo-popover__trigger {

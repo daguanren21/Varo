@@ -221,6 +221,12 @@ const noticeVisible = shallowRef(true)
       <view data-docs-case="loading-large-success">
         <VLoading size="lg" tone="success" />
       </view>
+      <view data-docs-case="loading-warning">
+        <VLoading tone="warning" />
+      </view>
+      <view data-docs-case="loading-danger">
+        <VLoading tone="danger" />
+      </view>
     </view>
 
     <view v-else-if="component === 'skeleton'" class="docs-demo__section grid gap-[18px]">

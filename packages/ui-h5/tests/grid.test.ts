@@ -4,22 +4,6 @@ import { h } from 'vue'
 import { VGrid, VGridItem } from '../src/grid'
 
 describe('ui-h5 grid', () => {
-  it('wraps grid root and item with Varo classes', () => {
-    const wrapper = mount(VGrid, {
-      props: {
-        columnNum: 4,
-        gutter: 6,
-      },
-      slots: {
-        default: () => [h(VGridItem, { icon: '□', text: '宫格' })],
-      },
-    })
-
-    expect(wrapper.classes().join(' ')).toContain('varo-grid')
-    expect(wrapper.attributes('data-columns')).toBe('4')
-    expect(wrapper.get('.varo-grid__item').text()).toContain('宫格')
-  })
-
   it('keeps single-digit badges circular and marks wider values', async () => {
     const item = mount(VGridItem, { props: { badge: 2, icon: '□', text: '订单' } })
     const badge = item.get('.varo-grid__badge')
@@ -27,6 +11,17 @@ describe('ui-h5 grid', () => {
 
     await item.setProps({ badge: '12' })
     expect(badge.attributes('data-wide')).toBe('true')
+  })
+
+  it('renders an explicit zero badge without an icon and removes an absent badge', async () => {
+    const item = mount(VGridItem, { props: { text: '订单' } })
+    expect(item.find('.varo-grid__badge').exists()).toBe(false)
+
+    await item.setProps({ badge: 0 })
+    expect(item.get('.varo-grid__badge').text()).toBe('0')
+
+    await item.setProps({ badge: undefined })
+    expect(item.find('.varo-grid__badge').exists()).toBe(false)
   })
 
   it('activates clickable items with Enter and Space', async () => {

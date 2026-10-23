@@ -5,6 +5,7 @@ import { createVariantClass } from '@varo-ui/headless'
 import { computed, defineComponent, h } from 'vue'
 import { CellGroupRoot, CellRoot } from '@varo/primitives-h5'
 import './styles/varo.css'
+import './styles/varo-cell.css'
 
 const cellProps = {
   title: String,

@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const rootClass = computed(() =>
-  cn('agent-message-scroller relative overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)]', props.className),
+  cn('agent-message-scroller relative flex flex-col overflow-hidden rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)]', props.className),
 )
 const rootStyle = computed(() => ({
   maxHeight: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight,
@@ -37,12 +37,12 @@ function follow() {
 
 <template>
   <view :class="rootClass" :style="rootStyle" :data-live-edge="String(atLiveEdge)">
-    <scroll-view class="grid min-h-[180px] gap-3 overflow-y-auto p-3.5" scroll-y role="log" aria-live="polite">
+    <scroll-view class="grid min-h-0 flex-auto gap-3 overflow-y-auto p-3.5" scroll-y role="log" aria-live="polite">
       <slot />
     </scroll-view>
     <button
       v-if="!atLiveEdge"
-      class="agent-native-button agent-native-button--fit mx-auto mb-2.5 flex min-h-9 items-center justify-center rounded-full border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-bold text-[var(--varo-agent-primary)] shadow-sm"
+      class="agent-native-button agent-native-button--fit mx-auto mb-2.5 flex min-h-9 flex-none items-center justify-center rounded-full border border-[var(--varo-agent-border-strong)] bg-[var(--varo-agent-surface)] px-3 text-[12px] font-bold text-[var(--varo-agent-primary)] shadow-sm"
       type="button"
       @click="follow"
     >

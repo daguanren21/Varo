@@ -1,5 +1,6 @@
-import { computed, defineComponent, h, type PropType, type StyleValue } from 'vue'
+import type { PropType, StyleValue } from 'vue'
 import type { CellDescTextAlign, CellSize } from './types'
+import { computed, defineComponent, h } from 'vue'
 
 export type * from './types'
 
@@ -27,7 +28,7 @@ export const CellRoot = defineComponent({
     desc: String,
     descTextAlign: {
       type: String as PropType<CellDescTextAlign>,
-      default: 'right'
+      default: 'right',
     },
     icon: String,
     isLink: Boolean,
@@ -36,20 +37,20 @@ export const CellRoot = defineComponent({
     center: Boolean,
     size: {
       type: String as PropType<CellSize>,
-      default: 'default'
+      default: 'default',
     },
     clickable: Boolean,
     titleWidth: {
       type: [Number, String] as PropType<number | string | undefined>,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['click'],
   setup(props, { attrs, emit, slots }) {
     const clickable = computed(() => props.clickable || props.isLink || Boolean(props.to))
     const titleWidth = computed(() => normalizeSize(props.titleWidth))
     const radiusStyle = computed<Record<string, string> | undefined>(() =>
-      props.roundRadius ? { '--varo-cell-round-radius': props.roundRadius } : undefined
+      props.roundRadius ? { '--varo-cell-round-radius': props.roundRadius } : undefined,
     )
 
     function handleClick(event: MouseEvent) {
@@ -66,13 +67,14 @@ export const CellRoot = defineComponent({
     }
 
     function renderIcon() {
-      const content = slots.icon?.() ?? (props.icon ? [props.icon] : [])
+      const customContent = slots.icon?.()
+      const content = customContent ?? (props.icon ? [props.icon] : [])
 
       if (content.length === 0) {
         return null
       }
 
-      return h('span', { class: 'varo-cell__icon', 'aria-hidden': props.icon ? 'true' : undefined }, content)
+      return h('span', { 'class': 'varo-cell__icon', 'aria-hidden': customContent ? undefined : 'true' }, content)
     }
 
     function renderTitle() {
@@ -93,15 +95,15 @@ export const CellRoot = defineComponent({
                 style: titleWidth.value
                   ? {
                       flexBasis: titleWidth.value,
-                      width: titleWidth.value
+                      width: titleWidth.value,
                     }
-                  : undefined
+                  : undefined,
               },
-              title
+              title,
             )
           : null,
         subTitle.length ? h('div', { class: 'varo-cell__subtitle' }, subTitle) : null,
-        customContent.length ? h('div', { class: 'varo-cell__content' }, customContent) : null
+        customContent.length ? h('div', { class: 'varo-cell__content' }, customContent) : null,
       ])
     }
 
@@ -116,13 +118,14 @@ export const CellRoot = defineComponent({
     }
 
     function renderLink() {
-      const content = slots.link?.() ?? (props.isLink || props.to ? ['›'] : [])
+      const customContent = slots.link?.()
+      const content = customContent ?? (props.isLink || props.to ? ['›'] : [])
 
       if (content.length === 0) {
         return null
       }
 
-      return h('span', { class: 'varo-cell__link', 'aria-hidden': 'true' }, content)
+      return h('span', { 'class': 'varo-cell__link', 'aria-hidden': customContent ? undefined : 'true' }, content)
     }
 
     return () => {
@@ -132,30 +135,30 @@ export const CellRoot = defineComponent({
         tag,
         {
           ...attrs,
-          class: attrs.class,
-          style: [attrs.style as StyleValue, radiusStyle.value],
-          href: props.to || undefined,
-          role: clickable.value && !props.to ? 'button' : undefined,
-          tabindex: clickable.value && !props.to ? 0 : undefined,
+          'class': attrs.class,
+          'style': [attrs.style as StyleValue, radiusStyle.value],
+          'href': props.to || undefined,
+          'role': clickable.value && !props.to ? 'button' : undefined,
+          'tabindex': clickable.value && !props.to ? 0 : undefined,
           'data-center': String(props.center),
           'data-clickable': String(clickable.value),
           'data-desc-align': props.descTextAlign,
           'data-link': String(props.isLink || Boolean(props.to)),
           'data-size': props.size,
-          onClick: handleClick,
-          onKeydown: handleKeydown
+          'onClick': handleClick,
+          'onKeydown': handleKeydown,
         },
-        [renderIcon(), renderTitle(), renderDesc(), renderLink()]
+        [renderIcon(), renderTitle(), renderDesc(), renderLink()],
       )
     }
-  }
+  },
 })
 
 export const CellGroupRoot = defineComponent({
   name: 'CellGroupRoot',
   props: {
     title: String,
-    desc: String
+    desc: String,
   },
   setup(props, { attrs, slots }) {
     return () =>
@@ -167,10 +170,10 @@ export const CellGroupRoot = defineComponent({
                 : null,
               props.desc || slots.desc
                 ? h('div', { class: 'varo-cell-group__desc' }, slots.desc?.() ?? props.desc)
-                : null
+                : null,
             ])
           : null,
-        h('div', { class: 'varo-cell-group__body' }, slots.default?.())
+        h('div', { class: 'varo-cell-group__body' }, slots.default?.()),
       ])
-  }
+  },
 })

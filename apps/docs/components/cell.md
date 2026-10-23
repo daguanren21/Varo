@@ -4,6 +4,10 @@
 
 <PlatformTabsDemo example="cell" locale="zh" />
 
+Cell 和 CellGroup 的布局、分组边框、行分隔线与文字样式随组件一起分发，无需复制演示页 CSS。H5 源码会导入安装依赖中的样式；原生项目通过应用级 `weapp.styles` 加载安装的 `src/styles/*.css`，并将 `varo.css` 放在首位。
+
+默认行高至少为 54px，`size="large"` 为 68px；`center` 控制垂直居中，`descTextAlign` 控制右侧描述的对齐。颜色、边框和阴影使用 `--varo-ui-*` 主题变量，`roundRadius` 作用于当前行的圆角。
+
 ## 基础用法
 
 ```vue

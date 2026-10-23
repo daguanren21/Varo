@@ -3,6 +3,7 @@ import type { PreviewScenarioId } from '../protocol'
 import { VButton } from '@varo-ui/h5'
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { isPreviewFrameMessage, previewScenarios } from '../protocol'
+import PreviewLoading from './PreviewLoading.vue'
 
 type PreviewState = 'loading' | 'ready' | 'error'
 type PreviewWidth = 320 | 390 | 430
@@ -13,6 +14,7 @@ interface Props {
   width: PreviewWidth
   embed?: boolean
   presentation?: 'default' | 'docs'
+  framed?: boolean
   locale?: 'zh' | 'en'
   theme?: 'light' | 'dark'
 }
@@ -20,6 +22,7 @@ interface Props {
 interface Emits {
   reset: []
   contentHeight: [height: number]
+  stateChange: [state: PreviewState]
 }
 
 const props = defineProps<Props>()
@@ -46,6 +49,7 @@ const pageScroll = computed(() => docsPresentation.value
 const frameUrl = computed(() => {
   const parameters = new URLSearchParams({ scenario: props.scenario, session: props.session })
   if (docsPresentation.value) { parameters.set('docs', '1') }
+  if (props.framed) { parameters.set('framed', '1') }
   if (props.locale) { parameters.set('locale', props.locale) }
   if (props.theme) { parameters.set('theme', props.theme) }
   return `./runtime.html?${parameters}`
@@ -80,6 +84,8 @@ watch(
   },
   { immediate: true },
 )
+
+watch(state, value => emit('stateChange', value), { immediate: true, flush: 'sync' })
 
 function receiveFrameMessage(event: MessageEvent<unknown>) {
   if (event.origin !== window.location.origin) {
@@ -137,7 +143,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <article class="preview-frame" :class="{ 'preview-frame--embed': embedded, 'preview-frame--docs': docsPresentation }" :data-state="state">
+  <article class="preview-frame" :class="{ 'preview-frame--embed': embedded, 'preview-frame--docs': docsPresentation }" :data-state="state" :data-theme="theme">
     <header v-if="!docsPresentation" class="preview-frame__header">
       <div v-if="!embedded" class="preview-frame__route">
         <span>Native page</span>
@@ -148,8 +154,8 @@ onBeforeUnmount(() => {
         <span class="preview-frame__status-dot" aria-hidden="true" />
         <span>{{ stateLabel }}</span>
       </div>
-      <VButton v-if="props.embed" native-type="button" size="sm" variant="outline" aria-label="重置预览" @click="emit('reset')">
-        重置预览
+      <VButton v-if="props.embed" native-type="button" size="sm" variant="outline" :aria-label="en ? 'Reset preview' : '重置预览'" @click="emit('reset')">
+        {{ en ? 'Reset preview' : '重置预览' }}
       </VButton>
     </header>
 
@@ -171,17 +177,14 @@ onBeforeUnmount(() => {
               :title="frameTitle"
               :tabindex="state === 'ready' ? 0 : -1"
               :aria-hidden="state !== 'ready'"
+              :inert="state !== 'ready'"
             />
 
-            <div v-if="state === 'loading'" class="preview-frame__overlay" role="status" aria-live="polite">
-              <span class="preview-frame__state-mark" aria-hidden="true" />
-              <strong>{{ embedded ? (en ? 'Loading preview' : '正在加载预览') : '正在启动 Web 兼容运行时' }}</strong>
-              <p v-if="!embedded">
-                等待 glass-easel 装载当前 Wevu 原生构建产物。
-              </p>
-            </div>
+            <Transition :name="docsPresentation ? undefined : 'preview-loading'" :css="!docsPresentation">
+              <PreviewLoading v-if="state === 'loading'" class="preview-frame__loading" :locale="locale" />
+            </Transition>
 
-            <div v-else-if="state === 'error'" class="preview-frame__overlay" role="alert">
+            <div v-if="state === 'error'" class="preview-frame__overlay" role="alert">
               <span class="preview-frame__state-mark" aria-hidden="true" />
               <strong>{{ en ? 'Unable to start preview' : '预览无法启动' }}</strong>
               <p>{{ errorMessage }}</p>
@@ -215,6 +218,15 @@ onBeforeUnmount(() => {
   border: 1px solid var(--varo-ui-border);
   border-radius: calc(var(--varo-ui-radius) + 8px);
   box-shadow: var(--varo-ui-shadow-md);
+}
+
+.preview-frame[data-theme='dark'] {
+  --varo-ui-surface: color-mix(in srgb, var(--varo-ui-black) 94%, var(--varo-ui-white));
+  --varo-ui-text: color-mix(in srgb, var(--varo-ui-white) 92%, var(--varo-ui-black));
+  --varo-ui-text-regular: color-mix(in srgb, var(--varo-ui-white) 72%, var(--varo-ui-black));
+  --varo-ui-text-muted: color-mix(in srgb, var(--varo-ui-white) 52%, var(--varo-ui-black));
+
+  color-scheme: dark;
 }
 
 .preview-frame__header,
@@ -351,6 +363,25 @@ onBeforeUnmount(() => {
   border: 0;
 }
 
+.preview-frame[data-state='loading'] .preview-frame__iframe,
+.preview-frame[data-state='error'] .preview-frame__iframe {
+  visibility: hidden;
+}
+
+.preview-frame__loading {
+  position: absolute;
+  inset: 0;
+}
+
+.preview-loading-leave-active {
+  pointer-events: none;
+  transition: opacity var(--varo-ui-motion-exit) var(--varo-ui-motion-ease);
+}
+
+.preview-loading-leave-to {
+  opacity: 0;
+}
+
 .preview-frame__overlay {
   position: absolute;
   inset: 0;
@@ -475,6 +506,12 @@ onBeforeUnmount(() => {
 
   .preview-frame__canvas {
     height: 660px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview-loading-leave-active {
+    transition: none;
   }
 }
 </style>

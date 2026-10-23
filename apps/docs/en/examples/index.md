@@ -27,9 +27,9 @@ Try H5 components and inspect native source and runtime screenshots here. Reposi
 
 Registry installation is the default path. Start with the [installation guide](/en/guide/installation), then generate source for the selected target.
 
-## H5 Live and Native Source Evidence
+## H5 and Mini Program Live Previews
 
-The H5 tab runs interactive `@varo-ui/h5` browser components. The native tab displays target Wevu SFC source and support information; it neither simulates mini-programs with Vue nor runs a native runtime.
+The H5 tab runs interactive `@varo-ui/h5` browser components. The Mini Program tab runs compiled Wevu pages inside a phone frame. A themed skeleton stays visible until the preview is ready; a failed preview offers retry, and the Registry source remains available below. Browser previews do not replace WeChat DevTools or device verification.
 
 <PlatformTabsDemo example="overview" locale="en" />
 
