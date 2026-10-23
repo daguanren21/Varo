@@ -106,6 +106,9 @@ export default defineConfig({
       alt: 'Varo',
     },
     siteTitle: false,
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/daguanren21/Varo', ariaLabel: 'GitHub' },
+    ],
     search: {
       provider: 'local',
       options: {
@@ -189,6 +192,7 @@ export default defineConfig({
               { text: '色彩系统', link: '/guide/colors' },
               { text: '国际化', link: '/guide/i18n' },
               { text: '参与贡献', link: '/guide/contributing' },
+              { text: 'DeepWiki', link: 'https://deepwiki.com/daguanren21/Varo' },
             ],
           },
         ],
@@ -419,6 +423,7 @@ export default defineConfig({
               { text: 'Color System', link: '/en/guide/colors' },
               { text: 'Internationalization', link: '/en/guide/i18n' },
               { text: 'Contributing', link: '/en/guide/contributing' },
+              { text: 'DeepWiki', link: 'https://deepwiki.com/daguanren21/Varo' },
             ],
           },
         ],
