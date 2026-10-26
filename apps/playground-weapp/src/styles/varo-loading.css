@@ -2,7 +2,7 @@
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  color: #64748b;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-loading__spinner {
@@ -15,7 +15,19 @@
 }
 
 .varo-loading[data-tone='primary'] {
-  color: #0f766e;
+  color: var(--varo-ui-primary);
+}
+
+.varo-loading[data-tone='success'] {
+  color: var(--varo-ui-success);
+}
+
+.varo-loading[data-tone='warning'] {
+  color: var(--varo-ui-warning);
+}
+
+.varo-loading[data-tone='danger'] {
+  color: var(--varo-ui-danger);
 }
 
 .varo-loading[data-size='sm'] {

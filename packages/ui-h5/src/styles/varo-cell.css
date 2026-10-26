@@ -1,0 +1,113 @@
+.varo-cell-group {
+  display: grid;
+  gap: 8px;
+}
+
+.varo-cell-group__header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.varo-cell-group__title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--varo-ui-text);
+  letter-spacing: 0.01em;
+}
+
+.varo-cell-group__desc {
+  font-size: 0.76rem;
+  color: var(--varo-ui-text-muted);
+}
+
+.varo-cell-group__body {
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-cell-round-radius, 16px);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-cell {
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 54px;
+  padding: 12px 14px;
+  line-height: 1.5;
+  color: var(--varo-ui-text);
+  text-decoration: none;
+  outline: none;
+  border-radius: var(--varo-cell-round-radius, 0);
+  transition:
+    background-color var(--varo-ui-motion-feedback) ease,
+    box-shadow var(--varo-ui-motion-feedback) ease;
+}
+
+.varo-cell + .varo-cell {
+  border-top: 1px solid var(--varo-ui-border-light);
+}
+
+.varo-cell[data-center='true'] {
+  align-items: center;
+}
+
+.varo-cell[data-clickable='true'] {
+  cursor: pointer;
+}
+
+.varo-cell[data-clickable='true']:hover {
+  background: var(--varo-ui-fill-light);
+}
+
+.varo-cell[data-clickable='true']:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--varo-ui-primary);
+}
+
+.varo-cell[data-size='large'] {
+  min-height: 68px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.varo-cell__icon,
+.varo-cell__link {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--varo-ui-primary);
+}
+
+.varo-cell__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.varo-cell__title {
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--varo-ui-text);
+}
+
+.varo-cell__subtitle {
+  margin-top: 3px;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--varo-ui-text-regular);
+}
+
+.varo-cell__desc {
+  flex: none;
+  max-width: 42%;
+  font-size: 0.82rem;
+  color: var(--varo-ui-text-regular);
+  text-align: right;
+}
+
+.varo-cell[data-desc-align='left'] .varo-cell__desc {
+  text-align: left;
+}

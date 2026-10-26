@@ -86,12 +86,17 @@ const dataState = computed(() => {
   return currentComplete.value ? 'complete' : 'incomplete'
 })
 const inputType = computed(() => 'text')
-const cells = computed(() => Array.from({ length: currentLength.value }, (_, index) => ({
-  active: currentFocused.value && currentActiveIndex.value === index,
-  filled: Boolean(currentValue.value[index]),
-  index,
-  value: currentValue.value[index] || '',
-})))
+const cells = computed(() => Array.from({ length: currentLength.value }, (_, index) => {
+  const value = currentValue.value[index] || ''
+  return {
+    dataActive: String(currentFocused.value && currentActiveIndex.value === index),
+    dataFilled: String(Boolean(value)),
+    dataIndex: String(index),
+    displayValue: props.mask && value ? '•' : value,
+    index,
+    showSeparator: Boolean(props.separator) && index < currentLength.value - 1,
+  }
+}))
 const classes = computed(() => cn('varo-input-otp', props.className))
 
 function readInputValue(event: Event) {
@@ -112,9 +117,6 @@ function handleFocus(event: Event) {
 function handleBlur(event: Event) {
   otp.events.blur()
   emit('blur', event)
-}
-function displayCell(cell: { value: string }) {
-  return props.mask && cell.value ? '•' : cell.value
 }
 </script>
 
@@ -149,19 +151,19 @@ function displayCell(cell: { value: string }) {
       @input="handleInput"
     >
     <view class="varo-input-otp__cells" aria-hidden="true">
-      <text
-        v-for="cell in cells"
-        :key="cell.index"
-        class="varo-input-otp__cell"
-        :data-active="String(cell.active)"
-        :data-filled="String(cell.filled)"
-        :data-index="String(cell.index)"
-      >
-        {{ displayCell(cell) }}
-      </text>
-      <text v-if="props.separator" class="varo-input-otp__separator">
-        {{ props.separator }}
-      </text>
+      <template v-for="cell in cells" :key="cell.index">
+        <text
+          class="varo-input-otp__cell"
+          :data-active="cell.dataActive"
+          :data-filled="cell.dataFilled"
+          :data-index="cell.dataIndex"
+        >
+          {{ cell.displayValue }}
+        </text>
+        <text v-if="cell.showSeparator" class="varo-input-otp__separator">
+          {{ props.separator }}
+        </text>
+      </template>
     </view>
     <slot />
   </view>

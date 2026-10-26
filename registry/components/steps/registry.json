@@ -47,5 +47,5 @@
       "to": "src/styles/varo-steps.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/steps"
 }

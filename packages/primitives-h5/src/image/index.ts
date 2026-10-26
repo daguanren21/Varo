@@ -1,7 +1,7 @@
 import type { PropType, StyleValue } from 'vue'
 import type { ImageDimension, ImageFit } from './types'
 import { useImageRoot } from '@varo-ui/headless'
-import { computed, defineComponent, h, toRef, watch } from 'vue'
+import { computed, defineComponent, h, onMounted, shallowRef, toRef, watch } from 'vue'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export type * from './types'
@@ -32,6 +32,7 @@ export const ImageRoot = defineComponent({
   emits: ['load', 'error', 'click'],
   setup(props, { attrs, emit, slots }) {
     const image = useImageRoot({ runtime: vueReactiveRuntime, src: toRef(props, 'src') })
+    const imageElement = shallowRef<HTMLImageElement | null>(null)
     const rootStyle = computed(() => ({
       width: normalizeDimension(props.width),
       height: normalizeDimension(props.height),
@@ -39,7 +40,17 @@ export const ImageRoot = defineComponent({
     }))
     const imageStyle = computed(() => ({ objectFit: props.fit, objectPosition: props.position }))
 
+    function reconcileCompletedImage() {
+      const element = imageElement.value
+      if (!image.state.hasSource.value || !element?.complete) { return }
+      // Hydration can attach listeners after the browser has already resolved the resource.
+      if (element.naturalWidth > 0) { image.events.load() }
+      else { image.events.error() }
+    }
+
     watch(() => props.src, image.api.reset)
+    watch(() => props.src, reconcileCompletedImage, { flush: 'post' })
+    onMounted(reconcileCompletedImage)
 
     function handleLoad(event: Event) {
       image.events.load()
@@ -68,6 +79,7 @@ export const ImageRoot = defineComponent({
               class: 'varo-image__img',
               draggable: props.draggable,
               loading: props.lazyLoad ? 'lazy' : undefined,
+              ref: imageElement,
               src: props.src,
               style: imageStyle.value,
               onError: handleError,
@@ -75,10 +87,10 @@ export const ImageRoot = defineComponent({
             })
           : null,
         image.state.loading.value && props.showLoading && !image.state.failed.value
-          ? h('div', { class: 'varo-image__loading' }, slots.loading?.() ?? props.loadingText)
+          ? h('div', { class: 'varo-image__placeholder varo-image__loading' }, slots.loading?.() ?? props.loadingText)
           : null,
         image.state.failed.value && props.showError
-          ? h('div', { class: 'varo-image__error' }, slots.error?.() ?? props.errorText)
+          ? h('div', { class: 'varo-image__placeholder varo-image__error' }, slots.error?.() ?? props.errorText)
           : null,
       ])
   },

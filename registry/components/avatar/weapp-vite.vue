@@ -29,6 +29,7 @@ const props = withDefaults(
 )
 
 const safeAlt = computed(() => props.alt || '')
+const imageRole = computed(() => (safeAlt.value ? 'img' : undefined))
 const safeFallback = computed(() => props.fallback || '')
 const safeSource = computed(() => props.src || '')
 const dimension = computed(() => {
@@ -40,7 +41,7 @@ const dimension = computed(() => {
 <template>
   <view
     class="varo-avatar"
-    role="img"
+    :role="imageRole"
     :aria-label="safeAlt"
     :data-shape="props.shape"
     :style="{ width: dimension, height: dimension }"

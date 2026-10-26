@@ -20,7 +20,7 @@ import {
   useId,
   watch,
 } from 'vue'
-import { callHandler, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, callHandler, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useDialogRoot } from './hooks'
@@ -331,14 +331,19 @@ export const DialogTrigger = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, !dialog.state.disabled.value),
           ...dialog.attrs.trigger,
-          disabled: dialog.state.disabled.value,
+          type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
+          disabled: props.as === 'button' ? dialog.state.disabled.value : undefined,
           ref: (element: unknown) => {
             dom.trigger.value = element instanceof HTMLElement ? element : null
           },
           onClick: (event: MouseEvent) => {
-            callHandler(attrs.onClick, event)
-            dialog.events.toggle()
+            runInteractiveClick(event, {
+              action: dialog.events.toggle,
+              handler: attrs.onClick,
+              interactive: !dialog.state.disabled.value,
+            })
           },
         },
         slots.default?.(),
@@ -369,16 +374,17 @@ export const DialogOverlay = defineComponent({
         {
           ...attrs,
           ...dialog.attrs.overlay,
-          ref: (element: unknown) => {
+          'aria-hidden': slots.default ? undefined : 'true',
+          'ref': (element: unknown) => {
             dom.overlay.value = element instanceof HTMLElement ? element : null
           },
-          onMousedown: (event: MouseEvent) => {
+          'onMousedown': (event: MouseEvent) => {
             callHandler(attrs.onMousedown, event)
-            event.preventDefault()
+            if (event.target === event.currentTarget) { event.preventDefault() }
           },
-          onClick: (event: MouseEvent) => {
+          'onClick': (event: MouseEvent) => {
             callHandler(attrs.onClick, event)
-            dialog.events.onOverlayClick()
+            if (!event.defaultPrevented && event.target === event.currentTarget) { dialog.events.onOverlayClick() }
           },
         },
         slots.default?.(),
@@ -437,9 +443,15 @@ export const DialogClose = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, !dialog.state.disabled.value),
+          disabled: props.as === 'button' ? dialog.state.disabled.value : undefined,
+          type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
-            callHandler(attrs.onClick, event)
-            dialog.events.close()
+            runInteractiveClick(event, {
+              action: dialog.events.close,
+              handler: attrs.onClick,
+              interactive: !dialog.state.disabled.value,
+            })
           },
         },
         slots.default?.(),

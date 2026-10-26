@@ -60,5 +60,5 @@
       "to": "src/styles/varo-collapse.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/collapse"
 }

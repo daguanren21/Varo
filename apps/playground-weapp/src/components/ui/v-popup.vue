@@ -10,6 +10,8 @@ import VOverlay from './v-overlay.vue'
 defineOptions({
   properties: {
     visible: { type: null, value: null },
+    duration: { type: null, value: null },
+    zIndex: { type: null, value: null },
   },
 })
 

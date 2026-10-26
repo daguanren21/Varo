@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { ClassValue } from '../../lib/cn'
 import { useOverlayRoot } from '@varo-ui/headless'
-import { computed, toRef } from 'wevu'
+import { computed, toRef, useSlots } from 'wevu'
 import { cn } from '../../lib/cn'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 
 defineOptions({
   properties: {
     visible: { type: null, value: null },
+    duration: { type: null, value: null },
+    zIndex: { type: null, value: null },
   },
 })
 
@@ -60,6 +62,8 @@ const overlay = useOverlayRoot({
 })
 
 const currentVisible = computed(() => overlay.state.visible.value)
+const slots = useSlots()
+const backdropAriaHidden = computed(() => slots.default ? undefined : 'true')
 const lockedVisible = computed(() => currentVisible.value && props.lockScroll)
 const classes = computed(() => cn('varo-overlay', props.disabled && 'disabled-true', props.className))
 const dataState = computed(() => currentVisible.value ? 'open' : 'closed')
@@ -100,7 +104,7 @@ function lockTouchMove() {
   <view
     v-if="lockedVisible"
     :class="classes"
-    aria-hidden="true"
+    :aria-hidden="backdropAriaHidden"
     :data-lock-scroll="dataLockScroll"
     :data-state="dataState"
     :style="rootStyle"
@@ -112,7 +116,7 @@ function lockTouchMove() {
   <view
     v-else-if="currentVisible"
     :class="classes"
-    aria-hidden="true"
+    :aria-hidden="backdropAriaHidden"
     :data-lock-scroll="dataLockScroll"
     :data-state="dataState"
     :style="rootStyle"

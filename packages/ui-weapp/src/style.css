@@ -1258,7 +1258,7 @@ textarea.varo-input__control {
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  color: #64748b;
+  color: var(--varo-ui-text-muted);
 }
 
 .varo-loading__spinner {
@@ -1271,7 +1271,19 @@ textarea.varo-input__control {
 }
 
 .varo-loading[data-tone='primary'] {
-  color: #0f766e;
+  color: var(--varo-ui-primary);
+}
+
+.varo-loading[data-tone='success'] {
+  color: var(--varo-ui-success);
+}
+
+.varo-loading[data-tone='warning'] {
+  color: var(--varo-ui-warning);
+}
+
+.varo-loading[data-tone='danger'] {
+  color: var(--varo-ui-danger);
 }
 
 .varo-loading[data-size='sm'] {
@@ -3214,6 +3226,105 @@ textarea.varo-input__control {
   color: var(--varo-ui-text-muted);
 }
 
+/* registry/themes/components/cell/weapp-vite.css */
+.varo-cell-group {
+  display: grid;
+  gap: 8px;
+}
+
+.varo-cell-group__header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.varo-cell-group__title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--varo-ui-text);
+  letter-spacing: 0.01em;
+}
+
+.varo-cell-group__desc {
+  font-size: 0.76rem;
+  color: var(--varo-ui-text-muted);
+}
+
+.varo-cell-group__body {
+  overflow: hidden;
+  background: var(--varo-ui-surface);
+  border: 1px solid var(--varo-ui-border);
+  border-radius: var(--varo-cell-round-radius, 16px);
+  box-shadow: var(--varo-ui-shadow-sm);
+}
+
+.varo-cell {
+  box-sizing: border-box;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 54px;
+  padding: 12px 14px;
+  line-height: 1.5;
+  color: var(--varo-ui-text);
+  text-decoration: none;
+  border-radius: var(--varo-cell-round-radius, 0);
+}
+
+.varo-cell + .varo-cell {
+  border-top: 1px solid var(--varo-ui-border-light);
+}
+
+.varo-cell.center-true {
+  align-items: center;
+}
+
+.varo-cell.size-large {
+  min-height: 68px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.varo-cell__icon,
+.varo-cell__link {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--varo-ui-primary);
+}
+
+.varo-cell__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.varo-cell__title {
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--varo-ui-text);
+}
+
+.varo-cell__subtitle {
+  margin-top: 3px;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--varo-ui-text-regular);
+}
+
+.varo-cell__desc {
+  flex: none;
+  max-width: 42%;
+  font-size: 0.82rem;
+  color: var(--varo-ui-text-regular);
+  text-align: right;
+}
+
+.varo-cell.desc-align-left .varo-cell__desc {
+  text-align: left;
+}
+
 /* registry/themes/components/avatar/style.css */
 .varo-avatar {
   display: inline-flex;
@@ -3670,7 +3781,7 @@ textarea.varo-input__control {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle, var(--varo-ui-surface) calc(50% - var(--varo-progress-stroke)), transparent calc(50% - var(--varo-progress-stroke) + 1px)),
+    radial-gradient(circle closest-side, var(--varo-ui-surface) calc(100% - var(--varo-progress-stroke)), transparent calc(100% - var(--varo-progress-stroke) + 1px)),
     conic-gradient(var(--varo-progress-color, var(--varo-ui-primary)) var(--varo-progress-value), var(--varo-ui-surface-muted) 0);
   border-radius: 999px;
 }
@@ -3737,6 +3848,9 @@ textarea.varo-input__control {
   display: grid;
   gap: 3px;
   min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .varo-steps__title {
@@ -3764,6 +3878,28 @@ textarea.varo-input__control {
   background: var(--varo-ui-primary);
 }
 
+.varo-steps[data-direction='horizontal'] .varo-steps__trigger {
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 0 4px;
+  text-align: center;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__marker {
+  box-sizing: border-box;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__body {
+  width: 100%;
+}
+
+.varo-steps[data-direction='horizontal'] .varo-steps__line {
+  right: calc(-50% + 16px);
+  left: calc(50% + 16px);
+}
+
 .varo-steps[data-direction='vertical'] {
   display: grid;
   gap: 0;
@@ -3786,6 +3922,7 @@ textarea.varo-input__control {
   display: flex;
   gap: 9px;
   align-items: center;
+  min-width: 0;
   min-height: 42px;
   padding: 0 12px;
   font-size: 13px;
@@ -3987,10 +4124,39 @@ textarea.varo-input__control {
 
 /* registry/themes/components/action-sheet/weapp-vite.css */
 .varo-action-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: none;
+}
+
+.varo-action-sheet .varo-popup__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: auto;
+  background: rgb(0 0 0 / 45%);
+}
+
+.varo-action-sheet .varo-popup__content {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1101;
+  box-sizing: border-box;
   width: 100%;
   max-height: min(76vh, 640px);
   overflow: auto;
+  color: var(--varo-ui-text);
+  pointer-events: auto;
   background: var(--varo-ui-surface);
+  border-radius: var(--varo-ui-radius) var(--varo-ui-radius) 0 0;
+  box-shadow: var(--varo-ui-shadow-md);
+}
+
+.varo-action-sheet .varo-popup__content[data-safe-area-inset-bottom='true'] {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .varo-action-sheet__header {
@@ -4350,6 +4516,22 @@ textarea.varo-input__control {
 
 .varo-grid[data-border='false'] .varo-grid__item {
   border-color: transparent;
+}
+
+.varo-grid[data-center='false'] .varo-grid__item {
+  justify-items: start;
+  text-align: left;
+}
+
+.varo-grid[data-square='true'] .varo-grid__item {
+  gap: 4px;
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 4px;
+}
+
+.varo-grid[data-square='true'] .varo-grid__icon-wrap {
+  height: 24px;
 }
 
 .varo-grid__item[data-direction='horizontal'] {
@@ -4922,6 +5104,7 @@ textarea.varo-input__control {
   position: relative;
   display: inline-flex;
   min-width: 0;
+  max-width: 100%;
   color: var(--varo-ui-text);
 }
 
@@ -4939,6 +5122,8 @@ textarea.varo-input__control {
   display: inline-flex;
   gap: 16rpx;
   align-items: center;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .varo-input-otp__cell {
@@ -4947,6 +5132,7 @@ textarea.varo-input__control {
   align-items: center;
   justify-content: center;
   width: 88rpx;
+  min-width: 0;
   height: 88rpx;
   font-size: 40rpx;
   font-weight: 650;
@@ -4967,6 +5153,7 @@ textarea.varo-input__control {
 }
 
 .varo-input-otp__separator {
+  flex-shrink: 0;
   color: var(--varo-ui-text-muted);
 }
 

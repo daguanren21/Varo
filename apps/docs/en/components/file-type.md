@@ -2,6 +2,12 @@
 
 `VFileType` is an independent, stateless component that displays a file icon and short type label based on a filename and MIME type. It does not read files, fetch URLs, inspect content, or decide whether an upload is allowed.
 
+## Demo
+
+<ComponentPlatformDemo component="file-type" locale="en">
+  <FileTypeDemo locale="en" />
+</ComponentPlatformDemo>
+
 ## Basic usage
 
 ```vue

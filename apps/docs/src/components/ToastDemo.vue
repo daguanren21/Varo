@@ -2,6 +2,7 @@
 import type { VToastType } from '@varo-ui/h5'
 import { VButton, VToast, VToastRegion } from '@varo-ui/h5'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 
 interface DemoToast {
   actionText?: string
@@ -88,52 +89,54 @@ onBeforeUnmount(() => clearTimeout(deployTimer))
 </script>
 
 <template>
-  <section class="toast-demo">
-    <div class="toast-demo__controls">
-      <VButton size="sm" @click="deploy">
-        {{ copy.deploy }}
-      </VButton>
-      <output aria-live="polite">{{ actionStatus }}</output>
-    </div>
+  <DocsDeviceFrame>
+    <section class="toast-demo">
+      <div class="toast-demo__controls">
+        <VButton size="sm" @click="deploy">
+          {{ copy.deploy }}
+        </VButton>
+        <output aria-live="polite">{{ actionStatus }}</output>
+      </div>
 
-    <VToastRegion inline class="toast-demo__region">
-      <VToast
-        :visible="visibleIds.has('deploy')"
-        :type="deployType"
-        :title="deployTitle"
-        :message="deployMessage"
-        closeable
-        :close-label="copy.close"
-        @close="dismiss('deploy')"
-      />
-      <VToast
-        v-for="toast in staticToasts"
-        :key="toast.id"
-        :visible="visibleIds.has(toast.id)"
-        :type="toast.type"
-        :title="toast.title"
-        :message="toast.message"
-        :action-text="toast.actionText"
-        :action-label="toast.actionText"
-        closeable
-        :close-label="copy.close"
-        @action="act(toast.id)"
-        @close="dismiss(toast.id)"
-      />
-    </VToastRegion>
-  </section>
+      <VToastRegion inline class="toast-demo__region">
+        <VToast
+          :visible="visibleIds.has('deploy')"
+          :type="deployType"
+          :title="deployTitle"
+          :message="deployMessage"
+          closeable
+          :close-label="copy.close"
+          @close="dismiss('deploy')"
+        />
+        <VToast
+          v-for="toast in staticToasts"
+          :key="toast.id"
+          :visible="visibleIds.has(toast.id)"
+          :type="toast.type"
+          :title="toast.title"
+          :message="toast.message"
+          :action-text="toast.actionText"
+          :action-label="toast.actionText"
+          closeable
+          :close-label="copy.close"
+          @action="act(toast.id)"
+          @close="dismiss(toast.id)"
+        />
+      </VToastRegion>
+    </section>
+  </DocsDeviceFrame>
 </template>
 
 <style scoped>
 .toast-demo {
   display: grid;
   gap: 14px;
-  width: min(100%, 520px);
-  margin: 16px 0 24px;
+  min-width: 0;
 }
 
 .toast-demo__controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
 }

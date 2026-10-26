@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { resolveDocsPreview } from '@varo/playground-weapp-preview/docs-scenarios'
+import PreviewLoading from '@varo/playground-weapp-preview/preview-loading'
 import { useData } from 'vitepress'
 import { computed, onBeforeUnmount, onMounted, shallowRef, useTemplateRef, watch } from 'vue'
 import DocsDeviceFrame from './DocsDeviceFrame.vue'
@@ -11,18 +12,20 @@ const props = withDefaults(defineProps<{
   preview?: boolean
   surface?: 'component' | 'primitive'
   framed?: boolean
-}>(), { locale: 'zh', preview: true, surface: 'component', framed: false })
+}>(), { locale: 'zh', preview: true, surface: 'component', framed: true })
 const { isDark } = useData()
 const frame = useTemplateRef<HTMLIFrameElement>('frame')
 const session = shallowRef('')
 const contentHeight = shallowRef(160)
+const state = shallowRef<'loading' | 'ready' | 'error'>('loading')
 const scenario = computed(() => resolveDocsPreview(props.component, props.surface))
 const scrollsPage = computed(() => props.component === 'sticky')
-const frameHeight = computed(() => `${scrollsPage.value ? 577 : contentHeight.value}px`)
+const frameHeight = computed(() => `${scrollsPage.value ? 577 : Math.max(state.value === 'error' ? 240 : 160, contentHeight.value)}px`)
 const previewUrl = computed(() => {
   const query = new URLSearchParams({
     scenario: scenario.value?.id ?? '',
     docs: '1',
+    framed: props.framed ? '1' : '0',
     locale: props.locale,
     theme: isDark.value ? 'dark' : 'light',
     session: session.value,
@@ -31,44 +34,65 @@ const previewUrl = computed(() => {
 })
 const title = computed(() => props.locale === 'en' ? `${props.component} mini-program preview` : `${props.component} 小程序预览`)
 
-function receiveHeight(event: MessageEvent) {
+function receiveFrameMessage(event: MessageEvent<unknown>) {
   if (event.origin !== window.location.origin || event.source !== frame.value?.contentWindow) { return }
   const data: unknown = event.data
   if (!data || typeof data !== 'object') { return }
   const message = data as Record<string, unknown>
-  if (message.channel !== 'varo-weapp-preview' || message.type !== 'height'
+  if (message.channel !== 'varo-weapp-preview'
     || message.session !== session.value || message.scenario !== scenario.value?.id) { return }
-  if (typeof message.height === 'number' && Number.isFinite(message.height) && message.height > 0) {
+  if (message.type === 'state') {
+    if (message.state === 'loading' || message.state === 'ready' || message.state === 'error') {
+      state.value = message.state
+    }
+    return
+  }
+  if (message.type === 'height' && state.value === 'ready'
+    && typeof message.height === 'number' && Number.isFinite(message.height) && message.height > 0) {
     contentHeight.value = Math.max(160, Math.ceil(message.height))
   }
 }
 
 onMounted(() => {
-  window.addEventListener('message', receiveHeight)
+  window.addEventListener('message', receiveFrameMessage)
   // Code/Preview keeps this component mounted but replaces its iframe.
   watch(
     [() => props.preview, scenario, () => props.locale, isDark, () => props.framed],
     ([preview, activeScenario]) => {
+      state.value = 'loading'
       contentHeight.value = 160
       session.value = preview && activeScenario ? crypto.randomUUID() : ''
     },
     { immediate: true },
   )
 })
-onBeforeUnmount(() => window.removeEventListener('message', receiveHeight))
+onBeforeUnmount(() => window.removeEventListener('message', receiveFrameMessage))
 </script>
 
 <template>
-  <section v-if="preview && scenario" class="native-component-preview" data-evidence="native-browser-artifact" :data-scenario="scenario.id">
+  <section v-if="preview && scenario" class="native-component-preview" data-evidence="native-browser-artifact" :data-scenario="scenario.id" :data-state="state" :data-framed="framed">
     <div v-if="framed" class="native-component-preview__evidence">
       <strong>{{ locale === 'en' ? 'Mini Program Live' : '小程序实时预览' }}</strong>
       <span>{{ locale === 'en' ? 'Interactive browser preview' : '浏览器运行时实时交互' }}</span>
     </div>
     <component :is="framed ? DocsDeviceFrame : 'div'" class="native-component-preview__viewport">
-      <iframe v-if="session" :key="session" ref="frame" class="native-component-preview__frame" :src="previewUrl" :title="title" :style="{ height: frameHeight }" />
-      <p v-else role="status">
-        {{ locale === 'en' ? 'Loading preview…' : '正在加载预览…' }}
-      </p>
+      <div class="native-component-preview__surface" :style="{ height: frameHeight }" :aria-busy="state === 'loading'">
+        <iframe
+          v-if="session"
+          :key="session"
+          ref="frame"
+          class="native-component-preview__frame"
+          :src="previewUrl"
+          :title="title"
+          :style="{ height: frameHeight }"
+          :inert="state === 'loading'"
+          :tabindex="state === 'loading' ? -1 : 0"
+          :aria-hidden="state === 'loading'"
+        />
+        <Transition name="native-preview-loading">
+          <PreviewLoading v-if="state === 'loading'" class="native-component-preview__loading" :locale="locale" />
+        </Transition>
+      </div>
     </component>
     <details class="native-component-preview__source">
       <summary>{{ locale === 'en' ? 'View code' : '查看代码' }}</summary>
@@ -114,6 +138,38 @@ onBeforeUnmount(() => window.removeEventListener('message', receiveHeight))
   min-width: 0;
 }
 
+.native-component-preview__surface {
+  position: relative;
+  min-width: 0;
+  min-height: var(--docs-device-content-min-height, 160px);
+}
+
+.native-component-preview[data-framed='true'] .native-component-preview__surface {
+  width: calc(100% + 32px);
+  margin-inline: -16px;
+  margin-bottom: -72px;
+}
+
+.native-component-preview__loading {
+  --preview-loading-background: transparent;
+
+  position: absolute;
+  inset: 0;
+}
+
+.native-component-preview[data-state='loading'] .native-component-preview__frame {
+  visibility: hidden;
+}
+
+.native-preview-loading-leave-active {
+  pointer-events: none;
+  transition: opacity var(--varo-ui-motion-exit) var(--varo-ui-motion-ease);
+}
+
+.native-preview-loading-leave-to {
+  opacity: 0;
+}
+
 .native-component-preview__frame {
   box-sizing: border-box;
   display: block;
@@ -137,5 +193,11 @@ onBeforeUnmount(() => window.removeEventListener('message', receiveHeight))
 .native-component-preview__source summary:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .native-preview-loading-leave-active {
+    transition: none;
+  }
 }
 </style>

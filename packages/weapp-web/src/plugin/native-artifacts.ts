@@ -471,6 +471,16 @@ class NativeSourceReader {
     return file
   }
 
+  async readAssetIfExists(relativePath: string): Promise<AssetFile | null> {
+    try {
+      return await this.readAsset(relativePath)
+    }
+    catch (error) {
+      if (error instanceof Error && error.message.startsWith('[varo-native-artifacts] Missing native artifact ')) { return null }
+      throw error
+    }
+  }
+
   digest(): string {
     const hash = createHash('sha256')
     for (const [path, content] of [...this.inputs.entries()].sort(([left], [right]) => compareStrings(left, right))) {
@@ -508,10 +518,13 @@ class AssetRegistry {
     this.aliases.set(alias, value)
   }
 
-  async add(specifier: string, ownerFile: string): Promise<AssetBinding | null> {
+  async add(specifier: string, ownerFile: string, kind: 'required' | 'candidate' = 'required'): Promise<AssetBinding | null> {
     if (preservedExternalReference(specifier, ownerFile)) { return null }
     const resolved = resolveLocalFileKey(ownerFile, specifier, 'asset')
-    const file = await this.reader.readAsset(resolved.key)
+    const file = kind === 'candidate'
+      ? await this.reader.readAssetIfExists(resolved.key)
+      : await this.reader.readAsset(resolved.key)
+    if (!file) { return null }
     this.files.set(file.relativePath, file)
     const value = { file, suffix: resolved.suffix }
     this.addAlias(specifier, value, ownerFile)
@@ -899,7 +912,8 @@ async function collectModules(
     const source = knownSources.get(key) ?? await reader.readText(key)
     modules.set(key, source)
     const metadata = inspectJavaScript(source.content, source.relativePath)
-    for (const assetReference of metadata.assets) { await assets.add(assetReference, source.relativePath) }
+    // JavaScript strings can be display filenames; only existing files are asset dependencies.
+    for (const assetReference of metadata.assets) { await assets.add(assetReference, source.relativePath, 'candidate') }
     for (const specifier of metadata.requires) {
       const candidates = resolveModuleCandidates(key, specifier)
       let dependency: string | undefined

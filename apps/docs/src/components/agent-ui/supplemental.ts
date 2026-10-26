@@ -125,7 +125,7 @@ export const AgentAttachmentList = defineComponent({
   emits: { remove: (_item: AgentAttachmentItem) => true },
   setup(props, { emit }) {
     return () =>
-      h('section', { class: 'grid gap-2.5 rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] p-3 shadow-sm' }, [
+      h('section', { class: 'agent-attachments grid gap-2.5 rounded-2xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)] p-3 shadow-sm' }, [
         h('header', { class: 'flex items-end justify-between gap-3 px-0.5' }, [
           h('span', { class: 'grid gap-0.5' }, [
             h('small', { class: 'text-[10px] font-black uppercase tracking-[0.16em] text-[var(--varo-agent-primary)]' }, 'Files'),
@@ -143,7 +143,7 @@ export const AgentAttachmentList = defineComponent({
                 : h(VFileType, { filename: item.name, mimeType: item.mimeType, decorative: true }),
               h('span', { class: 'grid min-w-0 flex-1 gap-0.5' }, [
                 h('strong', { class: 'break-all text-[12px] text-[var(--varo-agent-foreground)]' }, item.name),
-                h('small', { class: 'text-[10px] text-[var(--varo-agent-muted)]' }, [item.size, item.mimeType].filter(Boolean).join(' · ')),
+                h('small', { class: 'break-all text-[10px] text-[var(--varo-agent-muted)]' }, [item.size, item.mimeType].filter(Boolean).join(' · ')),
               ]),
               h(
                 'button',

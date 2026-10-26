@@ -5,6 +5,12 @@ import VButton from '../ui/v-button.vue'
 import VCard from '../ui/v-card.vue'
 import { agentShieldAlertIcon } from './agent-icons'
 
+defineOptions({
+  properties: {
+    value: { type: null, value: null },
+  },
+})
+
 const props = withDefaults(
   defineProps<{
     approveText?: string
@@ -54,12 +60,12 @@ const renderedChoices = computed(() =>
 )
 
 function select(value: string) {
-  internalValue.value = value
+  if (props.value == null) { internalValue.value = value }
   emit('update:value', value)
 }
 
 function approve() {
-  if (currentValue.value) { emit('approve', currentValue.value) }
+  if (!props.choices.length || currentValue.value) { emit('approve', currentValue.value) }
 }
 </script>
 

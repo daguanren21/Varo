@@ -33,6 +33,7 @@ import AgentComponentsDemo from '../../src/components/AgentComponentsDemo.vue'
 import ComponentCatalog from '../../src/components/ComponentCatalog.vue'
 import ComponentPlatformDemo from '../../src/components/ComponentPlatformDemo.vue'
 import DateFieldDemo from '../../src/components/DateFieldDemo.vue'
+import FileTypeDemo from '../../src/components/FileTypeDemo.vue'
 import FormComponentDemo from '../../src/components/FormComponentDemo.vue'
 import InteractivePreview from '../../src/components/InteractivePreview.vue'
 import ListDemo from '../../src/components/ListDemo.vue'
@@ -46,6 +47,7 @@ import PullRefreshDemo from '../../src/components/PullRefreshDemo.vue'
 import RegionPickerDemo from '../../src/components/RegionPickerDemo.vue'
 import RegistryCoverageEvidence from '../../src/components/RegistryCoverageEvidence.vue'
 import SignatureDemo from '../../src/components/SignatureDemo.vue'
+import TimeFieldDemo from '../../src/components/TimeFieldDemo.vue'
 import ToastDemo from '../../src/components/ToastDemo.vue'
 import WatermarkDemo from '../../src/components/WatermarkDemo.vue'
 import DocsLayout from './DocsLayout.vue'
@@ -63,7 +65,9 @@ const theme: Theme = {
     app.component('AgentComponentsDemo', AgentComponentsDemo)
     app.component('AgentComponentDemo', AgentComponentDemo)
     app.component('DateFieldDemo', DateFieldDemo)
+    app.component('FileTypeDemo', FileTypeDemo)
     app.component('FormComponentDemo', FormComponentDemo)
+    app.component('TimeFieldDemo', TimeFieldDemo)
     app.component('InteractivePreview', InteractivePreview)
     app.component('ListDemo', ListDemo)
     app.component('ComponentCatalog', ComponentCatalog)

@@ -76,7 +76,7 @@ const renderedSteps = computed<RenderedStep[]>(() =>
 
 function select(step: RenderedStep) {
   if (!props.clickable || step.item.disabled) { return }
-  emit('update:current', step.index)
+  if (props.current !== step.index) { emit('update:current', step.index) }
   emit('select', { index: step.index, item: step.item })
 }
 </script>

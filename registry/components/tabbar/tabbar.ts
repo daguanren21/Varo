@@ -30,6 +30,7 @@ export const VTabbar = defineComponent({
     provide(tabbarContextKey, {
       current,
       select(name) {
+        if (props.modelValue === name) { return }
         emit('update:modelValue', name)
         emit('change', name)
       },
@@ -79,7 +80,7 @@ export const VTabbarItem = defineComponent({
         },
         [
           props.icon || slots.icon
-            ? h('span', { 'aria-hidden': 'true', 'class': 'varo-tabbar__icon' }, slots.icon?.() ?? props.icon)
+            ? h('span', { 'aria-hidden': slots.icon ? undefined : 'true', 'class': 'varo-tabbar__icon' }, slots.icon?.() ?? props.icon)
             : null,
           h('span', { class: 'varo-tabbar__text' }, slots.default?.()),
           props.badge != null ? h('sup', { class: 'varo-tabbar__badge' }, String(props.badge)) : null,

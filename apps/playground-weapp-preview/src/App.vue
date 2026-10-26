@@ -11,6 +11,7 @@ const parameters = new URLSearchParams(window.location.search)
 const requestedScenario = parameters.get('scenario')
 const embed = parameters.get('embed') === '1'
 const docs = parameters.get('docs') === '1'
+const framed = docs && parameters.get('framed') === '1'
 const locale = parameters.get('locale') === 'en' ? 'en' : 'zh'
 const theme = parameters.get('theme') === 'dark' ? 'dark' : 'light'
 const parentSession = parameters.get('session') ?? globalThis.crypto.randomUUID()
@@ -18,6 +19,7 @@ const scenario = shallowRef<PreviewScenarioId>(isPreviewScenario(requestedScenar
 const width = shallowRef<PreviewWidth>(390)
 const session = shallowRef(parentSession)
 document.documentElement.classList.toggle('preview-docs', docs)
+document.documentElement.style.colorScheme = theme
 
 const activeScenario = computed(() =>
   previewScenarios.find(item => item.id === scenario.value) ?? previewScenarios[0],
@@ -35,6 +37,17 @@ function reportContentHeight(height: number) {
     session: parentSession,
     scenario: scenario.value,
     height,
+  }, window.location.origin)
+}
+
+function reportFrameState(state: 'loading' | 'ready' | 'error') {
+  if (!docs || window.parent === window) { return }
+  window.parent.postMessage({
+    channel: previewChannel,
+    type: 'state',
+    session: parentSession,
+    scenario: scenario.value,
+    state,
   }, window.location.origin)
 }
 
@@ -56,6 +69,7 @@ function selectWidth(nextWidth: PreviewWidth) {
   <main v-if="embed || docs" class="preview-app-embed" :lang="locale" :aria-label="locale === 'en' ? 'Mini Program preview' : '小程序组件预览'">
     <PreviewFrame
       embed
+      :framed="framed"
       :presentation="docs ? 'docs' : 'default'"
       :locale="locale"
       :theme="theme"
@@ -64,6 +78,7 @@ function selectWidth(nextWidth: PreviewWidth) {
       :width="width"
       @reset="renewSession"
       @content-height="reportContentHeight"
+      @state-change="reportFrameState"
     />
   </main>
   <div v-else class="preview-app">

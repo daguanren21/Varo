@@ -2,6 +2,7 @@
 import { VBreadcrumb, VButton, VDrawer, VInputOtp } from '@varo-ui/h5'
 import { computed, shallowRef } from 'vue'
 import ComponentPlatformDemo from './ComponentPlatformDemo.vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 
 const props = withDefaults(defineProps<{
   component: 'input-otp' | 'drawer' | 'breadcrumb'
@@ -92,7 +93,7 @@ const bottomDrawerOpen = shallowRef(false)
 
 const breadcrumbItems = computed(() => copy.value.breadcrumbItems.map((label, index) => ({
   label,
-  href: ['/', '/orders', undefined][index],
+  value: String(index),
 })))
 const disabledBreadcrumbItems = computed(() => breadcrumbItems.value.map((item, index) => ({
   ...item,
@@ -111,7 +112,7 @@ function selectBreadcrumb(payload: { index: number }) {
 <template>
   <ComponentPlatformDemo :component="component" :locale="locale">
     <div class="additional-component-demo" :data-docs-component="component">
-      <template v-if="component === 'input-otp'">
+      <DocsDeviceFrame v-if="component === 'input-otp'">
         <section class="additional-component-demo__section" data-docs-case="basic">
           <h3>{{ copy.basic }}</h3>
           <p class="additional-component-demo__hint">
@@ -158,9 +159,9 @@ function selectBreadcrumb(payload: { index: number }) {
             </div>
           </div>
         </section>
-      </template>
+      </DocsDeviceFrame>
 
-      <template v-else-if="component === 'drawer'">
+      <DocsDeviceFrame v-else-if="component === 'drawer'" overflow>
         <section class="additional-component-demo__section" data-docs-case="basic">
           <h3>{{ copy.basic }}</h3>
           <div class="additional-component-demo__row">
@@ -202,20 +203,20 @@ function selectBreadcrumb(payload: { index: number }) {
             </div>
           </VDrawer>
         </section>
-      </template>
+      </DocsDeviceFrame>
 
-      <template v-else-if="component === 'breadcrumb'">
+      <DocsDeviceFrame v-else-if="component === 'breadcrumb'">
         <section class="additional-component-demo__section" data-docs-case="basic">
           <h3>{{ copy.basic }}</h3>
           <VBreadcrumb :items="copy.breadcrumbItems" :label="copy.breadcrumbLabel" @select="selectBreadcrumb" />
         </section>
         <section class="additional-component-demo__section" data-docs-case="clickable-ancestors">
           <h3>{{ copy.clickable }}</h3>
-          <VBreadcrumb :items="breadcrumbItems" :label="copy.breadcrumbLabel" @click.prevent @select="selectBreadcrumb" />
+          <VBreadcrumb :items="breadcrumbItems" :label="copy.breadcrumbLabel" @select="selectBreadcrumb" />
         </section>
         <section class="additional-component-demo__section" data-docs-case="custom-slots">
           <h3>{{ copy.custom }}</h3>
-          <VBreadcrumb :items="breadcrumbItems" :label="copy.breadcrumbLabel" @click.prevent @select="selectBreadcrumb">
+          <VBreadcrumb :items="breadcrumbItems" :label="copy.breadcrumbLabel" @select="selectBreadcrumb">
             <template #item="{ item }">
               <strong>{{ item.label }}</strong>
             </template>
@@ -226,10 +227,10 @@ function selectBreadcrumb(payload: { index: number }) {
         </section>
         <section class="additional-component-demo__section" data-docs-case="disabled-ancestor">
           <h3>{{ copy.disabledAncestor }}</h3>
-          <VBreadcrumb :items="disabledBreadcrumbItems" :label="copy.breadcrumbLabel" @click.prevent @select="selectBreadcrumb" />
+          <VBreadcrumb :items="disabledBreadcrumbItems" :label="copy.breadcrumbLabel" @select="selectBreadcrumb" />
         </section>
         <output v-if="breadcrumbMessage" class="additional-component-demo__value" data-docs-result="breadcrumb" role="status">{{ breadcrumbMessage }}</output>
-      </template>
+      </DocsDeviceFrame>
     </div>
   </ComponentPlatformDemo>
 </template>

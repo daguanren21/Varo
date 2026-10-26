@@ -391,6 +391,37 @@ describe('PlatformTabsDemo', () => {
     expect(placement.get('.platform-demo__popover-tip').attributes('data-side')).toBe('top')
   })
 
+  it.each(['elevator', 'fixed-nav', 'side-navbar'] as const)('keeps %s on H5 when native state is restored', async (example) => {
+    window.history.replaceState(null, '', `/components/${example}?platform=weapp`)
+    window.sessionStorage.setItem('varo.docs.platform', 'weapp')
+    const wrapper = mount(PlatformTabsDemo, {
+      global: { plugins: [themePlugin] },
+      props: { example, locale: 'en' },
+    })
+    await flushPromises()
+
+    const tabs = wrapper.findAll('.platform-demo__platform-tab')
+    expect(tabs).toHaveLength(1)
+    expect(tabs[0]!.text()).toBe('H5')
+    expect(wrapper.get('.platform-demo').attributes('data-platform')).toBe('h5')
+    expect(new URL(window.location.href).searchParams.get('platform')).toBe('h5')
+    expect(window.sessionStorage.getItem('varo.docs.platform')).toBe('h5')
+    await tabs[0]!.trigger('keydown', { key: 'ArrowRight' })
+    expect(tabs[0]!.attributes('aria-selected')).toBe('true')
+    wrapper.unmount()
+
+    window.history.replaceState(null, '', `/components/${example}`)
+    window.sessionStorage.setItem('varo.docs.platform', 'weapp')
+    const restored = mount(PlatformTabsDemo, {
+      global: { plugins: [themePlugin] },
+      props: { example, locale: 'en' },
+    })
+    await flushPromises()
+    expect(restored.get('.platform-demo').attributes('data-platform')).toBe('h5')
+    expect(restored.findAll('.platform-demo__platform-tab')).toHaveLength(1)
+    restored.unmount()
+  })
+
   it('restores shareable platform and code state, then carries the platform preference to another component page', async () => {
     window.history.replaceState(null, '', '/components/button?platform=weapp&code=open')
     const wrapper = mount(PlatformTabsDemo, {
@@ -675,7 +706,6 @@ describe('PlatformTabsDemo', () => {
     expect(items).toHaveLength(4)
     expect(wrapper.findAll('.platform-demo__tabbar-icon')).toHaveLength(4)
     expect(items[0]!.attributes('aria-current')).toBe('page')
-    expect(wrapper.get('.varo-tabbar__icon').attributes('aria-hidden')).toBe('true')
     expect(wrapper.findAll('.varo-tabbar__badge')).toHaveLength(1)
     expect(wrapper.findAll('.varo-tabbar__dot')).toHaveLength(1)
 

@@ -42,6 +42,16 @@
       "to": "src/components/ui/v-cell.vue"
     },
     {
+      "target": "h5",
+      "from": "registry/themes/components/cell/h5.css",
+      "to": "src/styles/varo-cell.css"
+    },
+    {
+      "target": "weapp",
+      "from": "registry/themes/components/cell/weapp-vite.css",
+      "to": "src/styles/varo-cell.css"
+    },
+    {
       "target": "weapp",
       "from": "registry/components/cell/v-cell-group.vue",
       "to": "src/components/ui/v-cell-group.vue"

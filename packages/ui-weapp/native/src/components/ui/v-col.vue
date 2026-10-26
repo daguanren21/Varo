@@ -3,6 +3,10 @@ import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'
 
+defineOptions({
+  options: { virtualHost: true },
+})
+
 const props = withDefaults(
   defineProps<{
     className?: ClassValue

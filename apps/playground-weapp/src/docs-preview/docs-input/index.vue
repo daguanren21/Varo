@@ -16,6 +16,7 @@ import VPicker from '../../components/ui/v-picker.vue'
 import VRegionPicker from '../../components/ui/v-region-picker.vue'
 import VSearchbar from '../../components/ui/v-searchbar.vue'
 import VTextarea from '../../components/ui/v-textarea.vue'
+import VTimeField from '../../components/ui/v-time-field.vue'
 import { useDocsDemo } from '../../lib/docs-demo'
 
 const { component, en, theme } = useDocsDemo('input')
@@ -66,6 +67,11 @@ const copy = computed(() => en.value
       dateTitle: 'Invoice date',
       datePlaceholder: 'Select date',
       dateCancelled: 'Selection cancelled; the committed date was preserved.',
+      appointmentTitle: 'Appointment time',
+      appointmentHint: '09:00–18:00 · 15-minute steps',
+      timePlaceholder: 'Select time',
+      timeCancelled: 'Selection cancelled; the committed time was preserved.',
+      clear: 'Clear',
       confirmed: 'Confirmed',
       draft: 'Draft',
       deliveryTitle: 'Delivery window',
@@ -144,6 +150,11 @@ const copy = computed(() => en.value
       dateTitle: '开票日期',
       datePlaceholder: '请选择日期',
       dateCancelled: '已取消，保留原日期。',
+      appointmentTitle: '预约时间',
+      appointmentHint: '09:00–18:00 · 每 15 分钟',
+      timePlaceholder: '请选择时间',
+      timeCancelled: '已取消，保留原时间。',
+      clear: '清空',
       confirmed: '已确认',
       draft: '草稿',
       deliveryTitle: '配送时段',
@@ -230,6 +241,20 @@ function confirmDate(value: string) {
 }
 function cancelDate() {
   dateStatus.value = copy.value.dateCancelled
+}
+
+const timeValue = shallowRef('09:30')
+const timeVisible = shallowRef(false)
+const timeStatus = shallowRef('')
+const timeResult = computed(() => timeStatus.value || timeValue.value || copy.value.notSelected)
+function previewTime(value: string) {
+  timeStatus.value = `${copy.value.draft}：${value}`
+}
+function confirmTime(value: string) {
+  timeStatus.value = `${copy.value.confirmed}：${value}`
+}
+function cancelTime() {
+  timeStatus.value = copy.value.timeCancelled
 }
 
 const pickerValue = shallowRef<string | number | (string | number)[] | undefined>('morning')
@@ -588,6 +613,51 @@ function confirmRegion(selection: VaroRegionSelection) {
           </text>
           <VDateField disabled :placeholder="copy.datePlaceholder" :title="copy.dateTitle" />
         </view>
+      </view>
+    </template>
+
+    <template v-else-if="component === 'time-field'">
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="appointment-time">
+        <text class="docs-demo__heading">
+          {{ copy.appointmentTitle }}
+        </text>
+        <text class="docs-demo__muted">
+          {{ copy.appointmentHint }}
+        </text>
+        <VTimeField
+          :value="timeValue"
+          :visible="timeVisible"
+          min="09:00"
+          max="18:00"
+          :minute-step="15"
+          clearable
+          :cancel-text="copy.cancel"
+          :confirm-text="dateConfirmText"
+          :clear-text="copy.clear"
+          :placeholder="copy.timePlaceholder"
+          :title="copy.appointmentTitle"
+          @update:value="timeValue = $event"
+          @update:visible="timeVisible = $event"
+          @cancel="cancelTime"
+          @change="previewTime"
+          @confirm="confirmTime"
+          @clear="timeStatus = ''"
+        />
+        <text class="docs-demo__value" data-docs-state="time" aria-live="polite">
+          {{ timeResult }}
+        </text>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-state="readonly">
+        <text class="docs-demo__heading">
+          {{ copy.readonly }}
+        </text>
+        <VTimeField readonly clearable value="09:30" :clear-text="copy.clear" :title="copy.appointmentTitle" />
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-state="disabled">
+        <text class="docs-demo__heading">
+          {{ copy.disabled }}
+        </text>
+        <VTimeField disabled clearable value="09:30" :clear-text="copy.clear" :title="copy.appointmentTitle" />
       </view>
     </template>
 

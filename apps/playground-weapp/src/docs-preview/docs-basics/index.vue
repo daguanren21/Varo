@@ -5,6 +5,7 @@ import VAvatar from '../../components/ui/avatar.vue'
 import VBadge from '../../components/ui/badge.vue'
 import VEmpty from '../../components/ui/empty.vue'
 import VTag from '../../components/ui/tag.vue'
+import VAvatarGroup from '../../components/ui/v-avatar-group.vue'
 import VButton from '../../components/ui/v-button.vue'
 import VCard from '../../components/ui/v-card.vue'
 import VDialogClose from '../../components/ui/v-dialog-close.vue'
@@ -12,6 +13,7 @@ import VDialogContent from '../../components/ui/v-dialog-content.vue'
 import VDialogOverlay from '../../components/ui/v-dialog-overlay.vue'
 import VDialogRoot from '../../components/ui/v-dialog-root.vue'
 import VDialogTrigger from '../../components/ui/v-dialog-trigger.vue'
+import VFileType from '../../components/ui/v-file-type.vue'
 import VIcon from '../../components/ui/v-icon.vue'
 import VImage from '../../components/ui/v-image.vue'
 import VInput from '../../components/ui/v-input.vue'
@@ -36,6 +38,31 @@ watch(en, (isEnglish) => { overviewName.value = isEnglish ? 'Avery Lin' : '林�
 // A real decode failure exercises the native error event without an absent bundle asset.
 const unavailableImage = 'data:image/png;base64,AA=='
 const brokenImageIcon = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="#909399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h34v34H7z"/><path d="m7 34 9-9 7 7 5-5 13 12"/><circle cx="34" cy="16" r="4"/><path d="m25 7-4 9 6 5-5 8"/></svg>')}`
+
+const includeLastAvatar = shallowRef(true)
+const avatarMembers = [
+  { id: 'ada', alt: 'Ada', fallback: 'A' },
+  { id: 'bo', alt: 'Bo', fallback: 'B' },
+  { id: 'chen', alt: 'Chen', fallback: 'C' },
+  { id: 'dee', alt: 'Dee', fallback: 'D' },
+  { id: 'eli', alt: 'Eli', fallback: 'E' },
+]
+const visibleAvatarMembers = computed(() => includeLastAvatar.value ? avatarMembers : avatarMembers.slice(0, 4))
+const avatarGroupCopy = computed(() => en.value
+  ? {
+      heading: 'Avatar group',
+      label: 'Project members',
+      hint: 'Three visible avatars; the counter shows the remaining members.',
+      toggle: includeLastAvatar.value ? 'Hide final member' : 'Restore final member',
+      count: `Members: ${visibleAvatarMembers.value.length}`,
+    }
+  : {
+      heading: '头像组',
+      label: '项目成员',
+      hint: '展示三个头像，计数圆点显示其余人数。',
+      toggle: includeLastAvatar.value ? '隐藏最后一位' : '恢复最后一位',
+      count: `成员数: ${visibleAvatarMembers.value.length}`,
+    })
 
 const buttonCopy = computed(() => en.value
   ? {
@@ -306,6 +333,16 @@ const cardVariants = computed(() => [
   { value: 'muted' as const, label: copy.value.cardMuted },
 ])
 const iconNames = ['back', 'check', 'close', 'search', 'plus', 'minus', 'menu', 'more', 'location', 'chevron-left', 'chevron-right', 'chevron-up', 'chevron-down']
+const fileTypeFiles = ['report.pdf', 'budget.xlsx', 'photo.png', 'audio.mp3', 'archive.zip', 'source.ts']
+const fileTypeSizes = ['sm', 'md', 'lg'] as const
+const fileTypeCopy = computed(() => en.value
+  ? { common: 'Common formats', fallback: 'Names and MIME fallback', sizes: 'Icon sizes', special: 'Special filename', unknown: 'Unknown format', pdf: 'PDF document' }
+  : { common: '常见格式', fallback: '文件名与 MIME 回退', sizes: '图标尺寸', special: '特殊文件名', unknown: '未知格式', pdf: 'PDF 文档' })
+const fileTypeFallbacks = computed(() => [
+  { filename: 'download', mimeType: 'image/png', description: 'MIME: image/png' },
+  { filename: '.env.local', mimeType: '', description: fileTypeCopy.value.special },
+  { filename: 'asset.custom', mimeType: '', description: fileTypeCopy.value.unknown },
+])
 const iconTones = [
   { name: 'info', tone: 'default' },
   { name: 'info', tone: 'primary' },
@@ -584,6 +621,23 @@ const overviewCurrentValue = computed(() => overviewName.value || overviewCopy.v
           </VAvatar>
         </view>
       </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="avatar-group">
+        <text class="docs-demo__heading">
+          {{ avatarGroupCopy.heading }}
+        </text>
+        <text class="docs-demo__muted">
+          {{ avatarGroupCopy.hint }}
+        </text>
+        <VAvatarGroup :items="visibleAvatarMembers" :max="3" :size="40" :overlap="10" :aria-label="avatarGroupCopy.label" />
+        <view class="docs-demo__row">
+          <VButton size="sm" variant="outline" @click="includeLastAvatar = !includeLastAvatar">
+            {{ avatarGroupCopy.toggle }}
+          </VButton>
+          <text class="docs-demo__value" data-docs-state="avatar-members">
+            {{ avatarGroupCopy.count }}
+          </text>
+        </view>
+      </view>
     </view>
 
     <view v-else-if="component === 'card'">
@@ -717,6 +771,53 @@ const overviewCurrentValue = computed(() => overviewName.value || overviewCopy.v
       </view>
     </view>
 
+    <view v-else-if="component === 'file-type'" class="docs-demo__stack min-w-0">
+      <view class="docs-demo__section min-w-0" data-docs-case="common-formats">
+        <text class="docs-demo__heading">
+          {{ fileTypeCopy.common }}
+        </text>
+        <view class="grid grid-cols-2 gap-x-3 gap-y-4">
+          <view v-for="filename in fileTypeFiles" :key="filename" class="flex min-w-0 items-center gap-2">
+            <VFileType :filename="filename" decorative />
+            <text class="min-w-0 break-all text-[12px] leading-[18px]">
+              {{ filename }}
+            </text>
+          </view>
+        </view>
+      </view>
+      <view class="docs-demo__section min-w-0" data-docs-case="fallbacks">
+        <text class="docs-demo__heading">
+          {{ fileTypeCopy.fallback }}
+        </text>
+        <view class="grid gap-3.5">
+          <view v-for="file in fileTypeFallbacks" :key="file.filename" class="flex min-w-0 items-center gap-2">
+            <VFileType :filename="file.filename" :mime-type="file.mimeType" decorative />
+            <view class="grid min-w-0">
+              <text class="break-all text-[12px] leading-[18px]">
+                {{ file.filename }}
+              </text>
+              <text class="text-[11px] leading-4 text-[var(--varo-ui-text-muted)]">
+                {{ file.description }}
+              </text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="docs-demo__section min-w-0" data-docs-case="sizes">
+        <text class="docs-demo__heading">
+          {{ fileTypeCopy.sizes }}
+        </text>
+        <view class="flex items-end gap-7">
+          <view v-for="size in fileTypeSizes" :key="size" class="grid justify-items-center gap-2">
+            <VFileType filename="report.pdf" :size="size" :label="fileTypeCopy.pdf" />
+            <text class="text-[11px] leading-4 text-[var(--varo-ui-text-muted)]">
+              {{ size }}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
     <view v-else-if="component === 'image'" class="docs-demo__stack min-w-0">
       <view class="relative overflow-hidden rounded-[18px] border border-solid border-[var(--varo-ui-border)] bg-[var(--varo-ui-surface-muted)]" data-docs-case="cover">
         <VImage :src="storefrontImage" :alt="copy.storefront" width="100%" :height="176" :fit="imageFit" lazy-load radius="18px" />
@@ -797,6 +898,50 @@ const overviewCurrentValue = computed(() => overviewName.value || overviewCopy.v
             {{ copy.progressComplete }}
           </text>
         </VProgress>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="circle-sizes">
+        <text class="docs-demo__heading">
+          {{ copy.circle }} · {{ copy.sizes }}
+        </text>
+        <view class="docs-demo__row">
+          <VProgress type="circle" :percentage="0" :size="64" :stroke-width="4" />
+          <VProgress type="circle" :percentage="50" />
+          <VProgress type="circle" :percentage="75" size="128px" :stroke-width="12" />
+        </view>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="circle-statuses">
+        <text class="docs-demo__heading">
+          {{ copy.circle }} · {{ copy.progressStatus }}
+        </text>
+        <view class="docs-demo__row">
+          <view v-for="item in progressStatuses" :key="item.status" class="grid justify-items-center gap-2">
+            <VProgress type="circle" :percentage="item.value" :status="item.status" :size="80" />
+            <text class="docs-demo__muted">
+              {{ item.label }}
+            </text>
+          </view>
+        </view>
+      </view>
+      <view class="docs-demo__section docs-demo__stack" data-docs-case="circle-text">
+        <text class="docs-demo__heading">
+          {{ copy.circle }} · {{ copy.progressText }}
+        </text>
+        <view class="docs-demo__row">
+          <view class="grid justify-items-center gap-2">
+            <VProgress type="circle" :percentage="60" :show-text="false" />
+            <text class="docs-demo__muted">
+              {{ copy.progressHidden }}
+            </text>
+          </view>
+          <view class="grid justify-items-center gap-2">
+            <VProgress type="circle" :percentage="75">
+              <text>3 / 4</text>
+            </VProgress>
+            <text class="docs-demo__muted">
+              {{ copy.progressCustom }}
+            </text>
+          </view>
+        </view>
       </view>
     </view>
 

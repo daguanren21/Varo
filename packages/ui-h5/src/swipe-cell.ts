@@ -59,12 +59,14 @@ export const VSwipeCell = defineComponent({
     }
 
     function open(side: Exclude<SwipeCellSide, null>) {
+      if (props.disabled || currentSide.value === side) { return }
       currentSide.value = side
       emit('update:modelValue', side)
       emit('open', side)
     }
 
     function close() {
+      if (props.disabled || currentSide.value === null) { return }
       currentSide.value = null
       emit('update:modelValue', undefined)
       emit('close')
@@ -90,6 +92,7 @@ export const VSwipeCell = defineComponent({
     function onTouchEnd() {
       if (!dragging.value) { return }
       dragging.value = false
+      if (props.disabled || dragOffset.value === startOffset.value) { return }
 
       if (props.leftWidth > 0 && dragOffset.value >= props.leftWidth * props.threshold) {
         open('left')
@@ -100,6 +103,10 @@ export const VSwipeCell = defineComponent({
         return
       }
       close()
+    }
+
+    function onTouchCancel() {
+      dragging.value = false
     }
 
     return () =>
@@ -134,7 +141,7 @@ export const VSwipeCell = defineComponent({
               onTouchstart: onTouchStart,
               onTouchmove: onTouchMove,
               onTouchend: onTouchEnd,
-              onTouchcancel: onTouchEnd,
+              onTouchcancel: onTouchCancel,
             },
             slots.default?.({ close, open }),
           ),

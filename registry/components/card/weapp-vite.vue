@@ -43,6 +43,8 @@ const classes = computed(() =>
   ),
 )
 const hoverClass = computed(() => (props.interactive ? 'varo-card--pressed' : 'none'))
+const rootRole = computed(() => props.role || (props.interactive ? 'button' : undefined))
+const rootTabIndex = computed(() => (props.interactive ? 0 : undefined))
 
 function click(event: unknown) {
   if (!props.interactive) { return }
@@ -66,7 +68,8 @@ function pressCancel() {
   <view
     :class="classes"
     :aria-label="props.ariaLabel"
-    :role="props.role"
+    :role="rootRole"
+    :tabindex="rootTabIndex"
     :hover-class="hoverClass"
     :hover-start-time="20"
     :hover-stay-time="70"

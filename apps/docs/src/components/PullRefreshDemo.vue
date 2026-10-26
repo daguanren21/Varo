@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { VPullRefresh } from '@varo-ui/h5'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 
 const props = withDefaults(defineProps<{ locale?: 'en' | 'zh' }>(), {
   locale: 'zh',
@@ -56,31 +57,32 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="pull-refresh-demo">
-    <VPullRefresh
-      class="pull-refresh-demo__surface"
-      :loading="loading"
-      :loading-text="copy.loading"
-      :pull-text="copy.pull"
-      :release-text="copy.release"
-      @refresh="refresh"
-    >
-      <article v-for="item in items" :key="item.id" class="pull-refresh-demo__item">
-        {{ item.label }}
-      </article>
-    </VPullRefresh>
-    <output class="pull-refresh-demo__status" aria-live="polite">
-      {{ status }}
-    </output>
-  </section>
+  <DocsDeviceFrame>
+    <section class="pull-refresh-demo">
+      <VPullRefresh
+        class="pull-refresh-demo__surface"
+        :loading="loading"
+        :loading-text="copy.loading"
+        :pull-text="copy.pull"
+        :release-text="copy.release"
+        @refresh="refresh"
+      >
+        <article v-for="item in items" :key="item.id" class="pull-refresh-demo__item">
+          {{ item.label }}
+        </article>
+      </VPullRefresh>
+      <output class="pull-refresh-demo__status" aria-live="polite">
+        {{ status }}
+      </output>
+    </section>
+  </DocsDeviceFrame>
 </template>
 
 <style scoped>
 .pull-refresh-demo {
   display: grid;
   gap: 10px;
-  width: min(100%, 420px);
-  margin: 16px 0 24px;
+  min-width: 0;
 }
 
 .pull-refresh-demo__surface {

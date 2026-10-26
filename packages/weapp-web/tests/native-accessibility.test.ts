@@ -114,6 +114,41 @@ describe('native control semantic ownership', () => {
     expect(firstTap).toHaveBeenCalledTimes(1)
   })
 
+  it.each(['checkbox', 'radio', 'switch'])('activates a native %s view with uncanceled Space only', (role) => {
+    let checked = false
+    const { page } = mountNative(`
+      <view role="${role}" aria-checked="{{checked}}" aria-disabled="{{disabled}}"
+        tabindex="0" bindtap="toggle">Choice</view>
+    `, { checked, disabled: false }, {
+      toggle: () => {
+        checked = !checked
+        page.setData({ checked })
+      },
+    })
+    const host = document.querySelector<HTMLElement>(`[role="${role}"]`)!
+    host.focus()
+    const space = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })
+    host.dispatchEvent(space)
+    expect(space.defaultPrevented).toBe(true)
+    expect(host.getAttribute('aria-checked')).toBe('true')
+
+    host.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', repeat: true, bubbles: true, cancelable: true }))
+    expect(host.getAttribute('aria-checked')).toBe('true')
+    const canceled = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true })
+    canceled.preventDefault()
+    host.dispatchEvent(canceled)
+    expect(host.getAttribute('aria-checked')).toBe('true')
+    host.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+    expect(host.getAttribute('aria-checked')).toBe('true')
+
+    page.setData({ disabled: true })
+    host.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+    expect(host.getAttribute('aria-checked')).toBe('true')
+    page.setData({ disabled: false })
+    host.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }))
+    expect(host.getAttribute('aria-checked')).toBe('false')
+  })
+
   it.each(['pointer', 'touch'])('delivers native drag coordinates and cancels %s scrolling without a tap', (source) => {
     let startX = 0
     const tap = vi.fn()

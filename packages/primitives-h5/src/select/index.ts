@@ -9,7 +9,7 @@ import {
   useSelectRootContext,
 } from '@varo-ui/headless'
 import { defineComponent, Fragment, h, inject, provide, toRef } from 'vue'
-import { callHandler, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useSelectRoot } from './hooks'
@@ -81,6 +81,7 @@ export const SelectRoot = defineComponent({
 
 export const SelectTrigger = defineComponent({
   name: 'SelectTrigger',
+  inheritAttrs: false,
   props: {
     as: {
       type: String,
@@ -97,13 +98,17 @@ export const SelectTrigger = defineComponent({
         props.as,
         {
           ...restAttrs,
+          ...buttonKeyboardAttrs(props.as, attrs, !select.state.disabled.value),
           ...select.attrs.trigger,
           class: [attrClass],
           disabled: props.as === 'button' ? select.state.disabled.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
           onClick: (event: MouseEvent) => {
-            callHandler(userClick, event)
-            select.events.toggle()
+            runInteractiveClick(event, {
+              action: select.events.toggle,
+              handler: userClick,
+              interactive: !select.state.disabled.value,
+            })
           },
         },
         slots.default?.(),
@@ -216,12 +221,18 @@ export const SelectItem = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, !props.option.disabled && select.state.interactive.value),
           ...select.api.getItemAttrs(props.option),
-          disabled: props.as === 'button' ? props.option.disabled : undefined,
-          type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
-          onClick: (event: MouseEvent) => {
-            callHandler(attrs.onClick, event)
-            select.events.select(props.option)
+          'aria-disabled': props.option.disabled || !select.state.interactive.value || undefined,
+          'data-disabled': String(Boolean(props.option.disabled || !select.state.interactive.value)),
+          'disabled': props.as === 'button' ? props.option.disabled || !select.state.interactive.value : undefined,
+          'type': props.as === 'button' ? attrs.type ?? 'button' : undefined,
+          'onClick': (event: MouseEvent) => {
+            runInteractiveClick(event, {
+              action: () => select.events.select(props.option),
+              handler: attrs.onClick,
+              interactive: !props.option.disabled && select.state.interactive.value,
+            })
           },
         },
         slots.default?.({ option: props.option }) ?? props.option.label,

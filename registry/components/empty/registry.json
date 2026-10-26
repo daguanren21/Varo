@@ -44,5 +44,5 @@
       "to": "src/styles/varo-empty.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/empty"
 }

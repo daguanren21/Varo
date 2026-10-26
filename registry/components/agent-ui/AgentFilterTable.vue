@@ -77,28 +77,22 @@ function filterClass(value: string) {
     </view>
 
     <scroll-view class="w-full overflow-hidden rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)]" scroll-x :show-scrollbar="false">
-      <view class="min-w-[560px]">
+      <view class="min-w-[560px]" role="table">
         <view class="grid border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface-strong)]" :style="gridStyle" role="row">
           <text v-for="column in columns" :key="column.key" class="px-3 py-2.5 text-[11px] font-bold uppercase tracking-[.06em] text-[var(--varo-agent-text)]" role="columnheader">
             {{ column.label }}
           </text>
         </view>
-        <button
-          v-for="row in visibleRows"
-          :key="row.id"
-          class="agent-native-button agent-native-button--block grid min-h-11 border-0 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] p-0 text-left last:border-b-0"
-          hover-class="bg-[var(--varo-agent-surface-strong)]"
-          :hover-start-time="20"
-          :hover-stay-time="70"
-          :style="gridStyle"
-          type="button"
-          role="row"
-          @click="emit('select', row)"
-        >
-          <text v-for="column in columns" :key="column.key" class="truncate px-3 py-3 text-[12px] leading-4 text-[var(--varo-agent-foreground)]" role="cell">
-            {{ agentTableCellValue(row, column.key) }}
-          </text>
-        </button>
+        <view v-for="row in visibleRows" :key="row.id" class="grid min-h-11 border-b border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] text-left last:border-b-0" hover-class="bg-[var(--varo-agent-surface-strong)]" :hover-start-time="20" :hover-stay-time="70" :style="gridStyle" role="row" @click="emit('select', row)">
+          <view v-for="(column, index) in columns" :key="column.key" class="truncate px-3 py-3 text-[12px] leading-4 text-[var(--varo-agent-foreground)]" role="cell">
+            <button v-if="index === 0" class="agent-native-button border-0 bg-transparent p-0 text-left" type="button" @click.stop="emit('select', row)">
+              {{ agentTableCellValue(row, column.key) || `Select row ${row.id}` }}
+            </button>
+            <text v-else>
+              {{ agentTableCellValue(row, column.key) }}
+            </text>
+          </view>
+        </view>
         <view v-if="!visibleRows.length" class="grid min-h-24 place-items-center text-[12px] text-[var(--varo-agent-muted)]">
           No matching records
         </view>

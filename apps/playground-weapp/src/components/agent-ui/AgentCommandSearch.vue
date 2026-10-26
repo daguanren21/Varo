@@ -66,7 +66,7 @@ function selectItem(id: string) {
   <view :class="rootClass">
     <view class="agent-command-search__field">
       <image class="agent-command-search__icon" :src="agentSearchIcon" mode="aspectFit" aria-hidden="true" />
-      <input class="agent-command-search__input" :value="modelValue" :placeholder="placeholder" @input="inputValue">
+      <input class="agent-command-search__input" aria-label="Search commands" :value="modelValue" :placeholder="placeholder" @input="inputValue">
     </view>
 
     <scroll-view v-if="groupedItems.length" class="agent-command-search__list" scroll-y :show-scrollbar="false">

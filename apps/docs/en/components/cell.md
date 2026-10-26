@@ -4,6 +4,10 @@
 
 <PlatformTabsDemo example="cell" locale="en" />
 
+Cell and CellGroup ship their layout, group borders, row separators, and typography with the component; no demo-page CSS is needed. H5 source imports the installed style closure. Native apps load the installed `src/styles/*.css` through application-level `weapp.styles`, with `varo.css` first.
+
+Default rows have a minimum height of 54px; `size="large"` increases it to 68px. `center` controls vertical alignment and `descTextAlign` aligns the description. Colors, borders, and shadows use `--varo-ui-*` theme variables; `roundRadius` rounds the current row.
+
 ## Basic Usage
 
 ```vue

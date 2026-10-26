@@ -73,6 +73,20 @@ function selectBreadcrumb(payload: { index: number }) {
 
 const cellNotificationsEnabled = shallowRef(true)
 const cellLastAction = shallowRef('')
+const cellDemoStyle = computed(() => {
+  const dark = theme.value.seed.mode === 'dark'
+  return {
+    '--varo-ui-surface': dark ? '#141414' : '#fbfdfc',
+    '--varo-ui-text': dark ? '#e5eaf3' : '#1d2924',
+    '--varo-ui-text-regular': dark ? '#cfd3dc' : '#4f5e57',
+    '--varo-ui-text-muted': dark ? '#a3a6ad' : '#728078',
+    '--varo-ui-border': dark ? '#4c4d4f' : '#cfddd6',
+    '--varo-ui-border-light': dark ? '#414243' : '#d9e5df',
+    '--varo-ui-primary-soft': dark ? '#122c1f' : '#e6f9ef',
+    '--varo-ui-primary-foreground': '#10271b',
+    '--docs-cell-shadow': dark ? '0 0 12px rgb(0 0 0 / 72%)' : '0 20px 52px rgb(18 68 48 / 16%)',
+  }
+})
 const cellCopy = computed(() => en.value
   ? {
       accountGroup: 'Account & security',
@@ -329,7 +343,7 @@ function updateStickyScroll(event: { scrollTop: number }) {
       </text>
     </view>
 
-    <view v-else-if="component === 'cell'" class="grid gap-[18px]">
+    <view v-else-if="component === 'cell'" class="docs-cell-demo grid gap-[18px]" :style="cellDemoStyle">
       <view data-docs-case="account-security">
         <VCellGroup :title="cellCopy.accountGroup" :desc="cellCopy.accountGroupDesc">
           <VCell class-name="docs-cell-profile" center is-link size="large" :title="cellCopy.profile" :sub-title="cellCopy.profileSubtitle" :desc="cellCopy.edit" @click="cellLastAction = cellCopy.profile">
@@ -339,21 +353,21 @@ function updateStickyScroll(event: { scrollTop: number }) {
           </VCell>
           <VCell class-name="docs-cell-security" center is-link :title="cellCopy.security" :sub-title="cellCopy.securitySubtitle" @click="cellLastAction = cellCopy.security">
             <template #icon>
-              <view class="inline-flex h-8 w-8 items-center justify-center rounded-[10px] bg-[var(--varo-ui-primary-soft)]">
+              <view class="inline-flex h-[32px] w-[32px] items-center justify-center rounded-[10px] bg-[var(--varo-ui-primary-soft)]">
                 <VIcon :size="18" tone="primary">
                   <view :style="securityIcon" />
                 </VIcon>
               </view>
             </template>
             <template #desc>
-              <text class="text-xs font-semibold text-[var(--varo-ui-success)]">
+              <text class="text-[12.16px] font-[650] text-[var(--varo-ui-success)]">
                 {{ cellCopy.secure }}
               </text>
             </template>
           </VCell>
           <VCell center :title="cellCopy.notifications" :sub-title="cellCopy.notificationsSubtitle">
             <template #icon>
-              <view class="inline-flex h-8 w-8 items-center justify-center rounded-[10px] bg-[var(--varo-ui-primary-soft)]">
+              <view class="inline-flex h-[32px] w-[32px] items-center justify-center rounded-[10px] bg-[var(--varo-ui-primary-soft)]">
                 <VIcon :size="18" tone="primary">
                   <view :style="notificationIcon" />
                 </VIcon>

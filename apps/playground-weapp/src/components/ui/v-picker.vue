@@ -162,7 +162,7 @@ function publishedValue(values: Array<PickerScalar | undefined>): PickerValue {
 }
 
 function select(columnIndex: number, option: PickerOption) {
-  if (option.disabled) {
+  if (option.disabled || selectedValues.value[columnIndex] === option.value) {
     return
   }
 
@@ -182,7 +182,10 @@ function confirm() {
     return
   }
   const value = publishedValue(selectedValues.value)
-  emit('update:value', value)
+  const unchanged = Array.isArray(value)
+    ? Array.isArray(props.value) && value.length === props.value.length && value.every((item, index) => item === (props.value as PickerScalar[])[index])
+    : value === props.value
+  if (!unchanged) { emit('update:value', value) }
   emit('confirm', {
     option: resolvedColumns.value.length === 1 ? selectedOptions.value[0] : selectedOptions.value,
     value,

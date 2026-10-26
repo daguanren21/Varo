@@ -26,8 +26,10 @@ import {
   VTextarea as H5Textarea,
   VUploader as H5Uploader,
 } from '@varo-ui/h5'
-import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, shallowRef, useId, watch } from 'vue'
 import { z } from 'zod'
+import { componentCatalogItems } from '../component-catalog'
+import DocsDeviceFrame from './DocsDeviceFrame.vue'
 import NativeComponentPreview from './NativeComponentPreview.vue'
 
 type FormDemoKind
@@ -67,7 +69,14 @@ const props = withDefaults(
 
 const codeExpanded = ref(false)
 const activePlatform = ref<Platform>('h5')
-const platforms: Platform[] = ['h5', 'weapp']
+const supportsNative = computed(() => componentCatalogItems
+  .find(item => item.id === (props.example === 'form-array' ? 'form' : props.example))
+  ?.targets
+  .includes('weapp') ?? false)
+const platforms = computed<Platform[]>(() => supportsNative.value ? ['h5', 'weapp'] : ['h5'])
+watch(supportsNative, (supported) => {
+  if (!supported) { setPlatform('h5') }
+})
 const platformPanelId = computed(() => `form-${props.example}-platform-panel`)
 const VButton = H5Button
 const VCalendar = H5Calendar
@@ -304,7 +313,7 @@ const copy = computed(() =>
         perSeat: '$39 / seat',
         subtotal: 'Subtotal',
         amountTitle: 'Payment amount',
-        amountHint: 'Single payment limit $50,000',
+        amountHint: 'Enter digits and a decimal point',
         amountEntered: 'Amount entered',
         changeAmount: 'Edit amount',
         deliveryTimeTitle: 'Delivery window',
@@ -343,7 +352,7 @@ const copy = computed(() =>
         pinHint: 'Enter the 6-digit PIN',
         pinComplete: 'Complete',
         pinIncomplete: 'In progress',
-        pinSecurity: 'Encrypted locally and never displayed in plain text.',
+        pinSecurity: 'Entered digits are displayed as masked characters.',
         textareaTitle: 'Issue details',
         textareaHint: 'Describe the steps and expected result',
         textareaCount: 'Characters',
@@ -454,7 +463,7 @@ const copy = computed(() =>
         perSeat: '¥39 / 席位',
         subtotal: '小计',
         amountTitle: '付款金额',
-        amountHint: '单笔限额 ¥50,000',
+        amountHint: '支持数字和小数点输入',
         amountEntered: '金额已填写',
         changeAmount: '修改金额',
         deliveryTimeTitle: '配送时段',
@@ -494,7 +503,7 @@ const copy = computed(() =>
         pinHint: '请输入 6 位数字密码',
         pinComplete: '输入完成',
         pinIncomplete: '输入中',
-        pinSecurity: '本地加密处理，不会显示明文。',
+        pinSecurity: '输入内容仅以掩码显示。',
         textareaTitle: '问题描述',
         textareaHint: '说明复现步骤与预期结果',
         textareaCount: '已输入',
@@ -1248,6 +1257,7 @@ async function copySnippet() {
 }
 
 function setPlatform(platform: Platform) {
+  if (!platforms.value.includes(platform)) { return }
   activePlatform.value = platform
   resetCopyState()
 }
@@ -1257,26 +1267,26 @@ function platformTabId(platform: Platform) {
 }
 
 function handlePlatformTabKeydown(event: KeyboardEvent) {
-  const currentIndex = platforms.indexOf(activePlatform.value)
+  const currentIndex = platforms.value.indexOf(activePlatform.value)
   let nextIndex = currentIndex
   if (event.key === 'ArrowRight') {
-    nextIndex = (currentIndex + 1) % platforms.length
+    nextIndex = (currentIndex + 1) % platforms.value.length
   }
   else if (event.key === 'ArrowLeft') {
-    nextIndex = (currentIndex - 1 + platforms.length) % platforms.length
+    nextIndex = (currentIndex - 1 + platforms.value.length) % platforms.value.length
   }
   else if (event.key === 'Home') {
     nextIndex = 0
   }
   else if (event.key === 'End') {
-    nextIndex = platforms.length - 1
+    nextIndex = platforms.value.length - 1
   }
   else {
     return
   }
 
   event.preventDefault()
-  setPlatform(platforms[nextIndex]!)
+  setPlatform(platforms.value[nextIndex]!)
   const tabs = (event.currentTarget as HTMLElement)
     .closest('[role="tablist"]')
     ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
@@ -1378,6 +1388,7 @@ function onFormArrayFailed() {
           H5
         </button>
         <button
+          v-if="supportsNative"
           :id="platformTabId('weapp')"
           type="button"
           role="tab"
@@ -1400,7 +1411,7 @@ function onFormArrayFailed() {
         :aria-labelledby="platformTabId(activePlatform)"
       >
         <NativeComponentPreview v-if="activePlatform === 'weapp'" :component="example" :locale="locale" />
-        <template v-else>
+        <DocsDeviceFrame v-else>
           <section
             v-if="example === 'checkbox'"
             class="form-demo__control-scenario"
@@ -2241,7 +2252,7 @@ function onFormArrayFailed() {
               </VButton>
             </div>
           </section>
-        </template>
+        </DocsDeviceFrame>
       </div>
 
       <button
@@ -2330,17 +2341,6 @@ function onFormArrayFailed() {
   position: relative;
   display: grid;
   gap: 14px;
-  padding: 18px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--form-demo-surface) 94%, transparent),
-      var(--form-demo-surface-strong)
-    ),
-    radial-gradient(circle at top right, color-mix(in srgb, var(--varo-primary) 10%, transparent), transparent 36%);
-  border: 1px solid var(--form-demo-border);
-  border-radius: var(--varo-demo-radius);
-  box-shadow: var(--form-demo-shadow);
 }
 
 .form-demo__platform-switch {
@@ -2380,6 +2380,7 @@ function onFormArrayFailed() {
   display: grid;
   gap: 12px;
   align-items: start;
+  min-width: 0;
   min-height: 88px;
 }
 
@@ -2726,17 +2727,22 @@ function onFormArrayFailed() {
 }
 
 .form-demo__rate-field {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   align-items: center;
-  justify-content: space-between;
   padding: 14px;
   background: var(--varo-fill-light);
   border-radius: 14px;
 }
 
+.form-demo__rate-field :deep(.varo-rate) {
+  max-width: 100%;
+}
+
 .form-demo__rate-field :deep(.varo-rate__item) {
-  min-width: 40px;
+  width: 40px;
+  min-width: 0;
   min-height: 40px;
 }
 
@@ -2834,6 +2840,7 @@ function onFormArrayFailed() {
 
 .form-demo__context-head {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
   justify-content: space-between;
@@ -2844,6 +2851,8 @@ function onFormArrayFailed() {
 .form-demo__context-head output {
   display: grid;
   gap: 3px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .form-demo__context-head output {
@@ -2854,11 +2863,6 @@ function onFormArrayFailed() {
   display: grid;
   gap: 14px;
   width: min(100%, 420px);
-  padding: 16px;
-  background: var(--varo-card-solid);
-  border: 1px solid var(--varo-border);
-  border-radius: 20px;
-  box-shadow: var(--varo-shadow-sm);
 }
 
 .form-demo__calendar-card-scenario :deep(.varo-calendar-card) {
@@ -2935,24 +2939,6 @@ function onFormArrayFailed() {
 
 .form-demo__stage:has(.form-demo__preview[data-example='select']) {
   overflow: visible;
-}
-
-.form-demo__preview[data-example='calendar'],
-.form-demo__preview[data-example='date-picker'],
-.form-demo__preview[data-example='cascader'],
-.form-demo__preview[data-example='picker'],
-.form-demo__preview[data-example='number-keyboard'] {
-  position: relative;
-  max-width: 390px;
-  min-height: 280px;
-  padding: 12px;
-  overflow: hidden;
-  background: var(--varo-demo-phone-screen);
-  border: 1px solid var(--form-demo-border);
-  border-radius: 20px;
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--varo-card-solid) 18%, transparent),
-    0 14px 28px color-mix(in srgb, var(--varo-foreground) 8%, transparent);
 }
 
 .form-demo__preview[data-example='calendar'] :deep(.varo-calendar),
@@ -3339,11 +3325,6 @@ function onFormArrayFailed() {
 }
 
 @media (max-width: 640px) {
-  .form-demo__stage {
-    padding: 14px;
-    border-radius: calc(var(--varo-demo-radius) - 4px);
-  }
-
   .form-demo__code-toolbar {
     align-items: stretch;
   }

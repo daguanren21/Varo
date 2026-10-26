@@ -48,5 +48,5 @@
       "to": "src/styles/varo-icon.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/icon"
 }

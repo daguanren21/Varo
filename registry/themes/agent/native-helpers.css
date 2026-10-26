@@ -15,7 +15,12 @@
   width: fit-content;
 }
 
-.agent-attachments__remove.agent-attachments__remove,
+.agent-attachments__remove.agent-attachments__remove {
+  min-height: 32px;
+  padding: 0 8px;
+  margin: 0;
+}
+
 .agent-sidebar__toggle.agent-sidebar__toggle {
   width: 28px;
   height: 28px;

@@ -20,6 +20,7 @@ const theme = parameters.get('theme')
 if (locale === 'zh' || locale === 'en') { query.locale = locale }
 if (theme === 'light' || theme === 'dark') { query.theme = theme }
 document.documentElement.classList.toggle('runtime-docs', docs)
+document.documentElement.classList.toggle('runtime-framed', docs && parameters.get('framed') === '1')
 document.documentElement.lang = query.locale === 'en' ? 'en' : 'zh-CN'
 if (query.theme) { document.documentElement.style.colorScheme = query.theme }
 const status = document.getElementById('runtime-status')

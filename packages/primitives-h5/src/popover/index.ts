@@ -18,7 +18,7 @@ import {
 
   toRef,
 } from 'vue'
-import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { usePopoverRoot } from './hooks'
@@ -117,6 +117,7 @@ export const PopoverTrigger = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, context.popover.state.interactive.value),
           ...context.popover.attrs.trigger,
           ref: context.triggerElement,
           disabled: props.as === 'button' ? !context.popover.state.interactive.value : undefined,
@@ -177,6 +178,7 @@ export const PopoverClose = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, context.popover.state.interactive.value),
           ...context.popover.attrs.close,
           disabled: props.as === 'button' ? !context.popover.state.interactive.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,

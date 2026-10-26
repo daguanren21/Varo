@@ -17,10 +17,11 @@ const results = []
 const requiredCases = {
   'button': 'hierarchy tones sizes states layout',
   'badge': 'anchors counts statuses variants',
-  'avatar': 'image-fallback shapes sizes',
+  'avatar': 'image-fallback shapes sizes avatar-group',
   'card': 'composition variants interactive padding',
   'empty': 'basic action image sizes',
   'icon': 'builtins tones sizes-color spin',
+  'file-type': 'common-formats fallbacks sizes',
   'image': 'cover fit brand error',
   'progress': 'statuses stroke-width text',
   'tag': 'tones variants sizes-shape checkable closeable',
@@ -48,6 +49,7 @@ const requiredCases = {
   'searchbar': 'component-search',
   'textarea': 'issue-details',
   'date-field': 'invoice-date states',
+  'time-field': 'appointment-time',
   'region-picker': 'activity-location',
   'picker': 'delivery-window',
   'checkbox': 'notification-channels checkbox-states',
@@ -174,6 +176,78 @@ function samePhone(h5, native) {
       assert.equal(native[part][property], h5[part][property], `${part}.${property}`)
     }
   }
+}
+
+async function nativeLayoutGeometry(page, component) {
+  const runtime = await openScene(page, `docs-${component}`)
+  const observations = []
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 })
+    const geometry = await runtime.evaluate((name) => {
+      const rect = (element) => {
+        const box = element.getBoundingClientRect()
+        return { x: box.x, y: box.y, width: box.width, height: box.height, right: box.right, bottom: box.bottom }
+      }
+      const root = document.querySelector(`.varo-${name === 'layout' ? 'row' : name}`)
+      const selector = name === 'layout' ? '.varo-col' : name === 'cell' ? '.varo-cell' : `.varo-${name}__item`
+      return {
+        root: rect(root),
+        items: [...document.querySelectorAll(selector)].map(element => ({
+          ...rect(element),
+          border: getComputedStyle(element).borderTopWidth,
+          icon: element.querySelector(`.varo-${name}__icon`) ? rect(element.querySelector(`.varo-${name}__icon`)) : null,
+          text: element.querySelector(`.varo-${name}__text`) ? rect(element.querySelector(`.varo-${name}__text`)) : null,
+        })),
+        clippedValues: [...document.querySelectorAll('.varo-col .truncate')].filter(element => element.scrollWidth > element.clientWidth + 1).map(element => element.textContent),
+      }
+    }, component)
+    const { root, items } = geometry
+    if (component === 'layout') {
+      assert.equal(items.length, 5)
+      for (const [index, span] of [16, 8, 8, 8, 8].entries()) {
+        assert.ok(Math.abs(items[index].width - root.width * span / 24) < 2, `Column ${index} lost its span: ${JSON.stringify(geometry)}`)
+      }
+      assert.ok(Math.abs(items[0].y - items[1].y) < 1)
+      assert.ok(items[2].y >= items[0].bottom)
+      assert.ok(items.slice(2).every(item => Math.abs(item.y - items[2].y) < 1))
+      assert.deepEqual(geometry.clippedValues, [], 'Overview values must remain readable')
+    }
+    else if (component === 'cell') {
+      assert.equal(items.length, 6)
+      assert.deepEqual(items.map(item => item.border), ['0px', '1px', '1px', '0px', '1px', '1px'])
+      assert.ok(items.every(item => item.height >= 54 && item.height < 140), `Cell contents must form compact rows: ${JSON.stringify(items)}`)
+    }
+    else {
+      const columns = component === 'menu' ? 2 : 4
+      assert.equal(items.length, component === 'grid' ? 8 : columns)
+      const gap = component === 'grid' ? 8 : 0
+      for (const item of items) {
+        assert.ok(Math.abs(item.width - (root.width - gap * (columns - 1)) / columns) < 2, `Items must fill the row evenly: ${JSON.stringify(geometry)}`)
+        if (item.icon && item.text) {
+          assert.ok(item.text.y >= item.icon.bottom - 1, `Icon must sit above its label: ${JSON.stringify(item)}`)
+        }
+      }
+      assert.ok(items.slice(0, columns).every(item => Math.abs(item.y - items[0].y) < 1))
+      if (component === 'grid') { assert.ok(items[4].y >= items[0].bottom) }
+    }
+    observations.push({ width, ...geometry })
+    await noOverflow(page)
+  }
+  return observations
+}
+
+async function listPhoneFrame(page) {
+  await openDocs(page, 'list')
+  await page.getByRole('tab', { name: '小程序', exact: true }).first().click()
+  const embed = page.frameLocator('.native-component-preview__frame')
+  const runtime = await mounted(page, 'docs-list', embed)
+  const phone = await phoneGeometry(page)
+  const viewport = await runtime.evaluate(() => innerWidth)
+  assert.ok(viewport >= 280 && viewport <= 390, `List preview must use a mobile viewport, received ${viewport}px`)
+  assert.ok(phone.screen.width < 440, 'List preview must retain its phone frame')
+  const scroll = runtime.locator('wx-scroll-view[data-native-scroll-y="true"]')
+  assert.ok(await scroll.evaluate(element => element.scrollHeight > element.clientHeight), 'The framed list must remain scrollable')
+  return { phone, viewport }
 }
 
 async function runtimeEvidence(page) {
@@ -748,6 +822,10 @@ try {
   await run('input-number-bounds', 'behavior', numberBehavior, { width: 390, height: 844 })
   await run('checkbox-limit', 'behavior', checkboxBehavior, { width: 390, height: 844 })
   await run('select-en-dark', 'behavior', selectBehavior, { width: 390, height: 844 })
+  for (const component of ['layout', 'grid', 'menu', 'tabbar', 'cell']) {
+    await run(`native-${component}-geometry`, 'layout', page => nativeLayoutGeometry(page, component), { width: 390, height: 844 })
+  }
+  await run('list-phone-frame', 'layout', listPhoneFrame)
   await run('list-pagination', 'behavior', listBehavior, { width: 390, height: 844 })
   await run('tabs-zh-light', 'behavior', page => tabsBehavior(page, 'zh', 'light'), { width: 390, height: 844 })
   await run('tabs-en-dark', 'behavior', page => tabsBehavior(page, 'en', 'dark'), { width: 320, height: 844 })

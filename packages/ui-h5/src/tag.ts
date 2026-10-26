@@ -55,15 +55,21 @@ export const VTag = defineComponent({
       if (!props.disabled) { emit('close', event) }
     }
 
+    function checkboxAttributes() {
+      if (!props.checkable) { return undefined }
+      const attributes: Record<string, unknown> = {}
+      for (const key in attrs) {
+        if (key.startsWith('aria-')) { attributes[key] = attrs[key] }
+      }
+      return attributes
+    }
+
     return () =>
       h(
         'span',
         {
           ...attrs,
           'class': classes.value,
-          'role': props.checkable ? 'checkbox' : undefined,
-          'tabindex': props.checkable && !props.disabled ? 0 : undefined,
-          'aria-checked': props.checkable ? String(props.checked) : undefined,
           'aria-disabled': String(props.disabled),
           'data-checked': String(props.checked),
           'data-disabled': String(props.disabled),
@@ -72,15 +78,22 @@ export const VTag = defineComponent({
           'data-tone': props.tone,
           'data-variant': props.variant,
           'onClick': handleClick,
-          'onKeydown': (event: KeyboardEvent) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault()
-              handleClick(event as unknown as MouseEvent)
-            }
-          },
         },
         [
-          h('span', { class: 'varo-tag__content' }, slots.default?.()),
+          h('span', {
+            ...checkboxAttributes(),
+            'class': 'varo-tag__content',
+            'role': props.checkable ? 'checkbox' : undefined,
+            'tabindex': props.checkable && !props.disabled ? 0 : undefined,
+            'aria-checked': props.checkable ? String(props.checked) : undefined,
+            'aria-disabled': String(props.disabled),
+            'onKeydown': (event: KeyboardEvent) => {
+              if (props.checkable && event.target === event.currentTarget && !event.defaultPrevented && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault()
+                handleClick(event as unknown as MouseEvent)
+              }
+            },
+          }, slots.default?.()),
           props.closeable
             ? h(
                 'button',

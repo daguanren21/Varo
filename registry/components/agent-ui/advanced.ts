@@ -169,6 +169,30 @@ export const AgentRadioGroup = defineComponent({
   },
   emits: { 'change': (_value: string) => true, 'update:value': (_value: string) => true },
   setup(props, { emit }) {
+    const tabValue = computed(() => props.choices.find(choice => !choice.disabled && choice.value === props.value)?.value
+      ?? props.choices.find(choice => !choice.disabled)?.value)
+    function select(choice: AgentChoice) {
+      if (choice.disabled || choice.value === props.value) { return }
+      emit('update:value', choice.value)
+      emit('change', choice.value)
+    }
+    function onKeydown(event: KeyboardEvent, choice: AgentChoice) {
+      if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) { return }
+      const choices = props.choices.filter(item => !item.disabled)
+      if (!choices.length) { return }
+      event.preventDefault()
+      const index = choices.findIndex(item => item.value === choice.value)
+      const nextIndex = event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? choices.length - 1
+          : (index + (event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1) + choices.length) % choices.length
+      const next = choices[nextIndex]!
+      const group = (event.currentTarget as HTMLElement).parentElement
+      const buttons = group?.querySelectorAll<HTMLButtonElement>('button[role="radio"]')
+      buttons?.[props.choices.indexOf(next)]?.focus()
+      select(next)
+    }
     return () => h('div', {
       'class': 'agent-radio-group',
       'data-orientation': props.orientation,
@@ -181,11 +205,9 @@ export const AgentRadioGroup = defineComponent({
       'key': choice.value,
       'role': 'radio',
       'type': 'button',
-      'onClick': () => {
-        if (choice.disabled) { return }
-        emit('update:value', choice.value)
-        emit('change', choice.value)
-      },
+      'tabindex': choice.value === tabValue.value ? 0 : -1,
+      'onKeydown': (event: KeyboardEvent) => onKeydown(event, choice),
+      'onClick': () => select(choice),
     }, [
       h('i', { 'aria-hidden': 'true' }),
       h('span', [h('strong', choice.label), choice.description ? h('small', choice.description) : null]),
@@ -995,10 +1017,11 @@ export const AgentInsightCard = defineComponent({
   },
   emits: { 'action': (_item: AgentInsightItem) => true, 'update:current': (_value: number) => true },
   setup(props, { emit }) {
-    const active = computed(() => props.insights[Math.min(Math.max(0, props.current), Math.max(0, props.insights.length - 1))])
+    const currentIndex = computed(() => Math.min(Math.max(0, props.current), Math.max(0, props.insights.length - 1)))
+    const active = computed(() => props.insights[currentIndex.value])
     function move(delta: number) {
       if (!props.insights.length) { return }
-      emit('update:current', (props.current + delta + props.insights.length) % props.insights.length)
+      emit('update:current', (currentIndex.value + delta + props.insights.length) % props.insights.length)
     }
     return () => h('article', { 'class': 'agent-insight-card', 'data-tone': active.value?.tone || 'default' }, [
       h('header', { class: 'agent-insight-card__header' }, [
@@ -1006,7 +1029,7 @@ export const AgentInsightCard = defineComponent({
           h('strong', props.title),
           h('small', active.value?.label || '运行指标'),
         ]),
-        h('span', { class: 'agent-insight-card__count' }, `${props.insights.length ? props.current + 1 : 0}/${props.insights.length}`),
+        h('span', { class: 'agent-insight-card__count' }, `${props.insights.length ? currentIndex.value + 1 : 0}/${props.insights.length}`),
       ]),
       active.value
         ? h('div', { class: 'agent-insight-card__body' }, [
@@ -1061,7 +1084,7 @@ export const AgentDiffTable = defineComponent({
       h('div', { class: 'agent-table__scroll' }, [h('table', [
         h('thead', [h('tr', [h('th', 'Change'), ...props.columns.map(column => h('th', { key: column.key }, column.label))])]),
         h('tbody', props.rows.map(row => h('tr', { 'data-change': row.change || 'update', 'key': row.id, 'onClick': () => emit('select', row) }, [
-          h('td', row.change === 'add' ? '+' : row.change === 'remove' ? '−' : '~'),
+          h('td', [h('button', { 'type': 'button', 'aria-label': `Select row ${row.id}`, 'onClick': (event: MouseEvent) => { event.stopPropagation(); emit('select', row) } }, row.change === 'add' ? '+' : row.change === 'remove' ? '−' : '~')]),
           ...props.columns.map(column => h('td', { key: column.key }, cellValue(row, column.key))),
         ]))),
       ])]),
@@ -1094,8 +1117,10 @@ export const AgentRecordsTable = defineComponent({
               )),
             ]),
             h('tbody', props.rows.map(row =>
-              h('tr', { key: row.id, onClick: () => emit('select', row) }, props.columns.map(column =>
-                h('td', { key: column.key }, cellValue(row, column.key)),
+              h('tr', { key: row.id, onClick: () => emit('select', row) }, props.columns.map((column, index) =>
+                h('td', { key: column.key }, index === 0
+                  ? h('button', { type: 'button', onClick: (event: MouseEvent) => { event.stopPropagation(); emit('select', row) } }, cellValue(row, column.key) || `Select row ${row.id}`)
+                  : cellValue(row, column.key)),
               )),
             )),
           ]),
@@ -1171,7 +1196,7 @@ export const AgentCommandSearch = defineComponent({
     return () => h('section', { class: 'agent-command-search' }, [
       h('label', { class: 'agent-command-search__field' }, [
         h('span', { 'class': 'agent-command-search__icon', 'aria-hidden': 'true' }, [renderSearchIcon()]),
-        h('input', { value: props.modelValue, placeholder: props.placeholder, onInput: (event: Event) => emit('update:modelValue', eventValue(event)) }),
+        h('input', { 'aria-label': 'Search commands', 'value': props.modelValue, 'placeholder': props.placeholder, 'onInput': (event: Event) => emit('update:modelValue', eventValue(event)) }),
       ]),
       groupedItems.value.length
         ? h('div', { class: 'agent-command-search__list' }, groupedItems.value.flatMap(group => [

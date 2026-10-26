@@ -36,6 +36,11 @@ wx-page {
   min-height: 100vh;
 }
 
+.runtime-docs body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+}
+
 html.runtime-docs,
 .runtime-docs body,
 .runtime-docs #runtime-root,
@@ -48,6 +53,11 @@ html.runtime-docs,
 .runtime-docs #runtime-root {
   position: relative;
   display: flow-root;
+}
+
+.runtime-framed #runtime-root {
+  box-sizing: border-box;
+  padding: 0 16px 72px;
 }
 
 .runtime-docs #runtime-root > wx-page {

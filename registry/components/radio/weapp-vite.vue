@@ -50,6 +50,7 @@ function select() {
     return
   }
 
+  if (checked.value) { return }
   emit('update:checked', true)
   emit('change', props.value)
 }
@@ -70,9 +71,9 @@ function select() {
     :disabled="disabled"
     @click="select"
   >
-    <view class="varo-radio__icon" aria-hidden="true">
+    <view class="varo-radio__icon">
       <slot name="icon">
-        <view class="varo-radio__dot" />
+        <view class="varo-radio__dot" aria-hidden="true" />
       </slot>
     </view>
     <text class="varo-radio__label">

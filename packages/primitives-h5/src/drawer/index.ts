@@ -3,7 +3,7 @@ import type { PropType, ShallowRef } from 'vue'
 import { useDrawerRoot } from '@varo-ui/headless'
 import { defineComponent, h, inject, nextTick, onBeforeUnmount, onMounted, provide, shallowRef, toRef, useId, watch } from 'vue'
 import { useBodyScrollLock } from '../use-body-scroll-lock'
-import { callHandler, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, callHandler, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export type * from './types'
@@ -230,6 +230,7 @@ export const DrawerTrigger = defineComponent({
       props.as,
       {
         ...attrs,
+        ...buttonKeyboardAttrs(props.as, attrs, !drawer.state.disabled.value),
         ...drawer.attrs.trigger,
         disabled: props.as === 'button' ? drawer.state.disabled.value : undefined,
         ref: (element: unknown) => {
@@ -237,8 +238,11 @@ export const DrawerTrigger = defineComponent({
         },
         type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
         onClick: (event: MouseEvent) => {
-          callHandler(attrs.onClick, event)
-          drawer.events.toggle()
+          runInteractiveClick(event, {
+            action: drawer.events.toggle,
+            handler: attrs.onClick,
+            interactive: !drawer.state.disabled.value,
+          })
         },
       },
       slots.default?.(),
@@ -322,9 +326,15 @@ export const DrawerClose = defineComponent({
       props.as,
       {
         ...attrs,
+        ...buttonKeyboardAttrs(props.as, attrs, !drawer.state.disabled.value),
+        disabled: props.as === 'button' ? drawer.state.disabled.value : undefined,
+        type: props.as === 'button' ? attrs.type ?? 'button' : undefined,
         onClick: (event: MouseEvent) => {
-          callHandler(attrs.onClick, event)
-          drawer.events.close()
+          runInteractiveClick(event, {
+            action: drawer.events.close,
+            handler: attrs.onClick,
+            interactive: !drawer.state.disabled.value,
+          })
         },
       },
       slots.default?.(),

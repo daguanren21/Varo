@@ -41,7 +41,7 @@ export const VEmpty = defineComponent({
         [
           h(
             'div',
-            { 'class': 'varo-empty__visual', 'aria-hidden': 'true' },
+            { 'class': 'varo-empty__visual', 'aria-hidden': slots.image ? undefined : 'true' },
             slots.image?.()
             ?? (props.image
               ? [h(VImage, { alt: '', fit: 'contain', height: '100%', src: props.image, width: '100%' })]

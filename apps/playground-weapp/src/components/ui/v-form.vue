@@ -89,7 +89,7 @@ watch(
 provide(formContextKey, {
   form,
   disabled: computed(() => props.disabled),
-  showError: props.showError,
+  showError: computed(() => props.showError),
 })
 
 async function submit(event?: unknown) {

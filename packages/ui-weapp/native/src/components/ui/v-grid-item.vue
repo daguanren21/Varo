@@ -6,7 +6,9 @@ import { cn } from '../../lib/cn'
 import { gridContextKey } from './grid-context'
 
 defineOptions({
+  options: { virtualHost: true },
   properties: {
+    badge: { type: null, value: null },
     clickable: { type: null, value: null },
   },
 })
@@ -42,7 +44,7 @@ interface KeyboardLikeEvent {
 
 const grid = inject<GridContext | undefined>(gridContextKey, undefined)
 const hasNavigation = computed(() => Boolean(props.url || props.to))
-const navigationTarget = computed(() => (props.url ?? props.to))
+const navigationTarget = computed(() => (props.url || props.to))
 const clickable = computed(() => {
   if (props.clickable != null) { return props.clickable }
   if (grid !== undefined) { return grid.clickable }
@@ -85,7 +87,7 @@ function handleKeydown(event: unknown) {
     @click="handleClick"
     @keydown="handleKeydown"
   >
-    <view v-if="$slots.icon || props.icon || props.badge || props.dot" class="varo-grid__icon-wrap">
+    <view v-if="$slots.icon || props.icon || props.badge != null || props.dot" class="varo-grid__icon-wrap">
       <slot name="icon">
         <text v-if="props.icon" class="varo-grid__icon">
           {{ props.icon }}
@@ -117,7 +119,7 @@ function handleKeydown(event: unknown) {
     @click="handleClick"
     @keydown="handleKeydown"
   >
-    <view v-if="$slots.icon || props.icon || props.badge || props.dot" class="varo-grid__icon-wrap">
+    <view v-if="$slots.icon || props.icon || props.badge != null || props.dot" class="varo-grid__icon-wrap">
       <slot name="icon">
         <text v-if="props.icon" class="varo-grid__icon">
           {{ props.icon }}

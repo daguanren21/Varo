@@ -128,7 +128,7 @@ export const VGridItem = defineComponent({
         {
           ...attrs,
           'class': ['varo-grid__item', attrs.class],
-          'href': props.url ?? props.to,
+          'href': props.url || props.to,
           'role': clickable.value && tag.value === 'div' ? 'button' : undefined,
           'style': [attrs.style as StyleValue, style.value],
           'tabindex': clickable.value && tag.value === 'div' ? 0 : undefined,
@@ -140,7 +140,7 @@ export const VGridItem = defineComponent({
           'onKeydown': keydown,
         },
         [
-          props.icon || slots.icon || props.badge || props.dot
+          props.icon || slots.icon || props.badge != null || props.dot
             ? h('span', { class: 'varo-grid__icon-wrap' }, [
                 slots.icon?.() ?? (props.icon ? h('span', { class: 'varo-grid__icon' }, props.icon) : null),
                 props.badge != null ? h('sup', { 'class': 'varo-grid__badge', 'data-wide': String(badgeWide.value) }, badgeText.value) : null,

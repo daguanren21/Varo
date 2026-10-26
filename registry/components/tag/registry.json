@@ -43,5 +43,5 @@
       "to": "src/styles/varo-tag.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/tag"
 }

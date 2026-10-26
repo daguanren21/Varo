@@ -31,6 +31,7 @@ export const VRate = defineComponent({
     function update(next: number) {
       if (props.disabled || props.readonly) { return }
       const value = props.allowClear && props.value === next ? 0 : next
+      if (value === props.value) { return }
       emit('update:value', value)
       emit('change', value)
     }
@@ -54,7 +55,8 @@ export const VRate = defineComponent({
               'class': 'varo-rate__item',
               'type': 'button',
               'role': 'radio',
-              'aria-checked': String(active),
+              'aria-label': String(value),
+              'aria-checked': String(value === props.value),
               'data-active': String(active),
               'disabled': props.disabled,
               'onClick': () => update(value),

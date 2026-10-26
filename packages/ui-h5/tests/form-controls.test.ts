@@ -158,6 +158,15 @@ describe('ui-h5 form controls', () => {
 
     expect(rateUpdate).toHaveBeenCalledWith(4)
     expect(rangeUpdate).toHaveBeenCalledWith(8)
+
+    await rate.setProps({ value: 4 })
+    expect(rate.findAll('[role="radio"][aria-checked="true"]').map(item => item.attributes('aria-label'))).toEqual(['4'])
+    expect(rate.findAll('[data-active="true"]')).toHaveLength(4)
+    await rate.setProps({ value: 0 })
+    expect(rate.findAll('[role="radio"][aria-checked="true"]')).toHaveLength(0)
+    expect(rate.findAll('[data-active="true"]')).toHaveLength(0)
+    rate.unmount()
+    range.unmount()
   })
 
   it('submits searchbar queries and clears current value', async () => {

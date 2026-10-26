@@ -28,6 +28,22 @@
   border-color: transparent;
 }
 
+.varo-grid[data-center='false'] .varo-grid__item {
+  justify-items: start;
+  text-align: left;
+}
+
+.varo-grid[data-square='true'] .varo-grid__item {
+  gap: 4px;
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 4px;
+}
+
+.varo-grid[data-square='true'] .varo-grid__icon-wrap {
+  height: 24px;
+}
+
 .varo-grid__item[data-direction='horizontal'] {
   grid-template-columns: auto minmax(0, 1fr);
   place-items: center start;

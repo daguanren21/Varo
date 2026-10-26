@@ -126,7 +126,7 @@ export const VPicker = defineComponent({
     }
 
     function select(columnIndex: number, option: PickerOption) {
-      if (option.disabled) {
+      if (option.disabled || selectedValues.value[columnIndex] === option.value) {
         return
       }
       hasDraft = true
@@ -142,7 +142,10 @@ export const VPicker = defineComponent({
       }
       const option = resolvedColumns.value.length === 1 ? selectedOptions.value[0] : selectedOptions.value
       const value = resolvedColumns.value.length === 1 ? selectedValues.value[0] : selectedValues.value
-      emit('update:value', value)
+      const unchanged = Array.isArray(value)
+        ? Array.isArray(props.value) && value.length === props.value.length && value.every((item, index) => item === (props.value as Array<string | number>)[index])
+        : value === props.value
+      if (!unchanged) { emit('update:value', value) }
       emit('confirm', { option, value })
       emit('update:visible', false)
     }

@@ -6,7 +6,7 @@ import {
 
 } from '@varo-ui/headless'
 import { defineComponent, h, inject, provide, toRef } from 'vue'
-import { runInteractiveClick, usePropPresence } from '../vue-control'
+import { buttonKeyboardAttrs, runInteractiveClick, usePropPresence } from '../vue-control'
 import { vueReactiveRuntime } from '../vue-runtime'
 
 export { useCollapsibleRoot } from './hooks'
@@ -70,6 +70,7 @@ export const CollapsibleTrigger = defineComponent({
         props.as,
         {
           ...attrs,
+          ...buttonKeyboardAttrs(props.as, attrs, collapsible.state.interactive.value),
           ...collapsible.attrs.trigger,
           disabled: props.as === 'button' ? !collapsible.state.interactive.value : undefined,
           type: props.as === 'button' ? attrs.type ?? 'button' : undefined,

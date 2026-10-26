@@ -47,5 +47,5 @@
       "to": "src/styles/varo-safe-area.css"
     }
   ],
-  "docs": "/guide/shadcn-mode"
+  "docs": "/components/safe-area"
 }
