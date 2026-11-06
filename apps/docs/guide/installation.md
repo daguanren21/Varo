@@ -113,7 +113,7 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.5.0；Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
+`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.8.0；Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
 
 ## Agent 流式接入
 
@@ -177,7 +177,7 @@ pnpm test:e2e:weapp
 
 Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试；用例或目标缺失、失败、意外跳过都会拒绝验收。每次运行生成唯一的 `apps/e2e/.e2e/runs/<run-id>/run.json`，截图和框架报告保存在同一 run 目录，不复用旧报告。旧原生 smoke 与截图入口仍保留，等待宿主验收。
 
-Headless 通过仓库内的 `@weapp-vite/miniprogram-automator@1.3.0` pnpm patch 支持 `rich-text` 数组/HTML 的渲染树文本观察，以及原生提交按钮的表单默认动作。补丁位于 `patches/@weapp-vite__miniprogram-automator@1.3.0.patch`，只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 覆盖文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。升级 SDK 时须重新验证这些场景，确认上游已覆盖后再移除补丁。
+`@weapp-vite/miniprogram-automator@1.5.1` 提供 rich-text 与原生表单实现；仓库补丁 `patches/@weapp-vite__miniprogram-automator@1.5.1.patch` 补齐文本实体与不受支持节点过滤、禁用状态、空值和自定义表单字段语义，并在重渲染后通过 nodeKey 与 scope 重新定位点击目标，避免使用旧节点状态。补丁只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 验证这些契约。升级 SDK 时须重跑这些场景，确认上游行为一致后再移除补丁。
 
 Headless 不是微信客户端：不提供真实像素、键盘或触摸几何。渲染文本断言必须读取渲染树，不能用页面状态冒充结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
 
@@ -208,6 +208,7 @@ MCP 客户端启动该进程并保持 stdin/stdout 连接。工具为 `varo_bloc
 
 ## 版本策略
 
-- 当前原生集成使用 `weapp-vite` / `wevu` 7.5.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
+- 微信普通插槽上下文继承需在 `vue.template` 中同时启用 `nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`，使用默认 attached setup；created setup 和其他平台不在此支持范围内
+- 当前原生集成使用 `weapp-vite` / `wevu` 7.8.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
 - 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
 - VitePress、Vue 与 TypeScript 跟随 workspace 统一升级

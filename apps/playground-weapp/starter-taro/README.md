@@ -4,7 +4,7 @@ Editable Varo retail source for H5 and WeChat mini-programs, exported as a stand
 
 ## Run from this directory
 
-Use Node `^22.18.0 || ^24.11.0 || >=26.0.0` and **pnpm 11.24.0**. No Varo workspace build or global Taro installation is required.
+Use Node `^22.23.4 || ^24.22.1 || >=26.12.1` and **pnpm 11.24.0**. No Varo workspace build or global Taro installation is required.
 
 ```sh
 pnpm install --frozen-lockfile

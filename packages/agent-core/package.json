@@ -49,8 +49,8 @@
     "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
-    "markstream-core": "^2.0.12",
-    "stream-markdown-parser": "1.2.18"
+    "markstream-core": "^2.0.24",
+    "stream-markdown-parser": "1.2.25"
   },
   "devDependencies": {
     "base64-js": "1.5.1"

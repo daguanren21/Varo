@@ -199,12 +199,12 @@ async function installConsumer(root, records, rootPackage) {
   run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
   // Follow the documented consumer-root setup using the published artifact only.
   const consumerRequire = createRequire(resolve(root, 'package.json'))
-  const patchName = 'weapp-vite@7.5.0.patch'
+  const patchName = 'weapp-vite@7.8.0.patch'
   const patch = inside(root, await realpath(consumerRequire.resolve(`@varo-ui/weapp/patches/${patchName}`)))
   await mkdir(resolve(root, 'patches'), { recursive: true })
   await cp(patch, resolve(root, 'patches', patchName))
   const workspacePath = resolve(root, 'pnpm-workspace.yaml')
-  await write(workspacePath, `${await readFile(workspacePath, 'utf8')}patchedDependencies:\n  weapp-vite@7.5.0: patches/${patchName}\n`)
+  await write(workspacePath, `${await readFile(workspacePath, 'utf8')}patchedDependencies:\n  weapp-vite@7.8.0: patches/${patchName}\n`)
   run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
   for (const { manifest: original } of records) {
     const packageRoot = await realpath(resolve(root, 'node_modules', original.name))

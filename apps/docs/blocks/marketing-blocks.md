@@ -20,7 +20,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/marketing-contact
 | `blocks/marketing-contact`  | `components/button`、`components/input`、`components/textarea` | `MarketingContactValues`、`MarketingContactErrors`、`MarketingContactLabels`                          |
 | `blocks/marketing-process`  | `components/button`                                            | `MarketingProcessStep`                                                                                |
 
-安装器递归解析控件的工具、主题与 npm 依赖。Marketing 单元互不依赖，也不安装 Agent 聚合包。联系表单直接组合输入控件，不依赖原生 Form；上游 plain-slot 问题仍未解决，也未添加兼容上下文。
+安装器递归解析控件的工具、主题与 npm 依赖。Marketing 单元互不依赖，也不安装 Agent 聚合包。联系表单直接组合输入控件，不依赖原生 Form；Wevu 7.8.0 已支持微信目标下已编译组件的普通插槽上下文继承，要求 `nativeSlotContext: true`、`scopedSlotsRequireProps: true` 与默认 attached setup，无需上下文桥；created setup 和其他平台不在此支持范围内。
 
 H5 安装完整依赖 CSS。原生通过 `weapp.styles` 全局加载安装的样式，`varo.css` 在前，`include: 'app.vue'`；不要在 `apply-shared` 组件的局部 WXSS 中导入全局样式。配置见 [Registry 模式](/guide/shadcn-mode)。当前仅准入稳定 `h5`、`weapp`，不代表实验 profile 或真机认证。
 

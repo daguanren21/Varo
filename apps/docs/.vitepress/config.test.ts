@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { resolve } from 'node:path'
 import { createMarkdownRenderer, disposeMdItInstance } from 'vitepress'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'

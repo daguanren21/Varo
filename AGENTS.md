@@ -158,9 +158,9 @@ DOCS_BASE=/Varo/ pnpm --filter @varo/docs build
 
 ## Runtime/Tooling Preferences
 
-- Required local runtime: Node `^22.18.0 || ^24.11.0 || >=26.0.0`; CI uses Node 24. Vitest 5 and tsdown 0.23 exclude Node 25.
+- Required local runtime: Node `^22.23.4 || ^24.22.1 || >=26.12.1`; CI uses Node 24. Vitest 5 and tsdown 0.23 exclude Node 25.
 - Required package manager: pnpm `11.24.0`. Do not use npm or yarn for workspace operations.
-- Use Turbo for workspace orchestration, `tsdown` for most packages, Vite for H5/UI-H5, VitePress for docs, Vitest for tests, and `weapp-vite` plus `weapp-tailwindcss` for native compilation. Repository compiler/runtime versions are `weapp-vite`/`wevu` 7.5.0; native peers remain `>=7.2.1 <8`.
+- Use Turbo for workspace orchestration, `tsdown` for most packages, Vite for H5/UI-H5, VitePress for docs, Vitest for tests, and `weapp-vite` plus `weapp-tailwindcss` for native compilation. Repository compiler/runtime versions are `weapp-vite`/`wevu` 7.8.0; native peers remain `>=7.2.1 <8`.
 - Keep peer dependencies explicit; `autoInstallPeers` is disabled.
 - Treat `dist/`, `.turbo/`, `coverage/`, `.vitepress/{cache,dist}`, `.weapp-vite/`, Weapp `devtools/`, platform-smoke `.generated/`, and `packages/cli/registry/` as generated output, along with the Registry projections listed above. CLI `prepack` synchronizes its packaged Registry copy.
 - Stable DevTools output is `apps/playground-weapp/devtools/build/mp-weixin`; watcher output is `apps/playground-weapp/dist/dev/mp-weixin`. Never merge these output paths.

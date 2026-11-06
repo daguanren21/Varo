@@ -104,4 +104,4 @@ H5 playground 的 `/?demo=activity` 与原生 `pages/agent-activity-demo/index` 
 
 `Restrict start` / `Allow start`、全局禁用、单项锁定和终态展示当前 props 如何影响可用操作。`Reject next request` 让应用拒绝下一次合法请求，状态保持不变；`Clear activity` 传入受控空数组。六种标签、按钮、结果和请求计数均通过实际页面交互观察。
 
-E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。原生按钮依赖尚未发布的 Wevu plain-slot 协议，宿主也有观测限制；验证时须保留这些限制，模拟文本、DOM 几何或编译成功不能代替实际设备验证。
+E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。Wevu 7.8.0 已支持微信目标下已编译组件的普通插槽上下文继承，要求 `nativeSlotContext: true`、`scopedSlotsRequireProps: true` 与默认 attached setup，无需上下文桥；created setup 和其他平台不在此支持范围内。宿主仍有观测限制，模拟文本、DOM 几何或编译成功不能代替实际设备验证。

@@ -21,10 +21,14 @@ export async function verifyNativeSlotOwners(output, consumerRoot) {
     WEVU_PARENT_INSTANCE_KEY: parentKey,
   } = constants
   for (const ownerPath of ['__weapp_vite_app_shell.js', 'layouts/default.js']) {
+    const apps = []
     const definitions = []
+    const pageDefinitions = []
     let pages = []
     const context = vm.createContext({
+      App: definition => apps.push(definition),
       Component: definition => definitions.push(definition),
+      Page: definition => pageDefinitions.push(definition),
       wx: {},
       getCurrentPages: () => pages,
       console,
@@ -48,6 +52,12 @@ export async function verifyNativeSlotOwners(output, consumerRoot) {
       }, module, module.exports)
       return module.exports
     }
+    load(resolve(output, 'app.js'))
+    assert.equal(apps.length, 1, 'app.js: expected one native application registration')
+    const appConfig = JSON.parse(readFileSync(resolve(output, 'app.json'), 'utf8'))
+    const pageRegistrationCount = definitions.length + pageDefinitions.length
+    load(resolve(output, `${appConfig.pages[0]}.js`))
+    assert.equal(definitions.length + pageDefinitions.length, pageRegistrationCount + 1, `${appConfig.pages[0]}.js: expected one native page registration`)
     function definition(path) {
       const count = definitions.length
       load(resolve(output, path))
@@ -82,6 +92,7 @@ export async function verifyNativeSlotOwners(output, consumerRoot) {
     }
     try {
       const page = mount(providerDefinition, undefined, { value: 'page' })
+      const pageContext = page.__wevu.proxy.context
       pages = [page]
       const first = mount(ownerDefinition, page)
       const second = mount(ownerDefinition, page)
@@ -93,18 +104,20 @@ export async function verifyNativeSlotOwners(output, consumerRoot) {
       }
       const nested = provider(first, 'nearest')
       const sibling = provider(second, 'sibling')
-      function consumer(owner, key, expected, reverse = false) {
-        const child = mount(consumerDefinition, page, {}, (name, detail) => {
+      const nearestContext = nested.__wevu.proxy.context
+      const siblingContext = sibling.__wevu.proxy.context
+      let consumerId = 0
+      function consumer(owner, key, expected) {
+        const child = mount(consumerDefinition, page, { [addressProp]: [`consumer-${consumerId++}`, key] }, (name, detail) => {
           if (name !== slotEvent) { return }
-          for (const target of reverse ? [key, ''] : ['', key]) { slot(owner, target, detail) }
+          slot(owner, key, detail)
         })
         assert.equal(child.__wevu.proxy.ownership, expected, `${ownerPath}: wrong inherited provider`)
         return child
       }
-      assert.equal(consumer(first, '', 'page')[parentKey], first)
-      assert.equal(consumer(first, 'provider', 'nearest')[parentKey], nested)
-      assert.equal(consumer(first, 'provider', 'nearest', true)[parentKey], nested)
-      assert.equal(consumer(second, 'provider', 'sibling')[parentKey], sibling)
+      assert.equal(consumer(first, '', pageContext)[parentKey], first)
+      assert.equal(consumer(first, 'provider', nearestContext)[parentKey], nested)
+      assert.equal(consumer(second, 'provider', siblingContext)[parentKey], sibling)
       const index = mounted.findIndex(([, instance]) => instance === nested)
       mounted[index][0].lifetimes.detached.call(nested)
       mounted.splice(index, 1)
@@ -116,5 +129,5 @@ export async function verifyNativeSlotOwners(output, consumerRoot) {
       for (const [definition, instance] of mounted.reverse()) { definition.lifetimes.detached.call(instance) }
     }
   }
-  console.log('[consumers] Executed app-shell/layout registrations: inherited providers, sibling isolation, event order and detach cleanup verified.')
+  console.log('[consumers] Executed app-shell/layout registrations: exact provider identity, sibling isolation and detach cleanup verified.')
 }

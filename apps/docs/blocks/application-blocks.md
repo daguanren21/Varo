@@ -140,9 +140,9 @@ type StepFormIntent
 3. await 后重新确认步骤和数据版本，`finally` 清理 busy。
 4. 校验通过后才更新 position。通过应用服务或本地数据所有者执行提交，不把收到事件当成成功。
 
-本 Block 沿用 login/profile 的宿主 form 容器与 VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 plain-slot 上下文已在受支持的 7.5.0 编译配置下验证，但与这里的宿主 form 默认动作无关。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 和 VButton submit，不增加上下文桥或模拟宿主几何。
+本 Block 沿用 login/profile 的宿主 form 容器与 VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 plain-slot 上下文已在受支持的 7.8.0 编译配置下验证，但与这里的宿主 form 默认动作无关。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 和 VButton submit，不增加上下文桥或模拟宿主几何。
 
-仓库的原生 E2E 使用针对 `@weapp-vite/miniprogram-automator` 1.3.0 的 pnpm patch，在模拟器的原生默认动作层执行 form submit，并保留多步表单的校验与本地提交断言。补丁范围和升级验证要求见[安装指南](/guide/installation#确定性-e2e-与证据边界)；微信开发者工具与设备验收仍是独立步骤。
+仓库的原生 E2E 使用针对 `@weapp-vite/miniprogram-automator` 1.5.1 的 pnpm patch，在模拟器的原生默认动作层执行 form submit，并保留多步表单的校验与本地提交断言。补丁范围和升级验证要求见[安装指南](/guide/installation#确定性-e2e-与证据边界)；微信开发者工具与设备验收仍是独立步骤。
 
 ## status-timeline
 

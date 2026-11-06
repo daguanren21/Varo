@@ -99,8 +99,8 @@ describe('standalone Varo Form region and map demo', () => {
       longitude: '120.155',
     })
     expect(wrapper.get('map').attributes('show-location')).toBe('false')
-    expect(wrapper.get('map').attributes('style')).toContain('max-width: 100vw')
-    expect(wrapper.get('map').attributes('style')).toContain('max-height: 720px')
+    expect(wrapper.get<HTMLElement>('map').element.style.maxWidth).toBe('100vw')
+    expect(wrapper.get<HTMLElement>('map').element.style.maxHeight).toBe('720px')
     expect(wrapper.get('map').attributes('style')).toContain('box-sizing: border-box')
     await wrapper.get('map').trigger('regionchange', { type: 'end' })
     expect(onRegionChange).toHaveBeenCalled()

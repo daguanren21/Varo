@@ -36,7 +36,7 @@ async function sourceGraphFixture(t = { onTestFinished }, packages = []) {
   await symlink(resolve(playgroundRoot, 'node_modules'), resolve(app, 'node_modules'), 'dir')
   await mkdir(resolve(repository, 'packages/ui-weapp/patches'), { recursive: true })
   await symlink(resolve(repositoryRoot, 'packages/cli'), resolve(repository, 'packages/cli'), 'dir')
-  const patchPath = 'packages/ui-weapp/patches/weapp-vite@7.5.0.patch'
+  const patchPath = 'packages/ui-weapp/patches/weapp-vite@7.8.0.patch'
   await cp(resolve(repositoryRoot, patchPath), resolve(repository, patchPath))
   await symlink(resolve(repositoryRoot, 'scripts'), resolve(repository, 'scripts'), 'dir')
   for (const filename of ['export-retail-starter.mjs', 'convert-retail-vue.mjs', 'css-references.mjs']) {
@@ -216,8 +216,8 @@ it('exports exact CSS dependencies and canonical compiler patch bytes with prove
   assert.ok((await readFile(resolve(destination, 'src/app.vue'), 'utf8')).includes(await readFile(resolve(app, 'src/app.vue'), 'utf8')))
   const patch = await readFile(resolve(repository, patchPath))
   const patchDigest = createHash('sha256').update(patch).digest('hex')
-  assert.deepEqual(await readFile(resolve(destination, 'patches/weapp-vite@7.5.0.patch')), patch)
-  assert.equal(manifest.files.find(file => file.path === 'patches/weapp-vite@7.5.0.patch')?.sha256, patchDigest)
+  assert.deepEqual(await readFile(resolve(destination, 'patches/weapp-vite@7.8.0.patch')), patch)
+  assert.equal(manifest.files.find(file => file.path === 'patches/weapp-vite@7.8.0.patch')?.sha256, patchDigest)
   assert.equal(manifest.sourceFiles.find(file => file.path === patchPath)?.sha256, patchDigest)
   await assert.rejects(lstat(resolve(app, 'starter/patches')), { code: 'ENOENT' })
   assert.equal(paths.has('src/assets/unreferenced.svg'), false)
@@ -336,7 +336,7 @@ it.each(['missing', 'symlink'])('rejects a %s canonical compiler patch before pu
   await rm(resolve(repository, patchPath))
   if (kind === 'symlink') { await symlink(resolve(repositoryRoot, patchPath), resolve(repository, patchPath)) }
   await assert.rejects(run(), (error) => {
-    assert.ok(error.stderr.includes('weapp-vite@7.5.0.patch'))
+    assert.ok(error.stderr.includes('weapp-vite@7.8.0.patch'))
     assert.ok(error.stderr.includes(kind === 'missing' ? 'ENOENT' : 'non-symlink'))
     return true
   })

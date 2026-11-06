@@ -145,7 +145,7 @@ describe('native initialization and state repairs', () => {
     if (mode === 'disabled') { await wrapper.setProps({ disabled: true }) }
     await content.trigger(mode === 'cancel' ? 'touchcancel' : 'touchend')
     expect(wrapper.attributes('data-open')).toBe('none')
-    expect(content.attributes('style')).toContain('translate3d(0px, 0, 0)')
+    expect(content.attributes('style')).toMatch(/translate3d\(0px, 0(?:px)?, 0(?:px)?\)/)
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     expect(wrapper.emitted('close')).toBeUndefined()
   })

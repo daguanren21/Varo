@@ -140,9 +140,9 @@ An application submission handler should:
 3. Recheck the current step/revision after awaiting; clear `busy` in `finally`.
 4. Advance `position` only after accepting validation. Submit through the application's service or local data owner; do not treat the event as success.
 
-This Block uses the login/profile pattern of a host form with VInput/VSwitch, without VForm's validation provider. VForm's separate plain-slot context has been exercised with the supported 7.5.0 compiler configuration; that does not validate this Block's host form default action. H5 uses a semantic `<form>` and prevents default submission. Native uses a host `<form>` and VButton submit, without a context bridge or simulated host geometry.
+This Block uses the login/profile pattern of a host form with VInput/VSwitch, without VForm's validation provider. VForm's separate plain-slot context has been exercised with the supported 7.8.0 compiler configuration; that does not validate this Block's host form default action. H5 uses a semantic `<form>` and prevents default submission. Native uses a host `<form>` and VButton submit, without a context bridge or simulated host geometry.
 
-The repository's native E2E uses a pnpm patch for `@weapp-vite/miniprogram-automator` 1.3.0 to execute form submission in the simulator's native default-action layer, preserving the multi-step validation and local submission assertions. See the [installation guide](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for patch ownership and upgrade checks. WeChat DevTools and device acceptance remain separate.
+The repository's native E2E uses a pnpm patch for `@weapp-vite/miniprogram-automator` 1.5.1 to execute form submission in the simulator's native default-action layer, preserving the multi-step validation and local submission assertions. See the [installation guide](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for patch ownership and upgrade checks. WeChat DevTools and device acceptance remain separate.
 
 ## status-timeline
 

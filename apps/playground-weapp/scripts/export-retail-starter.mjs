@@ -419,7 +419,7 @@ async function collectProject(framework) {
   }
   await addTemplates(selectedTemplateRoot)
   if (framework === 'wevu') {
-    const patch = 'patches/weapp-vite@7.5.0.patch'
+    const patch = 'patches/weapp-vite@7.8.0.patch'
     if (files.has(patch)) { throw new Error(`Template/source path collision: ${patch}`) }
     files.set(patch, await snapshot(resolve(repoRoot, 'packages/ui-weapp', patch)))
   }

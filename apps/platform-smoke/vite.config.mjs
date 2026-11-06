@@ -50,7 +50,7 @@ export default defineConfig({
     },
     vue: {
       enable: true,
-      template: { htmlTagToWxml: true, htmlTagToWxmlTagClass: true, scopedSlotsRequireProps: true },
+      template: { htmlTagToWxml: true, htmlTagToWxmlTagClass: true, nativeSlotContext: true, scopedSlotsRequireProps: true },
     },
     mcp: { enabled: false, autoStart: false },
   },

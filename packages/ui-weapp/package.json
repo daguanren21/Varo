@@ -25,6 +25,7 @@
     ".": "./native/src/index.ts",
     "./components/*": "./native/src/components/ui/*",
     "./patches/weapp-vite@7.5.0.patch": "./patches/weapp-vite@7.5.0.patch",
+    "./patches/weapp-vite@7.8.0.patch": "./patches/weapp-vite@7.8.0.patch",
     "./resolver": {
       "types": "./dist/resolver.d.mts",
       "import": "./dist/resolver.mjs"
@@ -56,11 +57,11 @@
   "dependencies": {
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
-    "@weapp-tailwindcss/merge": "^2.2.4",
+    "@weapp-tailwindcss/merge": "^2.2.7",
     "clsx": "^2.1.1"
   },
   "devDependencies": {
-    "weapp-vite": "7.5.0",
-    "wevu": "7.5.0"
+    "weapp-vite": "7.8.0",
+    "wevu": "7.8.0"
   }
 }
