@@ -27,7 +27,7 @@ describe('primitives-h5 image', () => {
     expect(wrapper.get('img').attributes('src')).toBe('/avatar.png')
     expect(wrapper.get('img').attributes('alt')).toBe('Avatar')
     expect(wrapper.get('img').attributes('style')).toContain('object-fit: cover')
-    expect(wrapper.get('img').attributes('style')).toContain('object-position: top')
+    expect(wrapper.get<HTMLImageElement>('img').element.style.objectPosition).toMatch(/^(?:center )?top$/)
   })
 
   it('emits load and error while switching placeholders', async () => {

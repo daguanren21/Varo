@@ -40,7 +40,7 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 ### Native Weapp (Wevu)
 
 ::: info Native compound runtime boundary
-The Mini Program tab runs `weapp-vite` / `wevu` 7.5.0 artifacts. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup. Applications need no context bridge.
+The Mini Program tab runs `weapp-vite` / `wevu` 7.8.0 artifacts. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat with `nativeSlotContext: true` and `scopedSlotsRequireProps: true` and default attached setup. Applications need no context bridge.
 
 The separate `dialog` preview has exercised opening, synchronous close cancellation, and accepted closing for this configuration only. These results do not cover created setup, other platforms, or IDE/device certification.
 :::

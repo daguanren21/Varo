@@ -20,7 +20,7 @@ Replace the item name with any row below. Install the npm dependencies reported 
 | `blocks/marketing-contact`  | `components/button`, `components/input`, `components/textarea` | `MarketingContactValues`, `MarketingContactErrors`, `MarketingContactLabels`                          |
 | `blocks/marketing-process`  | `components/button`                                            | `MarketingProcessStep`                                                                                |
 
-The installer resolves controls' utility, theme and npm dependencies recursively. Marketing items do not depend on each other or install the Agent suite. Contact composes input controls without native Form. The upstream plain-slot issue remains unresolved, with no compatibility context added.
+The installer resolves controls' utility, theme and npm dependencies recursively. Marketing items do not depend on each other or install the Agent suite. Contact composes input controls without native Form. Wevu 7.8.0 supports plain-slot context inheritance in compiled WeChat components with `nativeSlotContext: true` and `scopedSlotsRequireProps: true` and default attached setup, without a context bridge. This support excludes created setup and other platforms.
 
 H5 installs the dependency CSS closure. Native applications load the installed CSS globally with `weapp.styles`, `varo.css` first and `include: 'app.vue'`; never import global styles into an `apply-shared` component's WXSS. See [Registry mode](/en/guide/shadcn-mode). Only stable `h5` and `weapp` are admitted. This is not experimental-profile or device certification.
 

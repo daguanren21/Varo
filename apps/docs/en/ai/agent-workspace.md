@@ -108,7 +108,7 @@ H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` us
 | `execution` | Replaces the default conversation, retrieval, task, and receipt region |
 
 ::: warning Native runtime limits
-The `execution` slot is an unscoped replacement slot. Forwarding parent state through native plain slots requires an unreleased Wevu plain-slot protocol fix. Do not change `scopedSlotsRequireProps`, add a context bridge, or copy parent data to bypass this limit. The demo uses the default execution area; custom native slots require the supported compiler/runtime fix before acceptance. Headless native tools cannot fully observe `rich-text`, so validate affected text on a supported real host. H5 slot tests do not establish native correctness.
+The `execution` slot is an unscoped replacement slot. Wevu 7.8.0 supports plain-slot context inheritance in compiled WeChat components with `nativeSlotContext: true` and `scopedSlotsRequireProps: true` and default attached setup, without a context bridge. This support excludes created setup and other platforms. Custom native slots still require acceptance on the actual host. Headless native tools cannot fully observe `rich-text`, so validate affected text on a supported real host. H5 slot tests do not establish native correctness.
 :::
 
 ::: info Target import

@@ -2,7 +2,9 @@
 import { provide } from 'wevu'
 
 const props = defineProps<{ value: string }>()
-provide('varo-consumer-slot-owner', props.value)
+const context = { value: props.value, action: () => props.value }
+provide('varo-consumer-slot-owner', context)
+defineExpose({ context })
 </script>
 
 <template>

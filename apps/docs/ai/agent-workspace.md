@@ -108,7 +108,7 @@ H5 的 `features/WorkspaceDemo.vue` 与原生的 `pages/agent-workspace-demo/ind
 | `execution` | 替换默认对话、检索、任务和回执区 |
 
 ::: warning 原生运行限制
-`execution` 是无参数的替换插槽。原生 plain slot 转发父级状态依赖尚未发布的 Wevu plain-slot 协议修复；不要更改 `scopedSlotsRequireProps`、添加上下文桥或复制父级数据来绕过限制。演示使用默认执行区，自定义原生插槽需等受支持的编译器/运行时修复后验收。headless 原生环境无法完整观察 `rich-text`，相关文本渲染需在受支持的真实宿主验证。H5 插槽测试不能证明原生行为正确。
+`execution` 是无参数的替换插槽。Wevu 7.8.0 已支持微信目标下已编译组件的普通插槽上下文继承，要求 `nativeSlotContext: true`、`scopedSlotsRequireProps: true` 与默认 attached setup，无需上下文桥；created setup 和其他平台不在此支持范围内。自定义原生插槽仍需在实际宿主验收。headless 原生环境无法完整观察 `rich-text`，相关文本渲染需在受支持的真实宿主验证。H5 插槽测试不能证明原生行为正确。
 :::
 
 ::: info 平台导入

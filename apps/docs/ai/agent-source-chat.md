@@ -152,4 +152,4 @@ Block 按 id 从当前 props 查找条目并检查操作条件，不转发已替
 - 手动流程：切换来源可用性 → 请求并手动完成**演示**连接 → 显式启用范围 → 提问 → 排队/读取 → 成功、失败、空结果或超出范围 → 打开本地引用原文/申请转交。
 - 禁用操作时证据仍保留；转交后应用移除授权对象，按钮不可再次申请。切换非受控输入可检查本地草稿与受控空串的区别。
 
-E2E 场景在 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`，通过实际控件检查页面状态，不调用组件内部方法或用 `setData` 模拟输入。原生断言覆盖原生文字、回执、引用控件和本地来源预览，不证明 headless 能观察 Chat 的 rich-text 正文。Wevu plain-slot 协议尚未发布，宿主也有观测限制，仍需独立验收；测试不通过上下文桥、模拟几何或复制消息文字绕过这些限制。
+E2E 场景在 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`，通过实际控件检查页面状态，不调用组件内部方法或用 `setData` 模拟输入。原生断言覆盖原生文字、回执、引用控件和本地来源预览，不证明 headless 能观察 Chat 的 rich-text 正文。Wevu 7.8.0 已支持微信目标下已编译组件的普通插槽上下文继承，要求 `nativeSlotContext: true`、`scopedSlotsRequireProps: true` 与默认 attached setup，无需上下文桥；created setup 和其他平台不在此支持范围内。宿主观测限制仍需独立验收，测试不以模拟几何或复制消息文字代替宿主证据。

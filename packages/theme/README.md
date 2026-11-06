@@ -95,7 +95,7 @@ export default defineConfig({
 
 The plugin transforms source CSS before preprocessing and appends `page { --varo-ui-* }` declarations after native CSS emission, so styles loaded through native sidecars retain the configured theme overrides.
 
-The plugin generates theme variables; you still need the component styles. Repository builds use `weapp-vite`/`wevu` 7.5.0. For Registry installations, configure `weapp.styles` to load every installed `src/styles/*.css` file in `app.vue`, starting with `varo.css` and ending with your application overrides. For native npm components, put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and register `{ source: 'package.css', include: 'app.vue' }` globally. `weapp.styles.source` does not accept an absolute package path.
+The plugin generates theme variables; you still need the component styles. Repository builds use `weapp-vite`/`wevu` 7.8.0. For Registry installations, configure `weapp.styles` to load every installed `src/styles/*.css` file in `app.vue`, starting with `varo.css` and ending with your application overrides. For native npm components, put `@import "@varo-ui/weapp/style.css";` in local `src/package.css` and register `{ source: 'package.css', include: 'app.vue' }` globally. `weapp.styles.source` does not accept an absolute package path.
 
 Keep page and global CSS out of component-local WXSS in `apply-shared` SFCs. H5 source imports dependency CSS automatically; native applications load it globally. See the [native stylesheet configuration](../ui-weapp/README.md#global-npm-stylesheet) and `apps/platform-smoke/vite.config.mjs`.
 

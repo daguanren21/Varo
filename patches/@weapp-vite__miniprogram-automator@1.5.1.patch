@@ -1,0 +1,168 @@
+diff --git a/dist/launch-DYvZy3JW.mjs b/dist/launch-DYvZy3JW.mjs
+index 9a4c2bdc73d8ed82595b72f59d816ed3f2514ce2..ecea8e2de3fe843fe8551382dc017826656f906c 100644
+--- a/dist/launch-DYvZy3JW.mjs
++++ b/dist/launch-DYvZy3JW.mjs
+@@ -18098,6 +18098,13 @@ function checked(attributes, name) {
+ 	const value = attributes?.[name];
+ 	return value !== void 0 && value !== "false" && value !== "0";
+ }
++function nativeBoolean(value) {
++	return value !== void 0 && value !== "false" && value !== "0";
++}
++function nativeChecked(node, name) {
++	const value = name === "disabled" ? node.nativeDisabled : node.nativeChecked;
++	return value ?? checked(node.attribs, name);
++}
+ function choiceValues(group, pageScope, resolveComponent) {
+ 	const values = [];
+ 	const scopes = participatingScopes(nativeOwner(group).scopeId, pageScope, resolveComponent);
+@@ -18106,7 +18113,7 @@ function choiceValues(group, pageScope, resolveComponent) {
+ 		if (node.name === "form" || node.name === "radio-group" || node.name === "checkbox-group") return;
+ 		if (node.name === choice) {
+ 			const owner = nativeOwner(node);
+-			if (checked(owner.target.attribs, "checked") && participates(owner.scopeId, scopes, "wx://form-field-group", resolveComponent)) values.push(owner.target.attribs?.value ?? "");
++			if (nativeChecked(owner.target, "checked") && participates(owner.scopeId, scopes, "wx://form-field-group", resolveComponent)) values.push(owner.target.attribs?.value ?? "");
+ 		}
+ 		for (const child of node.children ?? []) visit(child);
+ 	};
+@@ -18119,6 +18126,15 @@ function collectFormValues(form, scopes, pageScope, resolveComponent) {
+ 		if (node.name === "form") return;
+ 		const owner = nativeOwner(node);
+ 		const attributes = owner.target.attribs;
++		const component = owner.scopeId ? resolveComponent?.(owner.scopeId) : void 0;
++		if (component) {
++			if (includesBehavior(component.definition, "wx://form-field")) {
++				const name = component.instance.data.name ?? component.instance.properties?.name;
++				if (name) values[name] = cloneProtocolValue(Object.hasOwn(component.instance.data, "value") ? component.instance.data.value : component.instance.properties?.value);
++				return;
++			}
++			if (!includesBehavior(component.definition, "wx://form-field-group")) return;
++		}
+ 		const name = attributes?.name;
+ 		if (attributes && name && participates(owner.scopeId, scopes, "wx://form-field-group", resolveComponent)) switch (node.name) {
+ 			case "input":
+@@ -18126,7 +18142,7 @@ function collectFormValues(form, scopes, pageScope, resolveComponent) {
+ 				values[name] = attributes.value ?? "";
+ 				break;
+ 			case "switch":
+-				values[name] = checked(attributes, "checked");
++				values[name] = nativeChecked(owner.target, "checked");
+ 				break;
+ 			case "slider":
+ 				values[name] = Number(attributes.value ?? 0);
+@@ -18152,7 +18168,7 @@ function collectFormValues(form, scopes, pageScope, resolveComponent) {
+ /** 先固定提交目标、字段值和方法所有者，再允许 tap 回调改变组件树。 */
+ function prepareNativeFormSubmit(button, pageScope, event, resolveMethod, resolveComponent) {
+ 	const owner = nativeOwner(button);
+-	if (owner.target.attribs?.["form-type"] !== "submit" || checked(owner.target.attribs, "disabled")) return;
++	if (owner.target.attribs?.["form-type"] !== "submit" || nativeChecked(owner.target, "disabled")) return;
+ 	let form = button.parent;
+ 	while (form && form.name !== "form") form = form.parent;
+ 	if (!form) return;
+@@ -18407,8 +18423,42 @@ function materializeNode(node) {
+ 	};
+ }
+ /** 富文本直接成为已渲染节点，不能再进入 WXML 表达式或组件处理流程。 */
+-function renderRichTextNodes(value) {
+-	return normalizeRichTextNodes(value).map(materializeNode);
++function collectParsedText(nodes) {
++	let text = "";
++	for (const node of nodes ?? []) {
++		if (node.type === "text") text += node.data ?? "";
++		else text += collectParsedText(node.children);
++	}
++	return text;
++}
++const nativeRichTextAttributes = {
++	bdo: ["dir"], col: ["span", "width"], colgroup: ["span", "width"],
++	img: ["alt", "src", "height", "width"], ol: ["start", "type"], table: ["width"],
++	td: ["colspan", "height", "rowspan", "width"], th: ["colspan", "height", "rowspan", "width"], tr: ["colspan", "height", "rowspan", "width"]
++};
++function renderRichTextNodes(value, html = false) {
++	if (typeof value === "string") return renderRichTextNodes(parseDocument(value, { decodeEntities: true }).children, true);
++	if (!Array.isArray(value)) return [];
++	const nodes = [];
++	for (const entry of value) {
++		if (!entry || typeof entry !== "object") continue;
++		if (entry.type === "text") {
++			let text = html ? entry.data : entry.text;
++			if (typeof text !== "string") continue;
++			if (!html && text.includes("&")) text = collectParsedText(parseDocument(text.replace(/</g, "&lt;"), { decodeEntities: true }).children);
++			nodes.push({ type: "text", data: text });
++			continue;
++		}
++		const name = typeof entry.name === "string" ? entry.name.toLowerCase() : "";
++		if (!ALLOWED_TAGS.has(name) || (entry.type !== void 0 && entry.type !== (html ? "tag" : "node"))) continue;
++		const attrs = {};
++		for (const [key, value] of Object.entries((html ? entry.attribs : entry.attrs) ?? {})) {
++			const attribute = key.toLowerCase();
++			if (attribute === "class" || attribute === "style" || nativeRichTextAttributes[name]?.includes(attribute)) attrs[attribute] = String(value);
++		}
++		nodes.push({ type: "tag", name, attribs: attrs, children: renderRichTextNodes(entry.children, html) });
++	}
++	return nodes;
+ }
+ // ../../mpcore/packages/simulator/src/view/templateIncludes.ts
+ /** 展开 include 的可渲染内容，并保留嵌套引用的来源文件。 */
+@@ -18638,6 +18688,7 @@ function applyNodeBindings(node, scope, richText = false) {
+ 		}
+ 		const resolvedValue = resolveNativeAttributeValue(node, key, scope, (source) => typeof value === "string" ? resolveAttributeValue(value, source) : value);
+ 		if (key === "value") setNativePickerValue(node, resolvedValue);
++		if (key === "disabled" || key === "checked") node[key === "disabled" ? "nativeDisabled" : "nativeChecked"] = value === "" || Boolean(resolvedValue) && nativeBoolean(String(resolvedValue));
+ 		if (richText && key === "nodes") node.children = renderRichTextNodes(resolvedValue);
+ 		node.attribs[key] = String(resolvedValue ?? "");
+ 		if (isDatasetAttribute(key)) {
+@@ -39823,6 +39874,7 @@ function interpolateDomTree(root, data) {
+ 			for (const [key, value] of Object.entries(node.attribs)) {
+ 				const resolvedValue = isMustacheOnly(value) ? resolveRawValueByPath(data, value.trim().slice(2, -2)) : interpolateTemplate(value, data);
+ 				if (key === "value") setNativePickerValue(node, resolvedValue);
++				if (key === "disabled" || key === "checked") node[key === "disabled" ? "nativeDisabled" : "nativeChecked"] = value === "" || Boolean(resolvedValue) && nativeBoolean(String(resolvedValue));
+ 				if (richText && key === "nodes") node.children = renderRichTextNodes(resolvedValue);
+ 				node.attribs[key] = String(resolvedValue ?? "");
+ 				if (isDatasetAttribute(key)) {
+@@ -40226,6 +40278,14 @@ function getNativeScrollOffset(page, node) {
+ 		scrollLeft: state?.scrollLeft ?? 0
+ 	};
+ }
++function findNativeEventTarget(root, key, scopeId) {
++	if (nodeKey(root) === key && root.attribs?.["data-sim-scope"] === scopeId) return root;
++	for (const child of root.children ?? []) {
++		const match = findNativeEventTarget(child, key, scopeId);
++		if (match) return match;
++	}
++	return null;
++}
+ /** 原生交互更新宿主状态，导航仍交给统一 wx 路由入口。 */
+ function dispatchNativeNodeEvent(page, node, eventName, event, wx, resolveMethod, onHandlerResult, resolveComponent) {
+ 	if (dispatchNativeRefresherEvent(page, node, eventName, event, (target) => getNativeScrollOffset(page, target).scrollTop)) return true;
+@@ -40266,6 +40326,7 @@ function dispatchNativeNodeEvent(page, node, eventName, event, wx, resolveMethod
+ 		}
+ 		current = current.parent;
+ 	}
++	if (button && nativeChecked(nativeOwner(button).target, "disabled")) return true;
+ 	const submit = button ? prepareNativeFormSubmit(button, `page:${page.route}`, event, resolveMethod, resolveComponent) : void 0;
+ 	if (handlers) for (const handler of handlers) {
+ 		const result = handler.call(handler.event);
+@@ -44308,12 +44369,21 @@ var HeadlessSession = class {
+ 	}
+ 	dispatchNativeNodeEvent(node, eventName, event, onHandlerResult) {
+ 		const current = this.requireCurrentPage("dispatchNativeNodeEvent()");
+-		if (eventName === "tap") this.renderCurrentPage();
++		if (eventName === "tap") {
++			const rendered = this.renderCurrentPage();
++			const key = nodeKey(node);
++			if (key) {
++				const target = findNativeEventTarget(rendered.root, key, node.attribs?.["data-sim-scope"]);
++				if (!target) throw new Error("Native event target no longer exists in the current rendered page.");
++				node = target;
++			}
++		}
+ 		return dispatchNativeNodeEvent(current, node, eventName, event, this.moduleLoader.wx, (scopeId, method) => this.resolveScopeMethod(current, scopeId, method), onHandlerResult, (scopeId) => {
+ 			const instance = this.componentCache.get(scopeId);
+ 			const scope = this.componentScopes.get(scopeId);
+ 			return instance?.__definition__ && scope ? {
+ 				definition: instance.__definition__,
++				instance,
+ 				ownerScopeId: scope.ownerScopeId ?? null
+ 			} : void 0;
+ 		});

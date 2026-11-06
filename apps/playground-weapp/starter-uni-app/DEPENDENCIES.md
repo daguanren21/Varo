@@ -41,19 +41,19 @@ The versions below are pinned in this template's package manifest. License decla
 | `@dcloudio/uni-mp-weixin`   | `3.0.0-5020420260813003` | Apache-2.0       | WeChat platform                                                                |
 | `@dcloudio/uni-cli-shared`  | `3.0.0-5020420260813003` | Apache-2.0       | Official build utilities                                                       |
 | `@dcloudio/vite-plugin-uni` | `3.0.0-5020420260813003` | Apache-2.0       | Official compiler and CLI                                                      |
-| `@dcloudio/types`           | `3.4.31`                 | Apache-2.0       | Explicit uni-app peer/global types                                             |
+| `@dcloudio/types`           | `3.4.31`                 | Apache-2.0       | Exact peer/global types required by the pinned uni-app release                 |
 | `vue`, `@vue/runtime-core`  | `3.4.21`                 | MIT              | Vue runtime and component types                                                |
 | `vue-i18n`                  | `9.1.9`                  | MIT              | Official preset's internationalization dependency                              |
-| `@weapp-tailwindcss/merge`  | `2.2.3`                  | MIT              | Platform-aware utility merging                                                 |
+| `@weapp-tailwindcss/merge`  | `2.2.7`                  | MIT              | Platform-aware utility merging                                                 |
 | `clsx`                      | `2.1.1`                  | MIT              | Class value composition                                                        |
-| `tailwindcss`               | `4.3.3`                  | MIT              | Utility source definitions                                                     |
-| `weapp-tailwindcss`         | `5.5.3`                  | MIT              | H5/mini-program utility generation and transforms                              |
+| `tailwindcss`               | `4.3.4`                  | MIT              | Utility source definitions                                                     |
+| `weapp-tailwindcss`         | `5.6.3`                  | MIT              | H5/mini-program utility generation and transforms                              |
 | `vite`                      | `6.4.3`                  | MIT              | Security-patched starter toolchain; exact uni-plugin overrides described above |
 | `typescript`                | `5.9.3`                  | Apache-2.0       | Source checking and verifier JavaScript parsing                                |
-| `vue-tsc`                   | `3.1.0`                  | MIT              | SFC/source typechecking                                                        |
-| `@types/node`               | `22.10.4`                | MIT              | Node tooling declarations                                                      |
-| `postcss`                   | `8.5.6`                  | MIT              | Explicit build peer and compiled CSS parsing                                   |
-| `postcss-selector-parser`   | `7.1.6`                  | MIT              | Compiled selector verification                                                 |
+| `vue-tsc`                   | `3.3.14`                 | MIT              | SFC/source typechecking                                                        |
+| `@types/node`               | `26.6.6`                 | MIT              | Node tooling declarations                                                      |
+| `postcss`                   | `8.5.32`                 | MIT              | Explicit build peer and compiled CSS parsing                                   |
+| `postcss-selector-parser`   | `7.1.7`                  | MIT              | Compiled selector verification                                                 |
 | `@csstools/css-tokenizer`   | `4.0.2`                  | MIT              | CSS escape decoding for compiled import/URL verification                       |
 | `htmlparser2`               | `12.0.0`                 | MIT              | WXML dependency and attribute parsing                                          |
 

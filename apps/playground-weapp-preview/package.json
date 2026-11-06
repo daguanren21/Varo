@@ -18,13 +18,13 @@
   "dependencies": {
     "@varo-ui/h5": "workspace:*",
     "@varo/weapp-web": "workspace:*",
-    "vue": "^3.5.43"
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "@varo/playground-weapp": "workspace:*",
-    "@vitejs/plugin-vue": "^6.0.9",
+    "@vitejs/plugin-vue": "^6.0.10",
     "typescript": "^6.0.3",
-    "vite": "^8.3.0",
-    "vue-tsc": "^3.3.11"
+    "vite": "^8.3.6",
+    "vue-tsc": "^3.3.14"
   }
 }

@@ -135,6 +135,7 @@ export default defineConfig(({ mode }) => ({
       template: {
         htmlTagToWxml: true,
         htmlTagToWxmlTagClass: true,
+        nativeSlotContext: true,
         scopedSlotsRequireProps: true,
       },
     },

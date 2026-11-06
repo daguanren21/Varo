@@ -199,16 +199,19 @@ const localizedChunks = [
   ['deployInfo.js', 'improvePages/_chunks/deployInfo.js'],
   ['openInfo.js', 'improvePages/_chunks/openInfo.js'],
   ['partsInfo.js', 'improvePages/_chunks/partsInfo.js'],
-  ['check.js', 'managePages/_chunks/check.js'],
-  ['checkShanghai.js', 'managePages/_chunks/checkShanghai.js'],
-  ['detail.js', 'managePages/_chunks/detail.js'],
-  ['highSearch.js', 'managePages/_chunks/highSearch.js'],
-  ['module.js', 'managePages/_chunks/module.js'],
-  ['repair.js', 'managePages/_chunks/repair.js'],
 ]
 for (const [original, localized] of localizedChunks) {
   if (await exists(resolve(outputRoot, original)) || !await exists(resolve(outputRoot, localized))) {
     throw new Error(`Subpackage chunk was not localized: ${original} -> ${localized}`)
+  }
+}
+
+// weapp-vite 7.8 folds the former managePages entry chunks into their page or
+// subpackage common output. They no longer have a one-to-one localized file,
+// but must still stay out of the main package.
+for (const original of ['check.js', 'checkShanghai.js', 'detail.js', 'highSearch.js', 'module.js', 'repair.js']) {
+  if (await exists(resolve(outputRoot, original))) {
+    throw new Error(`Subpackage chunk leaked into the main package: ${original}`)
   }
 }
 

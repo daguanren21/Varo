@@ -40,7 +40,7 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 ### 原生 Weapp（Wevu）
 
 ::: info 原生组合运行边界
-小程序页签运行 `weapp-vite` / `wevu` 7.5.0 编译产物。普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)适用于微信目标下编译后的 Wevu 组件，要求 `scopedSlotsRequireProps: true` 和默认 attached setup，无需应用添加 context bridge。
+小程序页签运行 `weapp-vite` / `wevu` 7.8.0 编译产物。普通插槽上下文的[上游实现](https://github.com/weapp-vite/weapp-vite/pull/1174)适用于微信目标下编译后的 Wevu 组件，要求 `nativeSlotContext: true`、`scopedSlotsRequireProps: true` 和默认 attached setup，无需应用添加 context bridge。
 
 独立 `dialog` 预览已验证打开、同步取消关闭和允许关闭；结果仅覆盖上述配置，不包括 created setup、其他平台或 IDE/真机认证。
 :::

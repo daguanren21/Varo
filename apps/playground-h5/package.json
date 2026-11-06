@@ -19,15 +19,15 @@
     "@varo-ui/theme": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.7.0",
-    "vue": "^3.5.43"
+    "vue": "^3.5.45"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.4",
     "@varo/primitives-h5": "workspace:*",
-    "@vitejs/plugin-vue": "^6.0.9",
+    "@vitejs/plugin-vue": "^6.0.10",
     "dom-accessibility-api": "0.7.1",
-    "tailwindcss": "^4.3.3",
-    "vite": "^8.3.0",
-    "vue-tsc": "^3.3.11"
+    "tailwindcss": "^4.3.4",
+    "vite": "^8.3.6",
+    "vue-tsc": "^3.3.14"
   }
 }

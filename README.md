@@ -58,7 +58,7 @@ Write components in `registry/components/**`, Blocks in `registry/blocks/**`, an
 
 To install one of the six experimental profiles, the selected components and every dependency must explicitly support it. If any item does not, the CLI fails before writing files instead of falling back to Weapp. Representative supported components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with their required utilities and themes. Check the manifests for the exact list. This does not certify the full catalog or Agent UI on those platforms.
 
-Repository fixtures use `weapp-vite` and `wevu` **7.5.0**; native package peers accept `>=7.2.1 <8`. Donut uses the WeChat compiler and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. It has no separate Android, iOS, or OpenHarmony compiler target. You still need SDKs, vendor IDEs, registered AppIDs, signing, and device checks. The repository does not supply identities or credentials.
+Repository fixtures use `weapp-vite` and `wevu` **7.8.0**; native package peers accept `>=7.2.1 <8`. Donut uses the WeChat compiler and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. It has no separate Android, iOS, or OpenHarmony compiler target. You still need SDKs, vendor IDEs, registered AppIDs, signing, and device checks. The repository does not supply identities or credentials.
 
 ## Install editable source
 
@@ -122,7 +122,7 @@ pnpm run docs:dev
 
 This starts VitePress at `http://localhost:5173` and prepares the native preview artifacts. The H5 and Mini Program tabs share device framing, example cases, language, and theme. Mini Program examples run compiled Wevu SFCs through glass-easel; their editable source remains available under **View code**. H5-only components retain explicit platform support boundaries.
 
-The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.5.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174) for compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup; it does not extend the protocol to created setup or other platforms. All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
+The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.8.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174) for compiled Wevu components on WeChat with `nativeSlotContext: true` and `scopedSlotsRequireProps: true` and default attached setup; it does not extend the protocol to created setup or other platforms. All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
 
 ## Verification
 
@@ -148,7 +148,7 @@ Native artifacts are in `apps/platform-smoke/.generated/<profile>/dist/<compiler
 
 Realworld creates its manager with `createAedPinia()` in [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts). Install it before creating stores: call `use(pinia)` in native `app.vue` or `createApp({}).use(manager)` in local consumers. Through `$subscribe`, the plugin persists only the AED store in `realworld-weapp-state` format, including nested updates. Navigation data stays transient; disposing the store or manager releases subscriptions. Keep this configuration for persistence, rather than a setup-local deep watch or bare `createPinia()`. Local checks do not run `wx.login`, update checks, or device launch.
 
-Use pnpm `11.24.0` and Node `^22.18.0 || ^24.11.0 || >=26.0.0`. Vitest 5 and tsdown 0.23 exclude Node 25. TypeScript remains on 6.x for `vue-tsc` and the compiler API used by the native-artifact preview; jsdom remains on 29.x because 30.x requires newer Node patch versions than this workspace's supported minimums.
+Use pnpm `11.24.0` and Node `^22.23.4 || ^24.22.1 || >=26.12.1`. Vitest 5 and tsdown 0.23 exclude Node 25. The workspace uses jsdom 31 and retains TypeScript 6.0.3: TypeScript 7 removes the Compiler API used by source tooling, and its declaration build does not yet support this workspace's package graph. Native builds use Tailwind CSS 4.3.4 and weapp-tailwindcss 5.6.3.
 
 Vitest 5 no longer discovers configuration in parent directories. Workspace test scripts explicitly select the shared root configuration and restrict discovery to the current package. The Weapp playground instead selects its native-SFC test configuration with jsdom; the standalone Realworld app retains its local configuration.
 

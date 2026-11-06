@@ -113,7 +113,7 @@ Each experimental profile requires explicit support in the item manifest and eve
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.5.0. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
+`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.8.0. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
 
 ## Agent streaming
 
@@ -177,7 +177,7 @@ pnpm test:e2e:weapp
 
 The Web suite covers H5 and glass-easel preview; the Weapp suite uses a headless host for native compiled artifacts. Neither uses models or retries. Missing cases or targets, failures, and unexpected skips reject acceptance. Each run writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json`, with screenshots and framework reports in the same run directory; reports are never reused. Legacy native smokes and capture entrypoints remain pending host acceptance.
 
-The repository's pnpm patch for `@weapp-vite/miniprogram-automator@1.3.0` adds rendered-tree text observation for `rich-text` arrays/HTML and the native submit-button form default action. The patch lives at `patches/@weapp-vite__miniprogram-automator@1.3.0.patch` and applies only to a development test dependency. `apps/e2e/tests/runner/native-runtime.test.ts` exercises the real Launcher for entities, content updates, unsupported node/event filtering, named field values, custom form behaviors, and disabled buttons. Revalidate these scenarios when upgrading the SDK and remove the patch once upstream provides the behavior.
+`@weapp-vite/miniprogram-automator@1.5.1` provides rich-text and native form implementations. The repository patch at `patches/@weapp-vite__miniprogram-automator@1.5.1.patch` completes entity handling, unsupported-node filtering, disabled/nullish states, and custom form-field semantics. It also retargets clicks after rerendering using nodeKey and scope to avoid stale node state. This development-only patch is verified through the real Launcher in `apps/e2e/tests/runner/native-runtime.test.ts`. Revalidate these contracts when upgrading the SDK and remove the patch only when upstream behavior matches.
 
 Headless is not a WeChat client: it does not provide real pixels, keyboard input, or touch geometry. Rendered-text assertions must read the rendered tree rather than application state. `pnpm test:e2e:devtools` separately requires authenticated WeChat DevTools, its automation port, and a valid local AppID. Device capabilities and final native visuals still require separate acceptance.
 
@@ -208,6 +208,7 @@ Execution accepts only fixed enums: preview `h5` / `weapp-preview`, check `gener
 
 ## Version strategy
 
-- The current native integration uses `weapp-vite` / `wevu` 7.5.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
+- For plain-slot context inheritance on WeChat, enable both `nativeSlotContext: true` and `scopedSlotsRequireProps: true` in `vue.template` and use default attached setup; created setup and other platforms are excluded
+- The current native integration uses `weapp-vite` / `wevu` 7.8.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
 - Production projects should follow their lockfile, package `peerDependencies`, and CI build result
 - VitePress, Vue, and TypeScript move with the workspace upgrade policy

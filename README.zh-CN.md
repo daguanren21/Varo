@@ -58,7 +58,7 @@ Varo 为 Vue 3 移动 H5 和 `weapp-vite` 小程序提供组件与 Blocks。通�
 
 安装六个实验性 profile 时，所选组件及其全部依赖都必须明确支持该 profile。任何一项不支持，CLI 都会在写入前报错，不会回退到 Weapp。目前允许安装的代表组件有 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及所需工具和主题，具体以 manifest 为准。这个范围不代表完整组件目录或 Agent UI 已通过这些平台的验证。
 
-仓库示例使用 `weapp-vite` 与 `wevu` **7.5.0**，原生包的 peer 范围为 `>=7.2.1 <8`。Donut 使用微信编译器，再通过 `mini-android`、`mini-ios` 或 `mini-ohos` 元数据选择宿主，不单独使用 Android、iOS 或 OpenHarmony 编译 target。运行前仍需安装 SDK 和厂商 IDE、配置真实 AppID 与签名，并在真机上验证；仓库不提供身份或凭据。
+仓库示例使用 `weapp-vite` 与 `wevu` **7.8.0**，原生包的 peer 范围为 `>=7.2.1 <8`。Donut 使用微信编译器，再通过 `mini-android`、`mini-ios` 或 `mini-ohos` 元数据选择宿主，不单独使用 Android、iOS 或 OpenHarmony 编译 target。运行前仍需安装 SDK 和厂商 IDE、配置真实 AppID 与签名，并在真机上验证；仓库不提供身份或凭据。
 
 ## 安装可编辑源码
 
@@ -122,7 +122,7 @@ pnpm run docs:dev
 
 该命令在 `http://localhost:5173` 启动 VitePress。页面提供 H5 示例与原生源码，glass-easel 浏览器预览可运行可信的小程序编译产物。预览的同源 iframe 不提供安全隔离，也不能替代 IDE 或真机检查。
 
-原生 Dialog 使用独立的 `dialog` 诊断场景。仓库的 7.5.0 示例已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) 的修复：微信目标上编译的 Wevu 组件，在 `scopedSlotsRequireProps: true` 和默认 attached setup 下可通过普通插槽继承最近 Provider。created setup 和其他平台不在此范围内。
+原生 Dialog 使用独立的 `dialog` 诊断场景。仓库的 7.8.0 示例已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) 的修复：微信目标上编译的 Wevu 组件，在 `nativeSlotContext: true`、`scopedSlotsRequireProps: true` 和默认 attached setup 下可通过普通插槽继承最近 Provider。created setup 和其他平台不在此范围内。
 
 ## 验证
 
@@ -146,7 +146,7 @@ pnpm check:platforms
 
 Realworld 在 [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts) 用 `createAedPinia()` 创建管理器。创建 Store 前先安装：原生 `app.vue` 调用 `use(pinia)`，本地运行使用 `createApp({}).use(manager)`。插件通过 `$subscribe` 仅持久化 AED Store，沿用 `realworld-weapp-state` 格式，支持嵌套字段更新。导航数据不落盘，销毁 Store 或管理器会释放订阅。需要持久化时，保留此配置，不要改用 setup 内的深层 watch 或裸 `createPinia()`。本地检查不运行 `wx.login`、更新检查或真机启动。
 
-使用 pnpm `11.24.0` 和 Node `^22.18.0 || ^24.11.0 || >=26.0.0`。Vitest 5 与 tsdown 0.23 不支持 Node 25。TypeScript 保持在 6.x，以兼容 `vue-tsc` 和原生产物预览使用的编译器 API；jsdom 保持在 29.x，因为 30.x 要求的 Node 补丁版本高于工作区当前支持的下限。
+使用 pnpm `11.24.0` 和 Node `^22.23.4 || ^24.22.1 || >=26.12.1`。Vitest 5 与 tsdown 0.23 不支持 Node 25。工作区使用 jsdom 31，TypeScript 保留 6.0.3：TypeScript 7 移除了源码工具依赖的 Compiler API，其声明构建尚不能覆盖当前跨包发布图。原生构建使用 Tailwind CSS 4.3.4 与 weapp-tailwindcss 5.6.3。
 
 Vitest 5 不再向父目录查找配置。工作区测试命令显式选择根目录共享配置，并将测试发现范围限定在当前包。Weapp Playground 则选择支持原生 SFC 的专用配置并使用 jsdom；可独立安装的 Realworld 应用继续使用自己的本地配置。
 

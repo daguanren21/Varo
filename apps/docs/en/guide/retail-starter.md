@@ -8,7 +8,7 @@ The default service stores data in memory and resets on restart. Orders carry `s
 
 ## 1. Export and install
 
-We recommend **Node 24 (`>=24.11.0 <25`)**; use **pnpm 11.24.0**. Run from the **Varo repository root**:
+We recommend **Node 24 (`>=24.22.1 <25`)**; use **pnpm 11.24.0**. Run from the **Varo repository root**:
 
 ```bash
 pnpm install --frozen-lockfile

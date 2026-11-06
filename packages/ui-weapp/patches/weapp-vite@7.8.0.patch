@@ -1,0 +1,316 @@
+diff --git a/dist/createCompilerContextInstance-DzZkitaR.mjs b/dist/createCompilerContextInstance-DzZkitaR.mjs
+index ff1a0f0400b41410923c7402a157f20a6197bcd3..cffbf24a6f8e04fb5022bb5312953a3a6a174090 100644
+--- a/dist/createCompilerContextInstance-DzZkitaR.mjs
++++ b/dist/createCompilerContextInstance-DzZkitaR.mjs
+@@ -10260,6 +10260,7 @@ function createReadAndParseSfcOptions(pluginCtx, configService, options) {
+ }
+ // src/plugins/vue/transform/appShell.ts
+ const APP_VUE_FILE_RE = /[\\/]app\.vue$/;
++const APP_SHELL_VIRTUAL_MODULE_ID = "\0weapp-vite:app-shell";
+ function isAppVueFile(filename) {
+ 	return APP_VUE_FILE_RE.test(filename);
+ }
+@@ -10272,6 +10273,41 @@ function resolveAppShellBase(configService) {
+ function resolveAppShellRelativeBase(configService) {
+ 	return configService.relativeOutputPath(resolveAppShellBase(configService));
+ }
++function resolveNativeSlotOwnerWevuDefaults(configService) {
++	const defaults = resolveWevuDefaultsWithPreset(configService.weappViteConfig);
++	return {
++		...defaults,
++		component: {
++			...defaults.component,
++			__wevuScopedSlotOwnerRequired: true
++		}
++	};
++}
++function isNativeSlotOwnerContextEnabled(configService) {
++	const template = configService.weappViteConfig?.vue?.template;
++	return configService.platform === "weapp" && template?.nativeSlotContext === true && template?.scopedSlotsRequireProps === true;
++}
++async function emitAppShellChunk(pluginCtx, configService) {
++	const templateConfig = configService.weappViteConfig?.vue?.template;
++	const { script } = await compileVueFile("<template><slot /></template>", `${resolveAppShellBase(configService)}.vue`, {
++		template: {
++			platform: getMiniProgramTemplatePlatform(configService.platform),
++			scopedSlotsRequireProps: templateConfig?.scopedSlotsRequireProps ?? false,
++			nativeSlotContext: templateConfig?.nativeSlotContext === true
++		},
++		wevuDefaults: isNativeSlotOwnerContextEnabled(configService) ? resolveNativeSlotOwnerWevuDefaults(configService) : resolveWevuDefaultsWithPreset(configService.weappViteConfig),
++		runtimeBindingManifest: "compact",
++		sourceMap: false
++	});
++	const { scriptExtension } = resolveCompilerOutputExtensions(configService.outputExtensions);
++	pluginCtx.emitFile({
++		type: "chunk",
++		id: APP_SHELL_VIRTUAL_MODULE_ID,
++		fileName: `${resolveAppShellRelativeBase(configService)}.${scriptExtension}`,
++		preserveSignature: "exports-only"
++	});
++	return script;
++}
+ function resolveAppShellImportPath(configService) {
+ 	const relativeBase = resolveAppShellRelativeBase(configService);
+ 	return relativeBase ? `/${toPosixPath(relativeBase)}` : void 0;
+@@ -30476,7 +30512,6 @@ function createSelectedRuntimeProviderPlugin(provider, isDev) {
+ }
+ // src/plugins/utils/scriptlessComponent.ts
+ const SCRIPTLESS_COMPONENT_STUB = "Component({})";
+-const SLOT_HOST_SCRIPTLESS_COMPONENT_STUB = "Component({properties:{vueSlots:{type:null,value:null},__wvSlotOwnerId:{type:String,value:\"\"},__wvSlotScope:{type:null,value:null}}})";
+ /**
+ * 统一生成无脚本组件的脚本产物文件名。
+ */
+@@ -33320,30 +33355,6 @@ async function registerResolvedPageLayoutDependencies(ctx, ownerId, layouts, res
+ 	for (const layout of layouts) ctx.runtimeState?.build?.hmr?.externalComponentEntryMap?.set(layout.importPath.replace(/^\/+/, ""), layout.file);
+ 	ctx.moduleGraphService.replaceEntryDependencies(ownerId, "layout", transitiveDependencies);
+ }
+-// src/plugins/utils/scriptlessVueLayout.ts
+-const WEVU_TEMPLATE_RUNTIME_BINDING_ATTR_RE = /(?:^|[\s<])(?:ref|:ref|v-bind:ref|layout-host|:layout-host|v-bind:layout-host)\s*=/;
+-function hasWevuTemplateRuntimeBindings(template) {
+-	return typeof template === "string" && WEVU_TEMPLATE_RUNTIME_BINDING_ATTR_RE.test(template);
+-}
+-function isDefineComponentJsonOnlyScript(content) {
+-	const ast = parse$3(content, BABEL_TS_MODULE_PARSER_OPTIONS$1);
+-	let hasDefineComponentJson = false;
+-	for (const statement of ast.program.body) {
+-		if (t.isEmptyStatement(statement)) continue;
+-		if (!t.isExpressionStatement(statement) || !t.isCallExpression(statement.expression)) return false;
+-		const call = statement.expression;
+-		if (!t.isIdentifier(call.callee, { name: "defineComponentJson" })) return false;
+-		hasDefineComponentJson = true;
+-	}
+-	return hasDefineComponentJson;
+-}
+-function shouldEmitScriptlessVueLayoutJs(source, filename) {
+-	const { descriptor } = parse$1(source, { filename });
+-	if (hasWevuTemplateRuntimeBindings(descriptor.template?.content)) return false;
+-	const blocks = [descriptor.script?.content, descriptor.scriptSetup?.content].filter((content) => typeof content === "string" && content.trim().length > 0);
+-	if (blocks.length === 0) return true;
+-	return blocks.every(isDefineComponentJsonOnlyScript);
+-}
+ // src/plugins/hooks/useLoadEntry/loadEntry/app.ts
+ function createJsonSignature(value) {
+ 	let raw = "";
+@@ -34490,8 +34501,6 @@ function createEntryLoader(options) {
+ 	const entryResolver = createEntryResolver(configService, (base) => path.extname(base) ? void 0 : getSelectedAutoRouteSource(ctx, base));
+ 	const appEntriesCache = {};
+ 	const appEntryOutputCache = {};
+-	const emittedScriptlessVueLayoutJs = /* @__PURE__ */ new Set();
+-	const scriptlessVueLayoutDecisionCache = /* @__PURE__ */ new Map();
+ 	const entrySidecarResolutionCache = /* @__PURE__ */ new Map();
+ 	const entryJsonCache = /* @__PURE__ */ new Map();
+ 	const vueConfigCache = /* @__PURE__ */ new Map();
+@@ -34499,20 +34508,6 @@ function createEntryLoader(options) {
+ 	const templateEntryPathCache = /* @__PURE__ */ new Map();
+ 	const styleScannedEntryIds = /* @__PURE__ */ new Set();
+ 	let resolveCacheVersion = 0;
+-	const shouldEmitScriptlessVueLayoutJs$1 = async (layoutFile) => {
+-		const cached = scriptlessVueLayoutDecisionCache.get(layoutFile);
+-		if (cached) return await cached;
+-		const task = (async () => {
+-			return shouldEmitScriptlessVueLayoutJs(await readCompilerInput(configService, layoutFile, (file) => fs$1.readFile(file, "utf-8")), layoutFile);
+-		})();
+-		scriptlessVueLayoutDecisionCache.set(layoutFile, task);
+-		try {
+-			return await task;
+-		} catch (error) {
+-			scriptlessVueLayoutDecisionCache.delete(layoutFile);
+-			throw error;
+-		}
+-	};
+ 	return Object.assign(async function loadEntry(id, type, loadOptions) {
+ 		const resolveNativeLayoutAssets = createNativeLayoutAssetResolver();
+ 		if (configService.isDev || configService.inlineConfig?.build?.watch) existsCache.clear();
+@@ -34658,16 +34653,6 @@ function createEntryLoader(options) {
+ 				resolveNativeLayoutAssets
+ 			});
+ 			await registerResolvedPageLayoutDependencies(ctx, normalizedId, layoutPlan.layouts, resolveNativeLayoutAssets);
+-			for (const layout of layoutPlan.layouts) {
+-				if (layout.kind === "native") continue;
+-				if (!layout.file.endsWith(".vue")) continue;
+-				if (!await shouldEmitScriptlessVueLayoutJs$1(layout.file)) continue;
+-				const relativeLayoutBase = configService.relativeOutputPath(removeExtensionDeep(layout.file));
+-				if (!relativeLayoutBase || emittedScriptlessVueLayoutJs.has(relativeLayoutBase)) continue;
+-				emittedScriptlessVueLayoutJs.add(relativeLayoutBase);
+-				const { scriptExtension } = resolveCompilerOutputExtensions(configService.outputExtensions);
+-				emitScriptlessComponentAsset(this, resolveScriptlessComponentFileName(relativeLayoutBase, scriptExtension), SLOT_HOST_SCRIPTLESS_COMPONENT_STUB);
+-			}
+ 		};
+ 		if (type === "app") {
+ 			if (vueEntryPath && ctx.autoRoutesService?.isEnabled?.() && !ctx.runtimeState.autoRoutes.loadingAppConfig) {
+@@ -34923,7 +34908,6 @@ function createEntryLoader(options) {
+ 	}, { invalidateResolveCache() {
+ 		entryResolver.invalidate();
+ 		scriptSetupAnalyzer.clear();
+-		scriptlessVueLayoutDecisionCache.clear();
+ 		entrySidecarResolutionCache.clear();
+ 		entryJsonCache.clear();
+ 		vueConfigCache.clear();
+@@ -46423,7 +46407,7 @@ function buildCompileVueFileOptions(ctx, pluginCtx, vuePath, isPage, isApp, conf
+ 	let classStyleWxsSrc;
+ 	if (resolvedWxsExtension && relativeBase) classStyleWxsSrc = resolveClassStyleWxsLocationForBase(ctx, relativeBase, resolvedWxsExtension, configService).src;
+ 	const jsonConfig = configService.weappViteConfig?.json;
+-	const wevuDefaults = resolveWevuDefaultsWithPreset(configService.weappViteConfig);
++	const wevuDefaults = isLayoutFile(vuePath, configService) && isNativeSlotOwnerContextEnabled(configService) ? resolveNativeSlotOwnerWevuDefaults(configService) : resolveWevuDefaultsWithPreset(configService.weappViteConfig);
+ 	const wevuMinify = isWevuMinifyEnabled(configService.weappViteConfig, configService.isDev);
+ 	const jsonKind = isApp ? "app" : isPage ? "page" : "component";
+ 	const sourceMap = isVueTransformSourceMapEnabled(configService);
+@@ -47242,15 +47226,6 @@ async function loadFallbackPageEntryCompilation(options) {
+ function resolveVueLayoutAssetOptions(options) {
+ 	return resolveNativeLayoutOutputOptions(options);
+ }
+-async function emitResolvedBundleLayouts(options) {
+-	for (const layout of options.layouts) {
+-		if (layout.kind === "native") {
+-			await options.emitNativeLayout(layout.file);
+-			continue;
+-		}
+-		await options.emitVueLayout(layout.file);
+-	}
+-}
+ async function resolveNativeLayoutAssetState(options) {
+ 	const resolvedOptions = resolveVueLayoutAssetOptions({
+ 		configService: options.configService,
+@@ -47306,86 +47281,18 @@ function emitScriptlessComponentJsFallbackIfMissing(options) {
+ 	const { pluginCtx, bundle, relativeBase, scriptExtension, source } = options;
+ 	ensureScriptlessComponentAsset(pluginCtx, bundle, relativeBase, scriptExtension, source);
+ }
+-function resolveVueLayoutScriptFallbackState(options) {
+-	const resolvedOptions = resolveVueLayoutAssetOptions({
+-		configService: options.configService,
+-		layoutBasePath: getEntryBaseName(options.layoutFilePath),
+-		outputExtensions: options.outputExtensions
+-	});
+-	if (!resolvedOptions) return;
+-	const scriptFileName = resolveScriptlessComponentFileName(resolvedOptions.relativeBase, resolvedOptions.scriptExtension);
+-	if (options.bundle[scriptFileName]) return;
+-	return {
+-		resolvedOptions,
+-		scriptFileName
+-	};
+-}
+-async function emitVueLayoutScriptFallbackIfNeeded(options) {
+-	const { pluginCtx, bundle, layoutFilePath, ctx, configService, compileOptionsState, outputExtensions } = options;
+-	const fallbackState = resolveVueLayoutScriptFallbackState({
+-		bundle,
+-		layoutFilePath,
+-		configService,
+-		outputExtensions
+-	});
+-	if (!fallbackState) return;
+-	const { resolvedOptions } = fallbackState;
+-	const result = await compileVueLikeFile({
+-		source: await fs$1.readFile(layoutFilePath, "utf-8"),
+-		filename: layoutFilePath,
+-		ctx,
+-		pluginCtx,
+-		isPage: false,
+-		isApp: false,
+-		configService,
+-		compileOptionsState
+-	});
+-	assertTemplateHasDefaultSlot({
+-		filename: layoutFilePath,
+-		kind: "page-layout",
+-		template: result.template
+-	});
+-	if (result.script?.trim()) return;
+-	emitScriptlessComponentJsFallbackIfMissing({
+-		pluginCtx,
+-		bundle,
+-		relativeBase: resolvedOptions.relativeBase,
+-		scriptExtension: resolvedOptions.scriptExtension,
+-		source: SLOT_HOST_SCRIPTLESS_COMPONENT_STUB
+-	});
+-}
+-function createBundleLayoutEmitters(options) {
+-	return {
+-		emitNativeLayout: async (layoutFilePath) => {
+-			await emitNativeLayoutAssetsIfNeeded({
+-				pluginCtx: options.pluginCtx,
+-				bundle: options.bundle,
+-				layoutBasePath: layoutFilePath,
+-				configService: options.configService,
+-				outputExtensions: options.outputExtensions
+-			});
+-		},
+-		emitVueLayout: async (layoutFilePath) => {
+-			await emitVueLayoutScriptFallbackIfNeeded({
+-				pluginCtx: options.pluginCtx,
+-				bundle: options.bundle,
+-				layoutFilePath,
+-				ctx: options.ctx,
+-				configService: options.configService,
+-				compileOptionsState: options.compileOptionsState,
+-				outputExtensions: options.outputExtensions
+-			});
+-		}
+-	};
+-}
+ async function emitBundlePageLayoutsIfNeeded(options) {
+ 	if (!options.layouts?.length) return;
+-	const layoutEmitters = createBundleLayoutEmitters(options);
+-	await emitResolvedBundleLayouts({
+-		layouts: options.layouts,
+-		emitNativeLayout: layoutEmitters.emitNativeLayout,
+-		emitVueLayout: layoutEmitters.emitVueLayout
+-	});
++	for (const layout of options.layouts) {
++		if (layout.kind !== "native") continue;
++		await emitNativeLayoutAssetsIfNeeded({
++			pluginCtx: options.pluginCtx,
++			bundle: options.bundle,
++			layoutBasePath: layout.file,
++			configService: options.configService,
++			outputExtensions: options.outputExtensions
++		});
++	}
+ }
+ function resolveAppShellUsingComponents(template, usingComponents) {
+ 	const templateComponents = scanWxml(template, { excludeComponent: () => false }).autoImportComponents ?? {};
+@@ -47443,13 +47350,6 @@ function emitAppShellAssetsIfNeeded(options) {
+ 			extension: options.jsonExtension
+ 		}
+ 	});
+-	emitScriptlessComponentJsFallbackIfMissing({
+-		pluginCtx: options.pluginCtx,
+-		bundle: options.bundle,
+-		relativeBase,
+-		scriptExtension: options.scriptExtension,
+-		source: SLOT_HOST_SCRIPTLESS_COMPONENT_STUB
+-	});
+ }
+ // src/plugins/vue/transform/bundle/emitCompiledEntry.ts
+ async function emitResolvedCompiledVueEntryAssets(options) {
+@@ -48275,6 +48175,7 @@ function invalidateComponentMetaCache(componentMetaCache, id) {
+ function createVueTransformPlugin(ctx, options = {}) {
+ 	const compilationCache = /* @__PURE__ */ new Map();
+ 	let appShell;
++	let appShellScript;
+ 	let pageMatcher = null;
+ 	let scanDirtySynced = false;
+ 	let isBundledDev = false;
+@@ -48342,6 +48243,7 @@ function createVueTransformPlugin(ctx, options = {}) {
+ 			componentMetaCache.clear();
+ 			nativeSlotContextCache.clear();
+ 			updateAppShell(await resolveAppShellForCompilation(ctx, this));
++			appShellScript = appShell ? await emitAppShellChunk(this, ctx.configService) : void 0;
+ 			await preloadNativeLayoutEntries({
+ 				pluginCtx: this,
+ 				ctx,
+@@ -48356,6 +48258,7 @@ function createVueTransformPlugin(ctx, options = {}) {
+ 			});
+ 		},
+ 		resolveId(id) {
++			if (id === APP_SHELL_VIRTUAL_MODULE_ID) return id;
+ 			if (!SCOPED_SLOT_VIRTUAL_ID_RE.test(id)) return null;
+ 			const startedAt = performance.now();
+ 			try {
+@@ -48367,6 +48270,7 @@ function createVueTransformPlugin(ctx, options = {}) {
+ 			}
+ 		},
+ 		async load(id) {
++			if (id === APP_SHELL_VIRTUAL_MODULE_ID) return appShellScript;
+ 			if (!VUE_LOAD_FILTER_RE.test(id)) return null;
+ 			return await loadTransformStyleBlock({
+ 				id,
