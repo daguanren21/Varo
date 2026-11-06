@@ -1,0 +1,8 @@
+{
+  "projectname": "slot-owner-repro",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "dist",
+  "setting": {
+    "es6": true
+  }
+}

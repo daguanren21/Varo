@@ -1,0 +1,17 @@
+{
+  "name": "weapp-vite-slot-owner-repro",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.24.0",
+  "scripts": {
+    "build": "weapp-vite build",
+    "verify": "node verify.mjs"
+  },
+  "dependencies": {
+    "weapp-vite": "7.8.0",
+    "wevu": "7.8.0"
+  },
+  "engines": {
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
+  }
+}
