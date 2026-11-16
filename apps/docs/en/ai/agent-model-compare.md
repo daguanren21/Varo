@@ -56,6 +56,7 @@ interface AgentCompareState {
   busy: boolean
   error?: string
   retryable?: boolean
+  outcome?: 'completed' | 'cancelled'
   metrics?: {
     latencyMs?: number
     cost?: { amount: number, currency: string }
@@ -64,6 +65,8 @@ interface AgentCompareState {
 ```
 
 Supply unique, stable catalog IDs, readable labels, and current availability. The application controls `left` and `right`. Keep `busy` true from the start of pending work through resource cleanup. SDK snapshot `isLoading`, or `status` of `submitted` / `streaming`, also indicates active work; never write the display state `waiting` into SDK status. Missing side state is safe during initialization but prevents submission. The Block compares text: history retains its static display API, while active content is a pure projection of the SDK snapshot, without another active-message store or event replay. Handle tool execution, approvals, conversation storage, and provider routing in your application.
+
+`outcome` is the application-confirmed result of this run: provide `completed` only after the actual computation finishes, or `cancelled` after an explicit stop, and clear it for new work/model selection. SDK `ready` means that requests can be accepted, not success or cancellation. Without an outcome the panel displays ready; active work and errors take precedence over an old result. This display field owns neither messages nor execution policy.
 
 | Prop                                  | Meaning                                                                                |
 | ------------------------------------- | -------------------------------------------------------------------------------------- |

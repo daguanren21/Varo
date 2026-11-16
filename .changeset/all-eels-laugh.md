@@ -11,3 +11,5 @@ Keep trusted native-preview host bindings in an outer lexical scope so compiler-
 Verify the 7.10.0 native slot integration with execution-slot parent reactivity and child events, cancelable Dialog composition, Menu selection, and form-array runtime scenarios. Remove stale documentation claiming that plain-slot context is still blocked upstream, while retaining explicit opt-in and host/device evidence boundaries.
 
 Remove obsolete management-chunk relocation after the 7.10.0 compiler bundles those helpers into page/shared chunks. Validate actual emitted synchronous script dependencies and package ownership instead of requiring removed standalone files; keep native page, style, asset and package-size gates.
+
+Let comparison applications supply confirmed completion/cancellation outcomes independently of the TanStack ready state, preserving truthful result labels and side-specific stop/retry behavior.

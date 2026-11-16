@@ -37,6 +37,7 @@ export function useModelCompareDemo() {
   function createSide(id: AgentCompareSide, initialModel: string) {
     const modelId = shallowRef(initialModel)
     const elapsed = shallowRef<number | undefined>(undefined)
+    const outcome = shallowRef<AgentCompareState['outcome']>(undefined)
     const receipt = shallowRef({ steps: 0, cleanups: 0, active: false, timers: 0 })
     let lastRequest: { prompt: string, modelId: string } | undefined
     const connection = stream(async function* (_messages, data, signal, input): AsyncGenerator<StreamChunk> {
@@ -87,20 +88,30 @@ export function useModelCompareDemo() {
         messages: agentConversationHistory(snapshot.value),
         snapshot: snapshot.value,
         busy: pending.value, error: snapshot.value.error?.message, retryable: Boolean(lastRequest) && snapshot.value.status === 'error',
+        outcome: outcome.value,
         metrics: showMetrics.value && elapsed.value != null ? { latencyMs: elapsed.value } : undefined,
       }
     })
     const lifecycle = computed(() => `steps=${receipt.value.steps};cleanups=${receipt.value.cleanups};active=${receipt.value.active};timers=${receipt.value.timers}`)
     async function start(request: string, failFirstAttempt: boolean) {
       if (pending.value || disposed) { return }
-      lastRequest = { prompt: request, modelId: modelId.value }
+      const invocation = { prompt: request, modelId: modelId.value }
+      lastRequest = invocation
+      outcome.value = undefined
       client.clear()
       elapsed.value = undefined
       const startedAt = Date.now()
       await client.sendMessage(request, { prompt: request, modelId: modelId.value, failFirstAttempt })
-      if (!disposed && !snapshot.value.error && receipt.value.steps === request.split(/\s+/u).length) { elapsed.value = Date.now() - startedAt }
+      if (!disposed && lastRequest === invocation && !outcome.value && !snapshot.value.error && receipt.value.steps === request.split(/\s+/u).length) {
+        elapsed.value = Date.now() - startedAt
+        outcome.value = 'completed'
+      }
     }
-    function stop() { client.stop() }
+    function stop() {
+      if (!pending.value) { return }
+      outcome.value = 'cancelled'
+      client.stop()
+    }
     function retry() {
       if (!lastRequest || pending.value || snapshot.value.status !== 'error' || lastRequest.modelId !== modelId.value) { return }
       void start(lastRequest.prompt, false)
@@ -108,6 +119,7 @@ export function useModelCompareDemo() {
     function clear() {
       if (pending.value) { return }
       lastRequest = undefined
+      outcome.value = undefined
       elapsed.value = undefined
       unsubscribe()
       client.dispose()

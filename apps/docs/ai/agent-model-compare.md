@@ -56,6 +56,7 @@ interface AgentCompareState {
   busy: boolean
   error?: string
   retryable?: boolean
+  outcome?: 'completed' | 'cancelled'
   metrics?: {
     latencyMs?: number
     cost?: { amount: number, currency: string }
@@ -64,6 +65,8 @@ interface AgentCompareState {
 ```
 
 应用需提供唯一且稳定的目录 ID、可读名称与当前可用性。`left`/`right` 由应用控制；从任务开始到资源清理结束，`busy` 都应保持为 true。SDK snapshot 的 `isLoading` 或 `status` 为 `submitted` / `streaming` 时也按活动请求处理，不能把展示用 `waiting` 写入 SDK 状态。初始化阶段缺少某侧不会崩溃，但不能提交。Block 用于比较文本：历史消息保留静态展示 API，活动内容直接从 SDK snapshot 纯投影，不另存活动消息或重放事件。工具执行、审批、会话存储和 provider 路由需要在应用中处理。
+
+`outcome` 是应用确认的本次运行结果：真实计算全部结束后提供 `completed`，显式停止后提供 `cancelled`，新运行或切换模型时清除。SDK `ready` 只表示可接受请求，不代表成功或取消；未提供结果时面板显示“就绪”，活动请求与错误优先于旧结果。此字段只用于展示，不持有消息或执行策略。
 
 | Prop                                  | 含义                                                              |
 | ------------------------------------- | ----------------------------------------------------------------- |

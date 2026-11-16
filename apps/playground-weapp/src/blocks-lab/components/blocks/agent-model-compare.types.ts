@@ -18,6 +18,8 @@ export interface AgentCompareState {
   busy: boolean
   error?: string
   retryable?: boolean
+  /** Application-confirmed result; SDK ready alone does not establish completion or cancellation. */
+  outcome?: 'completed' | 'cancelled'
   metrics?: AgentCompareMetrics
 }
 
