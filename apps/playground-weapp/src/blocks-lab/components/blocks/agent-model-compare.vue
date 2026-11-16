@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import type { AgentModelOption } from '../../../components/agent-ui/agent-model-selector.types'
-import type { AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from './agent-model-compare.types'
+import type { AgentCompareApprovalIntent, AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from './agent-model-compare.types'
 import { useControllableState } from '@varo-ui/headless'
 import { computed } from 'wevu'
 import { varoReactiveRuntime } from '../../../lib/varo-primitives'
 import { availableModel } from '../../../components/agent-ui/agent-model-selector.types'
 import AgentComposer from '../../../components/agent-ui/AgentComposer.vue'
 import AgentConversation from '../../../components/agent-ui/AgentConversation.vue'
-import AgentMarkdown from '../../../components/agent-ui/AgentMarkdown.vue'
+import AgentEventRenderer from '../../../components/agent-ui/AgentEventRenderer.vue'
 import AgentModelSelector from '../../../components/agent-ui/AgentModelSelector.vue'
-import AgentStream from '../../../components/agent-ui/AgentStream.vue'
 import VButton from '../../../components/ui/v-button.vue'
 import { comparisonPanel, comparisonRetryable, comparisonRunning } from './agent-model-compare-actions'
 
@@ -35,6 +34,10 @@ const emit = defineEmits<{
   'run': [intent: AgentCompareRunIntent]
   'retry': [side: AgentCompareSide]
   'stop': [side: AgentCompareSide]
+  'approve': [intent: AgentCompareApprovalIntent]
+  'reject': [intent: AgentCompareApprovalIntent]
+  'retryInterrupts': [side: AgentCompareSide]
+  'cancelInterrupts': [side: AgentCompareSide]
 }>()
 const promptState = useControllableState<string>({
   runtime: varoReactiveRuntime,
@@ -99,15 +102,23 @@ function stop(side: AgentCompareSide) {
         <view class="grid gap-1 text-xs text-[var(--varo-ui-text-regular)]" data-compare-metrics="true">
           <text>{{ panel.latencyLabel }}</text><text>{{ panel.costLabel }}</text>
         </view>
-        <text v-if="!panel.state.messages.length && !panel.content && !panel.running && !panel.error" class="text-sm">
+        <text v-if="!panel.state.messages.length && !panel.hasMessage && !panel.running && !panel.error" class="text-sm">
           尚无比较结果
         </text>
-        <AgentConversation :messages="panel.state.messages" />
+        <AgentConversation :messages="panel.state.messages" :context-messages="panel.contextMessages" />
         <view :data-compare-output="panel.id">
-          <AgentStream v-if="panel.running" :content="panel.content" status="streaming" />
-          <AgentMarkdown v-else-if="panel.content" :content="panel.content" :final="true" />
+          <AgentEventRenderer
+            v-if="panel.state.snapshot"
+            :snapshot="panel.state.snapshot"
+            :retryable="false"
+            @approve="emit('approve', { side: panel.id, interruptId: $event })"
+            @reject="emit('reject', { side: panel.id, interruptId: $event })"
+            @retry="retry(panel.id)"
+            @retryInterrupts="emit('retryInterrupts', panel.id)"
+            @cancelInterrupts="emit('cancelInterrupts', panel.id)"
+          />
         </view>
-        <text v-if="panel.error" class="whitespace-pre-wrap break-words text-sm" role="alert">
+        <text v-if="panel.error && panel.error !== panel.snapshotError" class="whitespace-pre-wrap break-words text-sm" role="alert">
           {{ panel.error }}
         </text>
         <view class="flex flex-wrap gap-2">

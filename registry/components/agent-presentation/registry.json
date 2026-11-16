@@ -4,7 +4,7 @@
   "title": "Agent Presentation",
   "description": "Pure presentation contracts and helpers shared by Agent renderers without provider or execution policy.",
   "targets": ["h5", "weapp"],
-  "dependencies": ["@varo-ui/ai"],
+  "dependencies": ["@varo-ui/ai", "@tanstack/ai-client"],
   "registryDependencies": [],
   "files": [
     { "target": "h5", "from": "registry/components/agent-ui/types.ts", "to": "src/components/agent-ui/types.ts" },

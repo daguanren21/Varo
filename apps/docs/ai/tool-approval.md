@@ -18,6 +18,8 @@ import { AgentToolApproval } from '@/components/agent-ui'
 </template>
 ```
 
+该卡片只发送应用意图；`remember` 只表示用户选择，不会持久化权限，也不会自动批准后续操作。接入 TanStack 工具审批时，应用必须保存与卡片对应的 interrupt ID，并从 SDK 当前 `getInterrupts()` 找到可解析的 `tool-approval`，将允许/拒绝映射为 `resolveInterrupt(true)` / `resolveInterrupt(false)`。业务授权、记忆策略和工具执行归应用与服务端。需要直接携带 interrupt ID 的渲染器契约见 [AgentEventRenderer](./event-renderer)。
+
 ## Props
 
 | Prop          | Type                 | Default    | 说明     |

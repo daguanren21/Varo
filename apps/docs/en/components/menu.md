@@ -5,7 +5,7 @@
 <PlatformTabsDemo example="menu" locale="en" />
 
 ::: info Native compound runtime boundary
-The Mini Program tab runs components compiled with `weapp-vite` / `wevu` 7.5.0 and uses the corresponding H5 filter example. The [upstream plain-slot context implementation](https://github.com/weapp-vite/weapp-vite/pull/1174) applies to compiled Wevu components on WeChat using default attached setup. Browser preview does not replace IDE or device validation.
+The Mini Program tab runs `weapp-vite` / `wevu` 7.10.0 artifacts. Plain-slot context on WeChat requires both `nativeSlotContext: true` and `scopedSlotsRequireProps: true`, with default attached setup. The current compiled-native browser host has exercised pointer opening, overflowed option selection, and parent-value updates; see `apps/e2e/tests/weapp-preview/preview.e2e.ts`. These results do not replace WeChat IDE/device validation or establish created-setup or other-platform support.
 
 Card leaves descendant popups unclipped by default. Use explicit `overflow-hidden` when you need to clip media, and keep menus that need to overflow outside clipped containers.
 :::

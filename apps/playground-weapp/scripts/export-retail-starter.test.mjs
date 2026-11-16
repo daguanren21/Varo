@@ -2,7 +2,6 @@
 
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { createHash } from 'node:crypto'
 import { cp, lstat, mkdir, mkdtemp, readdir, readFile, readlink, realpath, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, resolve } from 'node:path'
@@ -34,10 +33,8 @@ async function sourceGraphFixture(t = { onTestFinished }, packages = []) {
   await mkdir(resolve(app, 'scripts'), { recursive: true })
   await symlink(resolve(repositoryRoot, 'node_modules'), resolve(repository, 'node_modules'), 'dir')
   await symlink(resolve(playgroundRoot, 'node_modules'), resolve(app, 'node_modules'), 'dir')
-  await mkdir(resolve(repository, 'packages/ui-weapp/patches'), { recursive: true })
+  await mkdir(resolve(repository, 'packages'), { recursive: true })
   await symlink(resolve(repositoryRoot, 'packages/cli'), resolve(repository, 'packages/cli'), 'dir')
-  const patchPath = 'packages/ui-weapp/patches/weapp-vite@7.5.0.patch'
-  await cp(resolve(repositoryRoot, patchPath), resolve(repository, patchPath))
   await symlink(resolve(repositoryRoot, 'scripts'), resolve(repository, 'scripts'), 'dir')
   for (const filename of ['export-retail-starter.mjs', 'convert-retail-vue.mjs', 'css-references.mjs']) {
     await cp(resolve(playgroundRoot, 'scripts', filename), resolve(app, 'scripts', filename))
@@ -113,7 +110,7 @@ async function sourceGraphFixture(t = { onTestFinished }, packages = []) {
     'Fixture source revision',
   ], { cwd: repository })
   const run = () => execute(process.execPath, ['scripts/export-retail-starter.mjs', destination], { cwd: app, timeout: 60_000 })
-  return { root, repository, app, destination, assets, patchPath, write, run }
+  return { root, repository, app, destination, assets, write, run }
 }
 
 it('occupied destination preserves existing nested files and directory identity', async (t) => {
@@ -204,8 +201,8 @@ it('Taro selection rejects occupied and symlink destinations before creating sta
   assert.deepEqual((await readdir(root)).sort(), ['linked', 'occupied'])
 })
 
-it('exports exact CSS dependencies and canonical compiler patch bytes with provenance', async (t) => {
-  const { repository, app, destination, assets, patchPath, run } = await sourceGraphFixture(t)
+it('exports exact CSS dependencies with provenance', async (t) => {
+  const { app, destination, assets, run } = await sourceGraphFixture(t)
   await run()
   const manifest = JSON.parse(await readFile(resolve(destination, 'starter-manifest.json'), 'utf8'))
   const paths = new Set(manifest.files.map(file => file.path))
@@ -214,12 +211,6 @@ it('exports exact CSS dependencies and canonical compiler patch bytes with prove
     assert.deepEqual(await readFile(resolve(destination, path)), await readFile(resolve(app, path)))
   }
   assert.ok((await readFile(resolve(destination, 'src/app.vue'), 'utf8')).includes(await readFile(resolve(app, 'src/app.vue'), 'utf8')))
-  const patch = await readFile(resolve(repository, patchPath))
-  const patchDigest = createHash('sha256').update(patch).digest('hex')
-  assert.deepEqual(await readFile(resolve(destination, 'patches/weapp-vite@7.5.0.patch')), patch)
-  assert.equal(manifest.files.find(file => file.path === 'patches/weapp-vite@7.5.0.patch')?.sha256, patchDigest)
-  assert.equal(manifest.sourceFiles.find(file => file.path === patchPath)?.sha256, patchDigest)
-  await assert.rejects(lstat(resolve(app, 'starter/patches')), { code: 'ENOENT' })
   assert.equal(paths.has('src/assets/unreferenced.svg'), false)
   assert.equal(paths.has('src/themes/unreferenced.css'), false)
   assert.ok((await readFile(resolve(destination, 'pnpm-lock.yaml'), 'utf8')).includes('lockfileVersion:'))
@@ -331,15 +322,3 @@ it.each([
   assert.deepEqual(await readdir(root), ['source'])
 }, 60_000)
 
-it.each(['missing', 'symlink'])('rejects a %s canonical compiler patch before publication', async (kind) => {
-  const { root, repository, destination, patchPath, run } = await sourceGraphFixture()
-  await rm(resolve(repository, patchPath))
-  if (kind === 'symlink') { await symlink(resolve(repositoryRoot, patchPath), resolve(repository, patchPath)) }
-  await assert.rejects(run(), (error) => {
-    assert.ok(error.stderr.includes('weapp-vite@7.5.0.patch'))
-    assert.ok(error.stderr.includes(kind === 'missing' ? 'ENOENT' : 'non-symlink'))
-    return true
-  })
-  await assert.rejects(lstat(destination), { code: 'ENOENT' })
-  assert.deepEqual(await readdir(root), ['source'])
-}, 60_000)

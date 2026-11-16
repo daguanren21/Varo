@@ -51,7 +51,7 @@ Both renderers check whether `modelValue` is supplied. With only `:model-value="
 
 Native input remains editable while `busy` but cannot submit; `disabled` also blocks editing. H5 disables input while busy. Native playground `pages/chat-prompt/index` uses native components to demonstrate local drafts, parent rejection/acceptance, external reset, and draft retention while busy, without jsdom layout simulation.
 
-This example only stores local messages; it does not connect a model. Wire `newConversation` and `close` to real application state transitions. When supplying `busy` and a streaming `snapshot`, also wire `stop` to cancel the producer/network operation. Disabled input does not disable stopping an active operation. The Block follows content growth only within 64px of the bottom and preserves the position while reading above.
+This example stores static local messages only and does not connect a model. For active chat, TanStack AI owns messages and abort. Pass the actual `ChatClientSnapshot` from `client.getSnapshot()` / its subscription to `snapshot`. Derive `busy` from SDK `isLoading`, pending `interruptState.interrupts`, and `interruptState.resuming`, without writing display states into the SDK. Wire `submit`, `stop`, and `retry` to SDK `sendMessage`, `stop`, and `reload`; the application decides new-conversation and close policy. Do not add a UI reducer. `messages` keeps the static-history presentation contract, not a second active transcript. Disabled input does not disable stopping active work. The Block follows content growth only within 64px of the bottom and preserves the position while reading above. See the [AI guide](./index) and [AgentEventRenderer](./event-renderer).
 
 ## Props
 
@@ -64,8 +64,8 @@ This example only stores local messages; it does not connect a model. Wire `newC
 | `layout`          | `'panel' \| 'page'`          | `'panel'`    | Panel or page layout                                               |
 | `history`         | `AgentChatHistoryItem[]`     | `[]`         | Application-supplied `{ id, title }` history entries               |
 | `activeHistoryId` | `string`                     | `—`          | Currently selected entry                                           |
-| `messages`        | `AgentConversationMessage[]` | `[]`         | Messages                                                           |
-| `snapshot`        | `AgentStreamSnapshot`        | `—`          | Snapshot                                                           |
+| `messages` | `readonly AgentConversationEntry[]` | `[]` | Static messages or SDK history with intact parts |
+| `snapshot`        | `ChatClientSnapshot`         | `—`          | Actual TanStack SDK snapshot, not a display-state object            |
 | `subtitle`        | `string`                     | `—`          | Subtitle                                                           |
 | `suggestions`     | `string[]`                   | `[]`         | Suggestions                                                        |
 | `title`           | `string`                     | `Varo Agent` | Title                                                              |
@@ -74,15 +74,19 @@ This example only stores local messages; it does not connect a model. Wire `newC
 
 | Event               | Payload  | Description                                                                                 |
 | ------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `approve`           | `string` | Approve                                                                                     |
+| `approve`           | `string` | Request approval of this interrupt ID; application resolves the SDK interrupt                |
 | `close`             | `void`   | Close                                                                                       |
 | `historySelect`     | `string` | Ask the application to select a history id; blocked while busy/disabled or already selected |
 | `newConversation`   | `void`   | Ask the application to clear the current conversation                                       |
 | `stop`              | `void`   | Ask the application to cancel generation (shown only while busy)                            |
-| `reject`            | `void`   | Reject                                                                                      |
+| `reject`            | `string` | Request denial of this interrupt ID; application resolves the SDK interrupt                  |
 | `retry`             | `void`   | Retry                                                                                       |
+| `retryInterrupts` | `void` | Retry the current recoverable approval transaction, not regeneration |
+| `cancelInterrupts` | `void` | Cancel the current interrupt transaction |
 | `submit`            | `string` | Submit                                                                                      |
 | `update:modelValue` | `string` | Update prompt                                                                               |
+
+The application finds that ID with `kind === 'tool-approval'` in `client.getInterrupts()`, checks eligibility, then calls `resolveInterrupt(true)` / `resolveInterrupt(false)`. The UI does not substitute a choice value or tool name for the interrupt ID, perform requests, or execute tools. Business authorization remains with the application and server.
 
 ::: info Target notes
 

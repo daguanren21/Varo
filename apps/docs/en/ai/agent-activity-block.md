@@ -29,7 +29,7 @@ import type { AgentActivityItem, AgentActivityStatus } from '@/components/agent-
 import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks/agent-activity-actions'
 ```
 
-`AgentActivityStatus` contains `queued | running | waiting | failed | cancelled | completed` and is used only for display. `AgentActivityItem.status` uses this type. Existing waiting/running/failed/completed callers remain valid; the core `AgentPartStatus` protocol is unchanged.
+`AgentActivityStatus` contains `queued | running | waiting | failed | cancelled | completed` for display only. `AgentActivityItem.status` uses this type. General `AgentPartStatus` (`waiting | running | completed | failed`) is also a Registry display type in `components/agent-ui/types`, not a core protocol or TanStack SDK state.
 
 `AgentActivityTask extends AgentActivityItem`, retaining `id`, `title`, `kind`, `detail?`, `duration?` and `status`, and adding only:
 
@@ -104,4 +104,4 @@ H5 playground `/?demo=activity` and native `pages/agent-activity-demo/index` use
 
 `Restrict start` / `Allow start`, global disabling, per-item locking, and terminal rows show how current props affect available actions. `Reject next request` makes the application reject the next otherwise legal request, leaving state unchanged. `Clear activity` supplies a controlled empty array. Tests observe labels, controls, results, and request counts through live page interactions rather than copies of the source logic.
 
-E2E scenarios are in `apps/e2e/tests/h5/activity.e2e.ts` and `apps/e2e/tests/weapp-native/activity.e2e.ts`. Native buttons depend on the unreleased Wevu plain-slot protocol, and the host has observation limits. These remain verification limits; simulated text, DOM geometry, or compilation cannot replace real-device evidence.
+E2E scenarios are in `apps/e2e/tests/h5/activity.e2e.ts` and `apps/e2e/tests/weapp-native/activity.e2e.ts`. Native 7.10.0 plain-slot context requires explicit `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` on the WeChat target. Configuration and an upgrade alone do not establish a passing scenario. Host observation limits remain; simulated text, DOM geometry, or compilation cannot replace real-device evidence.

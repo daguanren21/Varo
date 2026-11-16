@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import type { TextStreamSnapshot } from '@varo-ui/ai'
+import type { StreamChunk } from '@tanstack/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
 import type { AgentDiffLine } from '../../components/agent-ui/file-diff'
 import type { AgentContextSource } from '../../components/agent-ui/workspace-types'
 import type { MenuName } from '../../components/ui/menu-context'
-import { createTextStream } from '@varo-ui/ai'
+import { EventType } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
+import { agentMessageText } from '../../components/agent-ui/presentation'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 import AgentComposerScope from '../../components/agent-ui/AgentComposerScope.vue'
 import AgentFileDiff from '../../components/agent-ui/AgentFileDiff.vue'
@@ -74,17 +77,17 @@ const markdownSample = [
 const streamChunks = [
   '## 流式结论\n\n',
   '当前内容由 ',
-  '`@varo-ui/ai` ',
-  '的真实 text stream controller 分段提交。\n\n',
-  '- “停止”会暂停控制器并保留已显示内容。\n',
-  '- “继续”从剩余生产分片恢复。\n',
+  '`TanStack ChatClient` ',
+  '消费标准 AG-UI 本地分片。这里不连接模型或网络。\n\n',
+  '- “停止”由 SDK 中止生产器并保留已显示内容。\n',
+  '- “继续”开启本地后续轮次，追加剩余生产分片。\n',
   '- “从头重播”会重置内容和节奏。\n\n',
   '| 阶段 | 可观察结果 |\n',
   '| --- | --- |\n',
   '| streaming | AgentStream 显示逐步增长的文本 |\n',
   '| completed | AgentStream 切换到现有 Markdown 渲染 |\n\n',
   '```ts\n',
-  'controller.finish()\n',
+  'client.stop()\n',
   '```\n',
 ] as const
 
@@ -95,22 +98,32 @@ const streamPhase = shallowRef<StreamPhase>('idle')
 const producerChunkIndex = shallowRef(0)
 const lastStreamAction = shallowRef('等待点击“开始流式内容”')
 
-const textStream = createTextStream({
-  maxCharsPerCommit: 5,
-  maxCharsPerSecond: 120,
-  maxCommitFps: 20,
-  minCharsPerSecond: 24,
-  startDelayMs: 80,
-  targetLatencyMs: 1200,
-})
-const streamSnapshot = shallowRef<TextStreamSnapshot>(textStream.getSnapshot())
-let producerTimer: ReturnType<typeof setTimeout> | undefined
 let cleanedUp = false
-
-const unsubscribeStream = textStream.subscribe(() => {
-  const snapshot = textStream.getSnapshot()
-  streamSnapshot.value = snapshot
-  if (snapshot.final && streamPhase.value === 'streaming') {
+const client = new ChatClient({ threadId: 'varo-native-stream-preview', connection: stream(async function* (_messages, _data, signal, input): AsyncGenerator<StreamChunk> {
+  const id = `preview-${input.runId}`
+  yield { type: EventType.RUN_STARTED, threadId: input.threadId, runId: input.runId }
+  yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
+  while (producerChunkIndex.value < streamChunks.length) {
+    await new Promise<void>((resolve) => {
+      const finish = () => { clearTimeout(timer); signal?.removeEventListener('abort', finish); resolve() }
+      const timer = setTimeout(finish, 110)
+      signal?.addEventListener('abort', finish, { once: true })
+      if (signal?.aborted) { finish() }
+    })
+    if (signal?.aborted) { return }
+    const delta = streamChunks[producerChunkIndex.value]!
+    producerChunkIndex.value += 1
+    yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: id, delta }
+  }
+  yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
+  yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
+}) })
+const streamSnapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+const streamContent = computed(() => streamSnapshot.value.messages.filter(message => message.role === 'assistant').map(message => agentMessageText(message)).join(''))
+const streamFinal = computed(() => streamPhase.value === 'completed')
+const unsubscribeStream = client.subscribeSnapshot(() => {
+  streamSnapshot.value = client.getSnapshot()
+  if (!streamSnapshot.value.isLoading && streamPhase.value === 'streaming' && producerChunkIndex.value === streamChunks.length) {
     streamPhase.value = 'completed'
     lastStreamAction.value = '流式内容播放完成'
   }
@@ -129,9 +142,9 @@ const startButtonLabel = computed(() => streamPhase.value === 'stopped' ? '继�
 const startButtonDisabled = computed(() => streamPhase.value === 'streaming')
 const stopButtonDisabled = computed(() => streamPhase.value !== 'streaming')
 const streamProgressLabel = computed(() => `生产分片：${producerChunkIndex.value} / ${streamChunks.length}`)
-const streamBufferLabel = computed(() => `待显示字符：${streamSnapshot.value.pendingChars}`)
-const streamFinalLabel = computed(() => `final：${String(streamSnapshot.value.final)}`)
-const streamDiagnostic = computed(() => `phase=${streamPhase.value};chunks=${producerChunkIndex.value}/${streamChunks.length};pending=${streamSnapshot.value.pendingChars};final=${String(streamSnapshot.value.final)}`)
+const streamBufferLabel = computed(() => `剩余分片：${streamChunks.length - producerChunkIndex.value}`)
+const streamFinalLabel = computed(() => `final：${String(streamFinal.value)}`)
+const streamDiagnostic = computed(() => `phase=${streamPhase.value};chunks=${producerChunkIndex.value}/${streamChunks.length};pending=${streamChunks.length - producerChunkIndex.value};final=${String(streamFinal.value)};sdk=${streamSnapshot.value.status}`)
 
 function recordMarkdownLink(href: string) {
   markdownLinkCount.value += 1
@@ -142,78 +155,44 @@ function recordMarkdownError(message: string) {
   markdownErrorOutput.value = `Markdown 错误：${message}`
 }
 
-function clearProducerTimer() {
-  clearTimeout(producerTimer)
-  producerTimer = undefined
-}
-
-function produceNextChunk() {
-  producerTimer = undefined
-  if (streamPhase.value !== 'streaming') {
-    return
-  }
-
-  const chunk = streamChunks[producerChunkIndex.value]
-  if (chunk === undefined) {
-    textStream.finish()
-    return
-  }
-
-  textStream.enqueue(chunk)
-  producerChunkIndex.value += 1
-  if (producerChunkIndex.value >= streamChunks.length) {
-    textStream.finish()
-  }
-  else if (streamPhase.value === 'streaming') {
-    producerTimer = setTimeout(produceNextChunk, 110)
-  }
-}
-
 function beginStream(action: string) {
-  clearProducerTimer()
-  textStream.reset()
+  client.stop()
+  client.clear()
   producerChunkIndex.value = 0
   streamPhase.value = 'streaming'
   lastStreamAction.value = action
-  produceNextChunk()
+  void client.sendMessage('开始本地流式内容')
 }
 
 function startStream() {
-  if (streamPhase.value === 'streaming') {
-    return
-  }
+  if (cleanedUp || streamPhase.value === 'streaming') { return }
   if (streamPhase.value === 'stopped') {
     streamPhase.value = 'streaming'
     lastStreamAction.value = '继续播放剩余流式内容'
-    textStream.resume()
-    produceNextChunk()
+    void client.sendMessage('继续本地流式内容')
     return
   }
   beginStream('开始新的流式内容')
 }
 
 function stopStream() {
-  if (streamPhase.value !== 'streaming') {
-    return
-  }
+  if (streamPhase.value !== 'streaming') { return }
   streamPhase.value = 'stopped'
   lastStreamAction.value = '已停止；内容和生产进度已保留'
-  clearProducerTimer()
-  textStream.pause()
+  client.stop()
 }
 
 function replayStream() {
-  beginStream('从头重播流式内容')
+  if (!cleanedUp) { beginStream('从头重播流式内容') }
 }
 
 function cleanup() {
-  if (cleanedUp) {
-    return
-  }
+  if (cleanedUp) { return }
   cleanedUp = true
-  clearProducerTimer()
+  client.stop()
   unsubscribeStream()
-  textStream.destroy()
+  client.detach()
+  client.dispose()
 }
 
 onUnload(cleanup)
@@ -227,7 +206,7 @@ onUnmounted(cleanup)
         Wevu 原生 Agent 预览
       </text>
       <text class="text-xs leading-5 text-slate-300">
-        使用现有 AgentMarkdown、AgentStream 与 @varo-ui/ai；这不是微信客户端模拟器，也不调用登录、支付或业务 API。
+        使用现有 AgentMarkdown、AgentStream 与 TanStack ChatClient；这不是微信客户端模拟器，也不调用登录、支付或业务 API。
       </text>
     </view>
 
@@ -265,14 +244,14 @@ onUnmounted(cleanup)
         AgentStream 真实节奏
       </template>
       <template #description>
-        本地生产器分片送入 text stream controller；完成后沿用 AgentStream 当前的 Markdown 切换行为。
+        本地生产器通过标准 AG-UI 分片更新 SDK 快照；完成后沿用 AgentStream 当前的 Markdown 切换行为。
       </template>
 
       <view class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
         <view class="min-h-40 rounded-xl border border-[var(--varo-ui-border)] bg-[var(--varo-ui-fill)] p-3">
           <AgentStream
-            :content="streamSnapshot.visible"
-            :final="streamSnapshot.final"
+            :content="streamContent"
+            :final="streamFinal"
             :status="agentStreamStatus"
           />
         </view>

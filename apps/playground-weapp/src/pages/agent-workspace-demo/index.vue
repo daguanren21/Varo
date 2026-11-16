@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AgentThreadVersion, AgentToolPart } from '@varo-ui/ai'
-import type { AgentConversationMessage, AgentTask } from '../../components/agent-ui/types'
+import type { AgentThreadVersion } from '@varo-ui/ai'
+import type { AgentConversationMessage, AgentTask, AgentToolPart } from '../../components/agent-ui/types'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 import AgentToolChip from '../../components/agent-ui/AgentToolChip.vue'
 import AgentWorkspace from '../../components/blocks/agent-workspace.vue'

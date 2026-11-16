@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 
 import type { VueWrapper } from '@vue/test-utils'
+import type { AgentDemoController } from './features/useAgentDemo'
 import { mount } from '@vue/test-utils'
 import { computeAccessibleName } from 'dom-accessibility-api'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import AgentAssistantSheet from './components/blocks/agent-assistant-sheet.vue'
 import AgentChat from './components/blocks/agent-chat.vue'
+import { agentCurrentMessage, agentMessageText } from './components/agent-ui/presentation'
 import ChatBlocksDemo from './features/ChatBlocksDemo.vue'
 import { useAgentDemo } from './features/useAgentDemo'
 
@@ -178,7 +180,31 @@ describe('assistant sheet contracts', () => {
 })
 
 describe('real local demo state', () => {
-  it('cancels the existing local event-channel demo through the same stop intent', async () => {
+  it.each(['approve', 'reject'] as const)('preserves the real SDK %s receipt and historical tool input', async (decision) => {
+    vi.useFakeTimers()
+    let demo!: AgentDemoController
+    const wrapper = mount(defineComponent({ setup() { demo = useAgentDemo(); return () => h('div') } }))
+    mounted.push(wrapper)
+    demo.send('生成发布计划')
+    await vi.runAllTimersAsync()
+    const approval = demo.snapshot.value.interruptState.interrupts[0]!
+    if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+    expect(approval.id).not.toBe(approval.toolCallId)
+    const beforeRetry = demo.snapshot.value.messages
+    demo.retry()
+    expect(demo.snapshot.value.messages).toBe(beforeRetry)
+    demo[decision](approval.id)
+    await vi.runAllTimersAsync()
+    const parts = demo.snapshot.value.messages.flatMap(message => message.parts)
+    expect(parts.filter(part => part.type === 'tool-call').find(part => part.id === approval.toolCallId)?.state).toBe(decision === 'approve' ? 'complete' : 'error')
+    expect(parts.filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)?.state).toBe(decision === 'approve' ? 'complete' : 'error')
+    demo.send('下一条消息')
+    await vi.runAllTimersAsync()
+    expect(demo.messages.value.some(message => message.parts.some(part => part.type === 'tool-call' && part.id === approval.toolCallId))).toBe(true)
+    expect(demo.messages.value.some(message => message.parts.some(part => part.type === 'tool-result' && part.toolCallId === approval.toolCallId))).toBe(true)
+  })
+
+  it('stops the TanStack chat through the same stop intent', async () => {
     vi.useFakeTimers()
     const wrapper = mount(defineComponent({
       setup() {
@@ -200,16 +226,17 @@ describe('real local demo state', () => {
     await button(wrapper, '停止生成').trigger('click')
     const chat = wrapper.findComponent(AgentChat)
     const stopped = chat.props('snapshot')
-    expect(stopped?.status).toBe('cancelled')
+    expect(stopped?.status).toBe('ready')
     await vi.advanceTimersByTimeAsync(5000)
-    expect(chat.props('snapshot')).toEqual(stopped)
+    expect(chat.props('snapshot')?.messages).toEqual(stopped?.messages)
+    expect(chat.props('snapshot')).toMatchObject({ status: 'ready', isLoading: false })
     await button(wrapper, '新建会话').trigger('click')
-    expect(chat.props('snapshot')?.status).toBe('idle')
+    expect(chat.props('snapshot')?.status).toBe('ready')
     expect(chat.props('messages')).toEqual([])
     expect(chat.text()).toContain('有什么可以帮你？')
   })
 
-  it('cancels production and the actual stream controller, retaining a stable stopped state', async () => {
+  it('stops generation and retains stable SDK state without later chunks', async () => {
     vi.useFakeTimers()
     const wrapper = mount(ChatBlocksDemo)
     mounted.push(wrapper)
@@ -219,7 +246,7 @@ describe('real local demo state', () => {
     await button(wrapper, '禁用输入').trigger('click')
     await button(wrapper, '停止生成').trigger('click')
     const stopped = wrapper.get('[data-chat-demo="state"]').text()
-    expect(stopped).toContain('status=cancelled')
+    expect(stopped).toContain('status=ready')
     expect(stopped).toContain('action=stopped')
     await vi.advanceTimersByTimeAsync(5000)
     expect(wrapper.get('[data-chat-demo="state"]').text()).toBe(stopped)
@@ -249,16 +276,17 @@ describe('real local demo state', () => {
     await wrapper.get('.agent-composer button[aria-label="发送"]').trigger('click')
     await vi.advanceTimersByTimeAsync(5000)
     const chat = wrapper.findComponent(AgentChat)
-    const answer = chat.props('snapshot')?.message?.source
-    expect(chat.props('snapshot')?.status).toBe('completed')
+    const answer = agentMessageText(agentCurrentMessage(chat.props('snapshot')!))
+    expect(chat.props('snapshot')?.status).toBe('ready')
     expect(answer).toContain('建议草稿：先说明目标')
     await button(wrapper, '演示错误').trigger('click')
-    expect(chat.props('snapshot')?.status).toBe('failed')
-    expect(chat.props('snapshot')?.message).toBeUndefined()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(chat.props('snapshot')?.status).toBe('error')
+    expect(agentMessageText(agentCurrentMessage(chat.props('snapshot')!))).toBe('')
     await button(wrapper, '新建会话').trigger('click')
     await button(wrapper, '保留这次回答').trigger('click')
-    expect(chat.props('snapshot')?.status).toBe('idle')
-    expect(chat.props('messages')?.filter(message => message.role === 'assistant').map(message => message.content)).toEqual([answer])
+    expect(chat.props('snapshot')?.status).toBe('ready')
+    expect(chat.props('messages')?.filter(message => message.role === 'assistant').map(message => 'parts' in message ? agentMessageText(message) : message.content)).toEqual([answer])
     expect(chat.text()).toContain(answer)
   })
 
@@ -279,7 +307,7 @@ describe('real local demo state', () => {
     await button(wrapper, '打开助手').trigger('click')
     await button(wrapper, '写一段建议').trigger('click')
     await vi.advanceTimersByTimeAsync(5000)
-    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=completed')
+    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=ready')
     await button(wrapper, '插入到草稿').trigger('click')
     expect(wrapper.get('[data-chat-demo="draft"]').text()).toContain('建议草稿：先说明目标')
     await button(wrapper, '写一段建议').trigger('click')
@@ -294,14 +322,16 @@ describe('real local demo state', () => {
     mounted.push(wrapper)
     await button(wrapper, '禁用输入').trigger('click')
     await button(wrapper, '写一段建议').trigger('click')
-    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=idle')
+    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=ready')
     await button(wrapper, '启用输入').trigger('click')
     await button(wrapper, '演示错误').trigger('click')
-    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=failed')
+    await vi.advanceTimersByTimeAsync(0)
+    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=error')
     expect(wrapper.text()).toContain('演示错误：请重试本地生成。')
     await button(wrapper, '重试').trigger('click')
+    await vi.advanceTimersByTimeAsync(0)
     expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=streaming')
     await vi.advanceTimersByTimeAsync(5000)
-    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=completed')
+    expect(wrapper.get('[data-chat-demo="state"]').text()).toContain('status=ready')
   })
 })

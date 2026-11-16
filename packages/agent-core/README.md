@@ -1,6 +1,6 @@
 # @varo-ui/ai
 
-Agent event types, SSE/chunk decoding, a streaming controller, and a safe Markdown view model for Varo applications. The protocol is independent of the model provider.
+Safe Markdown models, text pacing, and thread-version helpers for Varo applications. This package does not own chat events, transport, active messages, tool execution, or approvals. Import TanStack AI directly for those contracts.
 
 ## Install
 
@@ -10,23 +10,57 @@ pnpm add @varo-ui/ai
 
 ## Usage
 
-For a chunked request made by your application, feed incoming bytes to the transport and connect its event stream to the controller:
+Parse progressively received text without introducing a chat protocol:
 
 ```ts
-import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
+import { createStreamingMarkdownParser } from '@varo-ui/ai'
 
-const transport = createAgentSseEventSource()
-const controller = createAgentStreamController()
-
-requestTask.onChunkReceived(({ data }) => transport.feed(data))
-await controller.connect(transport.source)
+const parser = createStreamingMarkdownParser()
+const nodes = parser.parse('## Answer\n\nIncremental text', { final: false })
+const finalNodes = parser.parse('## Answer\n\nComplete text.', { final: true })
+parser.reset()
 ```
 
-`connect()` manages the iterator: a protocol `done` or `error` event settles the connection and requests iterator cleanup. If the iterator ends naturally, the controller produces `done`.
+`createTextStream` provides presentation-only text pacing. H5 uses Markstream scheduling; native renderers use timed frames. This does not replace the SDK's message state or determine whether a network run finished. The package root and `@varo-ui/ai/source` expose the retained Markdown, text-pacing, and thread APIs, not a private protocol or transport.
 
-Call `transport.end()` when the request completes normally, or `transport.fail(error)` when it fails. During teardown, unsubscribe UI listeners and call `controller.destroy()`. Canceling the controller closes its iterator and ends local streaming. Your application still handles network aborts, purchase approval, tool execution, and retry decisions.
+## Chat state belongs to TanStack AI
 
-Import the compiled protocol and controller API from the package root, or use the source entry `@varo-ui/ai/source`. Both provide data and control APIs, without a provider SDK or renderer. Shared presentation types and helpers are in the Registry's `agent-presentation` unit; H5 and native sources handle their own rendering and lifecycle.
+- H5: `useChat` from `@tanstack/ai-vue`.
+- Native: `ChatClient` from `@tanstack/ai-client`, subscribed through Wevu reactivity; never use the Vue binding in native product code.
+- Messages and events: upstream `UIMessage` and AG-UI `StreamChunk` from `@tanstack/ai`. Snapshot props take `ChatClientSnapshot` from `@tanstack/ai-client`, obtained with `client.getSnapshot()`; do not construct a Varo-shaped replacement.
+- SDK statuses are `ready | submitted | streaming | error`. Registry `AgentStreamStatus` / `AgentPartStatus` are display projections, not SDK state or wire enums. `AgentToolPart`, `AgentChoice`, and `AgentConversationMessage` also belong to installed `components/agent-ui/types`, not this package. Static history remains a presentation API.
+
+The migration baseline is `@tanstack/ai` 1.4.0, `@tanstack/ai-client` 1.1.0, and `@tanstack/ai-vue` 1.0.1. There are no compatibility exports for the removed event/controller/channel/SSE/parser APIs.
+
+For `weapp-vite` / `wevu` 7.10.0, use Node `^22.23.4 || ^24.22.1 || >=26.12.1` and enable the published Web Runtime in your compiler configuration:
+
+```ts
+import { defineConfig } from 'weapp-vite/config'
+
+export default defineConfig({
+  weapp: {
+    platform: 'weapp',
+    vue: {
+      enable: true,
+      template: { nativeSlotContext: true, scopedSlotsRequireProps: true },
+    },
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
+  },
+})
+```
+
+On WeChat, the explicit `nativeSlotContext` / `scopedSlotsRequireProps` options select 7.10.0's upstream native slot/app-shell implementation instead of the old compiler patch and bootstrap. Configuration alone does not prove current runtime behavior. Validate default attached setup independently; do not infer created-setup or other-profile support from it.
+
+Then use the SDK's standard `fetchServerSentEvents` adapter with an application-owned endpoint. Do not add a bespoke `wx.request` transport or duplicate Web API polyfills. The host must supply real response status, headers, and incremental chunks; this setting does not certify DevTools, devices, or other native profiles. See [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals).
+
+`AgentEventRenderer` approval/rejection events carry an interrupt ID. The application finds the matching `kind === 'tool-approval'` in `client.getInterrupts()` and calls its `resolveInterrupt(true)` / `resolveInterrupt(false)` when eligible. Authorization, provider credentials, business execution, retry policy, and server-side cancellation propagation stay application-owned; the SDK owns active messages and request abort. See [TanStack client](https://tanstack.com/ai/latest/docs/api/ai-client), [Vue](https://tanstack.com/ai/latest/docs/api/ai-vue), [AG-UI events](https://tanstack.com/ai/latest/docs/chat/stream-events), and [tool approval](https://tanstack.com/ai/latest/docs/tools/tool-approval).
+
+The Registry's `agent-presentation` unit owns pure display helpers, including `agentMessageText(message: UIMessage | undefined): string` and `agentCurrentMessage(snapshot: ChatClientSnapshot): UIMessage | undefined`. Import them from installed `components/agent-ui/presentation`; they do not reduce events or execute tools.
 
 ### Markdown runtime portability
 
@@ -47,7 +81,7 @@ thread.fork('root', { id: 'verified', label: 'Verified branch' })
 thread.select('root')
 ```
 
-The controller stores versions in an immutable, acyclic graph. `append()` and `fork()` select the new version. Invalid ids, missing parents, cycles, and changes after destruction fail immediately.
+The helper stores versions in an immutable, acyclic graph. `append()` and `fork()` select the new version. Invalid ids, missing parents, cycles, and changes after destruction fail immediately. This is an application-owned presentation graph, not the SDK's active transcript, AG-UI run state, or server persistence.
 
 ## Install presentation source separately
 

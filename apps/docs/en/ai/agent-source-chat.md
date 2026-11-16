@@ -122,7 +122,7 @@ export interface AgentSourceChatTicketIntent {
 }
 ```
 
-These types describe Block display and escalation, without changing core `AgentPartStatus`. The ticket `reason` must match `responseState`, and `question.trim()` must be nonempty. `sourceIds` records the application's request scope; the Block does not infer authorization from it.
+These types describe Block display and escalation only. `AgentPartStatus` is likewise a pure Registry display type in `components/agent-ui/types`, not a core protocol or SDK state. The ticket `reason` must match `responseState`, and `question.trim()` must be nonempty. `sourceIds` records the application's request scope; the Block does not infer authorization from it.
 
 ## Events and guards
 
@@ -152,4 +152,4 @@ Omitting `modelValue` differs from passing `''`. Native uses `type: null, value:
 - Manual flow: change source availability → request and manually finish a **demo** connection → explicitly enable its scope → ask a question → queued/reading → success, failure, empty, or out-of-scope → open the local cited original or request escalation.
 - Disabled actions preserve evidence. After escalation, the application removes the eligibility object and prevents another request. Switching to uncontrolled input demonstrates a local draft versus a controlled empty string.
 
-E2E scenarios in `apps/e2e/tests/h5/source-chat.e2e.ts` and `apps/e2e/tests/weapp-native/source-chat.e2e.ts` operate real controls and inspect page state, without private methods or `setData` input simulation. Native assertions cover text, receipt/citation controls, and local document previews; they do not establish headless access to Chat's rich-text body. The unreleased Wevu plain-slot protocol and host observation limits still require independent acceptance. Tests do not bypass them with context bridges, simulated geometry, or copied message text.
+E2E scenarios in `apps/e2e/tests/h5/source-chat.e2e.ts` and `apps/e2e/tests/weapp-native/source-chat.e2e.ts` operate real controls and inspect page state, without private methods or `setData` input simulation. Native assertions cover text, receipt/citation controls, and local document previews; they do not establish headless access to Chat's rich-text body. The 7.10.0 WeChat target requires explicit `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` for plain-slot context, followed by current runtime acceptance. Tests do not bypass host observation limits with context bridges, simulated geometry, or copied message text.

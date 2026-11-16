@@ -18,7 +18,7 @@
   "dependencies": {
     "@varo-ui/h5": "workspace:*",
     "@varo/weapp-web": "workspace:*",
-    "vue": "^3.5.43"
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "@varo/playground-weapp": "workspace:*",

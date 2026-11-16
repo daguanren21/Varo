@@ -1,4 +1,4 @@
-import type { AgentPartStatus } from '@varo-ui/ai'
+import type { AgentPartStatus } from './types'
 import type { PropType, VNodeChild } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type {

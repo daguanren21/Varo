@@ -77,6 +77,14 @@
       "disposition": "run"
     },
     {
+      "file": "tests/weapp-preview/preview.e2e.ts",
+      "titlePath": [
+        "preview native Dialog retains slot context through cancelable open and close"
+      ],
+      "target": "weapp-preview",
+      "disposition": "run"
+    },
+    {
       "file": "tests/weapp-preview/pull-refresh.e2e.ts",
       "titlePath": [
         "preview pull-refresh cancel, scroll gate, threshold and loading lifecycle"
@@ -281,6 +289,7 @@
     { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "branch select pin and disabled controls preserve application-owned versions"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "approval decisions and retry compute a local result without optimistic completion"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "busy cancel stops local work and requires a new approval"], "target": "weapp-headless", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "forwards parent state and child actions through the custom execution slot"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "six states expose state-appropriate actions"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "controlled start approval retry completion and cancellation follow legal sequences"], "target": "weapp-headless", "disposition": "run" },
     { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "current prop eligibility disabled items and empty activity reject unavailable actions"], "target": "weapp-headless", "disposition": "run" },
@@ -702,6 +711,7 @@
     { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "branch select pin and disabled controls preserve application-owned versions"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "approval decisions and retry compute a local result without optimistic completion"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "busy cancel stops local work and requires a new approval"], "target": "weapp-devtools", "disposition": "run" },
+    { "file": "tests/weapp-native/workspace.e2e.ts", "titlePath": ["native B2 Workspace", "forwards parent state and child actions through the custom execution slot"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "six states expose state-appropriate actions"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "controlled start approval retry completion and cancellation follow legal sequences"], "target": "weapp-devtools", "disposition": "run" },
     { "file": "tests/weapp-native/activity.e2e.ts", "titlePath": ["native B2 Activity Block", "current prop eligibility disabled items and empty activity reject unavailable actions"], "target": "weapp-devtools", "disposition": "run" },

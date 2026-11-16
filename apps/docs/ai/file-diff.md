@@ -16,10 +16,10 @@ import { AgentFileDiff } from '@/components/agent-ui'
 
 const view = shallowRef<AgentDiffView>('unified')
 const lines: AgentDiffLine[] = [
-  { content: '@@ -16,5 +16,6 @@ createAgentStream', type: 'hunk' },
-  { content: '  const status = shallowRef<\'idle\' | \'done\'>(\'idle\')', oldNumber: 17, type: 'remove' },
-  { content: '  const status = shallowRef<AgentStreamStatus>(\'streaming\')', newNumber: 17, type: 'add' },
-  { content: '  const scheduler = target === \'weapp\' ? \'time-slice\' : \'raf\'', newNumber: 18, type: 'add' },
+  { content: '@@ -16,5 +16,6 @@ renderSummary', type: 'hunk' },
+  { content: '  const phase = \'draft\'', oldNumber: 17, type: 'remove' },
+  { content: '  const phase = \'reviewed\'', newNumber: 17, type: 'add' },
+  { content: '  const title = \'Summary\'', newNumber: 18, type: 'add' },
   { collapsedLines: 18, content: '@@ More unchanged context', type: 'hunk' }
 ]
 </script>
@@ -27,7 +27,7 @@ const lines: AgentDiffLine[] = [
 <template>
   <AgentFileDiff
     v-model:view="view"
-    filename="src/runtime/create-agent-stream.ts"
+    filename="src/views/render-summary.ts"
     :lines="lines"
     @accept="applyChanges"
     @reject="discardChanges"

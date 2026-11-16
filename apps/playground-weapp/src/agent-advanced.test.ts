@@ -1,10 +1,16 @@
 // @vitest-environment jsdom
 
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot, ToolApprovalInterrupt } from '@tanstack/ai-client'
+import { toolDefinition } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentFineTuneControl } from './components/agent-ui/advanced-types'
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import AgentActivity from './components/agent-ui/AgentActivity.vue'
+import AgentApproval from './components/agent-ui/AgentApproval.vue'
+import AgentConversation from './components/agent-ui/AgentConversation.vue'
+import AgentInterruptControls from './components/agent-ui/AgentInterruptControls.vue'
+import { agentConversationHistory } from './components/agent-ui/presentation'
 import AgentCitations from './components/agent-ui/AgentCitations.vue'
 import AgentCodeBlock from './components/agent-ui/AgentCodeBlock.vue'
 import AgentCommandSearch from './components/agent-ui/AgentCommandSearch.vue'
@@ -25,6 +31,31 @@ import AgentSidebar from './components/agent-ui/AgentSidebar.vue'
 import AgentThinking from './components/agent-ui/AgentThinking.vue'
 import AgentToolApproval from './components/agent-ui/AgentToolApproval.vue'
 import AgentToolResult from './components/agent-ui/AgentToolResult.vue'
+
+const approvalTool = toolDefinition({ name: 'registry.inspect', description: 'Native UI approval fixture', needsApproval: true }).client()
+type ApprovalSnapshot = ChatClientSnapshot<Array<typeof approvalTool>, any>
+
+function chatSnapshot(update: Partial<ApprovalSnapshot> = {}): ApprovalSnapshot {
+  const client = new ChatClient({ threadId: 'native-ui-test', tools: [approvalTool], connection: stream(async function* () {}) })
+  const snapshot = client.getSnapshot()
+  client.dispose()
+  return { ...snapshot, ...update }
+}
+
+function approvalInterrupt(id = 'approval', generation = 1): ToolApprovalInterrupt<typeof approvalTool> {
+  return {
+    id, interruptId: id, reason: 'tool-approval', message: '确认发布',
+    kind: 'tool-approval', threadId: 'native-ui-test', interruptedRunId: 'run', generation,
+    status: 'pending', errors: [], canResolve: true,
+    toolName: 'registry.inspect', toolCallId: 'tool', originalArgs: {},
+    binding: {
+      v: 1, kind: 'tool-approval', interruptId: id, interruptedRunId: 'run', generation,
+      toolName: 'registry.inspect', toolCallId: 'tool', originalArgs: {},
+      inputSchemaHash: 'input', approvalSchemaHash: 'approval', responseSchemaHash: 'response',
+    },
+    cancel: vi.fn(), clearResolution: vi.fn(), resolveInterrupt: vi.fn(),
+  }
+}
 
 describe('advanced mini-program Agent UI', () => {
   it('keeps motion radio choices controlled', async () => {
@@ -58,14 +89,13 @@ describe('advanced mini-program Agent UI', () => {
   })
 
   it('renders streaming Agent text without a scoped-slot feedback loop', async () => {
-    const snapshot = {
-      data: [],
-      eventCount: 1,
-      message: { final: false, id: 'stream', role: 'assistant' as const, source: '正在处理', visible: '正在处理' },
-      reasoning: [{ content: '识别退货意图', id: 'intent', status: 'completed' as const, title: '理解请求' }],
-      status: 'streaming' as const,
-      tools: [],
-    }
+    const snapshot = chatSnapshot({
+      messages: [{ id: 'stream', role: 'assistant', parts: [
+        { type: 'thinking', content: '识别退货意图' },
+        { type: 'text', content: '正在处理' },
+      ] }],
+      status: 'streaming', isLoading: true,
+    })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     expect(wrapper.get('.agent-stream').text()).toContain('正在处理')
     expect(wrapper.find('.agent-markdown').exists()).toBe(false)
@@ -73,37 +103,32 @@ describe('advanced mini-program Agent UI', () => {
     await wrapper.setProps({
       snapshot: {
         ...snapshot,
-        eventCount: 2,
-        message: { ...snapshot.message, source: '正在处理退货', visible: '正在处理退货' },
+        messages: [{ id: 'stream', role: 'assistant', parts: [{ type: 'text', content: '正在处理退货' }] }],
       },
     })
     expect(wrapper.get('.agent-stream').text()).toContain('正在处理退货')
   })
 
-  it('preserves waiting and cancellation without presenting either as a generation failure', async () => {
-    const snapshot: AgentStreamSnapshot = {
-      data: [],
-      eventCount: 1,
-      message: { final: false, id: 'message', role: 'assistant', source: '```\n保留回答\n```', visible: '```\n保留回答\n```' },
-      reasoning: [],
-      status: 'waiting',
-      tools: [],
-    }
+  it('preserves stopped SDK output without presenting it as a generation failure', async () => {
+    const snapshot = chatSnapshot({
+      messages: [{ id: 'message', role: 'assistant', parts: [{ type: 'text', content: '```\n保留回答\n```' }] }],
+      status: 'streaming', isLoading: true,
+    })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     try {
-      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('waiting')
-      expect(wrapper.find('.agent-stream__cursor').exists()).toBe(false)
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('streaming')
+      expect(wrapper.find('.agent-stream__cursor').exists()).toBe(true)
       expect(wrapper.find('.agent-loading').exists()).toBe(false)
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
 
-      await wrapper.setProps({ snapshot: { ...snapshot, status: 'cancelled' } })
-      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('cancelled')
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'ready', isLoading: false } })
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('completed')
       expect(wrapper.get('.agent-markdown scroll-view text').text()).toBe('保留回答')
       expect(wrapper.get('.agent-markdown').attributes('data-final')).toBe('true')
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
       expect(wrapper.find('.agent-stream__cursor').exists()).toBe(false)
 
-      await wrapper.setProps({ snapshot: { ...snapshot, status: 'failed', error: { type: 'error', message: '连接中断' } } })
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'error', isLoading: false, error: new Error('连接中断') } })
       expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')
       await wrapper.get('[role="alert"] button').trigger('click')
       expect(wrapper.emitted('retry')).toEqual([[]])
@@ -111,6 +136,204 @@ describe('advanced mini-program Agent UI', () => {
     finally {
       wrapper.unmount()
     }
+  })
+
+  it.each(['replacement', 'removal', 'generation'] as const)('rejects a native approval callback captured before %s', async (change) => {
+    const original = approvalInterrupt('approval-a')
+    const snapshot = chatSnapshot({ interruptState: { interrupts: [original], interruptErrors: [], resuming: false } })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      const card = wrapper.getComponent(AgentApproval)
+      const approve = card.vm.$.vnode.props!.onApprove as () => void
+      const reject = card.vm.$.vnode.props!.onReject as () => void
+      const replacement = change === 'generation' ? approvalInterrupt('approval-a', 2) : approvalInterrupt('approval-b')
+      await wrapper.setProps({ snapshot: chatSnapshot({ ...snapshot, interruptState: { interrupts: change === 'removal' ? [] : [replacement], interruptErrors: [], resuming: false } }) })
+      expect(() => { approve(); reject() }).not.toThrow()
+      expect(wrapper.emitted('approve')).toBeUndefined()
+      expect(wrapper.emitted('reject')).toBeUndefined()
+      if (change !== 'removal') {
+        wrapper.getComponent(AgentApproval).vm.$emit('approve', '')
+        expect(wrapper.emitted('approve')).toEqual([[replacement.id]])
+      }
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it.each(['unresolvable', 'staged', 'submitting', 'resuming'] as const)('guards a previously captured native approval when %s', async (state) => {
+    const interrupt = approvalInterrupt()
+    const snapshot = chatSnapshot({ interruptState: { interrupts: [interrupt], interruptErrors: [], resuming: false } })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      const approve = wrapper.getComponent(AgentApproval).vm.$.vnode.props!.onApprove as () => void
+      await wrapper.setProps({ snapshot: chatSnapshot({ ...snapshot, interruptState: {
+        interrupts: [{ ...interrupt, canResolve: state !== 'unresolvable', status: state === 'staged' || state === 'submitting' ? state : 'pending' }],
+        interruptErrors: [], resuming: state === 'resuming',
+      } }) })
+      approve()
+      expect(wrapper.emitted('approve')).toBeUndefined()
+      expect(wrapper.getComponent(AgentApproval).props('disabled')).toBe(true)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it.each(['expired', 'stale', 'conflict', 'invalid-response-schema'] as const)('does not resolve an ineligible native %s approval error', (code) => {
+    const interrupt = approvalInterrupt()
+    const snapshot = chatSnapshot({ interruptState: { interrupts: [{ ...interrupt, status: 'error', errors: [{
+      scope: 'item', source: 'server', code, message: '当前审批不可提交', retryable: false,
+      interruptId: interrupt.id, threadId: interrupt.threadId, interruptedRunId: interrupt.interruptedRunId, generation: interrupt.generation,
+    }] }], interruptErrors: [], resuming: false } })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.get('[role="alert"]').text()).toContain('当前审批不可提交')
+      expect(wrapper.getComponent(AgentApproval).props('disabled')).toBe(true)
+      wrapper.getComponent(AgentApproval).vm.$emit('approve', '')
+      expect(wrapper.emitted('approve')).toBeUndefined()
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('shows native validation errors while allowing corrected application resubmission', async () => {
+    const interrupt = approvalInterrupt()
+    const snapshot = chatSnapshot({ interruptState: {
+      interrupts: [{ ...interrupt, status: 'error', errors: [{
+        scope: 'item', source: 'client', code: 'invalid-payload', message: '请输入确认说明', retryable: false,
+        interruptId: interrupt.id, threadId: interrupt.threadId, interruptedRunId: interrupt.interruptedRunId, generation: interrupt.generation,
+      }] }], interruptErrors: [], resuming: false,
+    } })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.get('[role="alert"]').text()).toContain('请输入确认说明')
+      expect(wrapper.getComponent(AgentApproval).props('disabled')).toBe(false)
+      await wrapper.get('button.agent-approval__approve').trigger('click')
+      await wrapper.get('button.agent-approval__approve').trigger('click')
+      expect(wrapper.emitted('approve')).toEqual([['approval'], ['approval']])
+      expect(wrapper.get('[role="alert"]').text()).toContain('请输入确认说明')
+      expect(interrupt.resolveInterrupt).not.toHaveBeenCalled()
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('accepts a newly received native approval and offers cancellation after snapshot serialization', async () => {
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot: chatSnapshot() } })
+    try {
+      const snapshot = chatSnapshot({ interruptState: { interrupts: [approvalInterrupt()], interruptErrors: [], resuming: false } })
+      await wrapper.setProps({ snapshot: JSON.parse(JSON.stringify(snapshot)) })
+      await wrapper.get('button.agent-approval__approve').trigger('click')
+      expect(wrapper.emitted('approve')).toEqual([['approval']])
+      await wrapper.findAll('button').find(button => button.text() === '取消中断')!.trigger('click')
+      expect(wrapper.emitted('cancelInterrupts')).toEqual([[]])
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('shows all native interrupt failures and guards transaction recovery independently of generation retry', async () => {
+    const first = approvalInterrupt('a')
+    const second = approvalInterrupt('b')
+    const snapshot = chatSnapshot({
+      messages: [{ id: 'answer', role: 'assistant', parts: [{ type: 'text', content: '保留中断回答' }] }],
+      status: 'error', error: new Error('恢复连接失败'),
+      interruptState: { interrupts: [first, { ...second, status: 'error', errors: [{
+        scope: 'item', source: 'server', code: 'conflict', message: '审批状态冲突', retryable: true,
+        interruptId: second.id, threadId: second.threadId, interruptedRunId: second.interruptedRunId, generation: second.generation,
+      }] }], interruptErrors: [{
+        scope: 'batch', source: 'transport', code: 'transport', message: '恢复请求未送达', retryable: true,
+        threadId: first.threadId, interruptedRunId: first.interruptedRunId, generation: first.generation, interruptIds: [first.id, second.id],
+      }], resuming: false },
+    })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.findAllComponents(AgentApproval)).toHaveLength(2)
+      expect(wrapper.text()).toContain('恢复连接失败')
+      expect(wrapper.text()).toContain('审批状态冲突')
+      expect(wrapper.text()).toContain('恢复请求未送达')
+      expect(wrapper.text()).not.toContain('生成失败')
+      const controls = wrapper.getComponent(AgentInterruptControls)
+      const retry = controls.vm.$.vnode.props!.onRetryInterrupts as (key: string) => void
+      const cancel = controls.vm.$.vnode.props!.onCancelInterrupts as (key: string) => void
+      const key = controls.props('projection').transactionKey
+      await wrapper.findAll('button').find(button => button.text() === '重试中断')!.trigger('click')
+      await wrapper.findAll('button').find(button => button.text() === '取消中断')!.trigger('click')
+      expect(wrapper.emitted('retryInterrupts')).toEqual([[]])
+      expect(wrapper.emitted('cancelInterrupts')).toEqual([[]])
+      expect(wrapper.emitted('retry')).toBeUndefined()
+      await wrapper.setProps({ snapshot: chatSnapshot({ ...snapshot, interruptState: { ...snapshot.interruptState, resuming: true } }) })
+      retry(key)
+      cancel(key)
+      await wrapper.setProps({ snapshot: chatSnapshot({ ...snapshot, interruptState: { ...snapshot.interruptState, interrupts: [approvalInterrupt('a', 2)], interruptErrors: [] } }) })
+      retry(key)
+      cancel(key)
+      expect(wrapper.emitted('retryInterrupts')).toHaveLength(1)
+      expect(wrapper.emitted('cancelInterrupts')).toHaveLength(1)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('preserves native historical part order, cross-message results, and failed tool status', async () => {
+    const messages: ApprovalSnapshot['messages'] = [
+      { id: 'old', role: 'assistant', parts: [
+        { type: 'text', content: '```\n执行前\n```' },
+        { type: 'thinking', content: '检查权限' },
+        { type: 'tool-call', id: 'failed-tool', name: 'registry.inspect', arguments: '{}', state: 'error', output: '失败工具的输出' },
+        { type: 'text', content: '```\n执行后\n```' },
+        { type: 'tool-call', id: 'remote-tool', name: 'registry.inspect', arguments: '{}', state: 'complete' },
+        { type: 'structured-output', raw: '{"receipt":"结构化收据"}', status: 'complete', data: { receipt: '结构化收据' } },
+      ] },
+      { id: 'result', role: 'assistant', parts: [{ type: 'tool-result', toolCallId: 'failed-tool', content: '失败工具的输出', error: '调用失败', state: 'error' }] },
+      { id: 'latest', role: 'assistant', parts: [
+        { type: 'tool-result', toolCallId: 'remote-tool', content: '跨消息结果', state: 'complete' },
+        { type: 'text', content: '最新回答' },
+      ] },
+      { id: 'terminal', role: 'assistant', parts: [] },
+    ]
+    const snapshot = chatSnapshot({ messages })
+    const wrapper = mount(AgentConversation, { props: { messages: agentConversationHistory(snapshot), contextMessages: snapshot.messages } })
+    try {
+      expect(wrapper.text()).toContain('执行前')
+      expect(wrapper.text()).toContain('执行后')
+      expect(wrapper.text()).toContain('失败工具的输出')
+      expect(wrapper.text()).toContain('跨消息结果')
+      expect(wrapper.get('[data-message-part="data"]').text()).toContain('结构化收据')
+      expect(wrapper.findAll('.agent-message-parts')).toHaveLength(1)
+      expect(wrapper.find('.agent-stream').exists()).toBe(false)
+      expect(wrapper.text()).not.toContain('最新回答')
+      const failedTool = wrapper.get('.agent-tool[data-status="failed"]')
+      expect(failedTool.text()).toContain('registry.inspect')
+      expect(failedTool.find('[aria-hidden="true"]').classes().join(' ')).toContain('--varo-agent-danger')
+      expect(wrapper.text()).toContain('调用失败')
+      expect(wrapper.findAll('[data-message-part]').map(node => node.attributes('data-message-part'))).toEqual(['text', 'thinking', 'tool', 'text', 'tool', 'data'])
+      await wrapper.findAll('button').find(button => button.text().includes('推理过程'))!.trigger('click')
+      expect(wrapper.text()).toContain('检查权限')
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('keeps native generation errors visible without offering application-disabled retry', () => {
+    const wrapper = mount(AgentEventRenderer, { props: {
+      snapshot: chatSnapshot({ status: 'error', error: new Error('连接中断') }), retryable: false,
+    } })
+    try {
+      expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')
+      expect(wrapper.find('[role="alert"] button').exists()).toBe(false)
+      expect(wrapper.emitted('retry')).toBeUndefined()
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('keeps native pending approval intents separate without executing SDK actions', () => {
+    const a = approvalInterrupt('a')
+    const b = approvalInterrupt('b')
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot: chatSnapshot({ interruptState: { interrupts: [a, b], interruptErrors: [], resuming: false } }) } })
+    try {
+      const approvals = wrapper.findAllComponents(AgentApproval)
+      expect(approvals).toHaveLength(2)
+      approvals[1]!.vm.$emit('approve', '')
+      approvals[0]!.vm.$emit('reject')
+      expect(wrapper.emitted('approve')).toEqual([['b']])
+      expect(wrapper.emitted('reject')).toEqual([['a']])
+      expect(a.resolveInterrupt).not.toHaveBeenCalled()
+      expect(b.resolveInterrupt).not.toHaveBeenCalled()
+    }
+    finally { wrapper.unmount() }
   })
 
   it('supports file diff layouts and tool approval decisions', async () => {

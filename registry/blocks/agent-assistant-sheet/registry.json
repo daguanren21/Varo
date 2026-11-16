@@ -4,7 +4,7 @@
   "title": "Agent Assistant Sheet",
   "description": "Context-aware assistant with a floating entry, expandable drawer, explicit quote removal, busy stop intent, and typed response insertion into an application-owned draft.",
   "targets": ["h5", "weapp"],
-  "dependencies": ["@varo-ui/ai", "@varo-ui/headless"],
+  "dependencies": ["@tanstack/ai-client", "@varo-ui/headless"],
   "targetDependencies": {
     "h5": ["vue"],
     "weapp": ["wevu"]

@@ -48,7 +48,7 @@ async function main() {
     const beforeApproval = await waitForAutomationState(page, state => state.pendingAction === 'purchase' && !state.busy)
     assert.equal(await page.callMethod('automationApprovePurchase'), true)
     const purchasedState = await waitForAutomationState(page, state => state.orderCount === initialState.orderCount + 1
-      && state.messageCount === beforeApproval.messageCount + 1 && state.status === 'idle')
+      && state.messageCount === beforeApproval.messageCount + 1 && state.status === 'ready')
     await page.waitForRendered({ text: '已创建', timeout: 5000 })
     assert.equal(purchasedState.latestProduct, 'milk')
     assert.equal(purchasedState.latestStatus, 'paid')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentPartStatus } from '@varo-ui/ai'
+import type { AgentPartStatus } from './types'
 import type { CSSProperties } from 'vue'
 import type {
   AgentRagAnswerPart,

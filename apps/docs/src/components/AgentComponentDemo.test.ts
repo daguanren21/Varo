@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import AgentComponentDemo from './AgentComponentDemo.vue'
 
 describe('AgentComponentDemo', () => {
@@ -32,21 +32,53 @@ describe('AgentComponentDemo', () => {
   })
 
   it('stops, resets and closes the interactive chat instead of leaving inert actions', async () => {
+    vi.useFakeTimers()
     const wrapper = mount(AgentComponentDemo, { props: { component: 'agent-chat' } })
-    const action = (label: string) => wrapper.findAll('button').find(button => button.text() === label)!
-    await action('停止生成').trigger('click')
-    expect(wrapper.find('[aria-label="停止生成"]').exists()).toBe(false)
-    await action('新建会话').trigger('click')
-    expect(wrapper.get('[role="log"]').text()).toBe('')
-    expect(wrapper.get('textarea').element.value).toBe('')
-    await wrapper.get('textarea').setValue('本地新会话')
-    await wrapper.get('button[aria-label="发送"]').trigger('click')
-    expect(wrapper.get('[role="log"]').text()).toContain('本地新会话')
-    await wrapper.get('button[aria-label="关闭 Agent"]').trigger('click')
-    expect(wrapper.find('textarea').exists()).toBe(false)
-    await action('打开会话').trigger('click')
-    expect(wrapper.get('[role="log"]').text()).toContain('本地新会话')
-    wrapper.unmount()
+    try {
+      const action = (label: string) => wrapper.findAll('button').find(button => button.text() === label)!
+      await vi.advanceTimersByTimeAsync(200)
+      await action('停止生成').trigger('click')
+      expect(wrapper.find('[aria-label="停止生成"]').exists()).toBe(false)
+      await action('新建会话').trigger('click')
+      expect(wrapper.get('[role="log"]').text()).toBe('')
+      expect(wrapper.get('textarea').element.value).toBe('')
+      await wrapper.get('textarea').setValue('本地新会话')
+      await wrapper.get('button[aria-label="发送"]').trigger('click')
+      await vi.advanceTimersByTimeAsync(200)
+      expect(wrapper.get('[role="log"]').text()).toContain('本地新会话')
+      await wrapper.get('button[aria-label="关闭 Agent"]').trigger('click')
+      expect(wrapper.find('textarea').exists()).toBe(false)
+      await vi.advanceTimersByTimeAsync(2000)
+      await action('打开会话').trigger('click')
+      expect(wrapper.get('[role="log"]').text()).toContain('本地新会话')
+      expect(wrapper.get('[role="log"]').text()).not.toContain('本地双端 Agent 展示')
+    }
+    finally {
+      wrapper.unmount()
+      vi.useRealTimers()
+    }
+  })
+
+  it.each([
+    ['approve', '已记录本地审批决定；未执行任何检查、构建或发布。'],
+    ['reject', '已拒绝本地演示操作，没有产生外部副作用。'],
+  ])('resolves the live SDK approval ID through the %s control', async (decision, result) => {
+    vi.useFakeTimers()
+    const wrapper = mount(AgentComponentDemo, { props: { component: 'event-renderer' } })
+    try {
+      await vi.advanceTimersByTimeAsync(5000)
+      expect(wrapper.get('.agent-approval__title').text()).toContain('local.docs.release-preview')
+      expect(wrapper.text()).toContain('不会执行检查、构建或发布')
+      await wrapper.get(`.agent-approval__${decision}`).trigger('click')
+      await vi.advanceTimersByTimeAsync(200)
+      expect(wrapper.find('.agent-approval').exists()).toBe(false)
+      expect(wrapper.text()).toContain(result)
+      expect(wrapper.get('output').text()).toContain('未执行外部操作')
+    }
+    finally {
+      wrapper.unmount()
+      vi.useRealTimers()
+    }
   })
 
   it('reruns a completed RAG pipeline from the header action', async () => {
@@ -68,7 +100,7 @@ describe('AgentComponentDemo', () => {
     const wrapper = mount(AgentComponentDemo, { props: { component: 'approval' } })
 
     expect(wrapper.findAll('.agent-approval')).toHaveLength(1)
-    expect(wrapper.get('.agent-approval__title').text()).toBe('确认发布动作')
+    expect(wrapper.get('.agent-approval__title').text()).toBe('本地审批展示')
     expect(wrapper.findAll('.agent-approval__choice')).toHaveLength(2)
     expect(wrapper.get('.agent-approval__choice[data-selected="true"]').text()).toContain('仅验证')
 
@@ -77,7 +109,7 @@ describe('AgentComponentDemo', () => {
     expect(wrapper.get('.agent-approval__choice[data-selected="true"]').text()).toContain('验证并发布')
 
     await wrapper.get('.agent-approval__approve').trigger('click')
-    expect(wrapper.get('output').text()).toBe('已批准')
+    expect(wrapper.get('output').text()).toBe('已记录本地批准')
   })
 
   it('renders multiline Agent content as structure instead of escaped text', () => {

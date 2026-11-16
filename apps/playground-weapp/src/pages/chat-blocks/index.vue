@@ -5,7 +5,7 @@ import VButton from '../../components/ui/v-button.vue'
 import VInput from '../../components/ui/v-input.vue'
 import { useChatBlocksDemo } from './useChatBlocksDemo'
 
-const { activeHistoryId, busy, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, selectedResponse, selectHistory, send, snapshot, stop } = useChatBlocksDemo()
+const { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, retryInterrupts, selectedResponse, selectHistory, send, snapshot, stop } = useChatBlocksDemo()
 
 function toggleLayout() {
   layout.value = layout.value === 'panel' ? 'page' : 'panel'
@@ -19,7 +19,7 @@ function toggleLayout() {
         对话与上下文助手
       </text>
       <text class="text-sm">
-        本地确定性流演示。停止会取消控制器；插入只修改草稿，不调用外部服务。
+        本地确定性流演示。停止由 TanStack SDK 中止请求；插入只修改草稿，不调用外部服务。
       </text>
     </view>
     <view class="flex flex-wrap gap-2">
@@ -47,11 +47,11 @@ function toggleLayout() {
     <text class="whitespace-pre-wrap break-words" data-chat-demo="draft">
       {{ draft }}
     </text>
-    <AgentChat v-if="chatVisible && !open" v-model="prompt" title="本地写作会话" :layout="layout" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="closeChat" @historySelect="selectHistory" @newConversation="newConversation" @retry="retry" />
+    <AgentChat v-if="chatVisible && !open" v-model="prompt" title="本地写作会话" :layout="layout" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="closeChat" @historySelect="selectHistory" @newConversation="newConversation" @retry="retry" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" />
     <VButton v-if="!chatVisible && !open" variant="outline" @click="chatVisible = true">
       打开会话
     </VButton>
-    <AgentAssistantSheet v-model="prompt" v-model:open="open" v-model:expanded="expanded" :busy="busy" :disabled="disabled" :context="context" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :selected-response="selectedResponse" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="close" @historySelect="selectHistory" @newConversation="newConversation" @removeContext="removeContext" @insert="insert" @retry="retry" />
+    <AgentAssistantSheet v-model="prompt" v-model:open="open" v-model:expanded="expanded" :busy="busy" :disabled="disabled" :context="context" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :selected-response="selectedResponse" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="close" @historySelect="selectHistory" @newConversation="newConversation" @removeContext="removeContext" @insert="insert" @retry="retry" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" />
   </view>
 </template>
 

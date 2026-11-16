@@ -119,6 +119,30 @@ The resolver only uses local source files; it neither selects npm components nor
 - Disabled/readonly inputs reject mutation; accepted changes notify once and no-ops do not notify. Native Drawer `openChange` carries one `[open, details]` tuple: destructure it and call `details.cancel()` synchronously before the state/model/close transition. Unlike the H5 callback, it does not supply two separate arguments.
 - Review downstream edits before reinstalling source. `--force` replaces files; it does not merge customizations. Use `pnpm sync:registry` for repository-owned projections, never hand-edit `packages/ui-weapp/native`.
 
+## TanStack AI and streaming Fetch
+
+The workspace integrates `weapp-vite` / `wevu` 7.10.0. Its published Web API runtime supports the standard Fetch, streams, UTF-8 decoding, and cancellation APIs used by `@tanstack/ai-client`; Varo does not supply a separate Agent transport or polyfill.
+
+```ts
+export default defineConfig({
+  weapp: {
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
+    vue: {
+      enable: true,
+      template: { nativeSlotContext: true, scopedSlotsRequireProps: true },
+    },
+  },
+})
+```
+
+`nativeSlotContext` enables the upstream native slot-owner and app-shell implementation for the WeChat target; the former 7.5.0 compiler patch is removed. Install `@tanstack/ai-client` for Agent Registry consumers, bind `ChatClient` snapshots through Wevu, and keep server authorization and tool execution in the application. Runtime support on other profiles and IDE/device behavior require separate validation. See the [Web API runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) and [Agent guide](https://varo.weapp.dev/ai/).
+
+
 ## Profiles and evidence limits
 
 The `weapp` renderer is used by the `weapp`, `alipay`, `tt`, `xhs`, `donut-android`, `donut-ios`, and `donut-ohos` installation profiles. Only `weapp` is stable. For any of the six experimental profiles, every selected component and dependency must declare support in its manifest. Representative components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with their utilities and themes. Use the CLI to select supported source; this list does not certify every npm export.

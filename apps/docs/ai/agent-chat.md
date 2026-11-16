@@ -51,7 +51,7 @@ function newConversation() {
 
 原生输入在 `busy` 时可编辑但不能提交，`disabled` 才禁用编辑；H5 在 `busy` 时禁用输入。原生 playground 的 `pages/chat-prompt/index` 用原生组件演示本地草稿、应用拒绝或接受更新、外部清空及忙碌期间保留草稿，不使用 jsdom 模拟布局。
 
-此示例只保存本地消息，不连接模型。`newConversation` 和 `close` 必须接到应用的真实状态转换；提供 `busy` 与流式 `snapshot` 时，也必须将 `stop` 接到应用的生产者/网络取消操作。禁用输入不会阻止忙碌时停止。Block 只在距底部 64px 内跟随内容增长，向上阅读时保留滚动位置。
+此示例只保存静态本地消息，不连接模型。接入活动聊天时由 TanStack AI 持有消息和 abort；`snapshot` 直接传入 `client.getSnapshot()` / 订阅获得的真实 `ChatClientSnapshot`。`busy` 从 SDK `isLoading`、待处理的 `interruptState.interrupts` 和 `interruptState.resuming` 投影，不向 SDK 写入展示状态。将 `submit`、`stop`、`retry` 接到 SDK `sendMessage`、`stop`、`reload`，由应用决定新建会话和关闭策略；不要在 UI 中再建 reducer。`messages` 保留静态历史展示契约，不是第二份活动 transcript。禁用输入不会阻止忙碌时停止。Block 只在距底部 64px 内跟随内容增长，向上阅读时保留滚动位置。接入示例见 [AI 指南](./index) 与 [AgentEventRenderer](./event-renderer)。
 
 ## Props
 
@@ -64,8 +64,8 @@ function newConversation() {
 | `layout`          | `'panel' \| 'page'`          | `'panel'`    | 面板或页面布局                             |
 | `history`         | `AgentChatHistoryItem[]`     | `[]`         | 应用注入的 `{ id, title }` 历史入口        |
 | `activeHistoryId` | `string`                     | `—`          | 当前选中入口                               |
-| `messages`        | `AgentConversationMessage[]` | `[]`         | 消息                                       |
-| `snapshot`        | `AgentStreamSnapshot`        | `—`          | 快照                                       |
+| `messages` | `readonly AgentConversationEntry[]` | `[]` | 静态消息或保留完整 parts 的 SDK 历史 |
+| `snapshot`        | `ChatClientSnapshot`         | `—`          | 真实 TanStack SDK 快照，不是展示状态对象   |
 | `subtitle`        | `string`                     | `—`          | 副标题                                     |
 | `suggestions`     | `string[]`                   | `[]`         | 建议词                                     |
 | `title`           | `string`                     | `Varo Agent` | 标题                                       |
@@ -74,15 +74,19 @@ function newConversation() {
 
 | Event               | Payload  | 说明                                                    |
 | ------------------- | -------- | ------------------------------------------------------- |
-| `approve`           | `string` | 批准                                                    |
+| `approve`           | `string` | 请求批准该 interrupt ID；由应用解析 SDK 中断            |
 | `close`             | `void`   | 关闭                                                    |
 | `historySelect`     | `string` | 请求应用切换到给定历史 id；忙碌、禁用或重复选择时不发送 |
 | `newConversation`   | `void`   | 请求应用清空当前会话                                    |
 | `stop`              | `void`   | 请求应用取消生成（仅忙碌时显示）                        |
-| `reject`            | `void`   | 拒绝                                                    |
+| `reject`            | `string` | 请求拒绝该 interrupt ID；由应用解析 SDK 中断            |
 | `retry`             | `void`   | 重试                                                    |
+| `retryInterrupts` | `void` | 重试当前可恢复的审批事务，不重新生成回答 |
+| `cancelInterrupts` | `void` | 取消当前中断事务 |
 | `submit`            | `string` | 提交                                                    |
 | `update:modelValue` | `string` | 更新提示词                                              |
+
+批准/拒绝时，应用从 `client.getInterrupts()` 查找同 ID 的 `tool-approval`，检查可解析状态后调用 `resolveInterrupt(true)` / `resolveInterrupt(false)`。UI 不以选择值或工具名替代 interrupt ID，不执行网络或工具；业务授权仍由应用与服务端负责。
 
 ::: info 平台差异
 

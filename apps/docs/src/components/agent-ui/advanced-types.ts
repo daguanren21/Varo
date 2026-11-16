@@ -1,4 +1,4 @@
-import type { AgentPartStatus } from '@varo-ui/ai'
+import type { AgentPartStatus } from './types'
 
 export type AgentCodeBlockStatus = 'complete' | 'streaming'
 export type AgentImageGenerationStatus = 'completed' | 'failed' | 'generating' | 'queued'

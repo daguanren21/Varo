@@ -10,14 +10,14 @@ Versions and SPDX declarations below come from installed package metadata. Check
 
 | Package                    | Direct version | Declared license | Role                                                                                   |
 | -------------------------- | -------------- | ---------------- | -------------------------------------------------------------------------------------- |
-| `wevu`                     | 7.5.0          | MIT              | Native component/reactivity runtime                                                    |
+| `wevu`                     | 7.10.0         | MIT              | Native component/reactivity runtime                                                    |
 | `@weapp-tailwindcss/merge` | 2.2.3          | MIT              | Native-compatible class merging                                                        |
 | `clsx`                     | 2.1.1          | MIT              | Class value composition                                                                |
-| `weapp-vite`               | 7.5.0          | MIT              | Native compiler and watcher                                                            |
+| `weapp-vite`               | 7.10.0         | MIT              | Native compiler and published Web API runtime injection                                 |
 | `weapp-tailwindcss`        | 5.5.3          | MIT              | Mini-program style transforms                                                          |
 | `tailwindcss`              | 4.3.3          | MIT              | Utility generation                                                                     |
 | `vite`                     | 8.2.2          | MIT              | Build pipeline                                                                         |
-| `vue`                      | 3.5.42         | MIT              | Compiler/tooling dependency; application code imports `wevu`, not H5 renderer wrappers |
+| `vue`                      | 3.5.45         | MIT              | Compiler/tooling dependency; application code imports `wevu`, not H5 renderer wrappers |
 | `typescript`               | 6.0.3          | Apache-2.0       | TypeScript tooling                                                                     |
 | `miniprogram-api-typings`  | 5.2.3          | MIT              | WeChat API declarations                                                                |
 | `@types/node`              | 26.1.0         | MIT              | Node tooling declarations                                                              |
@@ -26,7 +26,7 @@ Versions and SPDX declarations below come from installed package metadata. Check
 | `postcss-selector-parser`  | 7.1.6          | MIT              | Compiled component selector verification                                               |
 | `@csstools/css-tokenizer`  | 4.0.2          | MIT              | CSS escape decoding for recursive stylesheet verification                              |
 
-`pnpm-lock.yaml` fixes this export's dependency graph. The pnpm configuration retains the `undici` 7.29.0 override and Vue 3.5.42 pin. Before redistribution, check `LICENSE`/`NOTICE` files for all installed dependencies, bundled code, and native binaries. This table covers direct dependencies only.
+`pnpm-lock.yaml` fixes this export's dependency graph. The pnpm configuration retains the `undici` 7.29.0 override and Vue 3.5.45 pin. Before redistribution, check `LICENSE`/`NOTICE` files for all installed dependencies, bundled code, and native binaries. This table covers direct dependencies only.
 
 ## Assets
 

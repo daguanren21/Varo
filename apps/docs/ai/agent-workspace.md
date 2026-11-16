@@ -78,7 +78,7 @@ function submit(value: string) {
 
 Block 不修改传入的 `versions`、`tasks`、来源或回执数组。选择、分支和固定事件携带当前 `versions` 中的 `AgentThreadVersion`，由应用更新快照和 `activeVersionId`，并管理分支 ID、父子关系、历史消息及持久化。固定状态也需由应用确认后更新。
 
-`AgentTask` 包含 `id`、`title`、`status` 和可选的 `description`、`meta`、`progress`、`requiresApproval`、`retryable`。状态使用核心 `AgentPartStatus` 的 `waiting | running | completed | failed`，请勿添加 `queued` 或 `cancelled`。取消结果及能否再次执行由应用决定，不能将取消表示为成功完成。
+`AgentTask` 包含 `id`、`title`、`status` 和可选的 `description`、`meta`、`progress`、`requiresApproval`、`retryable`。状态使用 Registry `@/components/agent-ui/types` 中的展示类型 `AgentPartStatus`：`waiting | running | completed | failed`，不是 core 协议、SDK 状态或工具 wire enum。请勿添加 `queued` 或 `cancelled`。取消结果及能否再次执行由应用决定，不能将取消表示为成功完成。
 
 | 意图     | 分发时检查的资格                           |
 | -------- | ------------------------------------------ |
@@ -93,7 +93,7 @@ Block 不修改传入的 `versions`、`tasks`、来源或回执数组。选择�
 
 单独使用 `AgentThreadVersions` 时可传 `disabled`，需同时限制忙碌状态时传 `disabled || busy`。`AgentTaskRunner` 分别接收 `busy` 和 `disabled`；不要把 `busy` 合并到 `disabled`，否则忙碌时也无法取消。两者发出事件前都会按 ID 查找当前 prop 条目，拒绝已移除或不再符合条件的条目。
 
-默认执行区展示对话、检索、任务和回执。工具详情可使用 `components/agent-conversation` 中的 `AgentToolChip`（H5 从 `@/components/agent-ui/conversation` 导入；原生从 `@/components/agent-ui/AgentToolChip.vue` 导入），传入应用的 `AgentToolPart` 即可展示，UI 不调用工具。`approveTask` 处理函数可打开审批界面，等待用户决定，再执行获准的工作并更新任务和工具快照。凭证、审批策略、网络执行、重试调度和存储均由应用处理。
+默认执行区展示对话、检索、任务和回执。工具详情可使用 `components/agent-conversation` 中的 `AgentToolChip`（H5 从 `@/components/agent-ui/conversation` 导入；原生从 `@/components/agent-ui/AgentToolChip.vue` 导入），传入 Registry `AgentToolPart` 的只读展示投影即可，UI 不调用工具。`approveTask` 是应用领域任务意图，不自动等同于 SDK 工具审批；如任务对应 TanStack `tool-approval`，由应用关联 interrupt ID，再解析匹配的 SDK 中断。凭证、业务授权、工具执行、网络、重试调度和存储均由应用处理。
 
 ### 本地演示与运行覆盖
 
@@ -108,7 +108,7 @@ H5 的 `features/WorkspaceDemo.vue` 与原生的 `pages/agent-workspace-demo/ind
 | `execution` | 替换默认对话、检索、任务和回执区 |
 
 ::: warning 原生运行限制
-`execution` 是无参数的替换插槽。原生 plain slot 转发父级状态依赖尚未发布的 Wevu plain-slot 协议修复；不要更改 `scopedSlotsRequireProps`、添加上下文桥或复制父级数据来绕过限制。演示使用默认执行区，自定义原生插槽需等受支持的编译器/运行时修复后验收。headless 原生环境无法完整观察 `rich-text`，相关文本渲染需在受支持的真实宿主验证。H5 插槽测试不能证明原生行为正确。
+`execution` 是无参数的替换插槽。7.10.0 微信目标需显式启用 `weapp.vue.template.nativeSlotContext: true` 和 `scopedSlotsRequireProps: true`；无需旧版编译器补丁、上下文桥或复制父级数据。`apps/e2e/tests/weapp-native/workspace.e2e.ts` 已通过真实控件验证自定义插槽中的父级 query/steps 更新、停止/重新运行与来源选择事件回传。覆盖范围为默认 attached setup 的原生 headless 宿主，不推断 created setup、其他平台或真机支持；headless 无法完整观察的 `rich-text` 仍需真实宿主验证。
 :::
 
 ::: info 平台导入

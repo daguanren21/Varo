@@ -1,10 +1,13 @@
-import type { AgentStreamEvent } from '@varo-ui/ai'
+import type { StreamChunk } from '@tanstack/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { ChatUIInterrupt } from '@tanstack/ai-client/ui'
+import { EventType } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentModelOption } from '../../components/agent-ui/agent-model-selector.types'
-import type { AgentConversationMessage } from '../../components/agent-ui/types'
-import type { AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../components/blocks/agent-model-compare.types'
-import { createAgentStreamController } from '@varo-ui/ai'
-import { computed, onBeforeUnmount, shallowRef } from 'wevu'
+import type { AgentCompareApprovalIntent, AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../components/blocks/agent-model-compare.types'
+import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 import { availableModel } from '../../components/agent-ui/agent-model-selector.types'
+import { agentCanResolveApproval, agentConversationHistory, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 
 const catalog: AgentModelOption[] = [
   { id: 'uppercase', label: '本地大写转换', available: true },
@@ -33,106 +36,108 @@ export function useModelCompareDemo() {
   let sequence = 0
 
   function createSide(id: AgentCompareSide, initialModel: string) {
-    const controller = createAgentStreamController({ text: { flushOnFinish: true } })
     const modelId = shallowRef(initialModel)
-    const snapshot = shallowRef(controller.getSnapshot())
-    const messages = shallowRef<AgentConversationMessage[]>([])
-    const pending = shallowRef(false)
     const elapsed = shallowRef<number | undefined>(undefined)
+    const outcome = shallowRef<AgentCompareState['outcome']>(undefined)
     const receipt = shallowRef({ steps: 0, cleanups: 0, active: false, timers: 0 })
-    const unsubscribe = controller.subscribe(() => { snapshot.value = controller.getSnapshot() })
-    let cancelProducer: (() => void) | undefined
     let lastRequest: { prompt: string, modelId: string } | undefined
-    const state = computed<AgentCompareState>(() => ({
-      label: id === 'left' ? '左侧' : '右侧',
-      modelId: modelId.value,
-      messages: messages.value,
-      snapshot: snapshot.value,
-      busy: pending.value,
-      error: snapshot.value.status === 'failed' ? snapshot.value.error?.message : undefined,
-      retryable: Boolean(lastRequest) && snapshot.value.status === 'failed',
-      metrics: showMetrics.value && elapsed.value != null ? { latencyMs: elapsed.value } : undefined,
-    }))
-    const lifecycle = computed(() => `steps=${receipt.value.steps};cleanups=${receipt.value.cleanups};active=${receipt.value.active};timers=${receipt.value.timers}`)
-
-    async function start(request: string, failFirstAttempt: boolean) {
-      if (pending.value || disposed) { return }
-      const selectedModel = modelId.value
+    const connection = stream(async function* (_messages, data, signal, input): AsyncGenerator<StreamChunk> {
       const messageId = `${id}-${++sequence}`
-      lastRequest = { prompt: request, modelId: selectedModel }
-      messages.value = [{ id: `prompt-${messageId}`, role: 'user', content: request }]
-      elapsed.value = undefined
-      pending.value = true
+      const request = String(data?.prompt ?? '')
+      const selectedModel = String(data?.modelId ?? '')
       receipt.value = { ...receipt.value, steps: 0, active: true }
-      const startedAt = Date.now()
-      let cancelled = false
-      let timer: number | NodeJS.Timeout | undefined
-      let wake: (() => void) | undefined
-      cancelProducer = () => {
-        cancelled = true
-        clearTimeout(timer)
-        timer = undefined
-        receipt.value = { ...receipt.value, timers: 0 }
-        wake?.()
-      }
-      async function* produce(): AsyncGenerator<AgentStreamEvent> {
-        try {
-          yield { type: 'message.start', messageId, role: 'assistant' }
-          const words = request.split(/\s+/u)
-          for (let index = 0; index < words.length; index++) {
-            await new Promise<void>((resolve) => {
-              wake = resolve
-              receipt.value = { ...receipt.value, timers: 1 }
-              timer = setTimeout(() => {
-                timer = undefined
-                receipt.value = { ...receipt.value, timers: 0 }
-                resolve()
-              }, id === 'left' ? 180 : 420)
-            })
-            wake = undefined
-            if (cancelled) { return }
-            const word = words[index]!
-            const transformed = selectedModel === 'uppercase'
-              ? word.toUpperCase()
-              : selectedModel === 'reverse'
-                ? Array.from(word).reverse().join('')
-                : `${word}(${Array.from(word).length})`
-            receipt.value = { ...receipt.value, steps: receipt.value.steps + 1 }
-            yield { type: 'text.delta', messageId, delta: `${index ? ' ' : ''}${transformed}` }
-            if (failFirstAttempt) { throw new Error('左侧本地转换首次执行失败；右侧仍独立运行。') }
-          }
-          yield { type: 'message.end', messageId }
-          yield { type: 'done' }
-        }
-        finally {
-          clearTimeout(timer)
-          receipt.value = { ...receipt.value, cleanups: receipt.value.cleanups + 1, active: false, timers: 0 }
-        }
-      }
       try {
-        const result = await controller.connect(produce())
-        if (!disposed && result.status === 'completed') { elapsed.value = Date.now() - startedAt }
+        yield { type: EventType.RUN_STARTED, threadId: input.threadId, runId: input.runId }
+        yield { type: EventType.TEXT_MESSAGE_START, messageId, role: 'assistant' }
+        const words = request.split(/\s+/u)
+        for (let index = 0; index < words.length; index++) {
+          let resolve!: () => void
+          const promise = new Promise<void>(done => { resolve = done })
+          const finish = () => {
+            clearTimeout(timer)
+            signal?.removeEventListener('abort', finish)
+            receipt.value = { ...receipt.value, timers: 0 }
+            resolve()
+          }
+          const timer = setTimeout(finish, id === 'left' ? 180 : 420)
+          receipt.value = { ...receipt.value, timers: 1 }
+          signal?.addEventListener('abort', finish, { once: true })
+          if (signal?.aborted) { finish() }
+          await promise
+          if (signal?.aborted) { return }
+          const word = words[index]!
+          const transformed = selectedModel === 'uppercase' ? word.toUpperCase() : selectedModel === 'reverse' ? Array.from(word).reverse().join('') : `${word}(${Array.from(word).length})`
+          receipt.value = { ...receipt.value, steps: receipt.value.steps + 1 }
+          yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId, delta: `${index ? ' ' : ''}${transformed}` }
+          if (data?.failFirstAttempt) { throw new Error('左侧本地转换首次执行失败；右侧仍独立运行。') }
+        }
+        yield { type: EventType.TEXT_MESSAGE_END, messageId }
+        yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
       }
       finally {
-        cancelProducer = undefined
-        pending.value = false
+        receipt.value = { ...receipt.value, cleanups: receipt.value.cleanups + 1, active: false, timers: 0 }
+      }
+    })
+    let threadSequence = 0
+    let client = new ChatClient({ threadId: `varo-native-model-compare-${id}-${++threadSequence}`, connection })
+    const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+    let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
+    const pending = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0)
+    const state = computed<AgentCompareState>(() => {
+      return {
+        label: id === 'left' ? '左侧' : '右侧', modelId: modelId.value,
+        messages: agentConversationHistory(snapshot.value),
+        snapshot: snapshot.value,
+        busy: pending.value, error: snapshot.value.error?.message, retryable: !pending.value && Boolean(lastRequest) && snapshot.value.status === 'error',
+        outcome: outcome.value,
+        metrics: showMetrics.value && elapsed.value != null ? { latencyMs: elapsed.value } : undefined,
+      }
+    })
+    const lifecycle = computed(() => `steps=${receipt.value.steps};cleanups=${receipt.value.cleanups};active=${receipt.value.active};timers=${receipt.value.timers}`)
+    async function start(request: string, failFirstAttempt: boolean) {
+      if (pending.value || disposed) { return }
+      const invocation = { prompt: request, modelId: modelId.value }
+      lastRequest = invocation
+      outcome.value = undefined
+      client.clear()
+      elapsed.value = undefined
+      const startedAt = Date.now()
+      await client.sendMessage(request, { prompt: request, modelId: modelId.value, failFirstAttempt })
+      if (!disposed && lastRequest === invocation && !outcome.value && !snapshot.value.error && receipt.value.steps === request.split(/\s+/u).length) {
+        elapsed.value = Date.now() - startedAt
+        outcome.value = 'completed'
       }
     }
     function stop() {
       if (!pending.value) { return }
-      cancelProducer?.()
-      controller.cancel('应用已停止本侧本地转换')
+      outcome.value = 'cancelled'
+      client.stop()
     }
     function retry() {
-      if (!lastRequest || pending.value || snapshot.value.status !== 'failed' || lastRequest.modelId !== modelId.value) { return }
+      if (!lastRequest || pending.value || snapshot.value.status !== 'error' || lastRequest.modelId !== modelId.value) { return }
       void start(lastRequest.prompt, false)
+    }
+    function decide(interruptId: string, approved: boolean) {
+      const interrupts: readonly ChatUIInterrupt[] = client.getInterrupts()
+      const interrupt = interrupts.find(item => item.id === interruptId)
+      if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(approved) }
+    }
+    function retryInterrupts() {
+      if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+    }
+    function cancelInterrupts() {
+      if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
     }
     function clear() {
       if (pending.value) { return }
       lastRequest = undefined
-      messages.value = []
+      outcome.value = undefined
       elapsed.value = undefined
-      controller.reset()
+      unsubscribe()
+      client.dispose()
+      client = new ChatClient({ threadId: `varo-native-model-compare-${id}-${++threadSequence}`, connection })
+      snapshot.value = client.getSnapshot()
+      unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
     }
     function select(value: string) {
       if (pending.value || value === modelId.value) { return }
@@ -140,11 +145,12 @@ export function useModelCompareDemo() {
       clear()
     }
     function dispose() {
-      cancelProducer?.()
+      client.stop()
       unsubscribe()
-      controller.destroy()
+      client.detach()
+      client.dispose()
     }
-    return { state, pending, modelId, lifecycle, start, stop, retry, select, clear, dispose }
+    return { state, pending, modelId, lifecycle, start, stop, retry, decide, retryInterrupts, cancelInterrupts, select, clear, dispose }
   }
 
   const left = createSide('left', 'uppercase')
@@ -183,6 +189,18 @@ export function useModelCompareDemo() {
     const side = id === 'left' ? left : right
     if (!locked.value && availableModel(displayedModels.value, side.modelId.value)) { side.retry() }
   }
+  function approve(intent: AgentCompareApprovalIntent) {
+    if (!locked.value) { (intent.side === 'left' ? left : right).decide(intent.interruptId, true) }
+  }
+  function reject(intent: AgentCompareApprovalIntent) {
+    if (!locked.value) { (intent.side === 'left' ? left : right).decide(intent.interruptId, false) }
+  }
+  function retryInterrupts(id: AgentCompareSide) {
+    if (!locked.value) { (id === 'left' ? left : right).retryInterrupts() }
+  }
+  function cancelInterrupts(id: AgentCompareSide) {
+    if (!locked.value) { (id === 'left' ? left : right).cancelInterrupts() }
+  }
   function stop(id: AgentCompareSide) { (id === 'left' ? left : right).stop() }
   function sendChat(value: string) {
     if (!locked.value && !busy.value && value.trim() && availableModel(displayedModels.value, left.modelId.value)) { void left.start(value.trim(), false) }
@@ -217,8 +235,9 @@ export function useModelCompareDemo() {
   function close() {
     dispose()
     visible.value = false
-    notice.value = '比较已关闭；两侧计时器、迭代器与控制器订阅均执行各自清理。下方显示真实迭代器清理记录。'
+    notice.value = '比较已关闭；两侧计时器、迭代器与 SDK 订阅均执行各自清理。下方显示真实迭代器清理记录。'
   }
-  onBeforeUnmount(dispose)
-  return { models: displayedModels, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close }
+  onUnload(dispose)
+  onUnmounted(dispose)
+  return { models: displayedModels, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close }
 }

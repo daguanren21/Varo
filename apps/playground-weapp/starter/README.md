@@ -4,7 +4,7 @@ An editable, MIT-licensed WeChat mini-program project exported from Varo's retai
 
 ## Requirements and first run
 
-Use Node **22.18+ within Node 22, 24.11+ within Node 24, or 26+**, and **pnpm 11.24.0**. Node 25 is outside this repository's supported runtime policy. Compiler/runtime dependencies are listed in `DEPENDENCIES.md`. Install registry dependencies with network access:
+Use Node **22.23.4+ within Node 22, 24.22.1+ within Node 24, or 26.12.1+**, and **pnpm 11.24.0**. Node 25 is outside this repository's supported runtime policy. Compiler/runtime dependencies are listed in `DEPENDENCIES.md`. Install registry dependencies with network access:
 
 ```sh
 pnpm install --frozen-lockfile

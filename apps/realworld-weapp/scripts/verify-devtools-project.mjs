@@ -1,6 +1,7 @@
 import { access, readdir, readFile, stat } from 'node:fs/promises'
 import { dirname, extname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { verifyScriptReferences } from './verify-script-references.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(projectRoot, 'devtools/build/mp-weixin')
@@ -199,12 +200,6 @@ const localizedChunks = [
   ['deployInfo.js', 'improvePages/_chunks/deployInfo.js'],
   ['openInfo.js', 'improvePages/_chunks/openInfo.js'],
   ['partsInfo.js', 'improvePages/_chunks/partsInfo.js'],
-  ['check.js', 'managePages/_chunks/check.js'],
-  ['checkShanghai.js', 'managePages/_chunks/checkShanghai.js'],
-  ['detail.js', 'managePages/_chunks/detail.js'],
-  ['highSearch.js', 'managePages/_chunks/highSearch.js'],
-  ['module.js', 'managePages/_chunks/module.js'],
-  ['repair.js', 'managePages/_chunks/repair.js'],
 ]
 for (const [original, localized] of localizedChunks) {
   if (await exists(resolve(outputRoot, original)) || !await exists(resolve(outputRoot, localized))) {
@@ -213,19 +208,7 @@ for (const [original, localized] of localizedChunks) {
 }
 
 const jsFiles = await collectFiles(outputRoot, '.js')
-const unresolvedRequires = []
-for (const path of jsFiles) {
-  const source = await readFile(path, 'utf8')
-  for (const match of source.matchAll(/require\((['"])(\.[^'"]+)\1\)/g)) {
-    const target = resolve(dirname(path), match[2])
-    if (!await exists(target)) {
-      unresolvedRequires.push(`${relative(outputRoot, path)} -> ${match[2]}`)
-    }
-  }
-}
-if (unresolvedRequires.length > 0) {
-  throw new Error(`Unresolved generated JS imports:\n${unresolvedRequires.join('\n')}`)
-}
+const scriptReferenceCount = await verifyScriptReferences(outputRoot, appJson.subPackages ?? appJson.subpackages ?? [], jsFiles)
 
 const outputFiles = await collectAllFiles(outputRoot)
 const subPackageRoots = new Set((appJson.subPackages ?? appJson.subpackages ?? []).map(item => item.root))
@@ -246,4 +229,4 @@ if (oversizedMedia.length > 0) {
 }
 
 console.log(`Verified package analyzer budgets; main package is ${mainPackageBytes} bytes`)
-console.log('Verified 51 pages, component paths, WXML and selector safety, Varo theme, and Tailwind WXSS')
+console.log(`Verified 51 pages, component paths, WXML and selector safety, Varo theme, Tailwind WXSS and ${scriptReferenceCount} synchronous script references`)

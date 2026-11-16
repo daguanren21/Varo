@@ -8,7 +8,9 @@ import AgentApproval from './components/agent-ui/AgentApproval.vue'
 import AgentComposer from './components/agent-ui/AgentComposer.vue'
 import AgentMarkdown from './components/agent-ui/AgentMarkdown.vue'
 import AgentRadioGroup from './components/agent-ui/AgentRadioGroup.vue'
+import { agentCurrentMessage, agentMessageText, agentSnapshotProjection } from './components/agent-ui/presentation'
 import { useMallAgent } from './features/mall/useMallAgent'
+import MallAgentPanel from './components/mall/MallAgentPanel.vue'
 
 function mountAgentHarness() {
   let agent!: MallAgentController
@@ -209,22 +211,148 @@ describe('AI-driven mall flows', () => {
     const stockBefore = agent.products.value.find(product => product.id === 'milk')!.stock
 
     const sendPromise = agent.send('买 2 盒牛奶')
-    await vi.advanceTimersByTimeAsync(600)
-    expect(agent.streamSnapshot.value).toMatchObject({
-      status: 'streaming',
-      message: { role: 'assistant' },
-    })
-    expect(agent.streamSnapshot.value.message?.source.length).toBeGreaterThan(0)
+    for (let elapsed = 0; elapsed < 1000; elapsed += 10) {
+      await vi.advanceTimersByTimeAsync(10)
+      if (agentMessageText(agentCurrentMessage(agent.streamSnapshot.value))) { break }
+    }
+    expect(agent.streamSnapshot.value.status).toBe('streaming')
+    expect(agentCurrentMessage(agent.streamSnapshot.value)?.role).toBe('assistant')
+    expect(agentMessageText(agentCurrentMessage(agent.streamSnapshot.value))).not.toBe('')
     await finishTimers(sendPromise)
     expect(agent.pendingAction.value).toMatchObject({ type: 'purchase', product: { id: 'milk' } })
     expect(agent.orders.value).toHaveLength(1)
+    expect(agentSnapshotProjection(agent.streamSnapshot.value).tools.some(tool => tool.status === 'waiting')).toBe(true)
 
-    await finishTimers(agent.approve('2'))
+    agent.approvalValue.value = '2'
+    const approval = agentSnapshotProjection(agent.streamSnapshot.value).approvals[0]
+    expect(approval).toBeDefined()
+    await finishTimers(agent.approve(approval!.id))
     expect(agent.orders.value).toHaveLength(2)
     expect(agent.orders.value[0]).toMatchObject({ productId: 'milk', quantity: 2, status: 'paid' })
     expect(agent.products.value.find(product => product.id === 'milk')!.stock).toBe(stockBefore - 2)
-    expect(agent.history.value[0].title).toBe('AI 下单成功')
+    expect(agent.history.value[0]).toMatchObject({ type: 'order', detail: expect.stringContaining('× 2') })
     wrapper.unmount()
+  })
+
+  it('cancels a validation-error transaction through the SDK without executing the action', async () => {
+    const { agent, wrapper } = mountAgentHarness()
+    try {
+      await finishTimers(agent.send('买 1 盒牛奶'))
+      const approval = agent.streamSnapshot.value.interruptState.interrupts[0]!
+      agent.approvalValue.value = 'not-a-number'
+      await finishTimers(agent.approve(approval.id))
+      expect(agent.streamSnapshot.value.interruptState.interrupts[0]?.status).toBe('error')
+      agent.cancelInterrupts()
+      await vi.runAllTimersAsync()
+      expect(agent.orders.value).toHaveLength(1)
+      expect(agent.pendingAction.value).toBeUndefined()
+      expect(agent.streamSnapshot.value.interruptState.interrupts).toHaveLength(0)
+      if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+      const result = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)
+      expect(result).toMatchObject({ state: 'error', outcome: 'cancelled' })
+      await finishTimers(agent.send('查看订单历史'))
+      expect(agent.historyOpen.value).toBe(true)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('executes and records validated edited inputs, ignoring subsequent UI preview changes', async () => {
+    const { agent, wrapper } = mountAgentHarness()
+    try {
+      await finishTimers(agent.send('买 1 盒牛奶'))
+      const approval = agent.streamSnapshot.value.interruptState.interrupts[0]!
+      expect(approval.kind).toBe('tool-approval')
+      if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+      expect(approval.id).not.toBe(approval.toolCallId)
+      expect(approval.originalArgs).toEqual({ type: 'purchase', productId: 'milk', quantity: 1 })
+      if (agent.pendingAction.value?.type !== 'purchase') { throw new Error('Expected purchase preview') }
+      agent.pendingAction.value.product.price = 1
+      agent.pendingAction.value.product.stock = 0
+      agent.pendingAction.value.quantity = 9
+      agent.approvalValue.value = '2'
+      const decision = agent.approve(approval.id)
+      agent.approvalValue.value = '9'
+      agent.pendingAction.value = { type: 'purchase', product: agent.products.value[0]!, quantity: 9 }
+      await finishTimers(decision)
+      expect(agent.orders.value[0]).toMatchObject({ productId: 'milk', quantity: 2, total: 11980 })
+      const call = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-call').find(part => part.id === approval.toolCallId)!
+      expect(JSON.parse(call.arguments)).toEqual({ type: 'purchase', productId: 'milk', quantity: 2 })
+      expect(call.input).toEqual({ type: 'purchase', productId: 'milk', quantity: 2 })
+      expect(call.state).toBe('complete')
+      const result = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)
+      expect(result?.state).toBe('complete')
+      expect(agent.messages.value.some(message => message.parts.some(part => part.type === 'tool-call' && part.id === approval.toolCallId))).toBe(true)
+      const panel = mount(MallAgentPanel, { props: { open: true, messages: agent.messages.value, streamSnapshot: agent.streamSnapshot.value } })
+      try { expect(panel.text()).toContain('local.mall.execute') }
+      finally { panel.unmount() }
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('keeps schema errors visible without side effects and accepts corrected approval input', async () => {
+    const { agent, wrapper } = mountAgentHarness()
+    try {
+      await finishTimers(agent.send('买 1 盒牛奶'))
+      const approval = agent.streamSnapshot.value.interruptState.interrupts[0]!
+      const stock = agent.products.value.find(product => product.id === 'milk')!.stock
+      agent.approvalValue.value = '0'
+      await finishTimers(agent.approve(approval.id))
+      expect(agent.orders.value).toHaveLength(1)
+      expect(agent.products.value.find(product => product.id === 'milk')!.stock).toBe(stock)
+      const failed = agent.streamSnapshot.value.interruptState.interrupts[0]!
+      expect(failed.status).toBe('error')
+      expect(failed.errors[0]?.code).toBe('invalid-edited-args')
+      expect(agentSnapshotProjection(agent.streamSnapshot.value).approvals[0]?.canResolve).toBe(true)
+      const panel = mount(MallAgentPanel, { props: { open: true, messages: agent.messages.value, streamSnapshot: agent.streamSnapshot.value } })
+      try { expect(panel.text()).toContain(failed.errors[0]!.message) }
+      finally { panel.unmount() }
+      agent.approvalValue.value = '3'
+      await finishTimers(agent.approve(approval.id))
+      expect(agent.orders.value[0]).toMatchObject({ productId: 'milk', quantity: 3 })
+      expect(agent.streamSnapshot.value.interruptState.interrupts).toHaveLength(0)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('does not execute denied or stale decisions', async () => {
+    const { agent, wrapper } = mountAgentHarness()
+    try {
+      await finishTimers(agent.send('买 1 盒牛奶'))
+      const approval = agent.streamSnapshot.value.interruptState.interrupts[0]!
+      const stock = agent.products.value.find(product => product.id === 'milk')!.stock
+      agent.reject(approval.id)
+      await vi.runAllTimersAsync()
+      expect(agent.orders.value).toHaveLength(1)
+      expect(agent.products.value.find(product => product.id === 'milk')!.stock).toBe(stock)
+      if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+      const result = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)
+      expect(result).toMatchObject({ state: 'error', outcome: 'denied' })
+      await finishTimers(agent.send('买 1 盒牛奶'))
+      await finishTimers(agent.approve(approval.id))
+      expect(agent.orders.value).toHaveLength(1)
+      expect(agent.streamSnapshot.value.interruptState.interrupts[0]?.id).not.toBe(approval.id)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it.each(['purchase', 'return'] as const)('revalidates current %s eligibility immediately before mutation', async (type) => {
+    const { agent, wrapper } = mountAgentHarness()
+    try {
+      await finishTimers(agent.send(type === 'purchase' ? '买 1 盒牛奶' : '我要退货'))
+      const approval = agent.streamSnapshot.value.interruptState.interrupts[0]!
+      const historyLength = agent.history.value.length
+      const decision = agent.approve(approval.id)
+      if (type === 'purchase') { agent.products.value = agent.products.value.map(product => product.id === 'milk' ? { ...product, stock: 0 } : product) }
+      else { agent.orders.value = agent.orders.value.map(order => ({ ...order, status: 'returned' })) }
+      await finishTimers(decision)
+      expect(agent.orders.value).toHaveLength(1)
+      expect(agent.history.value).toHaveLength(historyLength)
+      if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+      const call = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-call').find(part => part.id === approval.toolCallId)
+      expect(call?.state).toBe('error')
+      expect(agent.streamSnapshot.value.interruptState.interrupts).toHaveLength(0)
+    }
+    finally { wrapper.unmount() }
   })
 
   it('supports return, history, and address configuration intents', async () => {
@@ -232,7 +360,10 @@ describe('AI-driven mall flows', () => {
 
     await finishTimers(agent.send('我要退货'))
     expect(agent.pendingAction.value).toMatchObject({ type: 'return' })
-    await finishTimers(agent.approve('quality'))
+    agent.approvalValue.value = 'quality'
+    const approval = agentSnapshotProjection(agent.streamSnapshot.value).approvals[0]
+    expect(approval).toBeDefined()
+    await finishTimers(agent.approve(approval!.id))
     expect(agent.orders.value.find(order => order.id === 'JD20260819001')?.status).toBe('returned')
     expect(agent.history.value[0].type).toBe('return')
 

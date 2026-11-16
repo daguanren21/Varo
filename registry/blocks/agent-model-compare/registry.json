@@ -4,7 +4,7 @@
   "title": "Agent Model Compare",
   "description": "Two controlled model selections, a shared optional-controlled prompt, independently supplied streams and side-specific run/retry/stop intents.",
   "targets": ["h5", "weapp"],
-  "dependencies": ["@varo-ui/ai", "@varo-ui/headless"],
+  "dependencies": ["@tanstack/ai-client", "@varo-ui/headless"],
   "targetDependencies": { "h5": ["vue"], "weapp": ["wevu"] },
   "registryDependencies": ["components/agent-model-selector", "components/agent-conversation", "components/button", "utils/primitives"],
   "files": [

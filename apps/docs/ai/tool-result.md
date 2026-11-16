@@ -35,6 +35,8 @@ const open = ref(false)
 
 显式 `open=false` 优先于 `defaultOpen` 和状态。点击只发出 `update:open`，父级不更新则界面不变。省略 `open` 时由组件切换：初始状态为 `running` 或 `failed` 时展开，其余使用 `defaultOpen`。后续状态变化不会重新打开用户已关闭的结果。状态文案为“等待中 / 进行中 / 已完成 / 失败”。应用收到 `retry` 后自行处理重试，组件不执行工具。
 
+`AgentPartStatus` 从 Registry 安装后的 `@/components/agent-ui/types` 导入，仅用于展示 `waiting | running | completed | failed`；它不是 `@varo-ui/ai` 协议，也不是 SDK `ready | submitted | streaming | error` 或工具 wire state。由应用从真实工具结果投影，不以展示状态认定业务已授权或成功。
+
 ## Props
 
 | Prop          | Type              | Default     | 说明                                         |

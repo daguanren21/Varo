@@ -1,225 +1,161 @@
-import type { AgentEventChannel, AgentStreamSnapshot } from '@varo-ui/ai'
-import type { AgentConversationMessage } from '../components/agent-ui'
-import {
-
-  createAgentEventChannel,
-  createAgentStreamController,
-} from '@varo-ui/ai'
+import type { StreamChunk } from '@tanstack/ai'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
+import type { ComputedRef, ShallowRef } from 'vue'
+import { EventType, hashSchemaInput, normalizeApprovalSchema, toolDefinition, withInterruptBinding } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
+import { agentCanResolveApproval, agentConversationHistory, agentMessageText, agentSnapshotProjection } from '../components/agent-ui/presentation'
 
-function messageId(prefix: string) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-}
-
+const releaseTool = toolDefinition({ name: 'local.release.preview', description: '仅演示发布授权，不发布任何包。', needsApproval: true }).client()
+export type AgentDemoSnapshot = ChatClientSnapshot<Array<typeof releaseTool>, any>
+const releaseApproval = normalizeApprovalSchema(releaseTool.approvalSchema, releaseTool.inputSchema)
 const DEMO_RESPONSE = `## 双端 Agent 交付建议
 
-Varo 现在可以用同一份事件协议连接 **SSE、WebSocket 或微信分块请求**，再交给不同平台的渲染器。
+本地演示通过 **TanStack ChatClient** 消费标准 AG-UI 分片；不连接模型或外部服务。
 
 | 层级 | H5 | 小程序 |
 | --- | --- | --- |
-| 传输 | Fetch / SSE | \`enableChunked\` |
-| 节奏 | Markstream RAF | 定时帧调度 |
-| 内容 | 安全 Markdown AST | WXML 节点树 |
+| 状态 | ChatClientSnapshot | ChatClientSnapshot |
+| 运行时 | Vue | Wevu |
+| 内容 | 安全 Markdown | WXML 节点树 |
 
-\`AgentEventRenderer\` 会组合推理、工具、审批与回答状态：
+\`AgentEventRenderer\` 只呈现 SDK 快照，审批决定由应用提交给 SDK。
 
 \`\`\`ts
-const controller = createAgentStreamController()
-await controller.connect(events)
+const client = new ChatClient({ threadId: 'demo', connection: stream(localDemo) })
+await client.sendMessage(prompt)
 \`\`\`
 
-> 组件只消费协议，不绑定任何模型供应商。`
+> 这是确定性的本地演示，不是模型回答。`
 
-export function useAgentDemo() {
-  const controller = createAgentStreamController({
-    text: {
-      maxCharsPerCommit: 18,
-      maxCharsPerSecond: 520,
-      maxCommitFps: 30,
-      minCharsPerSecond: 45,
-      targetLatencyMs: 650,
-    },
-  })
-  const snapshot = shallowRef<AgentStreamSnapshot>(controller.getSnapshot())
-  const messages = shallowRef<AgentConversationMessage[]>([
-    {
-      content: '你好，我是 Varo Agent。试试“分析双端方案”或“生成发布计划”。',
-      id: 'welcome',
-      role: 'assistant',
-      timestamp: '刚刚',
-    },
-  ])
+export interface AgentDemoController {
+  approve: (id: string) => void
+  busy: ComputedRef<boolean>
+  cancelInterrupts: () => void
+  messages: ComputedRef<UIMessage[]>
+  newConversation: () => void
+  prompt: ShallowRef<string>
+  reject: (id: string) => void
+  retry: () => void
+  retryInterrupts: () => void
+  send: (value?: string) => void
+  snapshot: ShallowRef<AgentDemoSnapshot>
+  stop: () => void
+}
+
+export function useAgentDemo(): AgentDemoController {
   const prompt = shallowRef('')
   const lastPrompt = shallowRef('分析双端 Agent 方案')
-  const unsubscribe = controller.subscribe(() => {
-    snapshot.value = controller.getSnapshot()
+  let disposed = false
+  const createClient = (threadId: string, welcome = false) => {
+    let pending: { interruptId: string, toolCallId: string, runId: string } | undefined
+    return new ChatClient({
+    threadId,
+    tools: [releaseTool],
+    initialMessages: welcome ? [{ id: 'welcome', role: 'assistant', parts: [{ type: 'text', content: '你好，我是 Varo Agent。试试“分析双端方案”或“生成发布计划”。' }] }] : [],
+    connection: stream(async function* (history, _data, signal, input): AsyncGenerator<StreamChunk> {
+      const id = `assistant-${input.runId}`
+      yield { type: EventType.RUN_STARTED, threadId: input.threadId, runId: input.runId }
+      yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
+      if (input.resume?.length) {
+        const resolution = input.resume[0]!
+        if (!pending || input.resume.length !== 1 || resolution.interruptId !== pending.interruptId || input.threadId !== threadId || input.parentRunId !== pending.runId) { throw new Error('本地发布审批已失效') }
+        const { toolCallId } = pending
+        const approved = resolution.payload === true || (typeof resolution.payload === 'object' && resolution.payload !== null && 'approved' in resolution.payload && resolution.payload.approved === true)
+        yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: id, delta: approved ? '已记录本地发布授权；演示不会发布包或访问 npm registry。' : '已取消发布动作，未产生任何外部副作用。' }
+        yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${toolCallId}`, toolCallId, content: JSON.stringify({ approved, local: true }), role: 'tool', ...(!approved ? { metadata: { tanstack: { toolResultOutcome: resolution.status === 'cancelled' ? 'cancelled' : 'denied' } } } : {}) }
+        pending = undefined
+      }
+      else {
+        const request = history[history.length - 1]
+        const text = request && 'parts' in request ? agentMessageText(request) : String(request?.content ?? '')
+        yield { type: EventType.REASONING_MESSAGE_START, messageId: `reasoning-${id}`, role: 'reasoning' }
+        yield { type: EventType.REASONING_MESSAGE_CONTENT, messageId: `reasoning-${id}`, delta: `本地整理“${text}”的组件、SDK 与发布边界。` }
+        yield { type: EventType.REASONING_MESSAGE_END, messageId: `reasoning-${id}` }
+        for (let offset = 0; offset < DEMO_RESPONSE.length; offset += 12) {
+          await delay(42, signal)
+          if (signal?.aborted) { return }
+          yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: id, delta: DEMO_RESPONSE.slice(offset, offset + 12) }
+        }
+        if (text.includes('发布')) {
+          const toolCallId = `release-${input.runId}`
+          const interruptId = `approval-${input.runId}`
+          pending = { interruptId, toolCallId, runId: input.runId }
+          yield { type: 'TOOL_CALL_START', toolCallId, toolCallName: releaseTool.name, parentMessageId: id }
+          yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: '{}' }
+          yield { type: 'TOOL_CALL_END', toolCallId }
+          yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
+          yield {
+            type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId,
+            outcome: { type: 'interrupt', interrupts: [withInterruptBinding({ id: interruptId, toolCallId, reason: 'tool_call', message: '是否批准本地发布演示？不会执行真实发布。', responseSchema: releaseApproval.responseSchema, metadata: { kind: 'approval', toolName: releaseTool.name, input: {} } }, { v: 1, kind: 'tool-approval', interruptId, interruptedRunId: pending.runId, generation: 0, toolName: releaseTool.name, toolCallId, originalArgs: {}, inputSchemaHash: hashSchemaInput(releaseTool.inputSchema), approvalSchemaHash: releaseApproval.approvalSchemaHash, responseSchemaHash: releaseApproval.responseSchemaHash })] },
+          }
+          return
+        }
+      }
+      yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
+      yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
+    }),
   })
-  const busy = computed(() => snapshot.value.status === 'streaming' || snapshot.value.status === 'waiting')
-  let activeChannel: AgentEventChannel | undefined
-  let activeMessageId = ''
-  let awaitingApproval = false
-  let producerTimer: ReturnType<typeof setTimeout> | undefined
-  let wakeProducer: (() => void) | undefined
-
-  function sleep(duration: number) {
-    return new Promise<void>((resolve) => {
-      wakeProducer = resolve
-      producerTimer = setTimeout(() => {
-        producerTimer = undefined
-        wakeProducer = undefined
-        resolve()
-      }, duration)
-    })
   }
+  let threadSequence = 0
+  let client = createClient(`varo-agent-demo-${++threadSequence}`, true)
+  const snapshot = shallowRef<AgentDemoSnapshot>(client.getSnapshot())
+  let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
+  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0 || snapshot.value.interruptState.resuming)
+  const messages = computed<UIMessage[]>(() => agentConversationHistory(snapshot.value))
 
-  function stop() {
-    controller.cancel('已停止生成')
-    activeChannel?.end()
-    activeChannel = undefined
-    awaitingApproval = false
-    clearTimeout(producerTimer)
-    producerTimer = undefined
-    wakeProducer?.()
-    wakeProducer = undefined
-  }
-
+  function stop() { client.stop() }
   function newConversation() {
-    stop()
-    controller.reset()
-    messages.value = []
+    if (disposed) { return }
+    unsubscribe()
+    client.stop()
+    client.dispose()
+    client = createClient(`varo-agent-demo-${++threadSequence}`)
+    snapshot.value = client.getSnapshot()
+    unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
     prompt.value = ''
     lastPrompt.value = ''
-    activeMessageId = ''
   }
-
-  function archiveCurrentResponse() {
-    const message = snapshot.value.message
-    if (!message?.source || !message.final) { return }
-    messages.value = [
-      ...messages.value,
-      {
-        content: message.source,
-        id: message.id,
-        role: message.role,
-        timestamp: '刚刚',
-      },
-    ]
-  }
-
-  async function runLocalTransport(channel: AgentEventChannel, request: string, id: string) {
-    try {
-      channel.push({ id: 'intent', title: '理解请求', type: 'reasoning.start' })
-      await sleep(180)
-      if (activeChannel !== channel) { return }
-      channel.push({ delta: `识别到“${request}”`, id: 'intent', type: 'reasoning.delta' })
-      channel.push({ durationMs: 180, id: 'intent', type: 'reasoning.end' })
-      channel.push({ id: 'docs', name: 'varo.registry.inspect', summary: '读取双端 Registry 能力', type: 'tool.start' })
-      await sleep(220)
-      if (activeChannel !== channel) { return }
-      channel.push({ id: 'docs', output: { targets: ['h5', 'weapp'] }, summary: '确认双端源码与运行时', type: 'tool.result' })
-      channel.push({ id: 'plan', title: '生成回答', type: 'reasoning.start' })
-      channel.push({ delta: '组织组件、流式协议与发布边界', id: 'plan', type: 'reasoning.delta' })
-      channel.push({ durationMs: 120, id: 'plan', type: 'reasoning.end' })
-      channel.push({ messageId: id, role: 'assistant', type: 'message.start' })
-
-      const response = request.includes('发布')
-        ? `${DEMO_RESPONSE}\n\n### 发布门禁\n\n即将执行 Registry、类型、构建与双端运行检查。`
-        : DEMO_RESPONSE
-      const chunks = response.match(/[\s\S]{1,12}/g) ?? [response]
-      for (const chunk of chunks) {
-        await sleep(42)
-        if (activeChannel !== channel) { return }
-        channel.push({ delta: chunk, messageId: id, type: 'text.delta' })
-      }
-
-      if (request.includes('发布')) {
-        awaitingApproval = true
-        channel.push({
-          choices: [
-            { description: '运行检查但不发布包', label: '仅验证', value: 'verify' },
-            { description: '验证通过后进入发布流程', label: '验证并发布', value: 'publish' },
-          ],
-          description: '发布属于外部副作用，Agent 必须获得明确授权。',
-          id: 'release-approval',
-          title: '确认发布动作',
-          type: 'approval.required',
-        })
-        return
-      }
-
-      channel.push({ messageId: id, type: 'message.end' })
-      channel.push({ type: 'done', usage: { inputTokens: 96, outputTokens: 218 } })
-      channel.end()
-    }
-    catch (error) {
-      channel.fail(error)
-    }
-  }
-
   function send(value = prompt.value) {
     const request = value.trim()
-    if (!request || busy.value) { return }
-    archiveCurrentResponse()
-    messages.value = [
-      ...messages.value,
-      { content: request, id: messageId('user'), role: 'user', timestamp: '刚刚' },
-    ]
+    if (!request || busy.value || disposed) { return }
     prompt.value = ''
     lastPrompt.value = request
-    awaitingApproval = false
-    activeMessageId = messageId('assistant')
-    activeChannel = createAgentEventChannel()
-    void controller.connect(activeChannel.source)
-    void runLocalTransport(activeChannel, request, activeMessageId)
+    void client.sendMessage(request)
   }
-
-  function approve(value: string) {
-    if (!activeChannel || !awaitingApproval) { return }
-    awaitingApproval = false
-    activeChannel.push({ id: 'release-approval', type: 'approval.resolved', value })
-    activeChannel.push({
-      delta: value === 'publish'
-        ? '\n\n已记录发布授权；演示环境不会写入真实 npm registry。'
-        : '\n\n已切换为仅验证模式，不会执行发布。',
-      messageId: activeMessageId,
-      type: 'text.delta',
-    })
-    activeChannel.push({ messageId: activeMessageId, type: 'message.end' })
-    activeChannel.push({ type: 'done' })
-    activeChannel.end()
+  function approve(id: string) {
+    const interrupt = client.getInterrupts().find(item => item.id === id)
+    if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(true) }
   }
-
-  function reject() {
-    if (!activeChannel || !awaitingApproval) { return }
-    awaitingApproval = false
-    activeChannel.push({ id: 'release-approval', type: 'approval.resolved', value: 'reject' })
-    activeChannel.push({ delta: '\n\n已取消发布动作，未产生任何外部副作用。', messageId: activeMessageId, type: 'text.delta' })
-    activeChannel.push({ messageId: activeMessageId, type: 'message.end' })
-    activeChannel.push({ type: 'done' })
-    activeChannel.end()
+  function reject(id: string) {
+    const interrupt = client.getInterrupts().find(item => item.id === id)
+    if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(false) }
   }
-
   function retry() {
-    if (busy.value) { return }
-    send(lastPrompt.value)
+    if (!busy.value && !disposed && lastPrompt.value) { void client.reload() }
   }
-
+  function retryInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+  }
+  function cancelInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
+  }
   onBeforeUnmount(() => {
-    stop()
+    disposed = true
+    client.stop()
     unsubscribe()
-    controller.destroy()
+    client.detach()
+    client.dispose()
   })
+  return { approve, busy, cancelInterrupts, messages, newConversation, prompt, reject, retry, retryInterrupts, send, snapshot, stop }
+}
 
-  return {
-    approve,
-    busy,
-    messages,
-    newConversation,
-    prompt,
-    reject,
-    retry,
-    send,
-    snapshot,
-    stop,
-  }
+function delay(duration: number, signal?: AbortSignal) {
+  let resolve!: () => void
+  const promise = new Promise<void>(done => { resolve = done })
+  if (signal?.aborted) { resolve(); return promise }
+  const finish = () => { clearTimeout(timer); signal?.removeEventListener('abort', finish); resolve() }
+  const timer = setTimeout(finish, duration)
+  signal?.addEventListener('abort', finish, { once: true })
+  return promise
 }

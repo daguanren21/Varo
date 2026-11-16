@@ -1,6 +1,25 @@
-import type { AgentApprovalPart, AgentMessageRole, AgentPartStatus } from '@varo-ui/ai'
+import type { UIMessage } from '@tanstack/ai-client'
 
-export type AgentChoice = NonNullable<AgentApprovalPart['choices']>[number]
+export type AgentMessageRole = 'assistant' | 'system' | 'user'
+export type AgentPartStatus = 'waiting' | 'running' | 'completed' | 'failed'
+export type AgentStreamStatus = 'idle' | 'streaming' | 'waiting' | 'completed' | 'failed' | 'cancelled'
+
+export interface AgentChoice {
+  description?: string
+  disabled?: boolean
+  label: string
+  value: string
+}
+
+export interface AgentToolPart {
+  error?: string
+  id: string
+  input?: unknown
+  name: string
+  output?: unknown
+  status: AgentPartStatus
+  summary?: string
+}
 
 export interface AgentTraceStep {
   content?: string
@@ -23,6 +42,7 @@ export interface AgentTask {
   title: string
 }
 
+
 export interface AgentConversationMessage {
   content: string
   id: string
@@ -30,3 +50,6 @@ export interface AgentConversationMessage {
   role: AgentMessageRole
   timestamp?: string
 }
+
+/** Static application messages and SDK messages retain their distinct data contracts. */
+export type AgentConversationEntry = AgentConversationMessage | UIMessage

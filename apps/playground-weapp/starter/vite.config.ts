@@ -19,6 +19,12 @@ export default defineConfig({
     autoImportComponents: false,
     srcRoot: 'src',
     platform: 'weapp',
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
     styles: [
       { source: 'styles.css', include: 'app.vue' },
       ...registryStyles.map(name => ({ source: `styles/${name}`, include: 'app.vue' })),
@@ -41,6 +47,7 @@ export default defineConfig({
         htmlTagToWxml: true,
         htmlTagToWxmlTagClass: true,
         scopedSlotsRequireProps: true,
+        nativeSlotContext: true,
       },
     },
   },

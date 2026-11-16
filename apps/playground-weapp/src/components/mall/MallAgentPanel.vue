@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import type {
   MallAddress,
   MallAddressDraft,
-  MallAgentMessage,
   MallHistoryItem,
   MallOrder,
   PendingAction,
 } from '../../features/mall/useMallAgent'
 import type { AgentChoice, AgentTask } from '../agent-ui/types'
 import { computed, shallowRef } from 'wevu'
-import AgentApproval from '../agent-ui/AgentApproval.vue'
+import AgentRadioGroup from '../agent-ui/AgentRadioGroup.vue'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
-import AgentMessage from '../agent-ui/AgentMessage.vue'
+import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentTaskList from '../agent-ui/AgentTaskList.vue'
 import VButton from '../ui/v-button.vue'
 import VIcon from '../ui/v-icon.vue'
@@ -29,11 +28,11 @@ const props = withDefaults(
     defaultAddress?: MallAddress
     history?: MallHistoryItem[]
     historyOpen?: boolean
-    messages?: MallAgentMessage[]
+    messages?: readonly UIMessage[]
     open?: boolean
     orders?: MallOrder[]
     pendingAction?: PendingAction
-    streamSnapshot?: AgentStreamSnapshot
+    streamSnapshot?: ChatClientSnapshot
     tasks?: AgentTask[]
   }>(),
   {
@@ -53,10 +52,12 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'approve': [value: string]
+  'approve': [id: string]
   'close': []
-  'reject': []
+  'cancelInterrupts': []
+  'reject': [id: string]
   'returnOrder': [order: MallOrder]
+  'retryInterrupts': []
   'saveAddress': [address: MallAddressDraft]
   'send': [prompt: string]
   'update:approvalValue': [value: string]
@@ -64,6 +65,7 @@ const emit = defineEmits<{
 
 const prompt = shallowRef('')
 const suggestions = ['买一盒牛奶', '我要退货', '查看订单历史', '修改收货地址']
+const contextMessages = computed(() => props.streamSnapshot?.messages)
 const approvalTitle = computed(() => {
   if (props.pendingAction?.type === 'purchase') {
     return `确认购买 ${props.pendingAction.product.name}`
@@ -82,16 +84,12 @@ const approvalDescription = computed(() => {
   }
   return ''
 })
-const approveText = computed(() => (props.pendingAction?.type === 'purchase' ? '确认下单' : '提交退货'))
 
 function send(value: string) {
   prompt.value = ''
   emit('send', value)
 }
 
-function messageContent(message: MallAgentMessage) {
-  return String(message.content ?? '')
-}
 </script>
 
 <template>
@@ -122,33 +120,25 @@ function messageContent(message: MallAgentMessage) {
 
       <scroll-view class="box-border min-h-0 w-full overflow-x-hidden px-3.5 py-3" scroll-y :scroll-with-animation="true">
         <view class="grid gap-3 pb-2">
-          <AgentMessage
-            v-for="message in messages"
-            :key="message.id"
-            :content="messageContent(message)"
-            :markdown="message.role !== 'user'"
-            :role="message.role"
-            :timestamp="message.timestamp"
-          />
+          <AgentConversation :messages="messages" :context-messages="contextMessages" />
+
+          <view v-if="pendingAction && !busy" class="grid gap-2">
+            <text class="font-semibold">{{ approvalTitle }}</text>
+            <text class="text-xs">{{ approvalDescription }}</text>
+            <AgentRadioGroup :choices="approvalChoices" :value="approvalValue" @update:value="emit('update:approvalValue', $event)" />
+          </view>
 
           <AgentEventRenderer
-            v-if="streamSnapshot && streamSnapshot.status !== 'idle'"
+            v-if="streamSnapshot"
             :snapshot="streamSnapshot"
+            @approve="emit('approve', $event)"
+            @reject="emit('reject', $event)"
+            @retryInterrupts="emit('retryInterrupts')"
+            @cancelInterrupts="emit('cancelInterrupts')"
           />
 
           <AgentTaskList v-if="tasks.length" title="执行进度" :tasks="tasks" />
 
-          <AgentApproval
-            v-if="pendingAction"
-            :title="approvalTitle"
-            :description="approvalDescription"
-            :choices="approvalChoices"
-            :value="approvalValue"
-            :approve-text="approveText"
-            @update:value="emit('update:approvalValue', $event)"
-            @approve="emit('approve', $event)"
-            @reject="emit('reject')"
-          />
 
           <MallOrderHistory v-if="historyOpen" :orders="orders" :history="history" @return="emit('returnOrder', $event)" />
           <MallAddressEditor

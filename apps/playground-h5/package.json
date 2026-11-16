@@ -13,13 +13,15 @@
     "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
+    "@tanstack/ai": "1.4.0",
+    "@tanstack/ai-client": "1.1.0",
     "@varo-ui/ai": "workspace:^",
     "@varo-ui/h5": "workspace:*",
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.7.0",
-    "vue": "^3.5.43"
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -28,6 +30,7 @@
     "dom-accessibility-api": "0.7.1",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.0",
-    "vue-tsc": "^3.3.11"
+    "vue-tsc": "^3.3.11",
+    "zod": "^4.6.5"
   }
 }

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import { agentCurrentMessage, agentMessageText, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 import type { MallProduct } from '../../features/mall/useMallAgent'
 import { computed, shallowRef } from 'wevu'
 import MallAgentPanel from '../../components/mall/MallAgentPanel.vue'
@@ -9,24 +11,16 @@ import { useMallAgent } from '../../features/mall/useMallAgent'
 
 type MaybeRef<T> = T | { value: T }
 
-interface AutomationSnapshot {
-  eventCount: number
-  message?: { source: string }
-  reasoning: unknown[]
-  status: string
-  tools: unknown[]
-}
 
 interface MallPageAutomationContext {
   __wevu?: {
     proxy?: {
       busy?: MaybeRef<boolean>
       confirmAgentAction?: (value: string) => Promise<void>
-      messages?: MaybeRef<Array<{ content: string }>>
       orders?: MaybeRef<Array<{ productId: string, status: string }>>
       pendingAction?: MaybeRef<{ type: string } | undefined>
       runAgentPrompt?: (prompt: string) => Promise<void>
-      streamSnapshot?: MaybeRef<AutomationSnapshot>
+      streamSnapshot?: MaybeRef<ChatClientSnapshot>
     }
   }
 }
@@ -46,22 +40,21 @@ defineOptions({
         return value
       }
       const busy = unwrap(proxy?.busy)
-      const messages = unwrap(proxy?.messages)
       const orders = unwrap(proxy?.orders)
       const pendingAction = unwrap(proxy?.pendingAction)
       const snapshot = unwrap(proxy?.streamSnapshot)
       return {
         busy,
-        eventCount: snapshot?.eventCount ?? 0,
+        messagePartCount: snapshot?.messages.reduce((count, message) => count + message.parts.length, 0) ?? 0,
         latestProduct: orders?.[0]?.productId,
         latestStatus: orders?.[0]?.status,
-        messageCount: messages?.length ?? 0,
+        messageCount: snapshot?.messages.length ?? 0,
         orderCount: orders?.length ?? 0,
         pendingAction: pendingAction?.type,
-        reasoningCount: snapshot?.reasoning.length ?? 0,
-        sourceLength: snapshot?.message?.source.length ?? 0,
+        reasoningCount: snapshot?.messages.reduce((count, message) => count + message.parts.filter(part => part.type === 'thinking').length, 0) ?? 0,
+        sourceLength: snapshot ? agentMessageText(agentCurrentMessage(snapshot)).length : 0,
         status: snapshot?.status,
-        toolCount: snapshot?.tools.length ?? 0,
+        toolCount: snapshot?.messages.reduce((count, message) => count + message.parts.filter(part => part.type === 'tool-call').length, 0) ?? 0,
       }
     },
     automationRunPurchase(this: MallPageAutomationContext) {
@@ -81,6 +74,7 @@ const {
   approve,
   busy,
   buyProduct,
+  cancelInterrupts,
   cartCount,
   defaultAddress,
   history,
@@ -90,6 +84,7 @@ const {
   pendingAction,
   products,
   reject,
+  retryInterrupts,
   returnOrder,
   saveAddress,
   send,
@@ -130,7 +125,10 @@ async function runAgentPrompt(prompt: string) {
 }
 
 async function confirmAgentAction(value: string) {
-  await approve(value)
+  const approval = agentSnapshotProjection(streamSnapshot.value).approvals[0]
+  if (!approval) { return }
+  approvalValue.value = value
+  await approve(approval.id)
 }
 
 defineExpose({
@@ -250,6 +248,8 @@ defineExpose({
       @send="send"
       @approve="approve"
       @reject="reject"
+      @retryInterrupts="retryInterrupts"
+      @cancelInterrupts="cancelInterrupts"
       @update:approvalValue="panelApprovalValue = $event"
       @return-order="returnOrder"
       @save-address="saveAddress"

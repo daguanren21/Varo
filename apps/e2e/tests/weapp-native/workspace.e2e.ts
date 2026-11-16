@@ -75,4 +75,32 @@ test.describe('native B2 Workspace', { platforms: nativePlatforms, requires: ['m
     await expect(screen.getByRole('button', { name: '批准本地词数工具' })).toBeEnabled()
     if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('workspace-cancelled') }
   })
+
+  test('forwards parent state and child actions through the custom execution slot', async ({ miniProgram, screen }) => {
+    await miniProgram.reLaunch('/pages/agent-workspace/index')
+    await expectRoute(miniProgram, '/pages/agent-workspace/index')
+    const pipeline = miniProgram.locator(`${classXPath('agent-rag')}[@data-status]`)
+    await expect(pipeline).toHaveAttribute('data-status', 'waiting')
+
+    const question = '验证具名插槽中的父级响应式更新'
+    const composer = screen.getByRole('textbox', { name: 'Agent 输入', exact: true })
+    await composer.fill(question)
+    await screen.getByRole('button', { name: '发送消息', exact: true }).tap()
+    await expect(pipeline).toHaveAttribute('data-status', 'running')
+    await expect(pipeline).toContainText(question)
+    await expect(composer).toHaveValue('')
+
+    await screen.getByRole('button', { name: '停止', exact: true }).tap()
+    await expect(pipeline).toHaveAttribute('data-status', 'waiting')
+    await expect(pipeline).toContainText('已取消，可重新运行。')
+
+    await screen.getByRole('button', { name: '运行流程', exact: true }).tap()
+    await expect(pipeline).toHaveAttribute('data-status', 'running')
+    await expect(pipeline).toHaveAttribute('data-status', 'completed')
+    for (const stage of ['query', 'embed', 'retrieve', 'assemble', 'generate']) {
+      await expect(miniProgram.locator(`//*[@data-rag-stage="${stage}"]`)).toHaveAttribute('data-status', 'completed')
+    }
+    await miniProgram.locator('//*[@data-rag-citation="support"]').tap()
+    await expect(miniProgram.locator(classXPath('agent-workspace-page'))).toContainText('已选中来源：支持队列')
+  })
 })

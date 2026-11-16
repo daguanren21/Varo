@@ -22,13 +22,16 @@
     "test:contracts": "vitest run --config ../../vitest.config.ts --dir contracts --environment node --passWithNoTests=false"
   },
   "dependencies": {
+    "@tanstack/ai": "1.4.0",
+    "@tanstack/ai-client": "1.1.0",
     "@varo-ui/ai": "workspace:^",
     "@varo-ui/headless": "workspace:*",
     "@varo-ui/theme": "workspace:*",
     "@varo-ui/weapp": "workspace:*",
     "@weapp-tailwindcss/merge": "^2.2.4",
     "clsx": "^2.1.1",
-    "wevu": "7.5.0"
+    "wevu": "7.10.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@csstools/css-tokenizer": "4.0.2",
@@ -38,8 +41,8 @@
     "postcss-selector-parser": "7.1.6",
     "tailwindcss": "^4.3.3",
     "vite": "8.3.0",
-    "vue": "^3.5.43",
+    "vue": "^3.5.45",
     "weapp-tailwindcss": "^5.5.6",
-    "weapp-vite": "7.5.0"
+    "weapp-vite": "7.10.0"
   }
 }

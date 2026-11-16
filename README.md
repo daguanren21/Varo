@@ -13,16 +13,16 @@ Varo provides components and Blocks for Vue 3 mobile H5 applications and `weapp-
 - [`@varo-ui/h5`](https://www.npmjs.com/package/@varo-ui/h5) — tree-shakeable Vue components for mobile H5 products
 - [`@varo-ui/weapp`](https://www.npmjs.com/package/@varo-ui/weapp) — native Wevu `.vue` source and a resolver for the `weapp-vite` compiler, not a Vue render runtime
 - [`@varo-ui/theme`](https://www.npmjs.com/package/@varo-ui/theme) — shared theme tokens and providers
-- [`@varo-ui/ai`](https://www.npmjs.com/package/@varo-ui/ai) — Agent event protocol, streaming controller, SSE/chunk decoding, and safe Markdown model
+- [`@varo-ui/ai`](https://www.npmjs.com/package/@varo-ui/ai) — safe Markdown models, text pacing, and thread-version helpers; chat state and transport come directly from TanStack AI
 
 ## Current capabilities
 
 - **H5 components:** styled Vue components and DOM primitives, with editable Registry source
 - **Native components:** target-specific Wevu SFCs; npm and Registry installations derive from the same authored source
-- **Agent Core:** shared event protocol, SSE/chunk transport, Markstream scheduling on H5, timed-frame scheduling on mini programs, and a safe incremental Markdown AST
+- **Agent Core:** safe incremental Markdown AST, Markstream text pacing on H5, timed-frame text pacing on mini programs, and thread-version helpers only
 - **Agent UI:** conversation, workspace, advanced, and RAG source units plus Agent Chat and Agent Workspace Blocks for scoped context, retrieval, tasks, thread versions, streaming, tools, approvals, code, diffs, citations, media, tables, and workflows
 - **Dual-target Blocks:** Login Form, Profile Card, Profile Edit, Product List, Order Filter, Agent Chat, and Agent Workspace
-- **AI commerce demo:** real incremental events, reasoning and tool states, human approval for purchases and returns, order history, and address configuration
+- **AI commerce demo:** explicitly local TanStack AG-UI streams, reasoning and tool presentation, purchase/return approval UI, order history, and address configuration; not a live provider integration
 - **Renderer families:** `h5` and `weapp`; deployment profiles are listed below
 - **Mini-program styling:** Tailwind CSS v4, [`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss), and `@weapp-tailwindcss/merge`
 - **Mini-program debugging:** built-in MCP, DevTools console bridge, Automator screenshots, and runtime smoke checks
@@ -32,7 +32,7 @@ Varo provides components and Blocks for Vue 3 mobile H5 applications and `weapp-
 - The core Weapp Registry components draw on features shared by [Vant Weapp](https://vant-ui.github.io/vant-weapp/), [NutUI](https://nutui.jd.com/h5/vue/4x/), [TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview), and [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview).
 - Motion and Agent interaction patterns reference [Beautiful UI](https://www.beautifului.dev/) and [beUI](https://beui.dev/), while production code remains native to Vue and mini-program runtimes.
 - A component's supported platforms are declared in its `registry/**/registry.json` manifest and those of all its dependencies. An H5 catalog entry or browser example does not establish native support.
-- H5 streaming uses [Markstream Core](https://github.com/Simon-He95/markstream-vue) scheduling and Markdown parsing. Mini programs use the same protocol and AST with a timed scheduler that does not depend on `requestAnimationFrame`.
+- TanStack AI owns AG-UI events, active messages, stream state, and aborts. H5 uses `@tanstack/ai-vue`; native uses `@tanstack/ai-client` with Wevu. Varo's Markdown and text pacing are presentation-only: H5 uses [Markstream Core](https://github.com/Simon-He95/markstream-vue), while mini programs use the same safe AST with timed scheduling independent of `requestAnimationFrame`.
 - [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json) records product tiers. The manifests and profile table in [`packages/registry/src/index.ts`](./packages/registry/src/index.ts) determine which platforms an installation supports.
 
 ## Source ownership
@@ -58,7 +58,7 @@ Write components in `registry/components/**`, Blocks in `registry/blocks/**`, an
 
 To install one of the six experimental profiles, the selected components and every dependency must explicitly support it. If any item does not, the CLI fails before writing files instead of falling back to Weapp. Representative supported components are `button`, `input`, `input-otp`, `form`, `checkbox`, `switch`, `drawer`, `card`, and `icon`, with their required utilities and themes. Check the manifests for the exact list. This does not certify the full catalog or Agent UI on those platforms.
 
-Repository fixtures use `weapp-vite` and `wevu` **7.5.0**; native package peers accept `>=7.2.1 <8`. Donut uses the WeChat compiler and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. It has no separate Android, iOS, or OpenHarmony compiler target. You still need SDKs, vendor IDEs, registered AppIDs, signing, and device checks. The repository does not supply identities or credentials.
+Repository fixtures use `weapp-vite` and `wevu` **7.10.0**. Native AI clients use the published [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals): `weapp.appPrelude.webRuntime: { enabled: true, networkDefaults: { request: { enableChunked: true } } }`. Use TanStack's standard fetch adapter, not a bespoke `wx.request` transport. Streaming still requires real status, headers, and incremental chunks from the host; DevTools and devices need separate verification. Donut uses the WeChat compiler and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. It has no separate Android, iOS, or OpenHarmony compiler target. You still need SDKs, vendor IDEs, registered AppIDs, signing, and device checks. The repository does not supply identities or credentials.
 
 ## Install editable source
 
@@ -98,6 +98,7 @@ For native source installs, load **every installed `src/styles/*.css` file globa
 3. **Neutral behavior:** import state/form contracts from `@varo-ui/headless`; move `useBodyScrollLock` imports to `@varo-ui/h5/primitives` in H5 code only. Do not emulate DOM locking on native hosts. Form submit/failed handlers receive the named `SubmitPayload` (`FormSubmitPayload` in form source exports), containing `values`, `errors`, and optional platform-specific `event`, not a raw DOM event.
 4. **Styles:** stop treating `themes/base` as a monolithic component/Agent stylesheet. Reinstall the required item closure and apply the native global loading rule above; H5 installed source brings its dependency CSS imports.
 5. **Agent installs:** choose `components/agent-conversation`, `components/agent-workspace`, `components/agent-advanced`, or `components/agent-rag` as needed. `components/agent-presentation` owns pure shared types/helpers. `blocks/agent-chat` selects conversation dependencies, not advanced/RAG/fine-tuning UI; `components/agent-ui` deliberately selects the full suite. Approval, network, retry, and cancellation execution policy remains application-owned.
+6. **Agent SDK cutover:** import `UIMessage` / AG-UI chunks from `@tanstack/ai`, `ChatClientSnapshot` / `ChatClient` from `@tanstack/ai-client`, and H5 `useChat` from `@tanstack/ai-vue`. Do not recreate the removed Varo protocol, stream controller, channel, SSE decoder, or event parser. Snapshot props take the actual SDK snapshot; static history keeps `AgentConversationMessage[]`. `AgentPartStatus`, `AgentStreamStatus`, and `AgentToolPart` live in installed `components/agent-ui/types` and describe display only, not SDK states (`ready`, `submitted`, `streaming`, `error`). Renderer approval/rejection events carry interrupt IDs: the application resolves the matching `tool-approval` from `client.getInterrupts()` with `true` / `false`. Business authorization and execution remain application-owned. See the [AI integration guide](https://varo.weapp.dev/en/ai/).
 
 Input rejects edits while disabled or readonly. It notifies once when a value changes and sends no change event when the value stays the same. Cancel Drawer `openChange` synchronously in the handler to prevent the subsequent state change, model update, and close notification. Update existing handlers to follow these rules and remove the old event forwarding logic.
 
@@ -122,7 +123,7 @@ pnpm run docs:dev
 
 This starts VitePress at `http://localhost:5173` and prepares the native preview artifacts. The H5 and Mini Program tabs share device framing, example cases, language, and theme. Mini Program examples run compiled Wevu SFCs through glass-easel; their editable source remains available under **View code**. H5-only components retain explicit platform support boundaries.
 
-The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.5.0 compiler/runtime includes the upstream plain-slot context implementation from [weapp-vite #1174](https://github.com/weapp-vite/weapp-vite/pull/1174) for compiled Wevu components on WeChat with `scopedSlotsRequireProps: true` and default attached setup; it does not extend the protocol to created setup or other platforms. All registered documentation scenarios are exercised by `DOCS_PREVIEW_URL=http://localhost:5173/ pnpm --filter @varo/docs smoke:native-preview`. This trusted same-origin preview is not a security sandbox or WeChat IDE/device certification.
+The preview keeps native Dialog diagnostics in a separate `dialog` scenario. The 7.10.0 WeChat integration explicitly enables `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true`, without the former 7.5.0 compiler patch. Focused native coverage in `apps/e2e/tests/weapp-native/workspace.e2e.ts` exercises custom execution-slot parent updates and child events; `apps/e2e/tests/weapp-preview/preview.e2e.ts` covers Dialog cancellation/projected state and Menu selection. The selected docs smoke cases `docs-dialog,docs-menu,form-array-en-dark` also pass. These are default-attached compiled headless/browser-host checks, not created-setup, other-platform, or WeChat IDE/device certification. The trusted same-origin preview is not a security sandbox.
 
 ## Verification
 
@@ -148,7 +149,7 @@ Native artifacts are in `apps/platform-smoke/.generated/<profile>/dist/<compiler
 
 Realworld creates its manager with `createAedPinia()` in [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts). Install it before creating stores: call `use(pinia)` in native `app.vue` or `createApp({}).use(manager)` in local consumers. Through `$subscribe`, the plugin persists only the AED store in `realworld-weapp-state` format, including nested updates. Navigation data stays transient; disposing the store or manager releases subscriptions. Keep this configuration for persistence, rather than a setup-local deep watch or bare `createPinia()`. Local checks do not run `wx.login`, update checks, or device launch.
 
-Use pnpm `11.24.0` and Node `^22.18.0 || ^24.11.0 || >=26.0.0`. Vitest 5 and tsdown 0.23 exclude Node 25. TypeScript remains on 6.x for `vue-tsc` and the compiler API used by the native-artifact preview; jsdom remains on 29.x because 30.x requires newer Node patch versions than this workspace's supported minimums.
+Use pnpm `11.24.0` and Node `^22.23.4 || ^24.22.1 || >=26.12.1`, matching the published 7.10 compiler's runtime requirement. Node 25 is excluded. TypeScript remains on 6.x for `vue-tsc` and the compiler API used by the native-artifact preview; jsdom remains on 29.x.
 
 Vitest 5 no longer discovers configuration in parent directories. Workspace test scripts explicitly select the shared root configuration and restrict discovery to the current package. The Weapp playground instead selects its native-SFC test configuration with jsdom; the standalone Realworld app retains its local configuration.
 

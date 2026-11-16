@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, shallowRef, useTemplateRef, watch } from 'vue'
 import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
 import { useRagPipelineDemo } from '../composables/useRagPipelineDemo'
 import {
@@ -10,10 +10,13 @@ import {
   AgentResponseActions,
 } from './agent-ui'
 
+import { agentCurrentMessage, agentMessageText } from './agent-ui/presentation'
 type Locale = 'en' | 'zh'
 
 const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'zh' })
-const { approve, busy, messages, prompt, reject, retry, run, snapshot } = useAgentDocsDemo()
+const { approve, busy, cancelInterrupts, messages, prompt, reject, retry, retryInterrupts, run, snapshot } = useAgentDocsDemo()
+const currentMessage = computed(() => agentCurrentMessage(snapshot.value))
+const currentContent = computed(() => agentMessageText(currentMessage.value))
 const { snapshot: ragSnapshot, run: runRag, cancel: cancelRag } = useRagPipelineDemo(props.locale)
 
 const transcript = useTemplateRef<HTMLElement>('transcript')
@@ -57,8 +60,8 @@ function submitPrompt(value: string) {
 
 watch(
   [
-    () => messages.value.at(-1)?.content,
-    () => snapshot.value.message?.visible,
+    () => messages.value.at(-1)?.parts,
+    currentContent,
     () => snapshot.value.status,
   ],
   () => followLatest(),
@@ -81,7 +84,7 @@ function t(zh: string, en: string) {
     <section class="ai-docs-demo__mode" :aria-label="t('Chat 模式', 'Chat mode')">
       <header class="ai-docs-demo__mode-head">
         <span>
-          <small>CHAT</small>
+          <small>LOCAL CHAT</small>
           <h3>{{ t('Chat 模式', 'Chat') }}</h3>
         </span>
         <output :data-status="snapshot.status">{{ snapshot.status }}</output>
@@ -94,16 +97,17 @@ function t(zh: string, en: string) {
         </header>
 
         <div ref="transcript" class="ai-docs-demo__transcript" @scroll.passive="syncTranscriptLiveEdge">
-          <AgentConversation :messages="messages" />
+          <AgentConversation :messages="messages" :context-messages="snapshot.messages" />
           <AgentEventRenderer
-            v-if="snapshot.status !== 'idle'"
             :snapshot="snapshot"
             @approve="approve"
             @reject="reject"
             @retry="retry"
+            @retry-interrupts="retryInterrupts"
+            @cancel-interrupts="cancelInterrupts"
           >
             <template #actions>
-              <AgentResponseActions :content="snapshot.message?.source" @retry="retry" />
+              <AgentResponseActions :content="currentContent" @retry="retry" />
             </template>
           </AgentEventRenderer>
           <button

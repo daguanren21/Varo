@@ -11,6 +11,14 @@
 ```vue
 <script setup lang="ts">
 import { AgentToolChip } from '@/components/agent-ui'
+import type { AgentToolPart } from '@/components/agent-ui/types'
+
+const tool: AgentToolPart = {
+  id: 'lookup-1',
+  name: 'lookup',
+  status: 'completed',
+  summary: '本地展示示例；未调用工具',
+}
 </script>
 
 <template>
@@ -24,6 +32,8 @@ import { AgentToolChip } from '@/components/agent-ui'
 | --------- | --------------- | ---------- | -------------- |
 | `compact` | `boolean`       | `false`    | 仅显示紧凑信息 |
 | `tool`    | `AgentToolPart` | `required` | 工具状态       |
+
+`AgentToolPart` 是 Registry 展示类型（`id`、`name`、`input`、`output`、`summary`、`error`、`status`），不从 `@varo-ui/ai` 导入。其 `AgentPartStatus` 为 `waiting | running | completed | failed`，不是 TanStack 工具 wire state。应用或渲染器从 SDK 消息做纯投影；组件不执行工具或授予权限。
 
 ## Events
 

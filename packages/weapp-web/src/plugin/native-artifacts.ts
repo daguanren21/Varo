@@ -939,7 +939,9 @@ async function collectModules(
 function renderFactory(source: SourceFile): string {
   return `${JSON.stringify(source.relativePath)}: function (require, module, exports, globals) {\n`
     + `const { ${factoryGlobalNames.join(', ')} } = globals\n`
+    + 'return (function (require, module, exports, globals) {\n'
     + `${source.content}\n`
+    + '}).call(this, require, module, exports, globals)\n'
     + '}'
 }
 

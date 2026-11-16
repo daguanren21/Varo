@@ -159,7 +159,7 @@ async function packPackages(temporaryRoot, rootPackage) {
 async function installedVersions() {
   const versions = {}
   const roots = new Map([
-    [repoRoot, ['vue', 'wevu', 'vite', 'weapp-vite', 'weapp-tailwindcss', '@vitejs/plugin-vue', 'typescript', 'vue-tsc', '@types/node', 'miniprogram-api-typings']],
+    [repoRoot, ['vue', 'wevu', 'vite', 'weapp-vite', 'weapp-tailwindcss', '@vitejs/plugin-vue', 'typescript', 'vue-tsc', '@types/node', 'miniprogram-api-typings', '@tanstack/ai', '@tanstack/ai-client']],
     [platformFixture, ['tailwindcss', '@weapp-tailwindcss/merge', 'clsx']],
     [resolve(repoRoot, 'packages/ui-h5'), ['tailwind-merge']],
   ])
@@ -196,15 +196,6 @@ async function installConsumer(root, records, rootPackage) {
   ].join('\n'))
   // Varo packages are forced to the local tarballs above. Third-party packages
   // may use the registry when the store is cold, as in a fresh downstream install.
-  run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
-  // Follow the documented consumer-root setup using the published artifact only.
-  const consumerRequire = createRequire(resolve(root, 'package.json'))
-  const patchName = 'weapp-vite@7.5.0.patch'
-  const patch = inside(root, await realpath(consumerRequire.resolve(`@varo-ui/weapp/patches/${patchName}`)))
-  await mkdir(resolve(root, 'patches'), { recursive: true })
-  await cp(patch, resolve(root, 'patches', patchName))
-  const workspacePath = resolve(root, 'pnpm-workspace.yaml')
-  await write(workspacePath, `${await readFile(workspacePath, 'utf8')}patchedDependencies:\n  weapp-vite@7.5.0: patches/${patchName}\n`)
   run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
   for (const { manifest: original } of records) {
     const packageRoot = await realpath(resolve(root, 'node_modules', original.name))

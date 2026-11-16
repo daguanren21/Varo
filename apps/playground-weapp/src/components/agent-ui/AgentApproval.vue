@@ -17,6 +17,7 @@ const props = withDefaults(
     choices?: AgentChoice[]
     defaultValue?: string
     description?: string
+    disabled?: boolean
     rejectText?: string
     title: string
     value?: string
@@ -27,6 +28,7 @@ const props = withDefaults(
     choices: () => [],
     defaultValue: '',
     description: '',
+    disabled: false,
     rejectText: '取消',
     value: undefined,
     warning: '',
@@ -43,7 +45,7 @@ const internalValue = shallowRef(props.value ?? props.defaultValue)
 const currentValue = computed(() => props.value ?? internalValue.value)
 const renderedChoices = computed(() =>
   props.choices.map((choice) => {
-    const disabled = Boolean(choice.disabled)
+    const disabled = props.disabled || Boolean(choice.disabled)
     const selected = choice.value === currentValue.value
     let stateClass = ''
     if (selected) { stateClass = 'agent-approval__choice--selected' }
@@ -60,12 +62,17 @@ const renderedChoices = computed(() =>
 )
 
 function select(value: string) {
+  if (props.disabled || props.choices.find(choice => choice.value === value)?.disabled) { return }
   if (props.value == null) { internalValue.value = value }
   emit('update:value', value)
 }
 
 function approve() {
-  if (!props.choices.length || currentValue.value) { emit('approve', currentValue.value) }
+  if (!props.disabled && (!props.choices.length || currentValue.value)) { emit('approve', currentValue.value) }
+}
+
+function reject() {
+  if (!props.disabled) { emit('reject') }
 }
 </script>
 
@@ -124,10 +131,10 @@ function approve() {
       <slot />
 
       <view class="agent-approval__footer">
-        <VButton class="agent-approval__reject" tone="default" variant="outline" @click="emit('reject')">
+        <VButton class="agent-approval__reject" tone="default" variant="outline" :disabled="disabled" @click="reject">
           {{ rejectText }}
         </VButton>
-        <VButton class="agent-approval__approve" :disabled="choices.length > 0 && !currentValue" @click="approve">
+        <VButton class="agent-approval__approve" :disabled="disabled || (choices.length > 0 && !currentValue)" @click="approve">
           {{ approveText }}
         </VButton>
       </view>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentStreamStatus } from '@varo-ui/ai'
+import type { AgentStreamStatus } from './types'
 import { computed } from 'wevu'
 import AgentMarkdown from './AgentMarkdown.vue'
 import AgentStream from './AgentStream.vue'
@@ -15,6 +15,7 @@ const props = withDefaults(
     streamError?: string
     streamFinal?: boolean
     streamStatus?: AgentStreamStatus
+    streamRetryable?: boolean
     timestamp?: string
   }>(),
   {
@@ -27,6 +28,7 @@ const props = withDefaults(
     streamError: '',
     streamFinal: false,
     streamStatus: 'idle',
+    streamRetryable: true,
     timestamp: '',
   },
 )
@@ -85,6 +87,7 @@ const bubbleClass = computed(() => {
           :error="normalizedStreamError"
           :final="streamFinal"
           :status="normalizedStreamStatus"
+          :retryable="streamRetryable"
           @retry="emit('retry')"
         />
         <AgentMarkdown v-else-if="markdown" class="block w-full min-w-0 max-w-full overflow-hidden" :content="normalizedContent" final />

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
-import type { AgentConversationMessage } from '../agent-ui/types'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { AgentConversationEntry } from '../agent-ui/types'
 import type { AgentChatHistoryItem, AgentChatLayout } from './agent-chat.types'
 import { useControllableState } from '@varo-ui/headless'
 import { computed, onBeforeUnmount, onMounted, onUpdated, useTemplateRef, watch } from 'vue'
@@ -11,6 +11,7 @@ import {
 
   AgentEventRenderer,
 } from '../agent-ui/conversation'
+import { agentSnapshotStatus } from '../agent-ui/presentation'
 import { VButton } from '../ui/button'
 
 const props = withDefaults(
@@ -21,9 +22,9 @@ const props = withDefaults(
     history?: AgentChatHistoryItem[]
     activeHistoryId?: string
     closeLabel?: string
-    messages?: AgentConversationMessage[]
+    messages?: readonly AgentConversationEntry[]
     modelValue?: string
-    snapshot?: AgentStreamSnapshot
+    snapshot?: ChatClientSnapshot
     subtitle?: string
     suggestions?: string[]
     title?: string
@@ -43,13 +44,15 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'approve': [value: string]
+  'approve': [interruptId: string]
   'close': []
   'historySelect': [id: string]
   'newConversation': []
   'stop': []
-  'reject': []
+  'reject': [interruptId: string]
   'retry': []
+  'retryInterrupts': []
+  'cancelInterrupts': []
   'submit': [prompt: string]
   'update:modelValue': [value: string]
 }>()
@@ -62,7 +65,7 @@ const promptState = useControllableState<string>({
 })
 const prompt = computed(() => promptState.current.value)
 const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
-const empty = computed(() => props.messages.length === 0 && (!props.snapshot || props.snapshot.status === 'idle'))
+const empty = computed(() => props.messages.length === 0 && (!props.snapshot || agentSnapshotStatus(props.snapshot) === 'idle'))
 const historyChoices = computed(() => props.history.map(item => ({
   ...item,
   active: item.id === props.activeHistoryId,
@@ -163,13 +166,15 @@ function stop() {
             输入问题，或选择下方建议开始新的对话。
           </p>
         </div>
-        <AgentConversation :messages="messages" />
+        <AgentConversation :messages="messages" :context-messages="snapshot?.messages" />
         <AgentEventRenderer
-          v-if="snapshot && snapshot.status !== 'idle'"
+          v-if="snapshot && agentSnapshotStatus(snapshot) !== 'idle'"
           :snapshot="snapshot"
           @approve="emit('approve', $event)"
-          @reject="emit('reject')"
+          @reject="emit('reject', $event)"
           @retry="emit('retry')"
+          @retry-interrupts="emit('retryInterrupts')"
+          @cancel-interrupts="emit('cancelInterrupts')"
         >
           <template v-if="$slots.actions" #actions>
             <slot name="actions" />

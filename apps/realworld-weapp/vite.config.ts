@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
-import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { posix, relative, resolve } from 'node:path'
+import { readFile } from 'node:fs/promises'
+import { posix, resolve } from 'node:path'
 import { createVaroWeappThemePlugin } from '@varo-ui/theme/weapp-vite'
 import { defineConfig } from 'weapp-vite/config'
 import { realworldTheme } from './src/theme.ts'
@@ -18,27 +18,6 @@ const localizedChunkFiles = new Map([
   ['openInfo.js', 'improvePages/_chunks/openInfo.js'],
   ['partsInfo.js', 'improvePages/_chunks/partsInfo.js'],
 ])
-const postWriteLocalizedChunkFiles = new Map([
-  ['check.js', 'managePages/_chunks/check.js'],
-  ['checkShanghai.js', 'managePages/_chunks/checkShanghai.js'],
-  ['detail.js', 'managePages/_chunks/detail.js'],
-  ['highSearch.js', 'managePages/_chunks/highSearch.js'],
-  ['module.js', 'managePages/_chunks/module.js'],
-  ['repair.js', 'managePages/_chunks/repair.js'],
-])
-
-async function collectJavaScriptFiles(directory: string, files: string[] = []): Promise<string[]> {
-  for (const entry of await readdir(directory, { withFileTypes: true })) {
-    const path = resolve(directory, entry.name)
-    if (entry.isDirectory()) {
-      await collectJavaScriptFiles(path, files)
-    }
-    else if (entry.isFile() && entry.name.endsWith('.js')) {
-      files.push(path)
-    }
-  }
-  return files
-}
 
 function realworldGlobalStylesPlugin(): Plugin {
   return {
@@ -103,52 +82,6 @@ function realworldGlobalStylesPlugin(): Plugin {
 
         sharedStyle.source = `${sharedSource}\n${iconFontCss}`
         appStyle.source = `@import "./styles.wxss";\n${appSource}`
-      },
-    },
-    writeBundle: {
-      order: 'post',
-      async handler(options) {
-        if (!options.dir) {
-          throw new Error('Expected an output directory for localized chunks')
-        }
-        const outputDirectory = resolve(options.dir)
-        for (const [originalFileName, localizedFileName] of postWriteLocalizedChunkFiles) {
-          const originalPath = resolve(outputDirectory, originalFileName)
-          const localizedPath = resolve(outputDirectory, localizedFileName)
-          await mkdir(resolve(localizedPath, '..'), { recursive: true })
-          try {
-            await rename(originalPath, localizedPath)
-          }
-          catch (error) {
-            if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-              throw error
-            }
-          }
-        }
-
-        const originalFileByLocalizedFile = new Map(
-          Array.from(postWriteLocalizedChunkFiles, ([original, localized]) => [localized, original]),
-        )
-        for (const file of await collectJavaScriptFiles(outputDirectory)) {
-          const localizedImporter = relative(outputDirectory, file).split('\\').join('/')
-          const originalImporter = originalFileByLocalizedFile.get(localizedImporter) ?? localizedImporter
-          const source = await readFile(file, 'utf8')
-          const rewritten = source.replace(
-            /require\((['"])(\.[^'"]+)\1\)/g,
-            (_match, quote: string, specifier: string) => {
-              const originalTarget = posix.normalize(posix.join(posix.dirname(originalImporter), specifier))
-              const localizedTarget = postWriteLocalizedChunkFiles.get(originalTarget) ?? originalTarget
-              let relativeTarget = posix.relative(posix.dirname(localizedImporter), localizedTarget)
-              if (!relativeTarget.startsWith('.')) {
-                relativeTarget = `./${relativeTarget}`
-              }
-              return `require(${quote}${relativeTarget}${quote})`
-            },
-          )
-          if (rewritten !== source) {
-            await writeFile(file, rewritten)
-          }
-        }
       },
     },
   }
