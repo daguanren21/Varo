@@ -27,6 +27,7 @@ import { AgentStream } from '@/components/agent-ui'
 | `cursor`    | `boolean`           | `true`      | 显示光标                           |
 | `error`     | `string`            | `—`         | 错误文案                           |
 | `final`     | `boolean`           | `false`     | Markdown 是否结束                  |
+| `retryable` | `boolean` | `true` | 是否显示重新生成按钮；不影响错误展示 |
 | `status`    | `AgentStreamStatus` | `idle`      | Registry 纯展示状态，不是 SDK 状态  |
 
 ## Events

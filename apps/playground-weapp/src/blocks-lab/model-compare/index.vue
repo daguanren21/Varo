@@ -6,7 +6,7 @@ import VButton from '../../components/ui/v-button.vue'
 import AgentModelCompare from '../components/blocks/agent-model-compare.vue'
 import { useModelCompareDemo } from './useModelCompareDemo'
 
-const { models, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close } = useModelCompareDemo()
+const { models, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close } = useModelCompareDemo()
 const modeLabel = computed(() => ordinaryChat.value ? '显示双侧比较' : '显示普通 Chat 组合')
 </script>
 
@@ -76,9 +76,9 @@ const modeLabel = computed(() => ordinaryChat.value ? '显示双侧比较' : '�
     <template v-if="visible">
       <view v-if="ordinaryChat" class="grid min-w-0 gap-4" data-compare-demo="ordinary-chat">
         <AgentModelSelector :models="models" :model-value="leftState.modelId" :excluded-id="rightState.modelId" label="普通会话模型" :disabled="disabled || busy" :loading="loading" :error="catalogError" @update:modelValue="changeModel({ side: 'left', modelId: $event })" />
-        <AgentChat :model-value="boundPrompt" :messages="leftState.messages" :snapshot="leftState.snapshot" :busy="leftState.busy" :disabled="chatDisabled" title="普通 Chat 与独立选择器" subtitle="选择器在 Chat 外组合，不扩大 Chat 的会话依赖闭包。此处只执行左侧本地转换。" @update:modelValue="updatePrompt" @submit="sendChat" @stop="stop('left')" @retry="retry('left')" @newConversation="newConversation" @close="close" />
+        <AgentChat :model-value="boundPrompt" :messages="leftState.messages" :snapshot="leftState.snapshot" :busy="leftState.busy" :disabled="chatDisabled" title="普通 Chat 与独立选择器" subtitle="选择器在 Chat 外组合，不扩大 Chat 的会话依赖闭包。此处只执行左侧本地转换。" @update:modelValue="updatePrompt" @submit="sendChat" @stop="stop('left')" @retry="retry('left')" @approve="approve({ side: 'left', interruptId: $event })" @reject="reject({ side: 'left', interruptId: $event })" @retryInterrupts="retryInterrupts('left')" @cancelInterrupts="cancelInterrupts('left')" @newConversation="newConversation" @close="close" />
       </view>
-      <AgentModelCompare v-else :model-value="boundPrompt" :models="models" :left="leftState" :right="rightState" :disabled="disabled" :loading="loading" :error="catalogError" @update:modelValue="updatePrompt" @modelChange="changeModel" @run="run" @retry="retry" @stop="stop" />
+      <AgentModelCompare v-else :model-value="boundPrompt" :models="models" :left="leftState" :right="rightState" :disabled="disabled" :loading="loading" :error="catalogError" @update:modelValue="updatePrompt" @modelChange="changeModel" @run="run" @retry="retry" @approve="approve" @reject="reject" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" @stop="stop" />
     </template>
   </view>
 </template>

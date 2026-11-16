@@ -27,6 +27,7 @@ import { AgentStream } from '@/components/agent-ui'
 | `cursor`    | `boolean`           | `true`      | Show cursor                                            |
 | `error`     | `string`            | `—`         | Error text                                             |
 | `final`     | `boolean`           | `false`     | Whether Markdown is final                              |
+| `retryable` | `boolean` | `true` | Show the regeneration button without hiding the error |
 | `status`    | `AgentStreamStatus` | `idle`      | Registry display status, not SDK status                 |
 
 ## Events

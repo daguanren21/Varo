@@ -1,10 +1,10 @@
 import type { StreamChunk } from '@tanstack/ai'
-import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '../components/agent-ui/types'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
+import type { ComputedRef, ShallowRef } from 'vue'
 import { EventType, hashSchemaInput, normalizeApprovalSchema, toolDefinition, withInterruptBinding } from '@tanstack/ai/client'
 import { ChatClient, stream } from '@tanstack/ai-client'
 import { computed, onBeforeUnmount, onMounted, shallowRef, useId } from 'vue'
-import { agentConversationHistory, agentMessageText } from '../components/agent-ui/presentation'
+import { agentCanResolveApproval, agentConversationHistory, agentMessageText, agentSnapshotProjection } from '../components/agent-ui/presentation'
 
 function sleep(duration: number, signal?: AbortSignal) {
   let resolve!: () => void
@@ -25,6 +25,7 @@ const releaseTool = toolDefinition({
   description: '本地审批展示；不执行检查、构建或发布。',
   needsApproval: true,
 }).client()
+export type AgentDocsDemoSnapshot = ChatClientSnapshot<Array<typeof releaseTool>, any>
 const releaseApproval = normalizeApprovalSchema(releaseTool.approvalSchema, releaseTool.inputSchema)
 
 const RESPONSE = `## 本地双端 Agent 展示
@@ -39,12 +40,29 @@ const RESPONSE = `## 本地双端 Agent 展示
 
 \`AgentEventRenderer\` 只展示 SDK 快照，审批决定由应用按 interrupt ID 提交给 SDK。`
 
-export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
+export interface AgentDocsDemoController {
+  approve: (id: string) => boolean
+  busy: ComputedRef<boolean>
+  cancelInterrupts: () => void
+  messages: ComputedRef<UIMessage[]>
+  newConversation: () => void
+  prompt: ShallowRef<string>
+  reject: (id: string) => boolean
+  retry: () => void
+  retryInterrupts: () => void
+  run: (value?: string) => void
+  snapshot: ShallowRef<AgentDocsDemoSnapshot>
+  stop: () => void
+}
+
+export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力'): AgentDocsDemoController {
   const prompt = shallowRef('')
   const lastPrompt = shallowRef(initialPrompt)
   let disposed = false
   const identity = `docs-${useId()}`
-  const createClient = (threadId: string, welcome = false) => new ChatClient({
+  const createClient = (threadId: string, welcome = false) => {
+    let pending: { interruptId: string, toolCallId: string, runId: string } | undefined
+    return new ChatClient({
     threadId,
     tools: [releaseTool],
     initialMessages: welcome ? [{
@@ -59,12 +77,16 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
 
       if (input.resume?.length) {
         const resolution = input.resume[0]!
+        if (!pending || input.resume.length !== 1 || resolution.interruptId !== pending.interruptId || input.threadId !== threadId || input.parentRunId !== pending.runId) { throw new Error('本地发布审批已失效') }
+        const { toolCallId } = pending
         const approved = resolution.payload === true || (typeof resolution.payload === 'object' && resolution.payload !== null && 'approved' in resolution.payload && resolution.payload.approved === true)
         yield {
           type: EventType.TEXT_MESSAGE_CONTENT,
           messageId,
           delta: approved ? '已记录本地审批决定；未执行任何检查、构建或发布。' : '已拒绝本地演示操作，没有产生外部副作用。',
         }
+        yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${toolCallId}`, toolCallId, content: JSON.stringify({ approved, local: true }), role: 'tool', ...(!approved ? { metadata: { tanstack: { toolResultOutcome: resolution.status === 'cancelled' ? 'cancelled' : 'denied' } } } : {}) }
+        pending = undefined
       }
       else {
         const message = history[history.length - 1]
@@ -94,6 +116,8 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
 
         if (needsApproval) {
           const toolCallId = `release-${input.runId}`
+          const interruptId = `approval-${input.runId}`
+          pending = { interruptId, toolCallId, runId: input.runId }
           yield { type: 'TOOL_CALL_START', toolCallId, toolCallName: releaseTool.name, parentMessageId: messageId }
           yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: '{}' }
           yield { type: 'TOOL_CALL_END', toolCallId }
@@ -105,7 +129,7 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
             outcome: {
               type: 'interrupt',
               interrupts: [withInterruptBinding({
-                id: toolCallId,
+                id: interruptId,
                 toolCallId,
                 reason: 'tool_call',
                 message: '是否批准本地发布计划展示？不会执行检查、构建或发布。',
@@ -114,8 +138,8 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
               }, {
                 v: 1,
                 kind: 'tool-approval',
-                interruptId: toolCallId,
-                interruptedRunId: input.runId,
+                interruptId,
+                interruptedRunId: pending.runId,
                 generation: 0,
                 toolName: releaseTool.name,
                 toolCallId,
@@ -134,12 +158,13 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
       yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
     }),
   })
+  }
   let threadSequence = 0
   let client = createClient(`${identity}-${++threadSequence}`, true)
-  const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+  const snapshot = shallowRef<AgentDocsDemoSnapshot>(client.getSnapshot())
   let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
-  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.some(interrupt => interrupt.status === 'pending'))
-  const messages = computed<AgentConversationMessage[]>(() => agentConversationHistory(snapshot.value, 'Now'))
+  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0)
+  const messages = computed<UIMessage[]>(() => agentConversationHistory(snapshot.value))
 
   function run(value = prompt.value) {
     const request = value.trim()
@@ -150,18 +175,24 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
   }
   function approve(id: string) {
     const interrupt = client.getInterrupts().find(item => item.id === id)
-    if (disposed || snapshot.value.interruptState.resuming || interrupt?.kind !== 'tool-approval' || !interrupt.canResolve) { return false }
+    if (disposed || interrupt?.kind !== 'tool-approval' || !agentCanResolveApproval(client.getSnapshot(), interrupt)) { return false }
     interrupt.resolveInterrupt(true)
     return true
   }
   function reject(id: string) {
     const interrupt = client.getInterrupts().find(item => item.id === id)
-    if (disposed || snapshot.value.interruptState.resuming || interrupt?.kind !== 'tool-approval' || !interrupt.canResolve) { return false }
+    if (disposed || interrupt?.kind !== 'tool-approval' || !agentCanResolveApproval(client.getSnapshot(), interrupt)) { return false }
     interrupt.resolveInterrupt(false)
     return true
   }
   function retry() {
     if (!busy.value && !disposed && lastPrompt.value) { void client.reload() }
+  }
+  function retryInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+  }
+  function cancelInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
   }
   function stop() { client.stop() }
   function newConversation() {
@@ -188,5 +219,5 @@ export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
     client.dispose()
   })
 
-  return { approve, busy, messages, newConversation, prompt, reject, retry, run, snapshot, stop }
+  return { approve, busy, cancelInterrupts, messages, newConversation, prompt, reject, retry, retryInterrupts, run, snapshot, stop }
 }

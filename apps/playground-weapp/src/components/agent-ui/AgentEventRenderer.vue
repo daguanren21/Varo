@@ -1,57 +1,65 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { AgentInterruptIdentity } from './presentation'
 import { computed } from 'wevu'
-import { agentSnapshotProjection, agentStreamNotice } from './presentation'
-import AgentApproval from './AgentApproval.vue'
+import { agentCanResolveApproval, agentSnapshotProjection, agentStreamNotice } from './presentation'
+import AgentInterruptControls from './AgentInterruptControls.vue'
 import AgentLoading from './AgentLoading.vue'
-import AgentMessage from './AgentMessage.vue'
-import AgentThinking from './AgentThinking.vue'
-import AgentToolChip from './AgentToolChip.vue'
+import AgentMessageParts from './AgentMessageParts.vue'
+import AgentStream from './AgentStream.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   snapshot: ChatClientSnapshot
-}>()
+  retryable?: boolean
+}>(), { retryable: true })
 
 const emit = defineEmits<{
   approve: [interruptId: string]
   reject: [interruptId: string]
   retry: []
+  retryInterrupts: []
+  cancelInterrupts: []
 }>()
 const projection = computed(() => agentSnapshotProjection(props.snapshot))
+// Native hosts replace keyed list items; a key on a static component does not remount it.
+const interruptTransactions = computed(() => [projection.value])
+function retry() {
+  if (props.retryable) { emit('retry') }
+}
+function approve(identity: AgentInterruptIdentity) {
+  if (agentCanResolveApproval(props.snapshot, identity)) { emit('approve', identity.id) }
+}
+function reject(identity: AgentInterruptIdentity) {
+  if (agentCanResolveApproval(props.snapshot, identity)) { emit('reject', identity.id) }
+}
+function retryInterrupts(transactionKey: string) {
+  const current = agentSnapshotProjection(props.snapshot)
+  if (current.transactionKey === transactionKey && current.canRetryInterrupts) { emit('retryInterrupts') }
+}
+function cancelInterrupts(transactionKey: string) {
+  const current = agentSnapshotProjection(props.snapshot)
+  if (current.transactionKey === transactionKey && current.canCancelInterrupts) { emit('cancelInterrupts') }
+}
 </script>
 
 <template>
   <view class="agent-event-renderer grid gap-3" :data-status="projection.status">
-    <AgentThinking v-if="projection.reasoning.length" label="推理过程" :default-open="projection.status === 'streaming'" :steps="projection.reasoning" />
-
-    <view v-if="projection.tools.length" class="flex flex-wrap gap-2">
-      <AgentToolChip v-for="tool in projection.tools" :key="tool.id" :tool="tool" />
-    </view>
-
-    <AgentMessage
-      v-if="projection.message || projection.error"
-      :role="projection.messageRole"
-      :stream="true"
-      :stream-content="projection.messageText"
-      :stream-error="projection.error"
-      :stream-final="projection.messageFinal"
-      :stream-status="projection.status"
-      @retry="emit('retry')"
-    />
-    <view v-if="projection.status === 'waiting' && !projection.message && !projection.error && !projection.approval" class="text-xs text-[var(--varo-agent-muted)]" role="status">
+    <AgentMessageParts v-if="projection.renderedMessage" :message="projection.renderedMessage" :stream="true" :error="projection.error" :retryable="retryable" @retry="retry" />
+    <AgentStream v-else-if="projection.error" :error="projection.error" status="failed" :retryable="retryable" @retry="retry" />
+    <view v-if="projection.status === 'waiting' && !projection.message && !projection.error && !projection.approvals.length" class="text-xs text-[var(--varo-agent-muted)]" role="status">
       <text>{{ agentStreamNotice(projection.status) }}</text>
     </view>
 
     <AgentLoading v-if="projection.status === 'streaming' && !projection.messageText" label="正在生成回答" />
 
-    <AgentApproval
-      v-if="projection.approval"
-      :key="projection.approval.id"
-      :choices="projection.approval.choices"
-      :description="projection.approval.description"
-      :title="projection.approval.title"
-      @approve="emit('approve', projection.approval.id)"
-      @reject="emit('reject', projection.approval.id)"
+    <AgentInterruptControls
+      v-for="transaction in interruptTransactions"
+      :key="transaction.transactionKey"
+      :projection="transaction"
+      @approve="approve"
+      @reject="reject"
+      @retryInterrupts="retryInterrupts"
+      @cancelInterrupts="cancelInterrupts"
     />
   </view>
 </template>

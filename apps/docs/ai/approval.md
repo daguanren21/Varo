@@ -25,6 +25,7 @@ import { AgentApproval } from '@/components/agent-ui'
 | `approveText` | `string`        | `确认`     | 确认按钮 |
 | `choices`     | `AgentChoice[]` | `[]`       | 审批选项 |
 | `description` | `string`        | `—`        | 说明     |
+| `disabled` | `boolean` | `false` | 禁止选择、批准与拒绝；用于保护失效或提交中的事务 |
 | `rejectText`  | `string`        | `拒绝`     | 拒绝按钮 |
 | `title`       | `string`        | `required` | 审批标题 |
 | `value`       | `string`        | `''`       | 当前选择 |

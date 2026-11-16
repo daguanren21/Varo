@@ -1,6 +1,6 @@
 # AgentConversation
 
-保留 `AgentConversationMessage[]` 的静态消息历史展示 API。该类型来自 Registry `@/components/agent-ui/types`，不是 core 协议。活动聊天由 TanStack AI 持有；应用可从 SDK 消息纯投影展示，但不要在这里创建第二份可写 transcript。需要活动快照与工具审批时使用 [AgentEventRenderer](./event-renderer)。
+`messages` 接受 `AgentConversationEntry[]`：既支持原有静态 `AgentConversationMessage`，也支持 TanStack `UIMessage`。SDK 消息按原 parts 顺序显示文本、推理、工具调用与结果，不再把历史记录压平成字符串。使用 `agentConversationHistory(snapshot)` 取得保留原对象引用的历史，并传入 `contextMessages=snapshot.messages` 关联跨消息工具结果；活动消息继续由 [AgentEventRenderer](./event-renderer) 展示。组件不复制可写 transcript，也不执行工具。
 
 ## 案例
 
@@ -27,7 +27,8 @@ const messages: AgentConversationMessage[] = [
 
 | Prop       | Type                         | Default | 说明     |
 | ---------- | ---------------------------- | ------- | -------- |
-| `messages` | `AgentConversationMessage[]` | `[]`    | 消息列表 |
+| `messages` | `readonly AgentConversationEntry[]` | `[]` | 静态消息或完整 SDK 消息 |
+| `contextMessages` | `readonly UIMessage[]` | 未提供 | 完整 SDK transcript，用于跨消息工具结果关联 |
 
 ## Events
 

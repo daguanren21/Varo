@@ -57,7 +57,7 @@ H5 源码会导入所需 CSS。原生单元依赖 `themes/agent`，请按 [Wevu 
 
 SDK `status` 是 `ready | submitted | streaming | error`。展示用 `AgentPartStatus` 是 `waiting | running | completed | failed`，`AgentStreamStatus` 是 `idle | streaming | waiting | completed | failed | cancelled`；两者不是 SDK 状态或 wire enum，不可直接替换 SDK 的 `status`。`ready` 本身不代表成功完成或取消；应用根据真实结果做纯展示投影，不另建事件 reducer。
 
-`AgentToolPart` 的 `id`、`name`、`input`、`output`、`summary`、`error`、`status` 仅描述工具 UI，不会执行工具。`AgentConversationMessage[]` 仍可用于静态历史；活动消息由 SDK 持有，不在 Varo 中复制第二份可写状态。`snapshot` prop 必须直接传入 `client.getSnapshot()` 返回的上游 `ChatClientSnapshot`，不要手写近似对象或把 hook 的若干 ref 拼成快照。
+`AgentToolPart` 的 `id`、`name`、`input`、`output`、`summary`、`error`、`status` 仅描述工具 UI，不会执行工具。`AgentConversationEntry` 接受静态 `AgentConversationMessage` 或 SDK `UIMessage`；`agentConversationHistory(snapshot)` 保留消息对象与完整 parts 的原引用，不将工具记录压平成文本。SDK 拥有活动 transcript；`snapshot` prop 直接传入 `client.getSnapshot()`，不要手写近似对象或把 hook 的若干 ref 拼成快照。
 
 从安装后的 `@/components/agent-ui/presentation` 导入 `agentMessageText(message: UIMessage | undefined): string` 与 `agentCurrentMessage(snapshot: ChatClientSnapshot): UIMessage | undefined`。它们是只读展示 helper，不解析网络事件。
 

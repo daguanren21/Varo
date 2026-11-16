@@ -38,7 +38,7 @@ pnpm dlx @varo-ui/cli add --target weapp components/agent-model-selector
 
 ```ts
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '@/components/agent-ui/types'
+import type { AgentConversationEntry } from '@/components/agent-ui/types'
 
 interface AgentModelOption {
   id: string
@@ -51,7 +51,7 @@ interface AgentModelOption {
 interface AgentCompareState {
   label: string
   modelId: string
-  messages: AgentConversationMessage[]
+  messages: readonly AgentConversationEntry[]
   snapshot?: ChatClientSnapshot
   busy: boolean
   error?: string
@@ -86,6 +86,8 @@ interface AgentCompareState {
 | `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | 提示词 trim 后非空，两侧空闲且选择两个不同的可用模型；应用重新核对当前状态并分别通过两侧 SDK client 启动。                              |
 | `retry`             | `'left' \| 'right'`                                             | 仅失败/错误侧、`retryable: true`、本侧无待处理且所选模型可用时允许；**另一侧运行不阻止重试**。应用使用该侧保存的原请求，不使用已编辑草稿。 |
 | `stop`              | `'left' \| 'right'`                                             | 仅活动侧可停止，即使 disabled/loading/error 仍可用；应用只调用对应 SDK client 的 `stop()`，取消该侧生产者。                            |
+| `approve` / `reject` | `{ side: 'left' \| 'right', interruptId: string }` | 绑定显示时的中断事务，应用只解析对应侧 SDK 中断 |
+| `retryInterrupts` / `cancelInterrupts` | `'left' \| 'right'` | 应用重试或取消该侧中断事务，不混同于重新生成 |
 
 两端均发送单值或单对象事件，不使用原生多参数事件。激活时读取当前 props，不使用旧选项对象。Block 不乐观接受模型切换、清空结果或报告成功；这些由应用确认。外部替换受控状态也由应用处理，请勿在请求运行中替换模型 ID。
 

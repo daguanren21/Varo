@@ -1,37 +1,25 @@
 <script setup lang="ts">
-import type { AgentConversationMessage } from './types'
+import type { UIMessage } from '@tanstack/ai-client'
+import type { AgentConversationEntry } from './types'
 import { computed } from 'wevu'
-import AgentMessage from './AgentMessage.vue'
+import { agentConversationProjection } from './presentation'
+import AgentMessageParts from './AgentMessageParts.vue'
 
 const props = withDefaults(
   defineProps<{
-    messages?: AgentConversationMessage[]
+    messages?: readonly AgentConversationEntry[]
+    contextMessages?: readonly UIMessage[]
   }>(),
   {
     messages: () => [],
   },
 )
-const safeMessages = computed(() => (Array.isArray(props.messages) ? props.messages : []).map(message => ({
-  content: String(message?.content ?? ''),
-  id: String(message?.id ?? ''),
-  label: String(message?.label ?? ''),
-  role: (message?.role === 'user' || message?.role === 'system' ? message.role : 'assistant') as AgentConversationMessage['role'],
-  timestamp: String(message?.timestamp ?? ''),
-})))
+const renderedMessages = computed(() => agentConversationProjection(props.messages, props.contextMessages).filter(message => message.segments.length))
 </script>
 
 <template>
   <view class="agent-conversation box-border grid w-full min-w-0 max-w-full gap-3 overflow-hidden" role="log" aria-live="polite">
-    <AgentMessage
-      v-for="message in safeMessages"
-      :key="message.id"
-      class="block w-full min-w-0 max-w-full overflow-hidden"
-      :content="message.content"
-      :label="message.label"
-      :markdown="message.role !== 'user'"
-      :role="message.role"
-      :timestamp="message.timestamp"
-    />
+    <AgentMessageParts v-for="message in renderedMessages" :key="message.id" :message="message" />
   </view>
 </template>
 

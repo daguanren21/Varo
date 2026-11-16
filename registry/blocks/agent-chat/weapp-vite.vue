@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '../agent-ui/types'
+import type { AgentConversationEntry } from '../agent-ui/types'
 import type { AgentChatHistoryItem, AgentChatLayout } from './agent-chat.types'
 import { useControllableState } from '@varo-ui/headless'
 import { computed, nextTick, onBeforeUnmount, onMounted, onResize, onUpdated, shallowRef, useNativeInstance, watch } from 'wevu'
@@ -27,7 +27,7 @@ const props = withDefaults(
     history?: AgentChatHistoryItem[]
     activeHistoryId?: string
     closeLabel?: string
-    messages?: AgentConversationMessage[]
+    messages?: readonly AgentConversationEntry[]
     modelModifiers?: Record<string, boolean>
     modelValue?: string
     snapshot?: ChatClientSnapshot
@@ -59,6 +59,8 @@ const emit = defineEmits<{
   'stop': []
   'reject': [interruptId: string]
   'retry': []
+  'retryInterrupts': []
+  'cancelInterrupts': []
   'submit': [prompt: string]
   'update:modelValue': [value: string]
 }>()
@@ -74,6 +76,7 @@ const promptState = useControllableState<string>({
 const currentPrompt = computed(() => promptState.current.value)
 const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
 const empty = computed(() => props.messages.length === 0 && (!props.snapshot || agentSnapshotStatus(props.snapshot) === 'idle'))
+const contextMessages = computed(() => props.snapshot?.messages)
 const historyChoices = computed(() => props.history.map(item => ({
   ...item,
   active: item.id === props.activeHistoryId,
@@ -205,13 +208,15 @@ function updatePrompt(value: string) {
             输入问题，或选择下方建议开始新的对话。
           </text>
         </view>
-        <AgentConversation :messages="messages" />
+        <AgentConversation :messages="messages" :context-messages="contextMessages" />
         <AgentEventRenderer
           v-if="snapshot && agentSnapshotStatus(snapshot) !== 'idle'"
           :snapshot="snapshot"
           @approve="emit('approve', $event)"
           @reject="emit('reject', $event)"
           @retry="emit('retry')"
+          @retryInterrupts="emit('retryInterrupts')"
+          @cancelInterrupts="emit('cancelInterrupts')"
         />
       </view>
     </scroll-view>

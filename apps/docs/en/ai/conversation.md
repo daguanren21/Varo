@@ -1,6 +1,6 @@
 # AgentConversation
 
-Preserves the static-history presentation API `AgentConversationMessage[]`. Import this Registry type from `@/components/agent-ui/types`, not a core protocol. TanStack AI owns active chat. The application may derive a pure display projection from SDK messages, but must not create a second writable transcript here. Use [AgentEventRenderer](./event-renderer) for active snapshots and tool approvals.
+`messages` accepts `AgentConversationEntry[]`: either static `AgentConversationMessage` entries or full TanStack `UIMessage` entries. SDK text, reasoning, tool calls and results retain part order instead of being flattened into history strings. `agentConversationHistory(snapshot)` preserves historical message references; pass `contextMessages=snapshot.messages` to associate tool results across messages. [AgentEventRenderer](./event-renderer) renders the active message. Components own neither a writable transcript nor tool execution.
 
 ## Demo
 
@@ -27,7 +27,8 @@ const messages: AgentConversationMessage[] = [
 
 | Prop       | Type                         | Default | Description |
 | ---------- | ---------------------------- | ------- | ----------- |
-| `messages` | `AgentConversationMessage[]` | `[]`    | Messages    |
+| `messages` | `readonly AgentConversationEntry[]` | `[]` | Static or full SDK messages |
+| `contextMessages` | `readonly UIMessage[]` | Omitted | Full SDK transcript for cross-message tool-result matching |
 
 ## Events
 

@@ -1,12 +1,13 @@
 import type { StreamChunk } from '@tanstack/ai'
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { ChatUIInterrupt } from '@tanstack/ai-client/ui'
 import { EventType } from '@tanstack/ai/client'
 import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentModelOption } from '../components/agent-ui/agent-model-selector.types'
-import type { AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../components/blocks/agent-model-compare.types'
+import type { AgentCompareApprovalIntent, AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../components/blocks/agent-model-compare.types'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
 import { availableModel } from '../components/agent-ui/agent-model-selector.types'
-import { agentConversationHistory } from '../components/agent-ui/presentation'
+import { agentCanResolveApproval, agentConversationHistory, agentSnapshotProjection } from '../components/agent-ui/presentation'
 
 const catalog: AgentModelOption[] = [
   { id: 'uppercase', label: '本地大写转换', available: true },
@@ -81,13 +82,13 @@ export function useModelCompareDemo() {
     let client = new ChatClient({ threadId: `varo-model-compare-${id}-${++threadSequence}`, connection })
     const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
     let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
-    const pending = computed(() => snapshot.value.isLoading)
+    const pending = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0)
     const state = computed<AgentCompareState>(() => {
       return {
         label: id === 'left' ? '左侧' : '右侧', modelId: modelId.value,
         messages: agentConversationHistory(snapshot.value),
         snapshot: snapshot.value,
-        busy: pending.value, error: snapshot.value.error?.message, retryable: Boolean(lastRequest) && snapshot.value.status === 'error',
+        busy: pending.value, error: snapshot.value.error?.message, retryable: !pending.value && Boolean(lastRequest) && snapshot.value.status === 'error',
         outcome: outcome.value,
         metrics: showMetrics.value && elapsed.value != null ? { latencyMs: elapsed.value } : undefined,
       }
@@ -116,6 +117,17 @@ export function useModelCompareDemo() {
       if (!lastRequest || pending.value || snapshot.value.status !== 'error' || lastRequest.modelId !== modelId.value) { return }
       void start(lastRequest.prompt, false)
     }
+    function decide(interruptId: string, approved: boolean) {
+      const interrupts: readonly ChatUIInterrupt[] = client.getInterrupts()
+      const interrupt = interrupts.find(item => item.id === interruptId)
+      if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(approved) }
+    }
+    function retryInterrupts() {
+      if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+    }
+    function cancelInterrupts() {
+      if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
+    }
     function clear() {
       if (pending.value) { return }
       lastRequest = undefined
@@ -138,7 +150,7 @@ export function useModelCompareDemo() {
       client.detach()
       client.dispose()
     }
-    return { state, pending, modelId, lifecycle, start, stop, retry, select, clear, dispose }
+    return { state, pending, modelId, lifecycle, start, stop, retry, decide, retryInterrupts, cancelInterrupts, select, clear, dispose }
   }
 
   const left = createSide('left', 'uppercase')
@@ -177,6 +189,18 @@ export function useModelCompareDemo() {
     const side = id === 'left' ? left : right
     if (!locked.value && availableModel(displayedModels.value, side.modelId.value)) { side.retry() }
   }
+  function approve(intent: AgentCompareApprovalIntent) {
+    if (!locked.value) { (intent.side === 'left' ? left : right).decide(intent.interruptId, true) }
+  }
+  function reject(intent: AgentCompareApprovalIntent) {
+    if (!locked.value) { (intent.side === 'left' ? left : right).decide(intent.interruptId, false) }
+  }
+  function retryInterrupts(id: AgentCompareSide) {
+    if (!locked.value) { (id === 'left' ? left : right).retryInterrupts() }
+  }
+  function cancelInterrupts(id: AgentCompareSide) {
+    if (!locked.value) { (id === 'left' ? left : right).cancelInterrupts() }
+  }
   function stop(id: AgentCompareSide) { (id === 'left' ? left : right).stop() }
   function sendChat(value: string) {
     if (!locked.value && !busy.value && value.trim() && availableModel(displayedModels.value, left.modelId.value)) { void left.start(value.trim(), false) }
@@ -214,5 +238,5 @@ export function useModelCompareDemo() {
     notice.value = '比较已关闭；两侧计时器、迭代器与 SDK 订阅均执行各自清理。下方显示真实迭代器清理记录。'
   }
   onBeforeUnmount(dispose)
-  return { models: displayedModels, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close }
+  return { models: displayedModels, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close }
 }

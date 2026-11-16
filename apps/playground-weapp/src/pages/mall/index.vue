@@ -74,6 +74,7 @@ const {
   approve,
   busy,
   buyProduct,
+  cancelInterrupts,
   cartCount,
   defaultAddress,
   history,
@@ -83,6 +84,7 @@ const {
   pendingAction,
   products,
   reject,
+  retryInterrupts,
   returnOrder,
   saveAddress,
   send,
@@ -123,7 +125,7 @@ async function runAgentPrompt(prompt: string) {
 }
 
 async function confirmAgentAction(value: string) {
-  const approval = agentSnapshotProjection(streamSnapshot.value).approval
+  const approval = agentSnapshotProjection(streamSnapshot.value).approvals[0]
   if (!approval) { return }
   approvalValue.value = value
   await approve(approval.id)
@@ -246,6 +248,8 @@ defineExpose({
       @send="send"
       @approve="approve"
       @reject="reject"
+      @retryInterrupts="retryInterrupts"
+      @cancelInterrupts="cancelInterrupts"
       @update:approvalValue="panelApprovalValue = $event"
       @return-order="returnOrder"
       @save-address="saveAddress"

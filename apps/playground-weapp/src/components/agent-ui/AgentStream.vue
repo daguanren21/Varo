@@ -14,6 +14,7 @@ const props = withDefaults(
     final?: boolean
     error?: string
     status?: AgentStreamStatus
+    retryable?: boolean
   }>(),
   {
     content: '',
@@ -21,6 +22,7 @@ const props = withDefaults(
     final: false,
     error: '',
     status: 'idle',
+    retryable: true,
   },
 )
 
@@ -51,7 +53,7 @@ const statusNotice = computed(() => agentStreamNotice(props.status))
     </text>
     <view v-if="status === 'failed'" class="mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-[10px] bg-[var(--varo-agent-danger-soft)] px-3 py-2.5 text-xs text-[var(--varo-agent-danger)]" role="alert">
       <text>{{ error || '生成失败，请重试' }}</text>
-      <button class="agent-native-button inline-flex min-h-9 min-w-[54px] items-center justify-center rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-xs font-semibold text-[var(--varo-agent-danger)]" type="button" @click="emit('retry')">
+      <button v-if="retryable" class="agent-native-button inline-flex min-h-9 min-w-[54px] items-center justify-center rounded-lg border border-[var(--varo-agent-danger)] bg-[var(--varo-agent-surface)] px-2.5 text-xs font-semibold text-[var(--varo-agent-danger)]" type="button" @click="retryable && emit('retry')">
         重试
       </button>
     </view>

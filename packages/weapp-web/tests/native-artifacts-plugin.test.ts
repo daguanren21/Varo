@@ -123,6 +123,9 @@ describe('native artifact plugin', () => {
     nativeRoot = await mkdtemp(join(tmpdir(), 'varo-weapp-web-'))
     await writeMiniProgram(nativeRoot)
     await writeFile(join(nativeRoot, 'pages/index/index.js'), [
+      'var require; var module; var exports;',
+      'exports.commonJsBindings = typeof require === "function" && module.exports === exports',
+      'exports.originalArguments = arguments.length === 4 && arguments[0] === require && arguments[1] === module && arguments[2] === exports && arguments[3] === globals',
       'var queueMicrotask = callback => callback()',
       'const wx = { source: "native local" }',
       'exports.source = wx.source',
@@ -144,7 +147,7 @@ describe('native artifact plugin', () => {
       wx: { source: 'host global' },
       queueMicrotask: () => { throw new Error('Host queue must be shadowed by the native local') },
     })
-    expect(exports).toMatchObject({ source: 'native local', completed: true, host: 'provided host' })
+    expect(exports).toMatchObject({ source: 'native local', completed: true, host: 'provided host', commonJsBindings: true, originalArguments: true })
     expect(exports.receiver).toBe(receiver)
   })
 })

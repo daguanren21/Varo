@@ -1,3 +1,5 @@
+import type { UIMessage } from '@tanstack/ai-client'
+
 export type AgentMessageRole = 'assistant' | 'system' | 'user'
 export type AgentPartStatus = 'waiting' | 'running' | 'completed' | 'failed'
 export type AgentStreamStatus = 'idle' | 'streaming' | 'waiting' | 'completed' | 'failed' | 'cancelled'
@@ -48,3 +50,6 @@ export interface AgentConversationMessage {
   role: AgentMessageRole
   timestamp?: string
 }
+
+/** Static application messages and SDK messages retain their distinct data contracts. */
+export type AgentConversationEntry = AgentConversationMessage | UIMessage

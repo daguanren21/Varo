@@ -38,7 +38,7 @@ Import the following named types from `components/blocks/agent-model-compare.typ
 
 ```ts
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '@/components/agent-ui/types'
+import type { AgentConversationEntry } from '@/components/agent-ui/types'
 
 interface AgentModelOption {
   id: string
@@ -51,7 +51,7 @@ interface AgentModelOption {
 interface AgentCompareState {
   label: string
   modelId: string
-  messages: AgentConversationMessage[]
+  messages: readonly AgentConversationEntry[]
   snapshot?: ChatClientSnapshot
   busy: boolean
   error?: string
@@ -86,6 +86,8 @@ Supply unique, stable catalog IDs, readable labels, and current availability. Th
 | `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | Trimmed, nonempty prompt and two distinct current available models; both sides idle. Application rechecks state and starts each side through its SDK client.                                                                   |
 | `retry`             | `'left' \| 'right'`                                             | Only a failed/error side with `retryable: true`, an available selected model and no pending work on that side. Allowed while the **other** side runs. Application retries that side's saved request, not the edited draft. |
 | `stop`              | `'left' \| 'right'`                                             | Only an active side; remains available while disabled/loading/error. Application calls only that SDK client's `stop()` to cancel its producer.                                                                                 |
+| `approve` / `reject` | `{ side: 'left' \| 'right', interruptId: string }` | Bind the displayed transaction; resolve only that side's SDK interrupt |
+| `retryInterrupts` / `cancelInterrupts` | `'left' \| 'right'` | Retry or cancel that side's interrupt transaction, not generation |
 
 Both targets emit single values or objects, without native multi-argument events. Actions read current props, not saved option objects. The Block does not optimistically accept model changes, clear results, or report success; the application handles those decisions and external state replacements. Do not replace model IDs during active requests.
 

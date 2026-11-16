@@ -83,6 +83,7 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     expect((await miniProgram.inspectAgent()).orderCount).toBe(initial.orderCount)
     await screen.getByRole('radio', { name: /1 件/ }).tap()
     await expect(screen.getByRole('radio', { name: /1 件/ })).toHaveAttribute('aria-checked', 'true')
+    await expect(screen.getByRole('button', { name: '取消中断', exact: true })).toBeVisible()
     await screen.getByRole('button', { name: '确认执行', exact: true }).tap()
     await expect.poll(async () => (await miniProgram.inspectAgent()).orderCount, { timeout: 30_000 }).toBe(initial.orderCount + 1)
     const purchased = await miniProgram.inspectAgent()

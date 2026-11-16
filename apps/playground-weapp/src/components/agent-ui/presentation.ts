@@ -1,6 +1,7 @@
 import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
-import type { ChatUIInterrupt } from '@tanstack/ai-client/ui'
-import type { AgentConversationMessage, AgentPartStatus, AgentStreamStatus, AgentToolPart, AgentTraceStep, AgentChoice } from '../agent-ui/types'
+import type { ChatUIInterrupt, ChatUISelectedMessage, ChatUISelectedPart } from '@tanstack/ai-client/ui'
+import { selectChatUI } from '@tanstack/ai-client/ui'
+import type { AgentConversationEntry, AgentPartStatus, AgentStreamStatus, AgentToolPart, AgentTraceStep } from '../agent-ui/types'
 
 export const agentPartStatusLabels: Readonly<Record<AgentPartStatus, string>> = {
   waiting: '等待中',
@@ -32,19 +33,48 @@ type AgentMessagePart = UIMessage['parts'][number]
 type AgentToolCallPart = Extract<AgentMessagePart, { type: 'tool-call' }>
 type AgentToolResultPart = Extract<AgentMessagePart, { type: 'tool-result' }>
 
-export interface AgentApprovalDisplay {
-  choices: AgentChoice[]
-  description?: string
+export interface AgentInterruptIdentity {
   id: string
+  threadId: string
+  interruptedRunId: string
+  generation: number
+}
+
+export interface AgentApprovalDisplay extends AgentInterruptIdentity {
+  description: string
   title: string
+  errors: string[]
+  canResolve: boolean
+}
+
+export interface AgentMessageSegment {
+  id: string
+  kind: 'text' | 'thinking' | 'tool' | 'data'
+  content: string
+  tool?: AgentToolPart
+  steps: AgentTraceStep[]
+}
+
+export interface AgentRenderedMessage {
+  id: string
+  role: 'assistant' | 'system' | 'user'
+  label: string
+  timestamp: string
+  segments: AgentMessageSegment[]
+  final: boolean
+  status: AgentStreamStatus
 }
 
 export interface AgentSnapshotProjection {
-  approval?: AgentApprovalDisplay
+  approvals: AgentApprovalDisplay[]
+  interruptErrors: string[]
+  canRetryInterrupts: boolean
+  canCancelInterrupts: boolean
+  transactionKey: string
   error?: string
   message?: UIMessage
+  renderedMessage?: AgentRenderedMessage
   messageFinal: boolean
-  messageRole: 'assistant' | 'system' | 'user'
   messageText: string
   reasoning: AgentTraceStep[]
   status: AgentStreamStatus
@@ -70,23 +100,15 @@ export function agentCurrentMessage(snapshot: ChatClientSnapshot): UIMessage | u
   return undefined
 }
 
-export function agentConversationHistory(snapshot: ChatClientSnapshot, timestamp: string): Array<AgentConversationMessage & { timestamp: string }>
-export function agentConversationHistory(snapshot: ChatClientSnapshot, timestamp?: string): AgentConversationMessage[]
-export function agentConversationHistory(snapshot: ChatClientSnapshot, timestamp?: string): AgentConversationMessage[] {
+/** Preserve SDK messages and their parts by reference; never flatten tool receipts into text. */
+export function agentConversationHistory(snapshot: ChatClientSnapshot): UIMessage[] {
   const current = agentCurrentMessage(snapshot)
-  const history: AgentConversationMessage[] = []
-  for (const message of snapshot.messages) {
-    if (message.id === current?.id || message.role === 'activity') { continue }
-    const content = agentMessageText(message)
-    if (!content) { continue }
-    history.push({ id: message.id, role: message.role, content, timestamp })
-  }
-  return history
+  return snapshot.messages.filter(message => message !== current && message.parts.length > 0)
 }
 
 export function agentSnapshotStatus(snapshot: ChatClientSnapshot): AgentStreamStatus {
   if (snapshot.error || snapshot.status === 'error') { return 'failed' }
-  if (snapshot.interruptState.resuming || snapshot.interruptState.interrupts.some(interrupt => interrupt.status !== 'error')) {
+  if (snapshot.interruptState.resuming || snapshot.interruptState.interrupts.length > 0 || snapshot.interruptState.interruptErrors.length > 0) {
     return 'waiting'
   }
   if (snapshot.isLoading || snapshot.status === 'submitted' || snapshot.status === 'streaming') {
@@ -127,87 +149,137 @@ function toolSummary(value: unknown): string | undefined {
   catch { return undefined }
 }
 
-function snapshotTools(message: UIMessage | undefined): AgentToolPart[] {
-  if (!message) { return [] }
-  const tools: AgentToolPart[] = []
-  const byId = new Map<string, AgentToolPart>()
-  for (const part of message.parts) {
-    if (part.type === 'tool-call') {
-      const tool: AgentToolPart = {
-        id: part.id,
-        input: part.input ?? parseToolInput(part.arguments),
-        name: part.name,
-        output: part.output,
-        status: part.output === undefined ? toolCallStatus(part.state) : 'completed',
-        summary: toolSummary(part.output),
-      }
-      tools.push(tool)
-      byId.set(part.id, tool)
-      continue
-    }
-    if (part.type === 'tool-result') {
-      const existing = byId.get(part.toolCallId)
-      if (existing) {
-        existing.output = part.content
-        existing.error = part.error
-        existing.status = toolResultStatus(part.state)
-        existing.summary = toolSummary(part.error ?? part.content)
-      }
-      else {
-        tools.push({
-          error: part.error,
-          id: part.toolCallId,
-          name: part.name ?? '工具结果',
-          output: part.content,
-          status: toolResultStatus(part.state),
-          summary: toolSummary(part.error ?? part.content),
-        })
-      }
+function selectedTool(selected: ChatUISelectedPart): AgentToolPart | undefined {
+  if (selected.key === 'toolCall') {
+    const { part, result } = selected
+    const failed = part.state === 'error' || result?.state === 'error'
+    const output = part.output ?? result?.content
+    const error = result?.error ?? (failed ? toolSummary(output) : undefined)
+    return {
+      id: part.id,
+      input: part.input ?? parseToolInput(part.arguments),
+      name: part.name,
+      output,
+      error,
+      status: failed ? 'failed' : result ? toolResultStatus(result.state) : toolCallStatus(part.state),
+      summary: error ?? toolSummary(output),
     }
   }
-  return tools
+  if (selected.key === 'toolResult' && !selected.matched) {
+    return {
+      id: selected.part.toolCallId,
+      name: selected.part.name ?? '工具结果',
+      output: selected.part.content,
+      error: selected.part.error,
+      status: toolResultStatus(selected.part.state),
+      summary: selected.part.error ?? toolSummary(selected.part.content),
+    }
+  }
+  return undefined
 }
 
-function snapshotReasoning(message: UIMessage | undefined, status: AgentStreamStatus): AgentTraceStep[] {
-  if (!message) { return [] }
-  const partStatus = partStatusForSnapshot(status)
-  return message.parts
-    .filter((part): part is Extract<AgentMessagePart, { type: 'thinking' }> => part.type === 'thinking')
-    .map((part, index) => ({
-      content: part.content,
-      id: `${message.id}:thinking:${index}`,
-      status: partStatus,
-      title: '推理过程',
-    }))
-}
-
-function snapshotApproval(snapshot: ChatClientSnapshot): AgentApprovalDisplay | undefined {
-  if (snapshot.error || snapshot.status === 'error' || snapshot.interruptState.resuming) { return undefined }
-  const interrupts: readonly ChatUIInterrupt[] = snapshot.interruptState.interrupts
-  const interrupt = interrupts.find(item => item.kind === 'tool-approval' && item.status === 'pending' && item.canResolve)
-  if (!interrupt || interrupt.kind !== 'tool-approval') { return undefined }
+function renderMessage(selected: ChatUISelectedMessage, status: AgentStreamStatus): AgentRenderedMessage {
+  const message = selected.message
+  const segments: AgentMessageSegment[] = []
+  for (const [index, selectedPart] of selected.parts.entries()) {
+    const part = selectedPart.part
+    const id = `${message.id}:${index}`
+    if (selectedPart.key === 'toolResult' && selectedPart.matched) { continue }
+    const tool = selectedTool(selectedPart)
+    if (tool) {
+      const content = tool.input !== undefined || tool.output !== undefined ? toolSummary({ input: tool.input, output: tool.output }) ?? '' : ''
+      segments.push({ id, kind: 'tool', content, tool, steps: [] })
+    }
+    else if (part.type === 'text') {
+      segments.push({ id, kind: 'text', content: part.content, steps: [] })
+    }
+    else if (part.type === 'thinking') {
+      segments.push({ id, kind: 'thinking', content: part.content, steps: [{ id, content: part.content, status: partStatusForSnapshot(status), title: '推理过程' }] })
+    }
+    else {
+      segments.push({ id, kind: 'data', content: toolSummary(part) ?? part.type, steps: [] })
+    }
+  }
   return {
-    choices: [],
-    description: interrupt.message ?? interrupt.reason,
-    id: interrupt.id,
-    title: `确认工具：${interrupt.toolName}`,
+    id: message.id,
+    role: message.role === 'user' || message.role === 'system' ? message.role : 'assistant',
+    label: '',
+    timestamp: '',
+    segments,
+    final: status !== 'streaming',
+    status,
   }
 }
 
-/** Build one immutable display projection; no reducer or execution policy is involved. */
+export function agentConversationProjection(entries: readonly AgentConversationEntry[], context?: readonly UIMessage[]): AgentRenderedMessage[] {
+  const sdkMessages = context ?? entries.filter((entry): entry is UIMessage => 'parts' in entry)
+  const selected = new Map(selectChatUI({ messages: sdkMessages }).messages.map(message => [message.message.id, message]))
+  return entries.map((entry) => {
+    if ('parts' in entry) {
+      const message = selected.get(entry.id) ?? selectChatUI({ messages: [entry] }).messages[0]!
+      return renderMessage(message, 'completed')
+    }
+    return {
+      id: entry.id, role: entry.role, label: entry.label ?? '', timestamp: entry.timestamp ?? '',
+      segments: [{ id: `${entry.id}:text`, kind: 'text' as const, content: entry.content, steps: [] }],
+      final: true, status: 'completed' as const,
+    }
+  })
+}
+
+export function agentInterruptTransactionKey(snapshot: ChatClientSnapshot): string {
+  return JSON.stringify([
+    snapshot.interruptState.interrupts.map(({ id, threadId, interruptedRunId, generation }) => [id, threadId, interruptedRunId, generation]),
+    snapshot.interruptState.interruptErrors.map(({ threadId, interruptedRunId, generation }) => [threadId, interruptedRunId, generation]),
+  ])
+}
+
+export function agentCanResolveApproval(snapshot: ChatClientSnapshot, displayed: AgentInterruptIdentity): boolean {
+  if (snapshot.interruptState.resuming) { return false }
+  const interrupts: readonly ChatUIInterrupt[] = snapshot.interruptState.interrupts
+  const current = interrupts.find(item => item.id === displayed.id && item.threadId === displayed.threadId
+    && item.interruptedRunId === displayed.interruptedRunId && item.generation === displayed.generation)
+  if (!current || current.kind !== 'tool-approval' || !current.canResolve) { return false }
+  if (snapshot.error || snapshot.status === 'error') { return false }
+  if (current.status === 'pending') { return true }
+  return current.status === 'error' && current.errors.length > 0
+    && current.errors.every(error => error.code === 'invalid-payload' || error.code === 'invalid-edited-args')
+}
+
+/** Read-only view of SDK state, including errors owned by the interrupt transaction. */
 export function agentSnapshotProjection(snapshot: ChatClientSnapshot): AgentSnapshotProjection {
   const message = agentCurrentMessage(snapshot)
   const status = agentSnapshotStatus(snapshot)
-  const projection: AgentSnapshotProjection = {
-    approval: snapshotApproval(snapshot),
-    error: snapshot.error?.message,
-    message,
+  const interrupts: readonly ChatUIInterrupt[] = snapshot.interruptState.interrupts
+  const hasInterrupt = interrupts.length > 0 || snapshot.interruptState.interruptErrors.length > 0
+  const selection = selectChatUI({ messages: snapshot.messages, interrupts })
+  const selected = message ? selection.messages.find(item => item.message.id === message.id) : undefined
+  const renderedMessage = selected ? renderMessage(selected, hasInterrupt ? 'waiting' : status) : undefined
+  const interruptErrors = [
+    ...snapshot.interruptState.interruptErrors.map(error => error.message),
+    ...interrupts.flatMap(item => item.errors.map(error => error.message)),
+  ]
+  if (hasInterrupt && snapshot.error) { interruptErrors.unshift(snapshot.error.message) }
+  const approvals = interrupts.filter(item => item.kind === 'tool-approval').map(item => ({
+    id: item.id, threadId: item.threadId, interruptedRunId: item.interruptedRunId, generation: item.generation,
+    title: `确认工具：${item.kind === 'tool-approval' ? item.toolName : ''}`,
+    description: item.message ?? item.reason,
+    errors: item.errors.map(error => error.message),
+    canResolve: agentCanResolveApproval(snapshot, item),
+  }))
+  return {
+    approvals,
+    interruptErrors: [...new Set(interruptErrors)],
+    canRetryInterrupts: !snapshot.interruptState.resuming && (snapshot.interruptState.interruptErrors.some(error => error.retryable)
+      || interrupts.some(item => item.errors.some(error => error.retryable))),
+    canCancelInterrupts: !snapshot.interruptState.resuming && (interrupts.some(item => item.kind !== 'unbound') || snapshot.interruptState.interruptErrors.length > 0),
+    transactionKey: agentInterruptTransactionKey(snapshot),
+    error: hasInterrupt ? undefined : snapshot.error?.message,
+    message, renderedMessage,
     messageFinal: status !== 'streaming',
-    messageRole: message?.role === 'system' ? 'system' : message?.role === 'user' ? 'user' : 'assistant',
     messageText: agentMessageText(message),
-    reasoning: snapshotReasoning(message, status),
+    reasoning: renderedMessage?.segments.flatMap(segment => segment.steps) ?? [],
     status,
-    tools: snapshotTools(message),
+    tools: renderedMessage?.segments.flatMap(segment => segment.tool ? [segment.tool] : []) ?? [],
   }
-  return Object.freeze(projection)
 }

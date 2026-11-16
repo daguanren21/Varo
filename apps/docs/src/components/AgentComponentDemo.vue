@@ -152,11 +152,13 @@ const attachments = [
 const {
   approve: approveDocs,
   busy: chatBusy,
+  cancelInterrupts: cancelChatInterrupts,
   messages: chatMessages,
   newConversation: resetChat,
   prompt: chatPrompt,
   reject: rejectDocs,
   retry: retryChat,
+  retryInterrupts: retryChatInterrupts,
   run: runChat,
   snapshot: chatSnapshot,
   stop: stopChat,
@@ -356,7 +358,10 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentSourceList v-else-if="component === 'sources'" :sources="sources" title="参考来源" @open="done($event.title)" />
         <AgentRagPipeline v-else-if="component === 'rag-pipeline'" :query="ragSnapshot.query" :steps="ragSnapshot.steps" :sources="ragSnapshot.sources" :answer="ragSnapshot.answer" :elapsed-ms="ragSnapshot.elapsedMs" reduced-motion @run="runRag" @cancel="cancelRag" @select-source="done($event.title)" />
         <AgentAttachmentList v-else-if="component === 'attachments'" :attachments="attachments" @remove="done(`移除 ${$event.name}`)" />
-        <AgentEventRenderer v-else-if="component === 'event-renderer'" :snapshot="chatSnapshot" @approve="approveChat" @reject="rejectChat" @retry="retryChat" />
+        <template v-else-if="component === 'event-renderer'">
+          <AgentConversation :messages="chatMessages" :context-messages="chatSnapshot.messages" />
+          <AgentEventRenderer :snapshot="chatSnapshot" @approve="approveChat" @reject="rejectChat" @retry="retryChat" @retry-interrupts="retryChatInterrupts" @cancel-interrupts="cancelChatInterrupts" />
+        </template>
         <AgentMessageScroller v-else-if="component === 'message-scroller'" :at-live-edge="false" @follow="done('跳到最新消息')">
           <AgentConversation :messages="messages" />
         </AgentMessageScroller>
@@ -378,7 +383,7 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentFlowchart v-else-if="component === 'flowchart'" title="发布工作流" :nodes="flowNodes" @select="done($event.label)" @add="done('添加步骤')" />
         <AgentFineTune v-else-if="component === 'fine-tune'" v-model:controls="fineTuneControls" title="调整 Agent Card" @apply="done('已应用调整')" />
         <template v-else-if="component === 'agent-chat'">
-          <AgentChat v-if="chatOpen" v-model="chatPrompt" class="agent-component-demo__chat" title="Varo Agent" :busy="chatBusy" :messages="chatMessages" :snapshot="chatSnapshot" :suggestions="['分析需求', '生成计划']" @submit="sendChat" @new-conversation="resetChat" @stop="stopChat" @close="closeChat" @approve="approveChat" @reject="rejectChat" @retry="retryChat" />
+          <AgentChat v-if="chatOpen" v-model="chatPrompt" class="agent-component-demo__chat" title="Varo Agent" :busy="chatBusy" :messages="chatMessages" :snapshot="chatSnapshot" :suggestions="['分析需求', '生成计划']" @submit="sendChat" @new-conversation="resetChat" @stop="stopChat" @close="closeChat" @approve="approveChat" @reject="rejectChat" @retry="retryChat" @retry-interrupts="retryChatInterrupts" @cancel-interrupts="cancelChatInterrupts" />
           <button v-else type="button" @click="chatOpen = true">
             打开会话
           </button>

@@ -30,7 +30,8 @@
     "@varo-ui/weapp": "workspace:*",
     "@weapp-tailwindcss/merge": "^2.2.4",
     "clsx": "^2.1.1",
-    "wevu": "7.10.0"
+    "wevu": "7.10.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@csstools/css-tokenizer": "4.0.2",

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '../agent-ui/types'
+import type { AgentConversationEntry } from '../agent-ui/types'
 import type { AgentChatHistoryItem, AgentChatLayout } from './agent-chat.types'
 import { useControllableState } from '@varo-ui/headless'
 import { computed, onBeforeUnmount, onMounted, onUpdated, useTemplateRef, watch } from 'vue'
@@ -22,7 +22,7 @@ const props = withDefaults(
     history?: AgentChatHistoryItem[]
     activeHistoryId?: string
     closeLabel?: string
-    messages?: AgentConversationMessage[]
+    messages?: readonly AgentConversationEntry[]
     modelValue?: string
     snapshot?: ChatClientSnapshot
     subtitle?: string
@@ -51,6 +51,8 @@ const emit = defineEmits<{
   'stop': []
   'reject': [interruptId: string]
   'retry': []
+  'retryInterrupts': []
+  'cancelInterrupts': []
   'submit': [prompt: string]
   'update:modelValue': [value: string]
 }>()
@@ -164,13 +166,15 @@ function stop() {
             输入问题，或选择下方建议开始新的对话。
           </p>
         </div>
-        <AgentConversation :messages="messages" />
+        <AgentConversation :messages="messages" :context-messages="snapshot?.messages" />
         <AgentEventRenderer
           v-if="snapshot && agentSnapshotStatus(snapshot) !== 'idle'"
           :snapshot="snapshot"
           @approve="emit('approve', $event)"
           @reject="emit('reject', $event)"
           @retry="emit('retry')"
+          @retry-interrupts="emit('retryInterrupts')"
+          @cancel-interrupts="emit('cancelInterrupts')"
         >
           <template v-if="$slots.actions" #actions>
             <slot name="actions" />

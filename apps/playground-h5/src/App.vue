@@ -38,11 +38,13 @@ const agentChatOpen = shallowRef(true)
 const {
   approve: approveAgent,
   busy: agentBusy,
+  cancelInterrupts: cancelAgentInterrupts,
   messages: agentMessages,
   newConversation: newAgentConversation,
   prompt: agentPrompt,
   reject: rejectAgent,
   retry: retryAgent,
+  retryInterrupts: retryAgentInterrupts,
   send: sendAgent,
   snapshot: agentSnapshot,
   stop: stopAgent,
@@ -269,6 +271,8 @@ function record(message: string) {
             @close="closeAgentChat"
             @reject="rejectAgent"
             @retry="retryAgent"
+            @retry-interrupts="retryAgentInterrupts"
+            @cancel-interrupts="cancelAgentInterrupts"
             @submit="sendAgent"
             @stop="stopAgent"
             @new-conversation="newAgentConversation"

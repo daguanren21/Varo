@@ -14,7 +14,7 @@ import { agentCurrentMessage, agentMessageText } from './agent-ui/presentation'
 type Locale = 'en' | 'zh'
 
 const props = withDefaults(defineProps<{ locale?: Locale }>(), { locale: 'zh' })
-const { approve, busy, messages, prompt, reject, retry, run, snapshot } = useAgentDocsDemo()
+const { approve, busy, cancelInterrupts, messages, prompt, reject, retry, retryInterrupts, run, snapshot } = useAgentDocsDemo()
 const currentMessage = computed(() => agentCurrentMessage(snapshot.value))
 const currentContent = computed(() => agentMessageText(currentMessage.value))
 const { snapshot: ragSnapshot, run: runRag, cancel: cancelRag } = useRagPipelineDemo(props.locale)
@@ -60,7 +60,7 @@ function submitPrompt(value: string) {
 
 watch(
   [
-    () => messages.value.at(-1)?.content,
+    () => messages.value.at(-1)?.parts,
     currentContent,
     () => snapshot.value.status,
   ],
@@ -97,13 +97,14 @@ function t(zh: string, en: string) {
         </header>
 
         <div ref="transcript" class="ai-docs-demo__transcript" @scroll.passive="syncTranscriptLiveEdge">
-          <AgentConversation :messages="messages" />
+          <AgentConversation :messages="messages" :context-messages="snapshot.messages" />
           <AgentEventRenderer
-            v-if="currentMessage"
             :snapshot="snapshot"
             @approve="approve"
             @reject="reject"
             @retry="retry"
+            @retry-interrupts="retryInterrupts"
+            @cancel-interrupts="cancelInterrupts"
           >
             <template #actions>
               <AgentResponseActions :content="currentContent" @retry="retry" />

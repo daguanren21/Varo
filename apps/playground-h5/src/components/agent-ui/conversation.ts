@@ -1,19 +1,20 @@
-import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import type { AgentPartStatus, AgentStreamStatus, AgentToolPart } from './types'
 import type { PropType } from 'vue'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentChoice, AgentConversationMessage, AgentTraceStep } from './types'
+import type { AgentChoice, AgentConversationEntry, AgentTraceStep } from './types'
+import type { AgentRenderedMessage } from './presentation'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, useId, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import { AgentMarkdown } from './AgentMarkdown'
-import { agentPartStatusLabels, agentSnapshotProjection, agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
+import { agentCanResolveApproval, agentConversationProjection, agentPartStatusLabels, agentSnapshotProjection, agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
 import '../../styles/varo.css'
 import '../../styles/varo-agent.css'
 import './agent-conversation.css'
 import './agent-markdown.css'
 
 export { AgentMarkdown }
-export type { AgentChoice, AgentConversationMessage, AgentTraceStep } from './types'
+export type { AgentChoice, AgentConversationEntry, AgentConversationMessage, AgentTraceStep } from './types'
 export type { AgentPartStatus, AgentStreamStatus, AgentToolPart } from './types'
 
 const quietButton = 'inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-xs font-bold text-[var(--varo-agent-foreground)] transition-colors hover:bg-[var(--varo-agent-surface-strong)] disabled:cursor-not-allowed disabled:opacity-45'
@@ -241,11 +242,12 @@ export const AgentToolChip = defineComponent({
     tool: { type: Object as PropType<AgentToolPart>, required: true },
   },
   setup(props) {
-    return () => h('span', { class: 'inline-flex max-w-full items-center gap-2 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 py-1.5' }, [
+    return () => h('span', { 'class': 'agent-tool inline-flex max-w-full items-center gap-2 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 py-1.5', 'data-status': props.tool.status }, [
       h('i', { class: ['h-2 w-2 flex-none rounded-full', partMark(props.tool.status)] }),
       h('span', { class: 'grid min-w-0' }, [
         h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, props.tool.name),
-        props.tool.summary && !props.compact ? h('small', { class: 'truncate text-[11px] text-[var(--varo-agent-muted)]' }, props.tool.summary) : null,
+        props.tool.summary && !props.compact ? h('small', { class: 'whitespace-pre-wrap break-words text-[11px] text-[var(--varo-agent-muted)]' }, props.tool.summary) : null,
+        !props.compact ? h('small', { class: 'text-[11px] text-[var(--varo-agent-muted)]' }, agentPartStatusLabels[props.tool.status]) : null,
       ]),
     ])
   },
@@ -256,6 +258,7 @@ export const AgentApproval = defineComponent({
     approveText: { type: String, default: '确认' },
     choices: { type: Array as PropType<AgentChoice[]>, default: () => [] },
     description: String,
+    disabled: Boolean,
     rejectText: { type: String, default: '拒绝' },
     title: { type: String, required: true },
     value: { type: String, default: '' },
@@ -300,11 +303,11 @@ export const AgentApproval = defineComponent({
               h('input', {
                 class: 'agent-approval__radio',
                 checked: choice.value === props.value,
-                disabled: choice.disabled,
+                disabled: props.disabled || choice.disabled,
                 name: `agent-approval-${props.title}`,
                 type: 'radio',
                 value: choice.value,
-                onChange: () => emit('update:value', choice.value),
+                onChange: () => { if (!props.disabled && !choice.disabled) { emit('update:value', choice.value) } },
               }),
               h('span', { class: 'agent-approval__choice-copy' }, [
                 h('strong', choice.label),
@@ -319,14 +322,15 @@ export const AgentApproval = defineComponent({
       h('footer', { class: 'agent-approval__footer' }, [
         h('button', {
           class: 'agent-approval__reject',
+          disabled: props.disabled,
           type: 'button',
-          onClick: () => emit('reject'),
+          onClick: () => { if (!props.disabled) { emit('reject') } },
         }, props.rejectText),
         h('button', {
           class: 'agent-approval__approve',
-          disabled: props.choices.length > 0 && !props.value,
+          disabled: props.disabled || (props.choices.length > 0 && !props.value),
           type: 'button',
-          onClick: () => emit('approve', props.value),
+          onClick: () => { if (!props.disabled && (!props.choices.length || props.value)) { emit('approve', props.value) } },
         }, props.approveText),
       ]),
     ])
@@ -460,6 +464,7 @@ export const AgentStream = defineComponent({
     cursor: { type: Boolean, default: true },
     error: String,
     final: Boolean,
+    retryable: { type: Boolean, default: true },
     status: { type: String as PropType<AgentStreamStatus>, default: 'idle' },
   },
   emits: { retry: () => true },
@@ -468,8 +473,8 @@ export const AgentStream = defineComponent({
       h(AgentMarkdown, { content: props.content, final: props.final || agentStreamIsFinal(props.status) }),
       props.cursor && props.status === 'streaming' ? h('i', { class: 'agent-ui__cursor ml-1 inline-block h-[1.15em] w-0.5 rounded-full bg-[var(--varo-agent-primary)] align-[-.18em]' }) : null,
       agentStreamNotice(props.status) ? h('p', { class: 'mt-2 text-xs text-[var(--varo-agent-muted)]', role: 'status' }, agentStreamNotice(props.status)) : null,
-      props.status === 'failed' ? h('div', { class: 'mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-xl bg-[var(--varo-agent-danger-soft)] px-3 py-2.5 text-xs text-[var(--varo-agent-danger)]', role: 'alert' }, [h('span', props.error || '生成失败，请重试'), h('button', { class: quietButton, type: 'button', onClick: () => emit('retry') }, '重试')]) : null,
-      props.status === 'completed' ? h('div', { class: 'mt-3 flex flex-wrap gap-2' }, slots.actions?.()) : null,
+      props.status === 'failed' ? h('div', { class: 'mt-2.5 flex min-h-11 items-center justify-between gap-3 rounded-xl bg-[var(--varo-agent-danger-soft)] px-3 py-2.5 text-xs text-[var(--varo-agent-danger)]', role: 'alert' }, [h('span', props.error || '生成失败，请重试'), props.retryable ? h('button', { class: quietButton, type: 'button', onClick: () => { if (props.retryable) { emit('retry') } } }, '重试') : null]) : null,
+      props.status === 'completed' && slots.actions ? h('div', { class: 'mt-3 flex flex-wrap gap-2' }, slots.actions()) : null,
     ])
   },
 })
@@ -499,40 +504,108 @@ export const AgentResponseActions = defineComponent({
     ])
   },
 })
+const AgentMessageParts = defineComponent({
+  name: 'AgentMessageParts',
+  props: {
+    message: { type: Object as PropType<AgentRenderedMessage>, required: true },
+    stream: Boolean,
+    error: String,
+    retryable: { type: Boolean, default: true },
+  },
+  emits: { retry: () => true },
+  setup(props, { emit, slots }) {
+    return () => {
+      const message = props.message
+      let lastText: AgentRenderedMessage['segments'][number] | undefined
+      for (const segment of message.segments) { if (segment.kind === 'text') { lastText = segment } }
+      const status = message.status
+      return h('div', { class: 'agent-message-parts grid min-w-0 gap-3' }, [
+        ...message.segments.map(segment => {
+          if (segment.kind === 'thinking') {
+            return h(AgentThinking, { key: segment.id, label: '推理过程', defaultOpen: status === 'streaming', steps: segment.steps })
+          }
+          if (segment.kind === 'tool' && segment.tool) {
+            return h('div', { key: segment.id, class: 'grid min-w-0 gap-2', 'data-message-part': 'tool' }, [
+              h(AgentToolChip, { tool: segment.tool, compact: Boolean(segment.content) }),
+              segment.content ? h('span', { class: 'text-xs text-[var(--varo-agent-muted)]' }, agentPartStatusLabels[segment.tool.status]) : null,
+              segment.content && segment.tool.error ? h('p', { class: 'whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]' }, segment.tool.error) : null,
+              segment.content ? h('pre', { class: 'whitespace-pre-wrap break-words text-xs' }, segment.content) : null,
+            ])
+          }
+          if (segment.kind === 'data') {
+            return h('pre', { key: segment.id, class: 'whitespace-pre-wrap break-words text-xs', 'data-message-part': 'data' }, segment.content)
+          }
+          return h(AgentMessage, { key: segment.id, label: message.label, role: message.role, timestamp: message.timestamp }, {
+            default: () => props.stream && message.role !== 'user'
+              ? h(AgentStream, {
+                  content: segment.content, error: segment === lastText ? props.error : undefined,
+                  final: message.final || segment !== lastText, status: segment === lastText ? status : 'completed',
+                  retryable: props.retryable,
+                  onRetry: () => emit('retry'),
+                })
+              : h(AgentMarkdown, { content: segment.content, final: true }),
+          })
+        }),
+        !lastText && (props.error || agentStreamNotice(status))
+          ? h(AgentStream, { error: props.error, final: message.final, status, retryable: props.retryable, onRetry: () => emit('retry') })
+          : null,
+        status === 'completed' ? slots.actions?.() : null,
+      ])
+    }
+  },
+})
+
 export const AgentConversation = defineComponent({
   name: 'AgentConversation',
-  props: { messages: { type: Array as PropType<AgentConversationMessage[]>, default: () => [] } },
+  props: {
+    messages: { type: Array as PropType<readonly AgentConversationEntry[]>, default: () => [] },
+    contextMessages: { type: Array as PropType<readonly UIMessage[]>, default: undefined },
+  },
   setup(props) {
-    return () => h('div', { 'class': 'grid gap-3', 'role': 'log', 'aria-live': 'polite' }, props.messages.map(message => h(AgentMessage, { key: message.id, label: message.label, role: message.role, timestamp: message.timestamp }, { default: () => h(AgentMarkdown, { content: message.content, final: true }) })))
+    const messages = computed(() => agentConversationProjection(props.messages, props.contextMessages).filter(message => message.segments.length))
+    return () => h('div', { 'class': 'grid gap-3', 'role': 'log', 'aria-live': 'polite' }, messages.value.map(message => h(AgentMessageParts, { key: message.id, message })))
   },
 })
 export const AgentEventRenderer = defineComponent({
   name: 'AgentEventRenderer',
-  props: { snapshot: { type: Object as PropType<ChatClientSnapshot>, required: true } },
-  emits: { approve: (_value: string) => true, reject: (_value: string) => true, retry: () => true },
+  props: {
+    snapshot: { type: Object as PropType<ChatClientSnapshot>, required: true },
+    retryable: { type: Boolean, default: true },
+  },
+  emits: { approve: (_value: string) => true, reject: (_value: string) => true, retry: () => true, retryInterrupts: () => true, cancelInterrupts: () => true },
   setup(props, { emit, slots }) {
     const projection = computed(() => agentSnapshotProjection(props.snapshot))
+    const retry = () => { if (props.retryable) { emit('retry') } }
 
-    return () => h('div', { 'class': 'grid gap-3', 'data-status': projection.value.status }, [
-      projection.value.reasoning.length > 0 ? h(AgentThinking, { label: '推理过程', defaultOpen: projection.value.status === 'streaming', steps: projection.value.reasoning }) : null,
-      projection.value.tools.length > 0 ? h('div', { class: 'flex flex-wrap gap-2' }, projection.value.tools.map(tool => h(AgentToolChip, { key: tool.id, tool }))) : null,
-      projection.value.message || projection.value.error
-        ? h(AgentMessage, { role: projection.value.messageRole }, { default: () => h(AgentStream, { content: projection.value.messageText, error: projection.value.error, final: projection.value.messageFinal, status: projection.value.status, onRetry: () => emit('retry') }, { actions: slots.actions }) })
-        : null,
-      projection.value.status === 'waiting' && !projection.value.message && !projection.value.error && !projection.value.approval
-        ? h('p', { class: 'text-xs text-[var(--varo-agent-muted)]', role: 'status' }, agentStreamNotice(projection.value.status))
-        : null,
-      projection.value.status === 'streaming' && !projection.value.messageText ? h(AgentLoading, { label: '正在生成回答' }) : null,
-      projection.value.approval
-        ? h(AgentApproval, {
-            'choices': projection.value.approval.choices,
-            'description': projection.value.approval.description,
-            'title': projection.value.approval.title,
-            'onApprove': () => emit('approve', projection.value.approval!.id),
-            'onReject': () => emit('reject', projection.value.approval!.id),
-          })
-        : null,
-      slots.default?.(),
-    ])
+    return () => {
+      const display = projection.value
+      const transactionKey = display.transactionKey
+      const recover = (action: 'retryInterrupts' | 'cancelInterrupts') => {
+        const current = agentSnapshotProjection(props.snapshot)
+        if (current.transactionKey !== transactionKey) { return }
+        if (action === 'retryInterrupts' && current.canRetryInterrupts) { emit('retryInterrupts') }
+        if (action === 'cancelInterrupts' && current.canCancelInterrupts) { emit('cancelInterrupts') }
+      }
+      return h('div', { 'class': 'grid gap-3', 'data-status': display.status }, [
+        display.renderedMessage
+          ? h(AgentMessageParts, { message: display.renderedMessage, stream: true, error: display.error, retryable: props.retryable, onRetry: retry }, { actions: slots.actions })
+          : display.error ? h(AgentStream, { error: display.error, status: 'failed', retryable: props.retryable, onRetry: retry }) : null,
+        display.status === 'waiting' && !display.message && !display.error && !display.approvals.length
+          ? h('p', { class: 'text-xs text-[var(--varo-agent-muted)]', role: 'status' }, agentStreamNotice(display.status)) : null,
+        display.status === 'streaming' && !display.messageText ? h(AgentLoading, { label: '正在生成回答' }) : null,
+        ...display.approvals.map(approval => h(AgentApproval, {
+          key: JSON.stringify([approval.id, approval.threadId, approval.interruptedRunId, approval.generation]),
+          description: approval.description, title: approval.title, disabled: !approval.canResolve,
+          onApprove: () => { if (agentCanResolveApproval(props.snapshot, approval)) { emit('approve', approval.id) } },
+          onReject: () => { if (agentCanResolveApproval(props.snapshot, approval)) { emit('reject', approval.id) } },
+        })),
+        ...display.interruptErrors.map(error => h('p', { key: error, role: 'alert', class: 'whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]' }, error)),
+        display.canRetryInterrupts || display.canCancelInterrupts ? h('div', { class: 'flex flex-wrap gap-2' }, [
+          display.canRetryInterrupts ? h('button', { class: quietButton, type: 'button', onClick: () => recover('retryInterrupts') }, '重试中断') : null,
+          display.canCancelInterrupts ? h('button', { class: quietButton, type: 'button', onClick: () => recover('cancelInterrupts') }, '取消中断') : null,
+        ]) : null,
+        slots.default?.(),
+      ])
+    }
   },
 })

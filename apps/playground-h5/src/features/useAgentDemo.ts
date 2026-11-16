@@ -1,12 +1,13 @@
 import type { StreamChunk } from '@tanstack/ai'
-import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '../components/agent-ui/types'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
+import type { ComputedRef, ShallowRef } from 'vue'
 import { EventType, hashSchemaInput, normalizeApprovalSchema, toolDefinition, withInterruptBinding } from '@tanstack/ai/client'
 import { ChatClient, stream } from '@tanstack/ai-client'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
-import { agentConversationHistory, agentMessageText } from '../components/agent-ui/presentation'
+import { agentCanResolveApproval, agentConversationHistory, agentMessageText, agentSnapshotProjection } from '../components/agent-ui/presentation'
 
 const releaseTool = toolDefinition({ name: 'local.release.preview', description: '仅演示发布授权，不发布任何包。', needsApproval: true }).client()
+export type AgentDemoSnapshot = ChatClientSnapshot<Array<typeof releaseTool>, any>
 const releaseApproval = normalizeApprovalSchema(releaseTool.approvalSchema, releaseTool.inputSchema)
 const DEMO_RESPONSE = `## 双端 Agent 交付建议
 
@@ -27,11 +28,28 @@ await client.sendMessage(prompt)
 
 > 这是确定性的本地演示，不是模型回答。`
 
-export function useAgentDemo() {
+export interface AgentDemoController {
+  approve: (id: string) => void
+  busy: ComputedRef<boolean>
+  cancelInterrupts: () => void
+  messages: ComputedRef<UIMessage[]>
+  newConversation: () => void
+  prompt: ShallowRef<string>
+  reject: (id: string) => void
+  retry: () => void
+  retryInterrupts: () => void
+  send: (value?: string) => void
+  snapshot: ShallowRef<AgentDemoSnapshot>
+  stop: () => void
+}
+
+export function useAgentDemo(): AgentDemoController {
   const prompt = shallowRef('')
   const lastPrompt = shallowRef('分析双端 Agent 方案')
   let disposed = false
-  const createClient = (threadId: string, welcome = false) => new ChatClient({
+  const createClient = (threadId: string, welcome = false) => {
+    let pending: { interruptId: string, toolCallId: string, runId: string } | undefined
+    return new ChatClient({
     threadId,
     tools: [releaseTool],
     initialMessages: welcome ? [{ id: 'welcome', role: 'assistant', parts: [{ type: 'text', content: '你好，我是 Varo Agent。试试“分析双端方案”或“生成发布计划”。' }] }] : [],
@@ -41,9 +59,12 @@ export function useAgentDemo() {
       yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
       if (input.resume?.length) {
         const resolution = input.resume[0]!
+        if (!pending || input.resume.length !== 1 || resolution.interruptId !== pending.interruptId || input.threadId !== threadId || input.parentRunId !== pending.runId) { throw new Error('本地发布审批已失效') }
+        const { toolCallId } = pending
         const approved = resolution.payload === true || (typeof resolution.payload === 'object' && resolution.payload !== null && 'approved' in resolution.payload && resolution.payload.approved === true)
         yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: id, delta: approved ? '已记录本地发布授权；演示不会发布包或访问 npm registry。' : '已取消发布动作，未产生任何外部副作用。' }
-        yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${resolution.interruptId}`, toolCallId: resolution.interruptId, content: JSON.stringify({ approved, local: true }), role: 'tool' }
+        yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${toolCallId}`, toolCallId, content: JSON.stringify({ approved, local: true }), role: 'tool', ...(!approved ? { metadata: { tanstack: { toolResultOutcome: resolution.status === 'cancelled' ? 'cancelled' : 'denied' } } } : {}) }
+        pending = undefined
       }
       else {
         const request = history[history.length - 1]
@@ -58,13 +79,15 @@ export function useAgentDemo() {
         }
         if (text.includes('发布')) {
           const toolCallId = `release-${input.runId}`
+          const interruptId = `approval-${input.runId}`
+          pending = { interruptId, toolCallId, runId: input.runId }
           yield { type: 'TOOL_CALL_START', toolCallId, toolCallName: releaseTool.name, parentMessageId: id }
           yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: '{}' }
           yield { type: 'TOOL_CALL_END', toolCallId }
           yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
           yield {
             type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId,
-            outcome: { type: 'interrupt', interrupts: [withInterruptBinding({ id: toolCallId, toolCallId, reason: 'tool_call', message: '是否批准本地发布演示？不会执行真实发布。', responseSchema: releaseApproval.responseSchema, metadata: { kind: 'approval', toolName: releaseTool.name, input: {} } }, { v: 1, kind: 'tool-approval', interruptId: toolCallId, interruptedRunId: input.runId, generation: 0, toolName: releaseTool.name, toolCallId, originalArgs: {}, inputSchemaHash: hashSchemaInput(releaseTool.inputSchema), approvalSchemaHash: releaseApproval.approvalSchemaHash, responseSchemaHash: releaseApproval.responseSchemaHash })] },
+            outcome: { type: 'interrupt', interrupts: [withInterruptBinding({ id: interruptId, toolCallId, reason: 'tool_call', message: '是否批准本地发布演示？不会执行真实发布。', responseSchema: releaseApproval.responseSchema, metadata: { kind: 'approval', toolName: releaseTool.name, input: {} } }, { v: 1, kind: 'tool-approval', interruptId, interruptedRunId: pending.runId, generation: 0, toolName: releaseTool.name, toolCallId, originalArgs: {}, inputSchemaHash: hashSchemaInput(releaseTool.inputSchema), approvalSchemaHash: releaseApproval.approvalSchemaHash, responseSchemaHash: releaseApproval.responseSchemaHash })] },
           }
           return
         }
@@ -73,12 +96,13 @@ export function useAgentDemo() {
       yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
     }),
   })
+  }
   let threadSequence = 0
   let client = createClient(`varo-agent-demo-${++threadSequence}`, true)
-  const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+  const snapshot = shallowRef<AgentDemoSnapshot>(client.getSnapshot())
   let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
-  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.resuming)
-  const messages = computed<AgentConversationMessage[]>(() => agentConversationHistory(snapshot.value, '刚刚'))
+  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0 || snapshot.value.interruptState.resuming)
+  const messages = computed<UIMessage[]>(() => agentConversationHistory(snapshot.value))
 
   function stop() { client.stop() }
   function newConversation() {
@@ -101,14 +125,20 @@ export function useAgentDemo() {
   }
   function approve(id: string) {
     const interrupt = client.getInterrupts().find(item => item.id === id)
-    if (interrupt?.kind === 'tool-approval' && interrupt.canResolve) { interrupt.resolveInterrupt(true) }
+    if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(true) }
   }
   function reject(id: string) {
     const interrupt = client.getInterrupts().find(item => item.id === id)
-    if (interrupt?.kind === 'tool-approval' && interrupt.canResolve) { interrupt.resolveInterrupt(false) }
+    if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(false) }
   }
   function retry() {
     if (!busy.value && !disposed && lastPrompt.value) { void client.reload() }
+  }
+  function retryInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+  }
+  function cancelInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
   }
   onBeforeUnmount(() => {
     disposed = true
@@ -117,7 +147,7 @@ export function useAgentDemo() {
     client.detach()
     client.dispose()
   })
-  return { approve, busy, messages, newConversation, prompt, reject, retry, send, snapshot, stop }
+  return { approve, busy, cancelInterrupts, messages, newConversation, prompt, reject, retry, retryInterrupts, send, snapshot, stop }
 }
 
 function delay(duration: number, signal?: AbortSignal) {

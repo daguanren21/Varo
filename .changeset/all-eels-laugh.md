@@ -13,3 +13,7 @@ Verify the 7.10.0 native slot integration with execution-slot parent reactivity 
 Remove obsolete management-chunk relocation after the 7.10.0 compiler bundles those helpers into page/shared chunks. Validate actual emitted synchronous script dependencies and package ownership instead of requiring removed standalone files; keep native page, style, asset and package-size gates.
 
 Let comparison applications supply confirmed completion/cancellation outcomes independently of the TanStack ready state, preserving truthful result labels and side-specific stop/retry behavior.
+
+Preserve SDK message parts and historical tool receipts, keep failed tool states authoritative, and surface interrupt validation/transport errors with application-owned resubmission, retry, and cancellation. Bind approval intents to the rendered interrupt transaction, validate edited mall tool arguments before execution, complete documentation tool-result events, and preserve CommonJS parameters inside the native-preview isolation wrapper.
+
+Keep native approval controls scoped to keyed WXML list items so replaced transactions cannot reuse captured identities, and derive cancellation availability from serializable SDK metadata rather than methods removed by native property transport.

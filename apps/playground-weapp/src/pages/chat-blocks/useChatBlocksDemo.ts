@@ -2,10 +2,9 @@ import type { StreamChunk } from '@tanstack/ai'
 import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import { EventType } from '@tanstack/ai/client'
 import { ChatClient, stream } from '@tanstack/ai-client'
-import type { AgentConversationMessage } from '../../components/agent-ui/types'
 import type { AgentAssistantContext, AgentAssistantResponse } from '../../components/blocks/agent-assistant-sheet.types'
 import type { AgentChatHistoryItem } from '../../components/blocks/agent-chat.types'
-import { agentConversationHistory, agentCurrentMessage, agentMessageText } from '../../components/agent-ui/presentation'
+import { agentConversationHistory, agentCurrentMessage, agentMessageText, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 
 const passage = '把复杂任务拆成可以确认的小步骤，保留用户的决定权。'
@@ -31,7 +30,7 @@ export function useChatBlocksDemo() {
   let threadId = `thread-${++sequence}`
   let client = new ChatClient({ threadId, connection })
   const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
-  const messages = computed<AgentConversationMessage[]>(() => agentConversationHistory(snapshot.value))
+  const messages = computed<UIMessage[]>(() => agentConversationHistory(snapshot.value))
   const history = shallowRef<AgentChatHistoryItem[]>([{ id: 'saved', title: '已保存的写作建议' }])
   const conversations = new Map<string, ReadonlyArray<UIMessage>>([
     ['saved', [{ id: 'saved-answer', role: 'assistant', parts: [{ type: 'text', content: '先写清楚目标，再说明下一步。' }] }]],
@@ -49,7 +48,7 @@ export function useChatBlocksDemo() {
   const lastAction = shallowRef('ready')
   const chunksProduced = shallowRef(0)
   const insertCount = shallowRef(0)
-  const busy = computed(() => snapshot.value.isLoading)
+  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0)
   const selectedResponse = computed<AgentAssistantResponse | undefined>(() => {
     const message = agentCurrentMessage(snapshot.value)
     if (!busy.value && !snapshot.value.error && message && agentMessageText(message)) { return { id: message.id, content: agentMessageText(message) } }
@@ -154,6 +153,12 @@ export function useChatBlocksDemo() {
   }
 
   function retry() { send(lastPrompt || '重试写作建议') }
+  function retryInterrupts() {
+    if (!disposed && !disabled.value && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+  }
+  function cancelInterrupts() {
+    if (!disposed && !disabled.value && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
+  }
 
   function dispose() {
     if (disposed) { return }
@@ -166,7 +171,7 @@ export function useChatBlocksDemo() {
   onUnload(dispose)
   onUnmounted(dispose)
 
-  return { activeHistoryId, busy, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, selectedResponse, selectHistory, send, snapshot, stop }
+  return { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, retryInterrupts, selectedResponse, selectHistory, send, snapshot, stop }
 }
 
 function delay(duration: number, signal?: AbortSignal) {

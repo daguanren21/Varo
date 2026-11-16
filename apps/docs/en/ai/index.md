@@ -57,7 +57,7 @@ H5 source imports the required CSS. Native units depend on `themes/agent`; load 
 
 SDK `status` is `ready | submitted | streaming | error`. Display `AgentPartStatus` is `waiting | running | completed | failed`; `AgentStreamStatus` is `idle | streaming | waiting | completed | failed | cancelled`. These are not SDK states or wire enums and must not replace SDK `status`. `ready` alone does not establish success or cancellation. Derive pure display projections from actual results, without another event reducer.
 
-`AgentToolPart` fields `id`, `name`, `input`, `output`, `summary`, `error`, and `status` describe tool UI only; they do not execute tools. `AgentConversationMessage[]` remains available for static history. The SDK owns active messages; do not duplicate them in a second writable Varo store. A `snapshot` prop must receive the upstream `ChatClientSnapshot` returned by `client.getSnapshot()`, not a hand-built approximation or a collection of hook refs assembled into a snapshot.
+`AgentToolPart` fields `id`, `name`, `input`, `output`, `summary`, `error`, and `status` describe tool UI only. `AgentConversationEntry` accepts either static `AgentConversationMessage` entries or SDK `UIMessage` entries; `agentConversationHistory(snapshot)` preserves original message/part references rather than flattening tool receipts. The SDK owns the active transcript. Pass the actual `ChatClientSnapshot` from `client.getSnapshot()`, not a hand-built approximation or a collection of hook refs.
 
 Import `agentMessageText(message: UIMessage | undefined): string` and `agentCurrentMessage(snapshot: ChatClientSnapshot): UIMessage | undefined` from installed `@/components/agent-ui/presentation`. They are read-only presentation helpers, not network event parsers.
 

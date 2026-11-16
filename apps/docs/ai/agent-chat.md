@@ -64,7 +64,7 @@ function newConversation() {
 | `layout`          | `'panel' \| 'page'`          | `'panel'`    | 面板或页面布局                             |
 | `history`         | `AgentChatHistoryItem[]`     | `[]`         | 应用注入的 `{ id, title }` 历史入口        |
 | `activeHistoryId` | `string`                     | `—`          | 当前选中入口                               |
-| `messages`        | `AgentConversationMessage[]` | `[]`         | 消息                                       |
+| `messages` | `readonly AgentConversationEntry[]` | `[]` | 静态消息或保留完整 parts 的 SDK 历史 |
 | `snapshot`        | `ChatClientSnapshot`         | `—`          | 真实 TanStack SDK 快照，不是展示状态对象   |
 | `subtitle`        | `string`                     | `—`          | 副标题                                     |
 | `suggestions`     | `string[]`                   | `[]`         | 建议词                                     |
@@ -81,6 +81,8 @@ function newConversation() {
 | `stop`              | `void`   | 请求应用取消生成（仅忙碌时显示）                        |
 | `reject`            | `string` | 请求拒绝该 interrupt ID；由应用解析 SDK 中断            |
 | `retry`             | `void`   | 重试                                                    |
+| `retryInterrupts` | `void` | 重试当前可恢复的审批事务，不重新生成回答 |
+| `cancelInterrupts` | `void` | 取消当前中断事务 |
 | `submit`            | `string` | 提交                                                    |
 | `update:modelValue` | `string` | 更新提示词                                              |
 

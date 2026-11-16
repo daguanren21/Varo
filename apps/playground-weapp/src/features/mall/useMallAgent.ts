@@ -1,11 +1,12 @@
 import type { StreamChunk } from '@tanstack/ai'
-import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import type { ComputedRef, ShallowRef } from 'wevu'
 import type { AgentChoice, AgentTask } from '../../components/agent-ui/types'
-import { EventType, hashSchemaInput, normalizeApprovalSchema, toolDefinition, withInterruptBinding } from '@tanstack/ai/client'
+import { EventType, hashSchemaInput, normalizeApprovalSchema, parseWithStandardSchema, toolDefinition, uiMessagesToWire, withInterruptBinding } from '@tanstack/ai/client'
 import { ChatClient, stream } from '@tanstack/ai-client'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
-import { agentConversationHistory } from '../../components/agent-ui/presentation'
+import { z } from 'zod'
+import { agentCanResolveApproval, agentConversationHistory, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 
 export interface MallProduct {
   accent: string
@@ -47,12 +48,6 @@ export interface MallHistoryItem {
   type: 'address' | 'order' | 'return'
 }
 
-export interface MallAgentMessage {
-  content: string
-  id: string
-  role: 'assistant' | 'user' | 'system'
-  timestamp: string
-}
 
 export type PendingAction
   = | { product: MallProduct, quantity: number, type: 'purchase' }
@@ -68,19 +63,21 @@ export interface MallAgentController {
   approve: (id: string) => Promise<void>
   busy: ComputedRef<boolean>
   buyProduct: (product: MallProduct) => void
+  cancelInterrupts: () => void
   cartCount: ComputedRef<number>
   defaultAddress: ComputedRef<MallAddress | undefined>
   history: ShallowRef<MallHistoryItem[]>
   historyOpen: ShallowRef<boolean>
-  messages: ComputedRef<MallAgentMessage[]>
+  messages: ComputedRef<UIMessage[]>
   orders: ShallowRef<MallOrder[]>
   pendingAction: ShallowRef<PendingAction | undefined>
   products: ShallowRef<MallProduct[]>
   reject: (id: string) => void
+  retryInterrupts: () => void
   returnOrder: (order: MallOrder) => void
   saveAddress: (address: MallAddressDraft) => Promise<void>
   send: (prompt: string) => Promise<void>
-  streamSnapshot: ShallowRef<ChatClientSnapshot>
+  streamSnapshot: ShallowRef<MallAgentSnapshot>
   tasks: ShallowRef<AgentTask[]>
 }
 
@@ -143,7 +140,13 @@ function nextId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
-const mallTool = toolDefinition({ name: 'local.mall.execute', description: '修改当前页面内的演示订单；不调用真实支付或商城 API。', needsApproval: true }).client()
+const mallInputSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('purchase'), productId: z.string().min(1), quantity: z.number().int().min(1).max(9) }).strict(),
+  z.object({ type: z.literal('return'), orderId: z.string().min(1), reason: z.string().min(1) }).strict(),
+])
+type MallAction = z.infer<typeof mallInputSchema>
+const mallTool = toolDefinition({ name: 'local.mall.execute', description: '修改当前页面内的演示订单；不调用真实支付或商城 API。', inputSchema: mallInputSchema, needsApproval: true }).client()
+export type MallAgentSnapshot = ChatClientSnapshot<Array<typeof mallTool>, any>
 const mallApproval = normalizeApprovalSchema(mallTool.approvalSchema, mallTool.inputSchema)
 
 function sleep(duration: number, signal?: AbortSignal) {
@@ -199,25 +202,37 @@ export function useMallAgent(): MallAgentController {
   const defaultAddress = computed(() => addresses.value.find(address => address.isDefault) ?? addresses.value[0])
   const cartCount = computed(() => orders.value.filter(order => order.status === 'paid').length)
   let disposed = false
+  let pendingExecution: { interruptId: string, toolCallId: string, runId: string, threadId: string, args: MallAction } | undefined
 
   const client = new ChatClient({
     threadId: 'varo-mall-agent-demo',
     tools: [mallTool],
     initialMessages: [{ id: 'welcome', role: 'assistant', parts: [{ type: 'text', content: '你好，我是 Varo 购物 Agent。这是本地商城演示，不调用真实支付或业务 API。购买和退货前都会请你确认。' }] }],
-    connection: stream(async function* (_messages, data, signal, input): AsyncGenerator<StreamChunk> {
+    connection: stream(async function* (messages, data, signal, input): AsyncGenerator<StreamChunk> {
       const id = `mall-${input.runId}`
       let text = ''
+      let plannedAction: MallAction | undefined
       yield { type: EventType.RUN_STARTED, threadId: input.threadId, runId: input.runId }
       yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
       if (input.resume?.length) {
-        const action = pendingAction.value
+        const pending = pendingExecution
         const resolution = input.resume[0]!
-        const approved = resolution.payload === true || (typeof resolution.payload === 'object' && resolution.payload !== null && 'approved' in resolution.payload && resolution.payload.approved === true)
-        if (!approved || !action) {
-          clearApproval()
+        if (!pending || input.resume.length !== 1 || resolution.interruptId !== pending.interruptId || input.threadId !== pending.threadId || input.parentRunId !== pending.runId) { throw new Error('本地商城审批已失效') }
+        const payload = resolution.payload
+        const approved = payload === true || (typeof payload === 'object' && payload !== null && 'approved' in payload && payload.approved === true)
+        let failed = false
+        if (!approved) {
           text = '已取消本次执行，未修改任何订单数据。'
         }
         else {
+          const editedArgs = typeof payload === 'object' && payload !== null && 'editedArgs' in payload ? payload.editedArgs : pending.args
+          const action = parseWithStandardSchema<MallAction>(mallInputSchema, editedArgs)
+          // The producer records exactly the SDK-approved input, not the mutable UI preview.
+          yield { type: EventType.MESSAGES_SNAPSHOT, messages: uiMessagesToWire(messages.map(message => 'parts' in message ? {
+            ...message,
+            parts: message.parts.map(part => part.type === 'tool-call' && part.id === pending.toolCallId ? { ...part, arguments: JSON.stringify(action), input: action } : part),
+          } : message)) }
+          yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
           tasks.value = [
             { id: 'validate', title: '校验订单与库存', status: 'running', progress: 20 },
             { id: 'execute', title: action.type === 'purchase' ? '创建本地演示订单' : '提交本地退货申请', status: 'waiting' },
@@ -228,12 +243,13 @@ export function useMallAgent(): MallAgentController {
           await sleep(260, signal)
           if (action.type === 'purchase') {
             const address = defaultAddress.value
-            const product = products.value.find(item => item.id === action.product.id)
+            const product = products.value.find(item => item.id === action.productId)
             if (!address) {
               addressEditorOpen.value = true
+              failed = true
               text = '下单前需要先配置收货地址。'
             }
-            else if (!product || product.stock < action.quantity) { text = '当前库存不足，请重新选择数量。' }
+            else if (!product || product.stock < action.quantity) { failed = true; text = '当前库存不足，请重新选择数量。' }
             else {
               const order: MallOrder = { address: address.detail, createdAt: nowLabel(), id: `JD${Date.now()}`, productId: product.id, productName: product.name, quantity: action.quantity, status: 'paid', total: product.price * action.quantity }
               orders.value = [order, ...orders.value]
@@ -243,14 +259,19 @@ export function useMallAgent(): MallAgentController {
             }
           }
           else {
-            orders.value = orders.value.map(order => order.id === action.order.id ? { ...order, status: 'returned' } : order)
-            history.value = [{ detail: `${action.order.productName} · ${action.reason}`, id: nextId('history'), time: nowLabel(), title: '本地退货申请已提交', type: 'return' }, ...history.value]
-            text = `演示订单 ${action.order.id} 的退货申请已提交。退款进度会记录在页面内历史中。`
+            const order = orders.value.find(item => item.id === action.orderId)
+            if (!order || (order.status !== 'delivered' && order.status !== 'shipping')) { failed = true; text = '该订单当前不可退货，未修改订单数据。' }
+            else {
+              orders.value = orders.value.map(item => item.id === order.id ? { ...item, status: 'returned' } : item)
+              history.value = [{ detail: `${order.productName} · ${action.reason}`, id: nextId('history'), time: nowLabel(), title: '本地退货申请已提交', type: 'return' }, ...history.value]
+              text = `演示订单 ${order.id} 的退货申请已提交。退款进度会记录在页面内历史中。`
+            }
           }
-          tasks.value = tasks.value.map(task => ({ ...task, progress: 100, status: 'completed' }))
-          clearApproval()
+          tasks.value = tasks.value.map(task => ({ ...task, progress: failed ? 0 : 100, status: failed ? 'failed' : 'completed' }))
         }
-        yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${resolution.interruptId}`, toolCallId: resolution.interruptId, content: JSON.stringify({ approved, summary: text, local: true }), role: 'tool' }
+        clearApproval()
+        pendingExecution = undefined
+        yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${pending.toolCallId}`, toolCallId: pending.toolCallId, content: JSON.stringify({ approved, summary: text, local: true, ...(failed ? { error: text } : {}) }), role: 'tool', ...(!approved ? { metadata: { tanstack: { toolResultOutcome: resolution.status === 'cancelled' ? 'cancelled' : 'denied' } } } : failed ? { metadata: { tanstack: { state: 'output-error' } } } : {}) }
       }
       else if (data?.reply) { text = String(data.reply) }
       else {
@@ -270,7 +291,8 @@ export function useMallAgent(): MallAgentController {
         if (request.includes('退货') || request.includes('退款')) {
           const order = orders.value.find(item => item.status === 'delivered' || item.status === 'shipping')
           if (order) {
-            pendingAction.value = { order, reason: '不想要了', type: 'return' }
+            pendingAction.value = { order: { ...order }, reason: '不想要了', type: 'return' }
+            plannedAction = { orderId: order.id, reason: '不想要了', type: 'return' }
             approvalChoices.value = [{ label: '不想要了', value: 'changed-mind' }, { label: '商品问题', value: 'quality', description: '破损、故障或与描述不符' }, { label: '发错商品', value: 'wrong-item' }]
             approvalValue.value = 'changed-mind'
             text = `我找到了订单 ${order.id}：${order.productName}。请选择退货原因，确认后再提交本地申请。`
@@ -292,7 +314,8 @@ export function useMallAgent(): MallAgentController {
             const quantity = Math.max(1, Math.min(9, Number(request.match(/(\d+)\s*[件个盒双台]?/)?.[1] ?? 1)))
             if (selected.stock < quantity) { text = `库存只剩 ${selected.stock} 件，无法购买 ${quantity} 件。你可以减少数量。` }
             else {
-              pendingAction.value = { product: selected, quantity, type: 'purchase' }
+              pendingAction.value = { product: { ...selected }, quantity, type: 'purchase' }
+              plannedAction = { productId: selected.id, quantity, type: 'purchase' }
               approvalChoices.value = [1, 2, 3].map(count => ({ description: `${(selected.price * count / 100).toFixed(2)} 元`, label: `${count} 件`, value: String(count) }))
               approvalValue.value = String(Math.min(3, quantity))
               text = `已找到 ${selected.name}，当前价 ${(selected.price / 100).toFixed(2)} 元。请选择数量并确认本地下单。`
@@ -306,23 +329,26 @@ export function useMallAgent(): MallAgentController {
         await sleep(36, signal)
         yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: id, delta: chunk }
       }
-      if (pendingAction.value) {
+      if (plannedAction) {
         const toolCallId = `execute-${input.runId}`
+        const interruptId = `approval-${input.runId}`
+        const args = parseWithStandardSchema<MallAction>(mallInputSchema, plannedAction)
+        pendingExecution = { interruptId, toolCallId, runId: input.runId, threadId: input.threadId, args }
         yield { type: 'TOOL_CALL_START', toolCallId, toolCallName: mallTool.name, parentMessageId: id }
-        yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: JSON.stringify(pendingAction.value) }
+        yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: JSON.stringify(args) }
         yield { type: 'TOOL_CALL_END', toolCallId }
         yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
-        yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId, outcome: { type: 'interrupt', interrupts: [withInterruptBinding({ id: toolCallId, toolCallId, reason: 'tool_call', message: '确认后仅修改当前页面的演示订单。', responseSchema: mallApproval.responseSchema, metadata: { kind: 'approval', toolName: mallTool.name, input: pendingAction.value } }, { v: 1, kind: 'tool-approval', interruptId: toolCallId, interruptedRunId: input.runId, generation: 0, toolName: mallTool.name, toolCallId, originalArgs: pendingAction.value, inputSchemaHash: hashSchemaInput(mallTool.inputSchema), approvalSchemaHash: mallApproval.approvalSchemaHash, responseSchemaHash: mallApproval.responseSchemaHash })] } }
+        yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId, outcome: { type: 'interrupt', interrupts: [withInterruptBinding({ id: interruptId, toolCallId, reason: 'tool_call', message: '确认后仅修改当前页面的演示订单。', responseSchema: mallApproval.responseSchema, metadata: { kind: 'approval', toolName: mallTool.name, input: args } }, { v: 1, kind: 'tool-approval', interruptId, interruptedRunId: pendingExecution.runId, generation: 0, toolName: mallTool.name, toolCallId, originalArgs: args, inputSchemaHash: hashSchemaInput(mallTool.inputSchema), approvalSchemaHash: mallApproval.approvalSchemaHash, responseSchemaHash: mallApproval.responseSchemaHash })] } }
         return
       }
       yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
       yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
     }),
   })
-  const streamSnapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+  const streamSnapshot = shallowRef<MallAgentSnapshot>(client.getSnapshot())
   const unsubscribeStream = client.subscribeSnapshot(() => { streamSnapshot.value = client.getSnapshot() })
   const busy = computed(() => streamSnapshot.value.isLoading || streamSnapshot.value.interruptState.resuming)
-  const messages = computed<MallAgentMessage[]>(() => agentConversationHistory(streamSnapshot.value, nowLabel()))
+  const messages = computed<UIMessage[]>(() => agentConversationHistory(streamSnapshot.value))
   function clearApproval() {
     pendingAction.value = undefined
     approvalChoices.value = []
@@ -334,18 +360,26 @@ export function useMallAgent(): MallAgentController {
     await client.sendMessage(value, { prompt: value })
   }
   async function approve(id: string) {
-    if (busy.value || disposed || !pendingAction.value) { return }
+    if (busy.value || disposed) { return }
     const interrupt = client.getInterrupts().find(item => item.id === id)
-    if (interrupt?.kind !== 'tool-approval' || !interrupt.canResolve) { return }
+    if (interrupt?.kind !== 'tool-approval' || !agentCanResolveApproval(client.getSnapshot(), interrupt)) { return }
+    const action = parseWithStandardSchema<MallAction>(mallInputSchema, interrupt.originalArgs)
     const choice = approvalValue.value
-    const action = pendingAction.value
-    pendingAction.value = action.type === 'purchase' ? { ...action, quantity: Math.max(1, Math.min(9, Number(choice) || action.quantity)) } : { ...action, reason: approvalChoices.value.find(item => item.value === choice)?.label ?? action.reason }
-    interrupt.resolveInterrupt(true)
+    const editedArgs = action.type === 'purchase'
+      ? { ...action, quantity: Number(choice) }
+      : { ...action, reason: approvalChoices.value.find(item => item.value === choice)?.label ?? choice }
+    interrupt.resolveInterrupt(true, { editedArgs })
   }
   function reject(id: string) {
     if (busy.value || disposed) { return }
     const interrupt = client.getInterrupts().find(item => item.id === id)
-    if (interrupt?.kind === 'tool-approval' && interrupt.canResolve) { interrupt.resolveInterrupt(false) }
+    if (interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(false) }
+  }
+  function retryInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+  }
+  function cancelInterrupts() {
+    if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts(); clearApproval() }
   }
   async function saveAddress(address: MallAddressDraft) {
     if (busy.value || disposed || client.getInterrupts().length) { return }
@@ -367,5 +401,5 @@ export function useMallAgent(): MallAgentController {
   }
   onUnload(cleanup)
   onUnmounted(cleanup)
-  return { addresses, addressEditorOpen, approvalChoices, approvalValue, approve, busy, buyProduct, cartCount, defaultAddress, history, historyOpen, messages, orders, pendingAction, products, reject, returnOrder, saveAddress, send, streamSnapshot, tasks }
+  return { addresses, addressEditorOpen, approvalChoices, approvalValue, approve, busy, buyProduct, cancelInterrupts, cartCount, defaultAddress, history, historyOpen, messages, orders, pendingAction, products, reject, retryInterrupts, returnOrder, saveAddress, send, streamSnapshot, tasks }
 }

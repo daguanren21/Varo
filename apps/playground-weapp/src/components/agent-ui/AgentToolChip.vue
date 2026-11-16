@@ -21,7 +21,7 @@ function markClass(status: AgentToolPart['status']) {
 </script>
 
 <template>
-  <VTag class="agent-tool max-w-full gap-2 bg-[var(--varo-agent-surface)] text-[var(--varo-agent-text)]" size="sm" variant="outline">
+  <VTag class="agent-tool max-w-full gap-2 bg-[var(--varo-agent-surface)] text-[var(--varo-agent-text)]" size="sm" variant="outline" :data-status="tool.status">
     <text class="h-2 w-2 flex-none rounded-full" :class="[markClass(tool.status)]" aria-hidden="true" />
     <view class="grid min-w-0 flex-1 gap-px">
       <text class="overflow-hidden text-ellipsis whitespace-nowrap text-[12px] font-bold text-[var(--varo-agent-foreground)]">

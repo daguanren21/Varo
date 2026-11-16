@@ -64,7 +64,7 @@ This example stores static local messages only and does not connect a model. For
 | `layout`          | `'panel' \| 'page'`          | `'panel'`    | Panel or page layout                                               |
 | `history`         | `AgentChatHistoryItem[]`     | `[]`         | Application-supplied `{ id, title }` history entries               |
 | `activeHistoryId` | `string`                     | `—`          | Currently selected entry                                           |
-| `messages`        | `AgentConversationMessage[]` | `[]`         | Messages                                                           |
+| `messages` | `readonly AgentConversationEntry[]` | `[]` | Static messages or SDK history with intact parts |
 | `snapshot`        | `ChatClientSnapshot`         | `—`          | Actual TanStack SDK snapshot, not a display-state object            |
 | `subtitle`        | `string`                     | `—`          | Subtitle                                                           |
 | `suggestions`     | `string[]`                   | `[]`         | Suggestions                                                        |
@@ -81,6 +81,8 @@ This example stores static local messages only and does not connect a model. For
 | `stop`              | `void`   | Ask the application to cancel generation (shown only while busy)                            |
 | `reject`            | `string` | Request denial of this interrupt ID; application resolves the SDK interrupt                  |
 | `retry`             | `void`   | Retry                                                                                       |
+| `retryInterrupts` | `void` | Retry the current recoverable approval transaction, not regeneration |
+| `cancelInterrupts` | `void` | Cancel the current interrupt transaction |
 | `submit`            | `string` | Submit                                                                                      |
 | `update:modelValue` | `string` | Update prompt                                                                               |
 

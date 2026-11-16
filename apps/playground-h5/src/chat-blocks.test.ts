@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import type { VueWrapper } from '@vue/test-utils'
+import type { AgentDemoController } from './features/useAgentDemo'
 import { mount } from '@vue/test-utils'
 import { computeAccessibleName } from 'dom-accessibility-api'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -179,6 +180,30 @@ describe('assistant sheet contracts', () => {
 })
 
 describe('real local demo state', () => {
+  it.each(['approve', 'reject'] as const)('preserves the real SDK %s receipt and historical tool input', async (decision) => {
+    vi.useFakeTimers()
+    let demo!: AgentDemoController
+    const wrapper = mount(defineComponent({ setup() { demo = useAgentDemo(); return () => h('div') } }))
+    mounted.push(wrapper)
+    demo.send('生成发布计划')
+    await vi.runAllTimersAsync()
+    const approval = demo.snapshot.value.interruptState.interrupts[0]!
+    if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+    expect(approval.id).not.toBe(approval.toolCallId)
+    const beforeRetry = demo.snapshot.value.messages
+    demo.retry()
+    expect(demo.snapshot.value.messages).toBe(beforeRetry)
+    demo[decision](approval.id)
+    await vi.runAllTimersAsync()
+    const parts = demo.snapshot.value.messages.flatMap(message => message.parts)
+    expect(parts.filter(part => part.type === 'tool-call').find(part => part.id === approval.toolCallId)?.state).toBe(decision === 'approve' ? 'complete' : 'error')
+    expect(parts.filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)?.state).toBe(decision === 'approve' ? 'complete' : 'error')
+    demo.send('下一条消息')
+    await vi.runAllTimersAsync()
+    expect(demo.messages.value.some(message => message.parts.some(part => part.type === 'tool-call' && part.id === approval.toolCallId))).toBe(true)
+    expect(demo.messages.value.some(message => message.parts.some(part => part.type === 'tool-result' && part.toolCallId === approval.toolCallId))).toBe(true)
+  })
+
   it('stops the TanStack chat through the same stop intent', async () => {
     vi.useFakeTimers()
     const wrapper = mount(defineComponent({
@@ -261,7 +286,7 @@ describe('real local demo state', () => {
     await button(wrapper, '新建会话').trigger('click')
     await button(wrapper, '保留这次回答').trigger('click')
     expect(chat.props('snapshot')?.status).toBe('ready')
-    expect(chat.props('messages')?.filter(message => message.role === 'assistant').map(message => message.content)).toEqual([answer])
+    expect(chat.props('messages')?.filter(message => message.role === 'assistant').map(message => 'parts' in message ? agentMessageText(message) : message.content)).toEqual([answer])
     expect(chat.text()).toContain(answer)
   })
 
