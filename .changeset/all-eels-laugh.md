@@ -1,5 +1,11 @@
 ---
-"@varo-ui/ai": patch
+"@varo-ui/ai": major
+"@varo-ui/cli": major
+"@varo-ui/weapp": major
 ---
 
-Accept CR line endings in streamed SSE events while preserving split CRLF framing and terminal-event behavior.
+Replace the private Agent event protocol, SSE transport, and stream controller with direct TanStack AI / AG-UI consumption. Registry Agent renderers and Blocks now accept TanStack ChatClientSnapshot; applications own the ChatClient and interrupt resolution. Keep Markdown, text presentation pacing, and thread-version helpers in @varo-ui/ai. Upgrade the native compiler and Wevu to 7.10.0 and use the published Web API runtime for standard streaming Fetch and cancellation.
+
+Keep trusted native-preview host bindings in an outer lexical scope so compiler-provided Web API declarations can shadow them without duplicate-binding parse failures.
+
+Verify the 7.10.0 native slot integration with execution-slot parent reactivity and child events, cancelable Dialog composition, Menu selection, and form-array runtime scenarios. Remove stale documentation claiming that plain-slot context is still blocked upstream, while retaining explicit opt-in and host/device evidence boundaries.

@@ -19,7 +19,7 @@ function toggleLayout() {
         对话与上下文助手
       </text>
       <text class="text-sm">
-        本地确定性流演示。停止会取消控制器；插入只修改草稿，不调用外部服务。
+        本地确定性流演示。停止由 TanStack SDK 中止请求；插入只修改草稿，不调用外部服务。
       </text>
     </view>
     <view class="flex flex-wrap gap-2">

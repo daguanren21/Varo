@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
 import type {
   MallAddress,
   MallAddressDraft,
@@ -10,7 +10,7 @@ import type {
 } from '../../features/mall/useMallAgent'
 import type { AgentChoice, AgentTask } from '../agent-ui/types'
 import { computed, shallowRef } from 'wevu'
-import AgentApproval from '../agent-ui/AgentApproval.vue'
+import AgentRadioGroup from '../agent-ui/AgentRadioGroup.vue'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
 import AgentMessage from '../agent-ui/AgentMessage.vue'
@@ -33,7 +33,7 @@ const props = withDefaults(
     open?: boolean
     orders?: MallOrder[]
     pendingAction?: PendingAction
-    streamSnapshot?: AgentStreamSnapshot
+    streamSnapshot?: ChatClientSnapshot
     tasks?: AgentTask[]
   }>(),
   {
@@ -53,9 +53,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  'approve': [value: string]
+  'approve': [id: string]
   'close': []
-  'reject': []
+  'reject': [id: string]
   'returnOrder': [order: MallOrder]
   'saveAddress': [address: MallAddressDraft]
   'send': [prompt: string]
@@ -82,7 +82,6 @@ const approvalDescription = computed(() => {
   }
   return ''
 })
-const approveText = computed(() => (props.pendingAction?.type === 'purchase' ? '确认下单' : '提交退货'))
 
 function send(value: string) {
   prompt.value = ''
@@ -131,24 +130,21 @@ function messageContent(message: MallAgentMessage) {
             :timestamp="message.timestamp"
           />
 
+          <view v-if="pendingAction && !busy" class="grid gap-2">
+            <text class="font-semibold">{{ approvalTitle }}</text>
+            <text class="text-xs">{{ approvalDescription }}</text>
+            <AgentRadioGroup :choices="approvalChoices" :value="approvalValue" @update:value="emit('update:approvalValue', $event)" />
+          </view>
+
           <AgentEventRenderer
-            v-if="streamSnapshot && streamSnapshot.status !== 'idle'"
+            v-if="streamSnapshot"
             :snapshot="streamSnapshot"
+            @approve="emit('approve', $event)"
+            @reject="emit('reject', $event)"
           />
 
           <AgentTaskList v-if="tasks.length" title="执行进度" :tasks="tasks" />
 
-          <AgentApproval
-            v-if="pendingAction"
-            :title="approvalTitle"
-            :description="approvalDescription"
-            :choices="approvalChoices"
-            :value="approvalValue"
-            :approve-text="approveText"
-            @update:value="emit('update:approvalValue', $event)"
-            @approve="emit('approve', $event)"
-            @reject="emit('reject')"
-          />
 
           <MallOrderHistory v-if="historyOpen" :orders="orders" :history="history" @return="emit('returnOrder', $event)" />
           <MallAddressEditor

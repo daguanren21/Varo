@@ -31,6 +31,12 @@ export default defineConfig({
   weapp: {
     srcRoot: 'src',
     platform: profile.compilerPlatform,
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
     multiPlatform: {
       enabled: true,
       targets: [profile.compilerPlatform],
@@ -50,7 +56,7 @@ export default defineConfig({
     },
     vue: {
       enable: true,
-      template: { htmlTagToWxml: true, htmlTagToWxmlTagClass: true, scopedSlotsRequireProps: true },
+      template: { htmlTagToWxml: true, htmlTagToWxmlTagClass: true, scopedSlotsRequireProps: true, nativeSlotContext: true },
     },
     mcp: { enabled: false, autoStart: false },
   },

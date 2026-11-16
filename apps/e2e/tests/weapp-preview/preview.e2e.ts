@@ -101,12 +101,12 @@ test('preview controls, lifecycle, responsive frame, recovery, streaming and plu
   await browser.evaluate(() => new Promise<null>(resolve => setTimeout(resolve, 350, null)))
   expect(await runtime.locator('.agent-stream').textContent()).toBe(stopped)
   await runtime.getByRole('button', { name: '继续流式内容', exact: true }).click()
-  await expect(field(runtime, 'stream-state')).toHaveAttribute('data-preview-value', 'phase=completed;chunks=14/14;pending=0;final=true')
-  await expect(runtime.locator('.agent-stream')).toContainText('controller.finish()')
+  await expect(field(runtime, 'stream-state')).toHaveAttribute('data-preview-value', 'phase=completed;chunks=14/14;pending=0;final=true;sdk=ready')
+  await expect(runtime.locator('.agent-stream')).toContainText('client.stop()')
   await runtime.getByRole('button', { name: '从头重播', exact: true }).click()
   await expect(field(runtime, 'stream-phase')).toHaveText(/streaming/)
-  await expect(runtime.locator('.agent-stream')).not.toContainText('controller.finish()')
-  await expect(field(runtime, 'stream-state')).toHaveAttribute('data-preview-value', 'phase=completed;chunks=14/14;pending=0;final=true')
+  await expect(runtime.locator('.agent-stream')).not.toContainText('client.stop()')
+  await expect(field(runtime, 'stream-state')).toHaveAttribute('data-preview-value', 'phase=completed;chunks=14/14;pending=0;final=true;sdk=ready')
 
   await selectRadio(browser, /^原生地图/)
   await expect(browser.locator('.preview-frame')).toHaveAttribute('data-state', 'ready')
@@ -163,5 +163,34 @@ test('preview native Menu selects overflowed options by pointer', { platforms: [
   await option.click()
   await expect(screen.getByText('value=source-b;payload=source-b:来源 B', { exact: true })).toBeVisible()
   await expect(screen.getByRole('listbox')).not.toBeVisible()
+  await expectPreviewDiagnostics(webRuntime)
+})
+
+test('preview native Dialog retains slot context through cancelable open and close', { platforms: ['weapp-preview'] }, async ({ app, browser, screen, webRuntime }) => {
+  await browser.setViewport({ width: 390, height: 844 })
+  await app.open('/runtime.html?scenario=dialog')
+  await expect(browser.locator('#runtime-status')).toBeHidden()
+  const state = field(browser, 'dialog-state')
+  const contentState = field(browser, 'dialog-content-state')
+  await expect(state).toHaveAttribute('data-preview-value', 'open=false;cancel=true;updates=0;events=')
+
+  await screen.getByRole('button', { name: '打开取消验证对话框', exact: true }).click()
+  const opened = 'open=true;cancel=true;updates=1;events=request:true|update:true|'
+  await expect(state).toHaveAttribute('data-preview-value', opened)
+  await expect(contentState).toHaveAttribute('data-preview-value', opened)
+
+  await screen.getByRole('button', { name: '尝试关闭对话框', exact: true }).click()
+  const cancelled = `${opened}request:false|`
+  await expect(state).toHaveAttribute('data-preview-value', cancelled)
+  await expect(contentState).toHaveAttribute('data-preview-value', cancelled)
+
+  await screen.getByRole('button', { name: '允许关闭对话框', exact: true }).click()
+  const allowed = 'open=true;cancel=false;updates=1;events=request:true|update:true|request:false|'
+  await expect(state).toHaveAttribute('data-preview-value', allowed)
+  await expect(contentState).toHaveAttribute('data-preview-value', allowed)
+  await screen.getByRole('button', { name: '尝试关闭对话框', exact: true }).click()
+  await expect(state).toHaveAttribute('data-preview-value', 'open=false;cancel=false;updates=2;events=request:true|update:true|request:false|request:false|update:false|')
+  await expect(field(browser, 'dialog-content')).not.toBeVisible()
+  await app.screenshot('native-dialog-slot-context')
   await expectPreviewDiagnostics(webRuntime)
 })

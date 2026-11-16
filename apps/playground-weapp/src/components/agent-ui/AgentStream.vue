@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentStreamStatus } from '@varo-ui/ai'
+import type { AgentStreamStatus } from './types'
 import type { ClassValue } from '../../lib/cn'
 import { computed } from 'wevu'
 import { cn } from '../../lib/cn'

@@ -8,6 +8,7 @@ import AgentApproval from './components/agent-ui/AgentApproval.vue'
 import AgentComposer from './components/agent-ui/AgentComposer.vue'
 import AgentMarkdown from './components/agent-ui/AgentMarkdown.vue'
 import AgentRadioGroup from './components/agent-ui/AgentRadioGroup.vue'
+import { agentCurrentMessage, agentMessageText, agentSnapshotProjection } from './components/agent-ui/presentation'
 import { useMallAgent } from './features/mall/useMallAgent'
 
 function mountAgentHarness() {
@@ -209,21 +210,26 @@ describe('AI-driven mall flows', () => {
     const stockBefore = agent.products.value.find(product => product.id === 'milk')!.stock
 
     const sendPromise = agent.send('买 2 盒牛奶')
-    await vi.advanceTimersByTimeAsync(600)
-    expect(agent.streamSnapshot.value).toMatchObject({
-      status: 'streaming',
-      message: { role: 'assistant' },
-    })
-    expect(agent.streamSnapshot.value.message?.source.length).toBeGreaterThan(0)
+    for (let elapsed = 0; elapsed < 1000; elapsed += 10) {
+      await vi.advanceTimersByTimeAsync(10)
+      if (agentMessageText(agentCurrentMessage(agent.streamSnapshot.value))) { break }
+    }
+    expect(agent.streamSnapshot.value.status).toBe('streaming')
+    expect(agentCurrentMessage(agent.streamSnapshot.value)?.role).toBe('assistant')
+    expect(agentMessageText(agentCurrentMessage(agent.streamSnapshot.value))).not.toBe('')
     await finishTimers(sendPromise)
     expect(agent.pendingAction.value).toMatchObject({ type: 'purchase', product: { id: 'milk' } })
     expect(agent.orders.value).toHaveLength(1)
+    expect(agentSnapshotProjection(agent.streamSnapshot.value).tools.some(tool => tool.status === 'waiting')).toBe(true)
 
-    await finishTimers(agent.approve('2'))
+    agent.approvalValue.value = '2'
+    const approval = agentSnapshotProjection(agent.streamSnapshot.value).approval
+    expect(approval).toBeDefined()
+    await finishTimers(agent.approve(approval!.id))
     expect(agent.orders.value).toHaveLength(2)
     expect(agent.orders.value[0]).toMatchObject({ productId: 'milk', quantity: 2, status: 'paid' })
     expect(agent.products.value.find(product => product.id === 'milk')!.stock).toBe(stockBefore - 2)
-    expect(agent.history.value[0].title).toBe('AI 下单成功')
+    expect(agent.history.value[0]).toMatchObject({ type: 'order', detail: expect.stringContaining('× 2') })
     wrapper.unmount()
   })
 
@@ -232,7 +238,10 @@ describe('AI-driven mall flows', () => {
 
     await finishTimers(agent.send('我要退货'))
     expect(agent.pendingAction.value).toMatchObject({ type: 'return' })
-    await finishTimers(agent.approve('quality'))
+    agent.approvalValue.value = 'quality'
+    const approval = agentSnapshotProjection(agent.streamSnapshot.value).approval
+    expect(approval).toBeDefined()
+    await finishTimers(agent.approve(approval!.id))
     expect(agent.orders.value.find(order => order.id === 'JD20260819001')?.status).toBe('returned')
     expect(agent.history.value[0].type).toBe('return')
 

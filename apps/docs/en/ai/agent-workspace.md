@@ -78,7 +78,7 @@ Both renderers use the presence of `prompt` to determine whether it is controlle
 
 The Block does not modify `versions`, `tasks`, sources, or receipts. Selecting, branching, and pinning emit an `AgentThreadVersion` from current `versions`. The application updates its snapshot and `activeVersionId`, and manages branch IDs, ancestry, saved messages, and persistence. Pinning also waits for the application to confirm the new state.
 
-`AgentTask` contains `id`, `title`, `status`, and optional `description`, `meta`, `progress`, `requiresApproval`, and `retryable`. Its `status` uses core `AgentPartStatus`: `waiting | running | completed | failed`. Do not add `queued` or `cancelled`. The application determines cancellation results and whether a task can run again; cancellation must not be presented as successful completion.
+`AgentTask` contains `id`, `title`, `status`, and optional `description`, `meta`, `progress`, `requiresApproval`, and `retryable`. Its `status` uses Registry display type `AgentPartStatus` from `@/components/agent-ui/types`: `waiting | running | completed | failed`, not a core protocol, SDK status, or tool wire enum. Do not add `queued` or `cancelled`. The application determines cancellation results and whether a task can run again; cancellation must not be presented as successful completion.
 
 | Intent         | Eligibility checked at dispatch                  |
 | -------------- | ------------------------------------------------ |
@@ -93,7 +93,7 @@ The Block does not modify `versions`, `tasks`, sources, or receipts. Selecting, 
 
 Standalone `AgentThreadVersions` accepts `disabled`; pass `disabled || busy` to also block actions while busy. `AgentTaskRunner` accepts `busy` and `disabled` separately; do not pass `busy` as `disabled`, or cancellation will also be blocked. Both components resolve current prop items by ID before emitting and reject removed or ineligible items.
 
-The default execution area displays conversation, retrieval, tasks, and receipts. For tool details, use `AgentToolChip` from `components/agent-conversation` (H5: `@/components/agent-ui/conversation`; native: `@/components/agent-ui/AgentToolChip.vue`) with an application-supplied `AgentToolPart`; the UI does not call tools. An `approveTask` handler can open an approval UI, await the user's decision, execute approved work, and update task/tool snapshots. Credentials, approval policy, network requests, retry scheduling, and storage are handled by the application.
+The default execution area displays conversation, retrieval, tasks, and receipts. For tool details, use `AgentToolChip` from `components/agent-conversation` (H5: `@/components/agent-ui/conversation`; native: `@/components/agent-ui/AgentToolChip.vue`) with a read-only Registry `AgentToolPart` display projection; the UI does not call tools. `approveTask` is an application-domain task intent, not automatically an SDK tool approval. If a task corresponds to a TanStack `tool-approval`, the application associates its interrupt ID and resolves the matching SDK interrupt. Credentials, business authorization, tool execution, networking, retry scheduling, and storage remain application-owned.
 
 ### Local demo and runtime coverage
 
@@ -108,7 +108,7 @@ H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` us
 | `execution` | Replaces the default conversation, retrieval, task, and receipt region |
 
 ::: warning Native runtime limits
-The `execution` slot is an unscoped replacement slot. Forwarding parent state through native plain slots requires an unreleased Wevu plain-slot protocol fix. Do not change `scopedSlotsRequireProps`, add a context bridge, or copy parent data to bypass this limit. The demo uses the default execution area; custom native slots require the supported compiler/runtime fix before acceptance. Headless native tools cannot fully observe `rich-text`, so validate affected text on a supported real host. H5 slot tests do not establish native correctness.
+The `execution` slot is an unscoped replacement slot. On WeChat with 7.10.0, explicitly enable both `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true`; no former compiler patch, context bridge, or parent-data copy is needed. `apps/e2e/tests/weapp-native/workspace.e2e.ts` has exercised parent query/step updates, stop/replay, and source-selection event forwarding through the custom slot using real controls. This covers default attached setup in the native headless host, not created setup, other platforms, or devices. Where headless cannot fully observe `rich-text`, validate on a real supported host.
 :::
 
 ::: info Target import

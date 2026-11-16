@@ -37,6 +37,8 @@ import { AgentApproval } from '@/components/agent-ui'
 | `reject`       | `void`   | 拒绝     |
 | `update:value` | `string` | 更新选择 |
 
+独立卡片的 `approve` 字符串是当前选择值，`reject` 无载荷；这不同于 [AgentEventRenderer](./event-renderer) 和 AgentChat 转发的 interrupt ID 契约。`AgentChoice` 从 Registry `@/components/agent-ui/types` 导入，不属于 core 协议。应用若将此卡片关联 SDK 审批，必须另行保存 interrupt ID，解析对应 `tool-approval` 的 `true` / `false`，不能把选择值当作中断 ID。卡片不执行网络、工具或授权。
+
 ## Slots
 
 | Slot      | 说明     |

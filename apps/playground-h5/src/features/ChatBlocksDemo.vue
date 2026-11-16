@@ -14,7 +14,7 @@ const { activeHistoryId, busy, chatVisible, close, closeChat, context, diagnosti
       <h2 class="m-0 text-xl font-semibold">
         对话与上下文助手
       </h2>
-      <p>本地确定性流演示。停止会取消控制器；插入只修改下方草稿，不调用外部服务。</p>
+      <p>本地确定性流演示。停止由 TanStack SDK 中止请求；插入只修改下方草稿，不调用外部服务。</p>
     </header>
     <div class="flex flex-wrap gap-2">
       <VButton variant="outline" @click="layout = layout === 'panel' ? 'page' : 'panel'">

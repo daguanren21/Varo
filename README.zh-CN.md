@@ -13,16 +13,16 @@ Varo 为 Vue 3 移动 H5 和 `weapp-vite` 小程序提供组件与 Blocks。通�
 - [`@varo-ui/h5`](https://www.npmjs.com/package/@varo-ui/h5) — 面向移动 H5 的可 Tree-shaking Vue 组件
 - [`@varo-ui/weapp`](https://www.npmjs.com/package/@varo-ui/weapp) — 交给 `weapp-vite` 编译的原生 Wevu `.vue` 源码与 resolver，不是 Vue render 运行时
 - [`@varo-ui/theme`](https://www.npmjs.com/package/@varo-ui/theme) — 双端主题 token 与 Provider
-- [`@varo-ui/ai`](https://www.npmjs.com/package/@varo-ui/ai) — Agent 事件协议、流式控制器、SSE/分块解码与安全 Markdown 模型
+- [`@varo-ui/ai`](https://www.npmjs.com/package/@varo-ui/ai) — 安全 Markdown 模型、文本节奏与会话版本 helper；聊天状态和传输直接使用 TanStack AI
 
 ## 当前能力
 
 - **H5 组件：**带样式的 Vue 组件、DOM primitives 与可编辑 Registry 源码
 - **原生组件：**目标端 Wevu SFC；npm 包与 Registry 安装均来自同一份作者源码
-- **Agent Core：**统一事件协议、SSE/分块通道、H5 Markstream 平滑调度、小程序定时帧调度与安全增量 Markdown AST
+- **Agent Core：**仅提供安全增量 Markdown AST、H5 Markstream 文本节奏、小程序定时帧文本节奏与会话版本 helper
 - **Agent UI：**conversation、workspace、advanced、RAG 源码单元及 Agent Chat、Agent Workspace Blocks，覆盖上下文授权、检索、任务、会话版本、流式、工具、审批、代码、Diff、引用、媒体、表格与工作流
 - **双端 Blocks：**Login Form、Profile Card、Profile Edit、Product List、Order Filter、Agent Chat、Agent Workspace
-- **AI 商城 Demo：**真实增量事件、推理与工具状态、人工确认购买和退货、历史记录与地址配置
+- **AI 商城 Demo：**明确标注的本地 TanStack AG-UI 流、推理与工具展示、购买和退货审批 UI、历史记录与地址配置；不是在线 provider 集成
 - **Renderer family：**`h5`、`weapp`；部署 profile 见下表
 - **小程序样式：**Tailwind CSS v4、[`weapp-tailwindcss`](https://github.com/sonofmagic/weapp-tailwindcss)、`@weapp-tailwindcss/merge`
 - **小程序调试：**内置 MCP、DevTools console bridge、Automator 截图与 runtime smoke
@@ -32,7 +32,7 @@ Varo 为 Vue 3 移动 H5 和 `weapp-vite` 小程序提供组件与 Blocks。通�
 - 小程序 Registry 的基础组件参考 [Vant Weapp](https://vant-ui.github.io/vant-weapp/)、[NutUI](https://nutui.jd.com/h5/vue/4x/)、[TDesign Mobile Vue](https://tdesign.tencent.com/mobile-vue/components/overview) 与 [TDesign MiniProgram](https://tdesign.tencent.com/miniprogram/components/overview) 共同支持的功能。
 - 动效与 Agent 交互参考 [Beautiful UI](https://www.beautifului.dev/) 与 [beUI](https://beui.dev/)；生产代码保持 Vue 与小程序运行时原生实现。
 - 组件支持哪些平台，由 `registry/**/registry.json` 及其全部依赖的配置决定。H5 目录或浏览器示例中有某个组件，并不表示原生端也支持它。
-- H5 流式实现使用 [Markstream Core](https://github.com/Simon-He95/markstream-vue) 调度与 Markdown Parser；小程序使用相同协议和 AST，但改用不依赖 `requestAnimationFrame` 的定时调度。
+- TanStack AI 拥有 AG-UI 事件、活动消息、流状态和 abort。H5 使用 `@tanstack/ai-vue`，原生使用 `@tanstack/ai-client` 与 Wevu。Varo 的 Markdown 与文本节奏仅负责展示：H5 使用 [Markstream Core](https://github.com/Simon-He95/markstream-vue)，小程序使用相同安全 AST 与不依赖 `requestAnimationFrame` 的定时调度。
 - [`registry/component-tiers.v0.1.json`](./registry/component-tiers.v0.1.json) 记录产品分层；可安装的平台由 manifest 和 [`packages/registry/src/index.ts`](./packages/registry/src/index.ts) 中的 profile 表决定。
 
 ## 源码所有权
@@ -58,7 +58,7 @@ Varo 为 Vue 3 移动 H5 和 `weapp-vite` 小程序提供组件与 Blocks。通�
 
 安装六个实验性 profile 时，所选组件及其全部依赖都必须明确支持该 profile。任何一项不支持，CLI 都会在写入前报错，不会回退到 Weapp。目前允许安装的代表组件有 `button`、`input`、`input-otp`、`form`、`checkbox`、`switch`、`drawer`、`card`、`icon` 及所需工具和主题，具体以 manifest 为准。这个范围不代表完整组件目录或 Agent UI 已通过这些平台的验证。
 
-仓库示例使用 `weapp-vite` 与 `wevu` **7.5.0**，原生包的 peer 范围为 `>=7.2.1 <8`。Donut 使用微信编译器，再通过 `mini-android`、`mini-ios` 或 `mini-ohos` 元数据选择宿主，不单独使用 Android、iOS 或 OpenHarmony 编译 target。运行前仍需安装 SDK 和厂商 IDE、配置真实 AppID 与签名，并在真机上验证；仓库不提供身份或凭据。
+仓库示例使用 `weapp-vite` 与 `wevu` **7.10.0**。原生 AI 客户端使用已发布的 [Web Runtime 配置](https://vite.weapp.dev/config/web-runtime-globals)：`weapp.appPrelude.webRuntime: { enabled: true, networkDefaults: { request: { enableChunked: true } } }`。直接使用 TanStack 标准 fetch adapter，不另写 `wx.request` transport。流式交付仍要求宿主提供真实状态码、响应头和增量数据块，DevTools 与真机需分别验证。Donut 使用微信编译器，再通过 `mini-android`、`mini-ios` 或 `mini-ohos` 元数据选择宿主，不单独使用 Android、iOS 或 OpenHarmony 编译 target。运行前仍需安装 SDK 和厂商 IDE、配置真实 AppID 与签名，并在真机上验证；仓库不提供身份或凭据。
 
 ## 安装可编辑源码
 
@@ -98,6 +98,7 @@ CLI 会列出需要安装的 npm 依赖，请自行安装。已有文件默认�
 3. **中立行为：**从 `@varo-ui/headless` 导入状态与表单契约；仅在 H5 代码中把 `useBodyScrollLock` 导入迁到 `@varo-ui/h5/primitives`，不要在原生端模拟 DOM 锁。表单 submit/failed 接收命名 `SubmitPayload`（表单源码导出名为 `FormSubmitPayload`），包含 `values`、`errors` 和可选的平台特定 `event`，不是原始 DOM 事件。
 4. **样式：**不再把 `themes/base` 当作包含所有组件/Agent 的单体样式。重新安装所需条目的依赖闭包，并遵循上述原生全局加载规则；H5 安装源码自带依赖 CSS 导入。
 5. **Agent 安装：**按需选择 `components/agent-conversation`、`components/agent-workspace`、`components/agent-advanced` 或 `components/agent-rag`。`components/agent-presentation` 拥有共享纯类型/helper。`blocks/agent-chat` 只选择 conversation 依赖，不拉入 advanced/RAG/微调 UI；`components/agent-ui` 则明确安装完整套件。审批、网络、重试与取消操作的执行策略仍由应用负责。
+6. **Agent SDK 切换：**从 `@tanstack/ai` 导入 `UIMessage` / AG-UI chunk，从 `@tanstack/ai-client` 导入 `ChatClientSnapshot` / `ChatClient`，H5 从 `@tanstack/ai-vue` 导入 `useChat`。不再创建已移除的 Varo 协议、流控制器、channel、SSE 解码器或事件 parser。snapshot prop 必须传入真实 SDK 快照；静态历史保留 `AgentConversationMessage[]`。`AgentPartStatus`、`AgentStreamStatus` 和 `AgentToolPart` 位于安装后的 `components/agent-ui/types`，只描述展示，不是 SDK 状态（`ready`、`submitted`、`streaming`、`error`）。渲染器的批准/拒绝事件携带 interrupt ID，由应用从 `client.getInterrupts()` 找到对应 `tool-approval`，以 `true` / `false` 解析。业务授权与执行仍归应用。详见 [AI 接入指南](https://varo.weapp.dev/ai/)。
 
 Input 在 disabled/readonly 状态下不接受修改；值确实变化时只通知一次，值相同则不触发 change。要取消 Drawer 的 `openChange`，请在事件处理器中同步取消，这会阻止后续状态修改、model 更新和 close 通知。迁移处理器时需要遵循这些规则，移除旧的事件转发逻辑。
 
@@ -122,7 +123,7 @@ pnpm run docs:dev
 
 该命令在 `http://localhost:5173` 启动 VitePress。页面提供 H5 示例与原生源码，glass-easel 浏览器预览可运行可信的小程序编译产物。预览的同源 iframe 不提供安全隔离，也不能替代 IDE 或真机检查。
 
-原生 Dialog 使用独立的 `dialog` 诊断场景。仓库的 7.5.0 示例已包含 [weapp-vite #1172](https://github.com/weapp-vite/weapp-vite/issues/1172) 的修复：微信目标上编译的 Wevu 组件，在 `scopedSlotsRequireProps: true` 和默认 attached setup 下可通过普通插槽继承最近 Provider。created setup 和其他平台不在此范围内。
+原生 Dialog 使用独立的 `dialog` 诊断场景。7.10.0 微信集成显式启用 `weapp.vue.template.nativeSlotContext: true` 和 `scopedSlotsRequireProps: true`，不再使用旧 7.5.0 编译器补丁。`apps/e2e/tests/weapp-native/workspace.e2e.ts` 覆盖自定义 execution 插槽的父级状态更新与子级事件；`apps/e2e/tests/weapp-preview/preview.e2e.ts` 覆盖 Dialog 同步取消、投影内容更新与 Menu 选择。文档 smoke 的 `docs-dialog,docs-menu,form-array-en-dark` 也已通过。这些是默认 attached setup 下原生编译产物的 headless/浏览器宿主证据，不代表 created setup、其他平台或微信 IDE/真机认证；可信同源预览不是安全沙箱。
 
 ## 验证
 
@@ -146,7 +147,7 @@ pnpm check:platforms
 
 Realworld 在 [`src/store/manager.ts`](./apps/realworld-weapp/src/store/manager.ts) 用 `createAedPinia()` 创建管理器。创建 Store 前先安装：原生 `app.vue` 调用 `use(pinia)`，本地运行使用 `createApp({}).use(manager)`。插件通过 `$subscribe` 仅持久化 AED Store，沿用 `realworld-weapp-state` 格式，支持嵌套字段更新。导航数据不落盘，销毁 Store 或管理器会释放订阅。需要持久化时，保留此配置，不要改用 setup 内的深层 watch 或裸 `createPinia()`。本地检查不运行 `wx.login`、更新检查或真机启动。
 
-使用 pnpm `11.24.0` 和 Node `^22.18.0 || ^24.11.0 || >=26.0.0`。Vitest 5 与 tsdown 0.23 不支持 Node 25。TypeScript 保持在 6.x，以兼容 `vue-tsc` 和原生产物预览使用的编译器 API；jsdom 保持在 29.x，因为 30.x 要求的 Node 补丁版本高于工作区当前支持的下限。
+使用 pnpm `11.24.0` 和 Node `^22.23.4 || ^24.22.1 || >=26.12.1`，与已发布 7.10 编译器的运行时要求一致，不支持 Node 25。TypeScript 保持在 6.x，以兼容 `vue-tsc` 和原生产物预览使用的编译器 API；jsdom 保持在 29.x。
 
 Vitest 5 不再向父目录查找配置。工作区测试命令显式选择根目录共享配置，并将测试发现范围限定在当前包。Weapp Playground 则选择支持原生 SFC 的专用配置并使用 jsdom；可独立安装的 Realworld 应用继续使用自己的本地配置。
 

@@ -1,10 +1,37 @@
 // @vitest-environment jsdom
 
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot, ToolApprovalInterrupt } from '@tanstack/ai-client'
+import { toolDefinition } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { AgentComposer, AgentEventRenderer, AgentFileDiff, AgentMarkdown, AgentThinking } from './components/agent-ui'
 import AgentChat from './components/blocks/agent-chat.vue'
+
+const approvalTool = toolDefinition({ name: 'registry.inspect', description: 'UI approval fixture', needsApproval: true }).client()
+type ApprovalSnapshot = ChatClientSnapshot<Array<typeof approvalTool>, any>
+
+function chatSnapshot(update: Partial<ApprovalSnapshot> = {}): ApprovalSnapshot {
+  const client = new ChatClient({ threadId: 'ui-test', tools: [approvalTool], connection: stream(async function* () {}) })
+  const snapshot = client.getSnapshot()
+  client.dispose()
+  return { ...snapshot, ...update }
+}
+
+function approvalInterrupt(): ToolApprovalInterrupt<typeof approvalTool> {
+  return {
+    id: 'approval', interruptId: 'approval', reason: 'tool-approval', message: '确认发布',
+    kind: 'tool-approval', threadId: 'ui-test', interruptedRunId: 'run', generation: 1,
+    status: 'pending', errors: [], canResolve: true,
+    toolName: 'registry.inspect', toolCallId: 'tool', originalArgs: {},
+    binding: {
+      v: 1, kind: 'tool-approval', interruptId: 'approval', interruptedRunId: 'run', generation: 1,
+      toolName: 'registry.inspect', toolCallId: 'tool', originalArgs: {},
+      inputSchemaHash: 'input', approvalSchemaHash: 'approval', responseSchemaHash: 'response',
+    },
+    cancel: vi.fn(), clearResolution: vi.fn(), resolveInterrupt: vi.fn(),
+  }
+}
 
 describe('H5 Agent UI', () => {
   it('renders structured Markdown without injecting unsafe links', () => {
@@ -22,48 +49,82 @@ describe('H5 Agent UI', () => {
   })
 
   it('composes reasoning, tools, streaming content, and approval state', async () => {
-    const snapshot: AgentStreamSnapshot = {
-      approval: {
-        choices: [{ label: '仅验证', value: 'verify' }],
-        id: 'approval',
-        status: 'waiting',
-        title: '确认发布',
-      },
-      data: [],
-      eventCount: 8,
-      message: {
-        final: false,
-        id: 'message',
-        role: 'assistant',
-        source: '**发布计划**',
-        visible: '**发布计划**',
-      },
-      reasoning: [{ content: '检查 Registry', id: 'reason', status: 'completed', title: '分析依赖' }],
-      status: 'waiting',
-      tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '双端通过' }],
-    }
+    const interrupt = approvalInterrupt()
+    const snapshot = chatSnapshot({
+      messages: [{
+        id: 'message', role: 'assistant', parts: [
+          { type: 'thinking', content: '检查 Registry' },
+          { type: 'tool-call', id: 'tool', name: 'registry.inspect', arguments: '{}', state: 'complete', output: '双端通过' },
+          { type: 'text', content: '**发布计划**' },
+        ],
+      }],
+      interruptState: { interrupts: [interrupt], interruptErrors: [], resuming: false },
+    })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
 
     await wrapper.findAll('button').find(button => button.text().includes('推理过程'))!.trigger('click')
-    expect(wrapper.text()).toContain('分析依赖')
+    expect(wrapper.text()).toContain('检查 Registry')
     expect(wrapper.text()).toContain('registry.inspect')
     expect(wrapper.get('.agent-markdown__strong').text()).toBe('发布计划')
     expect(wrapper.text()).toContain('确认发布')
 
-    await wrapper.get('input[type="radio"]').setValue(true)
     await wrapper.findAll('button').find(button => button.text() === '确认')!.trigger('click')
-    expect(wrapper.emitted('approve')?.[0]).toEqual(['verify'])
+    expect(wrapper.emitted('approve')?.[0]).toEqual(['approval'])
+    expect(interrupt.resolveInterrupt).not.toHaveBeenCalled()
   })
 
-  it('preserves waiting and cancellation without presenting either as a generation failure', async () => {
-    const snapshot: AgentStreamSnapshot = {
-      data: [],
-      eventCount: 1,
-      message: { final: false, id: 'message', role: 'assistant', source: '保留回答', visible: '保留回答' },
-      reasoning: [],
-      status: 'waiting',
-      tools: [],
+  it('does not redisplay the previous answer while a new turn is submitted or fails before text', async () => {
+    const snapshot = chatSnapshot({
+      messages: [
+        { id: 'old', role: 'assistant', parts: [{ type: 'text', content: '上一轮回答' }] },
+        { id: 'new', role: 'user', parts: [{ type: 'text', content: '新的问题' }] },
+      ],
+      status: 'submitted', isLoading: true,
+    })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.text()).not.toContain('上一轮回答')
+      expect(wrapper.get('.agent-loading').text()).toContain('正在生成回答')
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'error', isLoading: false, error: new Error('新请求失败') } })
+      expect(wrapper.get('[role="alert"]').text()).toContain('新请求失败')
+      expect(wrapper.text()).not.toContain('上一轮回答')
     }
+    finally { wrapper.unmount() }
+  })
+
+  it.each(['unresolvable', 'submitting', 'resuming'] as const)('does not offer a duplicate or unsupported %s approval', (state) => {
+    const interrupt = approvalInterrupt()
+    const snapshot = chatSnapshot({
+      interruptState: {
+        interrupts: [{ ...interrupt, canResolve: state !== 'unresolvable', status: state === 'submitting' ? 'submitting' : 'pending' }],
+        interruptErrors: [], resuming: state === 'resuming',
+      },
+    })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.findAll('button').some(button => button.text() === '确认')).toBe(false)
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it('shows an unbound AG-UI pause without pretending that generation is active', () => {
+    const interrupt = { ...approvalInterrupt(), kind: 'unbound' as const, binding: undefined, canResolve: false as const }
+    const snapshot = chatSnapshot({ interruptState: { interrupts: [interrupt], interruptErrors: [], resuming: false } })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try {
+      expect(wrapper.attributes('data-status')).toBe('waiting')
+      expect(wrapper.find('.agent-loading').exists()).toBe(false)
+      expect(wrapper.findAll('button').some(button => button.text() === '确认')).toBe(false)
+    }
+    finally { wrapper.unmount() }
+  })
+
+
+  it('preserves paused and stopped SDK output while surfacing real generation errors', async () => {
+    const snapshot = chatSnapshot({
+      messages: [{ id: 'message', role: 'assistant', parts: [{ type: 'text', content: '保留回答' }] }],
+      interruptState: { interrupts: [approvalInterrupt()], interruptErrors: [], resuming: false },
+    })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     try {
       expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('waiting')
@@ -71,14 +132,14 @@ describe('H5 Agent UI', () => {
       expect(wrapper.find('.agent-loading').exists()).toBe(false)
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
 
-      await wrapper.setProps({ snapshot: { ...snapshot, status: 'cancelled' } })
-      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('cancelled')
+      await wrapper.setProps({ snapshot: { ...snapshot, interruptState: { interrupts: [], interruptErrors: [], resuming: false } } })
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('completed')
       expect(wrapper.get('.agent-markdown').text()).toBe('保留回答')
       expect(wrapper.get('.agent-markdown').attributes('data-final')).toBe('true')
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
       expect(wrapper.find('.agent-ui__cursor').exists()).toBe(false)
 
-      await wrapper.setProps({ snapshot: { ...snapshot, status: 'failed', error: { type: 'error', message: '连接中断' } } })
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'error', error: new Error('连接中断'), interruptState: { interrupts: [], interruptErrors: [], resuming: false } } })
       expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')
       await wrapper.get('[role="alert"] button').trigger('click')
       expect(wrapper.emitted('retry')).toEqual([[]])
@@ -234,5 +295,16 @@ describe('H5 Agent UI', () => {
     await wrapper.get('textarea').setValue('生成方案')
     await wrapper.get('button[aria-label="发送"]').trigger('click')
     expect(wrapper.emitted('submit')?.[0]).toEqual(['生成方案'])
+  })
+
+  it('retains the current turn result when the SDK appends an empty terminal placeholder', () => {
+    const snapshot = chatSnapshot({ messages: [
+      { id: 'request', role: 'user', parts: [{ type: 'text', content: '执行当前请求' }] },
+      { id: 'result', role: 'assistant', parts: [{ type: 'text', content: '当前轮操作结果' }] },
+      { id: 'terminal', role: 'assistant', parts: [] },
+    ] })
+    const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
+    try { expect(wrapper.get('.agent-stream').text()).toContain('当前轮操作结果') }
+    finally { wrapper.unmount() }
   })
 })

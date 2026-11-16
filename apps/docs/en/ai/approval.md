@@ -37,6 +37,8 @@ import { AgentApproval } from '@/components/agent-ui'
 | `reject`       | `void`   | Rejected      |
 | `update:value` | `string` | Update choice |
 
+The standalone card's `approve` string is the selected value; `reject` has no payload. This differs from the interrupt ID contract of [AgentEventRenderer](./event-renderer) and AgentChat forwarding it. Import `AgentChoice` from Registry `@/components/agent-ui/types`, not a core protocol. To associate the card with an SDK approval, the application stores the interrupt ID separately and resolves the matching `tool-approval` with `true` / `false`; a choice value is not an interrupt ID. The card performs no requests, tool execution, or authorization.
+
 ## Slots
 
 | Slot      | Description        |

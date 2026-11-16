@@ -20,7 +20,7 @@ Replace the item name with any row below. Install the npm dependencies reported 
 | `blocks/marketing-contact`  | `components/button`, `components/input`, `components/textarea` | `MarketingContactValues`, `MarketingContactErrors`, `MarketingContactLabels`                          |
 | `blocks/marketing-process`  | `components/button`                                            | `MarketingProcessStep`                                                                                |
 
-The installer resolves controls' utility, theme and npm dependencies recursively. Marketing items do not depend on each other or install the Agent suite. Contact composes input controls without native Form. The upstream plain-slot issue remains unresolved, with no compatibility context added.
+The installer resolves controls' utility, theme and npm dependencies recursively. Marketing items do not depend on each other or install the Agent suite. Contact composes input controls with application-owned `values`, `errors`, and `canSubmit`; it needs neither a VForm validation provider nor a slot-context compatibility layer. See [Dialog](/en/components/dialog) for the 7.10.0 native-slot configuration and evidence limits.
 
 H5 installs the dependency CSS closure. Native applications load the installed CSS globally with `weapp.styles`, `varo.css` first and `include: 'app.vue'`; never import global styles into an `apply-shared` component's WXSS. See [Registry mode](/en/guide/shadcn-mode). Only stable `h5` and `weapp` are admitted. This is not experimental-profile or device certification.
 

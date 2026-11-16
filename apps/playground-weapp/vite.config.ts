@@ -22,23 +22,12 @@ const weappJsonBlockTestPlugin = {
   },
 }
 
-const appSource = resolve(root, 'src/app.vue')
 const projectIdentity = createHash('sha256').update(resolve(realpathSync(root), 'devtools/build')).digest('hex')
-const nativeProjectIdentityPlugin = {
-  name: 'varo-native-project-identity',
-  enforce: 'pre' as const,
-  transform(code: string, id: string) {
-    if (id !== appSource) { return }
-    return {
-      code: `<script lang="ts">\nimport { createApp } from 'wevu'\ncreateApp({ globalData: { varoE2eProjectId: ${JSON.stringify(projectIdentity)} } })\n</script>\n${code}`,
-      map: null,
-    }
-  },
-}
 
 export default defineConfig(({ mode }) => ({
   define: {
     'import.meta.env.VARO_ROBOT_CHAT_ENABLED': JSON.stringify(process.env.WEAPP_ROBOT_CHAT === '1'),
+    'import.meta.env.VARO_E2E_PROJECT_ID': JSON.stringify(projectIdentity),
   },
   plugins: isTest
     ? [
@@ -51,7 +40,7 @@ export default defineConfig(({ mode }) => ({
         }),
         weappJsonBlockTestPlugin,
       ]
-    : [nativeProjectIdentityPlugin],
+    : [],
   build: {
     // Vite owns syntax lowering; project.config.json disables the DevTools JS passes.
     target: 'es2018',
@@ -102,6 +91,12 @@ export default defineConfig(({ mode }) => ({
     autoImportComponents: false,
     srcRoot: 'src',
     platform: 'weapp',
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
     chunks: {
       // Shared image URL modules belong with their main-package assets, not a demo's common chunk.
       sharedOverrides: [{ test: 'assets/retail/*.jpg', mode: 'path' }],
@@ -136,6 +131,7 @@ export default defineConfig(({ mode }) => ({
         htmlTagToWxml: true,
         htmlTagToWxmlTagClass: true,
         scopedSlotsRequireProps: true,
+        nativeSlotContext: true,
       },
     },
   },

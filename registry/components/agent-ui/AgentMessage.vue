@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentStreamStatus } from '@varo-ui/ai'
+import type { AgentStreamStatus } from './types'
 import { computed } from 'wevu'
 import AgentMarkdown from './AgentMarkdown.vue'
 import AgentStream from './AgentStream.vue'

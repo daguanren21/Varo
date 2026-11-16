@@ -27,13 +27,15 @@ import { AgentStream } from '@/components/agent-ui'
 | `cursor`    | `boolean`           | `true`      | Show cursor                                            |
 | `error`     | `string`            | `—`         | Error text                                             |
 | `final`     | `boolean`           | `false`     | Whether Markdown is final                              |
-| `status`    | `AgentStreamStatus` | `idle`      | Stream status                                          |
+| `status`    | `AgentStreamStatus` | `idle`      | Registry display status, not SDK status                 |
 
 ## Events
 
 | Event   | Payload | Description   |
 | ------- | ------- | ------------- |
 | `retry` | `void`  | Request retry |
+
+Import `AgentStreamStatus` from installed `@/components/agent-ui/types`: `idle | streaming | waiting | completed | failed | cancelled`. TanStack SDK status is `ready | submitted | streaming | error`. Project from actual requests, results, and cancellation records; SDK `ready` alone establishes neither success nor cancellation. This component only presents state, without owning messages or reducing events. The application decides whether `retry` calls SDK `reload()`.
 
 ## Slots
 
@@ -42,7 +44,7 @@ import { AgentStream } from '@/components/agent-ui'
 | `actions` | Completion actions |
 
 ::: info Streaming scheduler
-`@varo-ui/ai` tracks `markstream-core 2.0.12` and `stream-markdown-parser 1.2.16`. H5 uses RAF and mini programs use timed frames. Both preserve grapheme boundaries, atomic fence commits, catch-up latency, start delay, burst reveal, pause, resume, flush, and dispose behavior.
+`@varo-ui/ai` provides only Markdown, presentation text pacing, and thread-version helpers. H5 uses RAF and mini programs use timed frames. These control how text appears; they do not replace TanStack transport, active messages, request state, or abort. See [AI integration](./index) for text pacing and safe Markdown responsibilities.
 :::
 
 ::: info Target notes

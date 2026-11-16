@@ -6,6 +6,8 @@
 - `@varo-ui/headless` 只提供平台无关的状态、事件和受控状态约定；DOM、焦点和页面滚动锁定由 H5 处理
 - 原生工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`，无需用 Vue 渲染器模拟小程序
 
+本仓库使用 pnpm `11.24.0`；Node 要求为 `^22.23.4 || ^24.22.1 || >=26.12.1`，与已发布的 7.10 编译器一致。Node 25 不在支持范围内。
+
 ## 初始化项目
 
 ```bash
@@ -20,9 +22,9 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # 原生 Wevu 工程（二选一，不需要为渲染额外安装 Vue）
-pnpm add wevu @varo-ui/weapp @varo-ui/theme
-pnpm add -D weapp-vite
-# 仅在接入 Agent 事件流与 Markdown 时需要
+pnpm add wevu@7.10.0 @varo-ui/weapp @varo-ui/theme
+pnpm add -D weapp-vite@7.10.0
+# 仅用于 Markdown、文本节奏与会话版本 helper
 pnpm add @varo-ui/ai
 ```
 
@@ -113,30 +115,44 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.5.0；Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
+`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.10.0；微信目标原生 slot/app-shell 实现通过 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true` 显式启用，不再使用旧 7.5.0 补丁和 bootstrap。当前运行仍需重新验收，不能沿用历史证据。Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
 
 ## Agent 流式接入
 
-`@varo-ui/ai` 不绑定模型厂商。服务端只需输出 `message.start`、`text.delta`、`reasoning.*`、`tool.*`、`approval.*`、`message.end` 与 `done` 事件；H5 可接 Fetch/SSE，小程序可把 `wx.request({ enableChunked: true })` 的分块交给 `createAgentSseEventSource()`。
+聊天直接使用 TanStack AI：`@tanstack/ai` 1.4.0 定义上游 `UIMessage` 和 AG-UI `StreamChunk`，`@tanstack/ai-client` 1.1.0 拥有消息、`ChatClientSnapshot`、连接、中断与 abort；H5 使用 `@tanstack/ai-vue` 1.0.1 的 `useChat`，原生使用 `ChatClient` 与 Wevu。`@varo-ui/ai` 仅提供安全 Markdown、文本节奏与会话版本 helper，不再提供私有事件协议、流控制器、channel、SSE 解码器或事件 parser。
 
-UI 可按需安装 `agent-conversation`、`agent-workspace`、`agent-advanced`、`agent-rag`。共享的 `agent-presentation` 只含展示类型与纯函数。`blocks/agent-chat` 自动安装 conversation 及全部依赖，无需预装完整套件 `components/agent-ui`。详见 [Agent 安装](/ai/)。审批执行、网络、重试和取消策略由业务应用负责。
+UI 可按需安装 `agent-conversation`、`agent-workspace`、`agent-advanced`、`agent-rag`。共享 `agent-presentation` 只含展示类型与纯函数；`AgentPartStatus`、`AgentStreamStatus` 和 `AgentToolPart` 位于安装后的 `components/agent-ui/types`，不是 core 协议或 SDK 状态。SDK 状态是 `ready | submitted | streaming | error`，不能直接换成展示状态。`blocks/agent-chat` 自动安装 conversation 依赖，无需预装完整套件。静态历史保留 `AgentConversationMessage[]`，snapshot prop 必须是实际 `client.getSnapshot()`，不要重建或归约事件。
+
+原生 `weapp-vite` / `wevu` 使用 7.10.0，在现有编译配置中加入官方 [Web Runtime 配置](https://vite.weapp.dev/config/web-runtime-globals)：
 
 ```ts
-import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
+import { defineConfig } from 'weapp-vite/config'
 
-const transport = createAgentSseEventSource()
-const controller = createAgentStreamController()
-
-requestTask.onChunkReceived(({ data }) => transport.feed(data))
-await controller.connect(transport.source)
+export default defineConfig({
+  weapp: {
+    platform: 'weapp',
+    vue: {
+      enable: true,
+      template: { nativeSlotContext: true, scopedSlotsRequireProps: true },
+    },
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
+  },
+})
 ```
 
-`connect()` 负责事件迭代器的生命周期：协议 `done`/`error` 会结束连接并发起迭代器清理；迭代器自然结束时会合成 `done`。
+然后使用 SDK 标准 `fetchServerSentEvents` adapter；不要另写 `wx.request` transport 或 Web API polyfill。宿主必须提供真实响应状态、响应头和增量数据块，不能用整包缓冲伪装流式。原生响应式和生命周期从 `wevu` 导入，不使用 Vue binding。微信 DevTools 与真机需分别验证，其他平台不因此获得相同能力，也不模拟浏览器 Cookie/CORS 或网络级反压。
+
+渲染器的 `approve` / `reject` 发送 interrupt ID；应用从 `client.getInterrupts()` 查找对应 `tool-approval`，检查可解析状态后调用 `resolveInterrupt(true)` / `resolveInterrupt(false)`。UI 不执行网络或工具，不授予业务权限；凭据、业务执行和授权、重试与服务端取消传播均由应用负责。完整 H5 / 原生示例与官方 TanStack 引用见 [Agent 接入](/ai/)。
 
 ## 小程序构建链
 
 ```bash
-pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
+pnpm add -D weapp-vite@7.10.0 weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -208,6 +224,6 @@ MCP 客户端启动该进程并保持 stdin/stdout 连接。工具为 `varo_bloc
 
 ## 版本策略
 
-- 当前原生集成使用 `weapp-vite` / `wevu` 7.5.0；npm 包要求兼容的 7.x 版本，升级后重新验证所用 profile
+- 当前原生集成使用 `weapp-vite` / `wevu` 7.10.0；微信目标显式启用上游 `nativeSlotContext` / `scopedSlotsRequireProps`，不保留旧补丁或 bootstrap；升级后重新验证所用 profile，历史 7.5.0 证据不是当前运行证明
 - 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
 - VitePress、Vue 与 TypeScript 跟随 workspace 统一升级

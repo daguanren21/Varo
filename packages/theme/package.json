@@ -65,7 +65,7 @@
     "test": "vitest run --config ../../vitest.config.ts --dir . --passWithNoTests"
   },
   "dependencies": {
-    "vue": "^3.5.43"
+    "vue": "^3.5.45"
   },
   "devDependencies": {
     "vite": "8.3.0"

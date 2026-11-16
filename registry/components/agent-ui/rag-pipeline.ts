@@ -1,4 +1,4 @@
-import type { AgentPartStatus } from '@varo-ui/ai'
+import type { AgentPartStatus } from './types'
 import type { ClassValue } from '../../lib/cn'
 
 export type AgentRagStageId = 'query' | 'embed' | 'retrieve' | 'assemble' | 'generate'

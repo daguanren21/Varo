@@ -14,7 +14,7 @@ import { NativeSemantics } from './semantics'
 export interface WechatOptions { mode: 'headless' | 'devtools', endpoint?: string }
 export interface AgentInspection {
   busy: boolean
-  eventCount: number
+  messagePartCount: number
   latestProduct?: string
   latestStatus?: string
   messageCount: number
@@ -347,16 +347,16 @@ export function wechat(options: WechatOptions): EngineHandle {
           const page = await currentPage(active(), context.timeouts.action)
           if (page.path.replace(/^\/+/, '') !== 'pages/mall/index') { throw failure('INVALID_STATE', 'Agent inspection requires the mall page') }
           const state = record(await page.callMethodWithOptions('automationInspect', { timeout: context.timeouts.action }), 'Agent inspection')
-          const { busy, status, eventCount, messageCount, orderCount, reasoningCount, sourceLength, toolCount, latestProduct, latestStatus, pendingAction } = state
+          const { busy, status, messagePartCount, messageCount, orderCount, reasoningCount, sourceLength, toolCount, latestProduct, latestStatus, pendingAction } = state
           if (typeof busy !== 'boolean' || typeof status !== 'string'
-            || typeof eventCount !== 'number' || typeof messageCount !== 'number' || typeof orderCount !== 'number'
+            || typeof messagePartCount !== 'number' || typeof messageCount !== 'number' || typeof orderCount !== 'number'
             || typeof reasoningCount !== 'number' || typeof sourceLength !== 'number' || typeof toolCount !== 'number'
             || (latestProduct !== undefined && typeof latestProduct !== 'string')
             || (latestStatus !== undefined && typeof latestStatus !== 'string')
             || (pendingAction !== undefined && typeof pendingAction !== 'string')) {
             throw failure('ENGINE_FAILURE', 'Invalid app-owned Agent inspection')
           }
-          return { busy, status, eventCount, messageCount, orderCount, reasoningCount, sourceLength, toolCount, latestProduct, latestStatus, pendingAction }
+          return { busy, status, messagePartCount, messageCount, orderCount, reasoningCount, sourceLength, toolCount, latestProduct, latestStatus, pendingAction }
         })
       },
       async inspectTheme() {

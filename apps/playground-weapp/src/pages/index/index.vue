@@ -116,10 +116,10 @@ const tableFilters: AgentFilterOption[] = [
   { count: 2, label: 'Completed', value: 'completed' },
 ]
 const diffLines: AgentDiffLine[] = [
-  { content: '@@ -16,4 +16,5 @@ createAgentStream', type: 'hunk' },
-  { content: '  const status = shallowRef<\'idle\' | \'done\'>(\'idle\')', oldNumber: 17, type: 'remove' },
-  { content: '  const status = shallowRef<AgentStreamStatus>(\'streaming\')', newNumber: 17, type: 'add' },
-  { content: '  const scheduler = target === \'weapp\' ? \'time-slice\' : \'raf\'', newNumber: 18, type: 'add' },
+  { content: '@@ -16,3 +16,3 @@ localChat', type: 'hunk' },
+  { content: '  const answer = await generateLocally(prompt)', oldNumber: 17, type: 'remove' },
+  { content: '  await client.sendMessage(prompt)', newNumber: 17, type: 'add' },
+  { content: '  const snapshot = client.getSnapshot()', newNumber: 18, type: 'add' },
   { collapsedLines: 18, content: '@@ More unchanged context', type: 'hunk' },
 ]
 const diffLabels = {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentToolPart } from '@varo-ui/ai'
+import type { AgentToolPart } from './types'
 import VTag from '../ui/tag.vue'
 
 withDefaults(

@@ -6,6 +6,8 @@
 - `@varo-ui/headless` provides only platform-neutral state, event, and controlled-state contracts; H5 handles DOM behavior, focus, and page scroll locking
 - Native projects use `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`, without a Vue renderer to simulate mini programs
 
+This repository uses pnpm `11.24.0` and requires Node `^22.23.4 || ^24.22.1 || >=26.12.1`, matching the published 7.10 compiler. Node 25 is not supported.
+
 ## Initialize a project
 
 ```bash
@@ -20,9 +22,9 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # Native Wevu project (choose one path; no extra Vue renderer is needed)
-pnpm add wevu @varo-ui/weapp @varo-ui/theme
-pnpm add -D weapp-vite
-# Only for Agent events and Markdown
+pnpm add wevu@7.10.0 @varo-ui/weapp @varo-ui/theme
+pnpm add -D weapp-vite@7.10.0
+# Only for Markdown, text pacing, and thread-version helpers
 pnpm add @varo-ui/ai
 ```
 
@@ -113,30 +115,44 @@ Each experimental profile requires explicit support in the item manifest and eve
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.5.0. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
+`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.10.0. Explicit `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` enable the upstream native slot/app-shell implementation on WeChat, replacing the old 7.5.0 patch and bootstrap. Current runtime acceptance remains required; historical evidence does not transfer. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
 
 ## Agent streaming
 
-`@varo-ui/ai` is model-provider neutral. A backend emits `message.start`, `text.delta`, `reasoning.*`, `tool.*`, `approval.*`, `message.end`, and `done` events. H5 can connect Fetch/SSE; a mini program can feed `wx.request({ enableChunked: true })` chunks into `createAgentSseEventSource()`.
+Use TanStack AI directly for chat. `@tanstack/ai` 1.4.0 defines upstream `UIMessage` and AG-UI `StreamChunk`; `@tanstack/ai-client` 1.1.0 owns messages, `ChatClientSnapshot`, connections, interrupts, and abort. H5 uses `useChat` from `@tanstack/ai-vue` 1.0.1; native uses `ChatClient` with Wevu. `@varo-ui/ai` retains safe Markdown, text pacing, and thread-version helpers only, without a private event protocol, stream controller, channel, SSE decoder, or event parser.
 
-Install UI as needed: `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag`. Shared `agent-presentation` contains only presentation types and pure helpers. `blocks/agent-chat` installs conversation components and dependencies without requiring the full `components/agent-ui` suite. See [Agent installation](/en/ai/). Your application handles approval execution, networking, retries, and cancellation policy.
+Install UI as needed: `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag`. Shared `agent-presentation` contains only display types and pure helpers. `AgentPartStatus`, `AgentStreamStatus`, and `AgentToolPart` live in installed `components/agent-ui/types`, not a core protocol or SDK state. SDK status is `ready | submitted | streaming | error`; do not replace it with a display status. `blocks/agent-chat` installs conversation dependencies without requiring the full suite. Static history retains `AgentConversationMessage[]`; snapshot props take actual `client.getSnapshot()` results, without rebuilding snapshots or reducing events.
+
+Use native `weapp-vite` / `wevu` 7.10.0 and add the official [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) to your existing compiler configuration:
 
 ```ts
-import { createAgentSseEventSource, createAgentStreamController } from '@varo-ui/ai'
+import { defineConfig } from 'weapp-vite/config'
 
-const transport = createAgentSseEventSource()
-const controller = createAgentStreamController()
-
-requestTask.onChunkReceived(({ data }) => transport.feed(data))
-await controller.connect(transport.source)
+export default defineConfig({
+  weapp: {
+    platform: 'weapp',
+    vue: {
+      enable: true,
+      template: { nativeSlotContext: true, scopedSlotsRequireProps: true },
+    },
+    appPrelude: {
+      webRuntime: {
+        enabled: true,
+        networkDefaults: { request: { enableChunked: true } },
+      },
+    },
+  },
+})
 ```
 
-`connect()` manages the event iterator's lifecycle. Protocol `done`/`error` events end the connection and request iterator cleanup; when the iterator ends naturally, the controller generates `done`.
+Then use the SDK's standard `fetchServerSentEvents` adapter, without a bespoke `wx.request` transport or Web API polyfills. The host must supply real response status, headers, and incremental chunks; a fully buffered response must not be presented as streaming. Import native reactivity and lifecycle APIs from `wevu`, without the Vue binding. Verify WeChat DevTools and devices separately. Other profiles do not inherit equivalent capabilities, browser Cookie/CORS behavior is not simulated, and stream consumption is not network-level backpressure.
+
+Renderer `approve` / `reject` events carry an interrupt ID. The application finds the matching `tool-approval` in `client.getInterrupts()`, checks eligibility, and calls `resolveInterrupt(true)` / `resolveInterrupt(false)`. The UI performs no network or tool execution and grants no business permission. Credentials, business execution and authorization, retry policy, and server cancellation propagation belong to the application. See [Agent integration](/en/ai/) for complete H5 / native examples and official TanStack references.
 
 ## Mini-program build chain
 
 ```bash
-pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
+pnpm add -D weapp-vite@7.10.0 weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -208,6 +224,6 @@ Execution accepts only fixed enums: preview `h5` / `weapp-preview`, check `gener
 
 ## Version strategy
 
-- The current native integration uses `weapp-vite` / `wevu` 7.5.0; npm packages require compatible 7.x versions, and upgrades need validation of each profile you use
+- The native integration uses `weapp-vite` / `wevu` 7.10.0 with explicit upstream `nativeSlotContext` / `scopedSlotsRequireProps` on WeChat, without the old patch or bootstrap; revalidate each profile after upgrades, as historical 7.5.0 evidence is not current runtime proof
 - Production projects should follow their lockfile, package `peerDependencies`, and CI build result
 - VitePress, Vue, and TypeScript move with the workspace upgrade policy

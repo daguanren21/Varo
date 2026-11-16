@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
 import type { AgentConversationMessage } from '../agent-ui/types'
 import type { AgentAssistantContext, AgentAssistantResponse } from './agent-assistant-sheet.types'
 import type { AgentChatHistoryItem } from './agent-chat.types'
@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
   modelValue?: string
   open?: boolean
   selectedResponse?: AgentAssistantResponse
-  snapshot?: AgentStreamSnapshot
+  snapshot?: ChatClientSnapshot
   suggestions?: string[]
   title?: string
 }>(), {
@@ -37,12 +37,12 @@ const props = withDefaults(defineProps<{
   title: '写作助手',
 })
 const emit = defineEmits<{
-  'approve': [value: string]
+  'approve': [interruptId: string]
   'close': []
   'historySelect': [id: string]
   'insert': [response: AgentAssistantResponse]
   'newConversation': []
-  'reject': []
+  'reject': [interruptId: string]
   'removeContext': [context: AgentAssistantContext]
   'retry': []
   'stop': []
@@ -119,7 +119,7 @@ function insert() {
       <AgentChat
         v-model="prompt" class="min-h-0" style="
 
---varo-agent-chat-height: 100%" layout="page" close-label="关闭助手" :title="title" subtitle="只使用你明确引用的上下文；回答由应用决定是否插入。" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="suggestions" @close="updateOpen(false)" @submit="emit('submit', $event)" @stop="emit('stop')" @history-select="emit('historySelect', $event)" @new-conversation="emit('newConversation')" @approve="emit('approve', $event)" @reject="emit('reject')" @retry="emit('retry')"
+--varo-agent-chat-height: 100%" layout="page" close-label="关闭助手" :title="title" subtitle="只使用你明确引用的上下文；回答由应用决定是否插入。" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="suggestions" @close="updateOpen(false)" @submit="emit('submit', $event)" @stop="emit('stop')" @history-select="emit('historySelect', $event)" @new-conversation="emit('newConversation')" @approve="emit('approve', $event)" @reject="emit('reject', $event)" @retry="emit('retry')"
       >
         <template #context>
           <aside v-if="context" class="grid min-w-0 gap-2 rounded-lg border border-[var(--varo-ui-border-lighter)] bg-[var(--varo-ui-surface-muted)] p-3" aria-label="引用上下文">

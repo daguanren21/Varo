@@ -26,17 +26,20 @@ pnpm dlx @varo-ui/cli add --target weapp components/agent-model-selector
 - 应用逻辑：`apps/playground-h5/src/features/useModelCompareDemo.ts` 与 `apps/playground-weapp/src/blocks-lab/model-compare/useModelCompareDemo.ts`。
 - 组合入口：对应目录的 `ModelCompareDemo.vue` 与原生 `index.vue`。
 
-演示在本地异步转换文本，结果确定，不调用模型。每侧各有一个 `createAgentStreamController`、异步生成器、可取消计时器、原始请求、订阅和清理流程。转换包括逐词大写、按 Unicode 字符逐词反转和 Unicode 码点计数；字符数不是 token 数。每次比较，左侧输出第一个转换词后故意报错，右侧继续工作。重试仅重启左侧原始请求；单词输入同样触发首次失败。
+演示在本地异步转换文本，结果确定，不调用模型。每侧各有一个 TanStack `ChatClient`，通过 `stream(async function* ...)` 接收标准 AG-UI chunk，并拥有独立的可取消计时器、原始请求、snapshot 订阅和清理流程；不是 provider 调用。转换包括逐词大写、按 Unicode 字符逐词反转和 Unicode 码点计数；字符数不是 token 数。每次比较，左侧输出第一个转换词后故意报错，右侧继续工作。重试仅重启左侧原始请求；单词输入同样触发首次失败。
 
 提交后保留共享提示词，便于核对。切换模型仅清空本侧的消息、快照、重试请求和测量，不清空另一侧。“显示普通 Chat 组合”将独立选择器放在 AgentChat 外部，只执行左侧转换；右侧暂停使用时，仍要求两侧选择不同模型。AgentChat 仍然只安装 conversation 及其依赖。“新建会话”清空该普通本地会话。
 
-词数、`finally` 清理次数和计时器数量记录实际生成、调度及取消，用于观察资源，不能代替回答文本。关闭时清理两侧，重载路由创建新实例；卸载会取消生产器、解除订阅并销毁两个控制器。
+词数、`finally` 清理次数和计时器数量记录实际生成、调度及取消，用于观察资源，不能代替回答文本。关闭时清理两侧，重载路由创建新实例；卸载时调用各 SDK client 的 `stop()`、解除 snapshot 订阅并 `dispose()`，不保留第二套流控制器。
 
 ## 公开契约
 
 比较类型从 `components/blocks/agent-model-compare.types` 导入；模型目录类型从 `components/agent-ui/agent-model-selector.types` 导入。
 
 ```ts
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { AgentConversationMessage } from '@/components/agent-ui/types'
+
 interface AgentModelOption {
   id: string
   label: string
@@ -49,7 +52,7 @@ interface AgentCompareState {
   label: string
   modelId: string
   messages: AgentConversationMessage[]
-  snapshot?: AgentStreamSnapshot
+  snapshot?: ChatClientSnapshot
   busy: boolean
   error?: string
   retryable?: boolean
@@ -60,7 +63,7 @@ interface AgentCompareState {
 }
 ```
 
-应用需提供唯一且稳定的目录 ID、可读名称与当前可用性。`left`/`right` 由应用控制；从任务开始到资源清理结束，`busy` 都应保持为 true。即使 `busy` 为 false，快照处于 `streaming`/`waiting` 时仍按运行中处理。初始化阶段缺少某侧不会崩溃，但不能提交。Block 用于比较文本，渲染消息和快照文本；工具执行、审批、会话存储和 provider 路由需要在应用中处理。
+应用需提供唯一且稳定的目录 ID、可读名称与当前可用性。`left`/`right` 由应用控制；从任务开始到资源清理结束，`busy` 都应保持为 true。SDK snapshot 的 `isLoading` 或 `status` 为 `submitted` / `streaming` 时也按活动请求处理，不能把展示用 `waiting` 写入 SDK 状态。初始化阶段缺少某侧不会崩溃，但不能提交。Block 用于比较文本：历史消息保留静态展示 API，活动内容直接从 SDK snapshot 纯投影，不另存活动消息或重放事件。工具执行、审批、会话存储和 provider 路由需要在应用中处理。
 
 | Prop                                  | 含义                                                              |
 | ------------------------------------- | ----------------------------------------------------------------- |
@@ -77,9 +80,9 @@ interface AgentCompareState {
 | ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `update:modelValue` | `string`                                                        | 任一侧运行或 disabled/loading/目录错误时不更新草稿                                                                                         |
 | `modelChange`       | `{ side: 'left' \| 'right', modelId: string }`                  | 任一侧运行时禁止切换。拒绝不存在、不可用、禁用、当前已选和另一侧已选 ID；应用接受选择并决定旧结果处理。                                    |
-| `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | 提示词 trim 后非空，两侧空闲且选择两个不同的可用模型；应用重新核对当前状态并分别启动控制器。                                               |
+| `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | 提示词 trim 后非空，两侧空闲且选择两个不同的可用模型；应用重新核对当前状态并分别通过两侧 SDK client 启动。                              |
 | `retry`             | `'left' \| 'right'`                                             | 仅失败/错误侧、`retryable: true`、本侧无待处理且所选模型可用时允许；**另一侧运行不阻止重试**。应用使用该侧保存的原请求，不使用已编辑草稿。 |
-| `stop`              | `'left' \| 'right'`                                             | 仅活动侧可停止，即使 disabled/loading/error 仍可用；应用只取消对应生产器和控制器。                                                         |
+| `stop`              | `'left' \| 'right'`                                             | 仅活动侧可停止，即使 disabled/loading/error 仍可用；应用只调用对应 SDK client 的 `stop()`，取消该侧生产者。                            |
 
 两端均发送单值或单对象事件，不使用原生多参数事件。激活时读取当前 props，不使用旧选项对象。Block 不乐观接受模型切换、清空结果或报告成功；这些由应用确认。外部替换受控状态也由应用处理，请勿在请求运行中替换模型 ID。
 
@@ -89,7 +92,7 @@ interface AgentCompareState {
 
 只展示应用提供的实际指标。`latencyMs` 必须有限且非负；`cost` 的 `amount` 必须有限且非负，`currency`/单位非空。省略或非法值显示“未提供”；只有应用明确传入零时才显示零。
 
-“显示本地实测耗时”展示从启动到控制器完成的 `Date.now()` 差值，包含刻意放慢的输出节奏，标注为应用测量耗时，不代表网络或模型时延。失败/停止不提供完成耗时，隐藏指标后显示未提供。演示不提供费用或 token 用量，也不声称模型调用免费。
+“显示本地实测耗时”展示从启动到 SDK 请求完成的 `Date.now()` 差值，包含刻意放慢的输出节奏，标注为应用测量耗时，不代表网络或模型时延。失败/停止不提供完成耗时，隐藏指标后显示未提供。演示不提供费用或 token 用量，也不声称模型调用免费。
 
 ## 独立选择器与普通 Chat
 

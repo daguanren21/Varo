@@ -5,11 +5,8 @@ autoInstallPeers: false
 minimumReleaseAge: 0
 
 overrides:
-  vue: 3.5.42
+  vue: 3.5.45
   undici: 7.29.0
-
-patchedDependencies:
-  weapp-vite@7.5.0: patches/weapp-vite@7.5.0.patch
 
 allowBuilds:
   '@parcel/watcher': true

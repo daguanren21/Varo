@@ -6,7 +6,7 @@
   "packageManager": "pnpm@11.24.0",
   "license": "MIT",
   "engines": {
-    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
   },
   "scripts": {
     "dev": "node scripts/prepare-devtools-project.mjs && weapp-vite --project-config dist/dev/project.config.json",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@weapp-tailwindcss/merge": "2.2.3",
     "clsx": "2.1.1",
-    "wevu": "7.5.0"
+    "wevu": "7.10.0"
   },
   "devDependencies": {
     "@babel/core": "8.0.1",
@@ -29,8 +29,8 @@
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "vite": "8.2.2",
-    "vue": "3.5.42",
+    "vue": "3.5.45",
     "weapp-tailwindcss": "5.5.3",
-    "weapp-vite": "7.5.0"
+    "weapp-vite": "7.10.0"
   }
 }

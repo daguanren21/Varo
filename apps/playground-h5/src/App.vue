@@ -6,6 +6,7 @@ import {
   AgentResponseActions,
   AgentSourceList,
 } from './components/agent-ui'
+import { agentCurrentMessage, agentMessageText } from './components/agent-ui/presentation'
 import AgentWorkspaceDemo from './components/agent-workspace/AgentWorkspaceDemo.vue'
 import AgentChat from './components/blocks/agent-chat.vue'
 import LoginForm from './components/blocks/login-form.vue'
@@ -85,11 +86,11 @@ const products = [
   },
 ]
 const agentArtifact = {
-  content: `export const events = createAgentSseEventSource()\nrequestTask.onChunkReceived(({ data }) => events.feed(data))\nawait controller.connect(events.source)`,
+  content: `import { ChatClient, fetchServerSentEvents } from '@tanstack/ai-client'\nconst client = new ChatClient({ connection: fetchServerSentEvents('/api/chat') })\nawait client.sendMessage('分析双端方案')`,
   id: 'transport-adapter',
   kind: 'code' as const,
   language: 'ts',
-  title: '微信分块传输适配器',
+  title: 'TanStack SSE 连接示例',
 }
 const agentSources = [
   {
@@ -274,7 +275,7 @@ function record(message: string) {
           >
             <template #actions>
               <AgentResponseActions
-                :content="agentSnapshot.message?.source"
+                :content="agentMessageText(agentCurrentMessage(agentSnapshot))"
                 @copy="record('已复制 Agent 回答')"
                 @retry="retryAgent"
                 @like="record('回答反馈：有帮助')"

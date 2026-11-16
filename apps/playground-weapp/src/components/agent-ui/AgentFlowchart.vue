@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AgentPartStatus } from '@varo-ui/ai'
+import type { AgentPartStatus } from './types'
 import type { ClassValue } from '../../lib/cn'
 import type { AgentFlowNode } from './advanced-types'
 import { computed } from 'wevu'

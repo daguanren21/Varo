@@ -35,6 +35,8 @@ const open = ref(false)
 
 Explicit `open=false` overrides `defaultOpen` and status. Clicking emits `update:open`; the display changes only when the parent updates it. Without `open`, the component manages expansion: initial `running` or `failed` states open the result; other states use `defaultOpen`. Later status changes never reopen a result the user closed. Status labels are 等待中 (waiting), 进行中 (running), 已完成 (completed), and 失败 (failed). Handle `retry` in your application; the component does not execute tools.
 
+Import `AgentPartStatus` from Registry-installed `@/components/agent-ui/types`. It only presents `waiting | running | completed | failed`, not an `@varo-ui/ai` protocol, SDK `ready | submitted | streaming | error`, or tool wire state. Project it from actual tool results; display status establishes neither business authorization nor success.
+
 ## Props
 
 | Prop          | Type              | Default     | Description                                                        |

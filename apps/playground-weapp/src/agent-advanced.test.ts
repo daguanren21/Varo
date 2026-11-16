@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentFineTuneControl } from './components/agent-ui/advanced-types'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
@@ -25,6 +26,13 @@ import AgentSidebar from './components/agent-ui/AgentSidebar.vue'
 import AgentThinking from './components/agent-ui/AgentThinking.vue'
 import AgentToolApproval from './components/agent-ui/AgentToolApproval.vue'
 import AgentToolResult from './components/agent-ui/AgentToolResult.vue'
+
+function chatSnapshot(update: Partial<ChatClientSnapshot> = {}): ChatClientSnapshot {
+  const client = new ChatClient({ threadId: 'native-ui-test', connection: stream(async function* () {}) })
+  const snapshot = client.getSnapshot()
+  client.dispose()
+  return { ...snapshot, ...update }
+}
 
 describe('advanced mini-program Agent UI', () => {
   it('keeps motion radio choices controlled', async () => {
@@ -58,14 +66,13 @@ describe('advanced mini-program Agent UI', () => {
   })
 
   it('renders streaming Agent text without a scoped-slot feedback loop', async () => {
-    const snapshot = {
-      data: [],
-      eventCount: 1,
-      message: { final: false, id: 'stream', role: 'assistant' as const, source: '正在处理', visible: '正在处理' },
-      reasoning: [{ content: '识别退货意图', id: 'intent', status: 'completed' as const, title: '理解请求' }],
-      status: 'streaming' as const,
-      tools: [],
-    }
+    const snapshot = chatSnapshot({
+      messages: [{ id: 'stream', role: 'assistant', parts: [
+        { type: 'thinking', content: '识别退货意图' },
+        { type: 'text', content: '正在处理' },
+      ] }],
+      status: 'streaming', isLoading: true,
+    })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     expect(wrapper.get('.agent-stream').text()).toContain('正在处理')
     expect(wrapper.find('.agent-markdown').exists()).toBe(false)
@@ -73,37 +80,32 @@ describe('advanced mini-program Agent UI', () => {
     await wrapper.setProps({
       snapshot: {
         ...snapshot,
-        eventCount: 2,
-        message: { ...snapshot.message, source: '正在处理退货', visible: '正在处理退货' },
+        messages: [{ id: 'stream', role: 'assistant', parts: [{ type: 'text', content: '正在处理退货' }] }],
       },
     })
     expect(wrapper.get('.agent-stream').text()).toContain('正在处理退货')
   })
 
-  it('preserves waiting and cancellation without presenting either as a generation failure', async () => {
-    const snapshot: AgentStreamSnapshot = {
-      data: [],
-      eventCount: 1,
-      message: { final: false, id: 'message', role: 'assistant', source: '```\n保留回答\n```', visible: '```\n保留回答\n```' },
-      reasoning: [],
-      status: 'waiting',
-      tools: [],
-    }
+  it('preserves stopped SDK output without presenting it as a generation failure', async () => {
+    const snapshot = chatSnapshot({
+      messages: [{ id: 'message', role: 'assistant', parts: [{ type: 'text', content: '```\n保留回答\n```' }] }],
+      status: 'streaming', isLoading: true,
+    })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     try {
-      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('waiting')
-      expect(wrapper.find('.agent-stream__cursor').exists()).toBe(false)
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('streaming')
+      expect(wrapper.find('.agent-stream__cursor').exists()).toBe(true)
       expect(wrapper.find('.agent-loading').exists()).toBe(false)
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
 
-      await wrapper.setProps({ snapshot: { ...snapshot, status: 'cancelled' } })
-      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('cancelled')
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'ready', isLoading: false } })
+      expect(wrapper.get('.agent-stream').attributes('data-status')).toBe('completed')
       expect(wrapper.get('.agent-markdown scroll-view text').text()).toBe('保留回答')
       expect(wrapper.get('.agent-markdown').attributes('data-final')).toBe('true')
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
       expect(wrapper.find('.agent-stream__cursor').exists()).toBe(false)
 
-      await wrapper.setProps({ snapshot: { ...snapshot, status: 'failed', error: { type: 'error', message: '连接中断' } } })
+      await wrapper.setProps({ snapshot: { ...snapshot, status: 'error', isLoading: false, error: new Error('连接中断') } })
       expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')
       await wrapper.get('[role="alert"] button').trigger('click')
       expect(wrapper.emitted('retry')).toEqual([[]])

@@ -26,17 +26,20 @@ Both units explicitly support stable H5 and Weapp; no experimental profile or de
 - Application logic: `apps/playground-h5/src/features/useModelCompareDemo.ts` and `apps/playground-weapp/src/blocks-lab/model-compare/useModelCompareDemo.ts`.
 - Components: `ModelCompareDemo.vue` and native `index.vue` in those directories.
 
-The demos transform text asynchronously and deterministically on the local device, without calling a model. Each side has a separate `createAgentStreamController`, async generator, cancellable timer, saved request, subscription, and cleanup routine. Transformations uppercase words, reverse Unicode characters within words, or count Unicode code points, not tokens. Each comparison deliberately fails on the left after its first transformed word; the right continues. Retrying only restarts the left's saved request. A one-word input also triggers the first failure.
+The demos transform text asynchronously and deterministically on the local device, without calling a model. Each side has a separate TanStack `ChatClient` receiving standard AG-UI chunks through `stream(async function* ...)`, with an independent cancellable timer, saved request, snapshot subscription, and cleanup routine. This is not a provider call. Transformations uppercase words, reverse Unicode characters within words, or count Unicode code points, not tokens. Each comparison deliberately fails on the left after its first transformed word; the right continues. Retrying only restarts the left's saved request. A one-word input also triggers the first failure.
 
 The application preserves the shared draft after submission so you can compare it with the results. Changing a model clears only that side's messages, snapshot, saved retry request, and measurement. “Display ordinary Chat composition” places the standalone selector outside AgentChat and runs only the left producer. The two selected models must still differ while the right side is inactive. Chat still installs only conversation and its dependencies. “New conversation” clears that ordinary local conversation.
 
-Word counts, generator `finally` cleanups, and timer counts record actual generation, scheduling, and cancellation. They describe resources, not response text. Closing cleans up both sides; reloading creates fresh instances. Unmounting cancels producers, unsubscribes, and destroys both controllers.
+Word counts, generator `finally` cleanups, and timer counts record actual generation, scheduling, and cancellation. They describe resources, not response text. Closing cleans up both sides; reloading creates fresh instances. Unmounting calls each SDK client's `stop()`, unsubscribes from snapshots, and calls `dispose()`, without retaining a second stream controller.
 
 ## Public contracts
 
 Import the following named types from `components/blocks/agent-model-compare.types`; the model catalog type lives in `components/agent-ui/agent-model-selector.types`.
 
 ```ts
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { AgentConversationMessage } from '@/components/agent-ui/types'
+
 interface AgentModelOption {
   id: string
   label: string
@@ -49,7 +52,7 @@ interface AgentCompareState {
   label: string
   modelId: string
   messages: AgentConversationMessage[]
-  snapshot?: AgentStreamSnapshot
+  snapshot?: ChatClientSnapshot
   busy: boolean
   error?: string
   retryable?: boolean
@@ -60,7 +63,7 @@ interface AgentCompareState {
 }
 ```
 
-Supply unique, stable catalog IDs, readable labels, and current availability. The application controls `left` and `right`. Keep `busy` true from the start of pending work through resource cleanup. A snapshot in `streaming` or `waiting` is also treated as running, even if `busy` is false. Missing side state is safe during initialization but prevents submission. The Block compares text by rendering messages and snapshot text. Handle tool execution, approvals, conversation storage, and provider routing in your application.
+Supply unique, stable catalog IDs, readable labels, and current availability. The application controls `left` and `right`. Keep `busy` true from the start of pending work through resource cleanup. SDK snapshot `isLoading`, or `status` of `submitted` / `streaming`, also indicates active work; never write the display state `waiting` into SDK status. Missing side state is safe during initialization but prevents submission. The Block compares text: history retains its static display API, while active content is a pure projection of the SDK snapshot, without another active-message store or event replay. Handle tool execution, approvals, conversation storage, and provider routing in your application.
 
 | Prop                                  | Meaning                                                                                |
 | ------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -77,9 +80,9 @@ Supply unique, stable catalog IDs, readable labels, and current availability. Th
 | ------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `update:modelValue` | `string`                                                        | Draft update; no updates while disabled/loading/catalog error or either side running                                                                                                                                       |
 | `modelChange`       | `{ side: 'left' \| 'right', modelId: string }`                  | No changes while either side runs. Reject missing, unavailable, disabled, already selected and other-side IDs. Application accepts selection and decides how to handle prior results.                                      |
-| `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | Trimmed, nonempty prompt and two distinct current available models; both sides idle. Application rechecks current state and starts two independent controllers.                                                            |
+| `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | Trimmed, nonempty prompt and two distinct current available models; both sides idle. Application rechecks state and starts each side through its SDK client.                                                                   |
 | `retry`             | `'left' \| 'right'`                                             | Only a failed/error side with `retryable: true`, an available selected model and no pending work on that side. Allowed while the **other** side runs. Application retries that side's saved request, not the edited draft. |
-| `stop`              | `'left' \| 'right'`                                             | Only an active side; remains available while disabled/loading/error. Application aborts/cancels that producer and controller only.                                                                                         |
+| `stop`              | `'left' \| 'right'`                                             | Only an active side; remains available while disabled/loading/error. Application calls only that SDK client's `stop()` to cancel its producer.                                                                                 |
 
 Both targets emit single values or objects, without native multi-argument events. Actions read current props, not saved option objects. The Block does not optimistically accept model changes, clear results, or report success; the application handles those decisions and external state replacements. Do not replace model IDs during active requests.
 
@@ -89,7 +92,7 @@ Both targets emit single values or objects, without native multi-argument events
 
 Measurements appear only when the application supplies them. `latencyMs` must be finite and nonnegative. `cost` must have a finite, nonnegative `amount` and a nonempty `currency`/unit. An absent or invalid value displays “not provided” (`未提供`). Zero appears only when the application explicitly supplies it as a measurement.
 
-“Show local measured time” displays the `Date.now()` duration from start to controller completion, including deliberate pacing. It is labelled application-measured time, not network/model latency. Failed or stopped work has no completion duration; hiding measurements omits them again. The demo supplies no cost or token count and makes no claim of free model calls.
+“Show local measured time” displays the `Date.now()` duration from start to SDK request completion, including deliberate pacing. It is labelled application-measured time, not network/model latency. Failed or stopped work has no completion duration; hiding measurements omits them again. The demo supplies no cost or token count and makes no claim of free model calls.
 
 ## Selector composition
 

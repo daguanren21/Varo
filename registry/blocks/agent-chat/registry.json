@@ -8,7 +8,7 @@
     "weapp"
   ],
   "dependencies": [
-    "@varo-ui/ai"
+    "@tanstack/ai-client"
   ],
   "targetDependencies": {
     "h5": ["vue"],

@@ -24,7 +24,6 @@
   "exports": {
     ".": "./native/src/index.ts",
     "./components/*": "./native/src/components/ui/*",
-    "./patches/weapp-vite@7.5.0.patch": "./patches/weapp-vite@7.5.0.patch",
     "./resolver": {
       "types": "./dist/resolver.d.mts",
       "import": "./dist/resolver.mjs"
@@ -38,7 +37,6 @@
   "files": [
     "dist",
     "native",
-    "patches",
     "src/style.css"
   ],
   "scripts": {
@@ -60,7 +58,7 @@
     "clsx": "^2.1.1"
   },
   "devDependencies": {
-    "weapp-vite": "7.5.0",
-    "wevu": "7.5.0"
+    "weapp-vite": "7.10.0",
+    "wevu": "7.10.0"
   }
 }

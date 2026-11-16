@@ -10,7 +10,7 @@ test.describe('native B1 Chat Blocks', { platforms: nativePlatforms, requires: [
   test.beforeEach(async ({ miniProgram }) => {
     await miniProgram.reLaunch('/pages/chat-blocks/index')
     await expectRoute(miniProgram, '/pages/chat-blocks/index')
-    await expect(miniProgram.locator(stateXPath)).toContainText('status=idle;')
+    await expect(miniProgram.locator(stateXPath)).toContainText('status=ready;')
   })
   test.afterEach(async ({ miniProgram }) => { expect(await miniProgram.errors()).toEqual([]) })
 
@@ -26,7 +26,7 @@ test.describe('native B1 Chat Blocks', { platforms: nativePlatforms, requires: [
     await expect.poll(async () => /chunks=[1-9]\d*;/.test(await state.textContent() ?? '')).toBe(true)
     await expect(miniProgram.locator(composerXPath)).toHaveValue('')
     await screen.getByRole('button', { name: '停止生成' }).tap()
-    await expect(state).toContainText('status=cancelled;')
+    await expect(state).toContainText('status=ready;')
     await expect(state).toContainText('action=stopped')
     const stopped = await state.textContent()
     // More than four producer intervals, not a delay standing in for a readiness assertion.
@@ -38,11 +38,11 @@ test.describe('native B1 Chat Blocks', { platforms: nativePlatforms, requires: [
 
   test('pre-message error stays visible and real retry completes a response', async ({ miniProgram, screen }) => {
     await screen.getByRole('button', { name: '演示错误' }).tap()
-    await expect(miniProgram.locator(stateXPath)).toContainText('status=failed;')
+    await expect(miniProgram.locator(stateXPath)).toContainText('status=error;')
     await expect(screen.getByRole('alert')).toContainText('演示错误：请重试本地生成。')
     if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('chat-pre-message-error') }
     await screen.getByRole('button', { name: '重试' }).tap()
-    await expect(miniProgram.locator(stateXPath)).toContainText('status=completed;', { timeout: 15_000 })
+    await expect(miniProgram.locator(stateXPath)).toContainText('status=ready;', { timeout: 15_000 })
     await expect(screen.getByRole('alert')).toHaveCount(0)
     expect(await miniProgram.locator(classXPath('agent-stream')).textContent()).toContain('建议草稿：先说明目标')
     if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('chat-retry-completed') }

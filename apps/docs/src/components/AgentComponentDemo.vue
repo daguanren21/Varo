@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
-import type { AgentConversationMessage } from './agent-ui'
+import type { AgentConversationMessage } from './agent-ui/types'
 import { computed, nextTick, shallowRef } from 'vue'
 import { agentDemoCatalog } from '../agent-component-catalog'
+import { useAgentDocsDemo } from '../composables/useAgentDocsDemo'
 import { useRagPipelineDemo } from '../composables/useRagPipelineDemo'
 import {
   AgentActivity,
@@ -53,17 +53,17 @@ const demoDefinition = computed(() => agentDemoCatalog[props.component])
 const demoCopy = computed(() => props.locale === 'zh'
   ? {
       code: '使用代码',
-      live: '实时状态',
+      live: '本地实时状态',
       platform: 'H5 与 Wevu 使用同一公共 API',
       preview: '交互预览',
-      scenario: '发布检查工作流',
+      scenario: '本地发布流程展示；不执行检查或发布',
     }
   : {
       code: 'Usage code',
-      live: 'Live state',
+      live: 'Local live state',
       platform: 'One public API for H5 and Wevu',
       preview: 'Interactive preview',
-      scenario: 'Release readiness workflow',
+      scenario: 'Local release workflow; no checks or publishing',
     })
 const previewTabId = computed(() => `agent-${props.component}-preview-tab`)
 const previewPanelId = computed(() => `agent-${props.component}-preview-panel`)
@@ -104,9 +104,9 @@ const fineTuneControls = shallowRef([
   { label: 'Tone', type: 'select' as const, value: 'neutral', values: [{ label: 'Neutral', value: 'neutral' }, { label: 'Expressive', value: 'expressive' }] },
 ])
 
-const messages = [
+const messages: AgentConversationMessage[] = [
   { content: '请检查这次发布是否满足双端要求。', id: 'user', role: 'user' as const, timestamp: '10:24' },
-  { content: '已完成检查，H5 与小程序均通过。', id: 'assistant', role: 'assistant' as const, timestamp: '10:25' },
+  { content: '本地静态回答示例；未执行检查，不代表 H5 或小程序验证已通过。', id: 'assistant', role: 'assistant' as const, timestamp: '10:25' },
 ]
 const reasoningSteps = [
   { id: 'intent', title: '理解请求', detail: '识别为发布前检查', status: 'completed' as const, duration: '0.2s' },
@@ -127,12 +127,19 @@ const choices = [
   { label: '仅验证', value: 'verify', description: '不产生外部副作用' },
   { label: '验证并发布', value: 'publish', description: '通过后进入发布流程' },
 ]
+const code = `import { ChatClient, fetchServerSentEvents } from '@tanstack/ai-client'
+
+const client = new ChatClient({
+  threadId: 'docs-example',
+  connection: fetchServerSentEvents('/api/chat'),
+})
+const snapshot = client.getSnapshot()`
 const artifact = {
-  content: `const controller = createAgentStreamController()\nawait controller.connect(events)`,
-  id: 'agent-core',
+  content: code,
+  id: 'tanstack-client',
   kind: 'code' as const,
   language: 'ts',
-  title: '@varo-ui/ai',
+  title: 'TanStack ChatClient',
 }
 const sources = [
   { domain: 'github.com/Simon-He95', id: 'markstream', title: 'Markstream Core', url: 'https://github.com/Simon-He95/markstream-vue' },
@@ -142,64 +149,39 @@ const attachments = [
   { id: 'schema', mimeType: 'application/json', name: 'agent-events.schema.json', size: '4.2 KB' },
   { id: 'preview', mimeType: 'image/png', name: 'weapp-preview.png', size: '86 KB' },
 ]
-const eventSnapshot: AgentStreamSnapshot = {
-  approval: { choices, description: '发布属于外部副作用。', id: 'approval', status: 'waiting', title: '确认发布动作' },
-  data: [],
-  eventCount: 12,
-  message: { final: false, id: 'response', role: 'assistant', source: '## 发布检查\n\n双端组件已经通过。', visible: '## 发布检查\n\n双端组件已经通过。' },
-  reasoning: [{ content: '已读取组件清单', id: 'reason', status: 'completed', title: '检查 Registry' }],
-  status: 'waiting',
-  tools: [{ id: 'tool', name: 'registry.inspect', status: 'completed', summary: '44 surfaces' }],
-}
+const {
+  approve: approveDocs,
+  busy: chatBusy,
+  messages: chatMessages,
+  newConversation: resetChat,
+  prompt: chatPrompt,
+  reject: rejectDocs,
+  retry: retryChat,
+  run: runChat,
+  snapshot: chatSnapshot,
+  stop: stopChat,
+} = useAgentDocsDemo(props.component === 'event-renderer' || props.component === 'agent-chat' ? '生成本地发布计划' : '')
 const chatOpen = shallowRef(true)
-const chatMessages = shallowRef<AgentConversationMessage[]>(messages)
-const chatSnapshot = shallowRef<AgentStreamSnapshot | undefined>(eventSnapshot)
-const chatBusy = computed(() => chatSnapshot.value?.status === 'waiting')
-let chatSequence = 0
-
-function stopChat() {
-  const current = chatSnapshot.value
-  if (!current || !chatBusy.value) { return }
-  chatSnapshot.value = { ...current, approval: undefined, status: 'cancelled' }
-}
 
 function closeChat() {
   stopChat()
   chatOpen.value = false
 }
 
-function newChatConversation() {
-  stopChat()
-  chatSnapshot.value = undefined
-  chatMessages.value = []
-  prompt.value = ''
-}
 
 function sendChat(value: string) {
-  if (chatBusy.value) { return }
-  const answer = chatSnapshot.value?.message
-  chatMessages.value = [
-    ...chatMessages.value,
-    ...answer?.source ? [{ id: answer.id, role: answer.role, content: answer.source }] : [],
-    { id: `prompt-${++chatSequence}`, role: 'user', content: value },
-  ]
-  chatSnapshot.value = undefined
-  prompt.value = ''
-  done(value)
+  if (chatBusy.value || !value.trim()) { return }
+  runChat(value)
+  done(`提交本地演示：${value}`)
 }
 
-function resolveChatApproval(value: string) {
-  const current = chatSnapshot.value
-  if (!current?.approval || !chatBusy.value) { return }
-  chatSnapshot.value = {
-    ...current,
-    approval: { ...current.approval, status: 'completed', resolvedValue: value },
-    message: current.message ? { ...current.message, final: true } : undefined,
-    status: 'completed',
-  }
-  done(value === 'reject' ? '已取消演示审批' : '已记录演示审批；未执行外部操作')
+function approveChat(id: string) {
+  if (approveDocs(id)) { done('已提交本地批准决定；未执行外部操作') }
 }
-const code = `const controller = createAgentStreamController({\n  text: { targetLatencyMs: 620 }\n})\n\nawait controller.connect(events)`
+
+function rejectChat(id: string) {
+  if (rejectDocs(id)) { done('已提交本地拒绝决定；未执行外部操作') }
+}
 const markdownContent = `## 安全 Markdown
 
 支持 **strong**、表格、列表和代码块。
@@ -213,12 +195,12 @@ const streamContent = `## 流式回答
 const toolResultOutput = `Test Files 7 passed
 Tests 38 passed`
 const diffLines = [
-  { content: '@@ -16,5 +16,6 @@ createAgentStream', id: 'hunk-main', type: 'hunk' as const },
-  { content: 'export function createAgentStream(target: Target) {', newNumber: 16, oldNumber: 16, type: 'context' as const },
-  { content: '  const status = shallowRef<\'idle\' | \'done\'>(\'idle\')', id: 'status-old', oldNumber: 17, type: 'remove' as const },
-  { content: '  const status = shallowRef<AgentStreamStatus>(\'streaming\')', id: 'status-new', newNumber: 17, type: 'add' as const },
-  { content: '  const scheduler = target === \'weapp\' ? \'time-slice\' : \'raf\'', id: 'scheduler', newNumber: 18, type: 'add' as const },
-  { content: '  return connect({ scheduler, status })', newNumber: 19, oldNumber: 18, type: 'context' as const },
+  { content: '@@ -16,5 +16,6 @@ renderSummary', id: 'hunk-main', type: 'hunk' as const },
+  { content: 'export function renderSummary() {', newNumber: 16, oldNumber: 16, type: 'context' as const },
+  { content: '  const phase = \'draft\'', id: 'status-old', oldNumber: 17, type: 'remove' as const },
+  { content: '  const phase = \'reviewed\'', id: 'status-new', newNumber: 17, type: 'add' as const },
+  { content: '  const title = \'Summary\'', id: 'title', newNumber: 18, type: 'add' as const },
+  { content: '  return { title, phase }', newNumber: 19, oldNumber: 18, type: 'context' as const },
   { collapsedLines: 18, content: '@@ More unchanged context', id: 'hunk-rest', type: 'hunk' as const },
 ]
 const citations = [
@@ -365,8 +347,8 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         </div>
         <AgentTaskList v-else-if="component === 'task-list'" title="发布计划" :tasks="tasks" />
         <AgentRadioGroup v-else-if="component === 'radio-group'" v-model:value="radioValue" :choices="[{ label: '平衡', value: 'balanced', description: '推荐设置' }, { label: '快速', value: 'fast' }, { label: '严谨', value: 'strict' }]" />
-        <AgentApproval v-else-if="component === 'approval'" v-model:value="approvalValue" title="确认发布动作" description="确认后 Agent 才能执行外部副作用。" :choices="choices" @approve="done('已批准')" @reject="done('已拒绝')" />
-        <AgentRecommendation v-else-if="component === 'recommendation'" title="推荐统一事件协议" description="业务只提供事件来源，组件负责状态投影。" :confidence="96" @accept="done('已采用建议')" />
+        <AgentApproval v-else-if="component === 'approval'" v-model:value="approvalValue" title="本地审批展示" description="只记录演示选择，不执行外部操作。" :choices="choices" @approve="done('已记录本地批准')" @reject="done('已记录本地拒绝')" />
+        <AgentRecommendation v-else-if="component === 'recommendation'" title="直接使用 TanStack AG-UI" description="SDK 持有聊天状态，组件只做展示投影。" :confidence="96" @accept="done('已采用建议')" />
         <AgentPromptSuggestions v-else-if="component === 'prompt-suggestions'" :suggestions="['分析双端能力', '生成发布计划', '检查包体']" @select="done($event)" />
         <AgentComposer v-else-if="component === 'composer'" v-model="prompt" :suggestions="['分析需求', '生成计划']" @submit="done(`提交：${$event}`)" />
         <AgentResponseActions v-else-if="component === 'response-actions'" content="双端组件已经通过。" @copy="done('已复制')" @retry="done('重新生成')" @like="done('有帮助')" @dislike="done('需改进')" />
@@ -374,12 +356,12 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentSourceList v-else-if="component === 'sources'" :sources="sources" title="参考来源" @open="done($event.title)" />
         <AgentRagPipeline v-else-if="component === 'rag-pipeline'" :query="ragSnapshot.query" :steps="ragSnapshot.steps" :sources="ragSnapshot.sources" :answer="ragSnapshot.answer" :elapsed-ms="ragSnapshot.elapsedMs" reduced-motion @run="runRag" @cancel="cancelRag" @select-source="done($event.title)" />
         <AgentAttachmentList v-else-if="component === 'attachments'" :attachments="attachments" @remove="done(`移除 ${$event.name}`)" />
-        <AgentEventRenderer v-else-if="component === 'event-renderer'" :snapshot="eventSnapshot" @approve="done(`批准 ${$event}`)" @reject="done('拒绝')" @retry="done('重试')" />
+        <AgentEventRenderer v-else-if="component === 'event-renderer'" :snapshot="chatSnapshot" @approve="approveChat" @reject="rejectChat" @retry="retryChat" />
         <AgentMessageScroller v-else-if="component === 'message-scroller'" :at-live-edge="false" @follow="done('跳到最新消息')">
           <AgentConversation :messages="messages" />
         </AgentMessageScroller>
         <AgentCodeBlock v-else-if="component === 'code-block'" filename="agent.ts" language="TypeScript" :code="code" :focused-lines="[2, 5]" status="streaming" @copy="done('已复制代码')" />
-        <AgentFileDiff v-else-if="component === 'file-diff'" filename="src/runtime/create-agent-stream.ts" :labels="diffLabels" :lines="diffLines" status="running" @accept="done('已接受变更')" @expand="done('展开未修改上下文')" @reject="done('已拒绝变更')" @select="done(`${$event.side}: ${$event.line.content}`)" />
+        <AgentFileDiff v-else-if="component === 'file-diff'" filename="src/views/render-summary.ts" :labels="diffLabels" :lines="diffLines" status="running" @accept="done('已接受变更')" @expand="done('展开未修改上下文')" @reject="done('已拒绝变更')" @select="done(`${$event.side}: ${$event.line.content}`)" />
         <AgentToolResult v-else-if="component === 'tool-result'" name="pnpm test" status="completed" duration="1.8s" summary="38 tests passed" :output="toolResultOutput" default-open />
         <AgentImageGeneration v-else-if="component === 'image-generation'" status="generating" :progress="68" prompt="A clean mini-program Agent interface" />
         <AgentToolApproval v-else-if="component === 'tool-approval'" tool="npm.publish" description="允许 Agent 发布 @varo-ui/ai？" :details="[{ label: 'Package', value: '@varo-ui/ai' }, { label: 'Tag', value: 'latest' }]" @allow="done('允许一次')" @deny="done('已拒绝')" />
@@ -396,7 +378,7 @@ function handleDemoTabKeydown(event: KeyboardEvent) {
         <AgentFlowchart v-else-if="component === 'flowchart'" title="发布工作流" :nodes="flowNodes" @select="done($event.label)" @add="done('添加步骤')" />
         <AgentFineTune v-else-if="component === 'fine-tune'" v-model:controls="fineTuneControls" title="调整 Agent Card" @apply="done('已应用调整')" />
         <template v-else-if="component === 'agent-chat'">
-          <AgentChat v-if="chatOpen" v-model="prompt" class="agent-component-demo__chat" title="Varo Agent" :busy="chatBusy" :messages="chatMessages" :snapshot="chatSnapshot" :suggestions="['分析需求', '生成计划']" @submit="sendChat" @new-conversation="newChatConversation" @stop="stopChat" @close="closeChat" @approve="resolveChatApproval" @reject="resolveChatApproval('reject')" />
+          <AgentChat v-if="chatOpen" v-model="chatPrompt" class="agent-component-demo__chat" title="Varo Agent" :busy="chatBusy" :messages="chatMessages" :snapshot="chatSnapshot" :suggestions="['分析需求', '生成计划']" @submit="sendChat" @new-conversation="resetChat" @stop="stopChat" @close="closeChat" @approve="approveChat" @reject="rejectChat" @retry="retryChat" />
           <button v-else type="button" @click="chatOpen = true">
             打开会话
           </button>

@@ -1,175 +1,192 @@
-import type { AgentEventChannel, AgentStreamSnapshot } from '@varo-ui/ai'
-import type { AgentConversationMessage } from '../components/agent-ui'
-import {
+import type { StreamChunk } from '@tanstack/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { AgentConversationMessage } from '../components/agent-ui/types'
+import { EventType, hashSchemaInput, normalizeApprovalSchema, toolDefinition, withInterruptBinding } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
+import { computed, onBeforeUnmount, onMounted, shallowRef, useId } from 'vue'
+import { agentConversationHistory, agentMessageText } from '../components/agent-ui/presentation'
 
-  createAgentEventChannel,
-  createAgentStreamController,
-} from '@varo-ui/ai'
-import { computed, onBeforeUnmount, onMounted, shallowRef } from 'vue'
-
-function sleep(duration: number) {
-  return new Promise<void>(resolve => setTimeout(resolve, duration))
+function sleep(duration: number, signal?: AbortSignal) {
+  let resolve!: () => void
+  const promise = new Promise<void>(done => { resolve = done })
+  if (signal?.aborted) { resolve(); return promise }
+  const finish = () => {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', finish)
+    resolve()
+  }
+  const timer = setTimeout(finish, duration)
+  signal?.addEventListener('abort', finish, { once: true })
+  return promise
 }
 
-const RESPONSE = `## 双端 Agent 组件已连接
+const releaseTool = toolDefinition({
+  name: 'local.docs.release-preview',
+  description: '本地审批展示；不执行检查、构建或发布。',
+  needsApproval: true,
+}).client()
+const releaseApproval = normalizeApprovalSchema(releaseTool.approvalSchema, releaseTool.inputSchema)
 
-同一份事件协议现在可以驱动 **H5** 与 **微信小程序**：
+const RESPONSE = `## 本地双端 Agent 展示
 
-| 能力 | H5 | Weapp |
+此演示通过 **TanStack ChatClient** 消费标准 AG-UI 分片，不调用模型或外部服务，也不证明平台检查已通过。
+
+| 层级 | H5 | Weapp |
 | --- | --- | --- |
-| 增量输出 | Markstream RAF | 定时帧调度 |
-| Markdown | 安全 AST | WXML 节点树 |
-| 人工审批 | 支持 | 支持 |
+| 聊天状态 | ChatClientSnapshot | ChatClientSnapshot |
+| 响应式运行时 | Vue | Wevu |
+| Markdown 展示 | 安全 AST | 原生节点树 |
 
-\`AgentEventRenderer\` 负责组合推理、工具、回答和审批状态。`
+\`AgentEventRenderer\` 只展示 SDK 快照，审批决定由应用按 interrupt ID 提交给 SDK。`
 
-export function useAgentDocsDemo() {
-  const controller = createAgentStreamController({
-    text: {
-      maxCharsPerCommit: 14,
-      maxCharsPerSecond: 460,
-      maxCommitFps: 30,
-      minCharsPerSecond: 42,
-      targetLatencyMs: 620,
-    },
-  })
-  const snapshot = shallowRef<AgentStreamSnapshot>(controller.getSnapshot())
-  const messages = shallowRef<AgentConversationMessage[]>([
-    {
-      content: '我是 Varo Agent UI 文档演示。下面的回答由真实增量事件流渲染。',
+export function useAgentDocsDemo(initialPrompt = '分析双端 Agent 能力') {
+  const prompt = shallowRef('')
+  const lastPrompt = shallowRef(initialPrompt)
+  let disposed = false
+  const identity = `docs-${useId()}`
+  const createClient = (threadId: string, welcome = false) => new ChatClient({
+    threadId,
+    tools: [releaseTool],
+    initialMessages: welcome ? [{
       id: 'welcome',
       role: 'assistant',
-      timestamp: 'Docs',
-    },
-  ])
-  const prompt = shallowRef('')
-  const lastPrompt = shallowRef('分析双端 Agent 能力')
-  const unsubscribe = controller.subscribe(() => {
-    snapshot.value = controller.getSnapshot()
+      parts: [{ type: 'text', content: 'Varo Agent UI 本地文档演示：标准 AG-UI 增量数据，不连接模型或执行外部操作。' }],
+    }] : [],
+    connection: stream(async function* (history, _data, signal, input): AsyncGenerator<StreamChunk> {
+      const messageId = `assistant-${input.runId}`
+      yield { type: EventType.RUN_STARTED, threadId: input.threadId, runId: input.runId }
+      yield { type: EventType.TEXT_MESSAGE_START, messageId, role: 'assistant' }
+
+      if (input.resume?.length) {
+        const resolution = input.resume[0]!
+        const approved = resolution.payload === true || (typeof resolution.payload === 'object' && resolution.payload !== null && 'approved' in resolution.payload && resolution.payload.approved === true)
+        yield {
+          type: EventType.TEXT_MESSAGE_CONTENT,
+          messageId,
+          delta: approved ? '已记录本地审批决定；未执行任何检查、构建或发布。' : '已拒绝本地演示操作，没有产生外部副作用。',
+        }
+      }
+      else {
+        const message = history[history.length - 1]
+        const request = message && 'parts' in message ? agentMessageText(message) : String(message?.content ?? '')
+        const reasoningId = `reasoning-${input.runId}`
+        yield { type: EventType.REASONING_MESSAGE_START, messageId: reasoningId, role: 'reasoning' }
+        await sleep(160, signal)
+        if (signal?.aborted) { return }
+        yield { type: EventType.REASONING_MESSAGE_CONTENT, messageId: reasoningId, delta: `本地整理“${request}”的展示步骤；不是模型推理。` }
+        yield { type: EventType.REASONING_MESSAGE_END, messageId: reasoningId }
+
+        const inspectId = `inspect-${input.runId}`
+        yield { type: 'TOOL_CALL_START', toolCallId: inspectId, toolCallName: 'local.docs.preview', parentMessageId: messageId }
+        yield { type: EventType.TOOL_CALL_ARGS, toolCallId: inspectId, delta: '{}' }
+        await sleep(180, signal)
+        if (signal?.aborted) { return }
+        yield { type: 'TOOL_CALL_END', toolCallId: inspectId }
+        yield { type: EventType.TOOL_CALL_RESULT, toolCallId: inspectId, messageId: `result-${inspectId}`, content: '本地工具结果展示；未扫描 Registry 或验证平台。' }
+
+        const needsApproval = /发布|release/i.test(request)
+        const content = needsApproval ? `${RESPONSE}\n\n### 本地发布计划\n\n以下审批仅演示 SDK 中断，不执行发布。` : RESPONSE
+        for (let offset = 0; offset < content.length; offset += 10) {
+          await sleep(34, signal)
+          if (signal?.aborted) { return }
+          yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId, delta: content.slice(offset, offset + 10) }
+        }
+
+        if (needsApproval) {
+          const toolCallId = `release-${input.runId}`
+          yield { type: 'TOOL_CALL_START', toolCallId, toolCallName: releaseTool.name, parentMessageId: messageId }
+          yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: '{}' }
+          yield { type: 'TOOL_CALL_END', toolCallId }
+          yield { type: EventType.TEXT_MESSAGE_END, messageId }
+          yield {
+            type: EventType.RUN_FINISHED,
+            threadId: input.threadId,
+            runId: input.runId,
+            outcome: {
+              type: 'interrupt',
+              interrupts: [withInterruptBinding({
+                id: toolCallId,
+                toolCallId,
+                reason: 'tool_call',
+                message: '是否批准本地发布计划展示？不会执行检查、构建或发布。',
+                responseSchema: releaseApproval.responseSchema,
+                metadata: { kind: 'approval', toolName: releaseTool.name, input: {} },
+              }, {
+                v: 1,
+                kind: 'tool-approval',
+                interruptId: toolCallId,
+                interruptedRunId: input.runId,
+                generation: 0,
+                toolName: releaseTool.name,
+                toolCallId,
+                originalArgs: {},
+                inputSchemaHash: hashSchemaInput(releaseTool.inputSchema),
+                approvalSchemaHash: releaseApproval.approvalSchemaHash,
+                responseSchemaHash: releaseApproval.responseSchemaHash,
+              })],
+            },
+          }
+          return
+        }
+      }
+
+      yield { type: EventType.TEXT_MESSAGE_END, messageId }
+      yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
+    }),
   })
-  const busy = computed(() => snapshot.value.status === 'streaming' || snapshot.value.status === 'waiting')
-  let channel: AgentEventChannel | undefined
-  let messageId = ''
-  let awaitingApproval = false
-  let runId = 0
-
-  async function produce(activeRun: number, request: string) {
-    if (!channel) { return }
-    try {
-      channel.push({ id: 'intent', title: '识别组件需求', type: 'reasoning.start' })
-      await sleep(160)
-      if (activeRun !== runId) { return }
-      channel.push({ delta: `正在分析“${request}”`, id: 'intent', type: 'reasoning.delta' })
-      channel.push({ durationMs: 160, id: 'intent', type: 'reasoning.end' })
-      channel.push({ id: 'registry', name: 'varo.registry.inspect', summary: '读取 Agent UI 双端清单', type: 'tool.start' })
-      await sleep(180)
-      if (activeRun !== runId) { return }
-      channel.push({ id: 'registry', output: { components: 42, surfaces: 44, targets: 2 }, summary: '42 components + 2 blocks', type: 'tool.result' })
-      channel.push({ messageId, role: 'assistant', type: 'message.start' })
-
-      const content = request.includes('发布')
-        ? `${RESPONSE}\n\n### 发布检查\n\n准备执行类型、测试和构建检查。`
-        : RESPONSE
-      const chunks = content.match(/[\s\S]{1,10}/g) ?? [content]
-      for (const chunk of chunks) {
-        await sleep(34)
-        if (activeRun !== runId) { return }
-        channel.push({ delta: chunk, messageId, type: 'text.delta' })
-      }
-
-      if (request.includes('发布')) {
-        awaitingApproval = true
-        channel.push({
-          choices: [
-            { description: '只执行检查，不产生发布副作用', label: '仅验证', value: 'verify' },
-            { description: '验证通过后进入发布流程', label: '验证并发布', value: 'publish' },
-          ],
-          description: '外部副作用必须由用户明确确认。',
-          id: 'release',
-          title: '确认发布动作',
-          type: 'approval.required',
-        })
-        return
-      }
-
-      finish('')
-    }
-    catch (error) {
-      channel.fail(error)
-    }
-  }
-
-  function archive() {
-    const message = snapshot.value.message
-    if (!message?.source || !message.final) { return }
-    messages.value = [
-      ...messages.value,
-      { content: message.source, id: message.id, role: message.role, timestamp: 'Now' },
-    ]
-  }
+  let threadSequence = 0
+  let client = createClient(`${identity}-${++threadSequence}`, true)
+  const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+  let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
+  const busy = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.some(interrupt => interrupt.status === 'pending'))
+  const messages = computed<AgentConversationMessage[]>(() => agentConversationHistory(snapshot.value, 'Now'))
 
   function run(value = prompt.value) {
     const request = value.trim()
-    if (!request || busy.value) { return }
-    archive()
-    runId += 1
-    const activeRun = runId
-    messages.value = [
-      ...messages.value,
-      { content: request, id: `user-${activeRun}`, role: 'user', timestamp: 'Now' },
-    ]
+    if (!request || busy.value || disposed) { return }
     prompt.value = ''
     lastPrompt.value = request
-    messageId = `assistant-${activeRun}`
-    awaitingApproval = false
-    channel = createAgentEventChannel()
-    void controller.connect(channel.source)
-    void produce(activeRun, request)
+    void client.sendMessage(request)
   }
-
-  function finish(delta: string) {
-    if (!channel) { return }
-    if (delta) { channel.push({ delta, messageId, type: 'text.delta' }) }
-    channel.push({ messageId, type: 'message.end' })
-    channel.push({ type: 'done' })
-    channel.end()
+  function approve(id: string) {
+    const interrupt = client.getInterrupts().find(item => item.id === id)
+    if (disposed || snapshot.value.interruptState.resuming || interrupt?.kind !== 'tool-approval' || !interrupt.canResolve) { return false }
+    interrupt.resolveInterrupt(true)
+    return true
   }
-
-  function approve(value: string) {
-    if (!channel || !awaitingApproval) { return }
-    awaitingApproval = false
-    channel.push({ id: 'release', type: 'approval.resolved', value })
-    finish(value === 'publish' ? '\n\n已记录发布授权。' : '\n\n已切换为仅验证模式。')
+  function reject(id: string) {
+    const interrupt = client.getInterrupts().find(item => item.id === id)
+    if (disposed || snapshot.value.interruptState.resuming || interrupt?.kind !== 'tool-approval' || !interrupt.canResolve) { return false }
+    interrupt.resolveInterrupt(false)
+    return true
   }
-
-  function reject() {
-    if (!channel || !awaitingApproval) { return }
-    awaitingApproval = false
-    channel.push({ id: 'release', type: 'approval.resolved', value: 'reject' })
-    finish('\n\n已取消操作，没有产生外部副作用。')
-  }
-
   function retry() {
-    if (!busy.value) { run(lastPrompt.value) }
+    if (!busy.value && !disposed && lastPrompt.value) { void client.reload() }
+  }
+  function stop() { client.stop() }
+  function newConversation() {
+    if (disposed) { return }
+    unsubscribe()
+    client.stop()
+    client.dispose()
+    client = createClient(`${identity}-${++threadSequence}`)
+    snapshot.value = client.getSnapshot()
+    unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
+    prompt.value = ''
+    lastPrompt.value = ''
   }
 
-  onMounted(() => run('分析双端 Agent 能力'))
+  onMounted(() => {
+    client.attach()
+    run(initialPrompt)
+  })
   onBeforeUnmount(() => {
-    runId += 1
-    controller.cancel('Docs demo unmounted')
-    channel?.end()
+    disposed = true
+    client.stop()
     unsubscribe()
-    controller.destroy()
+    client.detach()
+    client.dispose()
   })
 
-  return {
-    approve,
-    busy,
-    messages,
-    prompt,
-    reject,
-    retry,
-    run,
-    snapshot,
-  }
+  return { approve, busy, messages, newConversation, prompt, reject, retry, run, snapshot, stop }
 }

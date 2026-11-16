@@ -1,19 +1,40 @@
+import type { StreamChunk } from '@tanstack/ai'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
+import { EventType } from '@tanstack/ai/client'
+import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentConversationMessage } from '../components/agent-ui/types'
 import type { AgentAssistantContext, AgentAssistantResponse } from '../components/blocks/agent-assistant-sheet.types'
 import type { AgentChatHistoryItem } from '../components/blocks/agent-chat.types'
-import { createAgentStreamController } from '@varo-ui/ai'
+import { agentConversationHistory, agentCurrentMessage, agentMessageText } from '../components/agent-ui/presentation'
 import { computed, onBeforeUnmount, shallowRef } from 'vue'
 
 const passage = '把复杂任务拆成可以确认的小步骤，保留用户的决定权。'
 const response = '建议草稿：先说明目标，再列出可验证的步骤。每一步由用户确认，助手只提供建议，不替用户执行外部操作。'
 
 export function useChatBlocksDemo() {
-  const controller = createAgentStreamController({ text: { maxCharsPerCommit: 12, maxCharsPerSecond: 120, minCharsPerSecond: 60 } })
-  const snapshot = shallowRef(controller.getSnapshot())
-  const messages = shallowRef<AgentConversationMessage[]>([])
+  const connection = stream(async function* (_messages, data, signal, input): AsyncGenerator<StreamChunk> {
+    if (data?.fail) { throw new Error('演示错误：请重试本地生成。') }
+    const id = `response-${input.runId}`
+    const answer = String(data?.answer ?? response)
+    yield { type: EventType.RUN_STARTED, threadId: input.threadId, runId: input.runId }
+    yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
+    for (let offset = 0; offset < answer.length; offset += 8) {
+      await delay(120, signal)
+      if (signal?.aborted) { return }
+      chunksProduced.value += 1
+      yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: id, delta: answer.slice(offset, offset + 8) }
+    }
+    yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
+    yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId }
+  })
+  let sequence = 0
+  let threadId = `thread-${++sequence}`
+  let client = new ChatClient({ threadId, connection })
+  const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
+  const messages = computed<AgentConversationMessage[]>(() => agentConversationHistory(snapshot.value))
   const history = shallowRef<AgentChatHistoryItem[]>([{ id: 'saved', title: '已保存的写作建议' }])
-  const conversations = new Map<string, AgentConversationMessage[]>([
-    ['saved', [{ id: 'saved-answer', role: 'assistant', content: '先写清楚目标，再说明下一步。' }]],
+  const conversations = new Map<string, ReadonlyArray<UIMessage>>([
+    ['saved', [{ id: 'saved-answer', role: 'assistant', parts: [{ type: 'text', content: '先写清楚目标，再说明下一步。' }] }]],
   ])
   const activeHistoryId = shallowRef('')
   const prompt = shallowRef('')
@@ -27,82 +48,58 @@ export function useChatBlocksDemo() {
   const lastAction = shallowRef('ready')
   const chunksProduced = shallowRef(0)
   const insertCount = shallowRef(0)
-  const busy = computed(() => snapshot.value.status === 'streaming' || snapshot.value.status === 'waiting')
+  const busy = computed(() => snapshot.value.isLoading)
   const selectedResponse = computed<AgentAssistantResponse | undefined>(() => {
-    const message = snapshot.value.message
-    if (snapshot.value.status === 'completed' && message?.final) { return { id: message.id, content: message.source } }
-    if (snapshot.value.status !== 'idle') { return undefined }
-    for (let index = messages.value.length - 1; index >= 0; index--) {
-      const saved = messages.value[index]
-      if (saved.role === 'assistant') { return { id: saved.id, content: saved.content } }
-    }
+    const message = agentCurrentMessage(snapshot.value)
+    if (!busy.value && !snapshot.value.error && message && agentMessageText(message)) { return { id: message.id, content: agentMessageText(message) } }
     return undefined
   })
   const diagnostic = computed(() => `status=${snapshot.value.status};chunks=${chunksProduced.value};history=${activeHistoryId.value || 'new'};context=${context.value?.id ?? 'none'};open=${open.value};expanded=${expanded.value};inserts=${insertCount.value};action=${lastAction.value}`)
-  const unsubscribe = controller.subscribe(() => { snapshot.value = controller.getSnapshot() })
-  let timer: number | NodeJS.Timeout | undefined
-  let sequence = 0
+  let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
   let disposed = false
   let lastPrompt = ''
 
-  function clearProducer() {
-    clearTimeout(timer)
-    timer = undefined
-  }
 
   function stop() {
     if (!busy.value) { return }
-    clearProducer()
-    controller.cancel('已停止生成')
+    client.stop()
     lastAction.value = 'stopped'
   }
 
   function archive() {
-    const message = snapshot.value.message
-    if (message?.source) {
-      messages.value = [...messages.value, { id: message.id, role: 'assistant', content: message.source }]
-    }
-    if (activeHistoryId.value) { conversations.set(activeHistoryId.value, messages.value) }
+    if (activeHistoryId.value) { conversations.set(activeHistoryId.value, snapshot.value.messages) }
+  }
+
+  function selectThread(id: string, initialMessages: ReadonlyArray<UIMessage> = []) {
+    unsubscribe()
+    client.stop()
+    client.dispose()
+    threadId = id
+    client = new ChatClient({ threadId, connection, initialMessages: [...initialMessages] })
+    snapshot.value = client.getSnapshot()
+    unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
   }
 
   function send(value: string) {
     const request = value.trim()
     if (!request || busy.value || disabled.value || disposed) { return }
     archive()
-    controller.reset()
-    const id = `response-${++sequence}`
     if (!activeHistoryId.value) {
-      activeHistoryId.value = `thread-${sequence}`
+      activeHistoryId.value = threadId
       history.value = [...history.value, { id: activeHistoryId.value, title: request }]
     }
-    messages.value = [...messages.value, { id: `prompt-${sequence}`, role: 'user', content: request }]
     prompt.value = ''
     lastPrompt = request
     lastAction.value = 'sent'
     chunksProduced.value = 0
-    controller.push({ type: 'message.start', messageId: id, role: 'assistant' })
     const answer = context.value ? `引用「${context.value.label}」：${context.value.text}\n\n${response}` : response
-    let offset = 0
-    function produce() {
-      timer = undefined
-      if (disposed || !busy.value) { return }
-      controller.push({ type: 'text.delta', messageId: id, delta: answer.slice(offset, offset + 8) })
-      offset += 8
-      chunksProduced.value += 1
-      if (offset >= answer.length) {
-        controller.push({ type: 'message.end', messageId: id })
-        controller.push({ type: 'done' })
-      }
-      else { timer = setTimeout(produce, 120) }
-    }
-    timer = setTimeout(produce, 120)
+    void client.sendMessage(request, { answer })
   }
 
   function selectHistory(id: string) {
     if (busy.value || disabled.value || id === activeHistoryId.value || !conversations.has(id)) { return }
     archive()
-    controller.reset()
-    messages.value = conversations.get(id)!
+    selectThread(id, conversations.get(id)!)
     activeHistoryId.value = id
     prompt.value = ''
     lastAction.value = `history:${id}`
@@ -111,8 +108,7 @@ export function useChatBlocksDemo() {
   function newConversation() {
     if (busy.value || disabled.value) { return }
     archive()
-    controller.reset()
-    messages.value = []
+    selectThread(`thread-${++sequence}`)
     activeHistoryId.value = ''
     prompt.value = ''
     lastAction.value = 'new-conversation'
@@ -152,8 +148,7 @@ export function useChatBlocksDemo() {
     if (disabled.value) { return }
     stop()
     archive()
-    controller.reset()
-    controller.push({ type: 'error', code: 'demo-failure', message: '演示错误：请重试本地生成。', retryable: true })
+    void client.sendMessage(lastPrompt || '演示错误', { fail: true })
     lastAction.value = 'failed'
   }
 
@@ -162,11 +157,22 @@ export function useChatBlocksDemo() {
   function dispose() {
     if (disposed) { return }
     disposed = true
-    clearProducer()
+    client.stop()
     unsubscribe()
-    controller.destroy()
+    client.detach()
+    client.dispose()
   }
   onBeforeUnmount(dispose)
 
   return { activeHistoryId, busy, chatVisible, close, closeChat, context, diagnostic, disabled, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, selectedResponse, selectHistory, send, snapshot, stop }
+}
+
+function delay(duration: number, signal?: AbortSignal) {
+  let resolve!: () => void
+  const promise = new Promise<void>(done => { resolve = done })
+  if (signal?.aborted) { resolve(); return promise }
+  const finish = () => { clearTimeout(timer); signal?.removeEventListener('abort', finish); resolve() }
+  const timer = setTimeout(finish, duration)
+  signal?.addEventListener('abort', finish, { once: true })
+  return promise
 }

@@ -1,4 +1,4 @@
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
 import type { AgentConversationMessage } from '../../../components/agent-ui/types'
 
 export type AgentCompareSide = 'left' | 'right'
@@ -14,7 +14,7 @@ export interface AgentCompareState {
   label: string
   modelId: string
   messages: AgentConversationMessage[]
-  snapshot?: AgentStreamSnapshot
+  snapshot?: ChatClientSnapshot
   busy: boolean
   error?: string
   retryable?: boolean

@@ -1,3 +1,4 @@
+import type { NativeArtifactBundle } from '../src/runtime/artifacts.ts'
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -116,5 +117,34 @@ describe('native artifact plugin', () => {
       logLevel: 'silent',
     })
     await expect(server.ssrLoadModule('virtual:varo-native-artifacts')).rejects.toThrow(/escapes the native build root|resolves outside the build root/)
+  })
+
+  it('executes native module locals without colliding with injected host globals', async () => {
+    nativeRoot = await mkdtemp(join(tmpdir(), 'varo-weapp-web-'))
+    await writeMiniProgram(nativeRoot)
+    await writeFile(join(nativeRoot, 'pages/index/index.js'), [
+      'var queueMicrotask = callback => callback()',
+      'const wx = { source: "native local" }',
+      'exports.source = wx.source',
+      'queueMicrotask(() => { exports.completed = true })',
+      'exports.host = globalThis.marker',
+      'exports.receiver = this',
+    ].join('\n'))
+    server = await createServer({
+      configFile: false,
+      root: nativeRoot,
+      plugins: [nativeArtifactsPlugin({ nativeBuildRoot: nativeRoot, pages: { sandbox: 'pages/index/index' } })],
+      logLevel: 'silent',
+    })
+    const bundle: NativeArtifactBundle = (await server.ssrLoadModule('virtual:varo-native-artifacts')).default
+    const exports: Record<string, unknown> = {}
+    const receiver = { nativeModule: true }
+    bundle.modules['pages/index/index.js']!.call(receiver, () => { throw new Error('Unexpected require') }, { exports }, exports, {
+      globalThis: { marker: 'provided host' },
+      wx: { source: 'host global' },
+      queueMicrotask: () => { throw new Error('Host queue must be shadowed by the native local') },
+    })
+    expect(exports).toMatchObject({ source: 'native local', completed: true, host: 'provided host' })
+    expect(exports.receiver).toBe(receiver)
   })
 })

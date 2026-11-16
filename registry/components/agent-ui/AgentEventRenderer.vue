@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { AgentStreamSnapshot } from '@varo-ui/ai'
-import type { AgentChoice } from './types'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
 import { computed } from 'wevu'
+import { agentSnapshotProjection, agentStreamNotice } from './presentation'
 import AgentApproval from './AgentApproval.vue'
 import AgentLoading from './AgentLoading.vue'
 import AgentMessage from './AgentMessage.vue'
@@ -9,57 +9,49 @@ import AgentThinking from './AgentThinking.vue'
 import AgentToolChip from './AgentToolChip.vue'
 
 const props = defineProps<{
-  snapshot: AgentStreamSnapshot
+  snapshot: ChatClientSnapshot
 }>()
 
 const emit = defineEmits<{
-  approve: [value: string]
-  reject: []
+  approve: [interruptId: string]
+  reject: [interruptId: string]
   retry: []
 }>()
-const emptyChoices: AgentChoice[] = []
-
-const choices = computed<AgentChoice[]>(() => props.snapshot.approval?.choices ?? emptyChoices)
-const messageContent = computed(() => String(props.snapshot.message?.visible ?? ''))
-const messageError = computed(() => String(props.snapshot.error?.message ?? ''))
-const showMessage = computed(() => props.snapshot.message != null || props.snapshot.error != null)
-const messageRole = computed(() => props.snapshot.message?.role ?? 'assistant')
-const messageFinal = computed(() => Boolean(props.snapshot.message?.final))
-const approvalDescription = computed(() => String(props.snapshot.approval?.description ?? ''))
-const approvalTitle = computed(() => String(props.snapshot.approval?.title ?? ''))
-const approvalId = computed(() => props.snapshot.approval?.id ?? '')
-const showApproval = computed(() => props.snapshot.approval?.status === 'waiting')
+const projection = computed(() => agentSnapshotProjection(props.snapshot))
 </script>
 
 <template>
-  <view class="agent-event-renderer grid gap-3" :data-status="snapshot.status">
-    <AgentThinking v-if="snapshot.reasoning.length" label="推理过程" :default-open="snapshot.status === 'streaming'" :steps="snapshot.reasoning" />
+  <view class="agent-event-renderer grid gap-3" :data-status="projection.status">
+    <AgentThinking v-if="projection.reasoning.length" label="推理过程" :default-open="projection.status === 'streaming'" :steps="projection.reasoning" />
 
-    <view v-if="snapshot.tools.length" class="flex flex-wrap gap-2">
-      <AgentToolChip v-for="tool in snapshot.tools" :key="tool.id" :tool="tool" />
+    <view v-if="projection.tools.length" class="flex flex-wrap gap-2">
+      <AgentToolChip v-for="tool in projection.tools" :key="tool.id" :tool="tool" />
     </view>
 
     <AgentMessage
-      v-if="showMessage"
-      :role="messageRole"
+      v-if="projection.message || projection.error"
+      :role="projection.messageRole"
       :stream="true"
-      :stream-content="messageContent"
-      :stream-error="messageError"
-      :stream-final="messageFinal"
-      :stream-status="snapshot.status"
+      :stream-content="projection.messageText"
+      :stream-error="projection.error"
+      :stream-final="projection.messageFinal"
+      :stream-status="projection.status"
       @retry="emit('retry')"
     />
+    <view v-if="projection.status === 'waiting' && !projection.message && !projection.error && !projection.approval" class="text-xs text-[var(--varo-agent-muted)]" role="status">
+      <text>{{ agentStreamNotice(projection.status) }}</text>
+    </view>
 
-    <AgentLoading v-if="snapshot.status === 'streaming' && !messageContent" label="正在生成回答" />
+    <AgentLoading v-if="projection.status === 'streaming' && !projection.messageText" label="正在生成回答" />
 
     <AgentApproval
-      v-if="showApproval"
-      :key="approvalId"
-      :choices="choices"
-      :description="approvalDescription"
-      :title="approvalTitle"
-      @approve="emit('approve', $event)"
-      @reject="emit('reject')"
+      v-if="projection.approval"
+      :key="projection.approval.id"
+      :choices="projection.approval.choices"
+      :description="projection.approval.description"
+      :title="projection.approval.title"
+      @approve="emit('approve', projection.approval.id)"
+      @reject="emit('reject', projection.approval.id)"
     />
   </view>
 </template>

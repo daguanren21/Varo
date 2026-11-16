@@ -1,11 +1,12 @@
-import type { AgentPartStatus, AgentStreamSnapshot, AgentStreamStatus, AgentToolPart } from '@varo-ui/ai'
+import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { AgentPartStatus, AgentStreamStatus, AgentToolPart } from './types'
 import type { PropType } from 'vue'
 import type { ClassValue } from '../../lib/cn'
 import type { AgentChoice, AgentConversationMessage, AgentTraceStep } from './types'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, useId, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import { AgentMarkdown } from './AgentMarkdown'
-import { agentPartStatusLabels, agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
+import { agentPartStatusLabels, agentSnapshotProjection, agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
 import '../../styles/varo.css'
 import '../../styles/varo-agent.css'
 import './agent-conversation.css'
@@ -13,7 +14,7 @@ import './agent-markdown.css'
 
 export { AgentMarkdown }
 export type { AgentChoice, AgentConversationMessage, AgentTraceStep } from './types'
-export type { AgentStreamSnapshot, AgentStreamStatus, AgentToolPart } from '@varo-ui/ai'
+export type { AgentPartStatus, AgentStreamStatus, AgentToolPart } from './types'
 
 const quietButton = 'inline-flex min-h-10 items-center justify-center rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-3 text-xs font-bold text-[var(--varo-agent-foreground)] transition-colors hover:bg-[var(--varo-agent-surface-strong)] disabled:cursor-not-allowed disabled:opacity-45'
 function partMark(status: AgentPartStatus) {
@@ -507,25 +508,28 @@ export const AgentConversation = defineComponent({
 })
 export const AgentEventRenderer = defineComponent({
   name: 'AgentEventRenderer',
-  props: { snapshot: { type: Object as PropType<AgentStreamSnapshot>, required: true } },
-  emits: { approve: (_value: string) => true, reject: () => true, retry: () => true },
+  props: { snapshot: { type: Object as PropType<ChatClientSnapshot>, required: true } },
+  emits: { approve: (_value: string) => true, reject: (_value: string) => true, retry: () => true },
   setup(props, { emit, slots }) {
-    const approvalValue = shallowRef('')
+    const projection = computed(() => agentSnapshotProjection(props.snapshot))
 
-    return () => h('div', { 'class': 'grid gap-3', 'data-status': props.snapshot.status }, [
-      props.snapshot.reasoning.length > 0 ? h(AgentThinking, { label: '推理过程', defaultOpen: props.snapshot.status === 'streaming', steps: props.snapshot.reasoning }) : null,
-      props.snapshot.tools.length > 0 ? h('div', { class: 'flex flex-wrap gap-2' }, props.snapshot.tools.map(tool => h(AgentToolChip, { key: tool.id, tool }))) : null,
-      props.snapshot.message || props.snapshot.error ? h(AgentMessage, { role: props.snapshot.message?.role ?? 'assistant' }, { default: () => h(AgentStream, { content: props.snapshot.message?.visible, error: props.snapshot.error?.message, final: props.snapshot.message?.final, status: props.snapshot.status, onRetry: () => emit('retry') }, { actions: slots.actions }) }) : null,
-      props.snapshot.status === 'streaming' && !props.snapshot.message?.visible ? h(AgentLoading, { label: '正在生成回答' }) : null,
-      props.snapshot.approval?.status === 'waiting'
+    return () => h('div', { 'class': 'grid gap-3', 'data-status': projection.value.status }, [
+      projection.value.reasoning.length > 0 ? h(AgentThinking, { label: '推理过程', defaultOpen: projection.value.status === 'streaming', steps: projection.value.reasoning }) : null,
+      projection.value.tools.length > 0 ? h('div', { class: 'flex flex-wrap gap-2' }, projection.value.tools.map(tool => h(AgentToolChip, { key: tool.id, tool }))) : null,
+      projection.value.message || projection.value.error
+        ? h(AgentMessage, { role: projection.value.messageRole }, { default: () => h(AgentStream, { content: projection.value.messageText, error: projection.value.error, final: projection.value.messageFinal, status: projection.value.status, onRetry: () => emit('retry') }, { actions: slots.actions }) })
+        : null,
+      projection.value.status === 'waiting' && !projection.value.message && !projection.value.error && !projection.value.approval
+        ? h('p', { class: 'text-xs text-[var(--varo-agent-muted)]', role: 'status' }, agentStreamNotice(projection.value.status))
+        : null,
+      projection.value.status === 'streaming' && !projection.value.messageText ? h(AgentLoading, { label: '正在生成回答' }) : null,
+      projection.value.approval
         ? h(AgentApproval, {
-            'choices': props.snapshot.approval.choices,
-            'description': props.snapshot.approval.description,
-            'title': props.snapshot.approval.title,
-            'value': approvalValue.value,
-            'onUpdate:value': (value: string) => { approvalValue.value = value },
-            'onApprove': (value: string) => emit('approve', value),
-            'onReject': () => emit('reject'),
+            'choices': projection.value.approval.choices,
+            'description': projection.value.approval.description,
+            'title': projection.value.approval.title,
+            'onApprove': () => emit('approve', projection.value.approval!.id),
+            'onReject': () => emit('reject', projection.value.approval!.id),
           })
         : null,
       slots.default?.(),

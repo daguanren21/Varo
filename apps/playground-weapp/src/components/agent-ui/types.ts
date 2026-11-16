@@ -1,6 +1,23 @@
-import type { AgentApprovalPart, AgentMessageRole, AgentPartStatus } from '@varo-ui/ai'
+export type AgentMessageRole = 'assistant' | 'system' | 'user'
+export type AgentPartStatus = 'waiting' | 'running' | 'completed' | 'failed'
+export type AgentStreamStatus = 'idle' | 'streaming' | 'waiting' | 'completed' | 'failed' | 'cancelled'
 
-export type AgentChoice = NonNullable<AgentApprovalPart['choices']>[number]
+export interface AgentChoice {
+  description?: string
+  disabled?: boolean
+  label: string
+  value: string
+}
+
+export interface AgentToolPart {
+  error?: string
+  id: string
+  input?: unknown
+  name: string
+  output?: unknown
+  status: AgentPartStatus
+  summary?: string
+}
 
 export interface AgentTraceStep {
   content?: string
@@ -22,6 +39,7 @@ export interface AgentTask {
   status: AgentPartStatus
   title: string
 }
+
 
 export interface AgentConversationMessage {
   content: string
