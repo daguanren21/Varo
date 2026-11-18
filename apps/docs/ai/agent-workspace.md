@@ -108,7 +108,7 @@ H5 的 `features/WorkspaceDemo.vue` 与原生的 `pages/agent-workspace-demo/ind
 | `execution` | 替换默认对话、检索、任务和回执区 |
 
 ::: warning 原生运行限制
-`execution` 是无参数的替换插槽。7.10.0 微信目标需显式启用 `weapp.vue.template.nativeSlotContext: true` 和 `scopedSlotsRequireProps: true`；无需旧版编译器补丁、上下文桥或复制父级数据。`apps/e2e/tests/weapp-native/workspace.e2e.ts` 已通过真实控件验证自定义插槽中的父级 query/steps 更新、停止/重新运行与来源选择事件回传。覆盖范围为默认 attached setup 的原生 headless 宿主，不推断 created setup、其他平台或真机支持；headless 无法完整观察的 `rich-text` 仍需真实宿主验证。
+`execution` 是无参数的替换插槽。7.11.1 微信目标需显式启用 `weapp.vue.template.nativeSlotContext: true` 和 `scopedSlotsRequireProps: true`；无需旧版编译器补丁、上下文桥或复制父级数据。此前在 7.10.0 编译基线上，`apps/e2e/tests/weapp-native/workspace.e2e.ts` 曾通过真实控件验证自定义插槽中的父级 query/steps 更新、停止/重新运行与来源选择事件回传。覆盖范围为默认 attached setup 的原生 headless 宿主，不推断 created setup、其他平台或真机支持；headless 无法完整观察的 `rich-text` 仍需真实宿主验证。
 :::
 
 ::: info 平台导入

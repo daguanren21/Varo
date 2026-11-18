@@ -121,7 +121,7 @@ The resolver only uses local source files; it neither selects npm components nor
 
 ## TanStack AI and streaming Fetch
 
-The workspace integrates `weapp-vite` / `wevu` 7.10.0. Its published Web API runtime supports the standard Fetch, streams, UTF-8 decoding, and cancellation APIs used by `@tanstack/ai-client`; Varo does not supply a separate Agent transport or polyfill.
+The workspace integrates `weapp-vite` / `wevu` 7.11.1. Its published Web API runtime supports the standard Fetch, streams, UTF-8 decoding, and cancellation APIs used by `@tanstack/ai-client`; Varo does not supply a separate Agent transport or polyfill.
 
 ```ts
 export default defineConfig({
@@ -141,7 +141,6 @@ export default defineConfig({
 ```
 
 `nativeSlotContext` enables the upstream native slot-owner and app-shell implementation for the WeChat target; the former 7.5.0 compiler patch is removed. Install `@tanstack/ai-client` for Agent Registry consumers, bind `ChatClient` snapshots through Wevu, and keep server authorization and tool execution in the application. Runtime support on other profiles and IDE/device behavior require separate validation. See the [Web API runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) and [Agent guide](https://varo.weapp.dev/ai/).
-
 
 ## Profiles and evidence limits
 

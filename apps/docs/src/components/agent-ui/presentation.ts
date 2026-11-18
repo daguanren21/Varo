@@ -187,7 +187,7 @@ function renderMessage(selected: ChatUISelectedMessage, status: AgentStreamStatu
     if (selectedPart.key === 'toolResult' && selectedPart.matched) { continue }
     const tool = selectedTool(selectedPart)
     if (tool) {
-      const content = tool.input !== undefined || tool.output !== undefined ? toolSummary({ input: tool.input, output: tool.output }) ?? '' : ''
+      const content = tool.output === undefined ? '' : toolSummary(tool.output) ?? ''
       segments.push({ id, kind: 'tool', content, tool, steps: [] })
     }
     else if (part.type === 'text') {

@@ -32,7 +32,7 @@ parser.reset()
 
 The migration baseline is `@tanstack/ai` 1.4.0, `@tanstack/ai-client` 1.1.0, and `@tanstack/ai-vue` 1.0.1. There are no compatibility exports for the removed event/controller/channel/SSE/parser APIs.
 
-For `weapp-vite` / `wevu` 7.10.0, use Node `^22.23.4 || ^24.22.1 || >=26.12.1` and enable the published Web Runtime in your compiler configuration:
+For `weapp-vite` / `wevu` 7.11.1, use Node `^22.23.4 || ^24.22.1 || >=26.12.1` and enable the published Web Runtime in your compiler configuration:
 
 ```ts
 import { defineConfig } from 'weapp-vite/config'
@@ -54,7 +54,7 @@ export default defineConfig({
 })
 ```
 
-On WeChat, the explicit `nativeSlotContext` / `scopedSlotsRequireProps` options select 7.10.0's upstream native slot/app-shell implementation instead of the old compiler patch and bootstrap. Configuration alone does not prove current runtime behavior. Validate default attached setup independently; do not infer created-setup or other-profile support from it.
+On WeChat, the explicit `nativeSlotContext` / `scopedSlotsRequireProps` options select 7.11.1's upstream native slot/app-shell implementation instead of the old compiler patch and bootstrap. Configuration alone does not prove current runtime behavior. Validate default attached setup independently; do not infer created-setup or other-profile support from it.
 
 Then use the SDK's standard `fetchServerSentEvents` adapter with an application-owned endpoint. Do not add a bespoke `wx.request` transport or duplicate Web API polyfills. The host must supply real response status, headers, and incremental chunks; this setting does not certify DevTools, devices, or other native profiles. See [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals).
 

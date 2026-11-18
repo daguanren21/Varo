@@ -108,7 +108,7 @@ H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` us
 | `execution` | Replaces the default conversation, retrieval, task, and receipt region |
 
 ::: warning Native runtime limits
-The `execution` slot is an unscoped replacement slot. On WeChat with 7.10.0, explicitly enable both `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true`; no former compiler patch, context bridge, or parent-data copy is needed. `apps/e2e/tests/weapp-native/workspace.e2e.ts` has exercised parent query/step updates, stop/replay, and source-selection event forwarding through the custom slot using real controls. This covers default attached setup in the native headless host, not created setup, other platforms, or devices. Where headless cannot fully observe `rich-text`, validate on a real supported host.
+The `execution` slot is an unscoped replacement slot. On WeChat with 7.11.1, explicitly enable both `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true`; no former compiler patch, context bridge, or parent-data copy is needed. Historical 7.10.0 coverage in `apps/e2e/tests/weapp-native/workspace.e2e.ts` exercised parent query/step updates, stop/replay, and source-selection event forwarding through the custom slot using real controls; it does not establish 7.11.1 behavior, created setup, other platforms, or devices. Where headless cannot fully observe `rich-text`, validate on a real supported host.
 :::
 
 ::: info Target import

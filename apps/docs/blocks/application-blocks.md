@@ -140,9 +140,9 @@ type StepFormIntent
 3. await 后重新确认步骤和数据版本，`finally` 清理 busy。
 4. 校验通过后才更新 position。通过应用服务或本地数据所有者执行提交，不把收到事件当成成功。
 
-本 Block 沿用 login/profile 的宿主 form 容器与 VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 7.10.0 原生插槽场景已通过 `form-array-en-dark` 验证字段校验、增删重排与提交，但这不替代本 Block 的宿主 form 默认动作验证。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 和 VButton submit，不增加上下文桥或模拟宿主几何。
+本 Block 沿用 login/profile 的宿主 form 容器与 VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 7.10.0 原生插槽场景此前已通过 `form-array-en-dark` 验证字段校验、增删重排与提交，但这不替代本 Block 的宿主 form 默认动作验证。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 和 VButton submit，不增加上下文桥或模拟宿主几何。
 
-仓库的原生 E2E 使用针对 `@weapp-vite/miniprogram-automator` 1.3.0 的 pnpm patch，在模拟器的原生默认动作层执行 form submit，并保留多步表单的校验与本地提交断言。补丁范围和升级验证要求见[安装指南](/guide/installation#确定性-e2e-与证据边界)；微信开发者工具与设备验收仍是独立步骤。
+仓库的原生 E2E 使用无补丁的 `@weapp-vite/miniprogram-automator` 1.5.5，保留多步表单的校验与本地提交断言。当前 `weapp-vite` / `wevu` 7.11.1 编译产物已通过完整原生 headless E2E；此前 1.5.4 暴露的四项 Launcher 回归也已在 1.5.5 上原样通过，不在下游补偿模拟器行为。微信开发者工具与设备验收仍是独立步骤。详见[安装指南](/guide/installation#确定性-e2e-与证据边界)。
 
 ## status-timeline
 

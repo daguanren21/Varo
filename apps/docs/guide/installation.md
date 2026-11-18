@@ -6,7 +6,7 @@
 - `@varo-ui/headless` 只提供平台无关的状态、事件和受控状态约定；DOM、焦点和页面滚动锁定由 H5 处理
 - 原生工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`，无需用 Vue 渲染器模拟小程序
 
-本仓库使用 pnpm `11.24.0`；Node 要求为 `^22.23.4 || ^24.22.1 || >=26.12.1`，与已发布的 7.10 编译器一致。Node 25 不在支持范围内。
+本仓库使用 pnpm `11.24.0`；Node 要求为 `^22.23.4 || ^24.22.1 || >=26.12.1`，与已发布的 7.11.1 编译器一致。Node 25 不在支持范围内。
 
 ## 初始化项目
 
@@ -22,8 +22,8 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # 原生 Wevu 工程（二选一，不需要为渲染额外安装 Vue）
-pnpm add wevu@7.10.0 @varo-ui/weapp @varo-ui/theme
-pnpm add -D weapp-vite@7.10.0
+pnpm add wevu@7.11.1 @varo-ui/weapp @varo-ui/theme
+pnpm add -D weapp-vite@7.11.1
 # 仅用于 Markdown、文本节奏与会话版本 helper
 pnpm add @varo-ui/ai
 ```
@@ -115,7 +115,7 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.10.0；微信目标原生 slot/app-shell 实现通过 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true` 显式启用，不再使用旧 7.5.0 补丁和 bootstrap。当前运行仍需重新验收，不能沿用历史证据。Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
+`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.11.1；微信目标原生 slot/app-shell 实现通过 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true` 显式启用，不再使用旧 7.5.0 补丁和 bootstrap。当前运行仍需重新验收，不能沿用历史证据。Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
 
 ## Agent 流式接入
 
@@ -123,7 +123,7 @@ pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox s
 
 UI 可按需安装 `agent-conversation`、`agent-workspace`、`agent-advanced`、`agent-rag`。共享 `agent-presentation` 只含展示类型与纯函数；`AgentPartStatus`、`AgentStreamStatus` 和 `AgentToolPart` 位于安装后的 `components/agent-ui/types`，不是 core 协议或 SDK 状态。SDK 状态是 `ready | submitted | streaming | error`，不能直接换成展示状态。`blocks/agent-chat` 自动安装 conversation 依赖，无需预装完整套件。静态历史保留 `AgentConversationMessage[]`，snapshot prop 必须是实际 `client.getSnapshot()`，不要重建或归约事件。
 
-原生 `weapp-vite` / `wevu` 使用 7.10.0，在现有编译配置中加入官方 [Web Runtime 配置](https://vite.weapp.dev/config/web-runtime-globals)：
+原生 `weapp-vite` / `wevu` 使用 7.11.1，在现有编译配置中加入官方 [Web Runtime 配置](https://vite.weapp.dev/config/web-runtime-globals)：
 
 ```ts
 import { defineConfig } from 'weapp-vite/config'
@@ -152,7 +152,7 @@ export default defineConfig({
 ## 小程序构建链
 
 ```bash
-pnpm add -D weapp-vite@7.10.0 weapp-tailwindcss tailwindcss
+pnpm add -D weapp-vite@7.11.1 weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -193,7 +193,7 @@ pnpm test:e2e:weapp
 
 Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试；用例或目标缺失、失败、意外跳过都会拒绝验收。每次运行生成唯一的 `apps/e2e/.e2e/runs/<run-id>/run.json`，截图和框架报告保存在同一 run 目录，不复用旧报告。旧原生 smoke 与截图入口仍保留，等待宿主验收。
 
-Headless 通过仓库内的 `@weapp-vite/miniprogram-automator@1.3.0` pnpm patch 支持 `rich-text` 数组/HTML 的渲染树文本观察，以及原生提交按钮的表单默认动作。补丁位于 `patches/@weapp-vite__miniprogram-automator@1.3.0.patch`，只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 覆盖文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。升级 SDK 时须重新验证这些场景，确认上游已覆盖后再移除补丁。
+Headless 使用官方 `@weapp-vite/miniprogram-automator@1.5.5`，不维护 Varo-side pnpm patch。`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 验证文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。1.5.4 曾出现的四项回归由 [weapp-vite#1351](https://github.com/weapp-vite/weapp-vite/pull/1351) 修复并随 1.5.5 发布；当前四项原样通过，完整 runner 检查为 15/15。使用 `weapp-vite` / `wevu` 7.11.1 重新构建后，原生 E2E 为 92/92 通过，原先 22 项 String/null 诊断失败全部恢复；没有跳过用例、放宽断言或过滤告警。
 
 Headless 不是微信客户端：不提供真实像素、键盘或触摸几何。渲染文本断言必须读取渲染树，不能用页面状态冒充结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
 
@@ -224,6 +224,6 @@ MCP 客户端启动该进程并保持 stdin/stdout 连接。工具为 `varo_bloc
 
 ## 版本策略
 
-- 当前原生集成使用 `weapp-vite` / `wevu` 7.10.0；微信目标显式启用上游 `nativeSlotContext` / `scopedSlotsRequireProps`，不保留旧补丁或 bootstrap；升级后重新验证所用 profile，历史 7.5.0 证据不是当前运行证明
+- 当前原生集成使用 `weapp-vite` / `wevu` 7.11.1；微信目标显式启用上游 `nativeSlotContext` / `scopedSlotsRequireProps`，不保留旧补丁或 bootstrap；升级后重新验证所用 profile，历史 7.5.0 证据不是当前运行证明
 - 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
 - VitePress、Vue 与 TypeScript 跟随 workspace 统一升级

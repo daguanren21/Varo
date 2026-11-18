@@ -40,9 +40,9 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 ### Native Weapp (Wevu)
 
 ::: info Native compound runtime boundary
-The Mini Program tab uses `weapp-vite` / `wevu` 7.10.0 artifacts. On WeChat, enable both `nativeSlotContext: true` and `scopedSlotsRequireProps: true` with default attached setup; see the [upstream native-slot protocol](https://vite.weapp.dev/config/vue#weapp-vue-template). No context bridge or former compiler patch is needed.
+The Mini Program tab targets `weapp-vite` / `wevu` 7.11.1 artifacts. On WeChat, enable both `nativeSlotContext: true` and `scopedSlotsRequireProps: true` with default attached setup; see the [upstream native-slot protocol](https://vite.weapp.dev/config/vue#weapp-vue-template). No context bridge or former compiler patch is needed.
 
-The separate `dialog` scenario has exercised opening, synchronous close cancellation, parent-state updates inside projected content, and one accepted close update in the current compiled-native browser host. Coverage lives in `apps/e2e/tests/weapp-preview/preview.e2e.ts`; it does not establish created-setup, other-platform, or WeChat IDE/device support.
+The prior 7.10.0 `dialog` scenario exercised opening, synchronous close cancellation, parent-state updates inside projected content, and one accepted close update in the compiled-native browser host. That historical coverage does not establish 7.11.1, created-setup, other-platform, or WeChat IDE/device support.
 :::
 
 Native events deliver one `detail` argument. For `openChange`, destructure the `[open, details]` tuple; do not declare two separate parameters. Import reactive APIs from `wevu`:

@@ -6,7 +6,7 @@
 - `@varo-ui/headless` provides only platform-neutral state, event, and controlled-state contracts; H5 handles DOM behavior, focus, and page scroll locking
 - Native projects use `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`, without a Vue renderer to simulate mini programs
 
-This repository uses pnpm `11.24.0` and requires Node `^22.23.4 || ^24.22.1 || >=26.12.1`, matching the published 7.10 compiler. Node 25 is not supported.
+This repository uses pnpm `11.24.0` and requires Node `^22.23.4 || ^24.22.1 || >=26.12.1`, matching the published 7.11.1 compiler. Node 25 is not supported.
 
 ## Initialize a project
 
@@ -22,8 +22,8 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # Native Wevu project (choose one path; no extra Vue renderer is needed)
-pnpm add wevu@7.10.0 @varo-ui/weapp @varo-ui/theme
-pnpm add -D weapp-vite@7.10.0
+pnpm add wevu@7.11.1 @varo-ui/weapp @varo-ui/theme
+pnpm add -D weapp-vite@7.11.1
 # Only for Markdown, text pacing, and thread-version helpers
 pnpm add @varo-ui/ai
 ```
@@ -115,7 +115,7 @@ Each experimental profile requires explicit support in the item manifest and eve
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.10.0. Explicit `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` enable the upstream native slot/app-shell implementation on WeChat, replacing the old 7.5.0 patch and bootstrap. Current runtime acceptance remains required; historical evidence does not transfer. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
+`pnpm check:platforms` compiles all seven native profiles and checks their artifacts in `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`. The integrated compiler is 7.11.1. Explicit `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` enable the upstream native slot/app-shell implementation on WeChat, replacing the old 7.5.0 patch and bootstrap. Current runtime acceptance remains required; historical evidence does not transfer. Donut uses the WeChat compiler with real host metadata. **Compilation and artifact checks cannot replace device validation.** Consumers must supply AppIDs, signing, host SDKs, IDE access, and device validation; the checks never fabricate credentials.
 
 ## Agent streaming
 
@@ -123,7 +123,7 @@ Use TanStack AI directly for chat. `@tanstack/ai` 1.4.0 defines upstream `UIMess
 
 Install UI as needed: `agent-conversation`, `agent-workspace`, `agent-advanced`, and `agent-rag`. Shared `agent-presentation` contains only display types and pure helpers. `AgentPartStatus`, `AgentStreamStatus`, and `AgentToolPart` live in installed `components/agent-ui/types`, not a core protocol or SDK state. SDK status is `ready | submitted | streaming | error`; do not replace it with a display status. `blocks/agent-chat` installs conversation dependencies without requiring the full suite. Static history retains `AgentConversationMessage[]`; snapshot props take actual `client.getSnapshot()` results, without rebuilding snapshots or reducing events.
 
-Use native `weapp-vite` / `wevu` 7.10.0 and add the official [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) to your existing compiler configuration:
+Use native `weapp-vite` / `wevu` 7.11.1 and add the official [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) to your existing compiler configuration:
 
 ```ts
 import { defineConfig } from 'weapp-vite/config'
@@ -152,7 +152,7 @@ Renderer `approve` / `reject` events carry an interrupt ID. The application find
 ## Mini-program build chain
 
 ```bash
-pnpm add -D weapp-vite@7.10.0 weapp-tailwindcss tailwindcss
+pnpm add -D weapp-vite@7.11.1 weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -193,7 +193,7 @@ pnpm test:e2e:weapp
 
 The Web suite covers H5 and glass-easel preview; the Weapp suite uses a headless host for native compiled artifacts. Neither uses models or retries. Missing cases or targets, failures, and unexpected skips reject acceptance. Each run writes a unique `apps/e2e/.e2e/runs/<run-id>/run.json`, with screenshots and framework reports in the same run directory; reports are never reused. Legacy native smokes and capture entrypoints remain pending host acceptance.
 
-The repository's pnpm patch for `@weapp-vite/miniprogram-automator@1.3.0` adds rendered-tree text observation for `rich-text` arrays/HTML and the native submit-button form default action. The patch lives at `patches/@weapp-vite__miniprogram-automator@1.3.0.patch` and applies only to a development test dependency. `apps/e2e/tests/runner/native-runtime.test.ts` exercises the real Launcher for entities, content updates, unsupported node/event filtering, named field values, custom form behaviors, and disabled buttons. Revalidate these scenarios when upgrading the SDK and remove the patch once upstream provides the behavior.
+Headless uses the official `@weapp-vite/miniprogram-automator@1.5.5` without a Varo-side pnpm patch. `apps/e2e/tests/runner/native-runtime.test.ts` exercises the real Launcher for entities, content updates, unsupported node/event filtering, named field values, custom form behaviors, and disabled buttons. The four regressions observed on 1.5.4 were fixed in [weapp-vite#1351](https://github.com/weapp-vite/weapp-vite/pull/1351) and released in 1.5.5; all four unchanged regressions now pass, with 15/15 runner checks passing. After a fresh `weapp-vite` / `wevu` 7.11.1 production build, native E2E passes 92/92 cases, recovering all 22 previous String/null diagnostic failures without skipped cases, weakened assertions, or filtered warnings.
 
 Headless is not a WeChat client: it does not provide real pixels, keyboard input, or touch geometry. Rendered-text assertions must read the rendered tree rather than application state. `pnpm test:e2e:devtools` separately requires authenticated WeChat DevTools, its automation port, and a valid local AppID. Device capabilities and final native visuals still require separate acceptance.
 
@@ -224,6 +224,6 @@ Execution accepts only fixed enums: preview `h5` / `weapp-preview`, check `gener
 
 ## Version strategy
 
-- The native integration uses `weapp-vite` / `wevu` 7.10.0 with explicit upstream `nativeSlotContext` / `scopedSlotsRequireProps` on WeChat, without the old patch or bootstrap; revalidate each profile after upgrades, as historical 7.5.0 evidence is not current runtime proof
+- The native integration uses `weapp-vite` / `wevu` 7.11.1 with explicit upstream `nativeSlotContext` / `scopedSlotsRequireProps` on WeChat, without the old patch or bootstrap; revalidate each profile after upgrades, as historical 7.5.0 evidence is not current runtime proof
 - Production projects should follow their lockfile, package `peerDependencies`, and CI build result
 - VitePress, Vue, and TypeScript move with the workspace upgrade policy

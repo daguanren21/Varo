@@ -53,6 +53,8 @@ describe('AgentComponentsDemo', () => {
     await vi.advanceTimersByTimeAsync(500)
     expect(wrapper.text()).toContain('local.docs.preview')
     expect(wrapper.get('.ai-docs-demo__mode-head output').attributes('data-status')).toBe('streaming')
+    expect(wrapper.text()).toContain('本地工具结果展示；未扫描 Registry 或验证平台。')
+    expect(wrapper.text()).not.toContain('{"input"')
     expect(transcriptElement.scrollTop).toBe(900)
 
     transcriptElement.scrollTop = 100

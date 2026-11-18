@@ -104,4 +104,4 @@ H5 playground 的 `/?demo=activity` 与原生 `pages/agent-activity-demo/index` 
 
 `Restrict start` / `Allow start`、全局禁用、单项锁定和终态展示当前 props 如何影响可用操作。`Reject next request` 让应用拒绝下一次合法请求，状态保持不变；`Clear activity` 传入受控空数组。六种标签、按钮、结果和请求计数均通过实际页面交互观察。
 
-E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。7.10.0 原生编译的 plain-slot 上下文需在微信目标显式启用 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`；配置与升级本身不证明场景已通过。宿主仍有观测限制，模拟文本、DOM 几何或编译成功不能代替实际设备验证。
+E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。7.11.1 原生编译的 plain-slot 上下文需在微信目标显式启用 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`；配置与升级本身不证明场景已通过。宿主仍有观测限制，模拟文本、DOM 几何或编译成功不能代替实际设备验证。

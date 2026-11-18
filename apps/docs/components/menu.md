@@ -5,7 +5,7 @@
 <PlatformTabsDemo example="menu" locale="zh" />
 
 ::: info 原生组合运行边界
-小程序页签运行 `weapp-vite` / `wevu` 7.10.0 编译产物。微信目标的普通插槽上下文需同时开启 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，使用默认 attached setup。当前原生浏览器宿主已通过真实指针打开菜单、选择溢出选项并更新父级值；回归见 `apps/e2e/tests/weapp-preview/preview.e2e.ts`。浏览器结果不能代替微信 IDE 或真机验证，也不推断 created setup 或其他平台支持。
+小程序页签当前使用 `weapp-vite` / `wevu` 7.11.1 编译产物。微信目标的普通插槽上下文需同时开启 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，使用默认 attached setup。此前在 7.10.0 原生浏览器宿主中曾通过真实指针打开菜单、选择溢出选项并更新父级值；回归见 `apps/e2e/tests/weapp-preview/preview.e2e.ts`。浏览器结果不能代替微信 IDE 或真机验证，7.11.1 当前运行仍需重新验收，也不推断 created setup 或其他平台支持。
 
 Card 默认不裁剪后代的弹出内容。需要裁剪媒体时再显式使用 `overflow-hidden`；需要溢出显示的菜单应放在裁剪容器之外。
 :::

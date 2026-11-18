@@ -20,7 +20,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/marketing-contact
 | `blocks/marketing-contact`  | `components/button`、`components/input`、`components/textarea` | `MarketingContactValues`、`MarketingContactErrors`、`MarketingContactLabels`                          |
 | `blocks/marketing-process`  | `components/button`                                            | `MarketingProcessStep`                                                                                |
 
-安装器递归解析控件的工具、主题与 npm 依赖。Marketing 单元互不依赖，也不安装 Agent 聚合包。联系表单直接组合输入控件，`values`、`errors` 和 `canSubmit` 由应用管理；它不依赖 VForm 校验 provider，也不需要插槽兼容上下文。7.10.0 的原生插槽配置与验证边界见 [Dialog](/components/dialog)。
+安装器递归解析控件的工具、主题与 npm 依赖。Marketing 单元互不依赖，也不安装 Agent 聚合包。联系表单直接组合输入控件，`values`、`errors` 和 `canSubmit` 由应用管理；它不依赖 VForm 校验 provider，也不需要插槽兼容上下文。7.11.1 的原生插槽配置与验证边界见 [Dialog](/components/dialog)。
 
 H5 安装完整依赖 CSS。原生通过 `weapp.styles` 全局加载安装的样式，`varo.css` 在前，`include: 'app.vue'`；不要在 `apply-shared` 组件的局部 WXSS 中导入全局样式。配置见 [Registry 模式](/guide/shadcn-mode)。当前仅准入稳定 `h5`、`weapp`，不代表实验 profile 或真机认证。
 

@@ -152,4 +152,4 @@ Block 按 id 从当前 props 查找条目并检查操作条件，不转发已替
 - 手动流程：切换来源可用性 → 请求并手动完成**演示**连接 → 显式启用范围 → 提问 → 排队/读取 → 成功、失败、空结果或超出范围 → 打开本地引用原文/申请转交。
 - 禁用操作时证据仍保留；转交后应用移除授权对象，按钮不可再次申请。切换非受控输入可检查本地草稿与受控空串的区别。
 
-E2E 场景在 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`，通过实际控件检查页面状态，不调用组件内部方法或用 `setData` 模拟输入。原生断言覆盖原生文字、回执、引用控件和本地来源预览，不证明 headless 能观察 Chat 的 rich-text 正文。7.10.0 微信目标的 plain-slot 上下文需显式启用 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`，并重新验收当前运行；测试不通过上下文桥、模拟几何或复制消息文字绕过宿主观测限制。
+E2E 场景在 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`，通过实际控件检查页面状态，不调用组件内部方法或用 `setData` 模拟输入。原生断言覆盖原生文字、回执、引用控件和本地来源预览，不证明 headless 能观察 Chat 的 rich-text 正文。7.11.1 微信目标的 plain-slot 上下文需显式启用 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`，并重新验收当前运行；测试不通过上下文桥、模拟几何或复制消息文字绕过宿主观测限制。
