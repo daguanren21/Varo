@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AgentApprovalPreview } from './presentation'
 import type { AgentChoice } from './types'
 import { computed, shallowRef } from 'wevu'
 import VButton from '../ui/v-button.vue'
@@ -18,6 +19,7 @@ const props = withDefaults(
     defaultValue?: string
     description?: string
     disabled?: boolean
+    preview?: AgentApprovalPreview
     rejectText?: string
     title: string
     value?: string
@@ -29,7 +31,7 @@ const props = withDefaults(
     defaultValue: '',
     description: '',
     disabled: false,
-    rejectText: '取消',
+    rejectText: '拒绝',
     value: undefined,
     warning: '',
   },
@@ -94,6 +96,18 @@ function reject() {
             {{ description }}
           </text>
         </view>
+      </view>
+
+      <view v-if="preview" class="flex min-w-0 flex-col gap-1">
+        <text v-if="preview.requestedBy" class="agent-approval__description whitespace-pre-wrap break-all">
+          发起方：{{ preview.requestedBy }}
+        </text>
+        <text v-if="preview.action" class="agent-approval__description whitespace-pre-wrap break-all">
+          操作：{{ preview.action }}
+        </text>
+        <text v-if="preview.impact" class="agent-approval__description whitespace-pre-wrap break-all">
+          影响范围：{{ preview.impact }}
+        </text>
       </view>
 
       <view v-if="choices.length" class="agent-approval__choices" role="radiogroup">

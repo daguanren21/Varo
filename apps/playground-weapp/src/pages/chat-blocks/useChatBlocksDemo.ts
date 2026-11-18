@@ -1,14 +1,19 @@
 import type { StreamChunk } from '@tanstack/ai'
 import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
-import { EventType } from '@tanstack/ai/client'
-import { ChatClient, stream } from '@tanstack/ai-client'
+import type { AgentToolCallPreview } from '../../components/agent-ui/types'
 import type { AgentAssistantContext, AgentAssistantResponse } from '../../components/blocks/agent-assistant-sheet.types'
 import type { AgentChatHistoryItem } from '../../components/blocks/agent-chat.types'
-import { agentConversationHistory, agentCurrentMessage, agentMessageText, agentSnapshotProjection } from '../../components/agent-ui/presentation'
+import { ChatClient, stream } from '@tanstack/ai-client'
+import { EventType } from '@tanstack/ai/client'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
+import { agentConversationHistory, agentCurrentMessage, agentMessageText, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 
 const passage = '把复杂任务拆成可以确认的小步骤，保留用户的决定权。'
 const response = '建议草稿：先说明目标，再列出可验证的步骤。每一步由用户确认，助手只提供建议，不替用户执行外部操作。'
+const toolCallPreviews: Readonly<Record<string, AgentToolCallPreview>> = {
+  'saved-outline': { parameters: '模板：简短建议', result: '找到写作提纲' },
+  'saved-style': { result: '已检查句子长度' },
+}
 
 export function useChatBlocksDemo() {
   const connection = stream(async function* (_messages, data, signal, input): AsyncGenerator<StreamChunk> {
@@ -33,7 +38,16 @@ export function useChatBlocksDemo() {
   const messages = computed<UIMessage[]>(() => agentConversationHistory(snapshot.value))
   const history = shallowRef<AgentChatHistoryItem[]>([{ id: 'saved', title: '已保存的写作建议' }])
   const conversations = new Map<string, ReadonlyArray<UIMessage>>([
-    ['saved', [{ id: 'saved-answer', role: 'assistant', parts: [{ type: 'text', content: '先写清楚目标，再说明下一步。' }] }]],
+    ['saved', [{ id: 'saved-answer', role: 'assistant', parts: [
+      { type: 'tool-call', id: 'saved-outline', name: '查询提纲', arguments: '{}', state: 'complete' },
+      { type: 'tool-call', id: 'saved-style', name: '检查文风', arguments: '{}', state: 'complete' },
+      { type: 'subagent', subagent: { id: 'saved-review', name: '文稿核对', status: 'finished', messages: [
+        { id: 'saved-review-details', role: 'assistant', parts: [
+          { type: 'tool-call', id: 'saved-private-check', name: '审核内部草稿', arguments: '{"draft":"不公开的草稿输入"}', state: 'complete', output: '不公开的审核结果' },
+        ] },
+      ] } },
+      { type: 'text', content: '先写清楚目标，再说明下一步。' },
+    ] }]],
   ])
   const activeHistoryId = shallowRef('')
   const prompt = shallowRef('')
@@ -58,7 +72,6 @@ export function useChatBlocksDemo() {
   let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
   let disposed = false
   let lastPrompt = ''
-
 
   function stop() {
     if (!busy.value) { return }
@@ -171,12 +184,12 @@ export function useChatBlocksDemo() {
   onUnload(dispose)
   onUnmounted(dispose)
 
-  return { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, retryInterrupts, selectedResponse, selectHistory, send, snapshot, stop }
+  return { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, retryInterrupts, selectedResponse, selectHistory, send, snapshot, stop, toolCallPreviews }
 }
 
 function delay(duration: number, signal?: AbortSignal) {
   let resolve!: () => void
-  const promise = new Promise<void>(done => { resolve = done })
+  const promise = new Promise<void>((done) => { resolve = done })
   if (signal?.aborted) { resolve(); return promise }
   const finish = () => { clearTimeout(timer); signal?.removeEventListener('abort', finish); resolve() }
   const timer = setTimeout(finish, duration)

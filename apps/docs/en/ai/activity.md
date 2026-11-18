@@ -69,4 +69,6 @@ H5 uses native buttons supporting Enter / Space, `aria-expanded`, and `aria-cont
 
 For native, import `ref` from `wevu` and use the `.vue` default export above. Omitting `expandedIds` lets the component manage expansion; passing an empty array puts the parent in control.
 
+On native Wevu, `AgentActivityItem` supports `requiresApproval?: boolean`. A `waiting` row shows `等待中` (waiting) by default. Set `requiresApproval: true` to show `等待确认` (awaiting confirmation) on that row. The summary calls out the first item awaiting confirmation. It shows `等待中` when ordinary waiting items are present and no running, failure, or approval hint applies. The field is native display metadata, not an action grant. H5 does not use it.
+
 :::

@@ -30,6 +30,12 @@ const emit = defineEmits<{
   cancel: [item: AgentActivityTask]
 }>()
 
+const activityItems = computed(() => props.items.map(item =>
+  item.status === 'waiting' && item.requiresApproval !== true && item.actions?.includes('approve')
+    ? { ...item, requiresApproval: true }
+    : item,
+))
+
 const rows = computed(() => props.items.map(item => ({
   id: item.id,
   title: item.title,
@@ -55,7 +61,7 @@ function request(id: string, action: AgentActivityAction) {
 
 <template>
   <view class="grid min-w-0 gap-3" :aria-label="title">
-    <AgentActivity :items="items" :title="title" />
+    <AgentActivity :items="activityItems" :title="title" />
     <text v-if="!items.length" class="text-sm text-[var(--varo-agent-muted)]" role="status">
       {{ emptyText }}
     </text>

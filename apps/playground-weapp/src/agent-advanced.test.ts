@@ -1,20 +1,20 @@
 // @vitest-environment jsdom
 
 import type { ChatClientSnapshot, ToolApprovalInterrupt } from '@tanstack/ai-client'
-import { toolDefinition } from '@tanstack/ai/client'
-import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentFineTuneControl } from './components/agent-ui/advanced-types'
+import { EventEmitter, once } from 'node:events'
+import { ChatClient, stream } from '@tanstack/ai-client'
+import { EventType, toolDefinition } from '@tanstack/ai/client'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { shallowRef } from 'vue'
 import AgentActivity from './components/agent-ui/AgentActivity.vue'
 import AgentApproval from './components/agent-ui/AgentApproval.vue'
-import AgentConversation from './components/agent-ui/AgentConversation.vue'
-import AgentInterruptControls from './components/agent-ui/AgentInterruptControls.vue'
-import { agentConversationHistory } from './components/agent-ui/presentation'
 import AgentCitations from './components/agent-ui/AgentCitations.vue'
 import AgentCodeBlock from './components/agent-ui/AgentCodeBlock.vue'
 import AgentCommandSearch from './components/agent-ui/AgentCommandSearch.vue'
 import AgentContextCard from './components/agent-ui/AgentContextCard.vue'
+import AgentConversation from './components/agent-ui/AgentConversation.vue'
 import AgentDiffTable from './components/agent-ui/AgentDiffTable.vue'
 import AgentEventRenderer from './components/agent-ui/AgentEventRenderer.vue'
 import AgentFileDiff from './components/agent-ui/AgentFileDiff.vue'
@@ -23,6 +23,7 @@ import AgentFineTune from './components/agent-ui/AgentFineTune.vue'
 import AgentFlowchart from './components/agent-ui/AgentFlowchart.vue'
 import AgentImageGeneration from './components/agent-ui/AgentImageGeneration.vue'
 import AgentInsightCard from './components/agent-ui/AgentInsightCard.vue'
+import AgentInterruptControls from './components/agent-ui/AgentInterruptControls.vue'
 import AgentMessageScroller from './components/agent-ui/AgentMessageScroller.vue'
 import AgentRadioGroup from './components/agent-ui/AgentRadioGroup.vue'
 import AgentRecordsTable from './components/agent-ui/AgentRecordsTable.vue'
@@ -31,6 +32,8 @@ import AgentSidebar from './components/agent-ui/AgentSidebar.vue'
 import AgentThinking from './components/agent-ui/AgentThinking.vue'
 import AgentToolApproval from './components/agent-ui/AgentToolApproval.vue'
 import AgentToolResult from './components/agent-ui/AgentToolResult.vue'
+import { agentConversationHistory, agentConversationProjection } from './components/agent-ui/presentation'
+import { agentToolDisclosureKey } from './components/agent-ui/tool-disclosure'
 
 const approvalTool = toolDefinition({ name: 'registry.inspect', description: 'Native UI approval fixture', needsApproval: true }).client()
 type ApprovalSnapshot = ChatClientSnapshot<Array<typeof approvalTool>, any>
@@ -44,16 +47,36 @@ function chatSnapshot(update: Partial<ApprovalSnapshot> = {}): ApprovalSnapshot 
 
 function approvalInterrupt(id = 'approval', generation = 1): ToolApprovalInterrupt<typeof approvalTool> {
   return {
-    id, interruptId: id, reason: 'tool-approval', message: '确认发布',
-    kind: 'tool-approval', threadId: 'native-ui-test', interruptedRunId: 'run', generation,
-    status: 'pending', errors: [], canResolve: true,
-    toolName: 'registry.inspect', toolCallId: 'tool', originalArgs: {},
+    id,
+    interruptId: id,
+    reason: 'tool-approval',
+    message: '确认发布',
+    kind: 'tool-approval',
+    threadId: 'native-ui-test',
+    interruptedRunId: 'run',
+    generation,
+    status: 'pending',
+    errors: [],
+    canResolve: true,
+    toolName: 'registry.inspect',
+    toolCallId: 'tool',
+    originalArgs: {},
     binding: {
-      v: 1, kind: 'tool-approval', interruptId: id, interruptedRunId: 'run', generation,
-      toolName: 'registry.inspect', toolCallId: 'tool', originalArgs: {},
-      inputSchemaHash: 'input', approvalSchemaHash: 'approval', responseSchemaHash: 'response',
+      v: 1,
+      kind: 'tool-approval',
+      interruptId: id,
+      interruptedRunId: 'run',
+      generation,
+      toolName: 'registry.inspect',
+      toolCallId: 'tool',
+      originalArgs: {},
+      inputSchemaHash: 'input',
+      approvalSchemaHash: 'approval',
+      responseSchemaHash: 'response',
     },
-    cancel: vi.fn(), clearResolution: vi.fn(), resolveInterrupt: vi.fn(),
+    cancel: vi.fn(),
+    clearResolution: vi.fn(),
+    resolveInterrupt: vi.fn(),
   }
 }
 
@@ -94,7 +117,8 @@ describe('advanced mini-program Agent UI', () => {
         { type: 'thinking', content: '识别退货意图' },
         { type: 'text', content: '正在处理' },
       ] }],
-      status: 'streaming', isLoading: true,
+      status: 'streaming',
+      isLoading: true,
     })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     expect(wrapper.get('.agent-stream').text()).toContain('正在处理')
@@ -112,7 +136,8 @@ describe('advanced mini-program Agent UI', () => {
   it('preserves stopped SDK output without presenting it as a generation failure', async () => {
     const snapshot = chatSnapshot({
       messages: [{ id: 'message', role: 'assistant', parts: [{ type: 'text', content: '```\n保留回答\n```' }] }],
-      status: 'streaming', isLoading: true,
+      status: 'streaming',
+      isLoading: true,
     })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     try {
@@ -167,7 +192,8 @@ describe('advanced mini-program Agent UI', () => {
       const approve = wrapper.getComponent(AgentApproval).vm.$.vnode.props!.onApprove as () => void
       await wrapper.setProps({ snapshot: chatSnapshot({ ...snapshot, interruptState: {
         interrupts: [{ ...interrupt, canResolve: state !== 'unresolvable', status: state === 'staged' || state === 'submitting' ? state : 'pending' }],
-        interruptErrors: [], resuming: state === 'resuming',
+        interruptErrors: [],
+        resuming: state === 'resuming',
       } }) })
       approve()
       expect(wrapper.emitted('approve')).toBeUndefined()
@@ -179,8 +205,15 @@ describe('advanced mini-program Agent UI', () => {
   it.each(['expired', 'stale', 'conflict', 'invalid-response-schema'] as const)('does not resolve an ineligible native %s approval error', (code) => {
     const interrupt = approvalInterrupt()
     const snapshot = chatSnapshot({ interruptState: { interrupts: [{ ...interrupt, status: 'error', errors: [{
-      scope: 'item', source: 'server', code, message: '当前审批不可提交', retryable: false,
-      interruptId: interrupt.id, threadId: interrupt.threadId, interruptedRunId: interrupt.interruptedRunId, generation: interrupt.generation,
+      scope: 'item',
+      source: 'server',
+      code,
+      message: '当前审批不可提交',
+      retryable: false,
+      interruptId: interrupt.id,
+      threadId: interrupt.threadId,
+      interruptedRunId: interrupt.interruptedRunId,
+      generation: interrupt.generation,
     }] }], interruptErrors: [], resuming: false } })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     try {
@@ -196,9 +229,18 @@ describe('advanced mini-program Agent UI', () => {
     const interrupt = approvalInterrupt()
     const snapshot = chatSnapshot({ interruptState: {
       interrupts: [{ ...interrupt, status: 'error', errors: [{
-        scope: 'item', source: 'client', code: 'invalid-payload', message: '请输入确认说明', retryable: false,
-        interruptId: interrupt.id, threadId: interrupt.threadId, interruptedRunId: interrupt.interruptedRunId, generation: interrupt.generation,
-      }] }], interruptErrors: [], resuming: false,
+        scope: 'item',
+        source: 'client',
+        code: 'invalid-payload',
+        message: '请输入确认说明',
+        retryable: false,
+        interruptId: interrupt.id,
+        threadId: interrupt.threadId,
+        interruptedRunId: interrupt.interruptedRunId,
+        generation: interrupt.generation,
+      }] }],
+      interruptErrors: [],
+      resuming: false,
     } })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
     try {
@@ -231,13 +273,28 @@ describe('advanced mini-program Agent UI', () => {
     const second = approvalInterrupt('b')
     const snapshot = chatSnapshot({
       messages: [{ id: 'answer', role: 'assistant', parts: [{ type: 'text', content: '保留中断回答' }] }],
-      status: 'error', error: new Error('恢复连接失败'),
+      status: 'error',
+      error: new Error('恢复连接失败'),
       interruptState: { interrupts: [first, { ...second, status: 'error', errors: [{
-        scope: 'item', source: 'server', code: 'conflict', message: '审批状态冲突', retryable: true,
-        interruptId: second.id, threadId: second.threadId, interruptedRunId: second.interruptedRunId, generation: second.generation,
+        scope: 'item',
+        source: 'server',
+        code: 'conflict',
+        message: '审批状态冲突',
+        retryable: true,
+        interruptId: second.id,
+        threadId: second.threadId,
+        interruptedRunId: second.interruptedRunId,
+        generation: second.generation,
       }] }], interruptErrors: [{
-        scope: 'batch', source: 'transport', code: 'transport', message: '恢复请求未送达', retryable: true,
-        threadId: first.threadId, interruptedRunId: first.interruptedRunId, generation: first.generation, interruptIds: [first.id, second.id],
+        scope: 'batch',
+        source: 'transport',
+        code: 'transport',
+        message: '恢复请求未送达',
+        retryable: true,
+        threadId: first.threadId,
+        interruptedRunId: first.interruptedRunId,
+        generation: first.generation,
+        interruptIds: [first.id, second.id],
       }], resuming: false },
     })
     const wrapper = mount(AgentEventRenderer, { props: { snapshot } })
@@ -286,20 +343,29 @@ describe('advanced mini-program Agent UI', () => {
       { id: 'terminal', role: 'assistant', parts: [] },
     ]
     const snapshot = chatSnapshot({ messages })
-    const wrapper = mount(AgentConversation, { props: { messages: agentConversationHistory(snapshot), contextMessages: snapshot.messages } })
+    const history = agentConversationHistory(snapshot)
+    const wrapper = mount(AgentConversation, { props: {
+      messages: history,
+      contextMessages: snapshot.messages,
+      toolCallPreviews: { 'remote-tool': { result: '脱敏收据' } },
+    } })
     try {
       expect(wrapper.text()).toContain('执行前')
       expect(wrapper.text()).toContain('执行后')
-      expect(wrapper.text()).toContain('失败工具的输出')
-      expect(wrapper.text()).toContain('跨消息结果')
+      expect(wrapper.text()).not.toContain('失败工具的输出')
+      expect(wrapper.text()).not.toContain('跨消息结果')
+      expect(agentConversationProjection(history, snapshot.messages)[0]?.segments.find(segment => segment.tool?.id === 'remote-tool')?.tool?.output).toBe('跨消息结果')
       expect(wrapper.get('[data-message-part="data"]').text()).toContain('结构化收据')
       expect(wrapper.findAll('.agent-message-parts')).toHaveLength(1)
       expect(wrapper.find('.agent-stream').exists()).toBe(false)
       expect(wrapper.text()).not.toContain('最新回答')
-      const failedTool = wrapper.get('.agent-tool[data-status="failed"]')
-      expect(failedTool.text()).toContain('registry.inspect')
-      expect(failedTool.find('[aria-hidden="true"]').classes().join(' ')).toContain('--varo-agent-danger')
-      expect(wrapper.text()).toContain('调用失败')
+      const [failedTool, completedTool] = wrapper.findAll('.agent-tool-call-group')
+      expect(failedTool!.text()).toContain('registry.inspect')
+      expect(failedTool!.text()).toContain('失败')
+      expect(completedTool!.text()).not.toContain('脱敏收据')
+      await completedTool!.get('button').trigger('click')
+      expect(completedTool!.text()).toContain('脱敏收据')
+      expect(wrapper.text()).not.toContain('调用失败')
       expect(wrapper.findAll('[data-message-part]').map(node => node.attributes('data-message-part'))).toEqual(['text', 'thinking', 'tool', 'text', 'tool', 'data'])
       await wrapper.findAll('button').find(button => button.text().includes('推理过程'))!.trigger('click')
       expect(wrapper.text()).toContain('检查权限')
@@ -307,9 +373,132 @@ describe('advanced mini-program Agent UI', () => {
     finally { wrapper.unmount() }
   })
 
+  it('keeps adjacent live tools grouped and expanded as SDK status changes without revealing raw payloads', async () => {
+    const calls: ChatClientSnapshot['messages'][number]['parts'] = [
+      { type: 'tool-call', id: 'lookup', name: '查询来源', arguments: '{"secret":"raw-input"}', state: 'complete', output: 'raw-output' },
+      { type: 'tool-call', id: 'validate', name: '核验来源', arguments: '{}', state: 'input-complete' },
+    ]
+    const snapshot: ChatClientSnapshot = {
+      ...chatSnapshot(),
+      messages: [{ id: 'tools', role: 'assistant', parts: calls }],
+      status: 'streaming',
+      isLoading: true,
+    }
+    const wrapper = mount(AgentEventRenderer, { props: {
+      snapshot,
+      toolCallPreviews: { lookup: { parameters: '仅公开文档', duration: '0.2s', result: '找到两条来源' } },
+    } })
+    try {
+      const group = () => wrapper.get('.agent-tool-call-group')
+      expect(wrapper.findAll('.agent-tool-call-group')).toHaveLength(1)
+      expect(group().text()).toContain('2 次工具调用')
+      expect(group().text()).toContain('进行中 1')
+      expect(group().text()).not.toContain('找到两条来源')
+      await group().get('button').trigger('click')
+      expect(group().text()).toContain('仅公开文档')
+      expect(group().text()).toContain('0.2s')
+      expect(group().text()).toContain('找到两条来源')
+      expect(group().text()).toContain('核验来源')
+      expect(wrapper.text()).not.toMatch(/raw-input|raw-output/)
+
+      await wrapper.setProps({ snapshot: {
+        ...snapshot,
+        messages: [{ id: 'tools', role: 'assistant', parts: [
+          ...calls,
+          { type: 'tool-result', toolCallId: 'validate', content: 'raw-validation-error', state: 'error', error: 'raw-validation-error' },
+          { type: 'text', content: '部分来源不可用。' },
+        ] }],
+      } })
+      expect(group().get('button').attributes('aria-expanded')).toBe('true')
+      expect(group().text()).toContain('失败 1')
+      expect(wrapper.text()).not.toContain('raw-validation-error')
+      expect(wrapper.text()).toContain('部分来源不可用。')
+    }
+    finally { wrapper.unmount() }
+  })
+
+  it.each(['active', 'history'] as const)('redacts nested tool payloads in native %s messages', (surface) => {
+    const client = new ChatClient({
+      threadId: 'native-subagent-test',
+      connection: stream(async function* () {}),
+      initialMessages: [{ id: 'parent', role: 'assistant', parts: [
+        { type: 'text', content: '开始整理来源' },
+        { type: 'subagent', subagent: { id: 'child', name: '核验来源', status: 'finished', messages: [
+          { id: 'child-message', role: 'assistant', parts: [
+            { type: 'tool-call', id: 'child-call', name: 'lookup', arguments: '{"source":"raw-child-args"}', state: 'complete', output: 'raw-child-result' },
+          ] },
+        ] } },
+        { type: 'text', content: '整理完成' },
+      ] }],
+    })
+    const snapshot = client.getSnapshot()
+    const wrapper = surface === 'active'
+      ? mount(AgentEventRenderer, { props: { snapshot } })
+      : mount(AgentConversation, { props: { messages: snapshot.messages } })
+    try {
+      expect(wrapper.findAll('[data-message-part]').map(part => part.attributes('data-message-part'))).toEqual(['text', 'data', 'text'])
+      expect(wrapper.html()).not.toMatch(/raw-child-args|raw-child-result/)
+      expect(wrapper.get('[data-message-part="data"]').text()).toBe('子 Agent：核验来源 · 已完成')
+    }
+    finally {
+      wrapper.unmount()
+      client.dispose()
+    }
+  })
+
+  it('retains the live group when the SDK names its message but not when reload replaces the tool', async () => {
+    const naming = new EventEmitter()
+    const namedMessage = once(naming, 'name')
+    let attempt = 0
+    const client = new ChatClient({
+      threadId: 'native-tool-identity',
+      connection: stream(async function* (_messages, _data, _signal, { threadId, runId }) {
+        const current = ++attempt
+        const callId = `lookup-${current}`
+        yield { type: EventType.RUN_STARTED, threadId, runId }
+        yield { type: EventType.TOOL_CALL_START, toolCallId: callId, toolCallName: `查询 ${current}` }
+        yield { type: EventType.TOOL_CALL_ARGS, toolCallId: callId, delta: '{}' }
+        yield { type: EventType.TOOL_CALL_END, toolCallId: callId }
+        if (current === 1) { await namedMessage }
+        yield { type: EventType.TEXT_MESSAGE_START, messageId: 'server-message', role: 'assistant' }
+        yield { type: EventType.TEXT_MESSAGE_CONTENT, messageId: 'server-message', delta: '查询完成' }
+        yield { type: EventType.TEXT_MESSAGE_END, messageId: 'server-message' }
+        yield { type: EventType.RUN_FINISHED, threadId, runId }
+      }),
+    })
+    const wrapper = mount(AgentEventRenderer, {
+      props: { snapshot: client.getSnapshot() },
+      global: { provide: { [agentToolDisclosureKey]: shallowRef(new Set<string>()) } },
+    })
+    const unsubscribe = client.subscribeSnapshot(() => { void wrapper.setProps({ snapshot: client.getSnapshot() }) })
+    const sent = client.sendMessage('查询')
+    try {
+      await vi.waitFor(() => expect(wrapper.get('.agent-tool-call-group button').text()).toContain('查询 1'))
+      await wrapper.get('.agent-tool-call-group button').trigger('click')
+      naming.emit('name')
+      await sent
+      await wrapper.vm.$nextTick()
+      expect(client.getSnapshot().messages.at(-1)?.id).toBe('server-message')
+      expect(wrapper.get('.agent-tool-call-group button').attributes('aria-expanded')).toBe('true')
+
+      await client.reload()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.get('.agent-tool-call-group button').text()).toContain('查询 2')
+      expect(wrapper.get('.agent-tool-call-group button').attributes('aria-expanded')).toBe('false')
+    }
+    finally {
+      naming.emit('name')
+      unsubscribe()
+      client.dispose()
+      wrapper.unmount()
+      await sent
+    }
+  })
+
   it('keeps native generation errors visible without offering application-disabled retry', () => {
     const wrapper = mount(AgentEventRenderer, { props: {
-      snapshot: chatSnapshot({ status: 'error', error: new Error('连接中断') }), retryable: false,
+      snapshot: chatSnapshot({ status: 'error', error: new Error('连接中断') }),
+      retryable: false,
     } })
     try {
       expect(wrapper.get('[role="alert"]').text()).toContain('连接中断')

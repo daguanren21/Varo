@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationEntry } from '../agent-ui/types'
+import type { AgentConversationEntry, AgentToolCallPreview } from '../agent-ui/types'
 import type { AgentChatHistoryItem, AgentChatLayout } from './agent-chat.types'
 import { useControllableState } from '@varo-ui/headless'
 import { computed, nextTick, onBeforeUnmount, onMounted, onResize, onUpdated, shallowRef, useNativeInstance, watch } from 'wevu'
@@ -8,8 +8,9 @@ import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
-import VButton from '../ui/v-button.vue'
 import { agentSnapshotStatus } from '../agent-ui/presentation'
+import { provideAgentToolDisclosure } from '../agent-ui/tool-disclosure'
+import VButton from '../ui/v-button.vue'
 
 // Keep an omitted native model distinct from a controlled empty string.
 defineOptions({
@@ -34,6 +35,7 @@ const props = withDefaults(
     subtitle?: string
     suggestions?: string[]
     title?: string
+    toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>>
   }>(),
   {
     busy: false,
@@ -77,6 +79,7 @@ const currentPrompt = computed(() => promptState.current.value)
 const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
 const empty = computed(() => props.messages.length === 0 && (!props.snapshot || agentSnapshotStatus(props.snapshot) === 'idle'))
 const contextMessages = computed(() => props.snapshot?.messages)
+provideAgentToolDisclosure(() => contextMessages.value, () => props.messages, () => empty.value ? null : props.activeHistoryId)
 const historyChoices = computed(() => props.history.map(item => ({
   ...item,
   active: item.id === props.activeHistoryId,
@@ -140,7 +143,9 @@ function measureContent() {
   })
 }
 
-watch([() => props.activeHistoryId, empty], () => { nearBottom = true })
+watch([() => props.activeHistoryId, empty], () => {
+  nearBottom = true
+})
 onMounted(measureContent)
 onUpdated(measureContent)
 onResize(measureContent)
@@ -208,10 +213,11 @@ function updatePrompt(value: string) {
             输入问题，或选择下方建议开始新的对话。
           </text>
         </view>
-        <AgentConversation :messages="messages" :context-messages="contextMessages" />
+        <AgentConversation :messages="messages" :context-messages="contextMessages" :tool-call-previews="toolCallPreviews" />
         <AgentEventRenderer
           v-if="snapshot && agentSnapshotStatus(snapshot) !== 'idle'"
           :snapshot="snapshot"
+          :tool-call-previews="toolCallPreviews"
           @approve="emit('approve', $event)"
           @reject="emit('reject', $event)"
           @retry="emit('retry')"

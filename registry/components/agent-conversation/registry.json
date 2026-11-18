@@ -26,7 +26,9 @@
     { "target": "weapp", "from": "registry/components/agent-ui/AgentResponseActions.vue", "to": "src/components/agent-ui/AgentResponseActions.vue" },
     { "target": "weapp", "from": "registry/components/agent-ui/AgentStream.vue", "to": "src/components/agent-ui/AgentStream.vue" },
     { "target": "weapp", "from": "registry/components/agent-ui/AgentThinking.vue", "to": "src/components/agent-ui/AgentThinking.vue" },
-    { "target": "weapp", "from": "registry/components/agent-ui/AgentToolChip.vue", "to": "src/components/agent-ui/AgentToolChip.vue" }
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentToolCallGroup.vue", "to": "src/components/agent-ui/AgentToolCallGroup.vue" },
+    { "target": "weapp", "from": "registry/components/agent-ui/AgentToolChip.vue", "to": "src/components/agent-ui/AgentToolChip.vue" },
+    { "target": "weapp", "from": "registry/components/agent-conversation/tool-disclosure.weapp.ts", "to": "src/components/agent-ui/tool-disclosure.ts" }
   ],
   "docs": "/guide/shadcn-mode"
 }

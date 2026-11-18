@@ -93,6 +93,8 @@ The Block does not modify `versions`, `tasks`, sources, or receipts. Selecting, 
 
 Standalone `AgentThreadVersions` accepts `disabled`; pass `disabled || busy` to also block actions while busy. `AgentTaskRunner` accepts `busy` and `disabled` separately; do not pass `busy` as `disabled`, or cancellation will also be blocked. Both components resolve current prop items by ID before emitting and reject removed or ineligible items.
 
+The native WeChat task list shows completed progress, the current step, and blockers. Supply `description` on a failed or approval-blocked task to explain why it needs attention. `waiting` alone is not an approval request; that also requires `requiresApproval`.
+
 The default execution area displays conversation, retrieval, tasks, and receipts. For tool details, use `AgentToolChip` from `components/agent-conversation` (H5: `@/components/agent-ui/conversation`; native: `@/components/agent-ui/AgentToolChip.vue`) with a read-only Registry `AgentToolPart` display projection; the UI does not call tools. `approveTask` is an application-domain task intent, not automatically an SDK tool approval. If a task corresponds to a TanStack `tool-approval`, the application associates its interrupt ID and resolves the matching SDK interrupt. Credentials, business authorization, tool execution, networking, retry scheduling, and storage remain application-owned.
 
 ### Local demo and runtime coverage

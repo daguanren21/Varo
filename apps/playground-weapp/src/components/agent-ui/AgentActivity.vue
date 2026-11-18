@@ -49,24 +49,45 @@ function toggleItem(item: AgentActivityItem) {
 }
 
 const rootClass = computed(() => cn('agent-activity', props.className))
-const completedCount = computed(() => props.items.filter(item => item.status === 'completed').length)
-const currentItem = computed(() => props.items.find(item => item.status === 'running' || item.status === 'failed'))
-const headingHint = computed(() => {
-  if (currentItem.value?.status === 'failed') {
-    return `阻塞于 ${currentItem.value.title}`
+const summary = computed(() => {
+  const items = props.items
+  let completed = 0
+  let currentIndex = -1
+  let failedItem: AgentActivityItem | undefined
+  let approvalItem: AgentActivityItem | undefined
+  let waiting = false
+  let queued = false
+
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index]!
+    if (item.status === 'completed') { completed += 1 }
+    else if (item.status === 'running' && currentIndex === -1) { currentIndex = index }
+    else if (item.status === 'failed') { failedItem ??= item }
+    else if (item.status === 'waiting') {
+      if (item.requiresApproval === true) { approvalItem ??= item }
+      else { waiting = true }
+    }
+    else if (item.status === 'queued') { queued = true }
   }
-  if (currentItem.value) {
-    return `正在执行 ${currentItem.value.title}`
+
+  const hints: string[] = []
+  const currentItem = items[currentIndex]
+  if (currentItem) { hints.push(`正在执行 ${currentItem.title}`) }
+  if (failedItem) { hints.push(`阻塞于 ${failedItem.title}`) }
+  if (approvalItem) { hints.push(`等待确认 ${approvalItem.title}`) }
+  if (!hints.length) {
+    if (!items.length) { hints.push('暂无活动') }
+    else if (completed === items.length) { hints.push('全部完成') }
+    else if (waiting) { hints.push(agentPartStatusLabels.waiting) }
+    else if (queued) { hints.push('排队中') }
+    else { hints.push('活动已结束') }
   }
-  if (!props.items.length) { return '暂无活动' }
-  if (completedCount.value === props.items.length) { return '全部完成' }
-  if (props.items.some(item => item.status === 'waiting')) { return '等待确认' }
-  if (props.items.some(item => item.status === 'queued')) { return '排队中' }
-  return '活动已结束'
+
+  return { completed, currentIndex, hints }
 })
 const displayItems = computed(() =>
-  props.items.map((item) => {
-    const ariaCurrent: 'step' | undefined = item.status === 'running' ? 'step' : undefined
+  props.items.map((item, index) => {
+    const ariaCurrent: 'step' | undefined = index === summary.value.currentIndex ? 'step' : undefined
     const expandable = props.expandable && !!item.detail
     const expanded = expandedIds.value.includes(item.id)
     return {
@@ -90,7 +111,13 @@ const displayItems = computed(() =>
           ? agentToolIcon
           : agentSparklesIcon,
       statusChipClass: `agent-advanced__status is-${item.status}`,
-      statusLabel: item.status === 'queued' ? '排队中' : item.status === 'cancelled' ? '已取消' : agentPartStatusLabels[item.status],
+      statusLabel: item.status === 'queued'
+        ? '排队中'
+        : item.status === 'cancelled'
+          ? '已取消'
+          : item.status === 'waiting' && item.requiresApproval === true
+            ? '等待确认'
+            : agentPartStatusLabels[item.status],
     }
   }),
 )
@@ -111,12 +138,12 @@ function statusDotClass(status: AgentActivityStatus) {
         <text class="agent-activity__title">
           {{ title }}
         </text>
-        <text class="agent-activity__hint">
-          {{ headingHint }}
+        <text v-for="hint in summary.hints" :key="hint" class="agent-activity__hint">
+          {{ hint }}
         </text>
       </view>
       <text class="agent-activity__count">
-        {{ completedCount }}/{{ items.length }}
+        已完成 {{ summary.completed }}/{{ items.length }}
       </text>
     </view>
     <view class="agent-activity__body">
@@ -201,6 +228,7 @@ function statusDotClass(status: AgentActivityStatus) {
   transform: rotate(180deg);
 }
 
+.agent-activity__hint,
 .agent-activity__detail {
   overflow-wrap: anywhere;
 }

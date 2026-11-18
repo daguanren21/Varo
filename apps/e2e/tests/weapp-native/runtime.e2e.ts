@@ -65,7 +65,7 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     const initial = await miniProgram.inspectAgent()
     await screen.getByRole('button', { name: '打开 AI 导购' }).tap()
     await expect(miniProgram.locator('//textarea')).toBeVisible()
-    await miniProgram.locator('//textarea').fill('买 1 盒牛奶')
+    await miniProgram.locator('//textarea').fill('买 1 盒牛奶（私人备注）')
     await miniProgram.locator(classXPath('agent-composer__submit')).tap()
     let streaming: AgentInspection | undefined
     await expect.poll(async () => {
@@ -81,13 +81,48 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
       return state.pendingAction === 'purchase' && !state.busy
     }, { timeout: 30_000 }).toBe(true)
     expect((await miniProgram.inspectAgent()).orderCount).toBe(initial.orderCount)
+
+    const groups = classXPath('agent-tool-call-group')
+    const lookupXPath = `${classXPath('agent-event-renderer')}${groups}[contains(., "local.mall.lookup")]`
+    const lookup = miniProgram.locator(lookupXPath)
+    const lookupButton = miniProgram.locator(`${lookupXPath}//button`)
+    await lookupButton.tap()
+    await expect(lookupButton).toHaveAttribute('aria-expanded', 'true')
+    await expect(lookup).toContainText('读取当前页面的商城数据。')
+    await expect(lookup).toContainText('已找到有货商品，可确认演示购买。')
+    await expect(lookup).not.toContainText('私人备注')
+
+    const approval = miniProgram.locator(classXPath('agent-approval__body'))
+    await expect(approval).toContainText('商城演示 Agent')
+    await expect(approval).toContainText('创建演示订单')
+    await expect(approval).toContainText('写入页面内历史记录')
+    await expect(approval).toContainText('不会实际扣款')
+    await expect(screen.getByRole('button', { name: '拒绝', exact: true })).toBeVisible()
     await screen.getByRole('radio', { name: /1 件/ }).tap()
     await expect(screen.getByRole('radio', { name: /1 件/ })).toHaveAttribute('aria-checked', 'true')
     await expect(screen.getByRole('button', { name: '取消中断', exact: true })).toBeVisible()
     await screen.getByRole('button', { name: '确认执行', exact: true }).tap()
-    await expect.poll(async () => (await miniProgram.inspectAgent()).orderCount, { timeout: 30_000 }).toBe(initial.orderCount + 1)
+    await expect.poll(async () => {
+      const state = await miniProgram.inspectAgent()
+      return state.orderCount === initial.orderCount + 1 && !state.busy
+    }, { timeout: 30_000 }).toBe(true)
     const purchased = await miniProgram.inspectAgent()
     expect(purchased.latestProduct).toBe('milk')
     expect(purchased.latestStatus).toBe('paid')
+
+    const historicalLookup = `${classXPath('agent-conversation')}${groups}[contains(., "local.mall.lookup")]`
+    await expect(lookupButton).toHaveCount(0)
+    await expect(miniProgram.locator(`${historicalLookup}//button`)).toHaveAttribute('aria-expanded', 'true')
+    await expect(miniProgram.locator(historicalLookup)).toContainText('已找到有货商品，可确认演示购买。')
+
+    const executionXPath = `${classXPath('agent-conversation')}${groups}[contains(., "local.mall.execute")]`
+    const execution = miniProgram.locator(executionXPath)
+    const executionButton = miniProgram.locator(`${executionXPath}//button`)
+    await expect(executionButton).toHaveAttribute('aria-expanded', 'false')
+    await executionButton.tap()
+    await expect(execution).toContainText('创建演示订单')
+    await expect(execution).toContainText('演示订单已创建，未实际扣款。')
+    await expect(execution).not.toContainText('productId')
+    await expect(execution).not.toContainText('上海市浦东新区张江路')
   })
 })

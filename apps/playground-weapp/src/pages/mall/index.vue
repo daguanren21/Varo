@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import { agentCurrentMessage, agentMessageText, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 import type { MallProduct } from '../../features/mall/useMallAgent'
 import { computed, shallowRef } from 'wevu'
+import { agentCurrentMessage, agentMessageText, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 import MallAgentPanel from '../../components/mall/MallAgentPanel.vue'
 import MallHeader from '../../components/mall/MallHeader.vue'
 import MallProductGrid from '../../components/mall/MallProductGrid.vue'
@@ -10,7 +10,6 @@ import VButton from '../../components/ui/v-button.vue'
 import { useMallAgent } from '../../features/mall/useMallAgent'
 
 type MaybeRef<T> = T | { value: T }
-
 
 interface MallPageAutomationContext {
   __wevu?: {
@@ -90,6 +89,7 @@ const {
   send,
   streamSnapshot,
   tasks,
+  toolCallPreviews,
 } = useMallAgent()
 const headerAddress = computed(() => defaultAddress.value?.detail ?? '')
 const headerCartCount = computed(() => Number(cartCount.value ?? 0))
@@ -235,6 +235,7 @@ defineExpose({
       :busy="busy"
       :messages="messages"
       :stream-snapshot="streamSnapshot"
+      :tool-call-previews="toolCallPreviews"
       :tasks="tasks"
       :pending-action="pendingAction"
       :approval-choices="approvalChoices"

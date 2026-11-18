@@ -11,6 +11,10 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 
 无需先装 `components/agent-ui`：此 Block 只安装 conversation 及其必要依赖，不包含 advanced、RAG、fine-tune 或 workspace UI。CLI 列出的 npm 依赖需另外安装；原生全局样式见 [Wevu Registry](/guide/shadcn-mode)。应用收到 `approve`、`reject`、`retry` 和取消相关事件后，需要自行处理网络请求和审批；Block 不会自动执行这些操作。
 
+### 更新已安装的原生源码 {#native-source-upgrade}
+
+升级 `@varo-ui/cli` 不会更新已复制到项目中的文件。已有 Wevu 安装需要升级时，先在干净项目中用 `--target weapp` 安装 `blocks/agent-chat`，再检查新版 Block 及其会话依赖，将变更合并到应用中。使用 `--force` 前请备份本地定制：它会覆盖已有目标文件，不会合并修改。
+
 ## 案例
 
 <AgentComponentDemo component="agent-chat" locale="zh" />
@@ -53,22 +57,33 @@ function newConversation() {
 
 此示例只保存静态本地消息，不连接模型。接入活动聊天时由 TanStack AI 持有消息和 abort；`snapshot` 直接传入 `client.getSnapshot()` / 订阅获得的真实 `ChatClientSnapshot`。`busy` 从 SDK `isLoading`、待处理的 `interruptState.interrupts` 和 `interruptState.resuming` 投影，不向 SDK 写入展示状态。将 `submit`、`stop`、`retry` 接到 SDK `sendMessage`、`stop`、`reload`，由应用决定新建会话和关闭策略；不要在 UI 中再建 reducer。`messages` 保留静态历史展示契约，不是第二份活动 transcript。禁用输入不会阻止忙碌时停止。Block 只在距底部 64px 内跟随内容增长，向上阅读时保留滚动位置。接入示例见 [AI 指南](./index) 与 [AgentEventRenderer](./event-renderer)。
 
+### 原生工具预览 {#native-tool-previews}
+
+Wevu 默认只展示工具名称和状态。如需展示详情，将应用的 [`toolCallPreviews` 映射](./event-renderer)绑定到原生 Block：
+
+```vue
+<AgentChat :messages="messages" :snapshot="snapshot" :tool-call-previews="toolCallPreviews" />
+```
+
+Block 在当前消息和历史消息中使用同一个映射。请以 `toolCallId` 为键，仅提供简短、可安全展示给当前用户的文本，并在切换会话时切换映射。不要复制原始参数或结果。此设置不会修改 SDK 快照，也不会清除已发往客户端的数据。H5 仍展示 SDK 的实际工具结果。
+
 ## Props
 
-| Prop              | Type                         | Default      | 说明                                       |
-| ----------------- | ---------------------------- | ------------ | ------------------------------------------ |
-| `modelValue`      | `string`                     | `—`          | 提供时受控；未提供时组件保存初始为空的草稿 |
-| `busy`            | `boolean`                    | `false`      | 忙碌                                       |
-| `disabled`        | `boolean`                    | `false`      | 禁用编辑、提交和历史切换，不禁用停止       |
-| `closeLabel`      | `string`                     | `关闭 Agent` | 关闭按钮名称                               |
-| `layout`          | `'panel' \| 'page'`          | `'panel'`    | 面板或页面布局                             |
-| `history`         | `AgentChatHistoryItem[]`     | `[]`         | 应用注入的 `{ id, title }` 历史入口        |
-| `activeHistoryId` | `string`                     | `—`          | 当前选中入口                               |
-| `messages` | `readonly AgentConversationEntry[]` | `[]` | 静态消息或保留完整 parts 的 SDK 历史 |
-| `snapshot`        | `ChatClientSnapshot`         | `—`          | 真实 TanStack SDK 快照，不是展示状态对象   |
-| `subtitle`        | `string`                     | `—`          | 副标题                                     |
-| `suggestions`     | `string[]`                   | `[]`         | 建议词                                     |
-| `title`           | `string`                     | `Varo Agent` | 标题                                       |
+| Prop               | Type                                             | Default      | 说明                                        |
+| ------------------ | ------------------------------------------------ | ------------ | ------------------------------------------- |
+| `modelValue`       | `string`                                         | `—`          | 提供时受控；未提供时组件保存初始为空的草稿  |
+| `busy`             | `boolean`                                        | `false`      | 忙碌                                        |
+| `disabled`         | `boolean`                                        | `false`      | 禁用编辑、提交和历史切换，不禁用停止        |
+| `closeLabel`       | `string`                                         | `关闭 Agent` | 关闭按钮名称                                |
+| `layout`           | `'panel' \| 'page'`                              | `'panel'`    | 面板或页面布局                              |
+| `history`          | `AgentChatHistoryItem[]`                         | `[]`         | 应用注入的 `{ id, title }` 历史入口         |
+| `activeHistoryId`  | `string`                                         | `—`          | 当前选中入口                                |
+| `messages`         | `readonly AgentConversationEntry[]`              | `[]`         | 静态消息或保留完整 parts 的 SDK 历史        |
+| `snapshot`         | `ChatClientSnapshot`                             | `—`          | 真实 TanStack SDK 快照，不是展示状态对象    |
+| `toolCallPreviews` | `Readonly<Record<string, AgentToolCallPreview>>` | `—`          | 仅 Wevu：应用按 `toolCallId` 提供的展示详情 |
+| `subtitle`         | `string`                                         | `—`          | 副标题                                      |
+| `suggestions`      | `string[]`                                       | `[]`         | 建议词                                      |
+| `title`            | `string`                                         | `Varo Agent` | 标题                                        |
 
 ## Events
 
@@ -81,8 +96,8 @@ function newConversation() {
 | `stop`              | `void`   | 请求应用取消生成（仅忙碌时显示）                        |
 | `reject`            | `string` | 请求拒绝该 interrupt ID；由应用解析 SDK 中断            |
 | `retry`             | `void`   | 重试                                                    |
-| `retryInterrupts` | `void` | 重试当前可恢复的审批事务，不重新生成回答 |
-| `cancelInterrupts` | `void` | 取消当前中断事务 |
+| `retryInterrupts`   | `void`   | 重试当前可恢复的审批事务，不重新生成回答                |
+| `cancelInterrupts`  | `void`   | 取消当前中断事务                                        |
 | `submit`            | `string` | 提交                                                    |
 | `update:modelValue` | `string` | 更新提示词                                              |
 

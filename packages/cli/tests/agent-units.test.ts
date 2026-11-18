@@ -32,6 +32,7 @@ describe.each(['h5', 'weapp'] as const)('Agent source units for %s', (target) =>
     const directory = join(projectRoot, 'src/components/agent-ui')
     const files = readdirSync(directory)
     expect(files).toContain(target === 'h5' ? 'conversation.ts' : 'AgentEventRenderer.vue')
+    expect(files.includes('AgentToolCallGroup.vue')).toBe(target === 'weapp')
     expect(files).toContain('presentation.ts')
     expect(files).not.toContain('index.ts')
     expect(files.filter(file => /advanced|workspace|rag|file-diff|FileDiff|FineTune|supplemental/i.test(file))).toEqual([])

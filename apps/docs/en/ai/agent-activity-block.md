@@ -31,7 +31,7 @@ import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks
 
 `AgentActivityStatus` contains `queued | running | waiting | failed | cancelled | completed` for display only. `AgentActivityItem.status` uses this type. General `AgentPartStatus` (`waiting | running | completed | failed`) is also a Registry display type in `components/agent-ui/types`, not a core protocol or TanStack SDK state.
 
-`AgentActivityTask extends AgentActivityItem`, retaining `id`, `title`, `kind`, `detail?`, `duration?` and `status`, and adding only:
+`AgentActivityTask` inherits the [`AgentActivityItem`](/en/ai/activity) display fields, including `requiresApproval?`, and adds only:
 
 - `actions?: readonly AgentActivityAction[]`: explicit application grants; absent or empty means no action is eligible.
 - `disabled?: boolean`: disables all actions on that item.
@@ -46,6 +46,8 @@ IDs must be stable and unique. The Block displays the state supplied in `items` 
 | `emptyText` | `string`              | `No activity yet` | Empty-state copy                                                           |
 
 `start`, `approve`, `retry`, and `cancel` each emit the current `AgentActivityTask` from props as a single payload. Before emitting, the Block resolves the item by ID and checks status, global/item disabling, and action grants. Removed or terminal items and inapplicable or ungranted actions emit nothing. There is no `update:items` event; rejecting a request leaves the UI unchanged.
+
+On native Wevu, a `waiting` item shows `等待确认` (awaiting confirmation) if `actions` includes `approve` or `requiresApproval: true` is set. Otherwise, it shows `等待中` (waiting). The application can set `requiresApproval: true` when the item is still waiting for someone else's approval. The marker does not enable buttons or authorize requests.
 
 ## State / action / transition table
 
@@ -97,6 +99,8 @@ function acceptLocal(action: AgentActivityAction, requested: AgentActivityTask) 
 ```
 
 For asynchronous requests, immediately supply updated `disabled` / `actions` or task state and maintain those restrictions while awaiting results. The Block has no built-in request lock, automatic retry, or success cache. Its action checks do not replace server-side authorization.
+
+On native WeChat, the activity trail shows completed progress, current work, and pending approval or failure separately. Running work does not hide blockers; ordinary waiting is not shown as a blocker. Supply user-visible blocker reasons in the activity item's `detail`.
 
 ## Interactive demo and verification boundary
 

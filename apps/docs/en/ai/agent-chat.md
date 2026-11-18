@@ -11,6 +11,10 @@ pnpm dlx @varo-ui/cli add --target h5 blocks/agent-chat
 
 There is no `components/agent-ui` prerequisite. This Block installs conversation and its required dependencies, without advanced, RAG, fine-tune, or workspace UI. Install the npm dependencies listed by the CLI separately; configure native global styles through [Wevu Registry](/en/guide/shadcn-mode). Handle approval, rejection, retry, and cancellation events in your application. The Block does not perform network requests or process approvals automatically.
 
+### Updating installed native source {#native-source-upgrade}
+
+Upgrading `@varo-ui/cli` does not update files copied into your project. To upgrade an existing Wevu install, install `blocks/agent-chat` with `--target weapp` in a clean project, then review and merge the updated block and its conversation dependencies into your app. Back up any customizations before using `--force`: it replaces existing destination files instead of merging them.
+
 ## Demo
 
 <AgentComponentDemo component="agent-chat" locale="en" />
@@ -53,36 +57,47 @@ Native input remains editable while `busy` but cannot submit; `disabled` also bl
 
 This example stores static local messages only and does not connect a model. For active chat, TanStack AI owns messages and abort. Pass the actual `ChatClientSnapshot` from `client.getSnapshot()` / its subscription to `snapshot`. Derive `busy` from SDK `isLoading`, pending `interruptState.interrupts`, and `interruptState.resuming`, without writing display states into the SDK. Wire `submit`, `stop`, and `retry` to SDK `sendMessage`, `stop`, and `reload`; the application decides new-conversation and close policy. Do not add a UI reducer. `messages` keeps the static-history presentation contract, not a second active transcript. Disabled input does not disable stopping active work. The Block follows content growth only within 64px of the bottom and preserves the position while reading above. See the [AI guide](./index) and [AgentEventRenderer](./event-renderer).
 
+### Native tool previews {#native-tool-previews}
+
+Wevu shows tool names and statuses by default. To opt into details, bind your app's [`toolCallPreviews` map](./event-renderer) to the native block:
+
+```vue
+<AgentChat :messages="messages" :snapshot="snapshot" :tool-call-previews="toolCallPreviews" />
+```
+
+The block uses the map for both the active message and history. Key entries by `toolCallId`, provide only bounded text safe for the current user, and switch the map when switching conversations. Do not copy raw arguments or results into it. This does not change the SDK snapshot or scrub data sent to the client. H5 keeps displaying actual SDK results.
+
 ## Props
 
-| Prop              | Type                         | Default      | Description                                                        |
-| ----------------- | ---------------------------- | ------------ | ------------------------------------------------------------------ |
-| `modelValue`      | `string`                     | `—`          | Controlled when provided; otherwise an initially empty local draft |
-| `busy`            | `boolean`                    | `false`      | Busy                                                               |
-| `disabled`        | `boolean`                    | `false`      | Disable editing, submission and history changes, not stop          |
-| `closeLabel`      | `string`                     | `关闭 Agent` | Close button name                                                  |
-| `layout`          | `'panel' \| 'page'`          | `'panel'`    | Panel or page layout                                               |
-| `history`         | `AgentChatHistoryItem[]`     | `[]`         | Application-supplied `{ id, title }` history entries               |
-| `activeHistoryId` | `string`                     | `—`          | Currently selected entry                                           |
-| `messages` | `readonly AgentConversationEntry[]` | `[]` | Static messages or SDK history with intact parts |
-| `snapshot`        | `ChatClientSnapshot`         | `—`          | Actual TanStack SDK snapshot, not a display-state object            |
-| `subtitle`        | `string`                     | `—`          | Subtitle                                                           |
-| `suggestions`     | `string[]`                   | `[]`         | Suggestions                                                        |
-| `title`           | `string`                     | `Varo Agent` | Title                                                              |
+| Prop               | Type                                             | Default      | Description                                                        |
+| ------------------ | ------------------------------------------------ | ------------ | ------------------------------------------------------------------ |
+| `modelValue`       | `string`                                         | `—`          | Controlled when provided; otherwise an initially empty local draft |
+| `busy`             | `boolean`                                        | `false`      | Busy                                                               |
+| `disabled`         | `boolean`                                        | `false`      | Disable editing, submission and history changes, not stop          |
+| `closeLabel`       | `string`                                         | `关闭 Agent` | Close button name                                                  |
+| `layout`           | `'panel' \| 'page'`                              | `'panel'`    | Panel or page layout                                               |
+| `history`          | `AgentChatHistoryItem[]`                         | `[]`         | Application-supplied `{ id, title }` history entries               |
+| `activeHistoryId`  | `string`                                         | `—`          | Currently selected entry                                           |
+| `messages`         | `readonly AgentConversationEntry[]`              | `[]`         | Static messages or SDK history with intact parts                   |
+| `snapshot`         | `ChatClientSnapshot`                             | `—`          | Actual TanStack SDK snapshot, not a display-state object           |
+| `toolCallPreviews` | `Readonly<Record<string, AgentToolCallPreview>>` | `—`          | Wevu only: application-supplied display details by `toolCallId`    |
+| `subtitle`         | `string`                                         | `—`          | Subtitle                                                           |
+| `suggestions`      | `string[]`                                       | `[]`         | Suggestions                                                        |
+| `title`            | `string`                                         | `Varo Agent` | Title                                                              |
 
 ## Events
 
 | Event               | Payload  | Description                                                                                 |
 | ------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `approve`           | `string` | Request approval of this interrupt ID; application resolves the SDK interrupt                |
+| `approve`           | `string` | Request approval of this interrupt ID; application resolves the SDK interrupt               |
 | `close`             | `void`   | Close                                                                                       |
 | `historySelect`     | `string` | Ask the application to select a history id; blocked while busy/disabled or already selected |
 | `newConversation`   | `void`   | Ask the application to clear the current conversation                                       |
 | `stop`              | `void`   | Ask the application to cancel generation (shown only while busy)                            |
-| `reject`            | `string` | Request denial of this interrupt ID; application resolves the SDK interrupt                  |
+| `reject`            | `string` | Request denial of this interrupt ID; application resolves the SDK interrupt                 |
 | `retry`             | `void`   | Retry                                                                                       |
-| `retryInterrupts` | `void` | Retry the current recoverable approval transaction, not regeneration |
-| `cancelInterrupts` | `void` | Cancel the current interrupt transaction |
+| `retryInterrupts`   | `void`   | Retry the current recoverable approval transaction, not regeneration                        |
+| `cancelInterrupts`  | `void`   | Cancel the current interrupt transaction                                                    |
 | `submit`            | `string` | Submit                                                                                      |
 | `update:modelValue` | `string` | Update prompt                                                                               |
 

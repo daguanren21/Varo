@@ -3,6 +3,8 @@ import { classXPath, expectRoute, nativePlatforms, test } from './fixtures'
 
 const stateXPath = '//*[@data-activity-demo="state"]'
 const activityXPath = classXPath('agent-activity__item')
+const hintXPath = classXPath('agent-activity__hint')
+const countXPath = classXPath('agent-activity__count')
 
 test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires: ['miniProgram'] }, () => {
   test.beforeEach(async ({ miniProgram }) => {
@@ -24,6 +26,16 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
       const row = miniProgram.locator(activityXPath).filter({ hasText: title })
       await expect(row).toHaveAttribute('data-status', status)
     }
+    const hints = miniProgram.locator(hintXPath)
+    await expect(hints).toHaveCount(3)
+    await expect(hints.filter({ hasText: '正在执行 Index notes' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '阻塞于 Export summary' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '等待确认 Review outline' })).toHaveCount(1)
+    await expect(miniProgram.locator(countXPath)).toHaveText('已完成 1/8')
+    await expect(miniProgram.locator(activityXPath).filter({ hasText: 'Export summary' })).toContainText('Local failure example; no service was called.')
+    const review = miniProgram.locator(activityXPath).filter({ hasText: 'Review outline' })
+    await expect(review).toContainText('等待确认')
+    await expect(review).toContainText('Awaiting an application-owned decision.')
     for (const name of ['Start Draft report', 'Cancel Draft report', 'Cancel Index notes', 'Approve Review outline', 'Retry Export summary']) {
       await expect(screen.getByRole('button', { name, exact: true })).toBeEnabled()
     }
@@ -35,29 +47,61 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
 
   test('controlled start approval retry completion and cancellation follow legal sequences', async ({ miniProgram, screen }) => {
     const draft = miniProgram.locator(activityXPath).filter({ hasText: 'Draft report' })
+    const hints = miniProgram.locator(hintXPath)
     const state = miniProgram.locator(stateXPath)
     await screen.getByRole('button', { name: 'Start Draft report', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'running')
+    await expect(hints.filter({ hasText: '正在执行 Draft report' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '正在执行 Index notes' })).toHaveCount(0)
     await expect(screen.getByRole('button', { name: 'Start Draft report', exact: true })).toHaveCount(0)
     await screen.getByRole('button', { name: 'Require local approval', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'waiting')
+    await expect(draft).toContainText('等待确认')
+    await expect(hints.filter({ hasText: '正在执行 Index notes' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '等待确认 Draft report' })).toHaveCount(1)
     await screen.getByRole('button', { name: 'Approve Draft report', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'running')
+    await expect(draft).not.toContainText('等待确认')
     await expect(screen.getByRole('button', { name: 'Approve Draft report', exact: true })).toHaveCount(0)
     await screen.getByRole('button', { name: 'Mark local failure', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'failed')
+    await expect(hints.filter({ hasText: '正在执行 Index notes' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '阻塞于 Draft report' })).toHaveCount(1)
     await screen.getByRole('button', { name: 'Retry Draft report', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'queued')
     await expect(screen.getByRole('button', { name: 'Retry Draft report', exact: true })).toHaveCount(0)
     await screen.getByRole('button', { name: 'Start Draft report', exact: true }).tap()
     await screen.getByRole('button', { name: 'Mark local complete', exact: true }).tap()
     await expect(draft).toHaveAttribute('data-status', 'completed')
+    await expect(miniProgram.locator(countXPath)).toHaveText('已完成 2/8')
     await expect(miniProgram.locator('//*[@data-activity-task="draft"]//button')).toHaveCount(0)
     await screen.getByRole('button', { name: 'Cancel Index notes', exact: true }).tap()
     await expect(miniProgram.locator(activityXPath).filter({ hasText: 'Index notes' })).toHaveAttribute('data-status', 'cancelled')
     await expect(screen.getByRole('button', { name: 'Cancel Index notes', exact: true })).toHaveCount(0)
     await expect(state).toHaveText('requests=5;accepted=5;last=cancel:index')
     if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('activity-completed-and-cancelled') }
+  })
+
+  test('waiting stays neutral when the current snapshot no longer declares approval', async ({ miniProgram, screen }) => {
+    const draft = miniProgram.locator(activityXPath).filter({ hasText: 'Draft report' })
+    const approve = screen.getByRole('button', { name: 'Approve Draft report', exact: true })
+    const hints = miniProgram.locator(hintXPath)
+
+    await screen.getByRole('button', { name: 'Start Draft report', exact: true }).tap()
+    await expect(draft).toHaveAttribute('data-status', 'running')
+    await screen.getByRole('button', { name: 'Require local approval', exact: true }).tap()
+    await expect(draft).toContainText('等待确认')
+    await expect(approve).toBeEnabled()
+
+    // The demo replaces Draft's action grants without changing its status.
+    await screen.getByRole('button', { name: 'Allow start', exact: true }).tap()
+    await expect(draft).toHaveAttribute('data-status', 'waiting')
+    await expect(draft).toContainText('等待中')
+    await expect(draft).not.toContainText('等待确认')
+    await expect(approve).toBeDisabled()
+    await expect(hints.filter({ hasText: '正在执行 Index notes' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '等待确认 Review outline' })).toHaveCount(1)
+    await expect(hints.filter({ hasText: '等待确认 Draft report' })).toHaveCount(0)
   })
 
   test('current prop eligibility disabled items and empty activity reject unavailable actions', async ({ miniProgram, screen }) => {
@@ -86,6 +130,8 @@ test.describe('native B2 Activity Block', { platforms: nativePlatforms, requires
     await screen.getByRole('button', { name: 'Clear activity', exact: true }).tap()
     await expect(screen.getByRole('status')).toHaveCount(1)
     await expect(miniProgram.locator('//*[@data-activity-task]')).toHaveCount(0)
+    await expect(miniProgram.locator(hintXPath)).toHaveText('暂无活动')
+    await expect(miniProgram.locator(countXPath)).toHaveText('已完成 0/0')
     await expect(state).toHaveText('requests=3;accepted=3;last=cancel:draft')
   })
 

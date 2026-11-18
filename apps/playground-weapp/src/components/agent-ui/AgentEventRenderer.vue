@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
 import type { AgentInterruptIdentity } from './presentation'
+import type { AgentToolCallPreview } from './types'
 import { computed } from 'wevu'
-import { agentCanResolveApproval, agentSnapshotProjection, agentStreamNotice } from './presentation'
 import AgentInterruptControls from './AgentInterruptControls.vue'
 import AgentLoading from './AgentLoading.vue'
 import AgentMessageParts from './AgentMessageParts.vue'
 import AgentStream from './AgentStream.vue'
+import { agentCanResolveApproval, agentSnapshotProjection, agentStreamNotice } from './presentation'
 
 const props = withDefaults(defineProps<{
   snapshot: ChatClientSnapshot
+  toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>>
   retryable?: boolean
 }>(), { retryable: true })
 
@@ -20,7 +22,7 @@ const emit = defineEmits<{
   retryInterrupts: []
   cancelInterrupts: []
 }>()
-const projection = computed(() => agentSnapshotProjection(props.snapshot))
+const projection = computed(() => agentSnapshotProjection(props.snapshot, 'summary'))
 // Native hosts replace keyed list items; a key on a static component does not remount it.
 const interruptTransactions = computed(() => [projection.value])
 function retry() {
@@ -33,18 +35,18 @@ function reject(identity: AgentInterruptIdentity) {
   if (agentCanResolveApproval(props.snapshot, identity)) { emit('reject', identity.id) }
 }
 function retryInterrupts(transactionKey: string) {
-  const current = agentSnapshotProjection(props.snapshot)
+  const current = projection.value
   if (current.transactionKey === transactionKey && current.canRetryInterrupts) { emit('retryInterrupts') }
 }
 function cancelInterrupts(transactionKey: string) {
-  const current = agentSnapshotProjection(props.snapshot)
+  const current = projection.value
   if (current.transactionKey === transactionKey && current.canCancelInterrupts) { emit('cancelInterrupts') }
 }
 </script>
 
 <template>
   <view class="agent-event-renderer grid gap-3" :data-status="projection.status">
-    <AgentMessageParts v-if="projection.renderedMessage" :message="projection.renderedMessage" :stream="true" :error="projection.error" :retryable="retryable" @retry="retry" />
+    <AgentMessageParts v-if="projection.renderedMessage" :message="projection.renderedMessage" :tool-call-previews="toolCallPreviews" :stream="true" :error="projection.error" :retryable="retryable" @retry="retry" />
     <AgentStream v-else-if="projection.error" :error="projection.error" status="failed" :retryable="retryable" @retry="retry" />
     <view v-if="projection.status === 'waiting' && !projection.message && !projection.error && !projection.approvals.length" class="text-xs text-[var(--varo-agent-muted)]" role="status">
       <text>{{ agentStreamNotice(projection.status) }}</text>

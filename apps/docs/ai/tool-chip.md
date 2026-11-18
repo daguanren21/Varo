@@ -35,7 +35,9 @@ const tool: AgentToolPart = {
 
 `AgentToolPart` 是 Registry 展示类型（`id`、`name`、`input`、`output`、`summary`、`error`、`status`），不从 `@varo-ui/ai` 导入。其 `AgentPartStatus` 为 `waiting | running | completed | failed`，不是 TanStack 工具 wire state。应用或渲染器从 SDK 消息做纯投影；组件不执行工具或授予权限。
 
-对话中的工具结果显示实际 `output`：字符串直接展示，结构化结果使用 JSON 展示；不会把 `input` 与 `output` 再包装成内部对象打印。输入仍保留在 SDK 消息和工具展示数据中，失败状态不因存在输出而变成成功。
+H5 对话展示 SDK 工具的实际 `output`：字符串以纯文本展示，结构化结果以 JSON 展示，不额外包装 `input` 和 `output`。展示输出不会把工具的失败状态改成成功。
+
+原生 Wevu 对话使用可折叠的工具调用组，显示 SDK 提供的名称和状态。参数、结果、错误和耗时默认不展示；如需展示，通过 [`toolCallPreviews`](./agent-chat#native-tool-previews) 按 `toolCallId` 提供简短、可安全展示给当前用户的文本。调用组不会直接渲染 SDK 原始载荷。升级请参阅[更新已安装的原生源码](./agent-chat#native-source-upgrade)。
 
 ## Events
 

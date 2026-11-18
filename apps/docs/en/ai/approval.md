@@ -20,15 +20,16 @@ import { AgentApproval } from '@/components/agent-ui'
 
 ## Props
 
-| Prop          | Type            | Default    | Description      |
-| ------------- | --------------- | ---------- | ---------------- |
-| `approveText` | `string`        | `确认`     | Approve label    |
-| `choices`     | `AgentChoice[]` | `[]`       | Approval choices |
-| `description` | `string`        | `—`        | Description      |
-| `disabled` | `boolean` | `false` | Prevent selection, approval and rejection for ineligible or submitting transactions |
-| `rejectText`  | `string`        | `拒绝`     | Reject label     |
-| `title`       | `string`        | `required` | Approval title   |
-| `value`       | `string`        | `''`       | Current choice   |
+| Prop          | Type                   | Default    | Description                                                                               |
+| ------------- | ---------------------- | ---------- | ----------------------------------------------------------------------------------------- |
+| `approveText` | `string`               | `确认`     | Approve label                                                                             |
+| `choices`     | `AgentChoice[]`        | `[]`       | Approval choices                                                                          |
+| `description` | `string`               | `—`        | Description                                                                               |
+| `disabled`    | `boolean`              | `false`    | Prevent selection, approval and rejection for ineligible or submitting transactions       |
+| `preview`     | `AgentApprovalPreview` | `—`        | Native WeChat only; shows application-supplied `requestedBy`, `action`, and `impact` text |
+| `rejectText`  | `string`               | `拒绝`     | Reject label                                                                              |
+| `title`       | `string`               | `required` | Approval title                                                                            |
+| `value`       | `string`               | `''`       | Current choice                                                                            |
 
 ## Events
 

@@ -54,6 +54,21 @@ test.describe('native B1 Chat Blocks', { platforms: nativePlatforms, requires: [
     await expect(miniProgram.locator(stateXPath)).toContainText('history=saved;')
     await expect(miniProgram.locator(stateXPath)).toContainText('action=history:saved')
     await expect(screen.getByRole('button', { name: '已保存的写作建议' })).toHaveAttribute('aria-pressed', 'true')
+    const tools = miniProgram.locator(`${classXPath('agent-tool-call-group')}//button`)
+    await expect(tools).toContainText('2 次工具调用')
+    await expect(tools).toHaveAttribute('aria-expanded', 'false')
+    await tools.tap()
+    await expect(tools).toHaveAttribute('aria-expanded', 'true')
+    await expect(miniProgram.locator(classXPath('agent-tool-call-group'))).toContainText('找到写作提纲')
+    const child = miniProgram.locator('//*[@data-message-part="data"]')
+    await expect(child).toHaveText('子 Agent：文稿核对 · 已完成')
+    if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('chat-tool-call-details') }
+    const priorTools = miniProgram.locator(`${classXPath('agent-conversation')}${classXPath('agent-tool-call-group')}//button`)
+    await miniProgram.locator(composerXPath).fill('继续整理')
+    await miniProgram.locator(classXPath('agent-composer__submit')).tap()
+    await expect(priorTools).toHaveAttribute('aria-expanded', 'true')
+    await expect(miniProgram.locator(stateXPath)).toContainText('status=ready;')
+    await expect(priorTools).toHaveAttribute('aria-expanded', 'true')
     await expect(miniProgram.locator(composerXPath)).toHaveValue('')
     await screen.getByRole('button', { name: '新建会话' }).tap()
     await expect(miniProgram.locator(stateXPath)).toContainText('history=new;')
@@ -68,6 +83,9 @@ test.describe('native B1 Chat Blocks', { platforms: nativePlatforms, requires: [
     await screen.getByRole('button', { name: '启用输入' }).tap()
     await expect(miniProgram.locator(composerXPath)).toBeEnabled()
     if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('chat-new-page-layout') }
+
+    await screen.getByRole('button', { name: '已保存的写作建议' }).tap()
+    await expect(tools).toHaveAttribute('aria-expanded', 'false')
   })
 
   test('sheet quote removal, expand/back/close and selected response insertion', async ({ miniProgram, screen }) => {
