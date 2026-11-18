@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-async function loadApp(robotChat: string | undefined) {
+async function loadApp(robotChat: string | undefined, a2uiDemo?: string) {
   vi.stubEnv('WEAPP_ROBOT_CHAT', robotChat)
+  vi.stubEnv('WEAPP_A2UI_DEMO', a2uiDemo)
   vi.resetModules()
   // Static import cannot replay the compiler entry's environment-dependent initialization.
   return (await import('./app.json')).default
@@ -10,6 +11,16 @@ async function loadApp(robotChat: string | undefined) {
 afterEach(() => {
   vi.unstubAllEnvs()
   vi.resetModules()
+})
+
+it('keeps the A2UI demo out of normal builds and registers it as an opt-in subpackage', async () => {
+  const demo = { root: 'pages/agent-a2ui', pages: ['index'] }
+  const enabled = await loadApp(undefined, '1')
+  const disabled = await loadApp(undefined)
+  expect(enabled.subPackages).toContainEqual(demo)
+  expect(enabled.pages).toEqual(disabled.pages)
+  expect(enabled.plugins).toBeUndefined()
+  expect(disabled.subPackages).not.toContainEqual(demo)
 })
 
 describe('native optional plugin admission', () => {

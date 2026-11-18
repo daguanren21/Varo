@@ -110,6 +110,7 @@ const registryDirectories = [
   'packages/ui-h5/src/',
   'packages/ui-weapp/native/src/',
   'apps/playground-weapp/src/blocks-lab/components/blocks/',
+  'apps/playground-weapp/src/pages/agent-a2ui/components/',
   ...['docs', 'playground-h5', 'playground-weapp'].flatMap(app =>
     ['components/ui/', 'components/blocks/', 'components/agent-ui/', 'lib/', 'styles/']
       .map(directory => `apps/${app}/src/${directory}`)),

@@ -51,20 +51,32 @@ export default defineConfig(({ mode }) => ({
     rolldownOptions: {
       output: {
         codeSplitting: {
-          groups: [{
-            // Claim virtual/resolved compiler helpers before a demo's common group absorbs their closure.
-            name: 'weapp-vendors/compiler-helpers',
-            test: /@oxc-project(?:\/|\+)runtime(?:@[^/]+)?\/(?:src\/)?helpers\//,
-            priority: 1,
-            minShareCount: 1,
-            includeDependenciesRecursively: true,
-          }, {
-            // Main-owned native UI entries cannot synchronously load a Block subpackage's helpers.
-            name: 'weapp-vendors/ui-helpers',
-            test: /\/src\/components\/ui\/[^/?]+\.ts(?:\?|$)/,
-            priority: 1,
-            minShareCount: 1,
-          }],
+          groups: [
+            ...(process.env.WEAPP_A2UI_DEMO === '1'
+              ? [{
+                  name: 'pages/agent-a2ui/core',
+                  test: /[/\\]node_modules[/\\]@a2ui[/\\]web_core[/\\]/,
+                  priority: 1,
+                  minShareCount: 1,
+                  includeDependenciesRecursively: true,
+                }]
+              : []),
+            {
+              // Claim virtual/resolved compiler helpers before a demo's common group absorbs their closure.
+              name: 'weapp-vendors/compiler-helpers',
+              test: /@oxc-project(?:\/|\+)runtime(?:@[^/]+)?\/(?:src\/)?helpers\//,
+              priority: 1,
+              minShareCount: 1,
+              includeDependenciesRecursively: true,
+            },
+            {
+              // Main-owned native UI entries cannot synchronously load a Block subpackage's helpers.
+              name: 'weapp-vendors/ui-helpers',
+              test: /\/src\/components\/ui\/[^/?]+\.ts(?:\?|$)/,
+              priority: 1,
+              minShareCount: 1,
+            },
+          ],
         },
         assetFileNames: asset => asset.originalFileNames.some(path => path.includes('src/docs-preview/assets/'))
           ? 'docs-preview/assets/[name]-[hash][extname]'
