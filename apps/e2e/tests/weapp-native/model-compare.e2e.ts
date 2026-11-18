@@ -104,6 +104,39 @@ test.describe('native B3 Model Compare', { platforms: nativePlatforms, requires:
     if (miniProgram.mode === 'devtools') { await miniProgram.screenshot('model-compare-independent-results') }
   })
 
+  test('tool disclosure follows a side into history without opening the other side', async ({ miniProgram, screen }) => {
+    const groups = classXPath('agent-tool-call-group')
+    const leftLiveGroup = miniProgram.locator(`${leftOutput}${groups}`)
+    const rightLiveGroup = miniProgram.locator(`${rightOutput}${groups}`)
+    const leftHistoryGroup = miniProgram.locator(`${leftSide}${classXPath('agent-conversation')}${groups}`)
+    const leftLiveToggle = miniProgram.locator(`${leftOutput}${groups}//button`)
+    const rightLiveToggle = miniProgram.locator(`${rightOutput}${groups}//button`)
+    const leftHistoryToggle = miniProgram.locator(`${leftSide}${classXPath('agent-conversation')}${groups}//button`)
+
+    await screen.getByRole('button', { name: '载入工具示例' }).tap()
+    await expect(leftLiveToggle).toHaveAttribute('aria-expanded', 'false')
+    await expect(rightLiveToggle).toHaveAttribute('aria-expanded', 'false')
+    await expect(leftHistoryGroup).toHaveCount(0)
+    await leftLiveToggle.tap()
+    await expect(leftLiveToggle).toHaveAttribute('aria-expanded', 'true')
+    await expect(leftLiveGroup).toContainText('左侧示例工具预览')
+    await expect(rightLiveToggle).toHaveAttribute('aria-expanded', 'false')
+
+    await screen.getByRole('button', { name: '继续左侧工具示例' }).tap()
+    await expect(leftLiveGroup).toHaveCount(0)
+    await expect(leftHistoryToggle).toHaveAttribute('aria-expanded', 'true')
+    await expect(leftHistoryGroup).toContainText('左侧示例工具预览')
+    await expect(rightLiveToggle).toHaveAttribute('aria-expanded', 'false')
+    await rightLiveToggle.tap()
+    await expect(rightLiveGroup).toContainText('右侧示例工具预览')
+    const replaceLeft = screen.getByRole('button', { name: '更换左侧工具会话' })
+    await expect(replaceLeft).toBeEnabled()
+    await replaceLeft.tap()
+    await expect(leftHistoryGroup).toHaveCount(0)
+    await expect(leftLiveToggle).toHaveAttribute('aria-expanded', 'false')
+    await expect(rightLiveToggle).toHaveAttribute('aria-expanded', 'true')
+  })
+
   test('disabled input preserves side-specific stop while the other producer continues', async ({ miniProgram, screen }) => {
     await miniProgram.locator(composer).fill('alpha bravo charlie delta echo foxtrot golf hotel india juliet '.repeat(4))
     await miniProgram.locator(send).tap()

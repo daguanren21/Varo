@@ -101,6 +101,8 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     await screen.getByRole('radio', { name: /1 件/ }).tap()
     await expect(screen.getByRole('radio', { name: /1 件/ })).toHaveAttribute('aria-checked', 'true')
     await expect(screen.getByRole('button', { name: '取消中断', exact: true })).toBeVisible()
+    const progress = miniProgram.locator(classXPath('agent-task-list__count'))
+    await expect(progress).not.toBeVisible()
     await screen.getByRole('button', { name: '确认执行', exact: true }).tap()
     await expect.poll(async () => {
       const state = await miniProgram.inspectAgent()
@@ -109,6 +111,7 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     const purchased = await miniProgram.inspectAgent()
     expect(purchased.latestProduct).toBe('milk')
     expect(purchased.latestStatus).toBe('paid')
+    await expect(progress).toContainText('已完成 3/3')
 
     const executionXPath = `${classXPath('agent-conversation')}${groups}[contains(., "local.mall.execute")]`
     const execution = miniProgram.locator(executionXPath)

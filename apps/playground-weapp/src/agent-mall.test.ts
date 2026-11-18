@@ -3,7 +3,7 @@
 import type { MallAgentController } from './features/mall/useMallAgent'
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, watch } from 'vue'
 import AgentApproval from './components/agent-ui/AgentApproval.vue'
 import AgentComposer from './components/agent-ui/AgentComposer.vue'
 import AgentMarkdown from './components/agent-ui/AgentMarkdown.vue'
@@ -209,6 +209,7 @@ describe('AI-driven mall flows', () => {
   it('streams a purchase plan and only creates an order after approval', async () => {
     const { agent, wrapper } = mountAgentHarness()
     const stockBefore = agent.products.value.find(product => product.id === 'milk')!.stock
+    const historyBefore = agent.history.value.length
 
     const sendPromise = agent.send('买 2 盒牛奶')
     for (let elapsed = 0; elapsed < 1000; elapsed += 10) {
@@ -226,7 +227,25 @@ describe('AI-driven mall flows', () => {
     agent.approvalValue.value = '2'
     const approval = agentSnapshotProjection(agent.streamSnapshot.value).approvals[0]
     expect(approval).toBeDefined()
-    await finishTimers(agent.approve(approval!.id))
+    const progress: { completed: string[], orders: number, stock: number, history: number }[] = []
+    const stop = watch(agent.tasks, (tasks) => {
+      const completed = tasks.filter(task => task.status === 'completed').map(task => task.id)
+      if (completed.length) {
+        progress.push({
+          completed,
+          orders: agent.orders.value.length,
+          stock: agent.products.value.find(product => product.id === 'milk')!.stock,
+          history: agent.history.value.length,
+        })
+      }
+    }, { flush: 'sync' })
+    try { await finishTimers(agent.approve(approval!.id)) }
+    finally { stop() }
+    expect(progress).toEqual([
+      { completed: ['validate'], orders: 1, stock: stockBefore, history: historyBefore },
+      { completed: ['validate', 'execute'], orders: 2, stock: stockBefore - 2, history: historyBefore },
+      { completed: ['validate', 'execute', 'record'], orders: 2, stock: stockBefore - 2, history: historyBefore + 1 },
+    ])
     expect(agent.orders.value).toHaveLength(2)
     expect(agent.orders.value[0]).toMatchObject({ productId: 'milk', quantity: 2, status: 'paid' })
     expect(agent.products.value.find(product => product.id === 'milk')!.stock).toBe(stockBefore - 2)
@@ -352,23 +371,94 @@ describe('AI-driven mall flows', () => {
     finally { wrapper.unmount() }
   })
 
-  it.each(['purchase', 'return'] as const)('revalidates current %s eligibility immediately before mutation', async (type) => {
+  it('does not mutate local state if the page unloads before execution', async () => {
+    const { agent, wrapper } = mountAgentHarness()
+    let unloaded = false
+    const stop = watch(agent.tasks, (tasks) => {
+      if (tasks[0]?.status === 'completed' && !unloaded) {
+        unloaded = true
+        wrapper.unmount()
+      }
+    }, { flush: 'sync' })
+    try {
+      await finishTimers(agent.send('买 1 盒牛奶'))
+      const orders = agent.orders.value
+      const products = agent.products.value
+      const history = agent.history.value
+      await finishTimers(agent.approve(agent.streamSnapshot.value.interruptState.interrupts[0]!.id))
+      expect(unloaded).toBe(true)
+      expect(agent.orders.value).toBe(orders)
+      expect(agent.products.value).toBe(products)
+      expect(agent.history.value).toBe(history)
+      expect(agent.tasks.value.map(task => task.status)).toEqual(['completed', 'waiting', 'waiting'])
+    }
+    finally {
+      stop()
+      if (!unloaded) { wrapper.unmount() }
+    }
+  })
+
+  it.each([
+    {
+      name: 'stock drops below the edited quantity',
+      prompt: '买 1 盒牛奶',
+      choice: '2',
+      reason: '当前库存不足，请重新选择数量。',
+      previewError: '库存不足，未创建演示订单。',
+      invalidate: (agent: MallAgentController) => {
+        agent.products.value = agent.products.value.map(product => product.id === 'milk' ? { ...product, stock: 1 } : product)
+      },
+    },
+    {
+      name: 'the shipping address is removed',
+      prompt: '买 1 盒牛奶',
+      choice: '2',
+      reason: '下单前需要先配置收货地址。',
+      previewError: '尚未配置收货地址，未创建演示订单。',
+      invalidate: (agent: MallAgentController) => { agent.addresses.value = [] },
+      opensAddressEditor: true,
+    },
+    {
+      name: 'the order is no longer returnable',
+      prompt: '我要退货',
+      choice: 'quality',
+      reason: '该订单当前不可退货，未修改订单数据。',
+      previewError: '订单当前不可退货，未修改订单。',
+      invalidate: (agent: MallAgentController) => {
+        agent.orders.value = agent.orders.value.map(order => ({ ...order, status: 'returned' }))
+      },
+    },
+  ])('fails only validation after approval when $name', async ({ prompt, choice, reason, previewError, invalidate, opensAddressEditor = false }) => {
     const { agent, wrapper } = mountAgentHarness()
     try {
-      await finishTimers(agent.send(type === 'purchase' ? '买 1 盒牛奶' : '我要退货'))
+      await finishTimers(agent.send(prompt))
       const approval = agent.streamSnapshot.value.interruptState.interrupts[0]!
-      const historyLength = agent.history.value.length
+      const history = agent.history.value
+      const statuses: string[][] = []
+      const stop = watch(agent.tasks, (tasks) => { statuses.push(tasks.map(task => task.status)) }, { flush: 'sync' })
+      agent.approvalValue.value = choice
       const decision = agent.approve(approval.id)
-      if (type === 'purchase') { agent.products.value = agent.products.value.map(product => product.id === 'milk' ? { ...product, stock: 0 } : product) }
-      else { agent.orders.value = agent.orders.value.map(order => ({ ...order, status: 'returned' })) }
-      await finishTimers(decision)
-      expect(agent.orders.value).toHaveLength(1)
-      expect(agent.history.value).toHaveLength(historyLength)
+      invalidate(agent)
+      const orders = agent.orders.value
+      const products = agent.products.value
+      try { await finishTimers(decision) }
+      finally { stop() }
+      expect(agent.orders.value).toBe(orders)
+      expect(agent.products.value).toBe(products)
+      expect(agent.history.value).toBe(history)
+      expect(agent.addressEditorOpen.value).toBe(opensAddressEditor)
+      expect(statuses).toEqual([['running', 'waiting', 'waiting'], ['failed', 'waiting', 'waiting']])
+      const panel = mount(MallAgentPanel, { props: { open: true, tasks: agent.tasks.value } })
+      try {
+        expect(panel.get('.agent-task-list__count').text()).toBe('已完成 0/3')
+        expect(panel.get('.agent-task-list__item.is-failed').text()).toContain(reason)
+      }
+      finally { panel.unmount() }
       if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
       const call = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-call').find(part => part.id === approval.toolCallId)
       expect(call?.state).toBe('error')
       const preview = agent.toolCallPreviews.value[approval.toolCallId]
-      expect(preview?.error).toBe(type === 'purchase' ? '库存不足，未创建演示订单。' : '订单当前不可退货，未修改订单。')
+      expect(preview?.error).toBe(previewError)
       expect(preview?.result).toBeUndefined()
       expect(agent.streamSnapshot.value.interruptState.interrupts).toHaveLength(0)
     }
@@ -386,6 +476,7 @@ describe('AI-driven mall flows', () => {
     await finishTimers(agent.approve(approval.id))
     expect(agent.orders.value.find(order => order.id === 'JD20260819001')?.status).toBe('returned')
     expect(agent.history.value[0]).toMatchObject({ type: 'return', detail: expect.stringContaining('商品问题') })
+    expect(agent.tasks.value.map(task => task.status)).toEqual(['completed', 'completed', 'completed'])
     expect(agent.toolCallPreviews.value[approval.toolCallId]).toEqual({
       parameters: '提交演示退货申请',
       result: '演示退货申请已提交，未发起真实退款。',

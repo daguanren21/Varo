@@ -156,6 +156,7 @@ Official references: [Vue API](https://tanstack.com/ai/latest/docs/api/ai-vue), 
 
 - [AgentChat](./agent-chat): conversation, streaming, tools, approvals, and input.
 - [AgentWorkspace](./agent-workspace): sources, retrieval, tasks, versions, and layout.
+- [Agent Decision Card](./agent-decision) and [Agent Inbox](./agent-inbox): native WeChat question cards and a controlled task list without the chat SDK.
 
 ::: info Platforms
 H5 uses RAF for presentation text pacing and WeChat mini programs use timed frames; both use the same safe Markdown AST. TanStack AI manages chat transport and state. Agent items support only `h5` / `weapp`; experimental compilation of base components does not extend Agent UI support.

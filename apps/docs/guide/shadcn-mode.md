@@ -72,7 +72,7 @@ export default defineConfig({
 })
 ```
 
-`styles.source` 相对于 `srcRoot`。`themes/base` 安装的 `src/styles/varo.css` 只含 tokens 与基础规则；各组件 manifest 安装自身 CSS，Agent 还依赖 `themes/agent` 的 `varo-agent.css`。每次新增组件后须重启构建，重新收集包括 `varo.css` 在内的全部样式。仓库 `apps/platform-smoke/vite.config.mjs` 采用同样配置，先加载基础样式，再加载组件样式。
+`styles.source` 相对于 `srcRoot`。`themes/base` 安装的 `src/styles/varo.css` 只含 tokens 与基础规则；组件 manifest 决定安装哪些 CSS。依赖 `themes/agent` 的条目会安装 `src/styles/varo-agent.css`。新增组件后须重启构建，重新收集全部样式，先加载 `varo.css`。参考仓库 `apps/platform-smoke/vite.config.mjs`。
 
 所有这些文件必须通过 `weapp.styles` 的 `include: 'app.vue'` 全局加载。保留原生 SFC 的 `styleIsolation: apply-shared`，不要在组件局部 `<style>` / WXSS 导入全局主题或组件 CSS；其中应用级选择器不能进入组件 WXSS。H5 Registry 源码会自动导入完整 CSS 依赖闭包，不使用此原生全局注册方式。
 

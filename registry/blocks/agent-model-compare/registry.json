@@ -10,6 +10,7 @@
   "files": [
     { "target": "h5", "from": "registry/blocks/agent-model-compare/h5.vue", "to": "src/components/blocks/agent-model-compare.vue" },
     { "target": "weapp", "from": "registry/blocks/agent-model-compare/weapp-vite.vue", "to": "src/components/blocks/agent-model-compare.vue" },
+    { "target": "weapp", "from": "registry/blocks/agent-model-compare/agent-model-compare-transcript.weapp-vite.vue", "to": "src/components/blocks/agent-model-compare-transcript.vue" },
     { "target": "h5", "from": "registry/blocks/agent-model-compare/agent-model-compare.types.ts", "to": "src/components/blocks/agent-model-compare.types.ts" },
     { "target": "weapp", "from": "registry/blocks/agent-model-compare/agent-model-compare.types.ts", "to": "src/components/blocks/agent-model-compare.types.ts" },
     { "target": "h5", "from": "registry/blocks/agent-model-compare/agent-model-compare-actions.ts", "to": "src/components/blocks/agent-model-compare-actions.ts" },

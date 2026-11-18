@@ -1,0 +1,16 @@
+{
+  "name": "agent-inbox",
+  "type": "block",
+  "title": "Agent Inbox",
+  "description": "Filter application-owned task snapshots and request open or retry by task ID.",
+  "targets": ["weapp"],
+  "dependencies": [],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/card"],
+  "files": [
+    { "target": "weapp", "from": "registry/blocks/agent-inbox/weapp-vite.vue", "to": "src/components/blocks/agent-inbox.vue" },
+    { "target": "weapp", "from": "registry/blocks/agent-inbox/agent-inbox-actions.weapp-vite.vue", "to": "src/components/blocks/agent-inbox-actions.vue" },
+    { "target": "weapp", "from": "registry/blocks/agent-inbox/agent-inbox.types.ts", "to": "src/components/blocks/agent-inbox.types.ts" }
+  ],
+  "docs": "/ai/agent-inbox"
+}

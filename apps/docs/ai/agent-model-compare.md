@@ -30,6 +30,8 @@ pnpm dlx @varo-ui/cli add --target weapp components/agent-model-selector
 
 提交后保留共享提示词，便于核对。切换模型仅清空本侧的消息、快照、重试请求和测量，不清空另一侧。“显示普通 Chat 组合”将独立选择器放在 AgentChat 外部，只执行左侧转换；右侧暂停使用时，仍要求两侧选择不同模型。AgentChat 仍然只安装 conversation 及其依赖。“新建会话”清空该普通本地会话。
 
+在原生演示中，“载入工具示例”会载入两份 SDK 会话，其中工具调用 ID 相同，但安全预览不同。展开左侧工具，再选择“继续左侧工具示例”，仅左侧会发送后续消息。旧的左侧工具移入历史后仍展开，右侧工具仍折叠。
+
 词数、`finally` 清理次数和计时器数量记录实际生成、调度及取消，用于观察资源，不能代替回答文本。关闭时清理两侧，重载路由创建新实例；卸载时调用各 SDK client 的 `stop()`、解除 snapshot 订阅并 `dispose()`，不保留第二套流控制器。
 
 ## 公开契约
@@ -38,7 +40,7 @@ pnpm dlx @varo-ui/cli add --target weapp components/agent-model-selector
 
 ```ts
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationEntry } from '@/components/agent-ui/types'
+import type { AgentConversationEntry, AgentToolCallPreview } from '@/components/agent-ui/types'
 
 interface AgentModelOption {
   id: string
@@ -53,6 +55,8 @@ interface AgentCompareState {
   modelId: string
   messages: readonly AgentConversationEntry[]
   snapshot?: ChatClientSnapshot
+  toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>> // 仅原生
+  sessionId?: string // 仅原生，替换本侧会话时更新
   busy: boolean
   error?: string
   retryable?: boolean
@@ -65,6 +69,8 @@ interface AgentCompareState {
 ```
 
 应用需提供唯一且稳定的目录 ID、可读名称与当前可用性。`left`/`right` 由应用控制；从任务开始到资源清理结束，`busy` 都应保持为 true。SDK snapshot 的 `isLoading` 或 `status` 为 `submitted` / `streaming` 时也按活动请求处理，不能把展示用 `waiting` 写入 SDK 状态。初始化阶段缺少某侧不会崩溃，但不能提交。Block 用于比较文本：历史消息保留静态展示 API，活动内容直接从 SDK snapshot 纯投影，不另存活动消息或重放事件。工具执行、审批、会话存储和 provider 路由需要在应用中处理。
+
+原生端按 SDK 工具调用 ID 设置 `toolCallPreviews`，只传入应用确认可安全展示的文本。同一侧的工具从当前回复移入历史时保留展开状态；删除工具调用或更改模型会丢弃对应展开状态。应用在原位替换本侧会话时应更新 `sessionId`，即使模型和工具 ID 相同也只重置该侧。
 
 `outcome` 是应用确认的本次运行结果：真实计算全部结束后提供 `completed`，显式停止后提供 `cancelled`，新运行或切换模型时清除。SDK `ready` 只表示可接受请求，不代表成功或取消；未提供结果时面板显示“就绪”，活动请求与错误优先于旧结果。此字段只用于展示，不持有消息或执行策略。
 
@@ -79,15 +85,15 @@ interface AgentCompareState {
 
 ### 意图与切换策略
 
-| 事件                | 载荷                                                            | 保护条件 / 应用责任                                                                                                                        |
-| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `update:modelValue` | `string`                                                        | 任一侧运行或 disabled/loading/目录错误时不更新草稿                                                                                         |
-| `modelChange`       | `{ side: 'left' \| 'right', modelId: string }`                  | 任一侧运行时禁止切换。拒绝不存在、不可用、禁用、当前已选和另一侧已选 ID；应用接受选择并决定旧结果处理。                                    |
-| `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | 提示词 trim 后非空，两侧空闲且选择两个不同的可用模型；应用重新核对当前状态并分别通过两侧 SDK client 启动。                              |
-| `retry`             | `'left' \| 'right'`                                             | 仅失败/错误侧、`retryable: true`、本侧无待处理且所选模型可用时允许；**另一侧运行不阻止重试**。应用使用该侧保存的原请求，不使用已编辑草稿。 |
-| `stop`              | `'left' \| 'right'`                                             | 仅活动侧可停止，即使 disabled/loading/error 仍可用；应用只调用对应 SDK client 的 `stop()`，取消该侧生产者。                            |
-| `approve` / `reject` | `{ side: 'left' \| 'right', interruptId: string }` | 绑定显示时的中断事务，应用只解析对应侧 SDK 中断 |
-| `retryInterrupts` / `cancelInterrupts` | `'left' \| 'right'` | 应用重试或取消该侧中断事务，不混同于重新生成 |
+| 事件                                   | 载荷                                                            | 保护条件 / 应用责任                                                                                                                        |
+| -------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `update:modelValue`                    | `string`                                                        | 任一侧运行或 disabled/loading/目录错误时不更新草稿                                                                                         |
+| `modelChange`                          | `{ side: 'left' \| 'right', modelId: string }`                  | 任一侧运行时禁止切换。拒绝不存在、不可用、禁用、当前已选和另一侧已选 ID；应用接受选择并决定旧结果处理。                                    |
+| `run`                                  | `{ prompt: string, leftModelId: string, rightModelId: string }` | 提示词 trim 后非空，两侧空闲且选择两个不同的可用模型；应用重新核对当前状态并分别通过两侧 SDK client 启动。                                 |
+| `retry`                                | `'left' \| 'right'`                                             | 仅失败/错误侧、`retryable: true`、本侧无待处理且所选模型可用时允许；**另一侧运行不阻止重试**。应用使用该侧保存的原请求，不使用已编辑草稿。 |
+| `stop`                                 | `'left' \| 'right'`                                             | 仅活动侧可停止，即使 disabled/loading/error 仍可用；应用只调用对应 SDK client 的 `stop()`，取消该侧生产者。                                |
+| `approve` / `reject`                   | `{ side: 'left' \| 'right', interruptId: string }`              | 绑定显示时的中断事务，应用只解析对应侧 SDK 中断                                                                                            |
+| `retryInterrupts` / `cancelInterrupts` | `'left' \| 'right'`                                             | 应用重试或取消该侧中断事务，不混同于重新生成                                                                                               |
 
 两端均发送单值或单对象事件，不使用原生多参数事件。激活时读取当前 props，不使用旧选项对象。Block 不乐观接受模型切换、清空结果或报告成功；这些由应用确认。外部替换受控状态也由应用处理，请勿在请求运行中替换模型 ID。
 
@@ -116,5 +122,6 @@ interface AgentCompareState {
 5. 禁用输入后独立停止，且生产器不再继续产生内容。
 6. 关闭活动比较后的真实迭代器/计时器清理。
 7. 独立选择器与普通 Chat 组合。
+8. 仅原生：展开左侧工具并继续左侧会话，确认它移入历史后仍展开，而同 ID 的右侧工具保持折叠。
 
 H5 场景请求窄屏和宽屏截图；原生只在 DevTools 支持时请求截图。headless SDK 无法观察部分 `rich-text` 渲染文本；最终 Markdown 文本断言仍须保留，并如实报告由此导致的失败，不能改为检查 snapshot/store 中的值。DevTools 登录、有效本地 AppID、可用截图能力及真机评审仍是独立前置条件。源码和已编写的场景不能证明这些检查已通过。

@@ -51,6 +51,7 @@ const blockDemos = [
   { label: 'Source Chat', route: '/pages/source-chat/index' },
   { label: 'Workspace', route: '/pages/agent-workspace-demo/index' },
   { label: 'Activity', route: '/pages/agent-activity-demo/index' },
+  { label: 'Agent Inbox', route: '/pages/agent-inbox-demo/index' },
   { label: 'Model Compare', route: '/blocks-lab/model-compare/index' },
   { label: 'Retail Tools', route: '/blocks-lab/retail/index' },
   { label: 'Application Blocks', route: '/blocks-lab/application/index' },

@@ -1,0 +1,15 @@
+{
+  "name": "agent-decision",
+  "type": "component",
+  "title": "Agent Decision Card",
+  "description": "Native card for collecting a choice or custom answer while application code owns acceptance and effects.",
+  "targets": ["weapp"],
+  "targetDependencies": { "weapp": ["wevu"] },
+  "registryDependencies": ["components/button", "components/card", "components/input", "themes/agent"],
+  "files": [
+    { "target": "weapp", "from": "registry/components/agent-decision/weapp-vite.vue", "to": "src/components/agent-ui/AgentDecisionCard.vue" },
+    { "target": "weapp", "from": "registry/components/agent-decision/agent-decision-option.weapp-vite.vue", "to": "src/components/agent-ui/agent-decision-option.vue" },
+    { "target": "weapp", "from": "registry/components/agent-decision/agent-decision.types.ts", "to": "src/components/agent-ui/agent-decision.types.ts" }
+  ],
+  "docs": "/ai/agent-decision"
+}
