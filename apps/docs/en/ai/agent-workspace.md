@@ -99,7 +99,7 @@ The default execution area displays conversation, retrieval, tasks, and receipts
 
 H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` use the installed Block and Varo controls. The labelled local demo selects, branches, and pins versions in memory and accepts or rejects approvals. The first word-count attempt deliberately fails; retry counts 24 words from eight in-page sentences. Cancel clears the local producer and returns the task to `waiting`, requiring approval to run again. The demo does not connect to a service or persist results.
 
-`apps/e2e/tests/{h5,weapp-native}/workspace.e2e.ts` exercises these controls and live page states, including disabled/no-op affordances and no later work after cancellation. Authored scenarios are not a claim that a device run passed.
+`apps/e2e/tests/{h5,weapp-native}/workspace.e2e.ts` exercises these controls and live page states, including disabled/no-op affordances and no later work after cancellation.
 
 ## Slots
 
@@ -107,8 +107,8 @@ H5 `features/WorkspaceDemo.vue` and native `pages/agent-workspace-demo/index` us
 | ----------- | ---------------------------------------------------------------------- |
 | `execution` | Replaces the default conversation, retrieval, task, and receipt region |
 
-::: warning Native runtime limits
-The `execution` slot is an unscoped replacement slot. On WeChat with 7.11.1, explicitly enable both `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true`; no former compiler patch, context bridge, or parent-data copy is needed. Historical 7.10.0 coverage in `apps/e2e/tests/weapp-native/workspace.e2e.ts` exercised parent query/step updates, stop/replay, and source-selection event forwarding through the custom slot using real controls; it does not establish 7.11.1 behavior, created setup, other platforms, or devices. Where headless cannot fully observe `rich-text`, validate on a real supported host.
+::: info Native slot configuration
+The `execution` slot is an unscoped replacement slot. On WeChat, enable both `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` with default attached setup. See [runtime evidence limits](/en/guide/installation#deterministic-e2e-and-evidence-boundaries), including headless `rich-text` observation limits.
 :::
 
 ::: info Target import

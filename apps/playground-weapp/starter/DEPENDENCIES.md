@@ -6,27 +6,27 @@ Varo retail source, native UI, selected helpers, and starter tooling use the rep
 
 ## Registry dependencies
 
-Versions and SPDX declarations below come from installed package metadata. Check upstream license texts and notices for the resolved dependency graph; Varo's MIT license does not replace them.
+Read direct dependency versions from [`package.json`](./package.json). SPDX declarations below come from package metadata. Check upstream license texts and notices for the resolved dependency graph; Varo's MIT license does not replace them.
 
-| Package                    | Direct version | Declared license | Role                                                                                   |
-| -------------------------- | -------------- | ---------------- | -------------------------------------------------------------------------------------- |
-| `wevu`                     | 7.11.1         | MIT              | Native component/reactivity runtime                                                    |
-| `@weapp-tailwindcss/merge` | 2.2.3          | MIT              | Native-compatible class merging                                                        |
-| `clsx`                     | 2.1.1          | MIT              | Class value composition                                                                |
-| `weapp-vite`               | 7.11.1         | MIT              | Native compiler and published Web API runtime injection                                |
-| `weapp-tailwindcss`        | 5.5.3          | MIT              | Mini-program style transforms                                                          |
-| `tailwindcss`              | 4.3.3          | MIT              | Utility generation                                                                     |
-| `vite`                     | 8.2.2          | MIT              | Build pipeline                                                                         |
-| `vue`                      | 3.5.45         | MIT              | Compiler/tooling dependency; application code imports `wevu`, not H5 renderer wrappers |
-| `typescript`               | 6.0.3          | Apache-2.0       | TypeScript tooling                                                                     |
-| `miniprogram-api-typings`  | 5.2.3          | MIT              | WeChat API declarations                                                                |
-| `@types/node`              | 26.1.0         | MIT              | Node tooling declarations                                                              |
-| `@babel/core`              | 8.0.1          | MIT              | Compiler peer dependency                                                               |
-| `esbuild`                  | 0.28.2         | MIT              | Production minification                                                                |
-| `postcss-selector-parser`  | 7.1.6          | MIT              | Compiled component selector verification                                               |
-| `@csstools/css-tokenizer`  | 4.0.2          | MIT              | CSS escape decoding for recursive stylesheet verification                              |
+| Package                    | Declared license | Role                                                                                   |
+| -------------------------- | ---------------- | -------------------------------------------------------------------------------------- |
+| `wevu`                     | MIT              | Native component/reactivity runtime                                                    |
+| `@weapp-tailwindcss/merge` | MIT              | Native-compatible class merging                                                        |
+| `clsx`                     | MIT              | Class value composition                                                                |
+| `weapp-vite`               | MIT              | Native compiler and published Web API runtime injection                                |
+| `weapp-tailwindcss`        | MIT              | Mini-program style transforms                                                          |
+| `tailwindcss`              | MIT              | Utility generation                                                                     |
+| `vite`                     | MIT              | Build pipeline                                                                         |
+| `vue`                      | MIT              | Compiler/tooling dependency; application code imports `wevu`, not H5 renderer wrappers |
+| `typescript`               | Apache-2.0       | TypeScript tooling                                                                     |
+| `miniprogram-api-typings`  | MIT              | WeChat API declarations                                                                |
+| `@types/node`              | MIT              | Node tooling declarations                                                              |
+| `@babel/core`              | MIT              | Compiler peer dependency                                                               |
+| `esbuild`                  | MIT              | Production minification                                                                |
+| `postcss-selector-parser`  | MIT              | Compiled component selector verification                                               |
+| `@csstools/css-tokenizer`  | MIT              | CSS escape decoding for recursive stylesheet verification                              |
 
-`pnpm-lock.yaml` fixes this export's dependency graph. The pnpm configuration retains the `undici` 7.29.0 override and Vue 3.5.45 pin. Before redistribution, check `LICENSE`/`NOTICE` files for all installed dependencies, bundled code, and native binaries. This table covers direct dependencies only.
+`pnpm-lock.yaml` fixes the export's resolved dependency graph; [`pnpm-workspace.yaml`](./pnpm-workspace.yaml) declares overrides. Before redistribution, check `LICENSE`/`NOTICE` files for all installed dependencies, bundled code, and native binaries. This table covers direct dependencies only.
 
 ## Assets
 

@@ -1,7 +1,7 @@
 import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import type { ChatUIInterrupt, ChatUISelectedMessage, ChatUISelectedPart } from '@tanstack/ai-client/ui'
-import { selectChatUI } from '@tanstack/ai-client/ui'
 import type { AgentConversationEntry, AgentPartStatus, AgentStreamStatus, AgentToolPart, AgentTraceStep } from '../agent-ui/types'
+import { selectChatUI } from '@tanstack/ai-client/ui'
 
 export const agentPartStatusLabels: Readonly<Record<AgentPartStatus, string>> = {
   waiting: '等待中',
@@ -220,9 +220,13 @@ export function agentConversationProjection(entries: readonly AgentConversationE
       return renderMessage(message, 'completed')
     }
     return {
-      id: entry.id, role: entry.role, label: entry.label ?? '', timestamp: entry.timestamp ?? '',
+      id: entry.id,
+      role: entry.role,
+      label: entry.label ?? '',
+      timestamp: entry.timestamp ?? '',
       segments: [{ id: `${entry.id}:text`, kind: 'text' as const, content: entry.content, steps: [] }],
-      final: true, status: 'completed' as const,
+      final: true,
+      status: 'completed' as const,
     }
   })
 }
@@ -261,7 +265,10 @@ export function agentSnapshotProjection(snapshot: ChatClientSnapshot): AgentSnap
   ]
   if (hasInterrupt && snapshot.error) { interruptErrors.unshift(snapshot.error.message) }
   const approvals = interrupts.filter(item => item.kind === 'tool-approval').map(item => ({
-    id: item.id, threadId: item.threadId, interruptedRunId: item.interruptedRunId, generation: item.generation,
+    id: item.id,
+    threadId: item.threadId,
+    interruptedRunId: item.interruptedRunId,
+    generation: item.generation,
     title: `确认工具：${item.kind === 'tool-approval' ? item.toolName : ''}`,
     description: item.message ?? item.reason,
     errors: item.errors.map(error => error.message),
@@ -275,7 +282,8 @@ export function agentSnapshotProjection(snapshot: ChatClientSnapshot): AgentSnap
     canCancelInterrupts: !snapshot.interruptState.resuming && (interrupts.some(item => item.kind !== 'unbound') || snapshot.interruptState.interruptErrors.length > 0),
     transactionKey: agentInterruptTransactionKey(snapshot),
     error: hasInterrupt ? undefined : snapshot.error?.message,
-    message, renderedMessage,
+    message,
+    renderedMessage,
     messageFinal: status !== 'streaming',
     messageText: agentMessageText(message),
     reasoning: renderedMessage?.segments.flatMap(segment => segment.steps) ?? [],

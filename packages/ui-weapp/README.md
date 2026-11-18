@@ -9,7 +9,7 @@ pnpm add @varo-ui/weapp wevu
 pnpm add -D weapp-vite
 ```
 
-The supported peer range for `weapp-vite` and `wevu` is `>=7.2.1 <8`.
+The supported peer range for `weapp-vite` and `wevu` is `>=7.2.1 <8`, as declared in [`package.json`](./package.json).
 
 ## Usage
 
@@ -110,10 +110,10 @@ install components; continue using `@varo-ui/cli add --target weapp` to copy edi
 
 The resolver only uses local source files; it neither selects npm components nor installs missing files. Load the npm stylesheet for npm components, or all installed styles for Registry components. Keep global CSS out of individual native SFCs. See `apps/platform-smoke/vite.config.mjs` and `apps/playground-weapp/vite.config.ts` for repository examples.
 
-## Migration from the former Vue Weapp renderer
+## API and runtime boundaries
 
-- `@varo-ui/weapp` now exports native SFC source. Recompile native consumers with the supported compiler instead of bundling the former Vue render functions.
-- `@varo-ui/weapp/primitives` and the Vue-Weapp primitive renderer are removed, without a compatibility barrel. Compose native SFCs, or bind neutral `@varo-ui/headless` behavior to Wevu for custom native controls.
+- `@varo-ui/weapp` exports native SFC source. Compile it with the supported native compiler, not a Vue renderer.
+- There is no `@varo-ui/weapp/primitives` entry. Compose native SFCs, or bind neutral `@varo-ui/headless` behavior to Wevu for custom native controls.
 - H5 DOM primitives, including body-scroll locking, belong to `@varo-ui/h5/primitives`. Do not import them into native product code.
 - Use `SubmitPayload` from `@varo-ui/headless` for form submit/failed handlers (`FormSubmitPayload` in installed form source exports). It contains `values`, `errors`, and optional `event: unknown`; a native event is not a DOM `Event`.
 - Disabled/readonly inputs reject mutation; accepted changes notify once and no-ops do not notify. Native Drawer `openChange` carries one `[open, details]` tuple: destructure it and call `details.cancel()` synchronously before the state/model/close transition. Unlike the H5 callback, it does not supply two separate arguments.
@@ -121,7 +121,7 @@ The resolver only uses local source files; it neither selects npm components nor
 
 ## TanStack AI and streaming Fetch
 
-The workspace integrates `weapp-vite` / `wevu` 7.11.1. Its published Web API runtime supports the standard Fetch, streams, UTF-8 decoding, and cancellation APIs used by `@tanstack/ai-client`; Varo does not supply a separate Agent transport or polyfill.
+Enable `weapp-vite`'s Web Runtime for the Fetch, streams, UTF-8 decoding, and cancellation APIs used by `@tanstack/ai-client`. Varo supplies no separate Agent transport or polyfill.
 
 ```ts
 export default defineConfig({
@@ -140,7 +140,7 @@ export default defineConfig({
 })
 ```
 
-`nativeSlotContext` enables the upstream native slot-owner and app-shell implementation for the WeChat target; the former 7.5.0 compiler patch is removed. Install `@tanstack/ai-client` for Agent Registry consumers, bind `ChatClient` snapshots through Wevu, and keep server authorization and tool execution in the application. Runtime support on other profiles and IDE/device behavior require separate validation. See the [Web API runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) and [Agent guide](https://varo.weapp.dev/ai/).
+On WeChat, enable both `nativeSlotContext` and `scopedSlotsRequireProps` with default attached setup. Install `@tanstack/ai-client` for Agent Registry consumers, bind `ChatClient` snapshots through Wevu, and keep server authorization and tool execution in the application. See the [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) and [Agent guide](https://varo.weapp.dev/en/ai/).
 
 ## Profiles and evidence limits
 
@@ -156,6 +156,6 @@ pnpm --filter @varo/platform-smoke verify:alipay
 
 The first command builds/checks all seven native profiles. The latter two build/check one profile and recheck its existing artifacts, respectively. The IDE/artifact root is `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`; runtime files are inside its nested `dist/`.
 
-Donut uses the WeChat compiler (`weapp`) and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. Artifact checks cover reachable component files, templates and event bindings, global styles, and host metadata. SDK installation, native packaging, signing, simulator and device checks, and independent release review need separate verification. To use `open:<profile>`, supply your registered AppID and vendor tools; the command does not generate credentials. Run only trusted artifacts in the glass-easel browser preview, which provides neither security isolation nor proof of device behavior.
+Donut uses the WeChat compiler (`weapp`) and selects its host through `mini-android`, `mini-ios`, or `mini-ohos` metadata. Artifact checks cover reachable component files, templates and event bindings, global styles, and host metadata. To use `open:<profile>`, supply a registered AppID and vendor tools. See [runtime evidence limits](https://varo.weapp.dev/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for SDKs, signing, preview safety, and device validation.
 
 [Component documentation](https://varo.weapp.dev/components/) · [Repository](https://github.com/daguanren21/Varo)

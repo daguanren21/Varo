@@ -99,7 +99,7 @@ Block 不修改传入的 `versions`、`tasks`、来源或回执数组。选择�
 
 H5 的 `features/WorkspaceDemo.vue` 与原生的 `pages/agent-workspace-demo/index` 使用安装后的 Block 和 Varo 控件。标注为本地演示的页面在内存中选择、分支和固定版本，可接受或拒绝审批。首次词数统计会故意失败，重试后实际统计页面内 8 条短句的 24 个词。取消会清理本地生产者，任务恢复为 `waiting`，再次运行需重新批准。演示不连接服务或持久化结果。
 
-`apps/e2e/tests/{h5,weapp-native}/workspace.e2e.ts` 通过实际控件和页面状态覆盖这些行为，包括禁用/无变化操作和取消后不再继续计算。编写了场景不等于已通过真机验证。
+交互回归见 [H5](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/h5/workspace.e2e.ts) 与[原生](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-native/workspace.e2e.ts)，覆盖禁用、无变化操作和取消后停止计算。
 
 ## Slots
 
@@ -107,8 +107,8 @@ H5 的 `features/WorkspaceDemo.vue` 与原生的 `pages/agent-workspace-demo/ind
 | ----------- | -------------------------------- |
 | `execution` | 替换默认对话、检索、任务和回执区 |
 
-::: warning 原生运行限制
-`execution` 是无参数的替换插槽。7.11.1 微信目标需显式启用 `weapp.vue.template.nativeSlotContext: true` 和 `scopedSlotsRequireProps: true`；无需旧版编译器补丁、上下文桥或复制父级数据。此前在 7.10.0 编译基线上，`apps/e2e/tests/weapp-native/workspace.e2e.ts` 曾通过真实控件验证自定义插槽中的父级 query/steps 更新、停止/重新运行与来源选择事件回传。覆盖范围为默认 attached setup 的原生 headless 宿主，不推断 created setup、其他平台或真机支持；headless 无法完整观察的 `rich-text` 仍需真实宿主验证。
+::: warning 原生插槽配置
+`execution` 是无参数的替换插槽。微信目标在 `weapp.vue.template` 中同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup。配置范围见[安装 profile 与支持边界](/guide/installation#安装-profile-与支持边界)，宿主观测限制见[证据边界](/guide/installation#确定性-e2e-与证据边界)。
 :::
 
 ::: info 平台导入

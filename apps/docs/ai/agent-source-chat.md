@@ -14,7 +14,7 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/agent-source-chat
 
 直接依赖 `blocks/agent-chat`、`components/agent-workspace`、`components/agent-advanced`、`components/button` 与 `utils/primitives`。引用功能使用 `agent-advanced`，无需安装完整的 `components/agent-ui`，也不增加基础 `agent-chat` 的 conversation 依赖。来源类型在 `agent-workspace`，引用类型在 `agent-advanced`。安装计划还包含 Agent 主题、conversation、presentation 与所需基础控件，无需手工复制依赖文件。
 
-H5 源码会导入所需 CSS。原生通过 `weapp.styles` 全局注册全部已安装 CSS，先加载 `varo.css`，并设置 `include: 'app.vue'`。保留 SFC 的 `styleIsolation: apply-shared`，不要把全局 CSS 导入组件局部 WXSS，详见 [Registry 模式](/guide/shadcn-mode)。原生使用 `wevu`，不能用 Vue alias 替代。声明的目标仅有 `h5` / `weapp`，不代表实验性 profile 或设备已通过验证。
+H5 源码会导入所需 CSS。原生通过 `weapp.styles` 全局注册全部已安装 CSS，先加载 `varo.css`，并设置 `include: 'app.vue'`。保留 SFC 的 `styleIsolation: apply-shared`，不要把全局 CSS 导入组件局部 WXSS，详见 [Registry 模式](/guide/shadcn-mode)。原生使用 `wevu`，不能用 Vue alias 替代。声明的目标仅有 `h5` / `weapp`。
 
 ## 数据与执行边界
 
@@ -145,11 +145,11 @@ Block 按 id 从当前 props 查找条目并检查操作条件，不转发已替
 
 省略 `modelValue` 与传入 `''` 不同。原生使用 `type: null, value: null` 属性元数据与 nullish 存在性检查。提交不清空非受控草稿；需要应用接受/拒绝更新、外部清空或切换会话草稿时使用 `v-model`。原生忙碌时可以编辑下一条草稿但不能提交；H5 沿用 `AgentChat` 忙碌时禁用编辑的行为。
 
-## 本地演示与验收范围
+## 本地演示与回归
 
 - H5：playground 的 `/?demo=source-chat`，组件为 `SourceChatDemo.vue`。
 - 原生：`pages/source-chat/index`。
 - 手动流程：切换来源可用性 → 请求并手动完成**演示**连接 → 显式启用范围 → 提问 → 排队/读取 → 成功、失败、空结果或超出范围 → 打开本地引用原文/申请转交。
 - 禁用操作时证据仍保留；转交后应用移除授权对象，按钮不可再次申请。切换非受控输入可检查本地草稿与受控空串的区别。
 
-E2E 场景在 `apps/e2e/tests/h5/source-chat.e2e.ts` 与 `apps/e2e/tests/weapp-native/source-chat.e2e.ts`，通过实际控件检查页面状态，不调用组件内部方法或用 `setData` 模拟输入。原生断言覆盖原生文字、回执、引用控件和本地来源预览，不证明 headless 能观察 Chat 的 rich-text 正文。7.11.1 微信目标的 plain-slot 上下文需显式启用 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`，并重新验收当前运行；测试不通过上下文桥、模拟几何或复制消息文字绕过宿主观测限制。
+微信目标在 `weapp.vue.template` 中同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup。交互回归见 [H5](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/h5/source-chat.e2e.ts) 与[原生](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-native/source-chat.e2e.ts)。原生场景检查文字、回执、引用控件和本地来源预览；`rich-text` 等宿主观测限制见[证据边界](/guide/installation#确定性-e2e-与证据边界)。

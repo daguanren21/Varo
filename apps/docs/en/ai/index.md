@@ -1,14 +1,14 @@
 # AI Agent Components
 
-TanStack AI owns AG-UI events, active messages, stream state, tool interrupts, and request abort. Varo UI only consumes SDK state for presentation. `@varo-ui/ai` retains safe Markdown, text pacing, and thread-version helpers only; it no longer provides a private protocol, stream controller, channel, SSE decoder, or event parser. Registry installs editable UI source.
+TanStack AI owns AG-UI events, active messages, stream state, tool interrupts, and request abort. Varo UI only consumes SDK state for presentation. `@varo-ui/ai` provides safe Markdown, text pacing, and thread-version helpers, not a private protocol, stream controller, channel, SSE decoder, or event parser. Registry installs editable UI source.
 
 ## Install
 
 ```bash
 # H5: Vue SDK binding
-pnpm add @varo-ui/ai @tanstack/ai@1.4.0 @tanstack/ai-client@1.1.0 @tanstack/ai-vue@1.0.1
+pnpm add @varo-ui/ai @tanstack/ai @tanstack/ai-client @tanstack/ai-vue
 # Native: headless SDK + Wevu only, without the Vue binding
-# pnpm add @varo-ui/ai @tanstack/ai@1.4.0 @tanstack/ai-client@1.1.0 wevu@7.11.1
+# pnpm add @varo-ui/ai @tanstack/ai @tanstack/ai-client wevu
 # Minimal conversation unit; choose H5 or Weapp
 pnpm dlx @varo-ui/cli add --target h5 components/agent-conversation
 pnpm dlx @varo-ui/cli add --target weapp components/agent-conversation
@@ -108,7 +108,7 @@ This minimal example renders text only. See [AgentEventRenderer](./event-rendere
 
 ## Native: ai-client + Wevu
 
-Import native SFC reactivity and lifecycle APIs from `wevu`, and the client from `@tanstack/ai-client`. Do not use `vue` or `@tanstack/ai-vue` in native product code. Use **7.11.1** for both the `weapp-vite` compiler and `wevu`, and enable the published Web Runtime in the compiler configuration:
+Import native SFC reactivity and lifecycle APIs from `wevu`, and the client from `@tanstack/ai-client`. Do not use `vue` or `@tanstack/ai-vue` in native product code. Enable Web Runtime in the compiler configuration:
 
 ```ts
 import { defineConfig } from 'weapp-vite/config'
@@ -130,11 +130,11 @@ export default defineConfig({
 })
 ```
 
-`nativeSlotContext` and `scopedSlotsRequireProps` explicitly enable the upstream 7.11.1 WeChat slot/app-shell implementation, replacing the old compiler patch and bootstrap. They are not current runtime proof or a promise for created setup or other platforms. Actual slot behavior under default attached setup still requires independent acceptance.
+On WeChat, enable both `nativeSlotContext` and `scopedSlotsRequireProps` with default attached setup. See [runtime evidence limits](/en/guide/installation#deterministic-e2e-and-evidence-boundaries).
 
 Keep the SDK's standard `fetchServerSentEvents` adapter with an application-owned absolute HTTPS endpoint. Web Runtime supplies the Fetch / Streams / decoding / cancellation APIs; do not add a `wx.request` transport or bespoke polyfills. Read `getSnapshot()` first, then update a Wevu `shallowRef` with `subscribeSnapshot()`. The application manages view attach/detach, subscription cleanup, and client disposal; see the complete [AgentEventRenderer](./event-renderer) example. Call SDK `stop()` to abort the active request. The application decides whether closing a view also cancels business work.
 
-The host must supply real status, headers, and chunks before the response ends. Do not assume 200 or disguise a fully buffered response as streaming when capabilities are missing. Verify WeChat DevTools and devices separately. This configuration does not promise equivalent support on other profiles, simulate browser Cookie/CORS behavior, or provide network-level backpressure. See the [official Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals).
+The host must supply real status, headers, and chunks before the response ends. Do not assume 200 or present a fully buffered response as streaming. Web Runtime does not simulate browser Cookie/CORS behavior or provide network-level backpressure. See the [official Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals).
 
 ## Approvals and local demos
 
@@ -158,5 +158,5 @@ Official references: [Vue API](https://tanstack.com/ai/latest/docs/api/ai-vue), 
 - [AgentWorkspace](./agent-workspace): sources, retrieval, tasks, versions, and layout.
 
 ::: info Platforms
-H5 uses RAF for presentation text pacing and WeChat mini programs use timed frames; both use the same safe Markdown AST. TanStack AI manages chat transport and state. Agent items support only `h5` / `weapp`. Experimental compilation of base components does not establish Agent UI support for other profiles. Native source and trusted compiled-artifact previews do not establish IDE or device behavior.
+H5 uses RAF for presentation text pacing and WeChat mini programs use timed frames; both use the same safe Markdown AST. TanStack AI manages chat transport and state. Agent items support only `h5` / `weapp`; experimental compilation of base components does not extend Agent UI support.
 :::

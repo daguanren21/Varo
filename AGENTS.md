@@ -96,6 +96,15 @@ DOCS_BASE=/Varo/ pnpm --filter @varo/docs build
 - Current workspace `lint` scripts are placeholders; `pnpm lint` is not evidence of substantive source linting. `test:e2e` runs Vitest structural contracts, not a browser suite.
 - Full repository/release verification uses `pnpm exec repo check --full`; do not equate a documented command with a passed gate.
 - During coordinated work, respect the integration owner's validation reservation: do not run project-wide builds, tests, linters, or formatters against siblings' in-flight changes.
+- Format canonical Registry source before generation. If a commit hook rewrites it, regenerate and stage the affected projections and inventory; run `check:generated` after the final hook mutations.
+
+## Documentation
+
+- Write for AI agents and developers: lead with required configuration, API contracts, constraints, and minimal runnable examples. Use short, direct statements; omit filler and repeated caveats.
+- Do not put current dependency versions in usage prose, configuration explanations, or ordinary install examples. Read exact versions from manifests and lockfiles. Keep version numbers only when a documented compatibility boundary, minimum requirement, or reproducible release record requires them.
+- Keep upgrade history, PR narratives, test counts, and point-in-time verification results in changelogs, PRs, or verification records, not usage guides.
+- Document shared constraints once and link to them. Preserve actionable platform, ownership, security, and failure boundaries; do not replace useful details with vague assurances.
+- Keep Chinese and English guidance aligned. Dependency upgrades do not justify mechanically replacing version numbers throughout the docs.
 
 ## Code Conventions & Common Patterns
 
@@ -158,9 +167,9 @@ DOCS_BASE=/Varo/ pnpm --filter @varo/docs build
 
 ## Runtime/Tooling Preferences
 
-- Required local runtime: Node `^22.18.0 || ^24.11.0 || >=26.0.0`; CI uses Node 24. Vitest 5 and tsdown 0.23 exclude Node 25.
-- Required package manager: pnpm `11.24.0`. Do not use npm or yarn for workspace operations.
-- Use Turbo for workspace orchestration, `tsdown` for most packages, Vite for H5/UI-H5, VitePress for docs, Vitest for tests, and `weapp-vite` plus `weapp-tailwindcss` for native compilation. Repository compiler/runtime versions are `weapp-vite`/`wevu` 7.5.0; native peers remain `>=7.2.1 <8`.
+- Read required Node and package-manager versions from the root `package.json` (`engines`, `packageManager`); CI runtime selection belongs to its workflow.
+- Use pnpm, not npm or yarn, for workspace operations.
+- Use Turbo for workspace orchestration, `tsdown` for most packages, Vite for H5/UI-H5, VitePress for docs, Vitest for tests, and `weapp-vite` plus `weapp-tailwindcss` for native compilation. Keep compiler and Wevu dependency pins aligned; native consumer compatibility belongs to `packages/ui-weapp/package.json` peer dependencies.
 - Keep peer dependencies explicit; `autoInstallPeers` is disabled.
 - Treat `dist/`, `.turbo/`, `coverage/`, `.vitepress/{cache,dist}`, `.weapp-vite/`, Weapp `devtools/`, platform-smoke `.generated/`, and `packages/cli/registry/` as generated output, along with the Registry projections listed above. CLI `prepack` synchronizes its packaged Registry copy.
 - Stable DevTools output is `apps/playground-weapp/devtools/build/mp-weixin`; watcher output is `apps/playground-weapp/dist/dev/mp-weixin`. Never merge these output paths.

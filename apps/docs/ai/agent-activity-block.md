@@ -20,7 +20,7 @@ CLI 列出的 npm 依赖需要另外安装。该项依赖 `components/agent-adva
 | 共享展示类型     | advanced 源单元已有的 `agent-ui/advanced-types.ts`        | 同左                                                           |
 | 样式             | advanced 自有 CSS、Agent 主题及按钮依赖样式由源文件导入   | Activity 自有 SFC 样式；base/Agent/button 依赖样式全局加载     |
 
-Block 使用现有的语义 token 和 utility class。原生工程通过 `weapp.styles` 将安装的全局 CSS 加载到 `app.vue`，先加载 `varo.css`；不要把全局样式导入 `apply-shared` 组件的局部 WXSS。具体配置见 [Wevu Registry](/guide/shadcn-mode)。清单目前只声明支持 `h5`/`weapp`，不能据此认定其他宿主或设备已通过验证。
+Block 使用现有的语义 token 和 utility class。原生工程通过 `weapp.styles` 将安装的全局 CSS 加载到 `app.vue`，先加载 `varo.css`；不要把全局样式导入 `apply-shared` 组件的局部 WXSS。具体配置见 [Wevu Registry](/guide/shadcn-mode)。清单仅声明支持 `h5` / `weapp`。
 
 ## 受控输入与事件
 
@@ -98,10 +98,10 @@ function acceptLocal(action: AgentActivityAction, requested: AgentActivityTask) 
 
 异步请求发出后，应用应立即更新 `disabled` / `actions` 或任务状态，并在等待结果期间保持这些限制。Block 没有内置的请求锁、自动重试或成功缓存，界面上的动作检查也不能代替服务端授权。
 
-## 交互演示与验证边界
+## 交互演示与回归
 
 H5 playground 的 `/?demo=activity` 与原生 `pages/agent-activity-demo/index` 使用明确标记的确定性本地数据。依次操作 `Start Draft report` → `Require local approval` → `Approve Draft report` → `Mark local failure` → `Retry Draft report` → `Start Draft report` → `Mark local complete`，可以查看应用如何控制整个流程；另一条运行项可取消。
 
 `Restrict start` / `Allow start`、全局禁用、单项锁定和终态展示当前 props 如何影响可用操作。`Reject next request` 让应用拒绝下一次合法请求，状态保持不变；`Clear activity` 传入受控空数组。六种标签、按钮、结果和请求计数均通过实际页面交互观察。
 
-E2E 文件为 `apps/e2e/tests/h5/activity.e2e.ts` 和 `apps/e2e/tests/weapp-native/activity.e2e.ts`。7.11.1 原生编译的 plain-slot 上下文需在微信目标显式启用 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true`；配置与升级本身不证明场景已通过。宿主仍有观测限制，模拟文本、DOM 几何或编译成功不能代替实际设备验证。
+微信目标在 `weapp.vue.template` 中同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup。交互回归见 [H5](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/h5/activity.e2e.ts) 与[原生](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-native/activity.e2e.ts)；宿主限制见[证据边界](/guide/installation#确定性-e2e-与证据边界)。

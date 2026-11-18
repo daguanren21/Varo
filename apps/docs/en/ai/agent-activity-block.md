@@ -20,7 +20,7 @@ Install npm dependencies listed by the CLI separately. This item depends on `com
 | Shared presentation types   | Existing advanced-owned `agent-ui/advanced-types.ts`                        | Same                                                                         |
 | Styles                      | Source imports advanced-owned CSS, Agent theme and button dependency styles | Activity's own SFC styles; load base/Agent/button dependency styles globally |
 
-The Block uses existing semantic tokens and utility classes. Native projects load installed global CSS into `app.vue` through `weapp.styles`, with `varo.css` first. Do not import global styles into an `apply-shared` component's local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). The manifest declares support for `h5`/`weapp` only; it does not establish support for other hosts or verify device behavior.
+The Block uses existing semantic tokens and utility classes. Native projects load installed global CSS into `app.vue` through `weapp.styles`, with `varo.css` first. Do not import global styles into an `apply-shared` component's local WXSS. See [Wevu Registry](/en/guide/shadcn-mode). The manifest supports `h5`/`weapp` only.
 
 ## Controlled inputs and events
 
@@ -104,4 +104,4 @@ H5 playground `/?demo=activity` and native `pages/agent-activity-demo/index` use
 
 `Restrict start` / `Allow start`, global disabling, per-item locking, and terminal rows show how current props affect available actions. `Reject next request` makes the application reject the next otherwise legal request, leaving state unchanged. `Clear activity` supplies a controlled empty array. Tests observe labels, controls, results, and request counts through live page interactions rather than copies of the source logic.
 
-E2E scenarios are in `apps/e2e/tests/h5/activity.e2e.ts` and `apps/e2e/tests/weapp-native/activity.e2e.ts`. Native 7.11.1 plain-slot context requires explicit `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` on the WeChat target. Configuration and an upgrade alone do not establish a passing scenario. Host observation limits remain; simulated text, DOM geometry, or compilation cannot replace real-device evidence.
+E2E scenarios are in `apps/e2e/tests/h5/activity.e2e.ts` and `apps/e2e/tests/weapp-native/activity.e2e.ts`. On WeChat, plain-slot context requires `weapp.vue.template.nativeSlotContext: true` and `scopedSlotsRequireProps: true` with default attached setup. See [runtime evidence limits](/en/guide/installation#deterministic-e2e-and-evidence-boundaries).

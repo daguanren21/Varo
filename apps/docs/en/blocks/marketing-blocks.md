@@ -20,9 +20,9 @@ Replace the item name with any row below. Install the npm dependencies reported 
 | `blocks/marketing-contact`  | `components/button`, `components/input`, `components/textarea` | `MarketingContactValues`, `MarketingContactErrors`, `MarketingContactLabels`                          |
 | `blocks/marketing-process`  | `components/button`                                            | `MarketingProcessStep`                                                                                |
 
-The installer resolves controls' utility, theme and npm dependencies recursively. Marketing items do not depend on each other or install the Agent suite. Contact composes input controls with application-owned `values`, `errors`, and `canSubmit`; it needs neither a VForm validation provider nor a slot-context compatibility layer. See [Dialog](/en/components/dialog) for the 7.11.1 native-slot configuration and evidence limits.
+The installer resolves controls' utility, theme and npm dependencies recursively. Marketing items do not depend on each other or install the Agent suite. Contact composes input controls with application-owned `values`, `errors`, and `canSubmit`; it does not use a VForm validation provider.
 
-H5 installs the dependency CSS closure. Native applications load the installed CSS globally with `weapp.styles`, `varo.css` first and `include: 'app.vue'`; never import global styles into an `apply-shared` component's WXSS. See [Registry mode](/en/guide/shadcn-mode). Only stable `h5` and `weapp` are admitted. This is not experimental-profile or device certification.
+H5 installs the dependency CSS closure. Native applications load the installed CSS globally with `weapp.styles`, `varo.css` first and `include: 'app.vue'`; never import global styles into an `apply-shared` component's WXSS. See [Registry mode](/en/guide/shadcn-mode). Only stable `h5` and `weapp` are admitted.
 
 ## Ownership and states
 
@@ -187,4 +187,4 @@ Both E2E suites use real controls and cover:
 6. Eligible process actions and instruction-only completion, with unavailable/no-op actions blocked.
 7. Loading/error/disabled evidence retention, empty messages and recovery.
 
-Generate current projections, register routes, compile both targets and run the suites before judging results. Native headless/DevTools fixtures require a supported engine setup; DevTools and devices also need a valid local AppID and connected host. Check SVGs, long-text layout, text scaling and native accessibility on the actual host. H5 screenshots or compilation cannot establish device behavior.
+Check SVGs, long-text layout, text scaling and native accessibility on the actual host. See [runtime evidence limits](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for headless, DevTools and device requirements.
