@@ -4,6 +4,13 @@ Varo uses `repoctl` with pnpm native change intents and fixed package versioning
 
 The workspace scanner requires the explicit `@pnpm/logger` development peer because this repository disables `autoInstallPeers`.
 
+## Git hooks
+
+- `pnpm install` runs guarded hook installation. Restore hooks with `pnpm exec repo tooling hooks install`.
+- `lefthook.yml` owns sequential staged ESLint, Stylelint and typechecking, commit-message validation, and pre-push lint/type checks.
+- The installer migrates only repository-local Husky hook paths; global and custom hook paths remain unchanged.
+- Partially staged changes are preserved. Failed fixers can leave changes staged; inspect the index before retrying.
+
 ## Release policy
 
 - Six user-facing `@varo-ui/*` packages ship as one fixed version; internal implementation packages are bundled and remain private.

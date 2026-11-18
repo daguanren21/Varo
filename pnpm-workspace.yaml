@@ -16,6 +16,8 @@ versioning:
     storage: repository
 
 allowBuilds:
+  # Root prepare installs hooks after checking Git hook-path ownership.
+  lefthook: false
   '@swc/core': true
   esbuild: true
   msgpackr-extract: true

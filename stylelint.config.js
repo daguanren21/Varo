@@ -37,7 +37,6 @@ export default await defineStylelintConfig({
       },
     ],
     rules: {
-      'declaration-block-single-line-max-declarations': null,
       'unit-no-unknown': [true, { ignoreUnits: ['rpx'] }],
     },
 
