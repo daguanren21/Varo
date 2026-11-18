@@ -5,4 +5,11 @@
 ### Patch Changes
 
 - Updated dependencies:
+  - @varo-ui/theme@3.0.0
+
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies:
   - @varo-ui/theme@2.0.0

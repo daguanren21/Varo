@@ -16,6 +16,10 @@
   intents:
     - canonical-native-source-cutover
     - cool-bars-wave
+"@varo-ui/ai@3.0.0":
+  dir: packages/agent-core
+  intents:
+    - all-eels-laugh
 "@varo-ui/cli@1.0.0":
   dir: packages/cli
   intents:
@@ -73,6 +77,17 @@
     - shiny-islands-fly
     - soft-fields-pulse
     - white-buttons-shine
+"@varo-ui/cli@3.0.0":
+  dir: packages/cli
+  intents:
+    - accessible-profile-select
+    - afraid-squids-tease
+    - all-eels-laugh
+    - plain-tool-output
+    - polite-breads-sniff
+    - quiet-component-time-history
+    - tangy-ties-fix
+    - thirty-papers-knock
 "@varo-ui/h5@1.0.0":
   dir: packages/ui-h5
   intents:
@@ -119,6 +134,12 @@
     - shiny-islands-fly
     - soft-fields-pulse
     - white-buttons-shine
+"@varo-ui/h5@3.0.0":
+  dir: packages/ui-h5
+  intents:
+    - accessible-profile-select
+    - quiet-component-time-history
+    - thirty-papers-knock
 "@varo-ui/headless@1.0.0":
   dir: packages/primitives-core
   intents:
@@ -149,6 +170,10 @@
     - canonical-native-source-cutover
     - cool-bars-wave
     - soft-fields-pulse
+"@varo-ui/headless@3.0.0":
+  dir: packages/primitives-core
+  intents:
+    - wacky-adults-vanish
 "@varo-ui/theme@1.0.0":
   dir: packages/theme
   intents:
@@ -232,6 +257,13 @@
     - shiny-islands-fly
     - soft-fields-pulse
     - white-buttons-shine
+"@varo-ui/weapp@3.0.0":
+  dir: packages/ui-weapp
+  intents:
+    - afraid-squids-tease
+    - all-eels-laugh
+    - quiet-component-time-history
+    - thirty-papers-knock
 "@varo/registry@0.0.1":
   dir: packages/registry
   intents:
