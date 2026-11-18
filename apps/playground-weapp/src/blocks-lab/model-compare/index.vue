@@ -6,7 +6,7 @@ import VButton from '../../components/ui/v-button.vue'
 import AgentModelCompare from '../components/blocks/agent-model-compare.vue'
 import { useModelCompareDemo } from './useModelCompareDemo'
 
-const { models, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close } = useModelCompareDemo()
+const { models, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, toolExampleLabel, toolExampleDisabled, updatePrompt, changeModel, run, advanceToolExample, replaceLeftToolExample, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close } = useModelCompareDemo()
 const modeLabel = computed(() => ordinaryChat.value ? '显示双侧比较' : '显示普通 Chat 组合')
 </script>
 
@@ -54,6 +54,12 @@ const modeLabel = computed(() => ordinaryChat.value ? '显示双侧比较' : '�
       </VButton>
       <VButton variant="outline" :disabled="busy" @click="setCatalog('ready')">
         恢复目录
+      </VButton>
+      <VButton v-if="!ordinaryChat" variant="outline" :disabled="toolExampleDisabled" @click="advanceToolExample">
+        {{ toolExampleLabel }}
+      </VButton>
+      <VButton v-if="!ordinaryChat && leftState.toolCallPreviews" variant="outline" :disabled="toolExampleDisabled" @click="replaceLeftToolExample">
+        更换左侧工具会话
       </VButton>
       <VButton variant="outline" @click="close">
         关闭并清理比较

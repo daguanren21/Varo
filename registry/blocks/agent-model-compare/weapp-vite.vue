@@ -6,11 +6,10 @@ import { computed } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import { availableModel } from '../agent-ui/agent-model-selector.types'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
-import AgentConversation from '../agent-ui/AgentConversation.vue'
-import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
 import AgentModelSelector from '../agent-ui/AgentModelSelector.vue'
 import VButton from '../ui/v-button.vue'
 import { comparisonPanel, comparisonRetryable, comparisonRunning } from './agent-model-compare-actions'
+import AgentCompareTranscript from './agent-model-compare-transcript.vue'
 
 defineOptions({ properties: {
   models: { type: Array, value: [] },
@@ -105,20 +104,15 @@ function stop(side: AgentCompareSide) {
         <text v-if="!panel.state.messages.length && !panel.hasMessage && !panel.running && !panel.error" class="text-sm">
           尚无比较结果
         </text>
-        <AgentConversation :messages="panel.state.messages" :context-messages="panel.contextMessages" :tool-call-previews="panel.state.toolCallPreviews" />
-        <view :data-compare-output="panel.id">
-          <AgentEventRenderer
-            v-if="panel.state.snapshot"
-            :snapshot="panel.state.snapshot"
-            :tool-call-previews="panel.state.toolCallPreviews"
-            :retryable="false"
-            @approve="emit('approve', { side: panel.id, interruptId: $event })"
-            @reject="emit('reject', { side: panel.id, interruptId: $event })"
-            @retry="retry(panel.id)"
-            @retryInterrupts="emit('retryInterrupts', panel.id)"
-            @cancelInterrupts="emit('cancelInterrupts', panel.id)"
-          />
-        </view>
+        <AgentCompareTranscript
+          :side="panel.id"
+          :state="panel.state"
+          @approve="emit('approve', { side: panel.id, interruptId: $event })"
+          @reject="emit('reject', { side: panel.id, interruptId: $event })"
+          @retry="retry(panel.id)"
+          @retryInterrupts="emit('retryInterrupts', panel.id)"
+          @cancelInterrupts="emit('cancelInterrupts', panel.id)"
+        />
         <text v-if="panel.error && panel.error !== panel.snapshotError" class="whitespace-pre-wrap break-words text-sm" role="alert">
           {{ panel.error }}
         </text>

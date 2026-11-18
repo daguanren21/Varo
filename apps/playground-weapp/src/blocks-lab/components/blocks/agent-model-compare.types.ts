@@ -22,6 +22,8 @@ export interface AgentCompareState {
   snapshot?: ChatClientSnapshot
   /** Native-only display, scoped to this side's transcript. */
   toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>>
+  /** Native disclosure scope. Change when replacing this side's session, even if tool IDs repeat. */
+  sessionId?: string
   busy: boolean
   error?: string
   retryable?: boolean

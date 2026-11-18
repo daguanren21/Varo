@@ -30,6 +30,8 @@ The demos transform text asynchronously and deterministically on the local devic
 
 The application preserves the shared draft after submission so you can compare it with the results. Changing a model clears only that side's messages, snapshot, saved retry request, and measurement. “Display ordinary Chat composition” places the standalone selector outside AgentChat and runs only the left producer. The two selected models must still differ while the right side is inactive. Chat still installs only conversation and its dependencies. “New conversation” clears that ordinary local conversation.
 
+In the native demo, “载入工具示例” loads two SDK transcripts with the same tool-call ID and different safe previews. Expand the left tool and choose “继续左侧工具示例” to send a follow-up only on the left. The old left tool stays expanded in history; the right tool stays collapsed.
+
 Word counts, generator `finally` cleanups, and timer counts record actual generation, scheduling, and cancellation. They describe resources, not response text. Closing cleans up both sides; reloading creates fresh instances. Unmounting calls each SDK client's `stop()`, unsubscribes from snapshots, and calls `dispose()`, without retaining a second stream controller.
 
 ## Public contracts
@@ -38,7 +40,7 @@ Import the following named types from `components/blocks/agent-model-compare.typ
 
 ```ts
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationEntry } from '@/components/agent-ui/types'
+import type { AgentConversationEntry, AgentToolCallPreview } from '@/components/agent-ui/types'
 
 interface AgentModelOption {
   id: string
@@ -53,6 +55,8 @@ interface AgentCompareState {
   modelId: string
   messages: readonly AgentConversationEntry[]
   snapshot?: ChatClientSnapshot
+  toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>> // Native only
+  sessionId?: string // Native only; update when replacing this side's session
   busy: boolean
   error?: string
   retryable?: boolean
@@ -65,6 +69,8 @@ interface AgentCompareState {
 ```
 
 Supply unique, stable catalog IDs, readable labels, and current availability. The application controls `left` and `right`. Keep `busy` true from the start of pending work through resource cleanup. SDK snapshot `isLoading`, or `status` of `submitted` / `streaming`, also indicates active work; never write the display state `waiting` into SDK status. Missing side state is safe during initialization but prevents submission. The Block compares text: history retains its static display API, while active content is a pure projection of the SDK snapshot, without another active-message store or event replay. Handle tool execution, approvals, conversation storage, and provider routing in your application.
+
+On native, key `toolCallPreviews` by SDK tool-call ID and supply only safe display text. A tool stays expanded when moving into history on the same side. Removing a tool or changing models clears the corresponding disclosure state. When replacing a side's session in place, update `sessionId` to reset only that side, even if its model and tool IDs are unchanged.
 
 `outcome` is the application-confirmed result of this run: provide `completed` only after the actual computation finishes, or `cancelled` after an explicit stop, and clear it for new work/model selection. SDK `ready` means that requests can be accepted, not success or cancellation. Without an outcome the panel displays ready; active work and errors take precedence over an old result. This display field owns neither messages nor execution policy.
 
@@ -79,15 +85,15 @@ Supply unique, stable catalog IDs, readable labels, and current availability. Th
 
 ### Intents and switching policy
 
-| Event               | Payload                                                         | Guard / application responsibility                                                                                                                                                                                         |
-| ------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `update:modelValue` | `string`                                                        | Draft update; no updates while disabled/loading/catalog error or either side running                                                                                                                                       |
-| `modelChange`       | `{ side: 'left' \| 'right', modelId: string }`                  | No changes while either side runs. Reject missing, unavailable, disabled, already selected and other-side IDs. Application accepts selection and decides how to handle prior results.                                      |
-| `run`               | `{ prompt: string, leftModelId: string, rightModelId: string }` | Trimmed, nonempty prompt and two distinct current available models; both sides idle. Application rechecks state and starts each side through its SDK client.                                                                   |
-| `retry`             | `'left' \| 'right'`                                             | Only a failed/error side with `retryable: true`, an available selected model and no pending work on that side. Allowed while the **other** side runs. Application retries that side's saved request, not the edited draft. |
-| `stop`              | `'left' \| 'right'`                                             | Only an active side; remains available while disabled/loading/error. Application calls only that SDK client's `stop()` to cancel its producer.                                                                                 |
-| `approve` / `reject` | `{ side: 'left' \| 'right', interruptId: string }` | Bind the displayed transaction; resolve only that side's SDK interrupt |
-| `retryInterrupts` / `cancelInterrupts` | `'left' \| 'right'` | Retry or cancel that side's interrupt transaction, not generation |
+| Event                                  | Payload                                                         | Guard / application responsibility                                                                                                                                                                                         |
+| -------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `update:modelValue`                    | `string`                                                        | Draft update; no updates while disabled/loading/catalog error or either side running                                                                                                                                       |
+| `modelChange`                          | `{ side: 'left' \| 'right', modelId: string }`                  | No changes while either side runs. Reject missing, unavailable, disabled, already selected and other-side IDs. Application accepts selection and decides how to handle prior results.                                      |
+| `run`                                  | `{ prompt: string, leftModelId: string, rightModelId: string }` | Trimmed, nonempty prompt and two distinct current available models; both sides idle. Application rechecks state and starts each side through its SDK client.                                                               |
+| `retry`                                | `'left' \| 'right'`                                             | Only a failed/error side with `retryable: true`, an available selected model and no pending work on that side. Allowed while the **other** side runs. Application retries that side's saved request, not the edited draft. |
+| `stop`                                 | `'left' \| 'right'`                                             | Only an active side; remains available while disabled/loading/error. Application calls only that SDK client's `stop()` to cancel its producer.                                                                             |
+| `approve` / `reject`                   | `{ side: 'left' \| 'right', interruptId: string }`              | Bind the displayed transaction; resolve only that side's SDK interrupt                                                                                                                                                     |
+| `retryInterrupts` / `cancelInterrupts` | `'left' \| 'right'`                                             | Retry or cancel that side's interrupt transaction, not generation                                                                                                                                                          |
 
 Both targets emit single values or objects, without native multi-argument events. Actions read current props, not saved option objects. The Block does not optimistically accept model changes, clear results, or report success; the application handles those decisions and external state replacements. Do not replace model IDs during active requests.
 
@@ -116,5 +122,6 @@ Matching public E2E files are `apps/e2e/tests/h5/model-compare.e2e.ts` and `apps
 5. Disabled input with independent stop and no later producer work.
 6. Closing active streams and actual iterator/timer cleanup.
 7. Standalone selector with ordinary Chat.
+8. Native only: open the left tool, continue the left transcript, and verify that it remains open in history while the right tool with the same ID stays closed.
 
 H5 scenarios request narrow and wide screenshots; native screenshots are requested only in supported DevTools mode. The headless native SDK's known `rich-text` text-observation limitation remains explicit: required final Markdown assertions are retained and must not be replaced by snapshot/store echoes. DevTools login, a valid local AppID, screenshot support, and any real-device review are separate prerequisites. Source implementation and authored scenarios are not claims that these checks have passed.

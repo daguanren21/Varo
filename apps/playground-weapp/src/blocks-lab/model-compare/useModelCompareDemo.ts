@@ -1,13 +1,14 @@
 import type { StreamChunk } from '@tanstack/ai'
-import type { ChatClientSnapshot } from '@tanstack/ai-client'
+import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import type { ChatUIInterrupt } from '@tanstack/ai-client/ui'
-import { EventType } from '@tanstack/ai/client'
-import { ChatClient, stream } from '@tanstack/ai-client'
 import type { AgentModelOption } from '../../components/agent-ui/agent-model-selector.types'
+import type { AgentToolCallPreview } from '../../components/agent-ui/types'
 import type { AgentCompareApprovalIntent, AgentCompareModelIntent, AgentCompareRunIntent, AgentCompareSide, AgentCompareState } from '../components/blocks/agent-model-compare.types'
+import { ChatClient, stream } from '@tanstack/ai-client'
+import { EventType } from '@tanstack/ai/client'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 import { availableModel } from '../../components/agent-ui/agent-model-selector.types'
-import { agentCanResolveApproval, agentConversationHistory, agentSnapshotProjection } from '../../components/agent-ui/presentation'
+import { agentCanResolveApproval, agentConversationHistory, agentCurrentMessage, agentSnapshotProjection } from '../../components/agent-ui/presentation'
 
 const catalog: AgentModelOption[] = [
   { id: 'uppercase', label: '本地大写转换', available: true },
@@ -39,6 +40,8 @@ export function useModelCompareDemo() {
     const modelId = shallowRef(initialModel)
     const elapsed = shallowRef<number | undefined>(undefined)
     const outcome = shallowRef<AgentCompareState['outcome']>(undefined)
+    const toolCallPreviews = shallowRef<Readonly<Record<string, AgentToolCallPreview>> | undefined>(undefined)
+    const exampleMessageId = `${id}-tool-example`
     const receipt = shallowRef({ steps: 0, cleanups: 0, active: false, timers: 0 })
     let lastRequest: { prompt: string, modelId: string } | undefined
     const connection = stream(async function* (_messages, data, signal, input): AsyncGenerator<StreamChunk> {
@@ -52,7 +55,7 @@ export function useModelCompareDemo() {
         const words = request.split(/\s+/u)
         for (let index = 0; index < words.length; index++) {
           let resolve!: () => void
-          const promise = new Promise<void>(done => { resolve = done })
+          const promise = new Promise<void>((done) => { resolve = done })
           const finish = () => {
             clearTimeout(timer)
             signal?.removeEventListener('abort', finish)
@@ -82,24 +85,33 @@ export function useModelCompareDemo() {
     let client = new ChatClient({ threadId: `varo-native-model-compare-${id}-${++threadSequence}`, connection })
     const snapshot = shallowRef<ChatClientSnapshot>(client.getSnapshot())
     let unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
+    const toolExampleIsCurrent = computed(() => agentCurrentMessage(snapshot.value)?.id === exampleMessageId)
     const pending = computed(() => snapshot.value.isLoading || snapshot.value.interruptState.resuming || snapshot.value.interruptState.interrupts.length > 0 || snapshot.value.interruptState.interruptErrors.length > 0)
     const state = computed<AgentCompareState>(() => {
       return {
-        label: id === 'left' ? '左侧' : '右侧', modelId: modelId.value,
+        label: id === 'left' ? '左侧' : '右侧',
+        modelId: modelId.value,
+        sessionId: `${id}-${threadSequence}`,
         messages: agentConversationHistory(snapshot.value),
         snapshot: snapshot.value,
-        busy: pending.value, error: snapshot.value.error?.message, retryable: !pending.value && Boolean(lastRequest) && snapshot.value.status === 'error',
+        toolCallPreviews: toolCallPreviews.value,
+        busy: pending.value,
+        error: snapshot.value.error?.message,
+        retryable: !pending.value && Boolean(lastRequest) && snapshot.value.status === 'error',
         outcome: outcome.value,
         metrics: showMetrics.value && elapsed.value != null ? { latencyMs: elapsed.value } : undefined,
       }
     })
     const lifecycle = computed(() => `steps=${receipt.value.steps};cleanups=${receipt.value.cleanups};active=${receipt.value.active};timers=${receipt.value.timers}`)
-    async function start(request: string, failFirstAttempt: boolean) {
+    async function start(request: string, failFirstAttempt: boolean, keepHistory = false) {
       if (pending.value || disposed) { return }
       const invocation = { prompt: request, modelId: modelId.value }
       lastRequest = invocation
       outcome.value = undefined
-      client.clear()
+      if (!keepHistory) {
+        toolCallPreviews.value = undefined
+        client.clear()
+      }
       elapsed.value = undefined
       const startedAt = Date.now()
       await client.sendMessage(request, { prompt: request, modelId: modelId.value, failFirstAttempt })
@@ -128,16 +140,23 @@ export function useModelCompareDemo() {
     function cancelInterrupts() {
       if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
     }
-    function clear() {
+    function clear(initialMessages?: UIMessage[]) {
       if (pending.value) { return }
       lastRequest = undefined
       outcome.value = undefined
       elapsed.value = undefined
+      toolCallPreviews.value = undefined
       unsubscribe()
       client.dispose()
-      client = new ChatClient({ threadId: `varo-native-model-compare-${id}-${++threadSequence}`, connection })
+      client = new ChatClient({ threadId: `varo-native-model-compare-${id}-${++threadSequence}`, connection, initialMessages })
       snapshot.value = client.getSnapshot()
       unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
+    }
+    function loadToolExample(callId: string) {
+      clear([{ id: exampleMessageId, role: 'assistant', parts: [
+        { type: 'tool-call', id: callId, name: '本地工具示例', arguments: '{}', state: 'complete' },
+      ] }])
+      toolCallPreviews.value = { [callId]: { result: id === 'left' ? '左侧示例工具预览' : '右侧示例工具预览' } }
     }
     function select(value: string) {
       if (pending.value || value === modelId.value) { return }
@@ -150,7 +169,7 @@ export function useModelCompareDemo() {
       client.detach()
       client.dispose()
     }
-    return { state, pending, modelId, lifecycle, start, stop, retry, decide, retryInterrupts, cancelInterrupts, select, clear, dispose }
+    return { state, pending, modelId, lifecycle, toolExampleIsCurrent, start, stop, retry, decide, retryInterrupts, cancelInterrupts, select, clear, loadToolExample, dispose }
   }
 
   const left = createSide('left', 'uppercase')
@@ -167,6 +186,9 @@ export function useModelCompareDemo() {
   const rejectionLabel = computed(() => rejectPrompt.value ? '接受提示词更新' : '拒绝提示词更新')
   const metricsLabel = computed(() => showMetrics.value ? '隐藏实测耗时' : '显示本地实测耗时')
   const selection = computed(() => `left=${left.modelId.value};right=${right.modelId.value}`)
+  const toolExampleLabel = computed(() => left.toolExampleIsCurrent.value ? '继续左侧工具示例' : '载入工具示例')
+  const toolExampleDisabled = computed(() => locked.value || busy.value
+    || !availableModel(displayedModels.value, left.modelId.value) || !availableModel(displayedModels.value, right.modelId.value))
 
   function updatePrompt(value: string) {
     if (!locked.value && !busy.value && !uncontrolled.value && !rejectPrompt.value) { prompt.value = value }
@@ -184,6 +206,25 @@ export function useModelCompareDemo() {
     void left.start(intent.prompt.trim(), true)
     void right.start(intent.prompt.trim(), false)
     notice.value = '已启动两个独立本地异步转换；原提示词保留用于核对。'
+  }
+  function advanceToolExample() {
+    if (toolExampleDisabled.value || ordinaryChat.value) { return }
+    if (left.toolExampleIsCurrent.value) {
+      void left.start('继续比较', false, true)
+      notice.value = '已发送左侧后续消息，右侧工具示例保持不变。'
+      return
+    }
+    const sharedCallId = `compare-tool-example-${++sequence}`
+    left.loadToolExample(sharedCallId)
+    right.loadToolExample(sharedCallId)
+    notice.value = '已载入两侧工具示例。展开左侧工具，再选择继续左侧。'
+  }
+  function replaceLeftToolExample() {
+    if (toolExampleDisabled.value || ordinaryChat.value) { return }
+    const callId = Object.keys(left.state.value.toolCallPreviews ?? {})[0]
+    if (!callId) { return }
+    left.loadToolExample(callId)
+    notice.value = '已更换左侧会话，沿用相同工具调用 ID。'
   }
   function retry(id: AgentCompareSide) {
     const side = id === 'left' ? left : right
@@ -239,5 +280,5 @@ export function useModelCompareDemo() {
   }
   onUnload(dispose)
   onUnmounted(dispose)
-  return { models: displayedModels, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, updatePrompt, changeModel, run, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close }
+  return { models: displayedModels, boundPrompt, uncontrolled, rejectPrompt, disabled, visible, ordinaryChat, loading, catalogError, notice, leftState, rightState, leftLifecycle, rightLifecycle, busy, chatDisabled, disabledLabel, promptModeLabel, rejectionLabel, metricsLabel, selection, showMetrics, toolExampleLabel, toolExampleDisabled, updatePrompt, changeModel, run, advanceToolExample, replaceLeftToolExample, retry, approve, reject, retryInterrupts, cancelInterrupts, stop, sendChat, newConversation, toggleMode, togglePromptMode, clearPrompt, setCatalog, toggleAvailability, close }
 }

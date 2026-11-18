@@ -69,7 +69,7 @@ Native `apply-shared` components use page tokens and global component selectors 
 pnpm dlx @varo-ui/cli add --target weapp button input card
 ```
 
-Install the npm dependencies reported by the CLI. Registry installation copies all required CSS into `src/styles/`: `varo.css` contains tokens and foundation styles, component styles have separate files, and Agent components add `varo-agent.css`. Load all installed CSS files globally, with `varo.css` first, to include both base and component styles.
+Install the npm dependencies reported by the CLI. Registry installation copies the required CSS into `src/styles/`: `varo.css` contains tokens and foundation styles, component styles have separate files, and source units that depend on `themes/agent` add `varo-agent.css`. Load all installed CSS files globally, with `varo.css` first.
 
 ## Editable Registry source resolver
 
@@ -140,7 +140,7 @@ export default defineConfig({
 })
 ```
 
-On WeChat, enable both `nativeSlotContext` and `scopedSlotsRequireProps` with default attached setup. Install `@tanstack/ai-client` for Agent Registry consumers, bind `ChatClient` snapshots through Wevu, and keep server authorization and tool execution in the application. See the [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) and [Agent guide](https://varo.weapp.dev/en/ai/).
+On WeChat, enable both `nativeSlotContext` and `scopedSlotsRequireProps` with default attached setup. For chat consumers, install `@tanstack/ai-client` and bind `ChatClient` snapshots through Wevu. Standalone Decision Card and Agent Inbox do not require the SDK. Application and server code own authorization and tool execution. See the [Web Runtime configuration](https://vite.weapp.dev/config/web-runtime-globals) and [Agent guide](https://varo.weapp.dev/en/ai/).
 
 ## Profiles and evidence limits
 

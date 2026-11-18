@@ -149,13 +149,14 @@ type MallAction = z.infer<typeof mallInputSchema>
 const mallTool = toolDefinition({ name: 'local.mall.execute', description: '修改当前页面内的演示订单；不调用真实支付或商城 API。', inputSchema: mallInputSchema, needsApproval: true }).client()
 export type MallAgentSnapshot = ChatClientSnapshot<Array<typeof mallTool>, any>
 const mallApproval = normalizeApprovalSchema(mallTool.approvalSchema, mallTool.inputSchema)
+const MALL_STOPPED_MESSAGE = '本地商城操作已停止'
 
 function sleep(duration: number, signal?: AbortSignal) {
   let resolve!: () => void
   let reject!: (error: Error) => void
   const promise = new Promise<void>((done, fail) => { resolve = done; reject = fail })
   const finish = () => { clearTimeout(timer); signal?.removeEventListener('abort', abort); resolve() }
-  const abort = () => { clearTimeout(timer); signal?.removeEventListener('abort', abort); reject(new Error('本地商城操作已停止')) }
+  const abort = () => { clearTimeout(timer); signal?.removeEventListener('abort', abort); reject(new Error(MALL_STOPPED_MESSAGE)) }
   const timer = setTimeout(finish, duration)
   signal?.addEventListener('abort', abort, { once: true })
   if (signal?.aborted) { abort() }
@@ -211,6 +212,14 @@ export function useMallAgent(): MallAgentController {
     toolCallPreviews.value = { ...previews, [id]: { ...previews[id], ...preview } }
   }
 
+  function settleTask(id: string, status: 'completed' | 'failed', description?: string) {
+    tasks.value = tasks.value.map(task => task.id === id ? { ...task, status, progress: status === 'completed' ? 100 : 0, description } : task)
+  }
+
+  function assertExecutionActive(signal?: AbortSignal) {
+    if (disposed || signal?.aborted) { throw new Error(MALL_STOPPED_MESSAGE) }
+  }
+
   const client = new ChatClient({
     threadId: 'varo-mall-agent-demo',
     tools: [mallTool],
@@ -243,15 +252,13 @@ export function useMallAgent(): MallAgentController {
                 parts: message.parts.map(part => part.type === 'tool-call' && part.id === pending.toolCallId ? { ...part, arguments: JSON.stringify(action), input: action } : part),
               }
             : message)) }
-          yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
           tasks.value = [
-            { id: 'validate', title: '校验订单与库存', status: 'running', progress: 20 },
+            { id: 'validate', title: '校验订单与库存', status: 'running' },
             { id: 'execute', title: action.type === 'purchase' ? '创建本地演示订单' : '提交本地退货申请', status: 'waiting' },
             { id: 'record', title: '写入页面内操作记录', status: 'waiting' },
           ]
-          await sleep(220, signal)
-          tasks.value = tasks.value.map(task => task.id === 'validate' ? { ...task, progress: 100, status: 'completed' } : task.id === 'execute' ? { ...task, progress: 45, status: 'running' } : task)
-          await sleep(260, signal)
+          yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
+          assertExecutionActive(signal)
           if (action.type === 'purchase') {
             const address = defaultAddress.value
             const product = products.value.find(item => item.id === action.productId)
@@ -267,10 +274,14 @@ export function useMallAgent(): MallAgentController {
               executionPreview = '库存不足，未创建演示订单。'
             }
             else {
+              settleTask('validate', 'completed')
+              assertExecutionActive(signal)
               const order: MallOrder = { address: address.detail, createdAt: nowLabel(), id: `JD${Date.now()}`, productId: product.id, productName: product.name, quantity: action.quantity, status: 'paid', total: product.price * action.quantity }
               orders.value = [order, ...orders.value]
               products.value = products.value.map(item => item.id === product.id ? { ...item, stock: item.stock - action.quantity } : item)
+              settleTask('execute', 'completed')
               history.value = [{ detail: `${product.name} × ${action.quantity} · ${(order.total / 100).toFixed(2)} 元`, id: nextId('history'), time: nowLabel(), title: '本地下单成功', type: 'order' }, ...history.value]
+              settleTask('record', 'completed')
               text = `演示订单 ${order.id} 已创建，将送到 ${address.detail}。你可以查看订单历史或申请退货；没有真实付款。`
               executionPreview = '演示订单已创建，未实际扣款。'
             }
@@ -283,13 +294,17 @@ export function useMallAgent(): MallAgentController {
               executionPreview = '订单当前不可退货，未修改订单。'
             }
             else {
+              settleTask('validate', 'completed')
+              assertExecutionActive(signal)
               orders.value = orders.value.map(item => item.id === order.id ? { ...item, status: 'returned' } : item)
+              settleTask('execute', 'completed')
               history.value = [{ detail: `${order.productName} · ${action.reason}`, id: nextId('history'), time: nowLabel(), title: '本地退货申请已提交', type: 'return' }, ...history.value]
+              settleTask('record', 'completed')
               text = `演示订单 ${order.id} 的退货申请已提交。退款进度会记录在页面内历史中。`
               executionPreview = '演示退货申请已提交，未发起真实退款。'
             }
           }
-          tasks.value = tasks.value.map(task => ({ ...task, progress: failed ? 0 : 100, status: failed ? 'failed' : 'completed' }))
+          if (failed) { settleTask('validate', 'failed', text) }
         }
         setToolCallPreview(pending.toolCallId, failed ? { error: executionPreview } : { result: executionPreview })
         clearApproval()
