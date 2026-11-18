@@ -35,7 +35,9 @@ const tool: AgentToolPart = {
 
 `AgentToolPart` is a Registry display type (`id`, `name`, `input`, `output`, `summary`, `error`, `status`), not an import from `@varo-ui/ai`. Its `AgentPartStatus` is `waiting | running | completed | failed`, not a TanStack tool wire state. The application or renderer projects it from SDK messages; the component neither executes tools nor grants permission.
 
-Conversation tool results display the actual `output`: strings remain plain text and structured results use JSON. The renderer does not print an additional internal object wrapping `input` and `output`. Inputs remain in SDK messages and tool display data; output does not turn a failed tool into a successful one.
+H5 conversations display the actual SDK tool `output`: strings are plain text and structured results appear as JSON, without an extra `input`/`output` wrapper. Showing output does not turn a failed tool into a successful one.
+
+Native Wevu conversations use collapsible tool-call groups with SDK names and statuses. Arguments, results, errors, and durations are opt-in: pass only bounded display text safe for the current user via [`toolCallPreviews`](./agent-chat#native-tool-previews), keyed by `toolCallId`. Raw SDK payloads are not rendered in the group. See [updating installed native source](./agent-chat#native-source-upgrade) for migration.
 
 ## Events
 

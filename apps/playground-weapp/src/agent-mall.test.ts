@@ -9,8 +9,8 @@ import AgentComposer from './components/agent-ui/AgentComposer.vue'
 import AgentMarkdown from './components/agent-ui/AgentMarkdown.vue'
 import AgentRadioGroup from './components/agent-ui/AgentRadioGroup.vue'
 import { agentCurrentMessage, agentMessageText, agentSnapshotProjection } from './components/agent-ui/presentation'
-import { useMallAgent } from './features/mall/useMallAgent'
 import MallAgentPanel from './components/mall/MallAgentPanel.vue'
+import { useMallAgent } from './features/mall/useMallAgent'
 
 function mountAgentHarness() {
   let agent!: MallAgentController
@@ -250,6 +250,7 @@ describe('AI-driven mall flows', () => {
       if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
       const result = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)
       expect(result).toMatchObject({ state: 'error', outcome: 'cancelled' })
+      expect(agent.toolCallPreviews.value[approval.toolCallId]?.result).toBe('演示操作已取消，未修改订单。')
       await finishTimers(agent.send('查看订单历史'))
       expect(agent.historyOpen.value).toBe(true)
     }
@@ -265,6 +266,7 @@ describe('AI-driven mall flows', () => {
       if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
       expect(approval.id).not.toBe(approval.toolCallId)
       expect(approval.originalArgs).toEqual({ type: 'purchase', productId: 'milk', quantity: 1 })
+      expect(agent.toolCallPreviews.value[approval.toolCallId]).toEqual({ parameters: '创建演示订单' })
       if (agent.pendingAction.value?.type !== 'purchase') { throw new Error('Expected purchase preview') }
       agent.pendingAction.value.product.price = 1
       agent.pendingAction.value.product.stock = 0
@@ -282,8 +284,22 @@ describe('AI-driven mall flows', () => {
       const result = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)
       expect(result?.state).toBe('complete')
       expect(agent.messages.value.some(message => message.parts.some(part => part.type === 'tool-call' && part.id === approval.toolCallId))).toBe(true)
-      const panel = mount(MallAgentPanel, { props: { open: true, messages: agent.messages.value, streamSnapshot: agent.streamSnapshot.value } })
-      try { expect(panel.text()).toContain('local.mall.execute') }
+      const panel = mount(MallAgentPanel, { props: {
+        open: true,
+        messages: agent.messages.value,
+        streamSnapshot: agent.streamSnapshot.value,
+        toolCallPreviews: agent.toolCallPreviews.value,
+      } })
+      try {
+        const execution = panel.get('.agent-conversation').findAll('.agent-tool-call-group').find(group => group.text().includes('local.mall.execute'))!
+        await execution.get('button').trigger('click')
+        expect(execution.text()).toContain('创建演示订单')
+        expect(execution.text()).toContain('演示订单已创建，未实际扣款。')
+        const [order] = agent.orders.value
+        expect(execution.text()).not.toContain(order!.address)
+        expect(execution.text()).not.toContain(order!.id)
+        expect(execution.text()).not.toMatch(/productId|quantity/)
+      }
       finally { panel.unmount() }
     }
     finally { wrapper.unmount() }
@@ -327,6 +343,7 @@ describe('AI-driven mall flows', () => {
       if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
       const result = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-result').find(part => part.toolCallId === approval.toolCallId)
       expect(result).toMatchObject({ state: 'error', outcome: 'denied' })
+      expect(agent.toolCallPreviews.value[approval.toolCallId]?.result).toBe('演示操作未获批准，未修改订单。')
       await finishTimers(agent.send('买 1 盒牛奶'))
       await finishTimers(agent.approve(approval.id))
       expect(agent.orders.value).toHaveLength(1)
@@ -350,6 +367,9 @@ describe('AI-driven mall flows', () => {
       if (approval.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
       const call = agent.streamSnapshot.value.messages.flatMap(message => message.parts).filter(part => part.type === 'tool-call').find(part => part.id === approval.toolCallId)
       expect(call?.state).toBe('error')
+      const preview = agent.toolCallPreviews.value[approval.toolCallId]
+      expect(preview?.error).toBe(type === 'purchase' ? '库存不足，未创建演示订单。' : '订单当前不可退货，未修改订单。')
+      expect(preview?.result).toBeUndefined()
       expect(agent.streamSnapshot.value.interruptState.interrupts).toHaveLength(0)
     }
     finally { wrapper.unmount() }
@@ -361,11 +381,15 @@ describe('AI-driven mall flows', () => {
     await finishTimers(agent.send('我要退货'))
     expect(agent.pendingAction.value).toMatchObject({ type: 'return' })
     agent.approvalValue.value = 'quality'
-    const approval = agentSnapshotProjection(agent.streamSnapshot.value).approvals[0]
-    expect(approval).toBeDefined()
-    await finishTimers(agent.approve(approval!.id))
+    const approval = agent.streamSnapshot.value.interruptState.interrupts[0]
+    if (approval?.kind !== 'tool-approval') { throw new Error('Expected bound approval') }
+    await finishTimers(agent.approve(approval.id))
     expect(agent.orders.value.find(order => order.id === 'JD20260819001')?.status).toBe('returned')
-    expect(agent.history.value[0].type).toBe('return')
+    expect(agent.history.value[0]).toMatchObject({ type: 'return', detail: expect.stringContaining('商品问题') })
+    expect(agent.toolCallPreviews.value[approval.toolCallId]).toEqual({
+      parameters: '提交演示退货申请',
+      result: '演示退货申请已提交，未发起真实退款。',
+    })
 
     await finishTimers(agent.send('查看订单历史'))
     expect(agent.historyOpen.value).toBe(true)

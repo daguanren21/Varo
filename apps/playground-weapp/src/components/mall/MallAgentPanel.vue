@@ -7,12 +7,12 @@ import type {
   MallOrder,
   PendingAction,
 } from '../../features/mall/useMallAgent'
-import type { AgentChoice, AgentTask } from '../agent-ui/types'
+import type { AgentChoice, AgentTask, AgentToolCallPreview } from '../agent-ui/types'
 import { computed, shallowRef } from 'wevu'
-import AgentRadioGroup from '../agent-ui/AgentRadioGroup.vue'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
-import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
+import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
+import AgentRadioGroup from '../agent-ui/AgentRadioGroup.vue'
 import AgentTaskList from '../agent-ui/AgentTaskList.vue'
 import VButton from '../ui/v-button.vue'
 import VIcon from '../ui/v-icon.vue'
@@ -34,6 +34,7 @@ const props = withDefaults(
     pendingAction?: PendingAction
     streamSnapshot?: ChatClientSnapshot
     tasks?: AgentTask[]
+    toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>>
   }>(),
   {
     addressEditorOpen: false,
@@ -77,10 +78,10 @@ const approvalTitle = computed(() => {
 })
 const approvalDescription = computed(() => {
   if (props.pendingAction?.type === 'purchase') {
-    return `单价 ¥${(props.pendingAction.product.price / 100).toFixed(2)}，确认后 Agent 将创建真实演示订单。`
+    return `单价 ¥${(props.pendingAction.product.price / 100).toFixed(2)}，确认后将在当前页面创建演示订单。`
   }
   if (props.pendingAction?.type === 'return') {
-    return `订单 ${props.pendingAction.order.id}，确认后 Agent 将提交退货申请。`
+    return `订单 ${props.pendingAction.order.id}，确认后将在当前页面提交演示退货申请。`
   }
   return ''
 })
@@ -89,7 +90,6 @@ function send(value: string) {
   prompt.value = ''
   emit('send', value)
 }
-
 </script>
 
 <template>
@@ -120,17 +120,22 @@ function send(value: string) {
 
       <scroll-view class="box-border min-h-0 w-full overflow-x-hidden px-3.5 py-3" scroll-y :scroll-with-animation="true">
         <view class="grid gap-3 pb-2">
-          <AgentConversation :messages="messages" :context-messages="contextMessages" />
+          <AgentConversation :messages="messages" :context-messages="contextMessages" :tool-call-previews="toolCallPreviews" />
 
           <view v-if="pendingAction && !busy" class="grid gap-2">
-            <text class="font-semibold">{{ approvalTitle }}</text>
-            <text class="text-xs">{{ approvalDescription }}</text>
+            <text class="font-semibold">
+              {{ approvalTitle }}
+            </text>
+            <text class="text-xs">
+              {{ approvalDescription }}
+            </text>
             <AgentRadioGroup :choices="approvalChoices" :value="approvalValue" @update:value="emit('update:approvalValue', $event)" />
           </view>
 
           <AgentEventRenderer
             v-if="streamSnapshot"
             :snapshot="streamSnapshot"
+            :tool-call-previews="toolCallPreviews"
             @approve="emit('approve', $event)"
             @reject="emit('reject', $event)"
             @retryInterrupts="emit('retryInterrupts')"
@@ -138,7 +143,6 @@ function send(value: string) {
           />
 
           <AgentTaskList v-if="tasks.length" title="执行进度" :tasks="tasks" />
-
 
           <MallOrderHistory v-if="historyOpen" :orders="orders" :history="history" @return="emit('returnOrder', $event)" />
           <MallAddressEditor

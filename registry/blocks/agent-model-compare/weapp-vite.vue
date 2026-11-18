@@ -105,11 +105,12 @@ function stop(side: AgentCompareSide) {
         <text v-if="!panel.state.messages.length && !panel.hasMessage && !panel.running && !panel.error" class="text-sm">
           尚无比较结果
         </text>
-        <AgentConversation :messages="panel.state.messages" :context-messages="panel.contextMessages" />
+        <AgentConversation :messages="panel.state.messages" :context-messages="panel.contextMessages" :tool-call-previews="panel.state.toolCallPreviews" />
         <view :data-compare-output="panel.id">
           <AgentEventRenderer
             v-if="panel.state.snapshot"
             :snapshot="panel.state.snapshot"
+            :tool-call-previews="panel.state.toolCallPreviews"
             :retryable="false"
             @approve="emit('approve', { side: panel.id, interruptId: $event })"
             @reject="emit('reject', { side: panel.id, interruptId: $event })"

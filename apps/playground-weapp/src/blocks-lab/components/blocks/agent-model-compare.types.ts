@@ -1,5 +1,5 @@
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationEntry } from '../../../components/agent-ui/types'
+import type { AgentConversationEntry, AgentToolCallPreview } from '../../../components/agent-ui/types'
 
 export type AgentCompareSide = 'left' | 'right'
 
@@ -20,6 +20,8 @@ export interface AgentCompareState {
   modelId: string
   messages: readonly AgentConversationEntry[]
   snapshot?: ChatClientSnapshot
+  /** Native-only display, scoped to this side's transcript. */
+  toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>>
   busy: boolean
   error?: string
   retryable?: boolean

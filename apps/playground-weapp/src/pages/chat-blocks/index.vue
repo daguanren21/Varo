@@ -5,7 +5,7 @@ import VButton from '../../components/ui/v-button.vue'
 import VInput from '../../components/ui/v-input.vue'
 import { useChatBlocksDemo } from './useChatBlocksDemo'
 
-const { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, retryInterrupts, selectedResponse, selectHistory, send, snapshot, stop } = useChatBlocksDemo()
+const { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, context, diagnostic, disabled, disabledLabel, draft, expanded, fail, history, insert, layout, messages, newConversation, open, prompt, quote, removeContext, retry, retryInterrupts, selectedResponse, selectHistory, send, snapshot, stop, toolCallPreviews } = useChatBlocksDemo()
 
 function toggleLayout() {
   layout.value = layout.value === 'panel' ? 'page' : 'panel'
@@ -47,11 +47,11 @@ function toggleLayout() {
     <text class="whitespace-pre-wrap break-words" data-chat-demo="draft">
       {{ draft }}
     </text>
-    <AgentChat v-if="chatVisible && !open" v-model="prompt" title="本地写作会话" :layout="layout" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="closeChat" @historySelect="selectHistory" @newConversation="newConversation" @retry="retry" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" />
+    <AgentChat v-if="chatVisible && !open" v-model="prompt" title="本地写作会话" :layout="layout" :busy="busy" :disabled="disabled" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :tool-call-previews="toolCallPreviews" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="closeChat" @historySelect="selectHistory" @newConversation="newConversation" @retry="retry" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" />
     <VButton v-if="!chatVisible && !open" variant="outline" @click="chatVisible = true">
       打开会话
     </VButton>
-    <AgentAssistantSheet v-model="prompt" v-model:open="open" v-model:expanded="expanded" :busy="busy" :disabled="disabled" :context="context" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :selected-response="selectedResponse" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="close" @historySelect="selectHistory" @newConversation="newConversation" @removeContext="removeContext" @insert="insert" @retry="retry" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" />
+    <AgentAssistantSheet v-model="prompt" v-model:open="open" v-model:expanded="expanded" :busy="busy" :disabled="disabled" :context="context" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :tool-call-previews="toolCallPreviews" :selected-response="selectedResponse" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="close" @historySelect="selectHistory" @newConversation="newConversation" @removeContext="removeContext" @insert="insert" @retry="retry" @retryInterrupts="retryInterrupts" @cancelInterrupts="cancelInterrupts" />
   </view>
 </template>
 

@@ -93,6 +93,8 @@ Block 不修改传入的 `versions`、`tasks`、来源或回执数组。选择�
 
 单独使用 `AgentThreadVersions` 时可传 `disabled`，需同时限制忙碌状态时传 `disabled || busy`。`AgentTaskRunner` 分别接收 `busy` 和 `disabled`；不要把 `busy` 合并到 `disabled`，否则忙碌时也无法取消。两者发出事件前都会按 ID 查找当前 prop 条目，拒绝已移除或不再符合条件的条目。
 
+微信原生任务列表显示已完成数、当前步骤和阻塞项。为待审批或失败的任务提供 `description`，说明为什么需要人处理；普通 `waiting` 不代表待审批，只有 `requiresApproval` 才显示这一含义。
+
 默认执行区展示对话、检索、任务和回执。工具详情可使用 `components/agent-conversation` 中的 `AgentToolChip`（H5 从 `@/components/agent-ui/conversation` 导入；原生从 `@/components/agent-ui/AgentToolChip.vue` 导入），传入 Registry `AgentToolPart` 的只读展示投影即可，UI 不调用工具。`approveTask` 是应用领域任务意图，不自动等同于 SDK 工具审批；如任务对应 TanStack `tool-approval`，由应用关联 interrupt ID，再解析匹配的 SDK 中断。凭证、业务授权、工具执行、网络、重试调度和存储均由应用处理。
 
 ### 本地演示与运行覆盖

@@ -25,6 +25,8 @@ export interface AgentActivityItem {
   duration?: string
   id: string
   kind: 'reasoning' | 'search' | 'tool' | 'trace'
+  /** Native display only: distinguish waiting for approval from ordinary waiting. */
+  requiresApproval?: boolean
   status: AgentActivityStatus
   title: string
 }

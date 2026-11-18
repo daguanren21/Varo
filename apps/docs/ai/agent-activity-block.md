@@ -31,7 +31,7 @@ import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks
 
 `AgentActivityStatus` 包含 `queued | running | waiting | failed | cancelled | completed`，仅用于展示。`AgentActivityItem.status` 使用这个类型；通用 `AgentPartStatus`（`waiting | running | completed | failed`）同样是 Registry `components/agent-ui/types` 中的展示类型，不是 core 协议或 TanStack SDK 状态。
 
-`AgentActivityTask extends AgentActivityItem`，保留 `id`、`title`、`kind`、`detail?`、`duration?`、`status`，只添加：
+`AgentActivityTask` 继承 [`AgentActivityItem`](/ai/activity) 的展示字段（包括 `requiresApproval?`），只添加：
 
 - `actions?: readonly AgentActivityAction[]`：应用明确授予的动作；缺省或空数组均不允许操作。
 - `disabled?: boolean`：禁用此项的所有操作。
@@ -46,6 +46,8 @@ import type { AgentActivityAction, AgentActivityTask } from '@/components/blocks
 | `emptyText` | `string`              | `No activity yet` | 空状态提示                              |
 
 `start`、`approve`、`retry`、`cancel` 均以激活时当前 props 中的 `AgentActivityTask` 为单一载荷。发出事件前，组件按 id 查找当前项，检查状态、全局和单项禁用及动作授权；项目已移除、已结束，或动作不适用、未获授权时，不会发出事件。组件不发送 `update:items`，应用拒绝请求则 UI 不变。
+
+原生 Wevu 中，`waiting` 项在 `actions` 包含 `approve` 或显式设置 `requiresApproval: true` 时显示“等待确认”，否则显示“等待中”。当前用户没有批准权限时，应用也可用 `requiresApproval: true` 表示该项仍在等待他人批准；此标记不会启用按钮或允许发出请求。
 
 ## 状态 / 动作 / 转换表
 
@@ -97,6 +99,8 @@ function acceptLocal(action: AgentActivityAction, requested: AgentActivityTask) 
 ```
 
 异步请求发出后，应用应立即更新 `disabled` / `actions` 或任务状态，并在等待结果期间保持这些限制。Block 没有内置的请求锁、自动重试或成功缓存，界面上的动作检查也不能代替服务端授权。
+
+微信原生活动轨迹分开显示已完成进度、当前执行项和待确认／失败项，因此并行任务运行时也不会盖住阻塞信息。普通等待不计作阻塞。通过活动项的 `detail` 提供可展示的阻塞原因。
 
 ## 交互演示与回归
 

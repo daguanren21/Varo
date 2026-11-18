@@ -69,4 +69,6 @@ H5 使用支持 Enter / Space 的原生按钮及 `aria-expanded` / `aria-control
 
 原生示例从 `wevu` 导入 `ref`，组件使用上述 `.vue` 默认导出。省略 `expandedIds` 与显式传入空数组含义不同。
 
+原生 Wevu 的 `AgentActivityItem` 可设置 `requiresApproval?: boolean`。`status: 'waiting'` 的行默认显示“等待中”；设置 `requiresApproval: true` 后，该行显示“等待确认”，摘要也会提示首个待确认项。有普通等待项且没有执行中、失败或待确认的提示时，摘要显示“等待中”。此字段仅用于原生展示，不授予操作权限，H5 不使用它。
+
 :::

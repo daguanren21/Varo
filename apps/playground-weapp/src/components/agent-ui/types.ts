@@ -21,6 +21,14 @@ export interface AgentToolPart {
   summary?: string
 }
 
+/** Application-formatted, bounded text safe to show to the current user. */
+export interface AgentToolCallPreview {
+  duration?: string
+  error?: string
+  parameters?: string
+  result?: string
+}
+
 export interface AgentTraceStep {
   content?: string
   detail?: string
@@ -41,7 +49,6 @@ export interface AgentTask {
   status: AgentPartStatus
   title: string
 }
-
 
 export interface AgentConversationMessage {
   content: string

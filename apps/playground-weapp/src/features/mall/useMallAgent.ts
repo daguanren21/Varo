@@ -1,9 +1,10 @@
 import type { StreamChunk } from '@tanstack/ai'
 import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
 import type { ComputedRef, ShallowRef } from 'wevu'
-import type { AgentChoice, AgentTask } from '../../components/agent-ui/types'
-import { EventType, hashSchemaInput, normalizeApprovalSchema, parseWithStandardSchema, toolDefinition, uiMessagesToWire, withInterruptBinding } from '@tanstack/ai/client'
+import type { AgentApprovalPreview } from '../../components/agent-ui/presentation'
+import type { AgentChoice, AgentTask, AgentToolCallPreview } from '../../components/agent-ui/types'
 import { ChatClient, stream } from '@tanstack/ai-client'
+import { EventType, hashSchemaInput, normalizeApprovalSchema, parseWithStandardSchema, toolDefinition, uiMessagesToWire, withInterruptBinding } from '@tanstack/ai/client'
 import { computed, onUnload, onUnmounted, shallowRef } from 'wevu'
 import { z } from 'zod'
 import { agentCanResolveApproval, agentConversationHistory, agentSnapshotProjection } from '../../components/agent-ui/presentation'
@@ -48,7 +49,6 @@ export interface MallHistoryItem {
   type: 'address' | 'order' | 'return'
 }
 
-
 export type PendingAction
   = | { product: MallProduct, quantity: number, type: 'purchase' }
     | { order: MallOrder, reason: string, type: 'return' }
@@ -79,6 +79,7 @@ export interface MallAgentController {
   send: (prompt: string) => Promise<void>
   streamSnapshot: ShallowRef<MallAgentSnapshot>
   tasks: ShallowRef<AgentTask[]>
+  toolCallPreviews: ShallowRef<Readonly<Record<string, AgentToolCallPreview>>>
 }
 
 const INITIAL_PRODUCTS: MallProduct[] = [
@@ -194,6 +195,7 @@ export function useMallAgent(): MallAgentController {
     },
   ])
   const tasks = shallowRef<AgentTask[]>([])
+  const toolCallPreviews = shallowRef<Readonly<Record<string, AgentToolCallPreview>>>({})
   const approvalChoices = shallowRef<AgentChoice[]>([])
   const approvalValue = shallowRef('')
   const pendingAction = shallowRef<PendingAction | undefined>(undefined)
@@ -203,6 +205,11 @@ export function useMallAgent(): MallAgentController {
   const cartCount = computed(() => orders.value.filter(order => order.status === 'paid').length)
   let disposed = false
   let pendingExecution: { interruptId: string, toolCallId: string, runId: string, threadId: string, args: MallAction } | undefined
+
+  function setToolCallPreview(id: string, preview: AgentToolCallPreview) {
+    const previews = toolCallPreviews.value
+    toolCallPreviews.value = { ...previews, [id]: { ...previews[id], ...preview } }
+  }
 
   const client = new ChatClient({
     threadId: 'varo-mall-agent-demo',
@@ -221,17 +228,21 @@ export function useMallAgent(): MallAgentController {
         const payload = resolution.payload
         const approved = payload === true || (typeof payload === 'object' && payload !== null && 'approved' in payload && payload.approved === true)
         let failed = false
+        let executionPreview: string
         if (!approved) {
           text = '已取消本次执行，未修改任何订单数据。'
+          executionPreview = resolution.status === 'cancelled' ? '演示操作已取消，未修改订单。' : '演示操作未获批准，未修改订单。'
         }
         else {
           const editedArgs = typeof payload === 'object' && payload !== null && 'editedArgs' in payload ? payload.editedArgs : pending.args
           const action = parseWithStandardSchema<MallAction>(mallInputSchema, editedArgs)
           // The producer records exactly the SDK-approved input, not the mutable UI preview.
-          yield { type: EventType.MESSAGES_SNAPSHOT, messages: uiMessagesToWire(messages.map(message => 'parts' in message ? {
-            ...message,
-            parts: message.parts.map(part => part.type === 'tool-call' && part.id === pending.toolCallId ? { ...part, arguments: JSON.stringify(action), input: action } : part),
-          } : message)) }
+          yield { type: EventType.MESSAGES_SNAPSHOT, messages: uiMessagesToWire(messages.map(message => 'parts' in message
+            ? {
+                ...message,
+                parts: message.parts.map(part => part.type === 'tool-call' && part.id === pending.toolCallId ? { ...part, arguments: JSON.stringify(action), input: action } : part),
+              }
+            : message)) }
           yield { type: EventType.TEXT_MESSAGE_START, messageId: id, role: 'assistant' }
           tasks.value = [
             { id: 'validate', title: '校验订单与库存', status: 'running', progress: 20 },
@@ -248,27 +259,39 @@ export function useMallAgent(): MallAgentController {
               addressEditorOpen.value = true
               failed = true
               text = '下单前需要先配置收货地址。'
+              executionPreview = '尚未配置收货地址，未创建演示订单。'
             }
-            else if (!product || product.stock < action.quantity) { failed = true; text = '当前库存不足，请重新选择数量。' }
+            else if (!product || product.stock < action.quantity) {
+              failed = true
+              text = '当前库存不足，请重新选择数量。'
+              executionPreview = '库存不足，未创建演示订单。'
+            }
             else {
               const order: MallOrder = { address: address.detail, createdAt: nowLabel(), id: `JD${Date.now()}`, productId: product.id, productName: product.name, quantity: action.quantity, status: 'paid', total: product.price * action.quantity }
               orders.value = [order, ...orders.value]
               products.value = products.value.map(item => item.id === product.id ? { ...item, stock: item.stock - action.quantity } : item)
               history.value = [{ detail: `${product.name} × ${action.quantity} · ${(order.total / 100).toFixed(2)} 元`, id: nextId('history'), time: nowLabel(), title: '本地下单成功', type: 'order' }, ...history.value]
               text = `演示订单 ${order.id} 已创建，将送到 ${address.detail}。你可以查看订单历史或申请退货；没有真实付款。`
+              executionPreview = '演示订单已创建，未实际扣款。'
             }
           }
           else {
             const order = orders.value.find(item => item.id === action.orderId)
-            if (!order || (order.status !== 'delivered' && order.status !== 'shipping')) { failed = true; text = '该订单当前不可退货，未修改订单数据。' }
+            if (!order || (order.status !== 'delivered' && order.status !== 'shipping')) {
+              failed = true
+              text = '该订单当前不可退货，未修改订单数据。'
+              executionPreview = '订单当前不可退货，未修改订单。'
+            }
             else {
               orders.value = orders.value.map(item => item.id === order.id ? { ...item, status: 'returned' } : item)
               history.value = [{ detail: `${order.productName} · ${action.reason}`, id: nextId('history'), time: nowLabel(), title: '本地退货申请已提交', type: 'return' }, ...history.value]
               text = `演示订单 ${order.id} 的退货申请已提交。退款进度会记录在页面内历史中。`
+              executionPreview = '演示退货申请已提交，未发起真实退款。'
             }
           }
           tasks.value = tasks.value.map(task => ({ ...task, progress: failed ? 0 : 100, status: failed ? 'failed' : 'completed' }))
         }
+        setToolCallPreview(pending.toolCallId, failed ? { error: executionPreview } : { result: executionPreview })
         clearApproval()
         pendingExecution = undefined
         yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${pending.toolCallId}`, toolCallId: pending.toolCallId, content: JSON.stringify({ approved, summary: text, local: true, ...(failed ? { error: text } : {}) }), role: 'tool', ...(!approved ? { metadata: { tanstack: { toolResultOutcome: resolution.status === 'cancelled' ? 'cancelled' : 'denied' } } } : failed ? { metadata: { tanstack: { state: 'output-error' } } } : {}) }
@@ -284,10 +307,12 @@ export function useMallAgent(): MallAgentController {
         yield { type: EventType.REASONING_MESSAGE_CONTENT, messageId: `intent-${id}`, delta: '在当前页面内识别购物意图、读取商城数据并生成待确认的执行计划。' }
         yield { type: EventType.REASONING_MESSAGE_END, messageId: `intent-${id}` }
         const lookup = `lookup-${id}`
+        setToolCallPreview(lookup, { parameters: '读取当前页面的商城数据。' })
         yield { type: 'TOOL_CALL_START', toolCallId: lookup, toolCallName: 'local.mall.lookup', parentMessageId: id }
         yield { type: EventType.TOOL_CALL_ARGS, toolCallId: lookup, delta: JSON.stringify({ prompt: request }) }
         yield { type: 'TOOL_CALL_END', toolCallId: lookup }
         await sleep(180, signal)
+        let lookupResult: string
         if (request.includes('退货') || request.includes('退款')) {
           const order = orders.value.find(item => item.status === 'delivered' || item.status === 'shipping')
           if (order) {
@@ -296,33 +321,47 @@ export function useMallAgent(): MallAgentController {
             approvalChoices.value = [{ label: '不想要了', value: 'changed-mind' }, { label: '商品问题', value: 'quality', description: '破损、故障或与描述不符' }, { label: '发错商品', value: 'wrong-item' }]
             approvalValue.value = 'changed-mind'
             text = `我找到了订单 ${order.id}：${order.productName}。请选择退货原因，确认后再提交本地申请。`
+            lookupResult = '已找到可申请退货的演示订单。'
           }
-          else { text = '暂时没有可申请退货的订单。我可以先帮你查看订单历史。' }
+          else {
+            text = '暂时没有可申请退货的订单。我可以先帮你查看订单历史。'
+            lookupResult = '未找到可申请退货的演示订单。'
+          }
         }
         else if (request.includes('地址') || request.includes('收货')) {
           addressEditorOpen.value = true
           text = `当前默认地址是：${defaultAddress.value?.detail ?? '尚未配置'}。你可以在下面修改并保存。`
+          lookupResult = '已打开页面内收货地址编辑器。'
         }
         else if (request.includes('历史') || request.includes('记录') || request.includes('订单')) {
           historyOpen.value = true
           text = `已整理最近的购买、退货和地址变更记录，共 ${history.value.length} 条。`
+          lookupResult = '已整理页面内操作记录。'
         }
         else {
           const product = products.value.find(item => PRODUCT_ALIASES[item.id]?.some(alias => request.includes(alias)))
           if (request.includes('买') || request.includes('购买') || request.includes('下单') || product) {
             const selected = product ?? products.value[0]!
             const quantity = Math.max(1, Math.min(9, Number(request.match(/(\d+)\s*[件个盒双台]?/)?.[1] ?? 1)))
-            if (selected.stock < quantity) { text = `库存只剩 ${selected.stock} 件，无法购买 ${quantity} 件。你可以减少数量。` }
+            if (selected.stock < quantity) {
+              text = `库存只剩 ${selected.stock} 件，无法购买 ${quantity} 件。你可以减少数量。`
+              lookupResult = '当前库存不足，无法生成购买计划。'
+            }
             else {
               pendingAction.value = { product: { ...selected }, quantity, type: 'purchase' }
               plannedAction = { productId: selected.id, quantity, type: 'purchase' }
               approvalChoices.value = [1, 2, 3].map(count => ({ description: `${(selected.price * count / 100).toFixed(2)} 元`, label: `${count} 件`, value: String(count) }))
               approvalValue.value = String(Math.min(3, quantity))
               text = `已找到 ${selected.name}，当前价 ${(selected.price / 100).toFixed(2)} 元。请选择数量并确认本地下单。`
+              lookupResult = '已找到有货商品，可确认演示购买。'
             }
           }
-          else { text = '我可以帮你购买耳机、牛奶、电饭煲或跑步鞋。也可以说“查看订单历史”“我要退货”或“修改收货地址”。' }
+          else {
+            text = '我可以帮你购买耳机、牛奶、电饭煲或跑步鞋。也可以说“查看订单历史”“我要退货”或“修改收货地址”。'
+            lookupResult = '未识别到可执行的商城操作。'
+          }
         }
+        setToolCallPreview(lookup, { result: lookupResult })
         yield { type: EventType.TOOL_CALL_RESULT, messageId: `result-${lookup}`, toolCallId: lookup, content: JSON.stringify({ summary: text }), role: 'tool' }
       }
       for (const chunk of text.match(/[\s\S]{1,4}/gu) ?? []) {
@@ -333,12 +372,47 @@ export function useMallAgent(): MallAgentController {
         const toolCallId = `execute-${input.runId}`
         const interruptId = `approval-${input.runId}`
         const args = parseWithStandardSchema<MallAction>(mallInputSchema, plannedAction)
+        const varoApprovalPreview: AgentApprovalPreview = {
+          requestedBy: '商城演示 Agent',
+          action: args.type === 'purchase' ? '创建演示订单' : '提交演示退货申请',
+          impact: args.type === 'purchase'
+            ? '仅更新当前页面的演示订单和库存，并写入页面内历史记录；不会实际扣款。'
+            : '将当前页面的演示订单标记为已退货，并在页面内历史记录中保存所选退货原因；不会发起真实退款。',
+        }
+        setToolCallPreview(toolCallId, { parameters: varoApprovalPreview.action })
         pendingExecution = { interruptId, toolCallId, runId: input.runId, threadId: input.threadId, args }
         yield { type: 'TOOL_CALL_START', toolCallId, toolCallName: mallTool.name, parentMessageId: id }
         yield { type: EventType.TOOL_CALL_ARGS, toolCallId, delta: JSON.stringify(args) }
         yield { type: 'TOOL_CALL_END', toolCallId }
         yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
-        yield { type: EventType.RUN_FINISHED, threadId: input.threadId, runId: input.runId, outcome: { type: 'interrupt', interrupts: [withInterruptBinding({ id: interruptId, toolCallId, reason: 'tool_call', message: '确认后仅修改当前页面的演示订单。', responseSchema: mallApproval.responseSchema, metadata: { kind: 'approval', toolName: mallTool.name, input: args } }, { v: 1, kind: 'tool-approval', interruptId, interruptedRunId: pendingExecution.runId, generation: 0, toolName: mallTool.name, toolCallId, originalArgs: args, inputSchemaHash: hashSchemaInput(mallTool.inputSchema), approvalSchemaHash: mallApproval.approvalSchemaHash, responseSchemaHash: mallApproval.responseSchemaHash })] } }
+        yield {
+          type: EventType.RUN_FINISHED,
+          threadId: input.threadId,
+          runId: input.runId,
+          outcome: {
+            type: 'interrupt',
+            interrupts: [withInterruptBinding({
+              id: interruptId,
+              toolCallId,
+              reason: 'tool_call',
+              message: '请核对操作与影响范围。',
+              responseSchema: mallApproval.responseSchema,
+              metadata: { kind: 'approval', toolName: mallTool.name, input: args, varoApprovalPreview },
+            }, {
+              v: 1,
+              kind: 'tool-approval',
+              interruptId,
+              interruptedRunId: pendingExecution.runId,
+              generation: 0,
+              toolName: mallTool.name,
+              toolCallId,
+              originalArgs: args,
+              inputSchemaHash: hashSchemaInput(mallTool.inputSchema),
+              approvalSchemaHash: mallApproval.approvalSchemaHash,
+              responseSchemaHash: mallApproval.responseSchemaHash,
+            })],
+          },
+        }
         return
       }
       yield { type: EventType.TEXT_MESSAGE_END, messageId: id }
@@ -401,5 +475,5 @@ export function useMallAgent(): MallAgentController {
   }
   onUnload(cleanup)
   onUnmounted(cleanup)
-  return { addresses, addressEditorOpen, approvalChoices, approvalValue, approve, busy, buyProduct, cancelInterrupts, cartCount, defaultAddress, history, historyOpen, messages, orders, pendingAction, products, reject, retryInterrupts, returnOrder, saveAddress, send, streamSnapshot, tasks }
+  return { addresses, addressEditorOpen, approvalChoices, approvalValue, approve, busy, buyProduct, cancelInterrupts, cartCount, defaultAddress, history, historyOpen, messages, orders, pendingAction, products, reject, retryInterrupts, returnOrder, saveAddress, send, streamSnapshot, tasks, toolCallPreviews }
 }

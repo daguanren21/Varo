@@ -35,20 +35,27 @@ function cancel() {
 </script>
 
 <template>
-  <view class="grid gap-3">
+  <view class="flex min-w-0 flex-col gap-3">
     <AgentApproval
       v-for="approval in approvals"
       :key="approval.key"
       :description="approval.description"
       :title="approval.title"
+      :preview="approval.preview"
       :disabled="approval.disabled"
       @approve="resolve(approval, 'approve')"
       @reject="resolve(approval, 'reject')"
     />
-    <text v-for="error in projection.interruptErrors" :key="error" class="whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]" role="alert">{{ error }}</text>
+    <text v-for="error in projection.interruptErrors" :key="error" class="whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]" role="alert">
+      {{ error }}
+    </text>
     <view v-if="projection.canRetryInterrupts || projection.canCancelInterrupts" class="flex flex-wrap gap-2">
-      <VButton v-if="projection.canRetryInterrupts" variant="outline" @click="retry">重试中断</VButton>
-      <VButton v-if="projection.canCancelInterrupts" variant="outline" @click="cancel">取消中断</VButton>
+      <VButton v-if="projection.canRetryInterrupts" variant="outline" @click="retry">
+        重试中断
+      </VButton>
+      <VButton v-if="projection.canCancelInterrupts" variant="outline" @click="cancel">
+        取消中断
+      </VButton>
     </view>
   </view>
 </template>

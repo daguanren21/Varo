@@ -15,30 +15,44 @@ const props = withDefaults(
   },
 )
 
-const completedCount = computed(() => props.tasks.filter(task => task.status === 'completed').length)
-const currentTask = computed(() => props.tasks.find(task => task.status === 'running' || task.status === 'failed'))
-const headingHint = computed(() => {
-  if (currentTask.value?.status === 'failed') {
-    return `阻塞于 ${currentTask.value.title}`
+const summary = computed(() => {
+  const tasks = props.tasks
+  let completed = 0
+  let currentIndex = -1
+  let failedTask: AgentTask | undefined
+  let approvalTask: AgentTask | undefined
+
+  for (let index = 0; index < tasks.length; index++) {
+    const task = tasks[index]!
+    if (task.status === 'completed') { completed += 1 }
+    else if (task.status === 'running' && currentIndex === -1) { currentIndex = index }
+    else if (task.status === 'failed') { failedTask ??= task }
+    else if (task.status === 'waiting' && task.requiresApproval) { approvalTask ??= task }
   }
-  if (currentTask.value) {
-    return `正在执行 ${currentTask.value.title}`
+
+  const hints: string[] = []
+  const currentTask = tasks[currentIndex]
+  if (currentTask) { hints.push(`正在执行 ${currentTask.title}`) }
+  if (failedTask) { hints.push(`阻塞于 ${failedTask.title}`) }
+  if (approvalTask) { hints.push(`等待确认 ${approvalTask.title}`) }
+  if (!hints.length) {
+    if (!tasks.length) { hints.push('暂无任务') }
+    else if (completed === tasks.length) { hints.push('全部完成') }
+    else { hints.push(agentPartStatusLabels.waiting) }
   }
-  if (props.tasks.length && completedCount.value === props.tasks.length) {
-    return '全部完成'
-  }
-  return '等待开始'
+
+  return { completed, currentIndex, hints }
 })
 const displayTasks = computed(() =>
   props.tasks.map((task, index) => {
-    const ariaCurrent: 'step' | undefined = task.status === 'running' ? 'step' : undefined
+    const ariaCurrent: 'step' | undefined = index === summary.value.currentIndex ? 'step' : undefined
     return {
       ...task,
       ariaCurrent,
       indexLabel: String(index + 1),
       itemClass: `agent-task-list__item is-${task.status}`,
       progressWidth: task.progress === undefined ? '' : `${Math.min(100, Math.max(0, task.progress))}%`,
-      statusLabel: agentPartStatusLabels[task.status],
+      statusLabel: task.status === 'waiting' && task.requiresApproval ? '等待确认' : agentPartStatusLabels[task.status],
     }
   }),
 )
@@ -51,12 +65,12 @@ const displayTasks = computed(() =>
         <text class="agent-task-list__title">
           {{ title }}
         </text>
-        <text class="agent-task-list__hint">
-          {{ headingHint }}
+        <text v-for="hint in summary.hints" :key="hint" class="agent-task-list__hint">
+          {{ hint }}
         </text>
       </view>
       <text class="agent-task-list__count">
-        {{ completedCount }}/{{ tasks.length }}
+        已完成 {{ summary.completed }}/{{ tasks.length }}
       </text>
     </view>
     <view class="agent-task-list__body">
@@ -139,6 +153,11 @@ const displayTasks = computed(() =>
   font-size: 11px;
   line-height: 16px;
   color: var(--varo-agent-muted, #667085);
+}
+
+.agent-task-list__hint,
+.agent-task-list__description {
+  overflow-wrap: anywhere;
 }
 
 .agent-task-list__count,

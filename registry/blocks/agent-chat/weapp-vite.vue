@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import type { ChatClientSnapshot } from '@tanstack/ai-client'
-import type { AgentConversationEntry } from '../agent-ui/types'
+import type { AgentConversationEntry, AgentToolCallPreview } from '../agent-ui/types'
 import type { AgentChatHistoryItem, AgentChatLayout } from './agent-chat.types'
 import { useControllableState } from '@varo-ui/headless'
-import { computed, nextTick, onBeforeUnmount, onMounted, onResize, onUpdated, shallowRef, useNativeInstance, watch } from 'wevu'
+import { computed, nextTick, onBeforeUnmount, onMounted, onResize, onUpdated, provide, shallowRef, triggerRef, useNativeInstance, watch } from 'wevu'
 import { varoReactiveRuntime } from '../../lib/varo-primitives'
 import AgentComposer from '../agent-ui/AgentComposer.vue'
 import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
-import VButton from '../ui/v-button.vue'
 import { agentSnapshotStatus } from '../agent-ui/presentation'
+import { agentToolDisclosureKey } from '../agent-ui/tool-disclosure'
+import VButton from '../ui/v-button.vue'
 
 // Keep an omitted native model distinct from a controlled empty string.
 defineOptions({
@@ -34,6 +35,7 @@ const props = withDefaults(
     subtitle?: string
     suggestions?: string[]
     title?: string
+    toolCallPreviews?: Readonly<Record<string, AgentToolCallPreview>>
   }>(),
   {
     busy: false,
@@ -77,6 +79,9 @@ const currentPrompt = computed(() => promptState.current.value)
 const statusLabel = computed(() => props.busy ? '处理中' : '就绪')
 const empty = computed(() => props.messages.length === 0 && (!props.snapshot || agentSnapshotStatus(props.snapshot) === 'idle'))
 const contextMessages = computed(() => props.snapshot?.messages)
+// Wevu does not proxy Sets; disclosures trigger the shared ref when a group changes.
+const openToolGroups = shallowRef(new Set<string>())
+provide(agentToolDisclosureKey, openToolGroups)
 const historyChoices = computed(() => props.history.map(item => ({
   ...item,
   active: item.id === props.activeHistoryId,
@@ -140,7 +145,28 @@ function measureContent() {
   })
 }
 
-watch([() => props.activeHistoryId, empty], () => { nearBottom = true })
+watch([() => props.activeHistoryId, empty], ([historyId, isEmpty], [previousHistoryId]) => {
+  nearBottom = true
+  if ((isEmpty || historyId !== previousHistoryId) && openToolGroups.value.size > 0) { openToolGroups.value = new Set() }
+})
+watch([contextMessages, () => props.messages], (transcripts) => {
+  const open = openToolGroups.value
+  if (!open.size) { return }
+  const removed = new Set(open)
+  for (const transcript of transcripts) {
+    if (!transcript) { continue }
+    for (const message of transcript) {
+      if (!('parts' in message)) { continue }
+      for (const part of message.parts) {
+        if (part.type === 'tool-call') { removed.delete(part.id) }
+        else if (part.type === 'tool-result') { removed.delete(part.toolCallId) }
+        if (!removed.size) { return }
+      }
+    }
+  }
+  for (const id of removed) { open.delete(id) }
+  triggerRef(openToolGroups)
+})
 onMounted(measureContent)
 onUpdated(measureContent)
 onResize(measureContent)
@@ -208,10 +234,11 @@ function updatePrompt(value: string) {
             输入问题，或选择下方建议开始新的对话。
           </text>
         </view>
-        <AgentConversation :messages="messages" :context-messages="contextMessages" />
+        <AgentConversation :messages="messages" :context-messages="contextMessages" :tool-call-previews="toolCallPreviews" />
         <AgentEventRenderer
           v-if="snapshot && agentSnapshotStatus(snapshot) !== 'idle'"
           :snapshot="snapshot"
+          :tool-call-previews="toolCallPreviews"
           @approve="emit('approve', $event)"
           @reject="emit('reject', $event)"
           @retry="emit('retry')"
