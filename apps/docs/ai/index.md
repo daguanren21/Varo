@@ -156,6 +156,7 @@ export default defineConfig({
 
 - [AgentChat](./agent-chat)：对话、流式回答、工具、审批和输入。
 - [AgentWorkspace](./agent-workspace)：来源、检索、任务、版本和多种布局。
+- [Agent Decision Card](./agent-decision) 和 [Agent Inbox](./agent-inbox)：微信原生选项回答与受控任务列表，不依赖聊天 SDK。
 
 ::: info 平台
 H5 使用 RAF 文本展示节奏，微信小程序使用定时帧，两者共用安全 Markdown AST；聊天传输与状态由 TanStack AI 管理。Agent 条目仅支持 `h5` / `weapp`，其他基础组件的实验性 profile 准入不适用于 Agent UI。

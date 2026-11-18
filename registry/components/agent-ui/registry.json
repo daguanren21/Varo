@@ -12,6 +12,7 @@
     "components/agent-model-selector",
     "components/agent-attachment-composer"
   ],
+  "targetRegistryDependencies": { "weapp": ["components/agent-decision"] },
   "files": [
     { "target": "h5", "from": "registry/components/agent-ui/h5/index.ts", "to": "src/components/agent-ui/index.ts" },
     { "target": "weapp", "from": "registry/components/agent-ui/index.ts", "to": "src/components/agent-ui/index.ts" }

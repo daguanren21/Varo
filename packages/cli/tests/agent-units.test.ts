@@ -33,6 +33,7 @@ describe.each(['h5', 'weapp'] as const)('Agent source units for %s', (target) =>
     const files = readdirSync(directory)
     expect(files).toContain(target === 'h5' ? 'conversation.ts' : 'AgentEventRenderer.vue')
     expect(files.includes('AgentToolCallGroup.vue')).toBe(target === 'weapp')
+    expect(files).not.toContain('AgentDecisionCard.vue')
     expect(files).toContain('presentation.ts')
     expect(files).not.toContain('index.ts')
     expect(files.filter(file => /advanced|workspace|rag|file-diff|FileDiff|FineTune|supplemental/i.test(file))).toEqual([])
@@ -55,9 +56,20 @@ describe.each(['h5', 'weapp'] as const)('Agent source units for %s', (target) =>
     expect(destinations).toEqual([...new Set(destinations)])
     const expected = target === 'h5'
       ? ['index.ts', 'conversation.ts', 'workspace.ts', 'advanced.ts', 'supplemental.ts', 'AgentRagPipeline.vue']
-      : ['index.ts', 'AgentEventRenderer.vue', 'AgentTaskRunner.vue', 'AgentFileDiff.vue', 'AgentFineTune.vue', 'AgentRagPipeline.vue']
+      : ['index.ts', 'AgentDecisionCard.vue', 'AgentEventRenderer.vue', 'AgentTaskRunner.vue', 'AgentFileDiff.vue', 'AgentFineTune.vue', 'AgentRagPipeline.vue']
     for (const file of expected) {
       expect(existsSync(join(projectRoot, 'src/components/agent-ui', file)), file).toBe(true)
     }
   })
+})
+
+it('installs native Decision and Inbox without bringing in chat or the SDK', async () => {
+  const projectRoot = mkdtempSync(join(tmpdir(), 'varo-agent-inbox-'))
+  projects.push(projectRoot)
+  const plan = await installRegistryItems(['components/agent-decision', 'blocks/agent-inbox'], { projectRoot, registryRoot, target: 'weapp' })
+  expect(existsSync(join(projectRoot, 'src/components/agent-ui/AgentDecisionCard.vue'))).toBe(true)
+  expect(existsSync(join(projectRoot, 'src/components/blocks/agent-inbox.vue'))).toBe(true)
+  expect(existsSync(join(projectRoot, 'src/components/agent-ui/AgentEventRenderer.vue'))).toBe(false)
+  expect(plan.dependencies).not.toContain('@tanstack/ai-client')
+  expect(plan.dependencies).not.toContain('@varo-ui/ai')
 })

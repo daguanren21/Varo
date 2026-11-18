@@ -51,6 +51,10 @@
       "pages": ["index"]
     },
     {
+      "root": "pages/agent-inbox-demo",
+      "pages": ["index"]
+    },
+    {
       "root": "pages/web-preview",
       "pages": ["index"]
     },

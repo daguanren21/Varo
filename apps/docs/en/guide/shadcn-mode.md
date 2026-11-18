@@ -72,7 +72,7 @@ export default defineConfig({
 })
 ```
 
-Each `styles.source` is relative to `srcRoot`. `themes/base` installs `src/styles/varo.css` with tokens and foundation rules only. Component manifests install their own CSS; Agent units also need `varo-agent.css` from `themes/agent`. After adding components, restart the build to collect all styles, including `varo.css`. This matches `apps/platform-smoke/vite.config.mjs`: foundation styles load before component CSS.
+Each `styles.source` is relative to `srcRoot`. `themes/base` installs `src/styles/varo.css` with tokens and foundation rules only. Component manifests determine which CSS is installed. Items that depend on `themes/agent` install `src/styles/varo-agent.css`. Restart the build after adding components to collect all installed styles, with `varo.css` first. See `apps/platform-smoke/vite.config.mjs`.
 
 Load all these files globally through `weapp.styles` with `include: 'app.vue'`. Retain `styleIsolation: apply-shared` in native SFCs. Do not import global theme or component CSS into component-local `<style>` / WXSS: application-level selectors cannot appear in component WXSS. H5 Registry source automatically imports its full CSS dependency closure and does not use this native global registration.
 
