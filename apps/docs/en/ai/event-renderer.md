@@ -89,6 +89,8 @@ A subagent only shows its name and status, not its nested messages, tool argumen
 
 Native `AgentChat` tracks disclosure by each group's first `toolCallId`, so naming a streamed message or moving it into history does not close the group. New calls on retry start collapsed. Update `activeHistoryId` when switching conversations so disclosure does not carry across threads.
 
+The native Mall demo also keeps tool details open when a message moves from the current reply into history.
+
 For a tool approval, the server can supply optional `requestedBy`, `action`, and `impact` strings in the interrupt's `metadata.varoApprovalPreview`. Each card shows its own preview. Without one it shows the tool name and approval description without inferring impact from raw arguments. Reject applies to one approval; Cancel Interrupt applies to the transaction.
 
 ## Props

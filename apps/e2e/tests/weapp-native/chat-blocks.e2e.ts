@@ -68,6 +68,7 @@ test.describe('native B1 Chat Blocks', { platforms: nativePlatforms, requires: [
     await miniProgram.locator(classXPath('agent-composer__submit')).tap()
     await expect(priorTools).toHaveAttribute('aria-expanded', 'true')
     await expect(miniProgram.locator(stateXPath)).toContainText('status=ready;')
+    await expect(priorTools).toHaveAttribute('aria-expanded', 'true')
     await expect(miniProgram.locator(composerXPath)).toHaveValue('')
     await screen.getByRole('button', { name: '新建会话' }).tap()
     await expect(miniProgram.locator(stateXPath)).toContainText('history=new;')

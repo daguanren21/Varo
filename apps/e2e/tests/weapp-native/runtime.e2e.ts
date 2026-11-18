@@ -87,10 +87,10 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     const lookup = miniProgram.locator(lookupXPath)
     const lookupButton = miniProgram.locator(`${lookupXPath}//button`)
     await lookupButton.tap()
+    await expect(lookupButton).toHaveAttribute('aria-expanded', 'true')
     await expect(lookup).toContainText('读取当前页面的商城数据。')
     await expect(lookup).toContainText('已找到有货商品，可确认演示购买。')
     await expect(lookup).not.toContainText('私人备注')
-    await lookupButton.tap()
 
     const approval = miniProgram.locator(classXPath('agent-approval__body'))
     await expect(approval).toContainText('商城演示 Agent')
@@ -110,9 +110,16 @@ test.describe('native runtime', { platforms: nativePlatforms, requires: ['miniPr
     expect(purchased.latestProduct).toBe('milk')
     expect(purchased.latestStatus).toBe('paid')
 
+    const historicalLookup = `${classXPath('agent-conversation')}${groups}[contains(., "local.mall.lookup")]`
+    await expect(lookupButton).toHaveCount(0)
+    await expect(miniProgram.locator(`${historicalLookup}//button`)).toHaveAttribute('aria-expanded', 'true')
+    await expect(miniProgram.locator(historicalLookup)).toContainText('已找到有货商品，可确认演示购买。')
+
     const executionXPath = `${classXPath('agent-conversation')}${groups}[contains(., "local.mall.execute")]`
     const execution = miniProgram.locator(executionXPath)
-    await miniProgram.locator(`${executionXPath}//button`).tap()
+    const executionButton = miniProgram.locator(`${executionXPath}//button`)
+    await expect(executionButton).toHaveAttribute('aria-expanded', 'false')
+    await executionButton.tap()
     await expect(execution).toContainText('创建演示订单')
     await expect(execution).toContainText('演示订单已创建，未实际扣款。')
     await expect(execution).not.toContainText('productId')

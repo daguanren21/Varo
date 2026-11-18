@@ -14,6 +14,7 @@ import AgentConversation from '../agent-ui/AgentConversation.vue'
 import AgentEventRenderer from '../agent-ui/AgentEventRenderer.vue'
 import AgentRadioGroup from '../agent-ui/AgentRadioGroup.vue'
 import AgentTaskList from '../agent-ui/AgentTaskList.vue'
+import { provideAgentToolDisclosure } from '../agent-ui/tool-disclosure'
 import VButton from '../ui/v-button.vue'
 import VIcon from '../ui/v-icon.vue'
 import MallAddressEditor from './MallAddressEditor.vue'
@@ -67,6 +68,7 @@ const emit = defineEmits<{
 const prompt = shallowRef('')
 const suggestions = ['买一盒牛奶', '我要退货', '查看订单历史', '修改收货地址']
 const contextMessages = computed(() => props.streamSnapshot?.messages)
+provideAgentToolDisclosure(() => contextMessages.value, () => props.messages)
 const approvalTitle = computed(() => {
   if (props.pendingAction?.type === 'purchase') {
     return `确认购买 ${props.pendingAction.product.name}`

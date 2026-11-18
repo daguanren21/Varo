@@ -89,6 +89,8 @@ const toolCallPreviews: Record<string, AgentToolCallPreview> = {
 
 原生 `AgentChat` 按每组首个 `toolCallId` 保存展开状态，不受流式消息 ID 改名或移入历史的影响。重试后的新调用默认折叠。切换会话时同步更新 `activeHistoryId`，避免跨会话复用展开状态。
 
+原生商城演示也会在消息从当前回复移入历史时保留已展开的工具详情。
+
 工具审批可由服务端在中断的 `metadata.varoApprovalPreview` 提供 `requestedBy`、`action`、`impact` 三个可选字符串。详情按当前审批卡片展示；没有预览时保留工具名称和审批说明，不从原始参数推断影响。“拒绝”只针对该审批，“取消中断”针对事务。
 
 ## Props
