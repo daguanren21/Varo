@@ -1,7 +1,7 @@
 {
   "name": "@varo-ui/ai",
   "type": "module",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Safe Markdown, text presentation pacing, and thread-version helpers for Varo Agent UI.",
   "author": "daguanren21 <1363917353@qq.com>",
   "license": "MIT",
