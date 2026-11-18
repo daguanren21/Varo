@@ -176,6 +176,9 @@ describe('playground-weapp delivery contract', () => {
     if (process.env.WEAPP_ROBOT_CHAT === '1') {
       expectedRoutes.push('pages/robot-chat-showcase/index', 'pages/web-preview-robot-chat/index', 'pages/docs-robot-chat/index')
     }
+    if (process.env.WEAPP_A2UI_DEMO === '1') {
+      expectedRoutes.push('pages/agent-a2ui/index')
+    }
     expect([...routes].sort()).toEqual([...expectedRoutes].sort())
     expect(new Set(routes).size).toBe(routes.length)
     expect(routes).toContain('blocks-lab/attachments/index')

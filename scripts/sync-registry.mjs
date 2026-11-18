@@ -116,6 +116,7 @@ const blocksLabFiles = new Set(blocksLabNames.flatMap((name) => {
 for (const [app, target] of [['playground-h5', 'h5'], ['playground-weapp', 'weapp']]) {
   const names = items.filter(item => item.targets.includes(target)
     && ((item.type === 'component' && !item.name.startsWith('agent-')) || item.name === 'agent-ui' || item.type === 'block')).map(item => item.id)
+  if (target === 'weapp') { names.push('components/agent-a2ui') }
   const plan = await sourcePlan(names, target)
   if (target !== 'weapp') {
     for (const file of plan.files) { output(`apps/${app}/${file.to}`, await readFile(file.sourcePath)) }
@@ -123,7 +124,9 @@ for (const [app, target] of [['playground-h5', 'h5'], ['playground-weapp', 'weap
   }
   const destinations = new Map(plan.files.map(file => [
     file.to,
-    blocksLabFiles.has(file.to) ? file.to.replace('src/', 'src/blocks-lab/') : file.to,
+    blocksLabFiles.has(file.to)
+      ? file.to.replace('src/', 'src/blocks-lab/')
+      : file.to.replace(/^src\/components\/agent-a2ui\//, 'src/pages/agent-a2ui/components/'),
   ]))
   for (const file of plan.files) {
     const destination = destinations.get(file.to)

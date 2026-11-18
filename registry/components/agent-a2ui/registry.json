@@ -1,0 +1,17 @@
+{
+  "name": "agent-a2ui",
+  "type": "component",
+  "title": "Agent A2UI",
+  "description": "Weapp session and renderers for a narrow A2UI 1.0 catalog.",
+  "targets": ["weapp"],
+  "dependencies": ["@a2ui/web_core@0.15.0", "wevu"],
+  "registryDependencies": ["components/button", "components/card", "components/input"],
+  "files": [
+    { "target": "weapp", "from": "registry/components/agent-a2ui/session.ts", "to": "src/components/agent-a2ui/session.ts" },
+    { "target": "weapp", "from": "registry/components/agent-a2ui/catalog.json", "to": "src/components/agent-a2ui/catalog.json" },
+    { "target": "weapp", "from": "registry/components/agent-a2ui/AgentSurfaceNode.vue", "to": "src/components/agent-a2ui/AgentSurfaceNode.vue" },
+    { "target": "weapp", "from": "registry/components/agent-a2ui/VAgentSurface.vue", "to": "src/components/agent-a2ui/VAgentSurface.vue" },
+    { "target": "weapp", "from": "registry/components/agent-a2ui/LICENSE.a2ui.txt", "to": "src/components/agent-a2ui/LICENSE.a2ui.txt" }
+  ],
+  "docs": "/ai/agent-a2ui"
+}
