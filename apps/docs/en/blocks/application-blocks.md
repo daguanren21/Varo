@@ -140,9 +140,7 @@ An application submission handler should:
 3. Recheck the current step/revision after awaiting; clear `busy` in `finally`.
 4. Advance `position` only after accepting validation. Submit through the application's service or local data owner; do not treat the event as success.
 
-This Block uses the login/profile host-form pattern with VInput/VSwitch, without VForm's validation provider. The separate VForm native-slot scenario on 7.10.0 has exercised validation, row insertion/removal/reindexing, and submission in `form-array-en-dark`; it does not replace this Block's host-form default-action verification. H5 uses a semantic `<form>` and prevents default submission. Native uses a host `<form>` and VButton submit, without a context bridge or simulated host geometry.
-
-The repository's native E2E uses a pnpm patch for `@weapp-vite/miniprogram-automator` 1.3.0 to execute form submission in the simulator's native default-action layer, preserving the multi-step validation and local submission assertions. See the [installation guide](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for patch ownership and upgrade checks. WeChat DevTools and device acceptance remain separate.
+This Block uses the login/profile host-form pattern with VInput/VSwitch, without VForm's validation provider. H5 uses a semantic `<form>` and prevents default submission. Native uses a host `<form>` and VButton submit.
 
 ## status-timeline
 
@@ -247,4 +245,4 @@ Both demos have seven section buttons and labelled controls for injected disable
 
 The paired scenarios exercise controlled settings rejection; bounded onboarding/close; invalid, previous and successful form paths; timeline retry; derived summary/filter/error; booking conflict/acceptance/cancel; people grants/paging/edit/approval/removal; and empty/pending/disabled evidence. Tests operate on rendered controls and observable state, not `setData`, page-method stand-ins, source-text assertions or fake geometry.
 
-After integration, register routes, generate the Registry, check styles and types/builds, and run these E2E scenarios against the output. Passing native headless tests does not establish device or visual behavior. DevTools scenarios require usable WeChat DevTools, an authorized local AppID/project and the repository's native fixture. Applications must connect real account storage, booking, authorization and asynchronous server validation.
+Applications must connect real account storage, booking, authorization and asynchronous server validation. See [runtime evidence limits](/en/guide/installation#deterministic-e2e-and-evidence-boundaries) for headless, DevTools and device requirements.

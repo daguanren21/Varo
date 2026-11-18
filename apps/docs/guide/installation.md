@@ -6,7 +6,7 @@
 - `@varo-ui/headless` 只提供平台无关的状态、事件和受控状态约定；DOM、焦点和页面滚动锁定由 H5 处理
 - 原生工程使用 `weapp-vite` + `wevu` + Tailwind CSS v4 + `weapp-tailwindcss`，无需用 Vue 渲染器模拟小程序
 
-本仓库使用 pnpm `11.24.0`；Node 要求为 `^22.23.4 || ^24.22.1 || >=26.12.1`，与已发布的 7.10 编译器一致。Node 25 不在支持范围内。
+Node 与 pnpm 要求以仓库根目录 [`package.json`](https://github.com/daguanren21/Varo/blob/main/package.json) 的 `engines`、`packageManager` 为准；原生依赖须满足 `@varo-ui/weapp` 的 `peerDependencies`。
 
 ## 初始化项目
 
@@ -22,8 +22,8 @@ pnpm install
 # H5
 pnpm add vue @varo-ui/h5 @varo-ui/theme
 # 原生 Wevu 工程（二选一，不需要为渲染额外安装 Vue）
-pnpm add wevu@7.10.0 @varo-ui/weapp @varo-ui/theme
-pnpm add -D weapp-vite@7.10.0
+pnpm add wevu @varo-ui/weapp @varo-ui/theme
+pnpm add -D weapp-vite
 # 仅用于 Markdown、文本节奏与会话版本 helper
 pnpm add @varo-ui/ai
 ```
@@ -115,15 +115,15 @@ renderer 只有 `h5` 和 `weapp` 两类；`--target` 选择的是以下精确安
 pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox switch drawer card
 ```
 
-`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。当前编译器为 7.10.0；微信目标原生 slot/app-shell 实现通过 `weapp.vue.template.nativeSlotContext: true` 与 `scopedSlotsRequireProps: true` 显式启用，不再使用旧 7.5.0 补丁和 bootstrap。当前运行仍需重新验收，不能沿用历史证据。Donut 使用微信编译器和各宿主的真实元数据。**编译和产物检查不能替代真机验收。**使用方须自行提供 AppID、签名、宿主 SDK、IDE 和设备验收，不生成虚假凭证。
+`pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。微信目标在 `weapp.vue.template` 中同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup；此插槽配置不覆盖 created setup 或其他平台。Donut 使用微信编译器及对应宿主元数据。宿主要求见[证据边界](#确定性-e2e-与证据边界)。
 
 ## Agent 流式接入
 
-聊天直接使用 TanStack AI：`@tanstack/ai` 1.4.0 定义上游 `UIMessage` 和 AG-UI `StreamChunk`，`@tanstack/ai-client` 1.1.0 拥有消息、`ChatClientSnapshot`、连接、中断与 abort；H5 使用 `@tanstack/ai-vue` 1.0.1 的 `useChat`，原生使用 `ChatClient` 与 Wevu。`@varo-ui/ai` 仅提供安全 Markdown、文本节奏与会话版本 helper，不再提供私有事件协议、流控制器、channel、SSE 解码器或事件 parser。
+聊天使用 TanStack AI：`@tanstack/ai` 定义 `UIMessage` 和 AG-UI `StreamChunk`，`@tanstack/ai-client` 拥有消息、`ChatClientSnapshot`、连接、中断与 abort；H5 使用 `@tanstack/ai-vue` 的 `useChat`，原生使用 `ChatClient` 与 Wevu。`@varo-ui/ai` 仅提供安全 Markdown、文本节奏与会话版本 helper，不管理传输协议或连接。
 
 UI 可按需安装 `agent-conversation`、`agent-workspace`、`agent-advanced`、`agent-rag`。共享 `agent-presentation` 只含展示类型与纯函数；`AgentPartStatus`、`AgentStreamStatus` 和 `AgentToolPart` 位于安装后的 `components/agent-ui/types`，不是 core 协议或 SDK 状态。SDK 状态是 `ready | submitted | streaming | error`，不能直接换成展示状态。`blocks/agent-chat` 自动安装 conversation 依赖，无需预装完整套件。静态历史保留 `AgentConversationMessage[]`，snapshot prop 必须是实际 `client.getSnapshot()`，不要重建或归约事件。
 
-原生 `weapp-vite` / `wevu` 使用 7.10.0，在现有编译配置中加入官方 [Web Runtime 配置](https://vite.weapp.dev/config/web-runtime-globals)：
+原生工程在现有编译配置中启用 [Web Runtime](https://vite.weapp.dev/config/web-runtime-globals)：
 
 ```ts
 import { defineConfig } from 'weapp-vite/config'
@@ -145,14 +145,14 @@ export default defineConfig({
 })
 ```
 
-然后使用 SDK 标准 `fetchServerSentEvents` adapter；不要另写 `wx.request` transport 或 Web API polyfill。宿主必须提供真实响应状态、响应头和增量数据块，不能用整包缓冲伪装流式。原生响应式和生命周期从 `wevu` 导入，不使用 Vue binding。微信 DevTools 与真机需分别验证，其他平台不因此获得相同能力，也不模拟浏览器 Cookie/CORS 或网络级反压。
+使用 SDK 标准 `fetchServerSentEvents` adapter，不另写 `wx.request` transport 或 Web API polyfill。宿主必须提供真实响应状态、响应头和增量数据块，不能用整包缓冲伪装流式。原生响应式和生命周期从 `wevu` 导入，不使用 Vue binding。Web Runtime 不模拟浏览器 Cookie/CORS，也不提供网络级反压。
 
 渲染器的 `approve` / `reject` 发送 interrupt ID；应用从 `client.getInterrupts()` 查找对应 `tool-approval`，检查可解析状态后调用 `resolveInterrupt(true)` / `resolveInterrupt(false)`。UI 不执行网络或工具，不授予业务权限；凭据、业务执行和授权、重试与服务端取消传播均由应用负责。完整 H5 / 原生示例与官方 TanStack 引用见 [Agent 接入](/ai/)。
 
 ## 小程序构建链
 
 ```bash
-pnpm add -D weapp-vite@7.10.0 weapp-tailwindcss tailwindcss
+pnpm add -D weapp-vite weapp-tailwindcss tailwindcss
 pnpm add clsx @weapp-tailwindcss/merge
 ```
 
@@ -173,7 +173,7 @@ pnpm --filter @varo/playground-weapp-preview preview
 
 生产预览默认使用 `http://127.0.0.1:4182`，可部署产物位于 `apps/playground-weapp-preview/dist`。确定性浏览器回归统一使用下方的 `pnpm test:e2e:web`；runner 启动并清理自己拥有的服务，覆盖原生产物交互、事件次数、上下文、流式取消/继续、样式边界与错误恢复。
 
-仓库 lockfile 记录该运行链需要的 SDK 版本；CLI 不会把这些依赖安装到外部业务项目。微信专属能力、真机性能与最终视觉仍需在微信环境验收。
+仓库 lockfile 记录预览运行链的 SDK 依赖；CLI 不会把这些开发依赖安装到业务项目。
 
 文档的 H5 与小程序标签页共享示例分组、语言、主题和设备框架。已注册的普通组件与 Primitive 小程序示例运行 Wevu 编译产物，支持输入、选择、表单校验、动态数组、文件选择和错误重试。「查看代码」提供安装命令与原生源码；仅支持 H5 的组件会明确标注。
 
@@ -191,17 +191,19 @@ pnpm test:e2e:web
 pnpm test:e2e:weapp
 ```
 
-Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试；用例或目标缺失、失败、意外跳过都会拒绝验收。每次运行生成唯一的 `apps/e2e/.e2e/runs/<run-id>/run.json`，截图和框架报告保存在同一 run 目录，不复用旧报告。旧原生 smoke 与截图入口仍保留，等待宿主验收。
+Web suite 覆盖 H5 与 glass-easel 预览；Weapp suite 使用原生编译产物的 headless 宿主。两者不调用模型、不重试；用例或目标缺失、失败、意外跳过都会拒绝验收。每次运行生成唯一的 `apps/e2e/.e2e/runs/<run-id>/run.json`，截图和框架报告保存在同一 run 目录，不复用旧报告。
 
-Headless 通过仓库内的 `@weapp-vite/miniprogram-automator@1.3.0` pnpm patch 支持 `rich-text` 数组/HTML 的渲染树文本观察，以及原生提交按钮的表单默认动作。补丁位于 `patches/@weapp-vite__miniprogram-automator@1.3.0.patch`，只用于开发测试依赖；`apps/e2e/tests/runner/native-runtime.test.ts` 通过真实 Launcher 覆盖文本实体、内容更新、不受支持的节点/事件过滤、具名字段值、自定义表单 behavior 和禁用按钮。升级 SDK 时须重新验证这些场景，确认上游已覆盖后再移除补丁。
+Headless 使用官方 `@weapp-vite/miniprogram-automator`。[Launcher 回归](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/runner/native-runtime.test.ts)覆盖文本、内容更新、节点/事件过滤、字段值、自定义表单 behavior 和禁用按钮。
 
-Headless 不是微信客户端：不提供真实像素、键盘或触摸几何。渲染文本断言必须读取渲染树，不能用页面状态冒充结果。`pnpm test:e2e:devtools` 另需已登录的微信开发者工具、automation 端口和有效的本地 AppID；真机能力与视觉仍须单独验收。
+编译产物检查、glass-easel 浏览器预览和 headless E2E 不能替代微信 IDE 或真机验收，也不扩展 manifest 的 profile 准入。Headless 不提供真实像素、键盘或触摸几何，也不能完整观察 `rich-text`。文本断言须读取渲染树，不能用页面状态代替结果。
+
+`pnpm test:e2e:devtools` 需要已登录的微信开发者工具、automation 端口和有效的本地 AppID。微信专属能力、网络流式能力、性能、视觉与可访问性须在对应宿主和设备验证。其他 profile 需各自的 IDE、SDK 与设备；Donut 还需原生工具链和签名。使用真实凭据，不生成虚假 AppID 或证书。
 
 `pnpm check:full` 先检查源投影与架构，再运行 repoctl 基础检查和构建、结构契约、runner 反例、真实 E2E、独立消费者和原生 profile 产物验证。缺少宿主前置条件不能算通过。
 
 ## 本地 Devframe MCP
 
-私有包 `@varo/devtools` 通过 Devframe stdio adapter 提供仓库开发工具，无 HTTP 接口或共享状态，不作为生产依赖。安装 workspace 后，用 Node 24 从仓库根目录启动：
+私有包 `@varo/devtools` 通过 Devframe stdio adapter 提供仓库开发工具，无 HTTP 接口或共享状态，不作为生产依赖。安装 workspace 后，用满足根目录 `engines` 的 Node 从仓库根目录启动：
 
 ```bash
 # 默认只读：列出/读取 Block、读取 manifest 声明的源码、预览安装计划
@@ -224,6 +226,5 @@ MCP 客户端启动该进程并保持 stdin/stdout 连接。工具为 `varo_bloc
 
 ## 版本策略
 
-- 当前原生集成使用 `weapp-vite` / `wevu` 7.10.0；微信目标显式启用上游 `nativeSlotContext` / `scopedSlotsRequireProps`，不保留旧补丁或 bootstrap；升级后重新验证所用 profile，历史 7.5.0 证据不是当前运行证明
-- 生产项目以 lockfile、各包 `peerDependencies` 和 CI 构建结果为准
-- VitePress、Vue 与 TypeScript 跟随 workspace 统一升级
+- 原生编译器与 `wevu` 保持版本对齐；兼容范围以 [`@varo-ui/weapp` 的 `peerDependencies`](https://github.com/daguanren21/Varo/blob/main/packages/ui-weapp/package.json) 为准。
+- 用 lockfile 固定依赖；升级后重新验证所用 profile。

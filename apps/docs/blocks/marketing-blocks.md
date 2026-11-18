@@ -20,9 +20,9 @@ pnpm dlx @varo-ui/cli add --target weapp blocks/marketing-contact
 | `blocks/marketing-contact`  | `components/button`、`components/input`、`components/textarea` | `MarketingContactValues`、`MarketingContactErrors`、`MarketingContactLabels`                          |
 | `blocks/marketing-process`  | `components/button`                                            | `MarketingProcessStep`                                                                                |
 
-安装器递归解析控件的工具、主题与 npm 依赖。Marketing 单元互不依赖，也不安装 Agent 聚合包。联系表单直接组合输入控件，`values`、`errors` 和 `canSubmit` 由应用管理；它不依赖 VForm 校验 provider，也不需要插槽兼容上下文。7.10.0 的原生插槽配置与验证边界见 [Dialog](/components/dialog)。
+安装器递归解析控件的工具、主题与 npm 依赖。Marketing 单元互不依赖，也不安装 Agent 聚合包。联系表单直接组合输入控件，`values`、`errors` 和 `canSubmit` 由应用管理，不依赖 VForm 校验 provider。
 
-H5 安装完整依赖 CSS。原生通过 `weapp.styles` 全局加载安装的样式，`varo.css` 在前，`include: 'app.vue'`；不要在 `apply-shared` 组件的局部 WXSS 中导入全局样式。配置见 [Registry 模式](/guide/shadcn-mode)。当前仅准入稳定 `h5`、`weapp`，不代表实验 profile 或真机认证。
+H5 安装完整依赖 CSS。原生通过 `weapp.styles` 全局加载安装的样式，`varo.css` 在前，`include: 'app.vue'`；不要在 `apply-shared` 组件的局部 WXSS 中导入全局样式。配置见 [Registry 模式](/guide/shadcn-mode)。当前仅准入稳定 `h5`、`weapp`。
 
 ## 状态与所有权
 
@@ -170,11 +170,11 @@ const labels = { name: '姓名', email: '邮箱', message: '留言', submit: '�
 
 `action` 检查授权后发送当前步骤，显示顺序与输入一致。应用提供状态，Block 不按下标、时间或点击推断。操作资格与展示状态独立，因此应用可允许重访已完成步骤。演示打开说明后才推进；“完成”仅表示**本地说明已打开**，不表示软件安装或信息送达。
 
-## 演示与可拒绝的验收场景
+## 演示与回归
 
 - H5：`/?demo=marketing-blocks`，实现位于 `apps/playground-h5/src/features/MarketingBlocksDemo.vue` 和 `useMarketingBlocksDemo.ts`。
 - 原生：`/blocks-lab/marketing/index`，实现位于 `apps/playground-weapp/src/blocks-lab/marketing/`。
-- E2E：`apps/e2e/tests/h5/marketing-blocks.e2e.ts`、`apps/e2e/tests/weapp-native/marketing-blocks.e2e.ts`。
+- E2E：[H5](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/h5/marketing-blocks.e2e.ts)、[原生](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-native/marketing-blocks.e2e.ts)。
 
 源代码流向插图和文章由 Varo 创作，未使用 Pro 素材。Ready、Loading、Empty、Error、Disabled、Long content 按钮改变传入 props。方案和联系请求由使用者手动接受或拒绝，不用计时器模拟服务结果。
 
@@ -188,4 +188,4 @@ const labels = { name: '姓名', email: '邮箱', message: '留言', submit: '�
 6. 合资格流程动作与仅限说明阅读的完成状态，以及未授权/无变化动作。
 7. 加载/错误/禁用保留证据，空状态与恢复。
 
-集成后需生成最新投影、接入路由、编译两端并运行测试，才能判断用例是否通过。原生 headless/DevTools fixture 需要受支持的引擎环境；DevTools 和真机还需有效本地 AppID 及连接的宿主。SVG、长文布局、文本缩放和原生可访问性需在实际宿主检查，H5 截图或编译成功不能证明设备表现。
+SVG、长文布局、文本缩放和原生可访问性需在实际宿主检查；环境要求见[证据边界](/guide/installation#确定性-e2e-与证据边界)。

@@ -39,10 +39,10 @@ function handleOpenChange(nextOpen: boolean, details: DialogOpenChangeDetails) {
 
 ### 原生 Weapp（Wevu）
 
-::: info 原生组合运行边界
-小程序页签使用 `weapp-vite` / `wevu` 7.10.0 编译产物。微信目标需同时启用 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，并使用默认 attached setup；配置说明见[上游原生插槽协议](https://vite.weapp.dev/config/vue#weapp-vue-template)。无需上下文桥或旧版编译器补丁。
+::: info 原生组合配置
+微信目标在 `weapp.vue.template` 中同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup。配置见[上游原生插槽协议](https://vite.weapp.dev/config/vue#weapp-vue-template)。
 
-独立 `dialog` 场景已在当前原生编译的浏览器宿主中验证打开、同步取消关闭、插槽内父级状态更新和允许关闭后的单次更新，回归见 `apps/e2e/tests/weapp-preview/preview.e2e.ts`。结果不扩展到 created setup、其他平台或微信 IDE/真机认证。
+交互回归见[原生产物预览场景](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-preview/preview.e2e.ts)；运行模式与宿主限制见[安装指南](/guide/installation#安装-profile-与支持边界)及[证据边界](/guide/installation#确定性-e2e-与证据边界)。
 :::
 
 原生事件只有一个 `detail` 参数。`openChange` 传递 `[open, details]` 元组，处理器需解构元组，不能接收两个独立参数。响应式 API 从 `wevu` 导入：

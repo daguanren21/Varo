@@ -140,9 +140,9 @@ type StepFormIntent
 3. await 后重新确认步骤和数据版本，`finally` 清理 busy。
 4. 校验通过后才更新 position。通过应用服务或本地数据所有者执行提交，不把收到事件当成成功。
 
-本 Block 沿用 login/profile 的宿主 form 容器与 VInput/VSwitch 组合，不使用 VForm 校验 provider。独立 VForm 的 7.10.0 原生插槽场景已通过 `form-array-en-dark` 验证字段校验、增删重排与提交，但这不替代本 Block 的宿主 form 默认动作验证。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 和 VButton submit，不增加上下文桥或模拟宿主几何。
+本 Block 组合宿主 form、VInput 和 VSwitch，不使用 VForm 校验 provider。H5 使用语义 `<form>` 并阻止浏览器默认提交；原生使用宿主 `<form>` 和 VButton submit。
 
-仓库的原生 E2E 使用针对 `@weapp-vite/miniprogram-automator` 1.3.0 的 pnpm patch，在模拟器的原生默认动作层执行 form submit，并保留多步表单的校验与本地提交断言。补丁范围和升级验证要求见[安装指南](/guide/installation#确定性-e2e-与证据边界)；微信开发者工具与设备验收仍是独立步骤。
+多步表单的校验与本地提交回归见[原生 E2E](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-native/application-blocks.e2e.ts)；宿主要求见[证据边界](/guide/installation#确定性-e2e-与证据边界)。
 
 ## status-timeline
 
@@ -241,10 +241,8 @@ type PeopleIntent = PersonMutation
 
 - H5：`/?demo=application-blocks`，由 `ApplicationBlocksDemo.vue` 和 `useApplicationBlocksDemo.ts` 组成。
 - 原生：`/blocks-lab/application/index`，由原生页面与 `use-application-demo.ts` 组成。
-- 场景：`apps/e2e/tests/{h5,weapp-native}/application-blocks.e2e.ts`。
+- 场景：[H5](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/h5/application-blocks.e2e.ts)、[原生](https://github.com/daguanren21/Varo/blob/main/apps/e2e/tests/weapp-native/application-blocks.e2e.ts)。
 
 两端均有七个区块入口，以及标明为注入状态的 disabled/pending/empty 控件。切换区块保留本地状态，重载则重置。多步表单等待本地校验，拒绝保留姓名和重复姓名，保留往返输入，同意后插入内存记录。时间线 retry 校验姓名后导入另一条记录，摘要统计这些记录和人员列表。预约使用独立本地账本演示冲突，再接受或取消另一个时段。人员管理提供分页、筛选、获准的修改与审批，以及可取消的删除确认。这些演示不模拟网络、邮件、认证、支付或预约服务成功。
 
 两端对应场景覆盖受控设置拒绝、引导边界与退出、表单无效/返回/成功路径、时间线重试、真实衍生摘要与筛选/错误、预约冲突/接受/取消、人员授权/分页/编辑/审批/删除，以及空态/pending/disabled 下的证据保留。测试通过实际控件操作并读取可观察状态，不使用 setData、页面方法代替操作、实现文本断言或虚构几何。
-
-集成后需完成路由注册、Registry 生成、样式和类型/构建检查，并对产物运行上述 E2E。原生 headless 通过不能证明设备或视觉表现；DevTools 场景需要可用微信开发者工具、获授权的本地 AppID/项目配置及仓库 fixture。真实账户存储、预约、授权和异步服务端校验需由应用接入。

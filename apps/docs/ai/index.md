@@ -1,14 +1,14 @@
 # AI Agent 组件
 
-TanStack AI 拥有 AG-UI 事件、活动消息、流状态、工具中断和请求 abort；Varo UI 只消费 SDK 状态并展示。`@varo-ui/ai` 仅保留安全 Markdown、文本节奏与会话版本 helper，不再提供私有协议、流控制器、channel、SSE 解码器或事件 parser。UI 通过 Registry 安装为可编辑源码。
+TanStack AI 拥有 AG-UI 事件、活动消息、流状态、工具中断和请求 abort；Varo UI 只消费 SDK 状态并展示。`@varo-ui/ai` 仅提供安全 Markdown、文本节奏与会话版本 helper，不管理传输协议或连接。UI 通过 Registry 安装为可编辑源码。
 
 ## 安装
 
 ```bash
 # H5：Vue SDK binding
-pnpm add @varo-ui/ai @tanstack/ai@1.4.0 @tanstack/ai-client@1.1.0 @tanstack/ai-vue@1.0.1
+pnpm add @varo-ui/ai @tanstack/ai @tanstack/ai-client @tanstack/ai-vue
 # 原生：只使用 headless SDK + Wevu，不安装 Vue binding
-# pnpm add @varo-ui/ai @tanstack/ai@1.4.0 @tanstack/ai-client@1.1.0 wevu@7.10.0
+# pnpm add @varo-ui/ai @tanstack/ai @tanstack/ai-client wevu
 # 按需对话单元；H5 / Weapp 二选一
 pnpm dlx @varo-ui/cli add --target h5 components/agent-conversation
 pnpm dlx @varo-ui/cli add --target weapp components/agent-conversation
@@ -46,14 +46,14 @@ H5 源码会导入所需 CSS。原生单元依赖 `themes/agent`，请按 [Wevu 
 
 ## 状态与所有权
 
-| 所有者 | 数据 / 责任 |
-| ------ | ----------- |
-| `@tanstack/ai` | 上游 `UIMessage`、AG-UI `StreamChunk`；服务端模型与工具 API |
-| `@tanstack/ai-client` | `ChatClient`、真实 `ChatClientSnapshot`、活动消息、连接、abort 与中断解析 |
-| `@tanstack/ai-vue` | H5 `useChat`，通过 Vue ref 暴露 SDK 状态并清理作用域 |
-| `@varo-ui/ai` | Markdown AST / 安全视图、文本展示节奏、会话版本 helper |
+| 所有者                               | 数据 / 责任                                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `@tanstack/ai`                       | 上游 `UIMessage`、AG-UI `StreamChunk`；服务端模型与工具 API                                                     |
+| `@tanstack/ai-client`                | `ChatClient`、真实 `ChatClientSnapshot`、活动消息、连接、abort 与中断解析                                       |
+| `@tanstack/ai-vue`                   | H5 `useChat`，通过 Vue ref 暴露 SDK 状态并清理作用域                                                            |
+| `@varo-ui/ai`                        | Markdown AST / 安全视图、文本展示节奏、会话版本 helper                                                          |
 | Registry `components/agent-ui/types` | `AgentPartStatus`、`AgentStreamStatus`、`AgentToolPart`、`AgentChoice`、`AgentConversationMessage` 等纯展示类型 |
-| 应用 / 服务端 | 身份与业务授权、provider 凭据、工具实现、来源范围、存储、重试策略及服务端取消传播 |
+| 应用 / 服务端                        | 身份与业务授权、provider 凭据、工具实现、来源范围、存储、重试策略及服务端取消传播                               |
 
 SDK `status` 是 `ready | submitted | streaming | error`。展示用 `AgentPartStatus` 是 `waiting | running | completed | failed`，`AgentStreamStatus` 是 `idle | streaming | waiting | completed | failed | cancelled`；两者不是 SDK 状态或 wire enum，不可直接替换 SDK 的 `status`。`ready` 本身不代表成功完成或取消；应用根据真实结果做纯展示投影，不另建事件 reducer。
 
@@ -67,8 +67,8 @@ SDK `status` 是 `ready | submitted | streaming | error`。展示用 `AgentPartS
 
 ```vue
 <script setup lang="ts">
-import { ref } from 'vue'
 import { fetchServerSentEvents, useChat } from '@tanstack/ai-vue'
+import { ref } from 'vue'
 import { AgentMarkdown } from '@/components/agent-ui/conversation'
 import { agentMessageText } from '@/components/agent-ui/presentation'
 
@@ -80,7 +80,7 @@ const { messages, status, isLoading, error, sendMessage, stop } = useChat({
 
 async function submit() {
   const text = input.value.trim()
-  if (!text || isLoading.value) return
+  if (!text || isLoading.value) { return }
   input.value = ''
   await sendMessage(text)
 }
@@ -89,11 +89,17 @@ async function submit() {
 <template>
   <p>SDK: {{ status }}</p>
   <AgentMarkdown v-for="message in messages" :key="message.id" :content="agentMessageText(message)" :final="!isLoading" />
-  <p v-if="error">{{ error.message }}</p>
+  <p v-if="error">
+    {{ error.message }}
+  </p>
   <form @submit.prevent="submit">
     <input v-model="input" :disabled="isLoading">
-    <button v-if="isLoading" type="button" @click="stop">停止</button>
-    <button v-else type="submit">发送</button>
+    <button v-if="isLoading" type="button" @click="stop">
+      停止
+    </button>
+    <button v-else type="submit">
+      发送
+    </button>
   </form>
 </template>
 ```
@@ -102,7 +108,7 @@ async function submit() {
 
 ## 原生：ai-client + Wevu
 
-原生 SFC 的响应式和生命周期 API 从 `wevu` 导入，客户端从 `@tanstack/ai-client` 导入，不使用 `vue` 或 `@tanstack/ai-vue`。编译器 `weapp-vite` 与 `wevu` 使用 **7.10.0**，在编译配置中启用已发布的 Web Runtime：
+原生 SFC 的响应式和生命周期 API 从 `wevu` 导入，客户端从 `@tanstack/ai-client` 导入，不使用 `vue` 或 `@tanstack/ai-vue`。在编译配置中启用 Web Runtime：
 
 ```ts
 import { defineConfig } from 'weapp-vite/config'
@@ -124,11 +130,11 @@ export default defineConfig({
 })
 ```
 
-其中 `nativeSlotContext` 与 `scopedSlotsRequireProps` 显式启用 7.10.0 微信目标的上游 slot/app-shell 实现，取代旧版编译器补丁和 bootstrap。它们不等于当前运行已通过验证，也不承诺 created setup 或其他平台支持；默认 attached setup 的实际插槽行为仍需独立验收。
+微信目标同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup。配置范围见[安装指南](/guide/installation#安装-profile-与支持边界)。
 
 继续使用 SDK 的标准 `fetchServerSentEvents` 与应用提供的绝对 HTTPS endpoint。Web Runtime 提供所需 Fetch / Streams / 解码 / 取消 API，不再添加 `wx.request` transport 或自制 polyfill。通过 `getSnapshot()` 初始读取，再用 `subscribeSnapshot()` 更新 Wevu `shallowRef`；视图 attach/detach、订阅清理和 client dispose 由应用管理，完整例子见 [AgentEventRenderer](./event-renderer)。需要停止当前请求时调用 SDK `stop()`；关闭视图或业务操作是否同时取消，由应用决定。
 
-宿主必须在响应结束前提供真实状态码、响应头和增量数据块；缺少能力时不能假定 200，也不能用整包缓冲伪装流式。微信 DevTools 与真机需分别验证；配置不承诺其他 profile 同等能力，不模拟浏览器 Cookie/CORS，也不等同于网络级反压。见 [Web Runtime 官方配置](https://vite.weapp.dev/config/web-runtime-globals)。
+宿主必须在响应结束前提供真实状态码、响应头和增量数据块；不能假定 200 或用整包缓冲伪装流式。Web Runtime 不模拟浏览器 Cookie/CORS，也不提供网络级反压。参见 [Web Runtime 配置](https://vite.weapp.dev/config/web-runtime-globals)与[宿主验证边界](/guide/installation#确定性-e2e-与证据边界)。
 
 ## 审批与本地演示
 
@@ -152,5 +158,5 @@ export default defineConfig({
 - [AgentWorkspace](./agent-workspace)：来源、检索、任务、版本和多种布局。
 
 ::: info 平台
-H5 使用 RAF 文本展示节奏，微信小程序使用定时帧，两者共用安全 Markdown AST；聊天传输与状态由 TanStack AI 管理。Agent 条目仅支持 `h5` / `weapp`，其他基础组件通过实验性编译不代表 Agent UI 支持相应 profile。原生源码和可信编译产物预览都不能证明 IDE 或真机行为。
+H5 使用 RAF 文本展示节奏，微信小程序使用定时帧，两者共用安全 Markdown AST；聊天传输与状态由 TanStack AI 管理。Agent 条目仅支持 `h5` / `weapp`，其他基础组件的实验性 profile 准入不适用于 Agent UI。
 :::
