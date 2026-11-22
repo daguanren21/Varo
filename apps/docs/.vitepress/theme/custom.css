@@ -456,6 +456,11 @@ html:not(.dark) .VPHero::before {
   color: var(--varo-muted);
 }
 
+/* Keep VitePress prose spacing off the bitmap inside VImage. */
+.vp-doc .varo-image__img {
+  margin: 0;
+}
+
 .vp-doc h1 {
   font-size: clamp(32px, 4vw, 42px);
   line-height: 1.14;
