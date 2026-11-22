@@ -10,6 +10,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { postcss } from 'weapp-tailwindcss/core'
 import { fixtureItems } from '../apps/platform-smoke/scripts/project.mjs'
 import { cssReferences, localCssReference } from '../apps/playground-weapp/scripts/css-references.mjs'
+import { verifyA2uiRuntime } from './consumer-fixtures/native-a2ui-smoke.mjs'
 import { verifyNativeSlotOwners } from './verify-native-slot-owners.mjs'
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -175,15 +176,12 @@ async function installedVersions() {
   return versions
 }
 
-async function installConsumer(root, records, rootPackage) {
-  const tarballs = Object.fromEntries(records.map(({ manifest, tarball }) => [manifest.name, `file:${tarball}`]))
-  await writeJson(resolve(root, 'package.json'), {
-    name: 'varo-packed-consumer-check',
-    private: true,
-    type: 'module',
-    packageManager: rootPackage.packageManager,
-    dependencies: { ...tarballs, ...await installedVersions() },
-  })
+function packedDependencies(records) {
+  return Object.fromEntries(records.map(({ manifest, tarball }) => [manifest.name, `file:${tarball}`]))
+}
+
+async function installDependencies(root, manifest, overrides) {
+  await writeJson(resolve(root, 'package.json'), { private: true, type: 'module', ...manifest })
   await write(resolve(root, 'pnpm-workspace.yaml'), [
     'packages: []',
     'autoInstallPeers: false',
@@ -191,12 +189,21 @@ async function installConsumer(root, records, rootPackage) {
     'enableGlobalVirtualStore: false',
     'minimumReleaseAge: 0',
     'overrides:',
-    ...Object.entries(tarballs).map(([name, path]) => `  ${JSON.stringify(name)}: ${JSON.stringify(path)}`),
+    ...Object.entries(overrides).map(([name, path]) => `  ${JSON.stringify(name)}: ${JSON.stringify(path)}`),
     '',
   ].join('\n'))
   // Varo packages are forced to the local tarballs above. Third-party packages
   // may use the registry when the store is cold, as in a fresh downstream install.
   run(pnpm, ['install', '--prefer-offline', '--ignore-scripts', '--no-frozen-lockfile'], root)
+}
+
+async function installConsumer(root, records, rootPackage, versions) {
+  const tarballs = packedDependencies(records)
+  await installDependencies(root, {
+    name: 'varo-packed-consumer-check',
+    packageManager: rootPackage.packageManager,
+    dependencies: { ...tarballs, ...versions },
+  }, tarballs)
   for (const { manifest: original } of records) {
     const packageRoot = await realpath(resolve(root, 'node_modules', original.name))
     inside(root, packageRoot)
@@ -270,17 +277,44 @@ async function checkChatPayload(consumerRoot, cli) {
   }
 }
 
-async function checkA2uiPayload(consumerRoot, cli) {
-  const root = await project(consumerRoot, 'agent-a2ui-weapp')
+async function buildA2ui(temporaryRoot, cli, records, rootPackage, versions) {
+  const root = await project(temporaryRoot, 'agent-a2ui-weapp')
   const output = run(process.execPath, [cli, 'add', '--target', 'weapp', 'components/agent-a2ui'], root, { capture: true })
-  assert.match(output, /^Dependencies:.*@a2ui\/web_core@/m)
-  assert.doesNotMatch(output, /@tanstack\/ai|@varo-ui\/ai/)
+  const plan = output.match(/^Dependencies: (.+)$/m)?.[1]
+  assert(plan, 'Packed A2UI install did not report its runtime dependencies')
+  assert.doesNotMatch(output, /^Dev dependencies:|@tanstack\/ai|@varo-ui\/ai/m)
+  const tarballs = packedDependencies(records)
+  const dependencies = Object.fromEntries(plan.split(/\s+/).map((spec) => {
+    const match = spec.match(/^((?:@[^/]+\/)?[^@]+)(?:@(.+))?$/)
+    assert(match, `Invalid A2UI install dependency: ${spec}`)
+    const [, name, requested] = match
+    const version = Object.hasOwn(tarballs, name)
+      ? tarballs[name]
+      : requested ?? (Object.hasOwn(versions, name) ? versions[name] : undefined)
+    assert(version, `No installed version or packed artifact for ${spec}`)
+    return [name, version]
+  }))
+  assert.match(dependencies['@a2ui/web_core'] ?? '', /^\d+\.\d+\.\d+(?:-[\w.-]+)?$/, 'A2UI must declare an exact Core version')
   const directory = resolve(root, 'src/components/agent-a2ui')
   for (const file of ['session.ts', 'core-compat.js', 'catalog.json', 'VAgentSurface.vue', 'AgentSurfaceNode.vue', 'LICENSE.a2ui.txt']) {
     assert((await stat(resolve(directory, file))).isFile(), `Packed A2UI install is missing ${file}`)
   }
   const catalog = await readJson(resolve(directory, 'catalog.json'))
   assert.deepEqual(Object.keys(catalog.components).sort(), ['Button', 'Card', 'Column', 'Text', 'TextField'])
+
+  const tools = ['esbuild', 'miniprogram-api-typings', 'tailwindcss', 'typescript', 'vite', 'weapp-tailwindcss', 'weapp-vite']
+  await installDependencies(root, {
+    name: 'varo-agent-a2ui-weapp-check',
+    packageManager: rootPackage.packageManager,
+    dependencies,
+    devDependencies: Object.fromEntries(tools.map(name => [name, versions[name]])),
+  }, tarballs)
+  await cp(resolve(fixtures, 'native-a2ui'), resolve(root, 'src'), { recursive: true })
+  const compiler = await binary(root, 'weapp-vite', 'weapp-vite')
+  const { ideRoot, output: artifact } = await compileNative(root, root, compiler, 'source')
+  const { styles } = await verifyNativeGraph(artifact)
+  requireStyleClasses(styles, ['button', 'card', 'input'])
+  await verifyA2uiRuntime(ideRoot)
 }
 
 async function checkProfiles(consumerRoot, cli) {
@@ -412,7 +446,7 @@ async function buildH5(consumerRoot, cli, vite, vueTsc, delivery) {
   console.log(`[consumers] Verified H5 ${delivery}: linked entry graph and component/theme CSS.`)
 }
 
-async function verifyNative(output, delivery) {
+async function verifyNativeGraph(output) {
   const app = await readJson(resolve(output, 'app.json'))
   assert.deepEqual(app.pages, ['pages/index/index'])
   assert((await stat(resolve(output, 'app.js'))).isFile())
@@ -440,6 +474,12 @@ async function verifyNative(output, delivery) {
   for (const path of await files(output)) {
     if (path.endsWith('.wxss')) { await verifyStyles(path, output, '.wxss', visitedStyles) }
   }
+  console.log(`[consumers] Verified native component graph: ${templates.size} reachable components/pages and local WXSS imports.`)
+  return { templates, styles }
+}
+
+async function verifyNative(output, delivery) {
+  const { templates, styles } = await verifyNativeGraph(output)
   const expected = [...fixtureItems, 'form-item', 'icon'].map(name => [name, `v-${name}`])
   if (delivery === 'package') {
     for (const name of ['avatar', 'badge', 'empty', 'input-number', 'select', 'tag']) { expected.push([name, name]) }
@@ -455,12 +495,9 @@ async function verifyNative(output, delivery) {
   }
   requireStyleClasses(styles, expected.map(([name]) => name))
   assert.match(styles, /\.flex\s*\{[^}]*display\s*:\s*flex/, 'Common fixture Tailwind utilities were not compiled')
-  console.log(`[consumers] Verified native component graph: ${templates.size} reachable components/pages and local WXSS imports.`)
 }
 
-async function buildNative(consumerRoot, cli, compiler, delivery) {
-  const root = await project(consumerRoot, `native-${delivery}`)
-  await cp(resolve(platformFixture, 'src'), resolve(root, 'src'), { recursive: true })
+async function compileNative(root, consumerRoot, compiler, delivery) {
   await copyBuildConfig(root, 'native')
   await writeJson(resolve(root, 'tsconfig.json'), {
     extends: './.weapp-vite/tsconfig.shared.json',
@@ -473,6 +510,20 @@ async function buildNative(consumerRoot, cli, compiler, delivery) {
     miniprogramRoot: 'dist',
     setting: { es6: true },
   })
+  run(process.execPath, [compiler, 'build', root, '--config', resolve(root, 'vite.config.mjs'), '--platform', 'weapp'], root, {
+    env: { VARO_CONSUMER_ROOT: consumerRoot, VARO_CONSUMER_DELIVERY: delivery },
+  })
+  const ideRoot = resolve(root, 'dist/weapp')
+  const projectConfig = await readJson(resolve(ideRoot, 'project.config.json'))
+  const output = inside(ideRoot, resolve(ideRoot, projectConfig.miniprogramRoot))
+  assert.equal(output, resolve(ideRoot, 'dist'), 'Native artifacts must match the selected IDE project')
+  assert(!projectConfig.appid, 'Credential-free compilation must not acquire an AppID')
+  return { ideRoot, output }
+}
+
+async function buildNative(consumerRoot, cli, compiler, delivery) {
+  const root = await project(consumerRoot, `native-${delivery}`)
+  await cp(resolve(platformFixture, 'src'), resolve(root, 'src'), { recursive: true })
   if (delivery === 'source') {
     run(process.execPath, [cli, 'add', '--target', 'weapp', ...fixtureItems], root)
     await checkBasePayload(root)
@@ -514,14 +565,7 @@ async function buildNative(consumerRoot, cli, compiler, delivery) {
   await write(pagePath, page
     .replace('<script setup lang="ts">', '<script setup lang="ts">\nimport SlotOwnerProvider from "../../components/SlotOwnerProvider.vue"\nimport SlotOwnerConsumer from "../../components/SlotOwnerConsumer.vue"\ndefinePageMeta({ layout: "default" })')
     .replace('<PlatformShowcase />', '<PlatformShowcase /><SlotOwnerProvider value="consumer"><SlotOwnerConsumer /></SlotOwnerProvider>'))
-  run(process.execPath, [compiler, 'build', root, '--config', resolve(root, 'vite.config.mjs'), '--platform', 'weapp'], root, {
-    env: { VARO_CONSUMER_ROOT: consumerRoot, VARO_CONSUMER_DELIVERY: delivery },
-  })
-  const ideRoot = resolve(root, 'dist/weapp')
-  const projectConfig = await readJson(resolve(ideRoot, 'project.config.json'))
-  const output = inside(ideRoot, resolve(ideRoot, projectConfig.miniprogramRoot))
-  assert.equal(output, resolve(ideRoot, 'dist'), 'Native artifacts must match the selected IDE project')
-  assert(!projectConfig.appid, 'Credential-free compilation must not acquire an AppID')
+  const { output } = await compileNative(root, consumerRoot, compiler, delivery)
   await verifyNative(output, delivery)
   await verifyNativeSlotOwners(output, consumerRoot)
   console.log(`[consumers] Verified Weapp ${delivery} with the installed compiler/runtime; no IDE/device/signing claim.`)
@@ -534,18 +578,19 @@ try {
   const expectedPnpm = rootPackage.packageManager.split('@')[1].split('+')[0]
   assert.equal(run(pnpm, ['--version'], repoRoot, { capture: true }).trim(), expectedPnpm)
   const records = await packPackages(temporaryRoot, rootPackage)
+  const versions = await installedVersions()
   const consumerRoot = resolve(temporaryRoot, 'consumer')
-  await installConsumer(consumerRoot, records, rootPackage)
+  await installConsumer(consumerRoot, records, rootPackage, versions)
   const cli = await binary(consumerRoot, '@varo-ui/cli', 'varo')
   const vite = await binary(consumerRoot, 'vite', 'vite')
   const vueTsc = await binary(consumerRoot, 'vue-tsc', 'vue-tsc')
   const compiler = await binary(consumerRoot, 'weapp-vite', 'weapp-vite')
   await checkChatPayload(consumerRoot, cli)
-  await checkA2uiPayload(consumerRoot, cli)
+  await buildA2ui(temporaryRoot, cli, records, rootPackage, versions)
   await checkProfiles(consumerRoot, cli)
   for (const delivery of ['source', 'package']) { await buildH5(consumerRoot, cli, vite, vueTsc, delivery) }
   for (const delivery of ['source', 'package']) { await buildNative(consumerRoot, cli, compiler, delivery) }
-  console.log('[consumers] Six tarballs, fresh H5/native source and package builds, exact profiles, atomic rejection and minimal Agent payloads verified.')
+  console.log('[consumers] Six tarballs, fresh H5/native source and package builds, exact profiles, atomic rejection, minimal Agent payloads and A2UI headless behavior verified.')
 }
 finally {
   await rm(temporaryRoot, { recursive: true, force: true })
