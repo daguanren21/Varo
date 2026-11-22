@@ -16,7 +16,8 @@ The workspace scanner requires the explicit `@pnpm/logger` development peer beca
 - Six user-facing `@varo-ui/*` packages ship as one fixed version; internal implementation packages are bundled and remain private.
 - Stable releases are prepared from `main`.
 - The initial `1.0.0` publish is authenticated locally because npm trusted publishing cannot be configured before the package pages exist.
-- After that bootstrap publish, `.github/workflows/release.yml` publishes through GitHub Actions OIDC without `NPM_TOKEN`.
+- After that bootstrap publish, `.github/workflows/release.yml` publishes through GitHub Actions OIDC without `NPM_TOKEN`. The release job requires the [CI workflow](.github/workflows/ci.yml) to pass on the same commit, including for manual and recovery runs.
+- If repoctl creates a new pre-release version commit during Release, the upload stops. Start a new Release run on that branch so CI verifies the version commit before upload.
 - Documentation deploys to Cloudflare Workers through `.github/workflows/docs.yml`.
 
 ## Release commands

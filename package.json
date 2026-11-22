@@ -25,6 +25,7 @@
     "release": "pnpm change",
     "release:prepare": "repo release stable prepare",
     "release:publish": "repo release stable publish",
+    "release:verify-head": "node scripts/check-release-head.mjs",
     "publish-packages": "repo release stable publish",
     "version-packages": "pnpm version -r",
     "repo:init": "repo init",
