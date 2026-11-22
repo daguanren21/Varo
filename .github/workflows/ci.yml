@@ -73,3 +73,11 @@ jobs:
 
       - name: Verify native profile artifacts
         run: pnpm check:platforms
+
+      - name: Verify opt-in Weapp A2UI artifacts and headless smoke
+        env:
+          WEAPP_A2UI_DEMO: '1'
+        run: |
+          pnpm exec turbo run build --filter=@varo/playground-weapp
+          pnpm exec turbo run test:contracts --filter=@varo/playground-weapp
+          pnpm --filter @varo/playground-weapp smoke:a2ui
