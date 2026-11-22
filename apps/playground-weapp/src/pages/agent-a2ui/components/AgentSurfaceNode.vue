@@ -5,16 +5,22 @@ import VButton from '../../../components/ui/v-button.vue'
 import VCard from '../../../components/ui/v-card.vue'
 import VInput from '../../../components/ui/v-input.vue'
 
-const { node } = defineProps<{ node: A2uiSurfaceNode }>()
+defineOptions({ options: { virtualHost: true } })
+
+const { node, disabled = false } = defineProps<{ node: A2uiSurfaceNode, disabled?: boolean }>()
 const emit = defineEmits<{ interaction: [event: A2uiInteraction] }>()
 const textClass = computed(() => node.type === 'Text' && node.variant === 'caption' ? 'block text-sm' : 'block text-base')
+const cardChildren = computed(() => node.type === 'Card' && node.child ? [node.child] : [])
+const interactionId = node.id
 
 function write(value: string) {
-  emit('interaction', { type: 'input', nodeId: node.id, value })
+  if (disabled) { return }
+  emit('interaction', { type: 'input', nodeId: interactionId, value })
 }
 
 function activate() {
-  emit('interaction', { type: 'action', nodeId: node.id })
+  if (disabled || node.type !== 'Button' || node.disabled) { return }
+  emit('interaction', { type: 'action', nodeId: interactionId })
 }
 </script>
 
@@ -24,15 +30,17 @@ function activate() {
       v-for="child in node.children"
       :key="child.id"
       :node="child"
+      :disabled="disabled"
       @interaction="emit('interaction', $event)"
     />
   </view>
   <view v-else-if="node.type === 'Card'" :data-a2ui-card="node.componentId">
     <VCard variant="outline">
       <AgentSurfaceNode
-        v-if="node.child"
-        :key="node.child.id"
-        :node="node.child"
+        v-for="child in cardChildren"
+        :key="child.id"
+        :node="child"
+        :disabled="disabled"
         @interaction="emit('interaction', $event)"
       />
     </VCard>
@@ -51,12 +59,17 @@ function activate() {
       :label="node.label"
       :placeholder="node.placeholder"
       :readonly="node.readonly"
+      :disabled="disabled"
       :type="node.inputType"
       @update:value="write"
     />
   </view>
   <view v-else-if="node.type === 'Button'" :data-a2ui-button="node.componentId">
-    <VButton :disabled="node.disabled" :variant="node.variant" @click="activate">
+    <!-- Replace the button on enable so a queued click on the disabled instance has no handler. -->
+    <VButton v-if="disabled || node.disabled" disabled :variant="node.variant">
+      {{ node.label }}
+    </VButton>
+    <VButton v-else :variant="node.variant" @click="activate">
       {{ node.label }}
     </VButton>
   </view>

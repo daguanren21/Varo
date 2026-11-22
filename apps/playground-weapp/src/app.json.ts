@@ -3,7 +3,8 @@ import manifest from '../app.manifest.json'
 export default {
   ...manifest,
   ...(process.env.WEAPP_A2UI_DEMO === '1'
-    ? { subPackages: [...manifest.subPackages, { root: 'pages/agent-a2ui', pages: ['index'] }] }
+    // WeChat DevTools can fail to start when A2UI follows the built-in subpackages.
+    ? { subPackages: [{ root: 'pages/agent-a2ui', pages: ['index'] }, ...manifest.subPackages] }
     : {}),
   ...(process.env.WEAPP_ROBOT_CHAT === '1'
     ? {

@@ -14,6 +14,8 @@ Install the npm dependencies the CLI lists. Load the copied styles globally as d
 
 If your project already has shared components, install A2UI in an empty directory and merge the missing files into your project. Do not use `--force` to overwrite customized components.
 
+The entry installs the standard `Object.hasOwn` method only when the host lacks it, as required by the pinned A2UI Core. Existing implementations remain unchanged. Keep `core-compat.js` when copying the unit, not only its SFC files.
+
 ## Render a surface and handle actions
 
 Use this example in `src/pages/index/index.vue`. Tapping the button displays the received action without making a network request.
@@ -58,6 +60,8 @@ onUnload(() => session.dispose())
 ```
 
 To use A2UI with AgentChat, place `VAgentSurface` in the `context` slot. Keep the application's existing TanStack `ChatClient` connection. In `onCustomEvent`, pass the agreed A2UI messages to `session.receive()`. `onAction` receives a standard A2UI action. The application decides whether to send the action and owns authorization, retries, and idempotency. Call `dispose()` when the session closes. The unit does not require a new transport.
+
+`onAction` may return a Promise. `session.interact()` awaits it and propagates rejection to the caller. Catch errors in the application and display the delivery result. When the application cannot accept actions, pass `:disabled="true"` to `VAgentSurface` so an enabled button cannot silently discard a submission. Server component or object-data replacements invalidate node interaction IDs. Treat them as temporary view identifiers, not persistent IDs.
 
 ## Supported catalog
 

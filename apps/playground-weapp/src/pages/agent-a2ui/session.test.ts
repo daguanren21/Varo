@@ -1,5 +1,5 @@
 import type { A2uiActionMessage, A2uiSession, A2uiSurfaceNode, A2uiSurfaceView } from './components/session'
-import { NodeResolver, SurfaceGroupModel } from '@a2ui/web_core'
+import { batchWrite, NodeResolver, SurfaceGroupModel } from '@a2ui/web_core'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { A2UI_CATALOG_ID, createA2uiSession } from './components/session'
 import { createPickupSurface } from './pickup-fixture'
@@ -64,6 +64,79 @@ const button = {
 }
 
 describe('native A2UI session', () => {
+  it('rejects old template inputs and actions after equal-length data reordering', async () => {
+    const app = setup()
+    app.create([
+      { id: 'root', component: 'Column', children: { componentId: 'row', path: '/rows' } },
+      { id: 'row', component: 'Column', children: ['time', 'save'] },
+      { ...field, value: { '@path': 'time' } },
+      { ...button, action: { event: { name: 'save', context: { order: { '@path': 'order' }, time: { '@path': 'time' } } } } },
+      label,
+    ], { rows: [{ order: 'A', time: '10:00' }, { order: 'B', time: '11:00' }] })
+    const oldField = app.node('time', 'TextField').id
+    const oldButton = app.node('save', 'Button').id
+    batchWrite(() => {
+      app.update('/rows', [{ order: 'B', time: '11:00' }, { order: 'A', time: '10:00' }])
+      void app.input(oldField, 'stale before flush')
+    })
+    await app.input(oldField, 'stale after flush')
+    await app.click(oldButton)
+    expect(app.node('time', 'TextField').value).toBe('11:00')
+    expect(app.onAction).not.toHaveBeenCalled()
+    const current = app.node('time', 'TextField').id
+    await app.input(current, '12:00')
+    await app.input(current, '13:00')
+    await app.click(app.node('save', 'Button').id)
+    expect(app.onAction.mock.lastCall?.[0].action.context).toEqual({ order: 'B', time: '13:00' })
+  })
+
+  it('publishes the latest views after an enclosing Core batch finishes', () => {
+    const app = setup()
+    batchWrite(() => app.create([{ id: 'root', component: 'Text', text: { '@path': '/title' } }], { title: 'Before' }))
+    expect(app.node('root', 'Text').text).toBe('Before')
+    batchWrite(() => {
+      app.update('/title', 'Intermediate')
+      app.update('/title', 'After')
+    })
+    expect(app.node('root', 'Text').text).toBe('After')
+    expect(app.onSurfaces).toHaveBeenCalledTimes(2)
+    batchWrite(() => app.remove())
+    expect(app.onSurfaces.mock.lastCall?.[0]).toEqual([])
+  })
+
+  it('awaits application action delivery and exposes rejection to the caller', async () => {
+    const app = setup()
+    app.create([{ ...button, id: 'root' }, label], { time: '10:00' })
+    let release!: () => void
+    app.onAction.mockImplementationOnce(() => new Promise<void>((resolve) => { release = resolve }))
+    let finished = false
+    const delivery = app.click(app.node('root', 'Button').id).then(() => { finished = true })
+    await vi.waitFor(() => expect(app.onAction).toHaveBeenCalledTimes(1))
+    expect(finished).toBe(false)
+    release()
+    await delivery
+    app.onAction.mockImplementationOnce(async () => { throw new Error('Delivery unavailable') })
+    await expect(app.click(app.node('root', 'Button').id)).rejects.toThrow('Delivery unavailable')
+  })
+
+  it('keeps simultaneous action deliveries distinct', async () => {
+    const app = setup()
+    app.create([{ id: 'root', component: 'Column', children: ['save', 'other'] }, button, { ...button, id: 'other', action: { event: { name: 'other' } } }, label], { time: '10:00' })
+    await Promise.all([app.click(app.node('save', 'Button').id), app.click(app.node('other', 'Button').id)])
+    expect(app.onAction.mock.calls.map(([message]) => message.action.name)).toEqual(['save', 'other'])
+  })
+
+  it('delivers the click-time object context when data changes before the callback runs', async () => {
+    const app = setup()
+    app.create([{ ...button, id: 'root', action: { event: { name: 'save', context: { order: { '@path': '/order' } } } } }, label], { order: { id: 'A', details: { time: '10:00' } } })
+    const delivery = app.click(app.node('root', 'Button').id)
+    app.update('/order/details/time', '11:00')
+    await delivery
+    expect(app.onAction.mock.lastCall?.[0].action.context).toEqual({ order: { id: 'A', details: { time: '10:00' } } })
+    await app.click(app.node('root', 'Button').id)
+    expect(app.onAction.mock.lastCall?.[0].action.context).toEqual({ order: { id: 'A', details: { time: '11:00' } } })
+  })
+
   it.each(['flat', 'nested'] as const)('accepts the playground %s fixture under strict Core validation', (layout) => {
     const app = setup()
     app.session.receive(createPickupSurface(layout))

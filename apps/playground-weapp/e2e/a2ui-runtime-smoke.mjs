@@ -10,7 +10,8 @@ import { ChatClient, fetchHttpStream } from '@tanstack/ai-client'
 import { Launcher } from '@weapp-vite/miniprogram-automator'
 import { createPickupRunner, pickupReceiptEvent, pickupSurfaceEvent } from '../src/pages/agent-a2ui/pickup-run.ts'
 
-async function verifyPickup(page, runtime, source, requests) {
+async function verifyPickup(page, runtime, source, server) {
+  const requests = server?.requests
   const nodes = xpath => page.getElementsByXpath(xpath)
   const attribute = (node, name) => typeof node.attr === 'function' ? node.attr(name) : node.attribute(name)
   async function element(xpath) {
@@ -66,8 +67,18 @@ async function verifyPickup(page, runtime, source, requests) {
 
   for (const [layout, nested] of [['布局 A', false], ['布局 B', true]]) {
     const requestOffset = requests?.length
+    const release = server?.holdNextCreate()
     await tap(layout)
     await until(async () => assert.equal(await inputValue(), '周五 10:00'))
+    if (release) {
+      try {
+        const confirm = await until(confirmButton)
+        assert.equal(String(await attribute(confirm, 'disabled')), 'true')
+        await confirm.tap()
+        assert.deepEqual(requests.slice(requestOffset), [{ type: 'create', layout: nested ? 'nested' : 'flat' }])
+      }
+      finally { release() }
+    }
     if (runtime === 'headless') {
       assert.equal((await nodes(`//*[@aria-label="A2UI 取件会话"]${surface}`)).length, 1)
       assert.equal((await nodes(nestedCard)).length, Number(nested))
@@ -84,7 +95,12 @@ async function verifyPickup(page, runtime, source, requests) {
     await until(async () => assert.equal(await inputValue(), '周五 14:00'))
     await (await input()).input('周五 16:30')
     await until(async () => assert.equal(await inputValue(), '周五 16:30'))
-    await (await until(confirmButton)).tap()
+    const confirm = await until(async () => {
+      const node = await confirmButton()
+      assert.notEqual(String(await attribute(node, 'disabled')), 'true')
+      return node
+    })
+    await confirm.tap()
     const message = await until(async () => JSON.parse(await (await element('//*[@id="a2ui-action-payload"]')).text()))
     assert.equal(message.version, '1.0')
     assert.equal(message.action.name, 'savePickupTime')
@@ -111,6 +127,8 @@ async function verifyPickup(page, runtime, source, requests) {
 async function startPickupServer() {
   const requests = []
   const run = createPickupRunner()
+  let nextCreate
+  const releases = new Set()
   async function handle(request, response) {
     if (request.method !== 'POST' || request.url !== '/a2ui') {
       response.writeHead(404).end()
@@ -118,7 +136,14 @@ async function startPickupServer() {
     }
     const input = JSON.parse(await text(request))
     requests.push(input.forwardedProps?.pickup)
-    const result = toHttpResponse(run(input))
+    const barrier = input.forwardedProps?.pickup?.type === 'create' ? nextCreate : undefined
+    if (barrier) { nextCreate = undefined }
+    const result = toHttpResponse((async function* () {
+      for await (const chunk of run(input)) {
+        if (barrier && chunk.type === 'RUN_FINISHED') { await barrier }
+        yield chunk
+      }
+    })())
     response.writeHead(result.status, Object.fromEntries(result.headers))
     await pipeline(Readable.fromWeb(result.body), response)
   }
@@ -135,7 +160,18 @@ async function startPickupServer() {
   return {
     port: server.address().port,
     requests,
-    close: () => new Promise((done, fail) => server.close(error => error ? fail(error) : done())),
+    holdNextCreate() {
+      let resolve
+      nextCreate = new Promise((done) => { resolve = done })
+      const release = () => { releases.delete(release); resolve() }
+      releases.add(release)
+      return release
+    },
+    close() {
+      for (const release of releases) { release() }
+      server.closeAllConnections()
+      return new Promise((done, fail) => server.close(error => error ? fail(error) : done()))
+    },
   }
 }
 
@@ -196,7 +232,7 @@ async function main() {
       }
       else {
         const page = await program.reLaunch(`/pages/agent-a2ui/index?testPort=${server.port}`)
-        await verifyPickup(page, runtime, '测试服务端', server.requests)
+        await verifyPickup(page, runtime, '测试服务端', server)
       }
     }
     finally {

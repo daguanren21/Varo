@@ -276,7 +276,7 @@ async function checkA2uiPayload(consumerRoot, cli) {
   assert.match(output, /^Dependencies:.*@a2ui\/web_core@/m)
   assert.doesNotMatch(output, /@tanstack\/ai|@varo-ui\/ai/)
   const directory = resolve(root, 'src/components/agent-a2ui')
-  for (const file of ['session.ts', 'catalog.json', 'VAgentSurface.vue', 'AgentSurfaceNode.vue', 'LICENSE.a2ui.txt']) {
+  for (const file of ['session.ts', 'core-compat.js', 'catalog.json', 'VAgentSurface.vue', 'AgentSurfaceNode.vue', 'LICENSE.a2ui.txt']) {
     assert((await stat(resolve(directory, file))).isFile(), `Packed A2UI install is missing ${file}`)
   }
   const catalog = await readJson(resolve(directory, 'catalog.json'))

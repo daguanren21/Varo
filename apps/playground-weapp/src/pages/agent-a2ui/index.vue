@@ -57,7 +57,7 @@ async function run(prompt: string, pickup: PickupCommand) {
 
 const session = createA2uiSession({
   onSurfaces: (views) => { surfaces.value = views },
-  onAction: (message) => { void run('确认取件时间', { type: 'action', message }) },
+  onAction: message => run('确认取件时间', { type: 'action', message }),
 })
 
 onLoad((query) => {
@@ -109,6 +109,7 @@ function stop() {
 }
 
 async function interact(surfaceId: string, event: A2uiInteraction) {
+  if (pending.value || disposed) { return }
   try {
     await session.interact(surfaceId, event)
   }
@@ -168,6 +169,7 @@ onUnmounted(dispose)
           v-for="surface in surfaces"
           :key="surface.id"
           :surface="surface"
+          :disabled="pending"
           @interaction="interact(surface.id, $event)"
         />
       </template>

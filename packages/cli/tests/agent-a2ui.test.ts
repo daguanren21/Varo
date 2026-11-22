@@ -28,7 +28,7 @@ describe('optional Weapp A2UI Registry unit', () => {
     const payload = join(options.projectRoot, directory)
     const catalog = JSON.parse(readFileSync(join(payload, 'catalog.json'), 'utf8'))
 
-    expect(readdirSync(payload)).toEqual(expect.arrayContaining(['AgentSurfaceNode.vue', 'LICENSE.a2ui.txt', 'VAgentSurface.vue', 'catalog.json', 'session.ts']))
+    expect(readdirSync(payload)).toEqual(expect.arrayContaining(['AgentSurfaceNode.vue', 'LICENSE.a2ui.txt', 'VAgentSurface.vue', 'catalog.json', 'core-compat.js', 'session.ts']))
     expect(catalog.protocolVersion).toBe('1.0')
     expect(Object.keys(catalog.components).sort()).toEqual(['Button', 'Card', 'Column', 'Text', 'TextField'])
     expect(plan.items.map(item => item.name).sort()).toEqual(['agent-a2ui', 'base', 'button', 'card', 'cn', 'icon', 'input', 'primitives'])

@@ -13,11 +13,11 @@ afterEach(() => {
   vi.resetModules()
 })
 
-it('keeps the A2UI demo out of normal builds and registers it as an opt-in subpackage', async () => {
+it('registers the opt-in A2UI subpackage before the default subpackages for WeChat DevTools startup', async () => {
   const demo = { root: 'pages/agent-a2ui', pages: ['index'] }
   const enabled = await loadApp(undefined, '1')
   const disabled = await loadApp(undefined)
-  expect(enabled.subPackages).toContainEqual(demo)
+  expect(enabled.subPackages).toEqual([demo, ...disabled.subPackages])
   expect(enabled.pages).toEqual(disabled.pages)
   expect(enabled.plugins).toBeUndefined()
   expect(disabled.subPackages).not.toContainEqual(demo)

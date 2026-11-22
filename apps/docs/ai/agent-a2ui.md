@@ -14,6 +14,8 @@ pnpm dlx @varo-ui/cli add --target weapp components/agent-a2ui
 
 如果项目已经安装了共享组件，请在空目录中安装 A2UI，再把缺少的文件合并到项目。不要用 `--force` 覆盖已经定制的组件。
 
+入口在缺少 `Object.hasOwn` 的宿主上安装该标准方法，供锁定版本的 A2UI Core 使用。已有实现保持不变。复制单元时须保留 `core-compat.js`，不能只复制 SFC。
+
 ## 渲染和交互
 
 在 `src/pages/index/index.vue` 中使用以下示例。点击按钮后，页面会显示收到的 action，不发送网络请求。
@@ -58,6 +60,8 @@ onUnload(() => session.dispose())
 ```
 
 与 AgentChat 配合时，把 `VAgentSurface` 放进 `context` 插槽。应用用现有 TanStack `ChatClient` 连接接收事件，在 `onCustomEvent` 中将约定的 A2UI 消息交给 `session.receive()`。`onAction` 收到标准 A2UI action；由应用决定是否发送，并负责授权、重试和幂等。关闭会话时调用 `dispose()`。组件不要求新的传输方式。
+
+`onAction` 可以返回 Promise；`session.interact()` 会等待它并向调用方传播拒绝。应用应捕获错误并展示发送结果。应用暂时不能接收动作时，给 `VAgentSurface` 传入 `:disabled="true"`，避免可点击按钮丢弃提交。服务端替换组件或对象数据时，节点交互 ID 会失效；把它视为临时视图标识，不要持久化。
 
 ## 支持范围
 

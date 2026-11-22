@@ -1,4 +1,4 @@
-import type { ActionPayload, ComponentNode, NodeAction, ProcessableMessage, Signal, SurfaceModel } from '@a2ui/web_core'
+import type { ActionPayload, ComponentNode, NodeAction, ProcessableMessage, SurfaceModel } from '@a2ui/web_core'
 import {
   A2uiValidationError,
   batchWrite,
@@ -16,6 +16,7 @@ import {
   WritableBinding,
 } from '@a2ui/web_core'
 import catalogJson from './catalog.json' with { type: 'json' }
+import './core-compat.js'
 
 const schemaCatalog = Catalog.fromJson(catalogJson)
 export const A2UI_CATALOG_ID = schemaCatalog.id
@@ -55,7 +56,7 @@ export interface A2uiSession {
 
 interface SessionListeners {
   onSurfaces: (views: A2uiSurfaceView[]) => void
-  onAction: (message: A2uiActionMessage) => void
+  onAction: (message: A2uiActionMessage) => void | Promise<void>
 }
 
 const stateMessages = ['createSurface', 'updateComponents', 'updateDataModel', 'deleteSurface'] as const
@@ -84,6 +85,9 @@ function readEnvelope(message: unknown) {
   return {
     type,
     surfaceId,
+    replacesBindings: type === 'updateComponents' || (type === 'updateDataModel'
+      && typeof payload === 'object' && payload !== null && 'value' in payload
+      && typeof payload.value === 'object'),
     message: { version: '1.0', [type]: payload } as ProcessableMessage,
   }
 }
@@ -94,10 +98,8 @@ type NodeOperation
 
 interface ResolvedSurface {
   resolver: NodeResolver
-  stop: () => void
-  revision: Signal<number>
+  generation: number
   operations: Map<string, NodeOperation>
-  view: A2uiSurfaceView | null
 }
 
 function textOf(value: unknown): string {
@@ -122,12 +124,12 @@ function columnStyle(align: unknown, justify: unknown, weight: unknown): string 
   return `align-items:${cross};justify-content:${justifyContent(justify)};${grow}`
 }
 
-function projectNode(value: unknown, operations: Map<string, NodeOperation>): A2uiSurfaceNode | null {
+function projectNode(value: unknown, operations: Map<string, NodeOperation>, generation: number): A2uiSurfaceNode | null {
   if (!isComponentNode(value) || value.disposed || value.isPlaceholder) {
     return null
   }
   const node = value
-  const identity = { id: node.id, componentId: node.componentId }
+  const identity = { id: `${node.id}-v${generation}`, componentId: node.componentId }
   const props = getValue(node.props)
   const raw = node.context?.componentModel.properties
   // Core 1.0 replaces component properties but the binder can retain omitted keys.
@@ -136,21 +138,21 @@ function projectNode(value: unknown, operations: Map<string, NodeOperation>): A2
     case 'Column': {
       const children = Array.isArray(props.children)
         ? props.children.flatMap((child) => {
-            const projected = projectNode(child, operations)
+            const projected = projectNode(child, operations, generation)
             return projected ? [projected] : []
           })
         : []
       return { ...identity, type: 'Column', children, style: columnStyle(prop('align'), prop('justify'), prop('weight')) }
     }
     case 'Card':
-      return { ...identity, type: 'Card', child: projectNode(props.child, operations) }
+      return { ...identity, type: 'Card', child: projectNode(props.child, operations, generation) }
     case 'Text':
       return { ...identity, type: 'Text', text: textOf(props.text), variant: prop('variant') === 'caption' ? 'caption' : 'body' }
     case 'TextField': {
       const binding = prop('value')
       const writable = binding instanceof WritableBinding
       if (writable) {
-        operations.set(node.id, { type: 'input', node, binding })
+        operations.set(identity.id, { type: 'input', node, binding })
       }
       const variant = prop('variant')
       return {
@@ -171,7 +173,7 @@ function projectNode(value: unknown, operations: Map<string, NodeOperation>): A2
       const action = prop('action')
       const enabled = label.trim() !== '' && typeof action === 'function'
       if (enabled) {
-        operations.set(node.id, { type: 'action', node, run: action as NodeAction })
+        operations.set(identity.id, { type: 'action', node, run: action as NodeAction })
       }
       const variant = prop('variant')
       return {
@@ -192,26 +194,32 @@ export function createA2uiSession({ onSurfaces, onAction }: SessionListeners): A
     validationConfig: { ...STRICT_VALIDATION, targetVersion: '1.0', allowedMessages: [...stateMessages] },
   })
   const surfaces = new Map<string, ResolvedSurface>()
+  const revision = signal(0)
   let disposed = false
-  let changed = false
+  let published = false
+  let dispatch: A2uiActionMessage[] | undefined
   const actionSubscription = processor.model.onAction.subscribe((action) => {
-    if (!disposed) {
-      onAction({ version: '1.0', action })
+    if (!disposed && dispatch) {
+      dispatch.push({ version: '1.0', action: JSON.parse(JSON.stringify(action)) as ActionPayload })
     }
+  })
+  const stopProjection = effect(() => {
+    getValue(revision)
+    const views: A2uiSurfaceView[] = []
+    for (const [id, active] of surfaces) {
+      const operations = new Map<string, NodeOperation>()
+      const root = projectNode(getValue(active.resolver.rootNode), operations, active.generation)
+      active.operations = operations
+      if (root) { views.push({ id, root }) }
+    }
+    if (disposed || (!published && views.length === 0)) { return }
+    published = views.length > 0
+    onSurfaces(views)
   })
 
   function attach(surface: SurfaceModel) {
     const resolver = new NodeResolver(surface)
-    const active: ResolvedSurface = { resolver, stop: () => {}, revision: signal(0), operations: new Map(), view: null }
-    active.stop = effect(() => {
-      getValue(active.revision)
-      const operations = new Map<string, NodeOperation>()
-      const root = projectNode(getValue(resolver.rootNode), operations)
-      active.operations = operations
-      changed ||= active.view !== null || root !== null
-      active.view = root ? { id: surface.id, root } : null
-    })
-    surfaces.set(surface.id, active)
+    surfaces.set(surface.id, { resolver, generation: 0, operations: new Map() })
   }
 
   function detach(surfaceId: string) {
@@ -220,18 +228,8 @@ export function createA2uiSession({ onSurfaces, onAction }: SessionListeners): A
       return
     }
     surfaces.delete(surfaceId)
-    active.stop()
     active.resolver.dispose()
     active.operations.clear()
-    changed ||= active.view !== null
-  }
-
-  function publish() {
-    if (!changed || disposed) {
-      return
-    }
-    changed = false
-    onSurfaces([...surfaces.values()].flatMap(({ view }) => view ? [view] : []))
   }
 
   return {
@@ -265,15 +263,17 @@ export function createA2uiSession({ onSurfaces, onAction }: SessionListeners): A
         else if (type === 'deleteSurface') {
           detach(surfaceId)
         }
-        else if (type === 'updateComponents') {
+        else if (envelope.replacesBindings) {
           const active = surfaces.get(surfaceId)
-          // Omitted properties may not invalidate the resolver's props signal.
           if (active) {
-            setValue(active.revision, peekValue(active.revision) + 1)
+            active.generation += 1
+            active.operations.clear()
           }
         }
+        if (type !== 'updateDataModel' || envelope.replacesBindings) {
+          setValue(revision, peekValue(revision) + 1)
+        }
       })
-      publish()
     },
     async interact(surfaceId, event) {
       if (disposed) {
@@ -285,10 +285,19 @@ export function createA2uiSession({ onSurfaces, onAction }: SessionListeners): A
       }
       if (event.type === 'input' && operation.type === 'input' && operation.binding.value !== event.value) {
         batchWrite(() => operation.binding.set(event.value))
-        publish()
       }
       else if (event.type === 'action' && operation.type === 'action') {
-        await operation.run()
+        const messages: A2uiActionMessage[] = []
+        let completion
+        // Core's event closure dispatches synchronously before its first await.
+        dispatch = messages
+        try { completion = operation.run() }
+        finally { dispatch = undefined }
+        await completion
+        for (const message of messages) {
+          if (disposed) { return }
+          await onAction(message)
+        }
       }
     },
     dispose() {
@@ -296,6 +305,7 @@ export function createA2uiSession({ onSurfaces, onAction }: SessionListeners): A
         return
       }
       disposed = true
+      stopProjection()
       actionSubscription.unsubscribe()
       for (const id of surfaces.keys()) {
         detach(id)

@@ -7,6 +7,7 @@
   "dependencies": ["@a2ui/web_core@0.15.0", "wevu"],
   "registryDependencies": ["components/button", "components/card", "components/input"],
   "files": [
+    { "target": "weapp", "from": "registry/components/agent-a2ui/core-compat.js", "to": "src/components/agent-a2ui/core-compat.js" },
     { "target": "weapp", "from": "registry/components/agent-a2ui/session.ts", "to": "src/components/agent-a2ui/session.ts" },
     { "target": "weapp", "from": "registry/components/agent-a2ui/catalog.json", "to": "src/components/agent-a2ui/catalog.json" },
     { "target": "weapp", "from": "registry/components/agent-a2ui/AgentSurfaceNode.vue", "to": "src/components/agent-a2ui/AgentSurfaceNode.vue" },
