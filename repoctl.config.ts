@@ -10,6 +10,9 @@ export default {
       autoConfirm: false,
       includePrivate: true,
     },
+    release: {
+      hooks: { beforePublish: ['release:verify-head'] },
+    },
     upgrade: {
       skipOverwrite: false,
       mergeTargets: true,
