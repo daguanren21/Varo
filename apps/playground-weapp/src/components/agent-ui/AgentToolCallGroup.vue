@@ -3,11 +3,11 @@ import type { ShallowRef } from 'wevu'
 import type { AgentToolCallPreview, AgentToolPart } from './types'
 import { computed, inject, shallowRef, triggerRef } from 'wevu'
 import { agentChevronDownIcon } from './agent-icons'
-import { agentPartStatusLabels } from './presentation'
+import { agentPartStatusLabels, agentToolOutcomeLabels } from './presentation'
 import { agentToolDisclosureKey } from './tool-disclosure'
 
 const props = defineProps<{
-  calls: readonly (Pick<AgentToolPart, 'id' | 'name' | 'status'> & { preview?: AgentToolCallPreview })[]
+  calls: readonly (Pick<AgentToolPart, 'id' | 'name' | 'outcome' | 'status'> & { preview?: AgentToolCallPreview })[]
   groupId: string
 }>()
 const sharedOpen = inject<ShallowRef<Set<string>> | undefined>(agentToolDisclosureKey, undefined)
@@ -24,22 +24,22 @@ function toggle() {
   triggerRef(sharedOpen)
 }
 const title = computed(() => props.calls.length === 1 ? props.calls[0]!.name : `${props.calls.length} 次工具调用`)
+const labelFor = (call: Pick<AgentToolPart, 'outcome' | 'status'>) => call.outcome ? agentToolOutcomeLabels[call.outcome] : agentPartStatusLabels[call.status]
 const summary = computed(() => {
-  const counts = { running: 0, waiting: 0, failed: 0, completed: 0 }
-  for (const call of props.calls) { counts[call.status] += 1 }
-  return (Object.keys(counts) as AgentToolPart['status'][])
-    .filter(status => counts[status] > 0)
-    .map(status => props.calls.length === 1 ? agentPartStatusLabels[status] : `${agentPartStatusLabels[status]} ${counts[status]}`)
-    .join(' · ')
+  if (props.calls.length === 1) { return labelFor(props.calls[0]!) }
+  const labels = props.calls
+    .map(call => labelFor(call))
+    .reduce((counts, label) => { counts.set(label, (counts.get(label) ?? 0) + 1); return counts }, new Map<string, number>())
+  return [...labels].map(([label, count]) => `${label} ${count}`).join(' · ')
 })
 
 const details = computed(() => {
   if (!open.value) { return [] }
   const multiple = props.calls.length > 1
-  return props.calls.map(({ id, name, status, preview }) => ({
+  return props.calls.map(({ id, name, outcome, status, preview }) => ({
     id,
     name: multiple ? name : '',
-    meta: preview?.duration ? `${agentPartStatusLabels[status]} · ${preview.duration}` : multiple ? agentPartStatusLabels[status] : '',
+    meta: preview?.duration ? `${outcome ? agentToolOutcomeLabels[outcome] : agentPartStatusLabels[status]} · ${preview.duration}` : multiple ? (outcome ? agentToolOutcomeLabels[outcome] : agentPartStatusLabels[status]) : '',
     parameters: preview?.parameters,
     result: preview?.result,
     error: preview?.error,

@@ -72,7 +72,7 @@ export default defineConfig({
 
 See [Wevu Registry setup](/en/guide/shadcn-mode) for the `src/styles.css` Tailwind entry. Do not import package styles into component-local WXSS. `VaroResolver` from `@varo-ui/weapp/resolver` resolves Registry SFCs already installed in your project; it does not install components or replace global style setup.
 
-On WeChat, enable both `weapp.vue.template.nativeSlotContext` and `scopedSlotsRequireProps` with default attached setup for native slot context. See the [native-slot configuration](https://vite.weapp.dev/config/vue#weapp-vue-template) and [runtime evidence limits](#deterministic-e2e-and-evidence-boundaries).
+On WeChat, use an unpatched `weapp-vite` and `wevu` pair at 7.11.1 or newer within the declared peer range. This is the verified baseline for slot ownership through app shells and scriptless layouts. Enable both `weapp.vue.template.nativeSlotContext` and `scopedSlotsRequireProps` with default attached setup for native slot context. See the [native-slot configuration](https://vite.weapp.dev/config/vue#weapp-vue-template) and [runtime evidence limits](#deterministic-e2e-and-evidence-boundaries).
 
 ## Primitives only
 
@@ -209,7 +209,7 @@ The native-slot configuration above uses WeChat's default attached setup. It doe
 
 ## Local Devframe MCP
 
-Private `@varo/devtools` provides workspace tools through the Devframe stdio adapter, with no HTTP interface or shared state. It is not a production dependency. After installing the workspace with the root manifest's Node and pnpm requirements, launch it from the repository root:
+Private `@varo/devtools` provides workspace tools through the Devframe stdio adapter, with no HTTP interface or shared state. It is not a production dependency. Use Node 24.22.1 or newer in the Node 24 line, or Node 26.12.1 or newer, satisfying both the root and devtools manifests. The private MCP tools do not support Node 22. After installing the workspace with its declared pnpm version, launch it from the repository root:
 
 ```bash
 # Read-only by default: Block catalog/manifests/source and installation plans

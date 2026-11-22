@@ -8,6 +8,7 @@
   "registryDependencies": ["components/button", "components/card", "components/input", "themes/agent"],
   "files": [
     { "target": "weapp", "from": "registry/components/agent-decision/weapp-vite.vue", "to": "src/components/agent-ui/AgentDecisionCard.vue" },
+    { "target": "weapp", "from": "registry/components/agent-decision/agent-decision-editor.weapp-vite.vue", "to": "src/components/agent-ui/agent-decision-editor.vue" },
     { "target": "weapp", "from": "registry/components/agent-decision/agent-decision-option.weapp-vite.vue", "to": "src/components/agent-ui/agent-decision-option.vue" },
     { "target": "weapp", "from": "registry/components/agent-decision/agent-decision.types.ts", "to": "src/components/agent-ui/agent-decision.types.ts" }
   ],

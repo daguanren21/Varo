@@ -17,9 +17,12 @@ export interface AgentToolPart {
   input?: unknown
   name: string
   output?: unknown
+  outcome?: AgentToolOutcome
   status: AgentPartStatus
   summary?: string
 }
+
+export type AgentToolOutcome = 'cancelled' | 'denied'
 
 /** Application-formatted, bounded text safe to show to the current user. */
 export interface AgentToolCallPreview {

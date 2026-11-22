@@ -31,7 +31,7 @@
     "repo:new": "repo new",
     "repo:check": "repo check",
     "repo:doctor": "repo doctor",
-    "prepare": "pnpm --filter @varo-ui/ai build:runtime && repo tooling hooks install",
+    "prepare": "pnpm --filter @varo-ui/ai build:runtime && node scripts/install-git-hooks.mjs",
     "commitlint": "commitlint --edit",
     "typecheck": "turbo run typecheck",
     "test": "vitest run --config vitest.config.ts --dir scripts && turbo run test",

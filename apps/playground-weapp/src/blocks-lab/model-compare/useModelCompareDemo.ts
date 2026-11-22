@@ -33,7 +33,7 @@ export function useModelCompareDemo() {
   const displayedModels = computed(() => catalogState.value === 'empty' ? [] : models.value)
   const boundPrompt = computed(() => uncontrolled.value ? undefined : prompt.value)
   const notice = shallowRef('本地异步计算；不是模型回答，不发起网络请求。左侧每次新比较的首次执行会故意抛出本地错误。')
-  let disposed = false
+  const disposed = shallowRef(false)
   let sequence = 0
 
   function createSide(id: AgentCompareSide, initialModel: string) {
@@ -104,7 +104,7 @@ export function useModelCompareDemo() {
     })
     const lifecycle = computed(() => `steps=${receipt.value.steps};cleanups=${receipt.value.cleanups};active=${receipt.value.active};timers=${receipt.value.timers}`)
     async function start(request: string, failFirstAttempt: boolean, keepHistory = false) {
-      if (pending.value || disposed) { return }
+      if (pending.value || disposed.value) { return }
       const invocation = { prompt: request, modelId: modelId.value }
       lastRequest = invocation
       outcome.value = undefined
@@ -115,7 +115,7 @@ export function useModelCompareDemo() {
       elapsed.value = undefined
       const startedAt = Date.now()
       await client.sendMessage(request, { prompt: request, modelId: modelId.value, failFirstAttempt })
-      if (!disposed && lastRequest === invocation && !outcome.value && !snapshot.value.error && receipt.value.steps === request.split(/\s+/u).length) {
+      if (!disposed.value && lastRequest === invocation && !outcome.value && !snapshot.value.error && receipt.value.steps === request.split(/\s+/u).length) {
         elapsed.value = Date.now() - startedAt
         outcome.value = 'completed'
       }
@@ -132,16 +132,16 @@ export function useModelCompareDemo() {
     function decide(interruptId: string, approved: boolean) {
       const interrupts: readonly ChatUIInterrupt[] = client.getInterrupts()
       const interrupt = interrupts.find(item => item.id === interruptId)
-      if (!disposed && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(approved) }
+      if (!disposed.value && interrupt?.kind === 'tool-approval' && agentCanResolveApproval(client.getSnapshot(), interrupt)) { interrupt.resolveInterrupt(approved) }
     }
     function retryInterrupts() {
-      if (!disposed && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
+      if (!disposed.value && agentSnapshotProjection(client.getSnapshot()).canRetryInterrupts) { client.retryInterrupts() }
     }
     function cancelInterrupts() {
-      if (!disposed && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
+      if (!disposed.value && agentSnapshotProjection(client.getSnapshot()).canCancelInterrupts) { client.cancelInterrupts() }
     }
     function clear(initialMessages?: UIMessage[]) {
-      if (pending.value) { return }
+      if (disposed.value || pending.value) { return }
       lastRequest = undefined
       outcome.value = undefined
       elapsed.value = undefined
@@ -153,6 +153,7 @@ export function useModelCompareDemo() {
       unsubscribe = client.subscribeSnapshot(() => { snapshot.value = client.getSnapshot() })
     }
     function loadToolExample(callId: string) {
+      if (disposed.value || pending.value) { return }
       clear([{ id: exampleMessageId, role: 'assistant', parts: [
         { type: 'tool-call', id: callId, name: '本地工具示例', arguments: '{}', state: 'complete' },
       ] }])
@@ -179,7 +180,7 @@ export function useModelCompareDemo() {
   const leftLifecycle = left.lifecycle
   const rightLifecycle = right.lifecycle
   const busy = computed(() => left.pending.value || right.pending.value)
-  const locked = computed(() => disposed || disabled.value || loading.value || Boolean(catalogError.value))
+  const locked = computed(() => disposed.value || disabled.value || loading.value || Boolean(catalogError.value))
   const chatDisabled = computed(() => locked.value || !availableModel(displayedModels.value, left.modelId.value))
   const disabledLabel = computed(() => disabled.value ? '启用输入' : '禁用输入')
   const promptModeLabel = computed(() => uncontrolled.value ? '使用受控输入' : '使用非受控输入')
@@ -208,7 +209,7 @@ export function useModelCompareDemo() {
     notice.value = '已启动两个独立本地异步转换；原提示词保留用于核对。'
   }
   function advanceToolExample() {
-    if (toolExampleDisabled.value || ordinaryChat.value) { return }
+    if (disposed.value || toolExampleDisabled.value || ordinaryChat.value) { return }
     if (left.toolExampleIsCurrent.value) {
       void left.start('继续比较', false, true)
       notice.value = '已发送左侧后续消息，右侧工具示例保持不变。'
@@ -220,7 +221,7 @@ export function useModelCompareDemo() {
     notice.value = '已载入两侧工具示例。展开左侧工具，再选择继续左侧。'
   }
   function replaceLeftToolExample() {
-    if (toolExampleDisabled.value || ordinaryChat.value) { return }
+    if (disposed.value || toolExampleDisabled.value || ordinaryChat.value) { return }
     const callId = Object.keys(left.state.value.toolCallPreviews ?? {})[0]
     if (!callId) { return }
     left.loadToolExample(callId)
@@ -268,8 +269,8 @@ export function useModelCompareDemo() {
     models.value = models.value.map(model => model.id === left.modelId.value ? { ...model, available: !model.available } : model)
   }
   function dispose() {
-    if (disposed) { return }
-    disposed = true
+    if (disposed.value) { return }
+    disposed.value = true
     left.dispose()
     right.dispose()
   }

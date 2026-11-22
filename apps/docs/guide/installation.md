@@ -117,6 +117,8 @@ pnpm dlx @varo-ui/cli add --target alipay button input input-otp form checkbox s
 
 `pnpm check:platforms` 编译七个原生 profile 并检查产物，输出位于 `apps/platform-smoke/.generated/<profile>/dist/<compilerPlatform>`。微信目标在 `weapp.vue.template` 中同时设置 `nativeSlotContext: true`、`scopedSlotsRequireProps: true`，保留默认 attached setup；此插槽配置不覆盖 created setup 或其他平台。Donut 使用微信编译器及对应宿主元数据。宿主要求见[证据边界](#确定性-e2e-与证据边界)。
 
+原生插槽穿过 app shell 和无脚本布局的未打补丁验证基线为 `weapp-vite` 与 `wevu` 7.11.1。使用该版本或 peer 范围内的更新配套版本；更旧的版本即使满足宽泛的 peer 范围，也不代表具备此插槽行为。
+
 ## Agent 流式接入
 
 聊天使用 TanStack AI：`@tanstack/ai` 定义 `UIMessage` 和 AG-UI `StreamChunk`，`@tanstack/ai-client` 拥有消息、`ChatClientSnapshot`、连接、中断与 abort；H5 使用 `@tanstack/ai-vue` 的 `useChat`，原生使用 `ChatClient` 与 Wevu。`@varo-ui/ai` 仅提供安全 Markdown、文本节奏与会话版本 helper，不管理传输协议或连接。
@@ -203,7 +205,7 @@ Headless 使用官方 `@weapp-vite/miniprogram-automator`。[Launcher 回归](ht
 
 ## 本地 Devframe MCP
 
-私有包 `@varo/devtools` 通过 Devframe stdio adapter 提供仓库开发工具，无 HTTP 接口或共享状态，不作为生产依赖。安装 workspace 后，用满足根目录 `engines` 的 Node 从仓库根目录启动：
+私有包 `@varo/devtools` 通过 Devframe stdio adapter 提供仓库开发工具，无 HTTP 接口或共享状态，不作为生产依赖。同时满足根目录与 devtools 的 `engines`，使用 Node 24 分支的 24.22.1 及以上版本，或 Node 26.12.1 及以上版本。私有 MCP 工具不支持 Node 22。按仓库声明的 pnpm 版本安装 workspace 后，从仓库根目录启动：
 
 ```bash
 # 默认只读：列出/读取 Block、读取 manifest 声明的源码、预览安装计划
