@@ -15,6 +15,7 @@
     "lint": "echo weapp playground lint pending",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "test": "vitest run --config vite.config.ts --environment jsdom --dir src --passWithNoTests && vitest run --config vite.config.ts --environment jsdom --dir scripts --passWithNoTests=false",
+    "smoke:a2ui": "node e2e/a2ui-runtime-smoke.mjs",
     "smoke:blocks": "node e2e/block-runtime-smoke.mjs",
     "smoke:runtime": "node e2e/runtime-smoke.mjs",
     "smoke:theme": "node e2e/theme-runtime-smoke.mjs",
@@ -22,6 +23,7 @@
     "test:contracts": "vitest run --config ../../vitest.config.ts --dir contracts --environment node --passWithNoTests=false"
   },
   "dependencies": {
+    "@a2ui/web_core": "0.15.0",
     "@tanstack/ai": "1.4.0",
     "@tanstack/ai-client": "1.1.0",
     "@varo-ui/ai": "workspace:^",

@@ -25,20 +25,31 @@ describe('styled radio keyboard contract', () => {
   it.each(['listener', 'capture'])('honors %s cancellation during arrow selection', async (boundary) => {
     let cancel = true
     const click = vi.fn((event: MouseEvent) => { if (cancel && boundary === 'listener') { event.preventDefault() } })
-    const wrapper = mount(VRadioGroup, {
-      props: { value: 'a' },
-      attrs: { onClickCapture: (event: MouseEvent) => { if (cancel && boundary === 'capture') { event.preventDefault() } } },
-      slots: { default: () => [h(VRadio, { value: 'a' }), h(VRadio, { value: 'b', onClick: click })] },
-    })
-    await wrapper.findAll('[role="radio"]')[0]!.trigger('keydown', { key: 'ArrowRight' })
-    expect(wrapper.emitted('update:value')).toBeUndefined()
-    expect(wrapper.emitted('change')).toBeUndefined()
-    expect(click).toHaveBeenCalledOnce()
-    cancel = false
-    await wrapper.findAll('[role="radio"]')[0]!.trigger('keydown', { key: 'ArrowRight' })
-    expect(wrapper.emitted('update:value')).toEqual([['b']])
-    expect(wrapper.emitted('change')).toEqual([['b']])
-    expect(click).toHaveBeenCalledTimes(2)
+    const capture = vi.fn((event: MouseEvent) => { if (cancel && boundary === 'capture') { event.preventDefault() } })
+    vi.useFakeTimers({ toFake: ['Date'] })
+    try {
+      const wrapper = mount(VRadioGroup, {
+        props: { value: 'a' },
+        attrs: { onClickCapture: capture },
+        slots: { default: () => [h(VRadio, { value: 'a' }), h(VRadio, { value: 'b', onClick: click })] },
+      })
+      // Vue skips the target listener if capture stamps the click at the listener's attachment time.
+      vi.setSystemTime(Date.now() + 1)
+      await wrapper.findAll('[role="radio"]')[0]!.trigger('keydown', { key: 'ArrowRight' })
+      expect(wrapper.emitted('update:value')).toBeUndefined()
+      expect(wrapper.emitted('change')).toBeUndefined()
+      expect(capture).toHaveBeenCalledOnce()
+      expect(click).toHaveBeenCalledOnce()
+      cancel = false
+      await wrapper.findAll('[role="radio"]')[0]!.trigger('keydown', { key: 'ArrowRight' })
+      expect(wrapper.emitted('update:value')).toEqual([['b']])
+      expect(wrapper.emitted('change')).toEqual([['b']])
+      expect(capture).toHaveBeenCalledTimes(2)
+      expect(click).toHaveBeenCalledTimes(2)
+    }
+    finally {
+      vi.useRealTimers()
+    }
   })
 
   it('provides group semantics and a single tab stop, wraps focus and skips disabled options', async () => {

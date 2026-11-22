@@ -17,7 +17,7 @@
     "@varo/playground-weapp#build": {
       "cache": false,
       "dependsOn": ["^build"],
-      "env": ["WEAPP_ROBOT_CHAT"],
+      "env": ["WEAPP_ROBOT_CHAT", "WEAPP_A2UI_DEMO"],
       "passThroughEnv": ["WEAPP_APP_ID"],
       "outputs": ["devtools/build/mp-weixin/**"]
     },
@@ -69,7 +69,8 @@
       "outputs": ["coverage/**"]
     },
     "test:contracts": {
-      "cache": false
+      "cache": false,
+      "env": ["WEAPP_ROBOT_CHAT", "WEAPP_A2UI_DEMO"]
     }
   }
 }

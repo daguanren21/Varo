@@ -257,15 +257,30 @@ async function checkBasePayload(root) {
 async function checkChatPayload(consumerRoot, cli) {
   for (const target of ['h5', 'weapp']) {
     const root = await project(consumerRoot, `chat-${target}`)
-    run(process.execPath, [cli, 'add', '--target', target, 'blocks/agent-chat'], root)
+    const output = run(process.execPath, [cli, 'add', '--target', target, 'blocks/agent-chat'], root, { capture: true })
+    assert(!output.includes('@a2ui/web_core'), 'Ordinary AgentChat must not request A2UI Core')
     const installed = (await files(resolve(root, 'src'))).map(path => relative(root, path).split(sep).join('/'))
     for (const required of ['src/components/blocks/agent-chat.vue', 'src/components/agent-ui/presentation.ts', 'src/styles/varo-agent.css']) {
       assert(installed.includes(required), `Minimal ${target} chat is missing ${required}`)
     }
     assert(installed.includes(`src/components/agent-ui/${target === 'h5' ? 'conversation.ts' : 'AgentEventRenderer.vue'}`))
     assert(!installed.includes('src/components/agent-ui/index.ts'), 'Minimal chat must not pull in the suite barrel')
+    assert(!installed.some(path => path.startsWith('src/components/agent-a2ui/')), 'Ordinary AgentChat must not install A2UI')
     assert.deepEqual(installed.filter(path => /advanced|workspace|(?:^|[/-])rag|AgentRag|file-?diff|fine-?tune|supplemental/i.test(path)), [], 'Minimal chat includes unrelated Agent units')
   }
+}
+
+async function checkA2uiPayload(consumerRoot, cli) {
+  const root = await project(consumerRoot, 'agent-a2ui-weapp')
+  const output = run(process.execPath, [cli, 'add', '--target', 'weapp', 'components/agent-a2ui'], root, { capture: true })
+  assert.match(output, /^Dependencies:.*@a2ui\/web_core@/m)
+  assert.doesNotMatch(output, /@tanstack\/ai|@varo-ui\/ai/)
+  const directory = resolve(root, 'src/components/agent-a2ui')
+  for (const file of ['session.ts', 'core-compat.js', 'catalog.json', 'VAgentSurface.vue', 'AgentSurfaceNode.vue', 'LICENSE.a2ui.txt']) {
+    assert((await stat(resolve(directory, file))).isFile(), `Packed A2UI install is missing ${file}`)
+  }
+  const catalog = await readJson(resolve(directory, 'catalog.json'))
+  assert.deepEqual(Object.keys(catalog.components).sort(), ['Button', 'Card', 'Column', 'Text', 'TextField'])
 }
 
 async function checkProfiles(consumerRoot, cli) {
@@ -526,6 +541,7 @@ try {
   const vueTsc = await binary(consumerRoot, 'vue-tsc', 'vue-tsc')
   const compiler = await binary(consumerRoot, 'weapp-vite', 'weapp-vite')
   await checkChatPayload(consumerRoot, cli)
+  await checkA2uiPayload(consumerRoot, cli)
   await checkProfiles(consumerRoot, cli)
   for (const delivery of ['source', 'package']) { await buildH5(consumerRoot, cli, vite, vueTsc, delivery) }
   for (const delivery of ['source', 'package']) { await buildNative(consumerRoot, cli, compiler, delivery) }

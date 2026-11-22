@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "varo.dev:weapp-a2ui",
+  "protocolVersion": "1.0",
+  "catalogId": "varo.dev:weapp-a2ui",
+  "title": "Varo Weapp A2UI Catalog",
+  "description": "Adapted from the A2UI 1.0 Basic Catalog (https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json), Copyright 2024 Google LLC, licensed under Apache-2.0 (https://www.apache.org/licenses/LICENSE-2.0). This native subset renders plain text without Markdown. Only Column supports weight; TextField is writable only through a data binding. Button renders only a nonempty Text label and dispatches only events; a missing label or action disables it. No catalog functions, checks, or RPC are provided.",
+  "components": {
+    "Column": {
+      "type": "object",
+      "properties": {
+        "component": { "const": "Column" },
+        "children": { "$ref": "common_types.json#/$defs/ChildList" },
+        "justify": {
+          "type": "string",
+          "enum": ["start", "center", "end", "spaceBetween", "spaceAround", "spaceEvenly", "stretch"],
+          "default": "start"
+        },
+        "align": {
+          "type": "string",
+          "enum": ["center", "end", "start", "stretch"],
+          "default": "stretch"
+        },
+        "weight": { "type": "number", "minimum": 0 }
+      },
+      "required": ["component", "children"]
+    },
+    "Card": {
+      "type": "object",
+      "properties": {
+        "component": { "const": "Card" },
+        "child": { "$ref": "common_types.json#/$defs/Child" }
+      },
+      "required": ["component", "child"]
+    },
+    "Text": {
+      "type": "object",
+      "properties": {
+        "component": { "const": "Text" },
+        "text": { "$ref": "common_types.json#/$defs/DynamicString" },
+        "variant": { "type": "string", "enum": ["caption", "body"], "default": "body" }
+      },
+      "required": ["component", "text"]
+    },
+    "TextField": {
+      "type": "object",
+      "properties": {
+        "component": { "const": "TextField" },
+        "label": { "$ref": "common_types.json#/$defs/DynamicString" },
+        "value": { "$ref": "common_types.json#/$defs/DynamicString" },
+        "placeholder": { "$ref": "common_types.json#/$defs/DynamicString" },
+        "variant": {
+          "type": "string",
+          "enum": ["longText", "number", "shortText", "obscured"],
+          "default": "shortText"
+        }
+      },
+      "required": ["component", "label"]
+    },
+    "Button": {
+      "type": "object",
+      "properties": {
+        "component": { "const": "Button" },
+        "child": { "$ref": "common_types.json#/$defs/Child" },
+        "variant": { "type": "string", "enum": ["default", "primary", "borderless"], "default": "default" },
+        "action": {
+          "description": "REF:common_types.json#/$defs/Action|Dispatches an event with a nonempty name to the application.",
+          "allOf": [{ "$ref": "common_types.json#/$defs/Action" }],
+          "not": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": { "functionCall": {} },
+                "required": ["functionCall"]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event": {
+                    "type": "object",
+                    "properties": { "name": { "const": "" } },
+                    "required": ["name"]
+                  }
+                },
+                "required": ["event"]
+              }
+            ]
+          }
+        }
+      },
+      "required": ["component"]
+    }
+  }
+}
