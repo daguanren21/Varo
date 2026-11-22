@@ -60,6 +60,9 @@ jobs:
       - name: Run browser and native headless E2E
         run: pnpm test:e2e
 
+      - name: Verify native Agent decision and model comparison
+        run: pnpm --filter @varo/playground-weapp smoke:agent-review
+
       - name: Preserve real E2E evidence
         if: always()
         uses: actions/upload-artifact@v4

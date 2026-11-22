@@ -118,4 +118,21 @@ describe('native AgentDecisionCard', () => {
     deliverQueuedSubmit()
     expect(wrapper.emitted('answer')).toBeUndefined()
   })
+
+  it('rejects delayed editor and submit events from a replaced decision', async () => {
+    const { wrapper, input, submit } = mountCard()
+    const oldInput = wrapper.findComponent({ name: 'VInput' })
+    const oldSubmit = wrapper.findAllComponents(VButton).find(button => button.props('className') === 'agent-decision__submit')!
+    const delayedEdit = (text: string) => oldInput.vm.$emit('update:value', text)
+    const delayedSubmit = () => oldSubmit.vm.$emit('click', undefined)
+
+    await wrapper.setProps({ decision: { ...decision, id: 'new-format', title: '新的问题' } })
+    await input().setValue('B 的回答')
+    delayedEdit('A 的回答')
+    delayedSubmit()
+
+    expect(wrapper.emitted('answer')).toBeUndefined()
+    await submit().trigger('click')
+    expect(wrapper.emitted('answer')).toEqual([[{ decisionId: 'new-format', answer: { kind: 'text', text: 'B 的回答' } }]])
+  })
 })

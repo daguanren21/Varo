@@ -1,13 +1,12 @@
 import type { ChatClientSnapshot, UIMessage } from '@tanstack/ai-client'
-import type { AgentPartStatus, AgentStreamStatus, AgentToolPart } from './types'
 import type { PropType } from 'vue'
 import type { ClassValue } from '../../lib/cn'
-import type { AgentChoice, AgentConversationEntry, AgentTraceStep } from './types'
 import type { AgentRenderedMessage } from './presentation'
+import type { AgentChoice, AgentConversationEntry, AgentPartStatus, AgentStreamStatus, AgentToolPart, AgentTraceStep } from './types'
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, shallowRef, useId, watch } from 'vue'
 import { cn } from '../../lib/cn'
 import { AgentMarkdown } from './AgentMarkdown'
-import { agentCanResolveApproval, agentConversationProjection, agentPartStatusLabels, agentSnapshotProjection, agentStreamIsFinal, agentStreamNotice, agentTraceDetail, agentTraceDuration } from './presentation'
+import { agentCanResolveApproval, agentConversationProjection, agentPartStatusLabels, agentSnapshotProjection, agentStreamIsFinal, agentStreamNotice, agentToolOutcomeLabels, agentTraceDetail, agentTraceDuration } from './presentation'
 import '../../styles/varo.css'
 import '../../styles/varo-agent.css'
 import './agent-conversation.css'
@@ -243,11 +242,11 @@ export const AgentToolChip = defineComponent({
   },
   setup(props) {
     return () => h('span', { 'class': 'agent-tool inline-flex max-w-full items-center gap-2 rounded-xl border border-[var(--varo-agent-border)] bg-[var(--varo-agent-surface)] px-2.5 py-1.5', 'data-status': props.tool.status }, [
-      h('i', { class: ['h-2 w-2 flex-none rounded-full', partMark(props.tool.status)] }),
+      h('i', { class: ['h-2 w-2 flex-none rounded-full', partMark(props.tool.outcome ? 'waiting' : props.tool.status)] }),
       h('span', { class: 'grid min-w-0' }, [
         h('strong', { class: 'truncate text-[12px] text-[var(--varo-agent-foreground)]' }, props.tool.name),
         props.tool.summary && !props.compact ? h('small', { class: 'whitespace-pre-wrap break-words text-[11px] text-[var(--varo-agent-muted)]' }, props.tool.summary) : null,
-        !props.compact ? h('small', { class: 'text-[11px] text-[var(--varo-agent-muted)]' }, agentPartStatusLabels[props.tool.status]) : null,
+        !props.compact ? h('small', { class: 'text-[11px] text-[var(--varo-agent-muted)]' }, props.tool.outcome ? agentToolOutcomeLabels[props.tool.outcome] : agentPartStatusLabels[props.tool.status]) : null,
       ]),
     ])
   },
@@ -520,26 +519,28 @@ const AgentMessageParts = defineComponent({
       for (const segment of message.segments) { if (segment.kind === 'text') { lastText = segment } }
       const status = message.status
       return h('div', { class: 'agent-message-parts grid min-w-0 gap-3' }, [
-        ...message.segments.map(segment => {
+        ...message.segments.map((segment) => {
           if (segment.kind === 'thinking') {
             return h(AgentThinking, { key: segment.id, label: '推理过程', defaultOpen: status === 'streaming', steps: segment.steps })
           }
           if (segment.kind === 'tool' && segment.tool) {
-            return h('div', { key: segment.id, class: 'grid min-w-0 gap-2', 'data-message-part': 'tool' }, [
-              h(AgentToolChip, { tool: segment.tool, compact: Boolean(segment.content) }),
-              segment.content ? h('span', { class: 'text-xs text-[var(--varo-agent-muted)]' }, agentPartStatusLabels[segment.tool.status]) : null,
-              segment.content && segment.tool.error ? h('p', { class: 'whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]' }, segment.tool.error) : null,
+            return h('div', { 'key': segment.id, 'class': 'grid min-w-0 gap-2', 'data-message-part': 'tool' }, [
+              h(AgentToolChip, { tool: segment.tool, compact: Boolean(segment.content || segment.tool.error) }),
+              segment.content ? h('span', { class: 'text-xs text-[var(--varo-agent-muted)]' }, segment.tool.outcome ? agentToolOutcomeLabels[segment.tool.outcome] : agentPartStatusLabels[segment.tool.status]) : null,
+              segment.tool.error && segment.tool.error !== segment.content ? h('p', { class: 'whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]' }, segment.tool.error) : null,
               segment.content ? h('pre', { class: 'whitespace-pre-wrap break-words text-xs' }, segment.content) : null,
             ])
           }
           if (segment.kind === 'data') {
-            return h('pre', { key: segment.id, class: 'whitespace-pre-wrap break-words text-xs', 'data-message-part': 'data' }, segment.content)
+            return h('pre', { 'key': segment.id, 'class': 'whitespace-pre-wrap break-words text-xs', 'data-message-part': 'data' }, segment.content)
           }
           return h(AgentMessage, { key: segment.id, label: message.label, role: message.role, timestamp: message.timestamp }, {
             default: () => props.stream && message.role !== 'user'
               ? h(AgentStream, {
-                  content: segment.content, error: segment === lastText ? props.error : undefined,
-                  final: message.final || segment !== lastText, status: segment === lastText ? status : 'completed',
+                  content: segment.content,
+                  error: segment === lastText ? props.error : undefined,
+                  final: message.final || segment !== lastText,
+                  status: segment === lastText ? status : 'completed',
                   retryable: props.retryable,
                   onRetry: () => emit('retry'),
                 })
@@ -591,19 +592,24 @@ export const AgentEventRenderer = defineComponent({
           ? h(AgentMessageParts, { message: display.renderedMessage, stream: true, error: display.error, retryable: props.retryable, onRetry: retry }, { actions: slots.actions })
           : display.error ? h(AgentStream, { error: display.error, status: 'failed', retryable: props.retryable, onRetry: retry }) : null,
         display.status === 'waiting' && !display.message && !display.error && !display.approvals.length
-          ? h('p', { class: 'text-xs text-[var(--varo-agent-muted)]', role: 'status' }, agentStreamNotice(display.status)) : null,
+          ? h('p', { class: 'text-xs text-[var(--varo-agent-muted)]', role: 'status' }, agentStreamNotice(display.status))
+          : null,
         display.status === 'streaming' && !display.messageText ? h(AgentLoading, { label: '正在生成回答' }) : null,
         ...display.approvals.map(approval => h(AgentApproval, {
           key: JSON.stringify([approval.id, approval.threadId, approval.interruptedRunId, approval.generation]),
-          description: approval.description, title: approval.title, disabled: !approval.canResolve,
+          description: approval.description,
+          title: approval.title,
+          disabled: !approval.canResolve,
           onApprove: () => { if (agentCanResolveApproval(props.snapshot, approval)) { emit('approve', approval.id) } },
           onReject: () => { if (agentCanResolveApproval(props.snapshot, approval)) { emit('reject', approval.id) } },
         })),
         ...display.interruptErrors.map(error => h('p', { key: error, role: 'alert', class: 'whitespace-pre-wrap break-words text-xs text-[var(--varo-agent-danger)]' }, error)),
-        display.canRetryInterrupts || display.canCancelInterrupts ? h('div', { class: 'flex flex-wrap gap-2' }, [
-          display.canRetryInterrupts ? h('button', { class: quietButton, type: 'button', onClick: () => recover('retryInterrupts') }, '重试中断') : null,
-          display.canCancelInterrupts ? h('button', { class: quietButton, type: 'button', onClick: () => recover('cancelInterrupts') }, '取消中断') : null,
-        ]) : null,
+        display.canRetryInterrupts || display.canCancelInterrupts
+          ? h('div', { class: 'flex flex-wrap gap-2' }, [
+              display.canRetryInterrupts ? h('button', { class: quietButton, type: 'button', onClick: () => recover('retryInterrupts') }, '重试中断') : null,
+              display.canCancelInterrupts ? h('button', { class: quietButton, type: 'button', onClick: () => recover('cancelInterrupts') }, '取消中断') : null,
+            ])
+          : null,
         slots.default?.(),
       ])
     }

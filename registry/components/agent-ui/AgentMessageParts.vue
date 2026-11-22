@@ -22,7 +22,7 @@ const lastTextId = computed(() => {
   for (const segment of props.message.segments) { if (segment.kind === 'text') { id = segment.id } }
   return id
 })
-type ToolCall = Pick<AgentToolPart, 'id' | 'name' | 'status'> & { preview?: AgentToolCallPreview }
+type ToolCall = Pick<AgentToolPart, 'id' | 'name' | 'outcome' | 'status'> & { preview?: AgentToolCallPreview }
 type RenderedPart
   = | { id: string, groupId: string, kind: 'tool', calls: ToolCall[] }
     | {
@@ -49,7 +49,7 @@ const segments = computed(() => {
       }
       // eslint-disable-next-line e18e/prefer-object-has-own -- Native engines need not expose ES2022 built-ins.
       const preview = previews && Object.prototype.hasOwnProperty.call(previews, tool.id) ? previews[tool.id] : undefined
-      calls.push({ id: tool.id, name: tool.name, status: tool.status, preview })
+      calls.push({ id: tool.id, name: tool.name, outcome: tool.outcome, status: tool.status, preview })
       continue
     }
     calls = undefined

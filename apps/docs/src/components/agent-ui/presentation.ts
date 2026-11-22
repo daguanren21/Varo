@@ -10,6 +10,11 @@ export const agentPartStatusLabels: Readonly<Record<AgentPartStatus, string>> = 
   failed: '失败',
 }
 
+export const agentToolOutcomeLabels: Readonly<Record<'cancelled' | 'denied', string>> = {
+  cancelled: '已取消',
+  denied: '已拒绝',
+}
+
 export function agentStreamIsFinal(status: AgentStreamStatus): boolean {
   return status === 'completed' || status === 'failed' || status === 'cancelled'
 }
@@ -32,6 +37,8 @@ export function agentTraceDuration(step: AgentTraceStep): string {
 type AgentMessagePart = UIMessage['parts'][number]
 type AgentToolCallPart = Extract<AgentMessagePart, { type: 'tool-call' }>
 type AgentToolResultPart = Extract<AgentMessagePart, { type: 'tool-result' }>
+type AgentActivityPart = Extract<AgentMessagePart, { type: 'activity' }>
+type AgentStructuredOutputPart = Extract<AgentMessagePart, { type: 'structured-output' }>
 
 export interface AgentInterruptIdentity {
   id: string
@@ -157,6 +164,23 @@ function toolSummary(value: unknown): string | undefined {
   catch { return undefined }
 }
 
+function activitySummary(part: AgentActivityPart): string {
+  const content = part.content
+  const fields = [content.title, content.description, content.status]
+    .filter((value): value is string => typeof value === 'string' && value.length > 0)
+  if (typeof content.progress === 'number' && Number.isFinite(content.progress)) {
+    fields.push(`${content.progress}%`)
+  }
+  return [part.activityType, ...fields].join(' · ')
+}
+
+function structuredOutputSummary(part: AgentStructuredOutputPart): string {
+  if (part.status === 'error') {
+    return [part.errorMessage || '结构化输出失败', part.raw].filter(Boolean).join('\n')
+  }
+  return part.raw || '结构化输出'
+}
+
 type AgentTranscriptDetail = 'full' | 'summary'
 const subagentLabels = {
   running: '进行中',
@@ -168,11 +192,12 @@ const subagentLabels = {
 function selectedTool(selected: ChatUISelectedPart, detail: AgentTranscriptDetail): AgentToolPart | undefined {
   if (selected.key === 'toolCall') {
     const { part, result } = selected
-    const failed = part.state === 'error' || result?.state === 'error'
-    const status = failed ? 'failed' : result ? toolResultStatus(result.state) : toolCallStatus(part.state)
-    if (detail === 'summary') { return { id: part.id, name: part.name, status } }
+    const outcome = result?.outcome
+    const failed = !outcome && (part.state === 'error' || result?.state === 'error')
+    const status = outcome ? 'completed' : failed ? 'failed' : result ? toolResultStatus(result.state) : toolCallStatus(part.state)
+    if (detail === 'summary') { return { id: part.id, name: part.name, status, ...(outcome ? { outcome } : {}) } }
     const output = part.output ?? result?.content
-    const error = result?.error ?? (failed ? toolSummary(output) : undefined)
+    const error = outcome ? undefined : result?.error ?? (failed ? toolSummary(output) : undefined)
     return {
       id: part.id,
       input: part.input ?? parseToolInput(part.arguments),
@@ -180,20 +205,24 @@ function selectedTool(selected: ChatUISelectedPart, detail: AgentTranscriptDetai
       output,
       error,
       status,
-      summary: error ?? toolSummary(output),
+      ...(outcome ? { outcome } : {}),
+      summary: outcome ? agentToolOutcomeLabels[outcome] : error ?? toolSummary(output),
     }
   }
   if (selected.key === 'toolResult' && !selected.matched) {
     const status = toolResultStatus(selected.part.state)
     const name = selected.part.name ?? '工具结果'
-    if (detail === 'summary') { return { id: selected.part.toolCallId, name, status } }
+    if (detail === 'summary') {
+      return { id: selected.part.toolCallId, name, status: selected.part.outcome ? 'completed' : status, ...(selected.part.outcome ? { outcome: selected.part.outcome } : {}) }
+    }
     return {
       id: selected.part.toolCallId,
       name,
       output: selected.part.content,
-      error: selected.part.error,
-      status,
-      summary: selected.part.error ?? toolSummary(selected.part.content),
+      error: selected.part.outcome ? undefined : selected.part.error,
+      status: selected.part.outcome ? 'completed' : status,
+      ...(selected.part.outcome ? { outcome: selected.part.outcome } : {}),
+      summary: selected.part.outcome ? agentToolOutcomeLabels[selected.part.outcome] : selected.part.error ?? toolSummary(selected.part.content),
     }
   }
   return undefined
@@ -217,14 +246,19 @@ function renderMessage(selected: ChatUISelectedMessage, status: AgentStreamStatu
     else if (part.type === 'thinking') {
       segments.push({ id, kind: 'thinking', content: part.content, steps: [{ id, content: part.content, status: partStatusForSnapshot(status), title: '推理过程' }] })
     }
+    else if (part.type === 'structured-output' && detail === 'summary') {
+      segments.push({ id, kind: 'data', content: structuredOutputSummary(part), steps: [] })
+    }
+    else if (part.type === 'activity' && detail === 'summary') {
+      segments.push({ id, kind: 'data', content: activitySummary(part), steps: [] })
+    }
     else if (detail === 'full') {
       segments.push({ id, kind: 'data', content: toolSummary(part) ?? part.type, steps: [] })
     }
     else {
       // Do not serialize SDK envelopes in the summary renderer: they can embed tool transcripts.
       let content: string = part.type
-      if (part.type === 'structured-output') { content = part.raw }
-      else if (part.type === 'subagent') { content = `子 Agent：${part.subagent.name} · ${subagentLabels[part.subagent.status]}` }
+      if (part.type === 'subagent') { content = `子 Agent：${part.subagent.name} · ${subagentLabels[part.subagent.status]}` }
       segments.push({ id, kind: 'data', content, steps: [] })
     }
   }
