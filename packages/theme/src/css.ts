@@ -138,20 +138,11 @@ function relativeLuminance(color: string): number | undefined {
     + channelLuminance(4) * 0.0722
 }
 
-function isChromatic(color: string): boolean {
-  const value = color.slice(1)
-  const normalized = value.length === 3
-    ? value.split('').map(part => `${part}${part}`).join('')
-    : value
+function foregroundFromLuminance(backgroundLuminance: number): '#000000' | '#ffffff' {
+  const blackContrast = (backgroundLuminance + 0.05) / 0.05
+  const whiteContrast = 1.05 / (backgroundLuminance + 0.05)
 
-  if (!color.startsWith('#') || !/^[\da-f]{6}$/i.test(normalized)) {
-    return false
-  }
-
-  const red = Number.parseInt(normalized.slice(0, 2), 16)
-  const green = Number.parseInt(normalized.slice(2, 4), 16)
-  const blue = Number.parseInt(normalized.slice(4, 6), 16)
-  return Math.max(red, green, blue) - Math.min(red, green, blue) >= 40
+  return blackContrast >= whiteContrast ? '#000000' : '#ffffff'
 }
 
 export function contrastSafeForeground(background: string): '#000000' | '#ffffff' {
@@ -160,24 +151,19 @@ export function contrastSafeForeground(background: string): '#000000' | '#ffffff
     throw new Error(`Contrast-safe foreground requires a hex color (#RGB or #RRGGBB): ${background}`)
   }
 
-  const blackContrast = (backgroundLuminance + 0.05) / 0.05
-  const whiteContrast = 1.05 / (backgroundLuminance + 0.05)
-
-  if (backgroundLuminance >= 0.55) {
-    return '#000000'
-  }
-
-  if (isChromatic(background)) {
-    return '#ffffff'
-  }
-
-  return blackContrast >= whiteContrast ? '#000000' : '#ffffff'
+  return foregroundFromLuminance(backgroundLuminance)
 }
 
 export function createThemeCssVariables(
   theme: ThemeDefinition,
   overrides: ThemeCssVariableOverrides = {},
 ): ThemeCssVariables {
+  function foregroundFor(fill: keyof ThemeCssVariables, fallback: string): string {
+    const override = overrides[fill]
+    const luminance = override == null ? undefined : relativeLuminance(override)
+    return luminance == null ? contrastSafeForeground(fallback) : foregroundFromLuminance(luminance)
+  }
+
   return {
     '--varo-ui-white': theme.palette.neutral.white,
     '--varo-ui-black': theme.palette.neutral.black,
@@ -206,36 +192,36 @@ export function createThemeCssVariables(
     '--varo-ui-primary-dark': theme.semantic.primaryDark,
     '--varo-ui-primary-hover': theme.semantic.primaryHover,
     '--varo-ui-primary-soft': theme.semantic.primarySoft,
-    '--varo-ui-primary-foreground': contrastSafeForeground(theme.semantic.primaryBase),
-    '--varo-ui-primary-hover-foreground': contrastSafeForeground(theme.semantic.primaryHover),
+    '--varo-ui-primary-foreground': foregroundFor('--varo-ui-primary', theme.semantic.primaryBase),
+    '--varo-ui-primary-hover-foreground': foregroundFor('--varo-ui-primary-hover', theme.semantic.primaryHover),
     '--varo-ui-primary-text': semanticTextColor(theme.semantic.primaryBase, theme.semantic.textBase),
     '--varo-ui-success': theme.semantic.successBase,
     '--varo-ui-success-dark': theme.semantic.successDark,
     '--varo-ui-success-hover': theme.semantic.successHover,
     '--varo-ui-success-soft': theme.semantic.successSoft,
-    '--varo-ui-success-foreground': contrastSafeForeground(theme.semantic.successBase),
-    '--varo-ui-success-hover-foreground': contrastSafeForeground(theme.semantic.successHover),
+    '--varo-ui-success-foreground': foregroundFor('--varo-ui-success', theme.semantic.successBase),
+    '--varo-ui-success-hover-foreground': foregroundFor('--varo-ui-success-hover', theme.semantic.successHover),
     '--varo-ui-success-text': semanticTextColor(theme.semantic.successBase, theme.semantic.textBase),
     '--varo-ui-warning': theme.semantic.warningBase,
     '--varo-ui-warning-dark': theme.semantic.warningDark,
     '--varo-ui-warning-hover': theme.semantic.warningHover,
     '--varo-ui-warning-soft': theme.semantic.warningSoft,
-    '--varo-ui-warning-foreground': contrastSafeForeground(theme.semantic.warningBase),
-    '--varo-ui-warning-hover-foreground': contrastSafeForeground(theme.semantic.warningHover),
+    '--varo-ui-warning-foreground': foregroundFor('--varo-ui-warning', theme.semantic.warningBase),
+    '--varo-ui-warning-hover-foreground': foregroundFor('--varo-ui-warning-hover', theme.semantic.warningHover),
     '--varo-ui-warning-text': semanticTextColor(theme.semantic.warningBase, theme.semantic.textBase),
     '--varo-ui-danger': theme.semantic.dangerBase,
     '--varo-ui-danger-dark': theme.semantic.dangerDark,
     '--varo-ui-danger-hover': theme.semantic.dangerHover,
     '--varo-ui-danger-soft': theme.semantic.dangerSoft,
-    '--varo-ui-danger-foreground': contrastSafeForeground(theme.semantic.dangerBase),
-    '--varo-ui-danger-hover-foreground': contrastSafeForeground(theme.semantic.dangerHover),
+    '--varo-ui-danger-foreground': foregroundFor('--varo-ui-danger', theme.semantic.dangerBase),
+    '--varo-ui-danger-hover-foreground': foregroundFor('--varo-ui-danger-hover', theme.semantic.dangerHover),
     '--varo-ui-danger-text': semanticTextColor(theme.semantic.dangerBase, theme.semantic.textBase),
     '--varo-ui-info': theme.semantic.infoBase,
     '--varo-ui-info-dark': theme.semantic.infoDark,
     '--varo-ui-info-hover': theme.semantic.infoHover,
     '--varo-ui-info-soft': theme.semantic.infoSoft,
-    '--varo-ui-info-foreground': contrastSafeForeground(theme.semantic.infoBase),
-    '--varo-ui-info-hover-foreground': contrastSafeForeground(theme.semantic.infoHover),
+    '--varo-ui-info-foreground': foregroundFor('--varo-ui-info', theme.semantic.infoBase),
+    '--varo-ui-info-hover-foreground': foregroundFor('--varo-ui-info-hover', theme.semantic.infoHover),
     '--varo-ui-info-text': semanticTextColor(theme.semantic.infoBase, theme.semantic.textBase),
     '--varo-ui-button-radius': theme.components.button.borderRadius,
     '--varo-ui-button-height-sm': theme.components.button.heightSm,
@@ -261,7 +247,7 @@ export function createThemeCssVariables(
     '--varo-ui-motion-exit': '160ms',
     '--varo-ui-motion-ease': 'cubic-bezier(0.2, 0.8, 0.2, 1)',
     '--varo-ui-ring': colorWithAlpha(theme.semantic.primaryBase, 16),
-    '--varo-ui-focus': contrastSafeForeground(theme.semantic.surfaceBase),
+    '--varo-ui-focus': foregroundFor('--varo-ui-surface', theme.semantic.surfaceBase),
     ...overrides,
   }
 }

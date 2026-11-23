@@ -9,7 +9,7 @@ const { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, 
 </script>
 
 <template>
-  <section id="chat-blocks-demo" class="grid min-w-0 gap-4" aria-label="Chat Blocks 演示">
+  <section id="chat-blocks-demo" class="grid min-w-0 grid-cols-1 gap-4" aria-label="Chat Blocks 演示">
     <header>
       <h2 class="m-0 text-xl font-semibold">
         对话与上下文助手
@@ -32,6 +32,7 @@ const { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, 
       <VButton variant="outline" :disabled="disabled" @click="quote(true)">
         引用长段落
       </VButton>
+      <AgentAssistantSheet v-model="prompt" v-model:open="open" v-model:expanded="expanded" inline-entry :busy="busy" :disabled="disabled" :context="context" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :selected-response="selectedResponse" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="close" @history-select="selectHistory" @new-conversation="newConversation" @remove-context="removeContext" @insert="insert" @retry="retry" @retry-interrupts="retryInterrupts" @cancel-interrupts="cancelInterrupts" />
     </div>
     <p class="m-0">
       把复杂任务拆成可以确认的小步骤，保留用户的决定权。
@@ -43,6 +44,5 @@ const { activeHistoryId, busy, cancelInterrupts, chatVisible, close, closeChat, 
     <VButton v-if="!chatVisible && !open" variant="outline" @click="chatVisible = true">
       打开会话
     </VButton>
-    <AgentAssistantSheet v-model="prompt" v-model:open="open" v-model:expanded="expanded" :busy="busy" :disabled="disabled" :context="context" :history="history" :active-history-id="activeHistoryId" :messages="messages" :snapshot="snapshot" :selected-response="selectedResponse" :suggestions="['写一段建议']" @submit="send" @stop="stop" @close="close" @history-select="selectHistory" @new-conversation="newConversation" @remove-context="removeContext" @insert="insert" @retry="retry" @retry-interrupts="retryInterrupts" @cancel-interrupts="cancelInterrupts" />
   </section>
 </template>

@@ -9,7 +9,7 @@
 
 .varo-input__label {
   font-size: 14px;
-  color: var(--varo-ui-text-muted);
+  color: var(--varo-ui-text-regular);
 }
 
 .varo-input__body {
@@ -33,6 +33,10 @@
   position: relative;
   align-items: flex-start;
   padding: 10px 12px 28px;
+}
+
+.varo-input__body:has(> .varo-input__clear:last-child) {
+  padding-inline-end: 0;
 }
 
 .varo-input[data-size='sm'] .varo-input__body {
@@ -84,15 +88,16 @@ textarea.varo-input__control {
   align-items: center;
   align-self: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 44px;
+  height: 44px;
   padding: 0;
+  margin: -14px 0;
   overflow: visible;
   color: var(--varo-ui-text-placeholder);
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0;
 }
 
 .varo-input__clear .varo-icon {
@@ -110,5 +115,5 @@ textarea.varo-input__control {
 
 .varo-input__error {
   font-size: 12px;
-  color: var(--varo-ui-danger);
+  color: var(--varo-ui-danger-text);
 }
