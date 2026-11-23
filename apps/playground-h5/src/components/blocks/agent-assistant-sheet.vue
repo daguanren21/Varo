@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<{
   entryLabel?: string
   expanded?: boolean
   history?: AgentChatHistoryItem[]
+  inlineEntry?: boolean
   messages?: readonly AgentConversationEntry[]
   modelValue?: string
   open?: boolean
@@ -105,7 +106,7 @@ function insert() {
 
 <template>
   <!-- Keep the opener mounted beneath the modal so Drawer can restore focus. -->
-  <VButton class="!fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] right-4 z-50" :disabled="disabled" :aria-label="entryLabel" @click="updateOpen(true)">
+  <VButton :class="inlineEntry ? undefined : '!fixed bottom-[calc(env(safe-area-inset-bottom)+16px)] right-4 z-50'" :disabled="disabled" :aria-label="entryLabel" @click="updateOpen(true)">
     {{ entryLabel }}
   </VButton>
   <VDrawer class="agent-assistant-sheet" :open="open" :aria-label="title" placement="bottom" :round="!expanded" @update:open="updateOpen">

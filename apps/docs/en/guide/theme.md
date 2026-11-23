@@ -37,6 +37,8 @@ import { VaroThemeProvider } from '@varo-ui/theme'
 
 Theme seeds use `#RGB` or `#RRGGBB` so Varo can derive contrast-safe foregrounds. When `VButton color` uses a CSS variable, named color, or `rgb()`, also provide `foreground-color`.
 
+Solid buttons use separate fill and foreground pairs for rest and interaction states. When overriding a fill directly in a stylesheet, override its foreground too, such as `--varo-ui-primary` and `--varo-ui-primary-foreground`.
+
 ## Weapp build-time theme
 
 For a fixed app-wide brand theme, the Vite integration appends all `page { --varo-ui-* }` variables to the configured app stylesheet.

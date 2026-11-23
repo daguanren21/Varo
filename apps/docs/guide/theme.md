@@ -48,6 +48,8 @@ const activeTheme = shallowRef(createTheme({
 
 主题种子使用 `#RGB` 或 `#RRGGBB`，以便自动计算满足对比度要求的前景色。`VButton color` 使用 CSS 变量、命名色或 `rgb()` 时，必须同时传入 `foreground-color`。
 
+实心按钮的默认态和交互态分别使用对应的前景色。直接在样式表中覆盖填充色时，也覆盖配对的前景色，例如 `--varo-ui-primary` 与 `--varo-ui-primary-foreground`。
+
 ## Weapp 构建时主题
 
 固定品牌主题应在构建时写入全局 WXSS。`createVaroWeappThemePlugin` 会把完整的 `page { --varo-ui-* }` 变量附加到应用样式：

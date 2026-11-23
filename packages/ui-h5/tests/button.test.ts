@@ -84,12 +84,18 @@ describe('ui-h5 button', () => {
     expect(wrapper.attributes('data-tone')).toBe('info')
     expect(wrapper.attributes('data-variant')).toBe('solid')
   })
-  it('keeps solid theme buttons on a white foreground across tones', () => {
+  it('publishes paired solid fill and foreground tokens for rest and interaction', () => {
     const style = readFileSync(resolve(__dirname, '../src/style.css'), 'utf8')
 
-    expect(style).toContain('--varo-button-foreground: var(--varo-ui-white, #fff)')
-    expect(style).toContain('--varo-button-hover-foreground: var(--varo-ui-white, #fff)')
-    expect(style).toContain('.varo-button[data-tone=\'info\'][data-variant=\'solid\']')
+    for (const tone of ['primary', 'success', 'warning', 'danger', 'info']) {
+      const selector = tone === 'primary' ? '.varo-button' : `.varo-button[data-tone='${tone}'][data-variant='solid']`
+      const rule = style.split(`${selector} {`)[1]?.split('}')[0]
+
+      expect(rule).toContain(`--varo-button-fill: var(--varo-ui-${tone})`)
+      expect(rule).toContain(`--varo-button-foreground: var(--varo-ui-${tone}-foreground)`)
+      expect(rule).toContain(`--varo-button-hover-fill: var(--varo-ui-${tone}-hover)`)
+      expect(rule).toContain(`--varo-button-hover-foreground: var(--varo-ui-${tone}-hover-foreground)`)
+    }
   })
 
   it('exposes Varo-style equivalents for Vant and NutUI button features', () => {

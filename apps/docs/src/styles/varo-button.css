@@ -5,8 +5,8 @@
 .varo-button {
   --varo-button-fill: var(--varo-ui-primary);
   --varo-button-hover-fill: var(--varo-ui-primary-hover);
-  --varo-button-foreground: var(--varo-ui-white, #fff);
-  --varo-button-hover-foreground: var(--varo-ui-white, #fff);
+  --varo-button-foreground: var(--varo-ui-primary-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-primary-hover-foreground);
 
   position: relative;
   display: inline-flex;
@@ -44,6 +44,10 @@
 
 .varo-button[data-variant='solid'] {
   border: 0;
+  transition:
+    opacity var(--varo-ui-motion-state) var(--varo-ui-motion-ease),
+    box-shadow var(--varo-ui-motion-feedback) var(--varo-ui-motion-ease),
+    transform var(--varo-ui-motion-feedback) var(--varo-ui-motion-ease);
 }
 
 @media (hover: hover) {
@@ -171,29 +175,29 @@
 .varo-button[data-tone='success'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-success);
   --varo-button-hover-fill: var(--varo-ui-success-hover);
-  --varo-button-foreground: var(--varo-ui-white, #fff);
-  --varo-button-hover-foreground: var(--varo-ui-white, #fff);
+  --varo-button-foreground: var(--varo-ui-success-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-success-hover-foreground);
 }
 
 .varo-button[data-tone='warning'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-warning);
   --varo-button-hover-fill: var(--varo-ui-warning-hover);
-  --varo-button-foreground: var(--varo-ui-white, #fff);
-  --varo-button-hover-foreground: var(--varo-ui-white, #fff);
+  --varo-button-foreground: var(--varo-ui-warning-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-warning-hover-foreground);
 }
 
 .varo-button[data-tone='danger'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-danger);
   --varo-button-hover-fill: var(--varo-ui-danger-hover);
-  --varo-button-foreground: var(--varo-ui-white, #fff);
-  --varo-button-hover-foreground: var(--varo-ui-white, #fff);
+  --varo-button-foreground: var(--varo-ui-danger-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-danger-hover-foreground);
 }
 
 .varo-button[data-tone='info'][data-variant='solid'] {
   --varo-button-fill: var(--varo-ui-info);
   --varo-button-hover-fill: var(--varo-ui-info-hover);
-  --varo-button-foreground: var(--varo-ui-white, #fff);
-  --varo-button-hover-foreground: var(--varo-ui-white, #fff);
+  --varo-button-foreground: var(--varo-ui-info-foreground);
+  --varo-button-hover-foreground: var(--varo-ui-info-hover-foreground);
 }
 
 .varo-button[data-shape='square'] {
@@ -227,7 +231,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .varo-button {
+  .varo-button,
+  .varo-button[data-variant='solid'] {
     transition-duration: 1ms;
   }
 

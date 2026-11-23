@@ -3,14 +3,14 @@ import type { ThemeDefinition } from './types.ts'
 import { createThemeCssVariables, renderThemeCssVariables } from './css.ts'
 
 export interface WeappThemeCssOptions {
-  variables?: ThemeCssVariableOverrides
+  variables?: ThemeCssVariableOverrides | null
 }
 
 export function createWeappThemeStyle(
   theme: ThemeDefinition,
   options: WeappThemeCssOptions = {},
 ): ThemeCssVariables {
-  return createThemeCssVariables(theme, options.variables)
+  return createThemeCssVariables(theme, options.variables ?? undefined)
 }
 
 export function renderWeappThemeCss(

@@ -1,7 +1,9 @@
+import type { WeappCompilerPlugin } from 'weapp-vite/config'
 import { createHash } from 'node:crypto'
 import { readdirSync, realpathSync } from 'node:fs'
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
+import { minifySync, transformWithOxc } from 'vite'
 import { defineConfig } from 'weapp-vite/config'
 
 const root = import.meta.dirname
@@ -10,6 +12,7 @@ const registryStyles = readdirSync(resolve(root, 'src/styles'))
   .sort((left, right) => left === 'varo.css' ? -1 : right === 'varo.css' ? 1 : left.localeCompare(right))
 const isTest = process.env.VITEST === 'true'
 const isProductionBuild = process.argv.slice(2).includes('build')
+const nativeBuildTarget = 'es2018'
 const weappJsonBlockTestPlugin = {
   name: 'varo-weapp-json-block-test',
   enforce: 'post' as const,
@@ -18,6 +21,30 @@ const weappJsonBlockTestPlugin = {
     return {
       code: `export default ${code.trim()}`,
       map: null,
+    }
+  },
+}
+
+const devToolsSyntaxPlugin: WeappCompilerPlugin = {
+  name: 'varo-weapp-devtools-syntax',
+  phase: 'output',
+  create({ isDev, resolvedConfig }) {
+    if (isDev || resolvedConfig?.build.watch) { return {} }
+    return {
+      async transformJavaScript({ fileName, code }) {
+        if (!/\?\?|\?\./.test(code)) { return null }
+        // weapp-vite injects request globals after Vite's syntax lowering.
+        const lowered = await transformWithOxc(code, fileName, {
+          target: nativeBuildTarget,
+          sourcemap: false,
+          tsconfig: false,
+        })
+        const compact = minifySync(fileName, lowered.code, { compress: false, mangle: false })
+        if (compact.errors.length) {
+          throw new Error(`Failed to compact DevTools JavaScript ${fileName}: ${compact.errors.map(error => error.message).join('\n')}`)
+        }
+        return { code: compact.code }
+      },
     }
   },
 }
@@ -43,7 +70,7 @@ export default defineConfig(({ mode }) => ({
     : [],
   build: {
     // Vite owns syntax lowering; project.config.json disables the DevTools JS passes.
-    target: 'es2018',
+    target: nativeBuildTarget,
     outDir: mode === 'browser-preview'
       ? 'dist/browser/mp-weixin'
       : isProductionBuild ? 'devtools/build/mp-weixin' : 'dist/dev/mp-weixin',
@@ -103,6 +130,7 @@ export default defineConfig(({ mode }) => ({
     autoImportComponents: false,
     srcRoot: 'src',
     platform: 'weapp',
+    compilerPlugins: !isTest && isProductionBuild && mode !== 'browser-preview' ? [devToolsSyntaxPlugin] : undefined,
     appPrelude: {
       webRuntime: {
         enabled: true,

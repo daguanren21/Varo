@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createThemeCssVariables, renderThemeCssVariables } from '../src/css'
 import { createTheme, mergeThemeOverrides } from '../src/theme'
-import { renderWeappThemeCss } from '../src/weapp'
+import { createWeappThemeStyle, renderWeappThemeCss } from '../src/weapp'
 
 function relativeLuminance(color: string): number {
   const channels = [1, 3, 5].map(offset => Number.parseInt(color.slice(offset, offset + 2), 16) / 255).map(channel => channel <= 0.04045
@@ -78,20 +78,10 @@ describe('theme', () => {
       fillBase: '#f0f2f5',
     })
     expect(variables).toMatchObject({
-      '--varo-ui-primary-foreground': '#ffffff',
-      '--varo-ui-primary-hover-foreground': '#ffffff',
       '--varo-ui-primary-text': '#1c794a',
-      '--varo-ui-success-foreground': '#ffffff',
-      '--varo-ui-success-hover-foreground': '#ffffff',
       '--varo-ui-success-text': '#22723e',
-      '--varo-ui-warning-foreground': '#ffffff',
-      '--varo-ui-warning-hover-foreground': '#ffffff',
       '--varo-ui-warning-text': '#95621a',
-      '--varo-ui-danger-foreground': '#ffffff',
-      '--varo-ui-danger-hover-foreground': '#ffffff',
       '--varo-ui-danger-text': '#8e3335',
-      '--varo-ui-info-foreground': '#000000',
-      '--varo-ui-info-hover-foreground': '#000000',
       '--varo-ui-info-text': '#525457',
     })
   })
@@ -165,7 +155,7 @@ describe('theme', () => {
     }
   })
 
-  it('keeps official solid tone foreground and background pairs WCAG AA when white remains AA', () => {
+  it.each(['light', 'dark'] as const)('keeps default %s solid tone foregrounds WCAG AA at rest and hover', (mode) => {
     const variables = createThemeCssVariables(createTheme({
       primary: '#07c160',
       success: '#13b248',
@@ -173,35 +163,17 @@ describe('theme', () => {
       error: '#eb3437',
       neutral: '#303133',
       info: '#73767a',
+      mode,
     }))
-    const tonePairs = [
-      ['--varo-ui-info-foreground', '--varo-ui-info'],
-    ] as const
 
-    for (const [foregroundToken, backgroundToken] of tonePairs) {
-      expect(contrastRatio(
-        variables[foregroundToken],
-        variables[backgroundToken],
-      )).toBeGreaterThanOrEqual(4.5)
+    for (const tone of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
+      const base = `--varo-ui-${tone}` as const
+      expect(contrastRatio(variables[`${base}-foreground`], variables[base]), `${tone} rest`).toBeGreaterThanOrEqual(4.5)
+      expect(contrastRatio(variables[`${base}-hover-foreground`], variables[`${base}-hover`]), `${tone} hover`).toBeGreaterThanOrEqual(4.5)
     }
   })
 
-  it('uses white on WeChat green, success, and warning action fills', () => {
-    const variables = createThemeCssVariables(createTheme({
-      primary: '#07c160',
-      success: '#13b248',
-      warning: '#fa9200',
-      error: '#eb3437',
-      neutral: '#303133',
-      info: '#73767a',
-    }))
-
-    expect(variables['--varo-ui-primary-foreground']).toBe('#ffffff')
-    expect(variables['--varo-ui-success-foreground']).toBe('#ffffff')
-    expect(variables['--varo-ui-warning-foreground']).toBe('#ffffff')
-  })
-
-  it.each(['#000000', '#ffffff', '#777777', '#2563eb', '#fef08a'])(
+  it.each(['#000000', '#ffffff', '#777777', '#2563eb', '#fef08a', '#07c160'])(
     'selects a readable foreground for the arbitrary seed %s',
     (seed) => {
       const variables = createThemeCssVariables(createTheme({
@@ -214,10 +186,11 @@ describe('theme', () => {
       }))
 
       for (const tone of ['primary', 'success', 'warning', 'danger', 'info'] as const) {
-        const foreground = variables[`--varo-ui-${tone}-foreground`]
-        const background = variables[`--varo-ui-${tone}`]
+        const base = `--varo-ui-${tone}` as const
+        const foreground = variables[`${base}-foreground`]
         expect(foreground === '#000000' || foreground === '#ffffff').toBe(true)
-        expect(contrastRatio(foreground, background)).toBeGreaterThan(1.4)
+        expect(contrastRatio(foreground, variables[base]), `${tone} rest`).toBeGreaterThanOrEqual(4.5)
+        expect(contrastRatio(variables[`${base}-hover-foreground`], variables[`${base}-hover`]), `${tone} hover`).toBeGreaterThanOrEqual(4.5)
       }
     },
   )
@@ -300,6 +273,28 @@ describe('theme', () => {
     })
   })
 
+  it('derives solid foregrounds from hex CSS fill overrides', () => {
+    const theme = createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+    })
+    const variables = createThemeCssVariables(theme, {
+      '--varo-ui-primary': '#000',
+      '--varo-ui-primary-hover': '#fff',
+      '--varo-ui-success': 'var(--brand-success)',
+      '--varo-ui-success-foreground': 'var(--brand-success-foreground)',
+      '--varo-ui-surface': '#141414',
+    })
+
+    expect(variables['--varo-ui-primary-foreground']).toBe('#ffffff')
+    expect(variables['--varo-ui-primary-hover-foreground']).toBe('#000000')
+    expect(variables['--varo-ui-success-foreground']).toBe('var(--brand-success-foreground)')
+    expect(contrastRatio(variables['--varo-ui-focus'], variables['--varo-ui-surface'])).toBeGreaterThanOrEqual(3)
+  })
+
   it('renders static Weapp theme declarations on page', () => {
     const theme = createTheme({
       primary: '#7c3aed',
@@ -314,6 +309,19 @@ describe('theme', () => {
     expect(css).toContain('page {')
     expect(css).toContain('  --varo-ui-primary: #7c3aed;')
     expect(css).toContain('  --varo-ui-ring: rgb(124 58 237 / 16%);')
+  })
+
+  it('uses the default theme variables when the Weapp host supplies a null override', () => {
+    const theme = createTheme({
+      primary: '#07c160',
+      success: '#13b248',
+      warning: '#fa9200',
+      error: '#eb3437',
+      neutral: '#303133',
+    })
+    const variables = createWeappThemeStyle(theme, { variables: null })
+
+    expect(variables).toEqual(createWeappThemeStyle(theme))
   })
 
   it('rejects unsafe generated CSS values', () => {
