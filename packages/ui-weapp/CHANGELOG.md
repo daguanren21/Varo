@@ -1,5 +1,115 @@
 # @varo-ui/weapp
 
+## 3.0.0
+
+### Major Changes
+
+- Replace the private Agent event protocol, SSE transport, and stream controller with direct TanStack AI / AG-UI consumption. Registry Agent renderers and Blocks now accept TanStack ChatClientSnapshot; applications own the ChatClient and interrupt resolution. Keep Markdown, text presentation pacing, and thread-version helpers in @varo-ui/ai. Upgrade the native compiler and Wevu to 7.11.1 and use the published Web API runtime for standard streaming Fetch and cancellation.
+
+  Keep trusted native-preview host bindings in an outer lexical scope so compiler-provided Web API declarations can shadow them without duplicate-binding parse failures.
+
+  The historical 7.10.0 native slot integration was verified with execution-slot parent reactivity and child events, cancelable Dialog composition, Menu selection, and form-array runtime scenarios. Remove stale documentation claiming that plain-slot context is still blocked upstream, while retaining explicit opt-in and host/device evidence boundaries.
+
+  Remove obsolete management-chunk relocation after the historical 7.10.0 compiler bundled those helpers into page/shared chunks. Validate actual emitted synchronous script dependencies and package ownership instead of requiring removed standalone files; keep native page, style, asset and package-size gates.
+
+  Upgrade the native E2E automator to stable `@weapp-vite/miniprogram-automator` 1.5.5, including upstream PR1351. The four unchanged Launcher regressions now pass within 15/15 runner checks. Fresh compiler/Wevu 7.11.1 artifacts pass 110 native delivery contracts and all 92 native headless E2E cases, recovering the previous 22 failures without weakening assertions; all seven compiler profiles, Realworld, and the standalone retail starter also pass their artifact checks. IDE and device acceptance remain separate.
+
+  Let comparison applications supply confirmed completion/cancellation outcomes independently of the TanStack ready state, preserving truthful result labels and side-specific stop/retry behavior.
+
+  Preserve SDK message parts and historical tool receipts, keep failed tool states authoritative, and surface interrupt validation/transport errors with application-owned resubmission, retry, and cancellation. Bind approval intents to the rendered interrupt transaction, validate edited mall tool arguments before execution, complete documentation tool-result events, and preserve CommonJS parameters inside the native-preview isolation wrapper.
+
+  Keep native approval controls scoped to keyed WXML list items so replaced transactions cannot reuse captured identities, and derive cancellation availability from serializable SDK metadata rather than methods removed by native property transport.
+
+### Minor Changes
+
+- Add editable H5 and native TimeField and FileType components. TimeField supports minute steps and overnight ranges without changing external values until a valid confirmation; FileType provides local filename/MIME classification and attachment-list icons.
+
+  Add native AvatarGroup, bound pagination windows, count H5 avatar children through fragments while preserving local key scopes and component identity during reorder/removal, and suppress redundant Tabs change events. Reject Picker confirmation when a column has no selectable option.
+
+  Add controlled Agent tool-result disclosure and optional independently expandable Thinking and Activity rows. Add Signature undo/redo with controlled parent acceptance and bounded stroke history.
+
+  Keep Picker selections visible with column-relative scrolling, separate columns, and remove hover fills, selection outlines, and lift effects. Fit native Picker buttons to their grid cells. Honor bare disabled attributes in H5 Tabs and preserve full large-page labels without horizontal overflow.
+
+  Match native model listeners to emitted camel-case arguments in component demos, documentation previews, and retail approval controls. Render native Signature strokes with component-scoped Canvas 2D and device-pixel-ratio sizing. Center Signature action labels horizontally and vertically on both renderers.
+
+  Compile the native playground to ES2018 once, disable the additional DevTools ES6/enhanced JavaScript passes, and preserve function names only in development builds.
+
+  Package subpackage-only native components with their actual consuming pages, preserving shared main runtime state and rebasing component, script, template, and style references. Resolve quoted and unquoted CSS URLs without ambiguous regex backtracking. Reserve a 1.5 MB compiled main-package budget for real-device debugging and validate each subpackage against 2 MiB; preview upload alone does not certify real-device debug packaging.
+
+  Give native Markdown blocks and recursive children explicit stable list keys during streaming, replacing their identities when the source content is replaced. Reject native relocation file/directory conflicts before writes and retain components used by shared templates or styles.
+
+  Patch weapp-vite 7.5.0 app-shell and scriptless or JSON-macro-only Vue layout generation to use compiled Wevu registration and preserve native slot-parent/provider ownership. Ship the version-specific patch in `@varo-ui/weapp` and verify it from fresh source and npm consumers.
+
+  Wait for the committed post-approval assistant message and its rendered confirmation in the native runtime smoke, so an order-state update cannot end verification before the response stream finishes.
+
+  Preserve valid uncommitted Picker and RegionPicker drafts through option updates on both renderers, while reconciling invalid paths and resolving delayed parent selections before the first edit. Ignore conditional comment/text placeholders and flatten nested fragments when creating H5 Tabs. Keep Activity behavior checks independent of translated status and empty-state labels.
+
+  Decode CSS escapes consistently when resolving and rewriting native assets and imports, preserve query/hash suffixes, and share the tokenizer with production, consumer, and exported starter verifiers. Apply the same decoded paths when collecting and converting starter source stylesheets.
+
+  Keep noninteractive native Cards transparent to descendant default actions and event propagation, while preserving interactive activation and disabled child control behavior.
+
+  Separate RegionPicker's displayed path from whole-path acceptance, reconcile fetched root selections, and keep obsolete branch feedback from blocking current drafts. Start root requests when loader/loading eligibility changes. Preserve H5 Tabs fragment identity and use immutable native registration identity with enabled focus fallback. Generate the docs RegionPicker from canonical Registry source.
+
+  Keep playground E2E identity in the native build, allowing the portable app source to export to Taro and uni-app. Include the canonical compiler patch in standalone Wevu exports before locking dependencies, resolve CSS URLs and imports with exact filesystem/package rules, and run converter/exporter regressions in the normal owning-app test task.
+
+  Keep the Taro starter on its compatible webpack 5.111.1 compiler and pin the schema-utils 4.x dependency family to 4.7.0, preserving strict peers and both H5/native compiler support.
+
+  Restore native layout column spans, Menu and Tabbar sizing, and the List documentation phone frame. Preserve absent Cell title widths, Grid badges, Image dimensions, and Agent loading start times instead of accepting native zero initialization. Keep square Grid cells within narrow columns and render explicit zero badges on both renderers.
+
+  Use a shared themed loading skeleton from documentation iframe startup through native readiness, with localized status, reduced-motion support, focus exclusion while loading, and reachable error recovery.
+
+  Constrain AgentMessageScroller's inner viewport within maxHeight on both renderers, keeping long messages scrollable and the follow action reachable.
+
+  Synchronize nested native preview color schemes to prevent opaque white backgrounds in dark mode. Match the Cell demo's H5 surface, avatar, typography, and icon sizing, and use consistent browser text rasterization.
+
+  Give framed native previews the phone's full viewport and preserve shadow painting space without adding layout height; unframed previews retain their existing sizing.
+
+  Add visible bilingual FileType and TimeField demonstrations, frame the form examples consistently, and expose native preview tabs only for Registry-supported targets. Restore compact Switch proportions and isolate Breadcrumb list spacing from documentation prose styles.
+
+  Enforce Calendar date bounds through selection and confirmation, preserve DateField placeholders for absent and empty values, fit InputOtp cells within narrow containers with matching native separators, and separate Rate's cumulative fill from its single selected radio. Describe password masking and numeric entry accurately in the form examples.
+
+  Keep filename-like JavaScript data from becoming required native preview assets, while retaining strict checks for explicit template/style assets, unsafe paths, and escaping symlinks.
+
+  Keep Calendar toolbars and rating demos within narrow phone frames, render inactive native rating stars as transparent outlines, and keep Breadcrumb demo actions on the current page.
+
+  Keep custom Cell icon and link slots accessible on H5 and native, hiding only built-in decorative fallbacks so embedded controls remain discoverable by assistive technology.
+
+  Preserve native optional property absence for numeric precision, selection, layering, and Agent state. Reject disabled, readonly, canceled, and unchanged mutations while retaining explicit confirmation, selection, cancellation, and close actions. Keep inherited Form error visibility reactive and reset Picker drafts after externally controlled closure.
+
+  Support keyboard activation and cancelable actions for H5 primitive controls, with a single enabled Radio tab stop that follows independently updated descendants. Preserve caller-provided accessible slot content and move Tag descriptions and error metadata with its focused checkbox, keeping removal independently operable.
+
+  Repair Agent approval selection defaults, radio keyboard navigation, bounded insight navigation, inferred diff counts, replacement table rows, and persistent command-search naming. Complete missing bilingual component demonstrations and native preview entries, and extend the native preview smoke coverage to all supported scenarios.
+
+  Reconcile images resolved before hydration and keep loading/error fallbacks inside their image bounds. Fit NoticeBar and translated Steps into narrow containers, isolate Steps list spacing from host prose styles, and keep SwipeCell demo controls reachable after opening either side. Support Space activation for native-preview selection roles while preserving disabled, canceled, and repeated-key guards.
+
+- Add editable mobile Blocks and receipt-gated Agent composition with target-specific source; keep application execution external and native host certification explicit.
+
+  Reject Data Grid saves containing changes to columns whose editing permission was revoked, while retaining controlled drafts and cancellation on both renderers.
+
+  Keep the H5 assistant launcher mounted beneath its modal so closing with Escape or the close button restores keyboard focus to the opener.
+
+  Use `draftChange` and `addToCart` consistently for native retail tool events, and preserve exact native listener names during linting.
+
+  Adopt `weapp-vite`/`wevu` 7.5.0 and native automator 1.3.0 for repository fixtures. Keep demo-only native Blocks in the playground's existing `blocks-lab` subpackage through Registry-owned projections, while retaining public install paths and the unchanged 2 MiB main-package and cross-package reference checks.
+
+  Normalize optional native option-disabled flags before rendering RegionPicker, Select, and AgentRadioGroup. Keep genuine disabled/hidden control guards intact. Allow Card descendants such as Menu popups to overflow by default; media compositions can still explicitly request clipping.
+
+  Recheck current application permissions when accepting deferred receipt/review requests, preserving records and drafts when a pending request becomes ineligible. Discard stale asynchronous form validation after owner permission, step, or value changes before publishing errors or committing local rows.
+
+### Patch Changes
+
+- Fix native Tabs event targeting and requested focus, preserve Input clear activation across blur, and keep RegionPicker open while navigating its hierarchy. Native controlled Form writes now emit `update:model` instead of mutating a property snapshot; consumers should apply that event to their page-owned model. Correct native FormItem slot property names and compiler-supported callback declarations.
+
+  Preserve omitted native FormItem `showError` and Form `validateOnChange` settings so inherited behavior remains active while explicit `false` is respected. Render validation messages through a top-level ref that survives native serialization, and keep form writes immediately readable for consecutive updates, reset, and transformed submit payloads.
+
+- Pair solid button fills with readable foregrounds on H5 and Weapp without changing the theme colors. Improve input label and error contrast. Enlarge the Input clear button and H5 Switch hit areas without scaling their icons.
+
+  Keep Weapp loading indicators spaced from their labels. Allow H5 assistant sheets to render an inline launcher with `inlineEntry` so an embedded chat can keep its text visible.
+
+- Updated dependencies:
+  - @varo-ui/headless@3.0.0
+  - @varo-ui/theme@3.0.0
+
 ## 2.2.0
 
 ### Minor Changes
