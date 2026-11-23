@@ -127,6 +127,10 @@ async function verifyScriptReferences(files) {
     if (source.parseDiagnostics.length) { throw new Error(`Invalid compiled JavaScript: ${outputName(path)}`) }
     const references = new Set()
     function visit(node) {
+      if (node.kind === ts.SyntaxKind.QuestionQuestionToken || node.kind === ts.SyntaxKind.QuestionDotToken) {
+        const { line, character } = source.getLineAndCharacterOfPosition(node.getStart(source))
+        throw new Error(`Unsupported DevTools syntax ${node.getText(source)} in ${outputName(path)}:${line + 1}:${character + 1}`)
+      }
       if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
         if (node.moduleSpecifier && ts.isStringLiteralLike(node.moduleSpecifier)) { references.add(node.moduleSpecifier.text) }
       }
