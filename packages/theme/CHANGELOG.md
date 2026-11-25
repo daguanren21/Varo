@@ -1,5 +1,11 @@
 # @varo-ui/theme
 
+## 3.0.1
+
+### Patch Changes
+
+- Point package homepages to the official Varo documentation at https://varo.weapp.dev/.
+
 ## 3.0.0
 
 ### Patch Changes
