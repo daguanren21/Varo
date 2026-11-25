@@ -1,5 +1,15 @@
 # @varo-ui/weapp
 
+## 3.0.1
+
+### Patch Changes
+
+- Point package homepages to the official Varo documentation at https://varo.weapp.dev/.
+
+- Updated dependencies:
+  - @varo-ui/headless@3.0.1
+  - @varo-ui/theme@3.0.1
+
 ## 3.0.0
 
 ### Major Changes

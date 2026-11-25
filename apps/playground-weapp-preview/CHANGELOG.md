@@ -5,6 +5,13 @@
 ### Patch Changes
 
 - Updated dependencies:
+  - @varo-ui/h5@3.0.1
+
+## 0.1.0
+
+### Patch Changes
+
+- Updated dependencies:
   - @varo-ui/h5@3.0.0
 
 ## 0.1.0

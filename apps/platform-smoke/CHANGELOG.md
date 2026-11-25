@@ -5,6 +5,14 @@
 ### Patch Changes
 
 - Updated dependencies:
+  - @varo-ui/headless@3.0.1
+  - @varo-ui/theme@3.0.1
+
+## 0.1.0
+
+### Patch Changes
+
+- Updated dependencies:
   - @varo-ui/headless@3.0.0
   - @varo-ui/theme@3.0.0
 
