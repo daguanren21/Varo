@@ -57,7 +57,7 @@ export async function createVaroDevtools(options: VaroDevtoolsOptions = {}): Pro
     version: '0.0.0',
     packageName: '@varo/devtools',
     importMetaUrl: import.meta.url,
-    homepage: 'https://daguanren21.github.io/Varo/',
+    homepage: 'https://varo.weapp.dev/',
     description: 'Local Registry reads and explicitly enabled fixed development commands.',
     setup(ctx) {
       register(ctx, 'varo:blocks:list', 'List canonical Registry Blocks with bounded pagination and optional profile admission.', listSchema, 'read', input => registry.list(input))

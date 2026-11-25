@@ -84,7 +84,7 @@ pnpm --filter @varo/platform-smoke verify:alipay
 pnpm --filter @varo-ui/cli test
 pnpm --filter @varo/registry test
 pnpm --filter @varo/docs dev
-DOCS_BASE=/Varo/ pnpm --filter @varo/docs build
+pnpm --filter @varo/docs build
 ```
 
 - Workspace `dev`/build/typecheck/test/lint commands use Turbo. `dev` is persistent and parallel.
@@ -100,6 +100,7 @@ DOCS_BASE=/Varo/ pnpm --filter @varo/docs build
 
 ## Documentation
 
+- Use the [official Varo documentation](https://varo.weapp.dev/) for current public usage and API guidance.
 - Write for AI agents and developers: lead with required configuration, API contracts, constraints, and minimal runnable examples. Use short, direct statements; omit filler and repeated caveats.
 - Do not put current dependency versions in usage prose, configuration explanations, or ordinary install examples. Read exact versions from manifests and lockfiles. Keep version numbers only when a documented compatibility boundary, minimum requirement, or reproducible release record requires them.
 - Keep upgrade history, PR narratives, test counts, and point-in-time verification results in changelogs, PRs, or verification records, not usage guides.
