@@ -61,7 +61,7 @@ Stylesheet declaration `url()` paths resolve relative to the stylesheet or SFC, 
 
 Start API integration in `src/features/retail/runtime.ts`, which selects the simulated `retailService`. The exporter configures no server, authentication, or payment provider. To connect a backend, use the included `src/features/retail/http-service.ts`: its `createHttpRetailService` requires your `RetailHttpTransport` and API contract, and is not imported by default. Handle authoritative prices, stock, address validation, and order persistence there. Preserve integer-cent amounts and order/address snapshots.
 
-Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data/assets, tab images and app theme values for your application; `retailConfig.scenario` selects local demo scenarios. `src/styles/` and the reached native UI source remain editable. `vite.config.ts` loads foundation (`varo.css`) before component styles, globally into `app.vue`. See the source repository's [technical guide](https://daguanren21.github.io/Varo/guide/retail-starter) for the service contracts, deterministic local scenarios and brand entry details.
+Replace `retailConfig.brand` in `src/features/retail/config.ts`, product data/assets, tab images and app theme values for your application; `retailConfig.scenario` selects local demo scenarios. `src/styles/` and the reached native UI source remain editable. `vite.config.ts` loads foundation (`varo.css`) before component styles, globally into `app.vue`. See the source repository's [technical guide](https://varo.weapp.dev/guide/retail-starter) for the service contracts, deterministic local scenarios and brand entry details.
 
 ## Version and integrity record
 
